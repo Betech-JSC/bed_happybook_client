@@ -18,7 +18,7 @@ export default function Header() {
       }}
     >
       <div className={styles.header__menu}>
-        <div className="mx-auto flex justify-between items-center py-4 relative lg:px-[30px] xl:px-[80px] sm:px-3">
+        <div className="mx-auto flex justify-between items-center py-4 relative lg:px-[50px] xl:px-[80px] sm:px-3">
           {/* Logo */}
           <div className="flex items-center">
             <Image
@@ -53,7 +53,7 @@ export default function Header() {
           <div>
             <a
               href="#"
-              className="h-8 hover:border-b-[3px] hover:border-[#F27145]"
+              className="h-8 hover:border-b-[3px] hover:border-[#F27145] hover:text-white text-[#EAECF0]"
             >
               Về chúng tôi
             </a>
@@ -61,7 +61,7 @@ export default function Header() {
           <div>
             <a
               href="#"
-              className="h-8 hover:border-b-[3px] hover:border-[#F27145]"
+              className="h-8 hover:border-b-[3px] hover:border-[#F27145] hover:text-white text-[#EAECF0]"
             >
               Liên hệ
             </a>
@@ -69,7 +69,7 @@ export default function Header() {
           <div>
             <a
               href="#"
-              className="h-8 hover:border-b-[3px] hover:border-[#F27145]"
+              className="h-8 hover:border-b-[3px] hover:border-[#F27145] hover:text-white text-[#EAECF0]"
             >
               Tin tức
             </a>
@@ -168,32 +168,33 @@ export default function Header() {
             </a>
           </nav>
         </div>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="absolute top-[74px] lg:right-[50px] xl:right-20 z-1 bg-blue-800">
+            <nav className="flex flex-col py-2 space-y-2 absolute right-0 w-[210px] h-[228px] bg-white text-black px-4 rounded-sm">
+              <a href="#" className={styles.text_hover_default}>
+                Đăng ký CTV
+              </a>
+              <a href="#" className={styles.text_hover_default}>
+                Tư vấn visa
+              </a>
+              <a href="#" className={styles.text_hover_default}>
+                Hướng dẫn thanh toán
+              </a>
+              <a href="#" className={styles.text_hover_default}>
+                Hướng dẫn đặt vé
+              </a>
+              <a href="#" className={styles.text_hover_default}>
+                Thông tin chuyển khoản
+              </a>
+              <a href="#" className={styles.text_hover_default}>
+                Điều khoản sử dụng
+              </a>
+            </nav>
+          </div>
+        )}
       </div>
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="relative z-1 bg-blue-800">
-          <nav className="flex flex-col py-2 space-y-2 absolute right-0 w-[210px] h-[228px] bg-white text-black px-4 rounded-sm">
-            <a href="#" className={styles.text_hover_default}>
-              Đăng ký CTV
-            </a>
-            <a href="#" className={styles.text_hover_default}>
-              Tư vấn visa
-            </a>
-            <a href="#" className={styles.text_hover_default}>
-              Hướng dẫn thanh toán
-            </a>
-            <a href="#" className={styles.text_hover_default}>
-              Hướng dẫn đặt vé
-            </a>
-            <a href="#" className={styles.text_hover_default}>
-              Thông tin chuyển khoản
-            </a>
-            <a href="#" className={styles.text_hover_default}>
-              Điều khoản sử dụng
-            </a>
-          </nav>
-        </div>
-      )}
+
       <div className="lg:px-[50px] xl:px-[80px] sm:px-3">
         <Search />
       </div>

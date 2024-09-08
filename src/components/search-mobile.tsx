@@ -38,7 +38,7 @@ export default function SearchMobile() {
       <div className="grid grid-cols-4 gap-2 my-4 px-3">
         <div
           onClick={() => setActiveTabMb(0)}
-          className={`rounded-2xl text-center h-[104px] ${
+          className={`rounded-2xl text-center h-[104px] flex flex-col ${
             activeTabMb === 0
               ? "bg-white text-[#175CD3]"
               : "bg-[#00000054] text-white"
@@ -54,11 +54,11 @@ export default function SearchMobile() {
               style={{ width: 20, height: 20 }}
             ></Image>
           </div>
-          <span className="px-1 text-sm font-medium">Vé máy bay</span>
+          <span className="px-1 mt-2 text-sm font-medium">Vé máy bay</span>
         </div>
         <div
           onClick={() => setActiveTabMb(1)}
-          className={`rounded-2xl text-center h-[104px] ${
+          className={`rounded-2xl text-center h-[104px] flex flex-col ${
             activeTabMb === 1
               ? "bg-white text-[#175CD3]"
               : "bg-[#00000054] text-white"
@@ -74,11 +74,11 @@ export default function SearchMobile() {
               style={{ width: 20, height: 20 }}
             ></Image>
           </div>
-          <span className="px-1 text-sm font-medium">Khách sạn</span>
+          <span className="px-1 mt-2 text-sm font-medium">Khách sạn</span>
         </div>
         <div
           onClick={() => setActiveTabMb(2)}
-          className={`rounded-2xl text-center h-[104px] ${
+          className={`rounded-2xl text-center h-[104px] flex flex-col ${
             activeTabMb === 2
               ? "bg-white text-[#175CD3]"
               : "bg-[#00000054] text-white"
@@ -93,11 +93,11 @@ export default function SearchMobile() {
               className="rounded-full mx-auto"
             ></Image>
           </div>
-          <span className="text-sm font-medium">Bảo hiểm</span>
+          <span className="text-sm mt-2 font-medium">Bảo hiểm</span>
         </div>
         <div
           onClick={() => setActiveTabMb(3)}
-          className={`rounded-2xl text-center h-[104px] ${
+          className={`rounded-2xl text-center h-[104px] flex flex-col ${
             activeTabMb === 3
               ? "bg-white text-[#175CD3]"
               : "bg-[#00000054] text-white"
@@ -112,7 +112,7 @@ export default function SearchMobile() {
               className="rounded-full mx-auto"
             ></Image>
           </div>
-          <span className="px-1 text-sm font-medium">Vé vui chơi</span>
+          <span className="px-1 mt-2 text-sm font-medium">Vé vui chơi</span>
         </div>
       </div>
       {/* Tabs Fly */}

@@ -47,12 +47,15 @@ export default function VisaService() {
     >
       <div className="flex justify-between">
         <div>
-          <h3 className="text-2xl lg:text-[32px] font-bold">
+          <h3 className="text-[24px] lg:text-[32px] font-bold">
             Dịch vụ Visa nổi bật
           </h3>
         </div>
-        <div className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3">
-          <button className="text-[#175CD3]"> Xem tất cả</button>
+        <div
+          className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
+          style={{ transition: "0.3s" }}
+        >
+          <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
@@ -66,7 +69,7 @@ export default function VisaService() {
         Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
       </p>
       <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
-        <button className="text-[#175CD3]"> Xem tất cả</button>
+        <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
@@ -96,7 +99,7 @@ export default function VisaService() {
                 <CarouselItem key={index} className="basis-1/8">
                   <button
                     key={index}
-                    className={`h-10 text-sm lg:text-base px-3 lg:px-4 py-2 rounded-[8px]  ${
+                    className={`h-10 text-sm lg:text-base px-3 lg:px-4 py-2 rounded-[8px] hover:bg-gray-100   ${
                       activeTab === index
                         ? "bg-[#1570EF] text-white"
                         : "text-gray-500 border-solid border-[#D0D5DD] border-2"

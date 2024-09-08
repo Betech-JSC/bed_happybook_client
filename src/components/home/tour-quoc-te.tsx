@@ -68,8 +68,11 @@ export default function TourQuocTe() {
         <div>
           <h3 className="text-[32px] font-bold">Tour quốc tế</h3>
         </div>
-        <div className="flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3">
-          <button className="text-[#175CD3]"> Xem tất cả</button>
+        <div
+          className="flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
+          style={{ transition: "0.3s" }}
+        >
+          <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
@@ -94,7 +97,7 @@ export default function TourQuocTe() {
             ].map((tab, index) => (
               <button
                 key={index}
-                className={`px-4 py-2 focus:outline-none rounded-[8px]  ${
+                className={`px-4 py-2 focus:outline-none rounded-[8px] hover:bg-gray-100   ${
                   activeTab === index
                     ? "bg-[#1570EF] text-white"
                     : "text-gray-500 border-solid border-[#D0D5DD] border-2"
