@@ -4,9 +4,9 @@ export default function VisaSteps() {
   return (
     <div
       className="relative bg-cover bg-center py-12 md:px-3 lg:px-[50px] xl:px[80px]"
-      // style={{ backgroundImage: 'url("/path-to-your-image.jpg")' }}
+      style={{ backgroundImage: 'url("/visa-step.png")' }}
     >
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div className="absolute inset-0 bg-opacity-50"></div>
       <div className="px-3 md:px-0 relative z-10 container mx-auto text-center text-white">
         <h2
           className={`${styles.pacifico_font} text-3xl font-normal mb-5 pacifico_font`}

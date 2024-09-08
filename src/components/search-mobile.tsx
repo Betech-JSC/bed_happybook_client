@@ -44,7 +44,7 @@ export default function SearchMobile() {
               : "bg-[#00000054] text-white"
           }`}
         >
-          <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto place-content-center">
+          <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
             <Image
               src="/icon/AirplaneTilt.svg"
               alt="Phone icon"
@@ -64,7 +64,7 @@ export default function SearchMobile() {
               : "bg-[#00000054] text-white"
           }`}
         >
-          <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto place-content-center">
+          <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
             <Image
               src="/icon/Buildings.svg"
               alt="Phone icon"
@@ -84,7 +84,7 @@ export default function SearchMobile() {
               : "bg-[#00000054] text-white"
           }`}
         >
-          <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto place-content-center">
+          <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto content-center">
             <Image
               src="/icon/Umbrella.svg"
               alt="Phone icon"
@@ -103,7 +103,7 @@ export default function SearchMobile() {
               : "bg-[#00000054] text-white"
           }`}
         >
-          <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto place-content-center">
+          <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto content-center">
             <Image
               src="/icon/Ticket.svg"
               alt="Phone icon"
@@ -116,7 +116,7 @@ export default function SearchMobile() {
         </div>
       </div>
       {/* Tabs Fly */}
-      <div className="mx-3 py-6  bg-white rounded-2xl shadow-lg relative">
+      <div className="mx-3 pt-6 pb-4  h-[530px] bg-white rounded-2xl shadow-lg relative">
         {/* Tab Fly */}
         {activeTabMb === 0 && (
           <div>

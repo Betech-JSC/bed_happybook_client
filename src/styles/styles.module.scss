@@ -7,6 +7,19 @@ $primary-color: #1570ef;
 .text_hover_default:hover {
   color: #f27145;
 }
+.header__menu {
+  position: relative;
+  &:after {
+    content: "";
+    height: 1px;
+    width: 100%;
+    bottom: -10px;
+    position: absolute;
+    background-color: #fff;
+    opacity: 0.2;
+    display: block;
+  }
+}
 // Visa step
 .progressbar {
   display: flex;

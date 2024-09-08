@@ -39,7 +39,7 @@ export default function HeaderMobile() {
       {isMenuMbOpen && (
         <div className="fixed inset-[-1px] flex items-center justify-center z-50 top-[69px] b">
           <div className="absolute inset-0 bg-black opacity-50"></div>
-          <div className="bg-white text-black overflow-scroll p-3 shadow-lg z-10 max-w-lg w-full h-full">
+          <div className="bg-white text-black overflow-scroll p-3 shadow-lg z-10 w-full h-full">
             <div>
               <p>
                 <strong>Dịch vụ</strong>

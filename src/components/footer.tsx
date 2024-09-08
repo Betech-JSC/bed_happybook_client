@@ -141,16 +141,16 @@ export default function Footer() {
             </p>
             <div className="grid grid-cols-3 gap-3 mt-4">
               <button>
-                <Image src="/payment/1.png" alt="Icon" width={58} height={40} />
+                <Image src="/payment/1.svg" alt="Icon" width={58} height={40} />
               </button>
               <button>
-                <Image src="/payment/2.png" alt="Icon" width={58} height={40} />
+                <Image src="/payment/2.svg" alt="Icon" width={58} height={40} />
               </button>
               <button>
-                <Image src="/payment/3.png" alt="Icon" width={58} height={40} />
+                <Image src="/payment/3.svg" alt="Icon" width={58} height={40} />
               </button>
               <button>
-                <Image src="/payment/4.png" alt="Icon" width={58} height={40} />
+                <Image src="/payment/4.svg" alt="Icon" width={58} height={40} />
               </button>
             </div>
           </div>

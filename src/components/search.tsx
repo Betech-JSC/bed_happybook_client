@@ -12,7 +12,7 @@ export default function Search() {
       <div className="pt-11 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
         <div className="w-[600px] grid grid-cols-4 gap-2 mb-4 absolute top-[-12%] left-[50%] translate-x-[-50%] bg-[#000000] py-2 px-3 rounded-3xl">
           <button
-            className={`flex items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
+            className={`flex lg:h-11 items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
               activeTab === 0 ? "bg-[#1570EF]" : ""
             }`}
             onClick={() => setActiveTab(0)}
@@ -28,7 +28,7 @@ export default function Search() {
           </button>
           <button
             onClick={() => setActiveTab(1)}
-            className={`flex items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
+            className={`flex lg:h-11 items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
               activeTab === 1 ? "bg-[#1570EF]" : ""
             }`}
           >
@@ -43,7 +43,7 @@ export default function Search() {
           </button>
           <button
             onClick={() => setActiveTab(2)}
-            className={`flex items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
+            className={`flex lg:h-11 items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
               activeTab === 2 ? "bg-[#1570EF]" : ""
             }`}
           >
@@ -57,7 +57,7 @@ export default function Search() {
           </button>
           <button
             onClick={() => setActiveTab(3)}
-            className={`flex items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
+            className={`flex lg:h-11 items-center text-white py-1 px-3 rounded-3xl focus:outline-none ${
               activeTab === 3 ? "bg-[#1570EF]" : ""
             }`}
           >
@@ -183,7 +183,7 @@ export default function Search() {
         )}
         {/* Tabs 2 */}
         {activeTab === 1 && (
-          <div className="my-10">
+          <div className="mt-10">
             <div className="flex lg:space-x-1 xl:space-x-2">
               <div className="w-[40%]">
                 <label className="block text-gray-700 mb-1">
@@ -374,7 +374,7 @@ export default function Search() {
         {/* Tabs 3 */}
         {activeTab === 3 && (
           <div>
-            <div className="flex space-x-12 mb-4">
+            <div className="flex space-x-12 mb-3">
               <label className="flex items-center space-x-2">
                 <span className="text-[18px] font-semibold text-black">
                   Tìm vé vui chơi

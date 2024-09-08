@@ -64,14 +64,14 @@ export default function CompoHot() {
             </div>
             <Image
               className="hidden lg:block"
-              src="/compo-hot/image.png"
+              src="/compo-hot/image.svg"
               alt="Compo Hot"
               width={200}
               height={160}
               style={{ height: "auto", width: "80%" }}
             />
           </div>
-          <div className="mt-8 lg:mt-0">
+          <div className="mt-8 lg:mt-0 lg:ml-8 lg:mr-3">
             <Carousel
               opts={{
                 align: "start",
