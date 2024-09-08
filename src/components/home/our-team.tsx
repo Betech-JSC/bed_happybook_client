@@ -5,11 +5,90 @@ import { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
+import styles from "@/styles/styles.module.scss";
 
-const ourTeams: string[] = [];
-for (let i = 1; i <= 16; i++) {
-  ourTeams.push(`/our-team/${i}.png`);
-}
+const ourTeams = [
+  {
+    name: "Chị Văn",
+    position: "Tổng Giám Đốc",
+    image: "1",
+  },
+  {
+    name: "Hòa",
+    position: "Leader Booker Quốc Tế",
+    image: "2",
+  },
+  {
+    name: "Ngà",
+    position: "Leader Booker Nội Địa",
+    image: "3",
+  },
+  {
+    name: "Nhu",
+    position: "Leader Marketing",
+    image: "4",
+  },
+  {
+    name: "Diễm",
+    position: "Hộ Chiếu & Visa",
+    image: "5",
+  },
+  {
+    name: "Huy Lớn",
+    position: "Hộ Chiếu & Visa",
+    image: "6",
+  },
+  {
+    name: "Huy Nhỏ",
+    position: "Content Creator",
+    image: "1",
+  },
+  {
+    name: "Tươi",
+    position: "Content Marketing",
+    image: "1",
+  },
+  {
+    name: "Kiệt",
+    position: "ADS Marketing",
+    image: "1",
+  },
+  {
+    name: "My",
+    position: "S.E.O Website",
+    image: "1",
+  },
+  {
+    name: "Anh Thành",
+    position: "Tour Du Lịch",
+    image: "1",
+  },
+  {
+    name: "Chị Thoa",
+    position: "CTV Vé Máy Bay",
+    image: "1",
+  },
+  {
+    name: "Kiều",
+    position: "Booker",
+    image: "1",
+  },
+  {
+    name: "Vy",
+    position: "Booker",
+    image: "1",
+  },
+  {
+    name: "Thắm",
+    position: "HR",
+    image: "1",
+  },
+  {
+    name: "Tuyết",
+    position: "Kế Toán",
+    image: "1",
+  },
+];
 
 export default function OurTeam() {
   const swiperRef = useRef<SwiperType | null>(null);
@@ -40,7 +119,11 @@ export default function OurTeam() {
           <h3 className="text-[32px] font-bold">Đội ngũ của chúng tôi</h3>
         </div>
       </div>
-      <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <div
+        className="mt-8"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         <Swiper
           spaceBetween={10}
           slidesPerView="auto"
@@ -59,16 +142,22 @@ export default function OurTeam() {
         >
           {ourTeams.map((member, index) => (
             <SwiperSlide key={index} className="basis-1/6">
-              <div>
+              <div className={styles.member__item}>
                 <Image
-                  src={member}
+                  src={`/our-team/${index + 1}.png`}
                   alt="Member"
                   width={100}
                   height={100}
                   sizes="100vw"
-                  className="rounded-2xl cursor-pointer grayscale hover:grayscale-0"
+                  className={styles.member__img}
                   style={{ width: "90%", height: "auto" }}
                 />
+                <div className={styles.member__info}>
+                  <div className={`m-3 text-white`}>
+                    <p className="font-semibold">{member.name}</p>
+                    <p className="font-medium text-sm">{member.position}</p>
+                  </div>
+                </div>
               </div>
             </SwiperSlide>
           ))}

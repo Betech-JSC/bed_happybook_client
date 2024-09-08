@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import styles from "@/styles/styles.module.scss";
 
 const hotels = [
   {
@@ -51,7 +52,14 @@ export default function Hotel() {
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   const [activeTab, setActiveTab] = useState(0);
   return (
-    <div className="lg:mt-12 lg:px-6 py-8 bg-[#FCFCFD] rounded-3xl">
+    <div
+      className={`lg:mt-12 lg:mb-8 lg:px-6 py-8 rounded-3xl ${styles.hide__background_mb}`}
+      style={{
+        background: "url(/bg-img/hotel.png), #FCFCFD",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="flex justify-between">
         <div>
           <h3 className="text-2xl lg:text-[32px] font-bold">

@@ -64,7 +64,7 @@ export default function Partner() {
           <h3 className="text-[32px] font-bold">Đối tác</h3>
         </div>
       </div>
-      <div className="mt-4 w-full">
+      <div className="mt-8 w-full">
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <Swiper
             spaceBetween={10}

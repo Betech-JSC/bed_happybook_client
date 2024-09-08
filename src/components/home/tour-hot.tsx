@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import styles from "@/styles/styles.module.scss";
 
 const tours = [
   {
@@ -53,7 +54,14 @@ export default function TourHot() {
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
   return (
-    <div className="lg:mt-12 py-6 lg:px-6 lg:py-8 bg-[#FCFCFD] rounded-3xl">
+    <div
+      className={`lg:mt-12 py-6 lg:px-6 lg:py-8 rounded-3xl ${styles.hide__background_mb}`}
+      style={{
+        background: "url(/bg-img/tour-hot.png), #FCFCFD",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="mt-5">
         <div className="flex justify-between">
           <div>

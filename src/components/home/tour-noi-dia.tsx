@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import styles from "@/styles/styles.module.scss";
 
 const tours = [
   {
@@ -54,7 +55,14 @@ export default function TourNoiDia() {
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   const [activeTab, setActiveTab] = useState(0);
   return (
-    <div className="hidden lg:block mt-12 px-6 py-8 bg-[#FCFCFD] rounded-3xl">
+    <div
+      className={`hidden lg:block mt-12 px-6 py-8 rounded-3xl ${styles.hide__background_mb}`}
+      style={{
+        background: "url(/bg-img/tour-noi-dia.png), #FCFCFD",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="flex justify-between">
         <div>
           <h3 className="text-[32px] font-bold">Tour Nội địa</h3>

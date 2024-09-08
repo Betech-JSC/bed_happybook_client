@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import styles from "@/styles/styles.module.scss";
 
 const visa = [
   {
@@ -36,7 +37,14 @@ export default function VisaService() {
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   const [activeTab, setActiveTab] = useState(0);
   return (
-    <div className="py-6 lg:mt-12 lg:px-6 lg:py-8 bg-white">
+    <div
+      className={`py-6 lg:mt-12 lg:px-6 lg:py-8 rounded-3xl ${styles.hide__background_mb}`}
+      style={{
+        background: "url(/bg-img/visa.png), #FCFCFD",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="flex justify-between">
         <div>
           <h3 className="text-2xl lg:text-[32px] font-bold">
