@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -11,11 +12,34 @@ export default function TravelGuide() {
         <div>
           <h3 className="text-[32px] font-bold">Cẩm nang du lịch</h3>
         </div>
+        <div
+          className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
+          style={{ transition: "0.3s" }}
+        >
+          <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
+          <Image
+            className=" hover:scale-110 ease-in duration-300"
+            src="/icon/chevron-right.svg"
+            alt="Icon"
+            width={20}
+            height={20}
+          />
+        </div>
+      </div>
+      <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-1 py-3 px-4 rounded-lg space-x-3">
+        <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
+        <Image
+          className=" hover:scale-110 ease-in duration-300"
+          src="/icon/chevron-right.svg"
+          alt="Icon"
+          width={20}
+          height={20}
+        />
       </div>
       <div className="mt-8 w-full flex flex-col lg:flex-row lg:space-x-4 space-y-6 lg:space-y-0">
         <div className="basis-1/2 cursor-pointer">
           <div
-            className="relative rounded-xl w-full h-[468px] lg:h-[584px] "
+            className="relative rounded-xl w-full h-[468px] lg:h-[584px]"
             style={{
               backgroundImage:
                 "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%), url('/travel-guide/1.png')",
@@ -89,7 +113,7 @@ export default function TravelGuide() {
           </div>
         </div>
         {/* Mobile */}
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <Carousel
             opts={{
               align: "start",
