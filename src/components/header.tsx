@@ -51,26 +51,17 @@ export default function Header() {
 
           {/* <div className="flex items-center space-x-6"> */}
           <div>
-            <a
-              href="#"
-              className="h-8 hover:border-b-[3px] hover:border-[#F27145] hover:text-white text-[#EAECF0]"
-            >
+            <a href="#" className={styles.header__menu_item}>
               Về chúng tôi
             </a>
           </div>
           <div>
-            <a
-              href="#"
-              className="h-8 hover:border-b-[3px] hover:border-[#F27145] hover:text-white text-[#EAECF0]"
-            >
+            <a href="#" className={styles.header__menu_item}>
               Liên hệ
             </a>
           </div>
           <div>
-            <a
-              href="#"
-              className="h-8 hover:border-b-[3px] hover:border-[#F27145] hover:text-white text-[#EAECF0]"
-            >
+            <a href="#" className={styles.header__menu_item}>
               Tin tức
             </a>
           </div>
@@ -129,41 +120,23 @@ export default function Header() {
         </div>
         {/* Bottom Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
-          <nav className="flex h-[26px] space-x-3">
-            <a
-              href="#"
-              className="hover:border-b-[3px] hover:border-[#F27145] px-[18px]"
-            >
+          <nav className="flex h-[26px] space-x-8">
+            <a href="#" className={`${styles.header__menu_item}`}>
               Tours
             </a>
-            <a
-              href="#"
-              className="hover:border-b-[3px] hover:border-[#F27145] px-[18px]"
-            >
+            <a href="#" className={`${styles.header__menu_item}`}>
               Vé máy bay
             </a>
-            <a
-              href="#"
-              className="hover:border-b-[3px] hover:border-[#F27145] px-[18px] "
-            >
+            <a href="#" className={`${styles.header__menu_item}`}>
               Visa
             </a>
-            <a
-              href="#"
-              className="hover:border-b-[3px] hover:border-[#F27145] px-[18px]"
-            >
+            <a href="#" className={`${styles.header__menu_item}`}>
               Định cư
             </a>
-            <a
-              href="#"
-              className="hover:border-b-[3px] hover:border-[#F27145] px-[18px]"
-            >
+            <a href="#" className={`${styles.header__menu_item}`}>
               Khách sạn
             </a>
-            <a
-              href="#"
-              className="hover:border-b-[3px] hover:border-[#F27145] ml-3 px-[18px]"
-            >
+            <a href="#" className={`${styles.header__menu_item}`}>
               Khác
             </a>
           </nav>
