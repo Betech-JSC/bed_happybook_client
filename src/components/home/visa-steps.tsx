@@ -24,12 +24,7 @@ export default function VisaSteps() {
             className={`flex w-[303px] md:w-auto flex-col basis-1/5 items-center relative ${styles.progressbar__step}`}
           >
             <div className="w-[240px] text-left ml-[86px] md:ml-0 md:text-center md:w-auto ">
-              <p
-                className={`text-[28px] font-normal mt-2 md:mt-5 ${styles.pacifico_font}`}
-              >
-                Đăng ký
-              </p>
-
+              <p className={styles.progressbar__step_title}>Đăng ký</p>
               <p className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3">
                 Điền form thông tin đơn giản, nhanh chóng. Thông tin được bảo
                 mật.
@@ -40,11 +35,7 @@ export default function VisaSteps() {
             className={`flex w-[303px] md:w-auto flex-col basis-1/5 items-center relative ${styles.progressbar__step}`}
           >
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
-              <p
-                className={`text-[28px] font-normal mt-2 md:mt-5 ${styles.pacifico_font}`}
-              >
-                Liên hệ
-              </p>
+              <p className={styles.progressbar__step_title}>Liên hệ</p>
 
               <p className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3">
                 Nhân viên sẽ liên hệ với bạn trong vòng 2h làm việc qua
@@ -56,11 +47,7 @@ export default function VisaSteps() {
             className={`flex w-[303px] md:w-auto flex-col basis-1/5 items-center relative ${styles.progressbar__step}`}
           >
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
-              <p
-                className={`text-[28px] font-normal mt-2 md:mt-5 ${styles.pacifico_font}`}
-              >
-                Tư vấn
-              </p>
+              <p className={styles.progressbar__step_title}>Tư vấn</p>
 
               <p className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3">
                 Tư vấn hoàn thiện hồ sơ: nhân viên visa giàu kinh nghiệm của
@@ -73,11 +60,7 @@ export default function VisaSteps() {
             className={`flex w-[303px] md:w-auto flex-col basis-1/5 items-center relative ${styles.progressbar__step}`}
           >
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
-              <p
-                className={`text-[28px] font-normal mt-2 md:mt-5 ${styles.pacifico_font}`}
-              >
-                Nộp hồ sơ
-              </p>
+              <p className={styles.progressbar__step_title}>Nộp hồ sơ</p>
 
               <p className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3">
                 Sau khi hồ sơ đã hoàn chỉnh, nhân viên Happy book nộp hồ sơ visa
@@ -89,11 +72,7 @@ export default function VisaSteps() {
             className={`flex w-[303px] md:w-auto flex-col basis-1/5 items-center relative ${styles.progressbar__step}`}
           >
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
-              <p
-                className={`text-[28px] font-normal mt-2 md:mt-5 ${styles.pacifico_font}`}
-              >
-                Đợi kết quả
-              </p>
+              <p className={styles.progressbar__step_title}>Đợi kết quả</p>
 
               <p className="text-sm font-normal lg:min-w-[200px] m-w-[220px] mt-3">
                 Sau quá trình đợi LSQ xét duyệt hồ sơ, nhân viên Happybook sẽ
