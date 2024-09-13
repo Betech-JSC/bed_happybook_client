@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import HeaderMobile from "@/components/header-mobile";
+import BackToTopButton from "@/components/back-top-btn";
+import FooterMenu from "@/components/footer-menu";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -45,6 +47,8 @@ export default function RootLayout({
         <Header></Header>
         <HeaderMobile></HeaderMobile>
         {children}
+        <BackToTopButton></BackToTopButton>
+        <FooterMenu></FooterMenu>
         <Footer></Footer>
       </body>
     </html>

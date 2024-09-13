@@ -1,12 +1,28 @@
 "use client";
 import Image from "next/image";
 import Search from "@/components/search";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/styles.module.scss";
+import clsx from "clsx";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSticky, setSticky] = useState(false);
+  const handleScroll = () => {
+    if (window.scrollY > 0) {
+      setSticky(true);
+    } else {
+      setSticky(false);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   const menuIcon = isMenuOpen ? "/icon/x-close.svg" : "/icon/menu-icon.svg";
+  const logo = isSticky ? "logo-2.svg" : "logo.svg";
   return (
     <header
       className="text-white relative hidden lg:block"
@@ -17,13 +33,17 @@ export default function Header() {
         backgroundPosition: "center",
       }}
     >
-      <div className={styles.header__menu}>
-        <div className="mx-auto flex justify-between items-center py-4 relative lg:px-[50px] xl:px-[80px] sm:px-3">
+      <div
+        className={clsx(styles.header__menu, {
+          [styles.header__sticky]: isSticky,
+        })}
+      >
+        <div className="mx-auto flex justify-between items-center px-4 pb-4 relative lg:px-[50px] xl:px-[80px] sm:px-3">
           {/* Logo */}
           <div className="flex items-center">
             <Image
               priority
-              src="/logo.svg"
+              src={logo}
               alt="Happy Book Logo"
               width={240}
               height={64}
@@ -35,7 +55,7 @@ export default function Header() {
             <input
               type="text"
               placeholder="Tìm theo điểm đến, hoạt động"
-              className="p-2 w-full rounded-l-lg text-gray-700 h-12"
+              className={`p-2 w-full rounded-l-lg text-gray-700 h-12 ${styles.header__menu_search}`}
             />
             <button className="bg-blue-500 px-3 rounded-r-lg w-12 h-12">
               <Image
@@ -71,12 +91,11 @@ export default function Header() {
               <Image
                 src="/icon/VN flag.svg"
                 alt="Phone icon"
-                className="h-10"
+                className="h-10 rounded-full"
                 width={22}
                 height={20}
                 style={{ width: 22, height: 20 }}
               ></Image>
-              <span>VN</span>
               <Image
                 src="/icon/chevron-down.svg"
                 alt="Phone icon"
@@ -89,7 +108,7 @@ export default function Header() {
 
           <a
             href="tel:0983-488-937"
-            className="flex lg:max-h-10 items-center space-x-2 border border-white px-3 py-2 rounded-3xl hover:bg-blue-600"
+            className={`flex lg:max-h-10 items-center space-x-2 border border-white px-3 py-2 rounded-3xl hover:bg-blue-600 ${styles.header__menu_phone_contact}`}
           >
             <Image
               src="/icon/phone.svg"
@@ -99,10 +118,10 @@ export default function Header() {
               height={20}
               style={{ width: 20, height: 20 }}
             ></Image>
-            <span>0983-488-937</span>
+            <span className="font-medium">0983-488-937</span>
           </a>
           <a
-            className={`bg-[#1570EF] lg:max-h-10 hover:bg-white cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none ${styles.text_hover_default}`}
+            className={`bg-[#1570EF] font-medium lg:max-h-10 hover:bg-white cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none ${styles.text_hover_default}`}
           >
             <span>Đăng nhập</span>
           </a>

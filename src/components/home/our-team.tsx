@@ -155,7 +155,9 @@ export default function OurTeam() {
                 <div className={styles.member__info}>
                   <div className={`m-3 text-white`}>
                     <p className="font-semibold">{member.name}</p>
-                    <p className="font-medium text-sm">{member.position}</p>
+                    <p className="font-medium text-sm mt-[6px]">
+                      {member.position}
+                    </p>
                   </div>
                 </div>
               </div>
