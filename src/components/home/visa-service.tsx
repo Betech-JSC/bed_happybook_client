@@ -143,7 +143,9 @@ export default function VisaService() {
                         />
                       </div>
                       <div className="py-3 px-4 lg:h-[72px] ">
-                        <p className="text-base font-semibold line-clamp-2 hover:text-[#F27145] cursor-pointer	">
+                        <p
+                          className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
+                        >
                           {item.title}
                         </p>
                       </div>

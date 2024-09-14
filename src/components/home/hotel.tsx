@@ -158,7 +158,9 @@ export default function Hotel() {
                           </div>
                         </div>
                         <div className="py-3 px-4">
-                          <p className="text-base font-semibold min-h-12 line-clamp-2 hover:text-[#F27145] cursor-pointer	">
+                          <p
+                            className={`text-base font-semibold min-h-12 line-clamp-2 ${styles.text_hover_default}`}
+                          >
                             {hotel.title}
                           </p>
                           <div className="flex mt-2">

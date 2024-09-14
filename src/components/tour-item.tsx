@@ -1,4 +1,5 @@
 import Image from "next/image";
+import styles from "@/styles/styles.module.scss";
 
 export default function TourItem({
   category = "",
@@ -35,7 +36,9 @@ export default function TourItem({
         )}
       </div>
       <div className="py-3 px-4">
-        <p className="text-base min-h-12 font-semibold line-clamp-2 hover:text-[#F27145] cursor-pointer	">
+        <p
+          className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
+        >
           {title}
         </p>
         <p className="flex space-x-2 mt-2">

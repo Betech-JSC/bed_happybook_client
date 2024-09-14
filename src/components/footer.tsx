@@ -1,4 +1,5 @@
 import Image from "next/image";
+import styles from "@/styles/styles.module.scss";
 
 export default function Footer() {
   return (
@@ -38,16 +39,12 @@ export default function Footer() {
             <p>
               <strong>Về Happy Book</strong>
             </p>
-            <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              Về chúng tôi
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">Tin tức</p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-4 ${styles.text_hover_default}`}>Về chúng tôi</p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>Tin tức</p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>
               Liên hệ chúng tôi
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Đăng ký CTV
-            </p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>Đăng ký CTV</p>
             <p className="mt-8 ">
               <strong>Theo dõi chúng tôi</strong>
             </p>
@@ -85,56 +82,46 @@ export default function Footer() {
             <p>
               <strong>Dịch vụ</strong>
             </p>
-            <p className="mt-4 cursor-pointer hover:text-[#F27145]">
-              Tour nội địa
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Tour quốc tế
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-4 ${styles.text_hover_default}`}>Tour nội địa</p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>Tour quốc tế</p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>
               Tour du thuyền
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-3 ${styles.text_hover_default}`}>
               Vé máy bay nội địa
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-3 ${styles.text_hover_default}`}>
               Vé máy bay quốc tế
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-3 ${styles.text_hover_default}`}>
               Dịch vụ làm Visa
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">Định cư</p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Khách sạn
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">Combo</p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>Định cư</p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>Khách sạn</p>
+            <p className={`mt-3 ${styles.text_hover_default}`}>Combo</p>
           </div>
           <div>
             <p>
               <strong>Khác</strong>
             </p>
-            <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              Tư vấn visa
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-4 ${styles.text_hover_default} `}>Tư vấn visa</p>
+            <p className={`mt-3 ${styles.text_hover_default} `}>
               Hướng dẫn thanh toán
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-3 ${styles.text_hover_default} `}>
               Hướng dẫn đặt vé
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-3 ${styles.text_hover_default} `}>
               Thông tin chuyển khoản
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-3 ${styles.text_hover_default} `}>
               Điều khoản sử dụng
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            <p className={`mt-3 ${styles.text_hover_default} `}>
               Dịch vụ làm Visa
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">Định cư</p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Khách sạn
-            </p>
+            <p className={`mt-3 ${styles.text_hover_default} `}>Định cư</p>
+            <p className={`mt-3 ${styles.text_hover_default} `}>Khách sạn</p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">Combo</p>
             <p className="mt-8">
               <strong>Hình thức thanh toán</strong>

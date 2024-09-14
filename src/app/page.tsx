@@ -10,6 +10,9 @@ import Partner from "@/components/home/partner";
 import OurTeam from "@/components/home/our-team";
 import TouristSuggest from "@/components/home/tourist-suggest";
 import TravelGuide from "@/components/home/travel-guide";
+import Flight from "@/components/home/flight";
+import AosAnimate from "@/components/aos-animate";
+import FooterMenu from "@/components/footer-menu";
 
 export default function Home() {
   return (
@@ -17,33 +20,63 @@ export default function Home() {
       <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px]">
         <Banner></Banner>
       </div>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <CompoHot></CompoHot>
-      </div>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <TourHot></TourHot>
-      </div>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <TourNoiDia></TourNoiDia>
-      </div>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <TourQuocTe></TourQuocTe>
-      </div>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <VisaService></VisaService>
-      </div>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <Hotel></Hotel>
-      </div>
-      <VisaSteps></VisaSteps>
-      <OurTeam></OurTeam>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <TouristSuggest></TouristSuggest>
-      </div>
-      <div className="px-3 lg:px-[50px] xl:px-[80px]">
-        <TravelGuide></TravelGuide>
-      </div>
-      <Partner></Partner>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <CompoHot></CompoHot>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <Flight></Flight>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <TourHot></TourHot>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <TourNoiDia></TourNoiDia>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <TourQuocTe></TourQuocTe>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <VisaService></VisaService>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <Hotel></Hotel>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <VisaSteps></VisaSteps>
+      </AosAnimate>
+      <AosAnimate>
+        <OurTeam></OurTeam>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <TouristSuggest></TouristSuggest>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <TravelGuide></TravelGuide>
+        </div>
+      </AosAnimate>
+      <AosAnimate>
+        <Partner></Partner>
+      </AosAnimate>
+      <AosAnimate>
+        <FooterMenu></FooterMenu>
+      </AosAnimate>
     </main>
   );
 }

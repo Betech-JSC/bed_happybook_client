@@ -1,7 +1,6 @@
 "use client";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import Autoplay from "embla-carousel-autoplay";
-import TourItem from "@/components/tour-item";
 import Image from "next/image";
 import {
   Carousel,
@@ -11,53 +10,64 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
+import FlightItem from "@/components/flight-item";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const tours = [
   {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
+    title: "Hà Nội - Hồ Chí Minh",
+    image: "/flight/1.png",
     price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-hot/1.png",
-    hot: 1,
+    airlineName: "Vietjet Air",
+    airlineLogo: "/airline/vietjet.svg",
+    date: "15/09/2024",
+    type: 0,
   },
   {
-    category: "Du lịch miền Bắc",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
+    title: "Hà Nội - Đà Lạt",
+    image: "/flight/2.png",
     price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-hot/2.png",
+    airlineName: "Vietjet Air",
+    airlineLogo: "/airline/vietjet.svg",
+    date: "15/09/2024",
+    type: 1,
   },
   {
-    category: "Du lịch miền Trung",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
+    title: "Hồ Chí Minh - Nha Trang",
+    image: "/flight/3.png",
     price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-hot/3.png",
+    airlineName: "Vietjet Air",
+    airlineLogo: "/airline/vietjet.svg",
+    date: "15/09/2024",
+    type: 0,
   },
   {
-    category: "Du lịch miền Trung",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
+    title: "Hồ Chí Minh - Hà Nội",
+    image: "/flight/4.png",
     price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-hot/4.png",
+    airlineName: "Vietjet Air",
+    airlineLogo: "/airline/vietjet.svg",
+    date: "15/09/2024",
+    type: 0,
   },
   {
-    category: "Du lịch miền Bắc",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
+    title: "Hà Nội - Hồ Chí Minh",
+    image: "/flight/1.png",
     price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-hot/2.png",
+    airlineName: "Vietjet Air",
+    airlineLogo: "/airline/vietjet.svg",
+    date: "15/09/2024",
+    type: 0,
   },
 ];
-export default function TourHot() {
+export default function Flight() {
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
-
   return (
     <div
-      className={`lg:mt-12 py-6 lg:px-6 lg:py-8 rounded-3xl ${styles.hide__background_mb}`}
+      className={`lg:mt-12 py-6 lg:px-6 lg:py-8 rounded-3xl  hidden lg:block ${styles.hide__background_mb}`}
       style={{
-        background: "url(/bg-img/tour-hot.png), #FCFCFD",
+        background: "url(/bg-img/flight.png), #FCFCFD",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -65,7 +75,9 @@ export default function TourHot() {
       <div>
         <div className="flex justify-between">
           <div>
-            <h3 className="text-[24px] lg:text-[32px] font-bold">Tour Hot</h3>
+            <h3 className="text-[24px] lg:text-[32px] font-bold">
+              Những chuyến bay phổ biến
+            </h3>
           </div>
           <div
             className="hidden lg:flex bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3"
@@ -110,7 +122,7 @@ export default function TourHot() {
                   key={index}
                   className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
                 >
-                  <TourItem {...tour} />
+                  <FlightItem {...tour} />
                 </CarouselItem>
               ))}
             </CarouselContent>
