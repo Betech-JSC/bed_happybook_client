@@ -18,10 +18,12 @@ export default function Header() {
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
+      if (window.scrollY) {
+        setSticky(true);
+      }
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  const menuIcon = isMenuOpen ? "/icon/x-close.svg" : "/icon/menu-icon.svg";
   const logo = isSticky ? "logo-2.svg" : "logo.svg";
   return (
     <header

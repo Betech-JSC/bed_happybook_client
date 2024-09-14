@@ -92,10 +92,10 @@ export default function TourNoiDia() {
               (tab, index) => (
                 <button
                   key={index}
-                  className={`px-4 py-2 focus:outline-none rounded-[8px] hover:bg-gray-100  ${
+                  className={`px-4 py-2 focus:outline-none rounded-[8px] duration-300 ${
                     activeTab === index
-                      ? "bg-[#1570EF] text-white"
-                      : "text-gray-500 border-solid border-[#D0D5DD] border-2"
+                      ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                      : "text-gray-500 border-solid border-[#D0D5DD] border-2 hover:bg-gray-100"
                   }`}
                   onClick={() => setActiveTab(index)}
                 >

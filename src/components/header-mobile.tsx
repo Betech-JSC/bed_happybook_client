@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import SearchMobile from "./search-mobile";
+import styles from "@/styles/styles.module.scss";
 
 export default function HeaderMobile() {
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
@@ -32,16 +33,14 @@ export default function HeaderMobile() {
             height={40}
           ></Image>
         </div>
-        <div>
-          {/* Menu Button */}
-          <button onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}>
-            <Image
-              src={menuIcon}
-              alt="Menu icon"
-              width={20}
-              height={20}
-            ></Image>
-          </button>
+        {/* Menu Button */}
+        <div
+          className={`${styles.nav_icon} ${isMenuMbOpen ? styles.open : ""} `}
+          onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+        >
+          <span className="!bg-black"></span>
+          <span className="!bg-black"></span>
+          <span className="!bg-black"></span>
         </div>
       </div>
       <div className="mt-[68px]">
@@ -49,15 +48,17 @@ export default function HeaderMobile() {
       </div>
       {/* Mobile Menu */}
       <div
-        className={`fixed max-h-[600px] inset-[-1px] flex items-center justify z-50  top-[69px] transition-height duration-300 ease-in-out`}
-        style={{ height: menuHeight }}
+        className={`fixed max-h-[600px] inset-[-1px] flex items-center justify z-50  top-[69px] duration-500 ease-in-out`}
+        style={{
+          height: menuHeight,
+          opacity: isMenuMbOpen ? "1" : "0",
+          zIndex: isMenuMbOpen ? "10" : "-1",
+          transform: isMenuMbOpen ? "translateY(0)" : "translateY(-50px)",
+        }}
       >
-        {/* <div className="absolute inset-0 bg-black opacity-50"></div> */}
         <div
           ref={dropdownRef}
-          className={`bg-white text-black overflow-y-scroll shadow-lg w-full h-full ${
-            isMenuMbOpen ? "px-3" : "px-0"
-          }`}
+          className={`bg-white text-black overflow-y-scroll shadow-lg w-full h-full px-3`}
         >
           <div>
             <p className="mt-3">
