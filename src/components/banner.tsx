@@ -1,26 +1,72 @@
+"use client";
 import Image from "next/image";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { useRef } from "react";
 
 export default function Banner() {
+  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   return (
     <div
-      className="grid grid-cols-1 lg:grid-cols-2  gap-[24px] justify-between mt-0 lg:mt-3"
+      className="mt-0 lg:mt-3"
       style={{ width: "100%", height: "100%", position: "relative" }}
     >
-      <Image
-        src="/images/banner.svg"
-        alt="Banner"
-        width={200}
-        height={160}
-        style={{ height: "100%", width: "100%" }}
-      />
-      <Image
-        src="/images/banner-1.svg"
-        className="hidden lg:block"
-        alt="Banner"
-        width={200}
-        height={160}
-        style={{ height: "100%", width: "100%" }}
-      />
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        // plugins={[plugin.current]}
+        // onMouseEnter={plugin.current.stop}
+        // onMouseLeave={plugin.current.reset}
+      >
+        <CarouselContent>
+          <CarouselItem className="basis-full lg:basis-2/4">
+            <Image
+              src="/images/banner.svg"
+              alt="Banner"
+              width={200}
+              height={160}
+              style={{ height: "100%", width: "100%" }}
+            />
+          </CarouselItem>
+          <CarouselItem className="basis-full lg:basis-2/4">
+            <Image
+              src="/images/banner-1.svg"
+              alt="Banner"
+              width={200}
+              height={160}
+              style={{ height: "100%", width: "100%" }}
+            />
+          </CarouselItem>
+          <CarouselItem className="basis-full lg:basis-2/4">
+            <Image
+              src="/images/banner.svg"
+              alt="Banner"
+              width={200}
+              height={160}
+              style={{ height: "100%", width: "100%" }}
+            />
+          </CarouselItem>
+          <CarouselItem className="basis-full lg:basis-2/4">
+            <Image
+              src="/images/banner-1.svg"
+              alt="Banner"
+              width={200}
+              height={160}
+              style={{ height: "100%", width: "100%" }}
+            />
+          </CarouselItem>
+        </CarouselContent>
+        <CarouselPrevious className="hidden lg:inline-flex" />
+        <CarouselNext className="hidden lg:inline-flex" />
+      </Carousel>
     </div>
   );
 }

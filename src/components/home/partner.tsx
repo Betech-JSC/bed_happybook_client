@@ -7,12 +7,12 @@ import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
 
 const arrPartner: string[] = [];
-for (let i = 1; i <= 10; i++) {
-  arrPartner.push(`/partner/${i}.png`);
+for (let i = 1; i <= 7; i++) {
+  arrPartner.push(`/partner/slide-1/${i}.svg`);
 }
 const arrPartner2: string[] = [];
-for (let i = 1; i <= 9; i++) {
-  arrPartner2.push(`/partner-2/${i}.png`);
+for (let i = 1; i <= 11; i++) {
+  arrPartner2.push(`/partner/slide-2/${i}.svg`);
 }
 export default function Partner() {
   const swiperRef = useRef<SwiperType | null>(null);
@@ -24,7 +24,6 @@ export default function Partner() {
   const handleMouseEnter = () => {
     if (swiperRef.current) {
       swiperRef.current.autoplay.stop();
-
       transformValue = swiperRef.current.wrapperEl.style.transform;
       swiperRef.current.wrapperEl.style.transitionDuration = "0ms";
       swiperRef.current.wrapperEl.style.transform =
@@ -65,7 +64,11 @@ export default function Partner() {
         </div>
       </div>
       <div className="mt-8 w-full">
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className="w-full overflow-hidden"
+        >
           <Swiper
             spaceBetween={10}
             slidesPerView="auto"
@@ -74,7 +77,7 @@ export default function Partner() {
               delay: 0,
               disableOnInteraction: false,
             }}
-            speed={3000}
+            speed={4000}
             modules={[Autoplay, FreeMode]}
             freeMode={{ enabled: true, momentum: false }}
             onSwiper={(swiper) => {
@@ -84,24 +87,22 @@ export default function Partner() {
           >
             {arrPartner.map((partNer, index) => (
               <SwiperSlide key={index} className="basis-1/6">
-                <div>
-                  <Image
-                    src={partNer}
-                    alt="Partner"
-                    width={100}
-                    height={70}
-                    sizes="100vw"
-                    style={{ width: "auto", height: "auto" }}
-                  />
-                </div>
+                <Image
+                  src={partNer}
+                  alt="Partner"
+                  width={0}
+                  height={0}
+                  style={{ width: "auto", height: "auto", margin: "0 auto" }}
+                />
               </SwiperSlide>
             ))}
           </Swiper>
         </div>
-        <div className="mt-5">
+        <div className="mt-6">
           <div
             onMouseEnter={handleMouseEnter2}
             onMouseLeave={handleMouseLeave2}
+            className="w-full overflow-hidden"
           >
             <Swiper
               spaceBetween={10}
@@ -112,7 +113,7 @@ export default function Partner() {
                 disableOnInteraction: false,
                 reverseDirection: true,
               }}
-              speed={3000}
+              speed={4000}
               modules={[Autoplay, FreeMode]}
               freeMode={{ enabled: true, momentum: false }}
               onSwiper={(swiper) => {
@@ -126,10 +127,13 @@ export default function Partner() {
                     <Image
                       src={partNer}
                       alt="Partner"
-                      width={100}
-                      height={70}
-                      sizes="100vw"
-                      style={{ width: "auto", height: "auto" }}
+                      width={0}
+                      height={0}
+                      style={{
+                        width: "auto",
+                        height: "40px",
+                        margin: "0 auto",
+                      }}
                     />
                   </div>
                 </SwiperSlide>

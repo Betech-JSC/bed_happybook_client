@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import SearchMobile from "./search-mobile";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
 
 export default function HeaderMobile() {
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
@@ -25,13 +26,15 @@ export default function HeaderMobile() {
       <div className="h-[68px] fixed w-full top-0 z-[99] bg-white mx-auto flex justify-between items-center py-3 px-3">
         {/* Logo */}
         <div>
-          <Image
-            priority
-            src="/logo-mobile.png"
-            alt="Happy Book Logo"
-            width={160}
-            height={40}
-          ></Image>
+          <Link href="/">
+            <Image
+              priority
+              src="/logo-mobile.png"
+              alt="Happy Book Logo"
+              width={160}
+              height={40}
+            />
+          </Link>
         </div>
         {/* Menu Button */}
         <div
@@ -42,9 +45,6 @@ export default function HeaderMobile() {
           <span className="!bg-black"></span>
           <span className="!bg-black"></span>
         </div>
-      </div>
-      <div className="mt-[68px]">
-        <SearchMobile />
       </div>
       {/* Mobile Menu */}
       <div
@@ -93,7 +93,7 @@ export default function HeaderMobile() {
               <strong>Về Happy Book</strong>
             </p>
             <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              Về chúng tôi
+              <Link href="/ve-chung-toi">Về chúng tôi</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">Tin tức</p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">

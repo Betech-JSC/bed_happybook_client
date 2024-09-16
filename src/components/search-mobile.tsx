@@ -14,7 +14,7 @@ export default function SearchMobile() {
         backgroundPosition: "center",
       }}
     >
-      <h3 className="pt-8 text-xl lg:text-2xl font-bold text-center">
+      <h3 className="pt-8 text-xl lg:text-2xl font-bold text-center text-white">
         Bắt đầu hành trình với HappyBook
       </h3>
       {/* Search Bar */}

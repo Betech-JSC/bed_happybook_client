@@ -8,26 +8,29 @@ $color-blue-700: #2e90fa;
   font-style: normal;
 }
 .text_hover_default {
-  @apply transition-all duration-300 hover:!text-[#f27145]  cursor-pointer;
+  @apply transition-colors duration-300 hover:!text-[#f27145]  cursor-pointer;
 }
 .header__menu {
-  @apply pt-4 relative;
-  &:after {
-    content: "";
-    height: 1px;
-    width: 100%;
-    bottom: -10px;
-    position: absolute;
-    background-color: #fff;
-    opacity: 0.2;
-    display: block;
-  }
+  @apply pt-4 pb-[10px] fixed top-0 w-full;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  // &:after {
+  //   content: "";
+  //   height: 1px;
+  //   width: 100%;
+  //   bottom: -10px;
+  //   position: absolute;
+  //   background-color: #fff;
+  //   opacity: 0.2;
+  //   display: block;
+  // }
   &_item {
-    @apply relative h-8 hover:text-white text-[#EAECF0];
-    transition: all 0.3s ease-in;
-    &:hover:after {
-      background-color: $primary-color;
-      height: 3px;
+    @apply relative h-8 hover:text-[#f27145] transition-colors duration-300 text-[#EAECF0];
+    // transition: hover 0.4s ease-in;
+    &:hover {
+      &:after {
+        background-color: $primary-color;
+        height: 3px;
+      }
     }
     &:after {
       position: absolute;
@@ -41,16 +44,18 @@ $color-blue-700: #2e90fa;
   }
 }
 .header__sticky {
-  @apply transition-all duration-300 ease-in translate-y-0 opacity-100 py-4;
+  @apply transition-all duration-300 ease-in opacity-100;
   top: 0;
   width: 100%;
   z-index: 99;
-  position: fixed;
   background-color: #fff;
   border-bottom: 1px solid #d0d5dd;
   .header__menu_item {
     color: #283448;
     padding-bottom: 10px;
+    &:hover {
+      color: $primary-color;
+    }
   }
   .header__menu_search {
     border: 1px solid #d0d5dd;
@@ -74,7 +79,7 @@ $color-blue-700: #2e90fa;
   height: 40px;
   position: relative;
   transform: rotate(0deg);
-  transition: 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out;
   cursor: pointer;
   span {
     display: block;
@@ -86,20 +91,20 @@ $color-blue-700: #2e90fa;
     opacity: 1;
     left: 0;
     transform: rotate(0deg);
-    transition: 0.4s ease-in;
+    transition: all 0.4s ease-in;
   }
   span:nth-child(1) {
-    top: 10px;
+    top: 8px;
     transform-origin: right center;
   }
 
   span:nth-child(2) {
-    top: 20px;
+    top: 16px;
     transform-origin: right center;
   }
 
   span:nth-child(3) {
-    top: 30px;
+    top: 24px;
     transform-origin: right center;
   }
   &.open {

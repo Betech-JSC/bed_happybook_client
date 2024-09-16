@@ -1,13 +1,19 @@
 "use client";
 import Image from "next/image";
-import Search from "@/components/search";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
 import clsx from "clsx";
 
 export default function Header() {
+  let headerClass = "";
+  const [isStickyHeader, setStickyHeader] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSticky, setSticky] = useState(false);
+  const logo = isSticky ? "logo-2.svg" : "logo.svg";
+  const pathname = usePathname();
+
   const handleScroll = () => {
     if (window.scrollY > 0) {
       setSticky(true);
@@ -15,41 +21,50 @@ export default function Header() {
       setSticky(false);
     }
   };
+
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      if (window.scrollY) {
-        setSticky(true);
-      }
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-  const logo = isSticky ? "logo-2.svg" : "logo.svg";
+    if (pathname !== "/") {
+      setSticky(true);
+      setStickyHeader(false);
+    } else {
+      setSticky(false);
+      setStickyHeader(true);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (isStickyHeader) {
+      window.addEventListener("scroll", handleScroll);
+      if (window.scrollY) setSticky(true);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, [isStickyHeader]);
   return (
-    <header
-      className="text-white relative hidden lg:block"
-      style={{
-        backgroundImage:
-          "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%), url(/bg-image.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <header className="text-white relative hidden lg:block">
       <div
-        className={clsx(styles.header__menu, {
-          [styles.header__sticky]: isSticky,
-        })}
+        className={clsx(
+          "text-white fixed hidden lg:block h-[132px] z-10",
+          styles.header__menu,
+          headerClass,
+          {
+            [styles.header__sticky]: isSticky,
+          }
+        )}
       >
         <div className="mx-auto flex justify-between items-center px-4 pb-4 relative lg:px-[50px] xl:px-[80px] sm:px-3">
           {/* Logo */}
           <div className="flex items-center">
-            <Image
-              priority
-              src={logo}
-              alt="Happy Book Logo"
-              width={240}
-              height={64}
-            ></Image>
+            <Link href="/">
+              <Image
+                priority
+                src={logo}
+                alt="Happy Book Logo"
+                width={240}
+                height={64}
+              ></Image>
+            </Link>
           </div>
 
           {/* Search Bar */}
@@ -71,11 +86,10 @@ export default function Header() {
             </button>
           </div>
 
-          {/* <div className="flex items-center space-x-6"> */}
           <div>
-            <a href="#" className={styles.header__menu_item}>
+            <Link href="/ve-chung-toi" className={styles.header__menu_item}>
               Về chúng tôi
-            </a>
+            </Link>
           </div>
           <div>
             <a href="#" className={styles.header__menu_item}>
@@ -98,13 +112,23 @@ export default function Header() {
                 height={20}
                 style={{ width: 22, height: 20 }}
               ></Image>
-              <Image
-                src="/icon/chevron-down.svg"
-                alt="Phone icon"
-                className="h-10"
-                width={22}
-                height={20}
-              ></Image>
+              <div>
+                <svg
+                  width="22"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    stroke={isSticky ? "#283448" : "#fff"}
+                    stroke-width="1.66667"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
             </button>
           </div>
 
@@ -144,7 +168,7 @@ export default function Header() {
             <span></span>
           </div>
         </div>
-        {/* Bottom Navigation */}
+        {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
           <nav className="flex h-[26px] space-x-8">
             <a href="#" className={`${styles.header__menu_item}`}>
@@ -167,7 +191,7 @@ export default function Header() {
             </a>
           </nav>
         </div>
-        {/* Mobile Menu */}
+        {/* Menu */}
         <div className="absolute top-[74px] lg:right-[50px] xl:right-20 z-1 bg-blue-800 ">
           <nav
             className={`flex flex-col  transition-height duration-500 ease-in-out opacity-100 border-gray-300 border-2 py-2 space-y-2 absolute right-0 w-[210px] h-[228px] bg-white text-black px-4 rounded-sm`}
@@ -197,10 +221,6 @@ export default function Header() {
             </a>
           </nav>
         </div>
-      </div>
-
-      <div className="lg:px-[50px] xl:px-[80px] sm:px-3">
-        <Search />
       </div>
     </header>
   );

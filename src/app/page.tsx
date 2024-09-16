@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Banner from "@/components/banner";
 import TourNoiDia from "@/components/home/tour-noi-dia";
 import TourHot from "@/components/home/tour-hot";
@@ -13,70 +14,88 @@ import TravelGuide from "@/components/home/travel-guide";
 import Flight from "@/components/home/flight";
 import AosAnimate from "@/components/aos-animate";
 import FooterMenu from "@/components/footer-menu";
+import Search from "@/components/search";
+import SearchMobile from "@/components/search-mobile";
 
 export default function Home() {
   return (
-    <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
-      <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px]">
-        <Banner></Banner>
+    <Fragment>
+      <div
+        className="lg:px-[50px] xl:px-[80px] sm:px-3 relative z-[0] hidden lg:block"
+        style={{
+          backgroundImage:
+            "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%), url(/bg-image.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <Search />
       </div>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <CompoHot></CompoHot>
+      <div className="mt-[68px] block lg:hidden">
+        <SearchMobile />
+      </div>
+      <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
+        <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px]">
+          <Banner></Banner>
         </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <Flight></Flight>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <TourHot></TourHot>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <TourNoiDia></TourNoiDia>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <TourQuocTe></TourQuocTe>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <VisaService></VisaService>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <Hotel></Hotel>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <VisaSteps></VisaSteps>
-      </AosAnimate>
-      <AosAnimate>
-        <OurTeam></OurTeam>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <TouristSuggest></TouristSuggest>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[50px] xl:px-[80px]">
-          <TravelGuide></TravelGuide>
-        </div>
-      </AosAnimate>
-      <AosAnimate>
-        <Partner></Partner>
-      </AosAnimate>
-      <AosAnimate>
-        <FooterMenu></FooterMenu>
-      </AosAnimate>
-    </main>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <CompoHot></CompoHot>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <Flight></Flight>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <TourHot></TourHot>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <TourNoiDia></TourNoiDia>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <TourQuocTe></TourQuocTe>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <VisaService></VisaService>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <Hotel></Hotel>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <VisaSteps></VisaSteps>
+        </AosAnimate>
+        <AosAnimate>
+          <OurTeam></OurTeam>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <TouristSuggest></TouristSuggest>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+            <TravelGuide></TravelGuide>
+          </div>
+        </AosAnimate>
+        <AosAnimate>
+          <Partner></Partner>
+        </AosAnimate>
+        <AosAnimate>
+          <FooterMenu></FooterMenu>
+        </AosAnimate>
+      </main>
+    </Fragment>
   );
 }

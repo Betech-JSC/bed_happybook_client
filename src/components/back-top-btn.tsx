@@ -7,7 +7,7 @@ export default function BackToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => {
-    if (window.scrollY > 300) {
+    if (window.scrollY > 200) {
       setIsVisible(true);
     } else {
       setIsVisible(false);
@@ -37,7 +37,7 @@ export default function BackToTopButton() {
         onClick={scrollToTop}
         className={styles.back__top_btn}
         style={{
-          opacity: isVisible ? "1" : "0",
+          opacity: isVisible ? "0.5" : "0",
           transform: isVisible ? "translateY(0)" : "translateY(20px)",
         }}
       >

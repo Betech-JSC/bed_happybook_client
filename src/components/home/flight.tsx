@@ -11,8 +11,6 @@ import {
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
 import FlightItem from "@/components/flight-item";
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 const tours = [
   {

@@ -5,8 +5,8 @@ import Image from "next/image";
 export default function Search() {
   const [activeTab, setActiveTab] = useState(0);
   return (
-    <div className="lg:h-[560px] mt-4 content-center">
-      <h3 className="text-2xl font-bold text-center mb-12 relative">
+    <div className="lg:h-[694px] content-center pt-[118px]">
+      <h3 className="text-2xl text-white font-bold text-center mb-12 relative">
         Bắt đầu hành trình với HappyBook
       </h3>
       <div className="pt-11 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
