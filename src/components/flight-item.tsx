@@ -40,12 +40,12 @@ export default function FlightItem({
         <p className="flex space-x-2 mt-2">
           <span>{date}</span>
         </p>
-        <div className="text-right mt-2">
+        {/* <div className="text-right mt-2">
           <span className="text-[#F27145] font-semibold text-base lg:text-xl">
             {" "}
             {price} vnđ
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   );
