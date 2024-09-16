@@ -24,6 +24,12 @@
   .header-background {
     background-color: rgba(4, 52, 154, 1);
   }
+  .text-color-primary {
+    color: #f27145;
+  }
+  .text__default_hover {
+    @apply transition-colors duration-300 hover:!text-[#f27145] cursor-pointer;
+  }
 }
 
 @layer base {

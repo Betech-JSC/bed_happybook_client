@@ -8,11 +8,11 @@ import clsx from "clsx";
 
 export default function Header() {
   let headerClass = "";
-  const [isStickyHeader, setStickyHeader] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSticky, setSticky] = useState(false);
-  const logo = isSticky ? "logo-2.svg" : "logo.svg";
   const pathname = usePathname();
+  const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isSticky, setSticky] = useState<boolean>(false);
+  const logo = isSticky ? "logo-2.svg" : "logo.svg";
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -41,6 +41,7 @@ export default function Header() {
       };
     }
   }, [isStickyHeader]);
+
   return (
     <header className="text-white relative hidden lg:block">
       <div
@@ -87,7 +88,12 @@ export default function Header() {
           </div>
 
           <div>
-            <Link href="/ve-chung-toi" className={styles.header__menu_item}>
+            <Link
+              href="/ve-chung-toi"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname == "/ve-chung-toi",
+              })}
+            >
               Về chúng tôi
             </Link>
           </div>

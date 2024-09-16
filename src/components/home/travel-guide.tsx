@@ -8,7 +8,7 @@ import styles from "@/styles/styles.module.scss";
 
 export default function TravelGuide() {
   return (
-    <div className="pt-8 bg-[#FCFCFD]">
+    <div className="pt-8 pb-12 bg-[#FCFCFD]">
       <div className="flex justify-between">
         <div>
           <h3 className="text-[32px] font-bold">Cẩm nang du lịch</h3>

@@ -13,14 +13,12 @@ export default function HeaderMobile() {
   useEffect(() => {
     if (dropdownRef.current) {
       if (isMenuMbOpen) {
-        console.log(dropdownRef.current);
         setMenuHeight(`${dropdownRef.current.scrollHeight}px`);
       } else {
         setMenuHeight("0px");
       }
     }
   }, [isMenuMbOpen]);
-  const menuIcon = isMenuMbOpen ? "/icon/close.svg" : "/icon/menu-mb.svg";
   return (
     <div className="text-white relative lg:hidden block bg-white">
       <div className="h-[68px] fixed w-full top-0 z-[99] bg-white mx-auto flex justify-between items-center py-3 px-3">
@@ -93,7 +91,12 @@ export default function HeaderMobile() {
               <strong>Về Happy Book</strong>
             </p>
             <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link href="/ve-chung-toi">Về chúng tôi</Link>
+              <Link
+                href="/ve-chung-toi"
+                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              >
+                Về chúng tôi
+              </Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">Tin tức</p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">

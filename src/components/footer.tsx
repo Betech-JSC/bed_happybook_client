@@ -3,7 +3,7 @@ import styles from "@/styles/styles.module.scss";
 
 export default function Footer() {
   return (
-    <div className="mt-12 lg:mt-0 px-3 lg:px-[80px] pt-12 pb-6 bg-[#F9FAFB]">
+    <footer className="lg:mt-0 px-3 lg:px-[80px] pt-12 pb-6 bg-[#F9FAFB]">
       <div className="flex flex-col lg:flex-row">
         <div className="basis-1/2">
           <div className="pb-12">
@@ -157,6 +157,6 @@ export default function Footer() {
           15/09/2016 - Cấp thay đổi ngày 26/03/2024
         </p>
       </div>
-    </div>
+    </footer>
   );
 }
