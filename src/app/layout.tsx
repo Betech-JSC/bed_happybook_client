@@ -23,8 +23,8 @@ export default function RootLayout({
       <head>
         {/* Meta */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta property="og:title" content="Happy Book" />
-        <meta property="og:description" content="Happy Book" />
+        {/* <meta property="og:title" content="Happy Book" /> */}
+        {/* <meta property="og:description" content="Happy Book" /> */}
         <meta
           property="og:url"
           content="https://bed-happybook-client.onrender.com"

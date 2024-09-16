@@ -113,7 +113,7 @@ export default function OurTeam() {
     }
   };
   return (
-    <div className="mt-12 py-8 lg:px-[80px] hidden lg:block">
+    <div className="mt-12 py-8 lg:px-[80px] hidden lg:block max__screen">
       <div className="flex justify-between">
         <div>
           <h3 className="text-[32px] font-bold">Đội ngũ của chúng tôi</h3>

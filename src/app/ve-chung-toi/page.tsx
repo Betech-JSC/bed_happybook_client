@@ -3,82 +3,88 @@ import Members from "./components/members";
 import Partner from "./components/partner";
 import Service from "./components/service";
 import AosAnimate from "@/components/aos-animate";
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Về chúng tôi",
+  description: "Happy Book",
+};
 export default function AboutUs() {
   return (
-    <main className="bg-white mt-[68px] lg:mt-[118px]">
-      <AosAnimate>
-        <div>
+    <main className="bg-white mt-[68px] lg:mt-[132px]">
+      {/* <AosAnimate> */}
+      <div>
+        <Image
+          priority
+          src="/about-us/banner.svg"
+          alt="Happy Book Logo"
+          width={100}
+          height={100}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+      {/* </AosAnimate> */}
+      {/* <AosAnimate> */}
+      <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
+        <div className="mt-8">
+          <p className="text-black text-center font-bold text-2xl">
+            HappyBook tự hào là đối tác tin cậy
+          </p>
+          <p className="font-medium text-black-700 text-center w-[836px] mx-auto mt-3  max-w-full">
+            HappyBook luôn đặt chữ TÍN lên hàng đầu. Với sự phát triển không
+            ngừng, chúng tôi đã xây dựng một đội ngũ chuyên viên năng động, giàu
+            kinh nghiệm và luôn tận tâm phục vụ quý khách. Sự hài lòng của khách
+            hàng là kim chỉ nam cho mọi hoạt động của chúng tôi.
+          </p>
+        </div>
+        <div className="mt-12">
           <Image
             priority
-            src="/about-us/banner.svg"
+            src="/about-us/members.svg"
             alt="Happy Book Logo"
             width={100}
             height={100}
             style={{ width: "100%", height: "100%" }}
           />
         </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="px-3 lg:px-[80px] pt-3">
-          <div className="mt-8">
-            <p className="text-black text-center font-bold text-2xl">
-              HappyBook tự hào là đối tác tin cậy
-            </p>
-            <p className="font-medium text-black-700 text-center w-[836px] mx-auto mt-3  max-w-full">
-              HappyBook luôn đặt chữ TÍN lên hàng đầu. Với sự phát triển không
-              ngừng, chúng tôi đã xây dựng một đội ngũ chuyên viên năng động,
-              giàu kinh nghiệm và luôn tận tâm phục vụ quý khách. Sự hài lòng
-              của khách hàng là kim chỉ nam cho mọi hoạt động của chúng tôi.
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-16 items-center ">
+          <div>
+            <h4 className="text-black font-bold text-2xl">
+              10 năm hình thành và phát triển
+            </h4>
+            <p className="font-medium">
+              HappyBook đã khẳng định vị thế của mình là đại lý cấp 1 chuyên
+              cung cấp vé máy bay trong nước và quốc tế. Chúng tôi hiện là đối
+              tác uy tín của nhiều hãng hàng không lớn tại Việt Nam và trên thế
+              giới, mang đến cho khách hàng những lựa chọn đa dạng và phù hợp
+              nhất.
             </p>
           </div>
-          <div className="mt-12">
+          <div>
             <Image
               priority
-              src="/about-us/members.svg"
+              src="/about-us/1.svg"
               alt="Happy Book Logo"
               width={100}
               height={100}
               style={{ width: "100%", height: "100%" }}
             />
           </div>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-16 items-center ">
-            <div>
-              <h4 className="text-black font-bold text-2xl">
-                10 năm hình thành và phát triển
-              </h4>
-              <p className="font-medium">
-                HappyBook đã khẳng định vị thế của mình là đại lý cấp 1 chuyên
-                cung cấp vé máy bay trong nước và quốc tế. Chúng tôi hiện là đối
-                tác uy tín của nhiều hãng hàng không lớn tại Việt Nam và trên
-                thế giới, mang đến cho khách hàng những lựa chọn đa dạng và phù
-                hợp nhất.
-              </p>
-            </div>
-            <div>
-              <Image
-                priority
-                src="/about-us/1.svg"
-                alt="Happy Book Logo"
-                width={100}
-                height={100}
-                style={{ width: "100%", height: "100%" }}
-              />
-            </div>
-          </div>
         </div>
-      </AosAnimate>
-      <AosAnimate>
-        <Partner></Partner>
-      </AosAnimate>
-      <AosAnimate>
-        <Members></Members>
-      </AosAnimate>
-      <AosAnimate>
-        <Service></Service>
-      </AosAnimate>
-      <AosAnimate>
-        <div className="py-12 px-3 lg:px-[80px] bg-[#F9FAFB]">
+      </div>
+      {/* </AosAnimate> */}
+      {/* <AosAnimate> */}
+      <Partner></Partner>
+      {/* </AosAnimate> */}
+      {/* <AosAnimate> */}
+      <Members></Members>
+      {/* </AosAnimate> */}
+      {/* <AosAnimate> */}
+      <Service></Service>
+      {/* </AosAnimate> */}
+      {/* <AosAnimate> */}
+      <div className="bg-[#F9FAFB]">
+        <div className="py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
           <p className="text-[32px] leading-[38.4px] font-bold text-center">
             Cam Kết Của Chúng Tôi
           </p>
@@ -142,19 +148,20 @@ export default function AboutUs() {
             </div>
           </div>
         </div>
-      </AosAnimate>
-      <AosAnimate>
-        <div>
-          <Image
-            priority
-            src="/about-us/contact.svg"
-            alt="Happy Book Logo"
-            width={1440}
-            height={360}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </div>
-      </AosAnimate>
+      </div>
+      {/* </AosAnimate> */}
+      {/* <AosAnimate> */}
+      <div>
+        <Image
+          priority
+          src="/about-us/contact.svg"
+          alt="Happy Book Logo"
+          width={1440}
+          height={360}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+      {/* </AosAnimate> */}
     </main>
   );
 }

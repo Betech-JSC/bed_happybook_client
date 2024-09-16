@@ -2,7 +2,7 @@ import styles from "@/styles/styles.module.scss";
 
 export default function FooterMenu() {
   return (
-    <div className="hidden lg:block py-12 px-3 lg:px-[80px]">
+    <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div>
         <p className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
           Vé máy bay phổ biến

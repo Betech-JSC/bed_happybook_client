@@ -58,7 +58,7 @@ export default function Partner() {
   };
   return (
     <div className="mt-12 py-8 bg-[#FCFCFD] hidden lg:block">
-      <div className="flex justify-between px-3 lg:px-[80px]">
+      <div className="flex justify-between px-3 lg:px-[80px] max__screen">
         <div>
           <h3 className="text-[32px] font-bold">Đối tác</h3>
         </div>

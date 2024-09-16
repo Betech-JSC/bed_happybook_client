@@ -30,6 +30,12 @@
   .text__default_hover {
     @apply transition-colors duration-300 hover:!text-[#f27145] cursor-pointer;
   }
+  @media (min-width: 1440px) {
+    .max__screen {
+      width: 1440px !important;
+      margin: 0 auto !important;
+    }
+  }
 }
 
 @layer base {

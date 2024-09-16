@@ -16,12 +16,18 @@ import AosAnimate from "@/components/aos-animate";
 import FooterMenu from "@/components/footer-menu";
 import Search from "@/components/search";
 import SearchMobile from "@/components/search-mobile";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Trang chủ",
+  description: "Happy Book",
+};
 
 export default function Home() {
   return (
     <Fragment>
       <div
-        className="lg:px-[50px] xl:px-[80px] sm:px-3 relative z-[0] hidden lg:block"
+        className="relative z-[0] hidden lg:block"
         style={{
           backgroundImage:
             "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%), url(/bg-image.png)",
@@ -35,41 +41,41 @@ export default function Home() {
         <SearchMobile />
       </div>
       <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
-        <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px]">
+        <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
           <Banner></Banner>
         </div>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <CompoHot></CompoHot>
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <Flight></Flight>
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <TourHot></TourHot>
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <TourNoiDia></TourNoiDia>
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <TourQuocTe></TourQuocTe>
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <VisaService></VisaService>
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <Hotel></Hotel>
           </div>
         </AosAnimate>
@@ -80,12 +86,12 @@ export default function Home() {
           <OurTeam></OurTeam>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <TouristSuggest></TouristSuggest>
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px]">
+          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <TravelGuide></TravelGuide>
           </div>
         </AosAnimate>

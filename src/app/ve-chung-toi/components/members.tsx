@@ -90,7 +90,7 @@ const ourTeams = [
 
 export default function Members() {
   return (
-    <div className="pt-8 pb-12 px-3 lg:px-[80px]">
+    <div className="pt-8 pb-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="flex justify-between">
         <div>
           <h3 className="text-[32px] font-bold">Đội ngũ của chúng tôi</h3>

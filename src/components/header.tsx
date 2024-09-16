@@ -43,15 +43,19 @@ export default function Header() {
   }, [isStickyHeader]);
 
   return (
-    <header className="text-white relative hidden lg:block">
+    <header
+      className={clsx(
+        "text-white relative hidden lg:block h-[132px] z-10",
+        styles.header__menu,
+        headerClass,
+        {
+          [styles.header__sticky]: isSticky,
+        }
+      )}
+    >
       <div
         className={clsx(
-          "text-white fixed hidden lg:block h-[132px] z-10",
-          styles.header__menu,
-          headerClass,
-          {
-            [styles.header__sticky]: isSticky,
-          }
+          "text-white fixed hidden lg:block h-[132px] z-10 max__screen w-full left-1/2 -translate-x-1/2"
         )}
       >
         <div className="mx-auto flex justify-between items-center px-4 pb-4 relative lg:px-[50px] xl:px-[80px] sm:px-3">
@@ -103,9 +107,14 @@ export default function Header() {
             </a>
           </div>
           <div>
-            <a href="#" className={styles.header__menu_item}>
+            <Link
+              href="/tin-tuc"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname == "/tin-tuc",
+              })}
+            >
               Tin tức
-            </a>
+            </Link>
           </div>
 
           <div className="relative">
