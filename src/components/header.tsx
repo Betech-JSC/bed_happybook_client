@@ -8,11 +8,12 @@ import clsx from "clsx";
 
 export default function Header() {
   let headerClass = "";
-  const pathname = usePathname();
+  const pathname: string = usePathname();
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
   const logo = isSticky ? "/logo-2.svg" : "/logo.svg";
+  const excludePaths = ["/", "/dang-nhap"];
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -23,7 +24,7 @@ export default function Header() {
   };
 
   useEffect(() => {
-    if (pathname !== "/") {
+    if (!excludePaths.includes(pathname)) {
       setSticky(true);
       setStickyHeader(false);
     } else {
@@ -168,11 +169,12 @@ export default function Header() {
             </svg>
             <span className="font-medium">0983-488-937</span>
           </a>
-          <a
+          <Link
+            href="/dang-nhap"
             className={`bg-blue-600 font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
           >
             <span>Đăng nhập</span>
-          </a>
+          </Link>
           {/* Menu Button */}
           <div
             className={`${styles.nav_icon} ${isMenuOpen ? styles.open : ""}`}

@@ -40,10 +40,11 @@ export default function AboutUs() {
         <div className="mt-12">
           <Image
             priority
-            src="/about-us/members.svg"
-            alt="Happy Book Logo"
-            width={100}
-            height={100}
+            src="/about-us/members.png"
+            alt="Members"
+            width={1280}
+            height={562}
+            sizes="100vw"
             style={{ width: "100%", height: "100%" }}
           />
         </div>

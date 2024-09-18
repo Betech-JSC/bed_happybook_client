@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -127,7 +128,7 @@ export default function Footer() {
                 Tư vấn visa
               </p>
               <p className={`mt-3 ${styles.text_hover_default} `}>
-                Hướng dẫn thanh toán
+                <Link href="/huong-dan-thanh-toan">Hướng dẫn thanh toán</Link>
               </p>
               <p className={`mt-3 ${styles.text_hover_default} `}>
                 Hướng dẫn đặt vé
