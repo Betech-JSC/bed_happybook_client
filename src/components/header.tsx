@@ -13,7 +13,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
   const logo = isSticky ? "/logo-2.svg" : "/logo.svg";
-  const excludePaths = ["/", "/dang-nhap"];
+  const excludePaths = ["/", "/dang-nhap", "/lien-he"];
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -103,9 +103,14 @@ export default function Header() {
             </Link>
           </div>
           <div>
-            <a href="#" className={styles.header__menu_item}>
+            <Link
+              href="/lien-he"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname == "/lien-he",
+              })}
+            >
               Liên hệ
-            </a>
+            </Link>
           </div>
           <div>
             <Link

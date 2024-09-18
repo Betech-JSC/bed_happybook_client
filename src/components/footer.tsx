@@ -62,7 +62,7 @@ export default function Footer() {
               <div className="flex space-x-3 mt-4">
                 <button>
                   <Image
-                    src="/social/fb.png"
+                    src="/social/fb.svg"
                     alt="Icon"
                     width={32}
                     height={32}
@@ -70,7 +70,7 @@ export default function Footer() {
                 </button>
                 <button>
                   <Image
-                    src="/social/tiktok.png"
+                    src="/social/tiktok.svg"
                     alt="Icon"
                     width={32}
                     height={32}
@@ -78,7 +78,7 @@ export default function Footer() {
                 </button>
                 <button>
                   <Image
-                    src="/social/zalo.png"
+                    src="/social/zalo.svg"
                     alt="Icon"
                     width={32}
                     height={32}
@@ -86,7 +86,7 @@ export default function Footer() {
                 </button>
                 <button>
                   <Image
-                    src="/social/ytb.png"
+                    src="/social/ytb.svg"
                     alt="Icon"
                     width={32}
                     height={32}

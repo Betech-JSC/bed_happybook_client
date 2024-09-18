@@ -12,7 +12,7 @@ $color-blue-700: #2e90fa;
 }
 .header__menu {
   @apply pt-4 pb-[10px] fixed top-0 w-full;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   // &:after {
   //   content: "";
   //   height: 1px;
