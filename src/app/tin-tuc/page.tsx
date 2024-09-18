@@ -1,7 +1,7 @@
 import Image from "next/image";
-import AosAnimate from "@/components/aos-animate";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Post from "@/styles/posts.module.scss";
 
 export const metadata: Metadata = {
   title: "Tin tức",
@@ -20,7 +20,7 @@ type post = {
 const arrPosts: categoryPosts = [
   {
     category_name: "Làm visa",
-    slug: "123123",
+    slug: "lam-visa",
     posts: [
       {
         title: "Làm Visa Dubai",
@@ -41,7 +41,7 @@ const arrPosts: categoryPosts = [
   },
   {
     category_name: "Vé máy bay",
-    slug: "123123",
+    slug: "lam-visa",
     posts: [
       {
         title: "Khi Nào Nên Mua Vé Máy Bay Đi Bắc Kinh Trung Quốc",
@@ -62,7 +62,7 @@ const arrPosts: categoryPosts = [
   },
   {
     category_name: "Tin định cư",
-    slug: "123123",
+    slug: "lam-visa",
     posts: [
       {
         title: "Chương Trình Định Cư Canada Theo Diện Tay Nghề Cao",
@@ -83,7 +83,7 @@ const arrPosts: categoryPosts = [
   },
   {
     category_name: "Cẩm nang du lịch",
-    slug: "123123",
+    slug: "lam-visa",
     posts: [
       {
         title: "Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ",
@@ -132,24 +132,28 @@ const popopularPosts: post[] = [
 ];
 export default function Posts() {
   return (
-    <main className="bg-white mt-[68px] lg:pt-[132px] px-3 lg:px-[80px] pt-6 max__screen">
-      <div className="flex space-x-12 lg:h-[670px]">
-        <div className="basis-[65%]">
-          <div className="posts_new">
-            <div>
+    <main className="bg-white lg:pt-[132px] px-3 lg:px-[80px] pt-14 max__screen">
+      <div className="flex space-x-12 lg:h-[670px] mt-6">
+        <div className="basis-full lg:basis-[65%]">
+          <div className={Post.post__item}>
+            <div className="overflow-hidden rounded-xl">
               <Image
                 src={`/posts/new/1.png`}
                 alt="Member"
                 width={844}
                 height={545}
-                style={{ width: "844px", height: "545px" }}
+                className="ease-in duration-300"
+                sizes="100vw"
+                style={{ width: "100%", height: "auto" }}
               />
             </div>
             <div className="my-3">
               <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-[#175CD3] font-medium hover:bg-blue-200 duration-300">
                 Làm visa
               </p>
-              <h3 className="text-2xl font-semibold text-gray-900 leading-8 mt-2">
+              <h3
+                className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
+              >
                 Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ
               </h3>
               <p className="text-base mt-2 line-clamp-2">
@@ -163,63 +167,72 @@ export default function Posts() {
             </div>
           </div>
         </div>
-        <div className="basis-[35%]">
-          <div>
-            <div>
+        <div className="hidden lg:block basis-[35%]">
+          <div className={Post.post__item}>
+            <div className="overflow-hidden rounded-xl">
               <Image
                 src={`/posts/new/2.png`}
                 alt="Member"
                 width={388}
                 height={225}
                 sizes="100vw"
-                style={{ width: "388px", height: "225px" }}
+                className="ease-in duration-300"
+                style={{ width: "100%", height: "auto" }}
               />
             </div>
             <div className="mt-3">
               <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300">
                 Làm visa
               </p>
-              <h3 className="text-base line-clamp-2 font-semibold text-gray-900 mt-2">
+              <h3
+                className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
+              >
                 Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ
               </h3>
             </div>
           </div>
-          <div className="mt-8">
-            <div>
+          <div className={`mt-8 ${Post.post__item}`}>
+            <div className="overflow-hidden rounded-xl">
               <Image
                 src={`/posts/new/3.png`}
                 alt="Member"
                 width={388}
                 height={224}
                 sizes="100vw"
-                style={{ width: "388px", height: "225px" }}
+                className="ease-in duration-300"
+                style={{ width: "100%", height: "auto" }}
               />
             </div>
             <div className="mt-3">
               <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300">
                 Tin định cư
               </p>
-              <h3 className="text-base line-clamp-2 font-semibold text-gray-900 mt-2">
+              <h3
+                className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
+              >
                 Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ
               </h3>
             </div>
           </div>
         </div>
       </div>
-      <div className="mt-12 mb-8 flex space-x-12">
-        <div className="basis-[65%]">
+      <div className="flex flex-col md:flex-row md:space-x-12 lg:mt-12 mt-4 mb-8">
+        <div className="basis-full md:basis-[65%]">
           {arrPosts.map((item, index) => (
             <div key={index} className="w-full mt-9">
-              <div className="flex justify-between">
-                <div>
+              <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row justify-between">
+                <div className="lg:basis-10/12">
                   <h3 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
                     {item.category_name}
                   </h3>
                 </div>
-                <div className="h-10 lg:flex cursor-pointer bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200 duration-300">
-                  <button className="text-[#175CD3] font-medium">
+                <div className="lg:basis-2/12 h-10 max-w-fit flex items-center cursor-pointer bg-[#EFF8FF] py-1 px-4 rounded-lg hover:bg-blue-200 duration-300">
+                  <Link
+                    href={`/tin-tuc/${item.slug}`}
+                    className="text-[#175CD3] font-medium"
+                  >
                     Xem tất cả
-                  </button>
+                  </Link>
                   <Image
                     className="ease-in duration-300"
                     src="/icon/chevron-right.svg"
@@ -231,16 +244,20 @@ export default function Posts() {
               </div>
               <div className="grid grid-cols-3 gap-[26.33px]">
                 {item.posts.map((post, key) => (
-                  <div key={key} className="mt-8">
-                    <Image
-                      className="ease-in duration-300"
-                      src={post.image}
-                      alt="Tin tức"
-                      width={252}
-                      height={168}
-                      style={{ width: "100%", height: "auto" }}
-                    />
-                    <p className="text-base font-semibold mt-3 line-clamp-3">
+                  <div key={key} className={`mt-8 ${Post.post__item}`}>
+                    <div className="overflow-hidden rounded-xl">
+                      <Image
+                        className="ease-in duration-300"
+                        src={post.image}
+                        alt="Tin tức"
+                        width={252}
+                        height={168}
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </div>
+                    <p
+                      className={`ease-in duration-300 text-base font-semibold mt-3 line-clamp-3 ${Post.post__item_title}`}
+                    >
                       {post.title}
                     </p>
                     <p className="text-sm mt-2">{post.date}</p>
@@ -250,12 +267,12 @@ export default function Posts() {
             </div>
           ))}
         </div>
-        <div className="basis-[35%] mt-9">
+        <div className="basis-full md:basis-[35%] mt-9">
           <div className="p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
             <p className="text-2xl font-bold">Chủ đề khác</p>
             <div>
               <Link
-                href="#"
+                href="/tin-tuc/lam-visa"
                 className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
               >
                 Làm VISA
@@ -286,20 +303,24 @@ export default function Posts() {
               {popopularPosts.map((post: post, key: number) => (
                 <div
                   key={key}
-                  className="mt-3 flex space-x-3 items-center pb-3 border-b-[1px] border-gray-200"
+                  className={`mt-3 flex space-x-3 items-center pb-3 border-b-[1px] border-gray-200 ${Post.post__item}`}
                 >
                   <div className="basis-[35%]">
-                    <Image
-                      className="ease-in duration-300"
-                      src={post.image}
-                      alt="Tin tức"
-                      width={140}
-                      height={100}
-                      style={{ width: "140px", height: "auto" }}
-                    />
+                    <div className="overflow-hidden rounded-sm">
+                      <Image
+                        className="ease-in duration-300"
+                        src={post.image}
+                        alt="Tin tức"
+                        width={140}
+                        height={100}
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </div>
                   </div>
                   <div className="basis-[65%]">
-                    <p className="text-base font-semibold mt-3 line-clamp-2">
+                    <p
+                      className={`text-base ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
+                    >
                       {post.title}
                     </p>
                     <p className="text-sm mt-2">{post.date}</p>

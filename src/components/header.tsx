@@ -12,7 +12,7 @@ export default function Header() {
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
-  const logo = isSticky ? "logo-2.svg" : "logo.svg";
+  const logo = isSticky ? "/logo-2.svg" : "/logo.svg";
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -110,7 +110,7 @@ export default function Header() {
             <Link
               href="/tin-tuc"
               className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname == "/tin-tuc",
+                [styles.active]: pathname.startsWith("/tin-tuc"),
               })}
             >
               Tin tức

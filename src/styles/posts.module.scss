@@ -1,0 +1,12 @@
+$primary-color: #f27145;
+.post__item {
+  @apply cursor-pointer;
+  &:hover {
+    img {
+      @apply scale-110;
+    }
+    .post__item_title {
+      color: $primary-color;
+    }
+  }
+}
