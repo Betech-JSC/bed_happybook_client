@@ -184,7 +184,7 @@ export default function SubCategoryPosts({
           </div>
         </div>
         <div className="basis-full md:basis-[35%]">
-          <div className="p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
+          <div className="hidden md:block p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
             <p className="text-2xl font-bold">Những danh mục khác</p>
             <div>
               <Link

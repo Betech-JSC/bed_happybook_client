@@ -6,6 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --primary: hsla(15, 87%, 61%, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,6 +30,12 @@
   }
   .text__default_hover {
     @apply transition-colors duration-300 hover:!text-[#f27145] cursor-pointer;
+  }
+  .text-32 {
+    @apply text-[32px] leading-[38.4px];
+  }
+  .text-18 {
+    @apply text-[18px] leading-[26.1px];
   }
   @media (min-width: 1440px) {
     .max__screen {

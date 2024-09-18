@@ -98,7 +98,14 @@ export default function HeaderMobile() {
                 Về chúng tôi
               </Link>
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">Tin tức</p>
+            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+              <Link
+                href="/tin-tuc"
+                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              >
+                Tin tức
+              </Link>
+            </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Liên hệ chúng tôi
             </p>

@@ -154,9 +154,7 @@ export default function Posts() {
               <h3
                 className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
               >
-                <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
-                  Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ
-                </Link>
+                Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ
               </h3>
               <p className="text-base mt-2 line-clamp-2">
                 Việc đặt lịch hẹn visa Mỹ là bước quan trọng trong quá trình xin
@@ -270,7 +268,7 @@ export default function Posts() {
           ))}
         </div>
         <div className="basis-full md:basis-[35%] mt-9">
-          <div className="hidden md:block p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
+          <div className="p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
             <p className="text-2xl font-bold">Chủ đề khác</p>
             <div>
               <Link
