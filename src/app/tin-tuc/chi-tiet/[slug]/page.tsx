@@ -141,7 +141,7 @@ const popopularPosts: post[] = [
 ];
 export default function Posts() {
   return (
-    <main className="bg-white  pt-[68px] lg:pt-[132px] px-3 lg:px-[80px] pt-14 max__screen">
+    <main className="bg-white lg:pt-[132px] px-3 lg:px-[80px] pt-14 max__screen">
       <div className="flex flex-col md:flex-row md:space-x-12 pt-3 mb-8">
         <div className="basis-full md:basis-[66%]">
           <Breadcrumb>

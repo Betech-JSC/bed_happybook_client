@@ -13,7 +13,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
   const logo = isSticky ? "/logo-2.svg" : "/logo.svg";
-  const excludePaths = ["/", "/dang-nhap", "/lien-he"];
+  const excludePaths = ["/", "/dang-nhap", "/lien-he", "/dang-ky-ctv"];
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -223,15 +223,23 @@ export default function Header() {
               transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
             }}
           >
-            <a href="#" className={styles.text_hover_default}>
+            <Link
+              href="/dang-ky-ctv"
+              className={styles.text_hover_default}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               Đăng ký CTV
-            </a>
+            </Link>
             <a href="#" className={styles.text_hover_default}>
               Tư vấn visa
             </a>
-            <a href="#" className={styles.text_hover_default}>
+            <Link
+              href="/huong-dan-thanh-toan"
+              className={styles.text_hover_default}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               Hướng dẫn thanh toán
-            </a>
+            </Link>
             <a href="#" className={styles.text_hover_default}>
               Hướng dẫn đặt vé
             </a>

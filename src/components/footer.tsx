@@ -49,13 +49,17 @@ export default function Footer() {
                 <strong>Về Happy Book</strong>
               </p>
               <p className={`mt-4 ${styles.text_hover_default}`}>
-                Về chúng tôi
+                <Link href="/ve-chung-toi">Về chúng tôi</Link>
               </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>Tin tức</p>
               <p className={`mt-3 ${styles.text_hover_default}`}>
-                Liên hệ chúng tôi
+                <Link href="/tin-tuc">Tin tức</Link>
               </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>Đăng ký CTV</p>
+              <p className={`mt-3 ${styles.text_hover_default}`}>
+                <Link href="/lien-he">Liên hệ chúng tôi</Link>
+              </p>
+              <p className={`mt-3 ${styles.text_hover_default}`}>
+                <Link href="/dang-ky-ctv">Đăng ký CTV</Link>
+              </p>
               <p className="mt-8 ">
                 <strong>Theo dõi chúng tôi</strong>
               </p>
