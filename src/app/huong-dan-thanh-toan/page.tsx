@@ -1,7 +1,5 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
-import Post from "@/styles/posts.module.scss";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,7 +7,6 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Pagination from "@/components/pagination";
 
 type post = {
   title: string;
@@ -18,86 +15,10 @@ type post = {
   date: string;
 };
 export const metadata: Metadata = {
-  title: "Làm visa",
+  title: "Hướng dẫn thanh toán",
   description: "Happy Book",
 };
-const categoryPosts: post[] = [
-  {
-    title: "Cập Nhật Bảng Giá Làm Visa Các Nước Uy Tín Chi Tiết Năm 2024",
-    image: "/posts/category-posts/1.png",
-    description:
-      "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Pháp",
-    image: "/posts/category-posts/2.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Canada",
-    image: "/posts/category-posts/3.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Hướng dẫn xin visa du lịch Canada tự túc đơn giản cho người mới ",
-    image: "/posts/category-posts/4.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Phí gia hạn visa Mỹ là bao nhiêu? Cập nhật thông tin mới nhất ",
-    image: "/posts/category-posts/5.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Canada",
-    image: "/posts/category-posts/6.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Dubai",
-    image: "/posts/category-posts/7.png",
-    description: "",
-    date: "22/08/2024",
-  },
-];
-const popopularPosts: post[] = [
-  {
-    title: "Vé Máy Bay Đi Trung Quốc",
-    image: "/posts/popular/1.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Chương Trình Định Cư Canada Theo Diện Tay Nghề Cao",
-    image: "/posts/popular/2.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ",
-    image: "/posts/popular/3.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ",
-    image: "/posts/popular/4.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Pháp",
-    image: "/posts/popular/5.png",
-    description: "",
-    date: "22/08/2024",
-  },
-];
+
 export default function PaymentInstructions() {
   return (
     <main className="bg-gray-100">
@@ -105,8 +26,10 @@ export default function PaymentInstructions() {
         <Breadcrumb className="pt-3">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/" className="text-[#175CD3]">
-                Trang chủ
+              <BreadcrumbLink asChild>
+                <Link href="/" className="text-blue-700">
+                  Trang chủ
+                </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

@@ -13,7 +13,8 @@ import RelatedPosts from "./components/related-posts";
 import TableOfContents from "./components/table-content";
 
 export const metadata: Metadata = {
-  title: "Tin tức",
+  title:
+    "Hướng Dẫn Thủ Tục Xin Visa Đi Đức Thăm Thân Chi Tiết Cho Người Mới Bắt Đầu",
   description: "Happy Book",
 };
 type categoryPosts = {
@@ -147,8 +148,10 @@ export default function Posts() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="text-blue-700">
-                  Trang chủ
+                <BreadcrumbLink asChild>
+                  <Link href="/" className="text-blue-700">
+                    Trang chủ
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -211,9 +214,12 @@ export default function Posts() {
             </div>
             {/* Tmp */}
             <div className="mt-6 post__detail_content">
-              <h3 className="text-2xl font-bold text-gray-900">
+              <h2
+                className="text-2xl font-bold text-gray-900"
+                id="visa-tham-than-duc-la-gi"
+              >
                 Visa thăm thân Đức là gì?
-              </h3>
+              </h2>
               <p className="text-base text-gray-700 mt-6">
                 Visa thăm thân Đức là loại thị thực ngắn hạn (thường gọi là visa
                 Schengen) được cấp cho những người muốn đến Đức để thăm người
@@ -230,9 +236,12 @@ export default function Posts() {
                 Ý, Tây Ban Nha, Bỉ, Hà Lan, Thụy Sĩ, Áo, Đan Mạch và một số quốc
                 gia khác.
               </p>
-              <h4 className="text-18 mt-6 font-semibold text-gray-900">
+              <h3
+                className="text-18 mt-6 font-semibold text-gray-900"
+                id="visa-tham-than-duc-co-thoi-han-bao-lau"
+              >
                 Visa thăm thân Đức có thời hạn bao lâu?
-              </h4>
+              </h3>
               <p className="text-base text-gray-700 mt-6">
                 Thời hạn của visa thăm thân Đức thông thường là 90 ngày. Tuy
                 nhiên, bạn có thể xin visa với thời hạn lưu trú ngắn hơn hoặc
@@ -255,9 +264,12 @@ export default function Posts() {
                   Thời hạn hiệu lực sẽ được ghi rõ trên visa
                 </p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mt-8">
+              <h2
+                className="text-2xl font-bold text-gray-900 mt-8"
+                id="thu-tuc-xin-visa-di-duc-tham-than"
+              >
                 Thủ tục xin visa đi Đức thăm thân
-              </h3>
+              </h2>
               <p className="mt-6 text-base text-gray-700">
                 Để xin visa đi Đức thăm thân, bạn cần chuẩn bị một bộ hồ sơ đầy
                 đủ và nộp tại cơ quan lãnh sự Đức tại Việt Nam (Đại sứ quán Đức

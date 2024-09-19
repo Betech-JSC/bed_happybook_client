@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function Pagination() {
-  const [currentPage, setCurrentPage] = useState(3); // Set trang hiện tại là 3
+  const [currentPage, setCurrentPage] = useState(3);
 
   const totalPages = 10;
   const arrPage = [...Array(10)];

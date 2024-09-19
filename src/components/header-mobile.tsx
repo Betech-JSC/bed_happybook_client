@@ -107,10 +107,20 @@ export default function HeaderMobile() {
               </Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Liên hệ chúng tôi
+              <Link
+                href="/lien-he"
+                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              >
+                Liên hệ chúng tôi
+              </Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Đăng ký CTV
+              <Link
+                href="/dang-ky-ctv"
+                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              >
+                Đăng ký CTV
+              </Link>
             </p>
           </div>
           <div className="my-6">
@@ -118,10 +128,20 @@ export default function HeaderMobile() {
               <strong>Khác</strong>
             </p>
             <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              Tư vấn visa
+              <Link
+                href="/tu-van-nhan-visa"
+                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              >
+                Tư vấn visa
+              </Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Hướng dẫn thanh toán
+              <Link
+                href="/huong-dan-thanh-toan"
+                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              >
+                Hướng dẫn thanh toán
+              </Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Hướng dẫn đặt vé

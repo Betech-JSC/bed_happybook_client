@@ -13,7 +13,13 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
   const logo = isSticky ? "/logo-2.svg" : "/logo.svg";
-  const excludePaths = ["/", "/dang-nhap", "/lien-he", "/dang-ky-ctv"];
+  const excludePaths = [
+    "/",
+    "/dang-nhap",
+    "/lien-he",
+    "/dang-ky-ctv",
+    "/tu-van-nhan-visa",
+  ];
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -216,8 +222,11 @@ export default function Header() {
         {/* Menu */}
         <div className="absolute top-[74px] lg:right-[50px] xl:right-20 z-1 bg-blue-800 ">
           <nav
-            className={`flex flex-col  transition-height duration-500 ease-in-out opacity-100 border-gray-300 border-2 py-2 space-y-2 absolute right-0 w-[210px] h-[228px] bg-white text-black px-4 rounded-sm`}
+            className={` ${styles.header__menu_sub_menu}  ${
+              isMenuOpen ? "[&>a]:max-h-12" : "[&>a]:max-h-0"
+            }`}
             style={{
+              maxHeight: isMenuOpen ? "228px" : "0px ",
               opacity: isMenuOpen ? "1" : "0",
               zIndex: isMenuOpen ? "10" : "-1",
               transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
@@ -230,9 +239,13 @@ export default function Header() {
             >
               Đăng ký CTV
             </Link>
-            <a href="#" className={styles.text_hover_default}>
+            <Link
+              href="/tu-van-nhan-visa"
+              className={styles.text_hover_default}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               Tư vấn visa
-            </a>
+            </Link>
             <Link
               href="/huong-dan-thanh-toan"
               className={styles.text_hover_default}

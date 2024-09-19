@@ -13,16 +13,6 @@ $color-blue-700: #2e90fa;
 .header__menu {
   @apply pt-4 pb-[10px] fixed top-0 w-full;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  // &:after {
-  //   content: "";
-  //   height: 1px;
-  //   width: 100%;
-  //   bottom: -10px;
-  //   position: absolute;
-  //   background-color: #fff;
-  //   opacity: 0.2;
-  //   display: block;
-  // }
   &_item {
     @apply relative h-8 hover:text-[#f27145] transition-colors duration-300 text-[#EAECF0];
     // transition: hover 0.4s ease-in;
@@ -48,6 +38,11 @@ $color-blue-700: #2e90fa;
       background-color: $primary-color;
       height: 3px;
     }
+  }
+  &_sub_menu {
+    @apply flex flex-col transition-all lg:h-56 duration-500 ease-in-out 
+    border-gray-300 border-2 py-2 space-y-2 absolute right-0 w-[210px] 
+    bg-white text-black px-4 rounded-sm [&>a]:duration-300 [&>a]:transition-all [&>a]:ease-in;
   }
 }
 .header__sticky {

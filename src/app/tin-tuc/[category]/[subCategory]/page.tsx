@@ -18,7 +18,7 @@ type post = {
   date: string;
 };
 export const metadata: Metadata = {
-  title: "Làm visa",
+  title: "Visa Đức",
   description: "Happy Book",
 };
 const categoryPosts: post[] = [
@@ -108,8 +108,10 @@ export default function SubCategoryPosts({
       <Breadcrumb className="pt-3">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="text-[#175CD3]">
-              Trang chủ
+            <BreadcrumbLink asChild>
+              <Link href="/" className="text-blue-700">
+                Trang chủ
+              </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -144,22 +146,25 @@ export default function SubCategoryPosts({
               >
                 <div className="basis-[35%]">
                   <div className="overflow-hidden rounded-xl">
-                    <Image
-                      className="ease-in duration-300"
-                      src={post.image}
-                      alt="Tin tức"
-                      width={140}
-                      height={100}
-                      style={{ width: "100%", height: "auto" }}
-                    />
+                    <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
+                      <Image
+                        className="ease-in duration-300"
+                        src={post.image}
+                        alt="Tin tức"
+                        width={140}
+                        height={100}
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </Link>
                   </div>
                 </div>
                 <div className="basis-[63%]">
-                  <p
+                  <Link
+                    href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau"
                     className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                   >
                     {post.title}
-                  </p>
+                  </Link>
                   <p className="text-sm text-gray-700 line-clamp-3 mt-2">
                     {index == 0
                       ? `Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau,

@@ -137,15 +137,17 @@ export default function Posts() {
         <div className="basis-full lg:basis-[65%]">
           <div className={Post.post__item}>
             <div className="overflow-hidden rounded-xl">
-              <Image
-                src={`/posts/new/1.png`}
-                alt="Member"
-                width={844}
-                height={545}
-                className="ease-in duration-300"
-                sizes="100vw"
-                style={{ width: "100%", height: "auto" }}
-              />
+              <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
+                <Image
+                  src={`/posts/new/1.png`}
+                  alt="Member"
+                  width={844}
+                  height={545}
+                  className="ease-in duration-300"
+                  sizes="100vw"
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </Link>
             </div>
             <div className="my-3">
               <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-[#175CD3] font-medium hover:bg-blue-200 duration-300">
@@ -172,48 +174,54 @@ export default function Posts() {
         <div className="hidden lg:block basis-[35%]">
           <div className={Post.post__item}>
             <div className="overflow-hidden rounded-xl">
-              <Image
-                src={`/posts/new/2.png`}
-                alt="Member"
-                width={388}
-                height={225}
-                sizes="100vw"
-                className="ease-in duration-300"
-                style={{ width: "100%", height: "auto" }}
-              />
+              <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
+                <Image
+                  src={`/posts/new/2.png`}
+                  alt="Member"
+                  width={388}
+                  height={225}
+                  sizes="100vw"
+                  className="ease-in duration-300"
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </Link>
             </div>
             <div className="mt-3">
               <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300">
                 Làm visa
               </p>
-              <h3
+              <Link
+                href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau"
                 className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
               >
                 Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ
-              </h3>
+              </Link>
             </div>
           </div>
           <div className={`mt-8 ${Post.post__item}`}>
             <div className="overflow-hidden rounded-xl">
-              <Image
-                src={`/posts/new/3.png`}
-                alt="Member"
-                width={388}
-                height={224}
-                sizes="100vw"
-                className="ease-in duration-300"
-                style={{ width: "100%", height: "auto" }}
-              />
+              <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
+                <Image
+                  src={`/posts/new/3.png`}
+                  alt="Member"
+                  width={388}
+                  height={224}
+                  sizes="100vw"
+                  className="ease-in duration-300"
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </Link>
             </div>
             <div className="mt-3">
               <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300">
                 Tin định cư
               </p>
-              <h3
+              <Link
+                href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau"
                 className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
               >
                 Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ
-              </h3>
+              </Link>
             </div>
           </div>
         </div>

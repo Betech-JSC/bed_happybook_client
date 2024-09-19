@@ -129,7 +129,7 @@ export default function Footer() {
                 <strong>Khác</strong>
               </p>
               <p className={`mt-4 ${styles.text_hover_default} `}>
-                Tư vấn visa
+                <Link href="/tu-van-nhan-visa">Tư vấn visa</Link>
               </p>
               <p className={`mt-3 ${styles.text_hover_default} `}>
                 <Link href="/huong-dan-thanh-toan">Hướng dẫn thanh toán</Link>

@@ -7,26 +7,37 @@ export const metadata: Metadata = {
   description: "Happy Book",
 };
 
-export default function Login() {
+export default function Contact() {
   return (
     <main className="relative h-400px">
-      <div className="absolute md:h-[700px] w-full -z-[1]">
-        <Image
-          priority
-          src="/login/background.png"
-          alt="Background"
-          width={1440}
-          height={810}
-          sizes="100vw"
-          className="h-[700px] lg:h-[810px] w-full"
-        />
-      </div>
-      <div className="base__content h-[373px] place-content-center">
-        <h4 className="text-32 text-white font-bold">Liên Hệ Với HappyBook</h4>
+      <div
+        className="h-[500px] md:h-[700px] w-full -z-[1] absolute"
+        style={{
+          backgroundImage: "linear-gradient(180deg, #04349A 0%, #1755DC 100%)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      ></div>
+      <div className="base__content h-80 md:h-[405px] lg:pr-[200px]">
+        <div className="flex justify-between items-center h-full">
+          <h4 className="text-32 text-white font-bold">
+            Liên Hệ Với HappyBook
+          </h4>
+          <div>
+            <Image
+              priority
+              src="/about-us/bg.png"
+              alt="Background"
+              width={273}
+              height={273}
+              className="w-full h-full md:w-[273px]"
+            />
+          </div>
+        </div>
       </div>
       <div className="h-auto pb-6 w-full bg-gray-100 rounded-2xl top-[-12px]">
         <div className="px-3 pt-10 lg:px-[80px] lg:pt-16">
-          <div className="mx-auto p-8 lg:w-[920px] h-auto bg-white rounded-2xl  ">
+          <div className="mx-auto p-8 lg:w-[980px] h-auto bg-white rounded-2xl  ">
             <h3 className="text-18 font-semibold">
               Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Nếu có bất kỳ câu
               hỏi nào hoặc cần trợ giúp, đừng ngần ngại liên hệ với chúng tôi
@@ -35,7 +46,7 @@ export default function Login() {
             <div className="mt-3 p-[28px] border border-gray-200 rounded-xl">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-4 border-b-[1px] border-gray-200">
                 <div className="flex space-x-4">
-                  <div className="md:w-14">
+                  <div>
                     <Image
                       src="/icon/contact/AirplaneTilt.svg"
                       alt="Icon"
