@@ -15,12 +15,11 @@ export default function AboutUs() {
       {/* <AosAnimate> */}
       <div>
         <Image
-          priority
-          src="/about-us/banner.svg"
+          src="/about-us/banner.png"
           alt="Happy Book Logo"
-          width={100}
-          height={100}
-          style={{ width: "100%", height: "100%" }}
+          width={1900}
+          height={500}
+          sizes="100vw"
         />
       </div>
       {/* </AosAnimate> */}
@@ -155,11 +154,12 @@ export default function AboutUs() {
       <div>
         <Image
           priority
-          src="/about-us/contact.svg"
+          src="/about-us/contact.png"
           alt="Happy Book Logo"
-          width={1440}
-          height={360}
-          style={{ width: "100%", height: "100%" }}
+          width={1900}
+          height={500}
+          sizes="100vw"
+          // style={{ width: "100%", height: "100%" }}
         />
       </div>
       {/* </AosAnimate> */}

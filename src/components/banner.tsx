@@ -29,38 +29,42 @@ export default function Banner() {
         <CarouselContent>
           <CarouselItem className="basis-full lg:basis-2/4">
             <Image
-              src="/images/banner.svg"
+              src="/images/banner.png"
               alt="Banner"
-              width={200}
-              height={160}
-              style={{ height: "100%", width: "100%" }}
+              width={628}
+              height={210}
+              sizes="100vw"
+              style={{ width: "100%", height: "100%" }}
             />
           </CarouselItem>
           <CarouselItem className="basis-full lg:basis-2/4">
             <Image
-              src="/images/banner-1.svg"
+              src="/images/banner-1.png"
               alt="Banner"
-              width={200}
-              height={160}
-              style={{ height: "100%", width: "100%" }}
+              width={628}
+              height={210}
+              sizes="100vw"
+              style={{ width: "100%", height: "100%" }}
             />
           </CarouselItem>
           <CarouselItem className="basis-full lg:basis-2/4">
             <Image
-              src="/images/banner.svg"
+              src="/images/banner.png"
               alt="Banner"
-              width={200}
-              height={160}
-              style={{ height: "100%", width: "100%" }}
+              width={628}
+              height={210}
+              sizes="100vw"
+              style={{ width: "100%", height: "100%" }}
             />
           </CarouselItem>
           <CarouselItem className="basis-full lg:basis-2/4">
             <Image
-              src="/images/banner-1.svg"
+              src="/images/banner-1.png"
               alt="Banner"
-              width={200}
-              height={160}
-              style={{ height: "100%", width: "100%" }}
+              width={628}
+              height={210}
+              sizes="100vw"
+              style={{ width: "100%", height: "100%" }}
             />
           </CarouselItem>
         </CarouselContent>
