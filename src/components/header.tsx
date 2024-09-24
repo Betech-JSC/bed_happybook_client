@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default function Header() {
     "/dang-ky-ctv",
     "/tu-van-nhan-visa",
   ];
-
+  const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
     if (window.scrollY > 0) {
       setSticky(true);
@@ -30,7 +30,7 @@ export default function Header() {
   };
 
   useEffect(() => {
-    if (!excludePaths.includes(pathname)) {
+    if (!excludePathsRef.current.includes(pathname)) {
       setSticky(true);
       setStickyHeader(false);
     } else {
