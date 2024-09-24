@@ -63,11 +63,12 @@ export default function AboutUs() {
           <div>
             <Image
               priority
-              src="/about-us/1.svg"
-              alt="Happy Book Logo"
-              width={100}
-              height={100}
-              style={{ width: "100%", height: "100%" }}
+              src="/about-us/1.png"
+              alt="Image"
+              width={623}
+              height={492}
+              sizes="100vw"
+              // style={{ width: "100%", height: "100%" }}
             />
           </div>
         </div>
