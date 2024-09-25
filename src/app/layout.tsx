@@ -34,13 +34,6 @@ export default function RootLayout({
           content="https://bed-happybook-client.onrender.com/logo-footer.svg"
         />
         <meta property="og:type" content="website" />
-        {/* Link */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Pacifico&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body className={OpenSans.className}>
         <Header></Header>

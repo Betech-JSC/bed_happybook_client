@@ -2,11 +2,11 @@ $primary-color: #f27145;
 $primary-color-blue: #1570ef;
 $color-blue-700: #2e90fa;
 
-.pacifico_font {
-  font-family: "Pacifico", cursive;
-  font-weight: 400;
-  font-style: normal;
-}
+// .pacifico_font {
+//   font-family: "Pacifico", cursive;
+//   font-weight: 400;
+//   font-style: normal;
+// }
 .text_hover_default {
   @apply transition-colors duration-300 hover:!text-[#f27145]  cursor-pointer;
 }
@@ -162,7 +162,6 @@ $color-blue-700: #2e90fa;
       z-index: -1;
     }
     &_title {
-      @extend .pacifico_font;
       @apply text-[28px] font-normal mt-2 md:mt-5;
       transition: all 0.3s linear;
     }
