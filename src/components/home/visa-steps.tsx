@@ -1,5 +1,6 @@
 import styles from "@/styles/styles.module.scss";
 import { Pacifico } from "next/font/google";
+import Image from "next/image";
 
 const pacifico = Pacifico({
   weight: "400",
@@ -9,11 +10,16 @@ const pacifico = Pacifico({
 
 export default function VisaSteps() {
   return (
-    <div
-      className="relative bg-cover bg-center py-12 md:px-3 lg:px-[50px] xl:px[80px]"
-      style={{ backgroundImage: 'url("/visa-step.png")' }}
-    >
-      <div className="absolute inset-0 bg-opacity-50"></div>
+    <div className="relative bg-cover bg-center py-12 md:px-3 lg:px-[50px] xl:px[80px]">
+      <div className="absolute inset-0 z-[2] w-full">
+        <Image
+          src="/visa-step-2.png"
+          width={1440}
+          height={518}
+          alt="Background"
+          className="w-full h-full object-cover object-center"
+        />
+      </div>
       <div className="px-3 md:px-0 relative z-10 container mx-auto text-center text-white">
         <h2
           className={`${pacifico.className} ${styles.pacifico_font} text-3xl font-normal mb-5`}

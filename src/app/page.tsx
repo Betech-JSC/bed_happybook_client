@@ -50,9 +50,7 @@ export default function Home() {
           </div>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <Flight></Flight>
-          </div>
+          <Flight></Flight>
         </AosAnimate>
         <AosAnimate>
           <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">

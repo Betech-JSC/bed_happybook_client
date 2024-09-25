@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import Autoplay from "embla-carousel-autoplay";
+// import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import {
   Carousel,
@@ -34,7 +34,7 @@ const visa = [
   },
 ];
 export default function VisaService() {
-  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div
@@ -120,9 +120,9 @@ export default function VisaService() {
                 align: "start",
                 loop: true,
               }}
-              plugins={[plugin.current]}
-              onMouseEnter={plugin.current.stop}
-              onMouseLeave={plugin.current.reset}
+              // plugins={[plugin.current]}
+              // onMouseEnter={plugin.current.stop}
+              // onMouseLeave={plugin.current.reset}
             >
               <CarouselContent>
                 {visa.map((item, index) => (

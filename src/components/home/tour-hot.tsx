@@ -1,6 +1,3 @@
-"use client";
-import { useState, useRef } from "react";
-import Autoplay from "embla-carousel-autoplay";
 import TourItem from "@/components/tour-item";
 import Image from "next/image";
 import {
@@ -51,7 +48,7 @@ const tours = [
   },
 ];
 export default function TourHot() {
-  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
   return (
     <div
@@ -100,9 +97,9 @@ export default function TourHot() {
               align: "start",
               loop: true,
             }}
-            plugins={[plugin.current]}
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
+            // plugins={[plugin.current]}
+            // onMouseEnter={plugin.current.stop}
+            // onMouseLeave={plugin.current.reset}
           >
             <CarouselContent>
               {tours.map((tour, index) => (

@@ -1,6 +1,3 @@
-"use client";
-import { useRef } from "react";
-import Autoplay from "embla-carousel-autoplay";
 import TourItem from "@/components/tour-item";
 import Image from "next/image";
 import {
@@ -40,7 +37,7 @@ const tours = [
   },
 ];
 export default function CompoHot() {
-  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   return (
     <div
       className="mt-6 px-3 py-6 lg:py-8 rounded-3xl"
@@ -64,11 +61,11 @@ export default function CompoHot() {
             </div>
             <Image
               className="hidden lg:block"
-              src="/compo-hot/image.svg"
+              src="/compo-hot/image.png"
               alt="Compo Hot"
-              width={200}
-              height={160}
-              style={{ height: "auto", width: "80%" }}
+              width={234}
+              height={165}
+              sizes="100vw"
             />
           </div>
           <div className="mt-8 lg:mt-0 lg:ml-8 lg:mr-3">
@@ -77,9 +74,9 @@ export default function CompoHot() {
                 align: "start",
                 loop: true,
               }}
-              plugins={[plugin.current]}
-              onMouseEnter={plugin.current.stop}
-              onMouseLeave={plugin.current.reset}
+              // plugins={[plugin.current]}
+              // onMouseEnter={plugin.current.stop}
+              // onMouseLeave={plugin.current.reset}
             >
               <CarouselContent>
                 {tours.map((tour, index) => (

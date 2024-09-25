@@ -49,7 +49,7 @@ const hotels = [
   },
 ];
 export default function Hotel() {
-  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div
@@ -131,9 +131,9 @@ export default function Hotel() {
                   align: "start",
                   loop: true,
                 }}
-                plugins={[plugin.current]}
-                onMouseEnter={plugin.current.stop}
-                onMouseLeave={plugin.current.reset}
+                // plugins={[plugin.current]}
+                // onMouseEnter={plugin.current.stop}
+                // onMouseLeave={plugin.current.reset}
               >
                 <CarouselContent>
                   {hotels.map((hotel, index) => (
