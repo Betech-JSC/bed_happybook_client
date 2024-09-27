@@ -215,6 +215,9 @@ export default function Header() {
               Khách sạn
             </a>
             <a href="#" className={`${styles.header__menu_item}`}>
+              Combo
+            </a>
+            <a href="#" className={`${styles.header__menu_item}`}>
               Khác
             </a>
           </nav>
