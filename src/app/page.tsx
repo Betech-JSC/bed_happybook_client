@@ -26,17 +26,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <Fragment>
-      <div
-        className="relative z-[0] hidden lg:block"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%), url(/bg-image.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <Search />
-      </div>
+      <Search />
       <div className="mt-[68px] block lg:hidden">
         <SearchMobile />
       </div>

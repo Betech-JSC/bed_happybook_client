@@ -164,72 +164,104 @@ export default function TravelGuide() {
             }}
           >
             <CarouselContent>
-              <CarouselItem className="basis-9/12">
-                <div
-                  className="relative rounded-xl cursor-pointer"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%), url('/travel-guide/2.png')",
-                    backgroundSize: "cover",
-                    width: "100%",
-                    height: "280px",
-                  }}
-                >
-                  <span className="absolute bottom-3 left-5 right-5 text-white font-semibold">
-                    Hướng Dẫn Chi Tiết Gia Hạn Visa Việt Nam Cho Người Nước
-                    Ngoài
-                  </span>
+              <CarouselItem className="basis-9/12 h-[280px]">
+                <div className="relative rounded-xl cursor-pointer h-full">
+                  <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
+                    <Image
+                      src="/travel-guide/2.png"
+                      width={500}
+                      height={280}
+                      className="rounded-xl w-full h-full"
+                      alt="Blog image"
+                    />
+                  </div>
+                  <div
+                    className="absolute bottom-0 w-full h-full rounded-xl"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
+                    }}
+                  >
+                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      Hướng Dẫn Chi Tiết Gia Hạn Visa Việt Nam Cho Người Nước
+                      Ngoài
+                    </span>
+                  </div>
                 </div>
               </CarouselItem>
               <CarouselItem className="basis-9/12">
-                <div
-                  className="relative rounded-xl cursor-pointer"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%), url('/travel-guide/4.png')",
-                    backgroundSize: "cover",
-                    width: "100%",
-                    height: "280px",
-                  }}
-                >
-                  <span className="absolute bottom-3 left-5 right-5 text-white font-semibold">
-                    Điểm Danh Những Khu Du Lịch Sinh Thái Bến Tre Được Nhiều Du
-                    Khách Chọn Lựa
-                  </span>
+                <div className="relative rounded-xl cursor-pointer h-full">
+                  <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
+                    <Image
+                      src="/travel-guide/3.png"
+                      width={500}
+                      height={280}
+                      className="rounded-xl w-full h-full"
+                      alt="Blog image"
+                    />
+                  </div>
+                  <div
+                    className="absolute bottom-0 w-full h-full rounded-xl"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
+                    }}
+                  >
+                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      Làm Thế Nào Để Đăng Ký E visa Cho Người Nước Ngoài Vào
+                      Việt Nam?
+                    </span>
+                  </div>
                 </div>
               </CarouselItem>
               <CarouselItem className="basis-9/12">
-                <div
-                  className="relative rounded-xl cursor-pointer"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%), url('/travel-guide/5.png')",
-                    backgroundSize: "cover",
-                    width: "100%",
-                    height: "280px",
-                  }}
-                >
-                  <span className="absolute bottom-3 left-5 right-5 text-white font-semibold">
-                    Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa 462
-                    Úc Tham Khảo
-                  </span>
+                <div className="relative rounded-xl cursor-pointer h-full">
+                  <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
+                    <Image
+                      src="/travel-guide/4.png"
+                      width={500}
+                      height={280}
+                      className="rounded-xl w-full h-full"
+                      alt="Blog image"
+                    />
+                  </div>
+                  <div
+                    className="absolute bottom-0 w-full h-full rounded-xl"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
+                    }}
+                  >
+                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      Điểm Danh Những Khu Du Lịch Sinh Thái Bến Tre Được Nhiều
+                      Du Khách Chọn Lựa
+                    </span>
+                  </div>
                 </div>
               </CarouselItem>
               <CarouselItem className="basis-9/12">
-                <div
-                  className="relative rounded-xl cursor-pointer"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%), url('/travel-guide/3.png')",
-                    backgroundSize: "cover",
-                    width: "100%",
-                    height: "280px",
-                  }}
-                >
-                  <span className="absolute bottom-3 left-5 right-5 text-white font-semibold">
-                    Làm Thế Nào Để Đăng Ký E visa Cho Người Nước Ngoài Vào Việt
-                    Nam?
-                  </span>
+                <div className="relative rounded-xl cursor-pointer h-full">
+                  <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
+                    <Image
+                      src="/travel-guide/5.png"
+                      width={500}
+                      height={280}
+                      className="rounded-xl w-full h-full"
+                      alt="Blog image"
+                    />
+                  </div>
+                  <div
+                    className="absolute bottom-0 w-full h-full rounded-xl"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
+                    }}
+                  >
+                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa 462
+                      Úc Tham Khảo
+                    </span>
+                  </div>
                 </div>
               </CarouselItem>
             </CarouselContent>
