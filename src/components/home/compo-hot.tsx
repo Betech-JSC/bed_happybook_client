@@ -50,7 +50,7 @@ export default function CompoHot() {
     >
       <div className="mt-0 lg:mt-5">
         <div className="mt-0 lg:mt-4 lg:flex">
-          <div className="flex md:w-[40%] flex-col justify-between lg:items-center">
+          <div className="flex lg:w-[40%] flex-col justify-between lg:items-center">
             <div>
               <h3 className="text-2xl lg:text-[32px] leading-9 font-bold text-white">
                 Combo siêu hot hôm nay

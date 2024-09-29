@@ -8,6 +8,7 @@ export default function SearchMobile() {
     <div className="mt-4 h-[828px]">
       <div className="absolute inset-0 h-[828px]">
         <Image
+          priority
           src="/bg-image.png"
           width={500}
           height={584}

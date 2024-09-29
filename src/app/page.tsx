@@ -43,29 +43,19 @@ export default function Home() {
           <Flight></Flight>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <TourHot></TourHot>
-          </div>
+          <TourHot></TourHot>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <TourNoiDia></TourNoiDia>
-          </div>
+          <TourNoiDia></TourNoiDia>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <TourQuocTe></TourQuocTe>
-          </div>
+          <TourQuocTe></TourQuocTe>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <VisaService></VisaService>
-          </div>
+          <VisaService></VisaService>
         </AosAnimate>
         <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <Hotel></Hotel>
-          </div>
+          <Hotel></Hotel>
         </AosAnimate>
         <AosAnimate>
           <VisaSteps></VisaSteps>

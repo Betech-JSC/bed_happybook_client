@@ -8,6 +8,7 @@ export default function Search() {
     <div className="relative z-[0] hidden lg:block">
       <div className="absolute inset-0">
         <Image
+          priority
           src="/bg-image.png"
           width={500}
           height={584}
