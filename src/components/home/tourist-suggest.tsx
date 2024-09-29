@@ -1,6 +1,3 @@
-"use client";
-import { useRef } from "react";
-import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import {
   Carousel,
@@ -15,7 +12,6 @@ for (let i = 1; i <= 8; i++) {
   tourist.push(`/tourist-suggest/${i}.png`);
 }
 export default function TouristSuggest() {
-  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
   return (
     <div className="py-8 bg-[#FCFCFD] hidden lg:block">
       <div className="flex justify-between">
@@ -29,9 +25,6 @@ export default function TouristSuggest() {
             align: "start",
             loop: true,
           }}
-          plugins={[plugin.current]}
-          onMouseEnter={plugin.current.stop}
-          onMouseLeave={plugin.current.reset}
         >
           <CarouselContent>
             {tourist.map((place, index) => (
