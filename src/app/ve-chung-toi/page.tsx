@@ -155,7 +155,7 @@ export default function AboutUs() {
       <div>
         <Image
           priority
-          src="/about-us/contact.png"
+          src="/about-us/Contact.png"
           alt="Happy Book Logo"
           width={1900}
           height={500}

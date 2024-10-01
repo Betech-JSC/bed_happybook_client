@@ -170,7 +170,13 @@ export default function Contact() {
                   <div className="w-3/4">
                     <p className="text-sm font-semibold">Địa chỉ</p>
                     <p className="text-gray-900">
-                      93/10 Quang Trung, KP.1, P.Hiệp Phú, TP.Thủ Đức, TP.HCM
+                      <span className="font-medium">Trụ sở chính:</span> Tầng 1,
+                      Phong Phú Tower, 93/10 Quang Trung, KP.1, P.Hiệp Phú,
+                      TP.Thủ Đức, TP.HCM
+                    </p>
+                    <p className="text-gray-900">
+                      <span className="font-medium">Chi nhánh 1:</span> 124 Lê
+                      Quang Định, P.14, Q.Bình Thạnh, TP.HCM
                     </p>
                   </div>
                 </div>

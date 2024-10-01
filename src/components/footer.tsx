@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#F9FAFB]">
       <div className="max__screen px-3 lg:px-[50px] xl:px-[80px] lg:mt-0  pt-12 pb-6">
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col lg:flex-row lg:space-x-6">
           <div className="basis-1/2">
             <div className="pb-12">
               <Image
@@ -35,12 +35,16 @@ export default function Footer() {
               HR@happybook.com.vn
             </p>
             <p>
-              <strong>Email visa - hộ chiếu::</strong>
+              <strong>Email visa - hộ chiếu: </strong>
               visaonline@happybook.com.vn
             </p>
             <p>
-              <strong>Địa chỉ:</strong> 93/10 Quang Trung, KP.1, P.Hiệp Phú,
-              TP.Thủ Đức, TP.HCM
+              <strong>Trụ sở chính:</strong> Tầng 1, Phong Phú Tower, 93/10
+              Quang Trung, KP.1, P.Hiệp Phú, TP.Thủ Đức, TP.HCM
+            </p>
+            <p>
+              <strong>Chi nhánh 1:</strong> 124 Lê Quang Định, P.14, Q.Bình
+              Thạnh, TP.HCM
             </p>
           </div>
           <div className="mt-12 lg:mt-0 basis-1/2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12">

@@ -10,6 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Pagination from "@/components/pagination";
+import { fetchNewsByCategory } from "@/api/news";
 
 type post = {
   title: string;
@@ -98,11 +99,12 @@ const popopularPosts: post[] = [
     date: "22/08/2024",
   },
 ];
-export default function SubCategoryPosts({
+export default async function SubCategoryPosts({
   params,
 }: {
   params: { subCategory: string };
 }) {
+  const data = await fetchNewsByCategory(params.subCategory);
   return (
     <main className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
       <Breadcrumb className="pt-3">
