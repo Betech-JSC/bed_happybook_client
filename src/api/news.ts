@@ -1,6 +1,6 @@
 import { PostType, categoryPostsType } from "@/types/post";
 
-const API_BASE_URL = "http://happy-book-api.test";
+const API_BASE_URL = "http://api.happybooktravel.com";
 
 const fetchLastestNews = async (): Promise<PostType[]> => {
   try {
