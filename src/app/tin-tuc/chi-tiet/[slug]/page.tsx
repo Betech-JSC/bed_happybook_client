@@ -94,37 +94,12 @@ export default async function Posts({ params }: Props) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="w-[78px] h-6 cursor-pointer bg-[#EFF8FF] py-[2px] px-2 rounded-sm hover:bg-blue-200 duration-300 mt-8">
-            <p className="text-blue-700 text-sm font-medium">
+          <div className="h-6 cursor-pointer mt-8 rounded">
+            <p className="inline-block rounded text-blue-700 py-1 px-2 text-sm font-medium hover:bg-blue-200 duration-300 bg-[#EFF8FF]">
               {detail.category.name}
             </p>
           </div>
           <div className="post__detail mt-4">
-            {/* <div className="pb-8 border-b-[1px] border-gray-200">
-              <h1 className="text-gray-900 text-32 font-bold">
-                {detail.title}
-              </h1>
-              <div className="mt-6">
-                <Image
-                  className="ease-in duration-300"
-                  src="/posts/detail/1.png"
-                  alt="Tin tức"
-                  width={810}
-                  height={469}
-                  style={{ width: "100%", height: "auto" }}
-                />
-                <div
-                  className="text-base text-gray-700 mt-6"
-                  dangerouslySetInnerHTML={{
-                    __html: detail.description,
-                  }}
-                ></div>
-              </div>
-            </div>
-            <div className="mt-8">
-              <TableOfContents />
-            </div> */}
-            {/* Content */}
             <div
               className="mt-6 post__detail_content"
               dangerouslySetInnerHTML={{

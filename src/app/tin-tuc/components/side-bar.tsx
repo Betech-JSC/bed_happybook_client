@@ -14,7 +14,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
             categories.map((item) => (
               <Link
                 key={item.id}
-                href={`/tin-tuc/${item.slug ?? ""}`}
+                href={`/tin-tuc/${item.alias}`}
                 className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
               >
                 {item.name}

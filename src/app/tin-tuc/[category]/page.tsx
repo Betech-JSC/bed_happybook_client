@@ -13,7 +13,7 @@ import {
 import Pagination from "@/components/pagination";
 import { fetchCategoryDetails } from "@/api/news";
 import { notFound } from "next/navigation";
-import { categoryPostsType, PostType } from "@/types/post";
+import { CategoryPostsType, PostType, SearchParamsProps } from "@/types/post";
 import { formatDate } from "@/lib/formatters";
 import SideBar from "../components/side-bar";
 
@@ -24,20 +24,20 @@ export const metadata: Metadata = {
 
 export default async function CategoryPosts({
   params,
+  searchParams,
 }: {
   params: { category: string };
+  searchParams: SearchParamsProps;
 }) {
-  const data = await fetchCategoryDetails(params.category);
+  const data = await fetchCategoryDetails(params.category, searchParams);
   const category = data.category;
   if (!category) {
     notFound();
   }
-  // const relatedCategories: categoryPostsType[] = data.relatedCategories;
-  // const news: PostType[] = data.news.data;
-  // const totalPages: number = data.news.last_page;
-  const relatedCategories: categoryPostsType[] = [];
-  const news: PostType[] = [];
-  const totalPages: number = 0;
+  const relatedCategories: CategoryPostsType[] = data.relatedCategories;
+  const news: PostType[] = data.news.data;
+  const totalPages: number = data.news.last_page;
+  const currentPage = parseInt(searchParams?.page || "1");
   return (
     <main className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
       <Breadcrumb className="pt-3">
@@ -67,18 +67,18 @@ export default async function CategoryPosts({
             <div className="mt-6"></div>
           </h3>
           <div className="border-b-[1px] border-gray-300">
-            {/* <ul className="flex">
-              {category.recursive_children.map((item: categoryPostsType) => (
+            <ul className="flex">
+              {category.recursive_children.map((item: CategoryPostsType) => (
                 <li
                   key={item.id}
                   className="text-sm font-medium text-gray-700 py-[6px] px-[10px] text__default_hover"
                 >
-                  <Link href={`/tin-tuc/lam-visa/${item.slug}`}>
+                  <Link href={`/tin-tuc/lam-visa/${item.alias}`}>
                     {item.name}
                   </Link>
                 </li>
               ))}
-            </ul> */}
+            </ul>
           </div>
           <div className="mt-8">
             <Suspense fallback={<div>Đang tải tin tức...</div>}>
@@ -122,21 +122,19 @@ export default async function CategoryPosts({
                   </div>
                 ))
               ) : (
-                <p className="text-center text-xl">
-                  Tin tức đang được cập nhật....
-                </p>
+                <p className="text-xl">Tin tức đang cập nhật....</p>
               )}
             </Suspense>
           </div>
           {/* Paginate */}
           {totalPages > 1 && (
             <div className="my-8 pt-5 border-t-[1px] border-gray-200">
-              <Pagination />
+              <Pagination totalPages={totalPages} currentPage={currentPage} />
             </div>
           )}
         </div>
         {/* Side bar */}
-        <SideBar categories={relatedCategories} news={news} />
+        <SideBar categories={relatedCategories} news={[]} />
       </div>
     </main>
   );

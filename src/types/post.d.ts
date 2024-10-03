@@ -18,13 +18,18 @@ export interface PostType {
   };
   new_relation: PostType[];
 }
-export interface categoryPostsType {
+export interface CategoryPostsType {
   id: number;
   name: string;
-  slug: string;
+  alias: string;
   news: PostType[] | [];
 }
 export interface SidebarProps {
   categories: categoryPostsType[];
   news: PostType[];
+}
+
+export interface SearchParamsProps {
+  page?: string;
+  locale?: string;
 }

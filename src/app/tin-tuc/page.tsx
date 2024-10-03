@@ -2,49 +2,20 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Post from "@/styles/posts.module.scss";
-import { fetchLastestNews, fetchCategoriesWithNews } from "@/api/news";
+import { fetchNewsIndex } from "@/api/news";
 import SideBar from "./components/side-bar";
 import { formatDate } from "@/lib/formatters";
+import { CategoryPostsType, PostType } from "@/types/post";
 
 export const metadata: Metadata = {
   title: "Tin tức",
   description: "Happy Book",
 };
-type categoryPosts = {
-  category_name: string;
-  slug: string;
-  posts: post[];
-}[];
-type post = {
-  title: string;
-  image: string;
-  date: string;
-};
-const arrPosts: categoryPosts = [
-  {
-    category_name: "Làm visa",
-    slug: "lam-visa",
-    posts: [],
-  },
-  {
-    category_name: "Vé máy bay",
-    slug: "lam-visa",
-    posts: [],
-  },
-  {
-    category_name: "Tin định cư",
-    slug: "lam-visa",
-    posts: [],
-  },
-  {
-    category_name: "Cẩm nang du lịch",
-    slug: "lam-visa",
-    posts: [],
-  },
-];
+
 export default async function Posts() {
-  const lastestPosts = await fetchLastestNews();
-  const categoriesWithPosts = await fetchCategoriesWithNews();
+  const data = await fetchNewsIndex();
+  const lastestPosts: PostType[] = data.lastestPosts;
+  const categoriesWithPosts: CategoryPostsType[] = data.categoriesWithPosts;
   return (
     <main className="bg-white lg:pt-[132px] px-3 lg:px-[80px] pt-14 max__screen">
       {lastestPosts.length > 0 && (
@@ -54,8 +25,10 @@ export default async function Posts() {
               <div className="overflow-hidden rounded-xl">
                 <Link href={`/tin-tuc/chi-tiet/${lastestPosts[0].alias}`}>
                   <Image
-                    src={`/posts/new/1.png`}
-                    alt="Member"
+                    src={
+                      lastestPosts[0].image_url + lastestPosts[0].image_location
+                    }
+                    alt={lastestPosts[0].title}
                     width={844}
                     height={545}
                     className="ease-in duration-300"
@@ -93,8 +66,8 @@ export default async function Posts() {
                     <div className="overflow-hidden rounded-xl">
                       <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
                         <Image
-                          src={`/posts/new/2.png`}
-                          alt="Member"
+                          src={item.image_url + item.image_location}
+                          alt={item.title}
                           width={388}
                           height={225}
                           sizes="100vw"
@@ -133,7 +106,7 @@ export default async function Posts() {
                 </div>
                 <div className="lg:basis-2/12 h-10 max-w-fit flex items-center cursor-pointer bg-[#EFF8FF] py-1 px-4 rounded-lg hover:bg-blue-200 duration-300">
                   <Link
-                    href={`/tin-tuc/${item.slug ?? "lam-visa"}`}
+                    href={`/tin-tuc/${item.alias}`}
                     className="text-[#175CD3] font-medium"
                   >
                     Xem tất cả
@@ -149,29 +122,29 @@ export default async function Posts() {
               </div>
               {item.news.length > 0 ? (
                 <div className="grid grid-cols-3 gap-[26.33px]">
-                  {item.news.map((post, key) => (
+                  {item.news.map((item, key) => (
                     <div key={key} className={`mt-8 ${Post.post__item}`}>
                       <div className="overflow-hidden rounded-xl">
-                        <Link href={`/tin-tuc/chi-tiet/${post.alias}`}>
+                        <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
                           <Image
                             className="ease-in duration-300"
-                            src="/posts/category-posts/2.png"
-                            alt="Tin tức"
+                            src={item.image_url + item.image_location}
+                            alt={item.title}
                             width={252}
                             height={168}
-                            style={{ width: "100%", height: "auto" }}
+                            style={{ width: "100%", height: "168px" }}
                           />
                         </Link>
                       </div>
-                      <Link href={`/tin-tuc/chi-tiet/${post.alias}`}>
+                      <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
                         <p
                           className={`ease-in duration-300 text-base font-semibold mt-3 line-clamp-3 ${Post.post__item_title}`}
                         >
-                          {post.title}
+                          {item.title}
                         </p>
                       </Link>
                       <p className="text-sm mt-2">
-                        {formatDate(post.created_at)}
+                        {formatDate(item.created_at)}
                       </p>
                     </div>
                   ))}

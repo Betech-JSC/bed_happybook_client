@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
-import Post from "@/styles/posts.module.scss";
+import PostStyle from "@/styles/posts.module.scss";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,6 +11,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import Pagination from "@/components/pagination";
 import { fetchCategoryDetails } from "@/api/news";
+import { PostType, SearchParamsProps } from "@/types/post";
+import { formatDate } from "@/lib/formatters";
+import SideBar from "../../components/side-bar";
+import { Suspense } from "react";
 
 type post = {
   title: string;
@@ -101,10 +105,15 @@ const popopularPosts: post[] = [
 ];
 export default async function SubCategoryPosts({
   params,
+  searchParams,
 }: {
   params: { subCategory: string };
+  searchParams: SearchParamsProps;
 }) {
-  // const data = await fetchCategoryDetails(params.subCategory);
+  const category = await fetchCategoryDetails(params.subCategory, searchParams);
+  const posts: PostType[] = category.news.data;
+  const totalPages: number = category.news.last_page;
+
   return (
     <main className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
       <Breadcrumb className="pt-3">
@@ -141,118 +150,60 @@ export default async function SubCategoryPosts({
             <div className="mt-6"></div>
           </h3>
           <div className="mt-8">
-            {categoryPosts.map((post, index) => (
-              <div
-                key={index}
-                className={`mt-3 mb-6 flex space-x-6 items-center pb-3 ${Post.post__item}`}
-              >
-                <div className="basis-[35%]">
-                  <div className="overflow-hidden rounded-xl">
-                    <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
-                      <Image
-                        className="ease-in duration-300"
-                        src={post.image}
-                        alt="Tin tức"
-                        width={140}
-                        height={100}
-                        style={{ width: "100%", height: "auto" }}
-                      />
-                    </Link>
-                  </div>
-                </div>
-                <div className="basis-[63%]">
-                  <Link
-                    href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau"
-                    className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
+            <Suspense fallback={<div>Đang tải tin tức...</div>}>
+              {posts.length > 0 ? (
+                posts.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`mt-3 mb-6 flex space-x-6 items-center pb-3 ${PostStyle.post__item}`}
                   >
-                    {post.title}
-                  </Link>
-                  <p className="text-sm text-gray-700 line-clamp-3 mt-2">
-                    {index == 0
-                      ? `Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau,
-                  nếu bạn không thành thạo việc xin visa ra nước ngoài, thì
-                    quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu
-                    sót.`
-                      : `Việc đặt lịch hẹn visa Mỹ là bước quan trọng trong quá
-                    trình xin visa, đặc biệt là đối với các diện visa du lịch,
-                    công tác. Để giúp bạn có một cuộc phỏng vấn suôn sẻ và tăng
-                    cơ hội đậu visa, dưới đây là hướng dẫn của HappyBook Travel
-                    chi tiết về cách chuẩn bị giấy tờ, kinh nghiệm phỏng vấn,
-                    cũng như quy trình đăng ký địa chỉ nhận visa Mỹ gửi về nhà.`}
-                  </p>
-                  <p className="text-sm mt-2">{post.date}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Paginate */}
-          <div className="my-8 pt-5 border-t-[1px] border-gray-200">
-            <Pagination />
-          </div>
-        </div>
-        <div className="basis-full md:basis-[35%]">
-          <div className="hidden md:block p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
-            <p className="text-2xl font-bold">Những danh mục khác</p>
-            <div>
-              <Link
-                href="#"
-                className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
-              >
-                VISA Pháp
-              </Link>
-              <Link
-                href="#"
-                className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
-              >
-                VISA Anh
-              </Link>
-              <Link
-                href="#"
-                className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
-              >
-                VISA Trung Quốc
-              </Link>
-              <Link
-                href="#"
-                className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
-              >
-                VISA Mỹ
-              </Link>
-            </div>
-          </div>
-          <div className="mt-4">
-            <p className="text-2xl font-bold">Bài viết phổ biến</p>
-            <div>
-              {popopularPosts.map((post: post, key: number) => (
-                <div
-                  key={key}
-                  className={`mt-3 flex space-x-3 items-center pb-3 border-b-[1px] border-gray-200 ${Post.post__item}`}
-                >
-                  <div className="basis-[35%]">
-                    <div className="overflow-hidden rounded-sm">
-                      <Image
-                        className="ease-in duration-300"
-                        src={post.image}
-                        alt="Tin tức"
-                        width={140}
-                        height={100}
-                        style={{ width: "100%", height: "auto" }}
-                      />
+                    <div className="basis-[35%]">
+                      <div className="overflow-hidden rounded-xl">
+                        <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
+                          <Image
+                            className="ease-in duration-300"
+                            src={item.image_url + item.image_location}
+                            alt="Tin tức"
+                            width={140}
+                            height={100}
+                            style={{ width: "100%", height: "auto" }}
+                          />
+                        </Link>
+                      </div>
+                    </div>
+                    <div className="basis-[63%]">
+                      <Link
+                        href={`/tin-tuc/chi-tiet/${item.alias}`}
+                        className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${PostStyle.post__item_title}`}
+                      >
+                        {item.title}
+                      </Link>
+                      <div
+                        className="text-sm text-gray-700 line-clamp-3 mt-2"
+                        dangerouslySetInnerHTML={{
+                          __html: item.description,
+                        }}
+                      ></div>
+                      <p className="text-sm mt-2">
+                        {formatDate(item.created_at)}
+                      </p>
                     </div>
                   </div>
-                  <div className="basis-[65%]">
-                    <p
-                      className={`text-base ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
-                    >
-                      {post.title}
-                    </p>
-                    <p className="text-sm mt-2">{post.date}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))
+              ) : (
+                <p className="text-xl">Tin tức đang được cập nhật....</p>
+              )}
+            </Suspense>
           </div>
+          {/* Paginate */}
+          {totalPages > 1 && (
+            <div className="my-8 pt-5 border-t-[1px] border-gray-200">
+              {/* <Pagination /> */}
+            </div>
+          )}
         </div>
+        {/* Side bar */}
+        <SideBar categories={[]} news={[]} />
       </div>
     </main>
   );

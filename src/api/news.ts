@@ -1,14 +1,17 @@
-import { PostType, categoryPostsType } from "@/types/post";
+import { PostType, CategoryPostsType, SearchParamsProps } from "@/types/post";
 
-const API_BASE_URL = "http://api.happybooktravel.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
-const fetchLastestNews = async (): Promise<PostType[]> => {
+const fetchNewsIndex = async ($locale = "vi"): Promise<any> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/news?limit=3`, {
-      cache: "reload",
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/news?locale=${$locale}`,
+      {
+        next: { revalidate: 30 },
+      }
+    );
     const result = await response.json();
-    return result.data.data ?? [];
+    return result.data;
   } catch (error) {
     console.error("Error fetching news data:", error);
     return [];
@@ -18,7 +21,7 @@ const fetchLastestNews = async (): Promise<PostType[]> => {
 const fetchNewsDetail = async (slug: string): Promise<PostType | null> => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/news/${slug}`, {
-      cache: "reload",
+      next: { revalidate: 30 },
     });
     const result = await response.json();
     return result.data ?? null;
@@ -28,12 +31,17 @@ const fetchNewsDetail = async (slug: string): Promise<PostType | null> => {
   }
 };
 
-const fetchCategoryDetails = async (slug: string): Promise<any> => {
+const fetchCategoryDetails = async (
+  alias: string,
+  searchParams: SearchParamsProps
+): Promise<any> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/news/categoryDetail/${slug}`,
+      `${API_BASE_URL}/api/v1/news/categoryDetail/${alias}?page=${
+        searchParams.page ?? ""
+      }&locale=${searchParams.locale ?? ""}`,
       {
-        next: { revalidate: 60 },
+        next: { revalidate: 30 },
       }
     );
     const result = await response.json();
@@ -44,10 +52,13 @@ const fetchCategoryDetails = async (slug: string): Promise<any> => {
   }
 };
 
-const fetchCategoriesWithNews = async (): Promise<categoryPostsType[]> => {
+const fetchCategoriesWithNews = async (): Promise<CategoryPostsType[]> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/news/categories-with-news`
+      `${API_BASE_URL}/api/v1/news/categories-with-news`,
+      {
+        next: { revalidate: 30 },
+      }
     );
     const result = await response.json();
     return result.data;
@@ -58,7 +69,7 @@ const fetchCategoriesWithNews = async (): Promise<categoryPostsType[]> => {
 };
 
 export {
-  fetchLastestNews,
+  fetchNewsIndex,
   fetchNewsDetail,
   fetchCategoryDetails,
   fetchCategoriesWithNews,
