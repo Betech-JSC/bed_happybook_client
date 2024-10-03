@@ -7,7 +7,7 @@ const fetchNewsIndex = async ($locale = "vi"): Promise<any> => {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/news?locale=${$locale}`,
       {
-        next: { revalidate: 30 },
+        cache: "no-store",
       }
     );
     const result = await response.json();
@@ -26,7 +26,7 @@ const fetchNewsDetail = async (
     const response = await fetch(
       `${API_BASE_URL}/api/v1/news/${slug}?locale=${searchParams.locale ?? ""}`,
       {
-        next: { revalidate: 30 },
+        cache: "no-store",
       }
     );
     const result = await response.json();
@@ -47,7 +47,7 @@ const fetchCategoryDetails = async (
         searchParams.page ?? ""
       }&locale=${searchParams.locale ?? ""}`,
       {
-        next: { revalidate: 30 },
+        cache: "no-store",
       }
     );
     const result = await response.json();
@@ -63,7 +63,7 @@ const fetchCategoriesWithNews = async (): Promise<CategoryPostsType[]> => {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/news/categories-with-news`,
       {
-        next: { revalidate: 30 },
+        cache: "no-store",
       }
     );
     const result = await response.json();
