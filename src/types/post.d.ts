@@ -9,19 +9,23 @@ export interface PostType {
   title: string;
   description: string;
   content: string;
+  meta_title: string;
+  meta_description: string;
+  meta_robots: string;
+  canonical_link: string;
+  meta_image: string;
+  ordering: number;
   created_at: string;
   updated_at: string;
-  category: {
-    id: number;
-    name: string;
-    slug: string | null;
-  };
+  category: CategoryPostsType;
   new_relation: PostType[];
+  categories_relation: CategoryPostsType[];
 }
 export interface CategoryPostsType {
   id: number;
   name: string;
   alias: string;
+  parent_id: number;
   news: PostType[] | [];
 }
 export interface SidebarProps {

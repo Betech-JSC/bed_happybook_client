@@ -18,11 +18,17 @@ const fetchNewsIndex = async ($locale = "vi"): Promise<any> => {
   }
 };
 
-const fetchNewsDetail = async (slug: string): Promise<PostType | null> => {
+const fetchNewsDetail = async (
+  slug: string,
+  searchParams: SearchParamsProps
+): Promise<PostType | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/news/${slug}`, {
-      next: { revalidate: 30 },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/news/${slug}?locale=${searchParams.locale ?? ""}`,
+      {
+        next: { revalidate: 30 },
+      }
+    );
     const result = await response.json();
     return result.data ?? null;
   } catch (error) {

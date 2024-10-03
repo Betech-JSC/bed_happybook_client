@@ -31,9 +31,8 @@ export default async function Posts() {
                     alt={lastestPosts[0].title}
                     width={844}
                     height={545}
-                    className="ease-in duration-300"
+                    className="ease-in duration-300 w-full lg:h-[545px]"
                     sizes="100vw"
-                    style={{ width: "100%", height: "auto" }}
                   />
                 </Link>
               </div>
@@ -69,10 +68,10 @@ export default async function Posts() {
                           src={item.image_url + item.image_location}
                           alt={item.title}
                           width={388}
-                          height={225}
+                          height={240}
                           sizes="100vw"
                           className="ease-in duration-300"
-                          style={{ width: "100%", height: "225px" }}
+                          style={{ width: "100%", height: "240px" }}
                         />
                       </Link>
                     </div>
@@ -104,13 +103,11 @@ export default async function Posts() {
                     {item.name}
                   </h3>
                 </div>
-                <div className="lg:basis-2/12 h-10 max-w-fit flex items-center cursor-pointer bg-[#EFF8FF] py-1 px-4 rounded-lg hover:bg-blue-200 duration-300">
-                  <Link
-                    href={`/tin-tuc/${item.alias}`}
-                    className="text-[#175CD3] font-medium"
-                  >
-                    Xem tất cả
-                  </Link>
+                <Link
+                  href={`/tin-tuc/${item.alias}`}
+                  className="lg:basis-2/12 h-10  text-[#175CD3] font-medium max-w-fit flex items-center cursor-pointer bg-[#EFF8FF] py-1 px-4 rounded-lg hover:bg-blue-200 duration-300"
+                >
+                  <span>Xem tất cả</span>
                   <Image
                     className="ease-in duration-300"
                     src="/icon/chevron-right.svg"
@@ -118,7 +115,7 @@ export default async function Posts() {
                     width={20}
                     height={20}
                   />
-                </div>
+                </Link>
               </div>
               {item.news.length > 0 ? (
                 <div className="grid grid-cols-3 gap-[26.33px]">

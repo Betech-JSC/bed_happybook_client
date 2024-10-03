@@ -16,41 +16,45 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import TableOfContents from "./components/table-content";
 import { fetchNewsDetail } from "@/api/news";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
 import { formatDate } from "@/lib/formatters";
 import SideBar from "../../components/side-bar";
-import { PostType } from "@/types/post";
+import { PostType, SearchParamsProps } from "@/types/post";
 
 type Props = {
   params: { slug: string };
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const news = await fetchNewsDetail(params.slug);
+  const news = await fetchNewsDetail(params.slug, {});
 
   return {
-    title: news?.title,
+    title: news?.meta_title ?? news?.title,
+    description: news?.meta_description,
+    robots: news?.meta_robots,
+    keywords: news?.keywords,
+    alternates: {
+      canonical: news?.canonical_link,
+    },
     openGraph: {
-      title: news?.title,
-      description: news?.description,
-      url: "",
-      siteName: "Local Host",
       images: [
         {
-          url: "",
-          width: 800,
-          height: 600,
+          url: news?.meta_image ?? "",
+          alt: news?.meta_title,
         },
       ],
-      locale: "vi_VN",
-      type: "website",
     },
   };
 }
-export default async function Posts({ params }: Props) {
-  const detail = await fetchNewsDetail(params.slug);
+export default async function Posts({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: SearchParamsProps;
+}) {
+  const detail = await fetchNewsDetail(params.slug, searchParams);
   const relatedNews: PostType[] = detail?.new_relation ?? [];
   if (!detail) {
     notFound();
@@ -79,16 +83,11 @@ export default async function Posts({ params }: Props) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tin-tuc/lam-visa" className="text-blue-700">
-                    Làm VISA
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
-                    Visa Đức
+                  <Link
+                    href={`/tin-tuc/${detail.category.alias}`}
+                    className="text-gray-700"
+                  >
+                    {detail.category.name}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -100,8 +99,24 @@ export default async function Posts({ params }: Props) {
             </p>
           </div>
           <div className="post__detail mt-4">
+            <h1 className="text-gray-900 text-32 font-bold">{detail.title}</h1>
+            <div className="my-6">
+              <Image
+                src={detail.image_url + detail.image_location}
+                width={900}
+                height={470}
+                className="w-full lg-h[470px]"
+                alt={detail.title}
+              />
+            </div>
             <div
-              className="mt-6 post__detail_content"
+              className="mb-8 pb-8 border-b-2 border-gray-200"
+              dangerouslySetInnerHTML={{
+                __html: detail.description,
+              }}
+            ></div>
+            <div
+              className="post__detail_content"
               dangerouslySetInnerHTML={{
                 __html: detail.content,
               }}
@@ -109,7 +124,7 @@ export default async function Posts({ params }: Props) {
           </div>
         </div>
         {/* Side bar */}
-        <SideBar categories={[]} news={[]} />
+        <SideBar categories={detail.categories_relation} news={[]} />
       </div>
       {/* Releted Posts */}
       {detail.new_relation?.length > 0 && (

@@ -12,12 +12,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("http://client.happybooktravel.com"),
   title: "Happy Book",
   description: "Happy Book",
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    images: "/logo-footer.png",
-  },
 };
 
 export default function RootLayout({

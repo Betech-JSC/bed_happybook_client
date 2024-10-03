@@ -17,10 +17,29 @@ import { CategoryPostsType, PostType, SearchParamsProps } from "@/types/post";
 import { formatDate } from "@/lib/formatters";
 import SideBar from "../components/side-bar";
 
-export const metadata: Metadata = {
-  title: "Làm visa",
-  description: "Happy Book",
+type Props = {
+  params: { category: string };
 };
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const data = await fetchCategoryDetails(params.category, {});
+  return {
+    title: data.category?.meta_title ?? data.category?.name,
+    description: data.category?.meta_description,
+    robots: data.category?.meta_robots,
+    keywords: data.category?.meta_keywords,
+    alternates: {
+      canonical: data.category?.canonical_link,
+    },
+    openGraph: {
+      images: [
+        {
+          url: data.category?.meta_image ?? "",
+          alt: data.category?.meta_title,
+        },
+      ],
+    },
+  };
+}
 
 export default async function CategoryPosts({
   params,

@@ -16,93 +16,29 @@ import { formatDate } from "@/lib/formatters";
 import SideBar from "../../components/side-bar";
 import { Suspense } from "react";
 
-type post = {
-  title: string;
-  image: string;
-  description: string | null;
-  date: string;
+type Props = {
+  params: { subCategory: string };
 };
-export const metadata: Metadata = {
-  title: "Visa Đức",
-  description: "Happy Book",
-};
-const categoryPosts: post[] = [
-  {
-    title: "Cập Nhật Bảng Giá Làm Visa Các Nước Uy Tín Chi Tiết Năm 2024",
-    image: "/posts/category-posts/1.png",
-    description:
-      "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Pháp",
-    image: "/posts/category-posts/2.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Canada",
-    image: "/posts/category-posts/3.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Hướng dẫn xin visa du lịch Canada tự túc đơn giản cho người mới ",
-    image: "/posts/category-posts/4.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Phí gia hạn visa Mỹ là bao nhiêu? Cập nhật thông tin mới nhất ",
-    image: "/posts/category-posts/5.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Canada",
-    image: "/posts/category-posts/6.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Dubai",
-    image: "/posts/category-posts/7.png",
-    description: "",
-    date: "22/08/2024",
-  },
-];
-const popopularPosts: post[] = [
-  {
-    title: "Vé Máy Bay Đi Trung Quốc",
-    image: "/posts/popular/1.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Chương Trình Định Cư Canada Theo Diện Tay Nghề Cao",
-    image: "/posts/popular/2.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ",
-    image: "/posts/popular/3.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Hướng Dẫn Chuẩn Bị Giấy Tờ Cần Chuẩn Bị Đặt Lịch Hẹn Visa Mỹ",
-    image: "/posts/popular/4.png",
-    description: "",
-    date: "22/08/2024",
-  },
-  {
-    title: "Làm Visa Pháp",
-    image: "/posts/popular/5.png",
-    description: "",
-    date: "22/08/2024",
-  },
-];
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const data = await fetchCategoryDetails(params.subCategory, {});
+  return {
+    title: data.category?.meta_title ?? data.category?.name,
+    description: data.category?.meta_description,
+    robots: data.category?.meta_robots,
+    keywords: data.category?.meta_keywords,
+    alternates: {
+      canonical: data.category?.canonical_link,
+    },
+    openGraph: {
+      images: [
+        {
+          url: data.category?.meta_image ?? "",
+          alt: data.category?.meta_title,
+        },
+      ],
+    },
+  };
+}
 export default async function SubCategoryPosts({
   params,
   searchParams,
@@ -110,10 +46,11 @@ export default async function SubCategoryPosts({
   params: { subCategory: string };
   searchParams: SearchParamsProps;
 }) {
-  const category = await fetchCategoryDetails(params.subCategory, searchParams);
-  const posts: PostType[] = category.news.data;
-  const totalPages: number = category.news.last_page;
-
+  const data = await fetchCategoryDetails(params.subCategory, searchParams);
+  const category = data.category;
+  const posts: PostType[] = data.news.data;
+  const totalPages: number = data.news.last_page;
+  const currentPage = parseInt(searchParams?.page || "1");
   return (
     <main className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
       <Breadcrumb className="pt-3">
@@ -137,7 +74,7 @@ export default async function SubCategoryPosts({
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="#" className="text-gray-900">
-                Làm VISA
+                {category.name}
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -198,12 +135,12 @@ export default async function SubCategoryPosts({
           {/* Paginate */}
           {totalPages > 1 && (
             <div className="my-8 pt-5 border-t-[1px] border-gray-200">
-              {/* <Pagination /> */}
+              <Pagination totalPages={totalPages} currentPage={currentPage} />
             </div>
           )}
         </div>
         {/* Side bar */}
-        <SideBar categories={[]} news={[]} />
+        <SideBar categories={data.relatedCategories} news={[]} />
       </div>
     </main>
   );
