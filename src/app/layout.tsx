@@ -24,14 +24,6 @@ export default function RootLayout({
       <head>
         {/* Meta */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-          property="og:url"
-          content="https://bed-happybook-client.onrender.com"
-        />
-        <meta
-          property="og:image"
-          content="https://bed-happybook-client.onrender.com/logo-footer.svg"
-        />
         <meta property="og:type" content="website" />
       </head>
       <body className={OpenSans.className}>

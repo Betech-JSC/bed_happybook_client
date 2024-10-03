@@ -8,6 +8,7 @@ export interface PostType {
   image_location: string;
   title: string;
   description: string;
+  toc: string;
   content: string;
   meta_title: string;
   meta_description: string;

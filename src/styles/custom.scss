@@ -15,3 +15,28 @@
     }
   }
 }
+.toc-container {
+  ul {
+    line-height: 1.8;
+    list-style-type: none;
+    counter-reset: item;
+    > li {
+      margin: 0;
+    }
+    li {
+      counter-increment: item;
+      ul {
+        margin-left: 20px;
+        counter-reset: item;
+      }
+      &:before {
+        content: counters(item, ".") ". ";
+        font-weight: bold;
+      }
+
+      ul {
+        counter-reset: item;
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Post from "@/styles/posts.module.scss";
+import "@/styles/custom.scss";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,6 +23,7 @@ import { Fragment } from "react";
 import { formatDate } from "@/lib/formatters";
 import SideBar from "../../components/side-bar";
 import { PostType, SearchParamsProps } from "@/types/post";
+import TableOfContents from "./components/table-content";
 
 type Props = {
   params: { slug: string };
@@ -35,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     robots: news?.meta_robots,
     keywords: news?.keywords,
     alternates: {
-      canonical: news?.canonical_link,
+      canonical: news?.canonical_link ?? `/tin-tuc/chi-tiet/${news?.alias}`,
     },
     openGraph: {
       images: [
@@ -61,7 +63,7 @@ export default async function Posts({
   }
   return (
     <main className="bg-white lg:pt-[132px] px-3 lg:px-[80px] pt-14 max__screen">
-      <div className="flex flex-col md:flex-row md:space-x-12 pt-3 mb-8">
+      <div className="flex flex-col md:flex-row md:space-x-12 pt-3 mb-8 mt-2">
         <div className="basis-full md:basis-[66%]">
           <Breadcrumb>
             <BreadcrumbList>
@@ -105,7 +107,7 @@ export default async function Posts({
                 src={detail.image_url + detail.image_location}
                 width={900}
                 height={470}
-                className="w-full lg-h[470px]"
+                className="max-w-full lg-h[470px]"
                 alt={detail.title}
               />
             </div>
@@ -115,8 +117,9 @@ export default async function Posts({
                 __html: detail.description,
               }}
             ></div>
+            <TableOfContents toc={detail.toc} />
             <div
-              className="post__detail_content"
+              className="post__detail_content md:max-w-[460px] lg:max-w-[820px]"
               dangerouslySetInnerHTML={{
                 __html: detail.content,
               }}

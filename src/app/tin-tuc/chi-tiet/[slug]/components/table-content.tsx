@@ -3,7 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const TableOfContents = () => {
+type Props = {
+  toc: string;
+};
+const TableOfContents = ({ toc }: Props) => {
   const [isOpen, setIsOpen] = useState(true);
   const icon = isOpen ? "close" : "menu-mb";
   const toggleMenu = () => {
@@ -18,8 +21,8 @@ const TableOfContents = () => {
   }, []);
   return (
     <div
-      className={`px-6 py-3 overflow-hidden mt-8 border-l-4 h-auto border-[#F27145] bg-gray-50 rounded-r-xl lg:w-[520px] transition-all duration-700 ease-in-out 
-        ${isOpen ? "max-h-96" : "max-h-12"}`}
+      className={`px-6 py-3 overflow-hidden my-8 border-l-4 h-auto border-[#F27145] bg-gray-50 rounded-r-xl lg:w-[520px] transition-all duration-700 ease-in-out 
+        ${isOpen ? "max-h-[600px]" : "max-h-12"}`}
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Mục lục</h2>
@@ -58,36 +61,11 @@ const TableOfContents = () => {
           </div>
         </div>
       </div>
-      <ul className="space-y-3 list-decimal px-6">
-        <li className="pl-2">
-          <Link
-            href="#visa-tham-than-duc-la-gi"
-            className="text-gray-900 text-base"
-          >
-            Visa thăm thân Đức là gì?
-          </Link>
-          <ul>
-            <li className="mt-3">
-              <Link href="#visa-tham-than-duc-co-thoi-han-bao-lau">
-                1.1 Visa thăm thân Đức có thời hạn bao lâu?
-              </Link>
-            </li>
-          </ul>
-        </li>
-        <li className="pl-2">
-          <Link
-            href="#thu-tuc-xin-visa-di-duc-tham-than"
-            className="text-gray-900 text-base"
-          >
-            Thủ tục xin visa đi Đức thăm thân
-          </Link>
-        </li>
-        <li className="pl-2">
-          <a href="#" className="text-gray-900 text-base">
-            Liên hệ làm visa Đức tại Happy Book qua
-          </a>
-        </li>
-      </ul>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: toc,
+        }}
+      ></div>
     </div>
   );
 };

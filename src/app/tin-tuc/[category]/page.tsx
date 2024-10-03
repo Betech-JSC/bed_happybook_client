@@ -28,7 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     robots: data.category?.meta_robots,
     keywords: data.category?.meta_keywords,
     alternates: {
-      canonical: data.category?.canonical_link,
+      canonical:
+        data.category?.canonical_link ?? `/tin-tuc/${data.category?.alias}`,
     },
     openGraph: {
       images: [

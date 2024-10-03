@@ -43,7 +43,7 @@ export default async function Posts() {
                 <h3
                   className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
                 >
-                  <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
+                  <Link href={`/tin-tuc/chi-tiet/${lastestPosts[0].alias}`}>
                     {lastestPosts[0].title ?? ""}
                   </Link>
                 </h3>
@@ -80,7 +80,7 @@ export default async function Posts() {
                         {item.category.name ?? ""}
                       </p>
                       <Link
-                        href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau"
+                        href={`/tin-tuc/chi-tiet/${item.alias}`}
                         className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
                       >
                         {item.title ?? ""}
