@@ -4,12 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "cms.happybooktravel.com",
+        hostname: process.env.NEXT_PUBLIC_HOSTNAME,
         port: "",
         pathname: "/**",
       },
     ],
   },
 };
-
 export default nextConfig;

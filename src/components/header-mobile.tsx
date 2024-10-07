@@ -152,6 +152,14 @@ export default function HeaderMobile() {
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Điều khoản sử dụng
             </p>
+            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+              <Link
+                href="/chinh-sach-bao-mat"
+                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              >
+                Chính sách bảo mật
+              </Link>
+            </p>
           </div>
         </div>
       </div>

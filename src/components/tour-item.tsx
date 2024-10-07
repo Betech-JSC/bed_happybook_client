@@ -8,8 +8,15 @@ export default function TourItem({
   duration = "",
   image = "",
   hot = 0,
-  vehicle = "fly",
+  vehicle = "",
 }) {
+  const vehicleIcon = ["AirplaneTilt-2", "bus"];
+  if (vehicle === "fly" || !vehicle) {
+    vehicleIcon.splice(1, 1);
+  } else if (vehicle === "bus") {
+    vehicleIcon.splice(0, 1);
+  }
+
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
@@ -51,12 +58,17 @@ export default function TourItem({
           <span>{duration}</span>
         </p>
         <div className="flex justify-between mt-[14px]">
-          <Image
-            src="/icon/AirplaneTilt-2.svg"
-            alt="Icon"
-            width={20}
-            height={20}
-          />
+          <div className="flex space-x-2">
+            {vehicleIcon.map((item, index) => (
+              <Image
+                key={index}
+                src={`/icon/${item}.svg`}
+                alt="Icon"
+                width={20}
+                height={20}
+              />
+            ))}
+          </div>
           <div>
             <span>chỉ từ</span>
             <span className="text-[#F27145] font-semibold text-base lg:text-xl">

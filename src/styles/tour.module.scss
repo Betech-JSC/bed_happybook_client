@@ -1,0 +1,29 @@
+.search_input {
+  @apply p-2 w-10/12 rounded-l-lg text-gray-500 h-16;
+  border: 1px solid #d0d5dd;
+  box-shadow: 0px 1px 2px 0px #1018280d;
+  outline: none;
+  text-indent: 42px;
+}
+.custom_checkbox {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #d0d5dd;
+  border-radius: 4px;
+  appearance: none;
+  background-color: #fff;
+  cursor: pointer;
+  &:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+  &:checked::before {
+    content: "✔";
+    display: block;
+    color: #fff;
+    font-size: 12px;
+    height: 12px;
+    text-align: center;
+  }
+}

@@ -19,6 +19,7 @@ export default function Header() {
     "/lien-he",
     "/dang-ky-ctv",
     "/tu-van-nhan-visa",
+    "/tour",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
@@ -199,9 +200,9 @@ export default function Header() {
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
           <nav className="flex h-[26px] space-x-8">
-            <a href="#" className={`${styles.header__menu_item}`}>
+            <Link href="/tour" className={`${styles.header__menu_item}`}>
               Tours
-            </a>
+            </Link>
             <a href="#" className={`${styles.header__menu_item}`}>
               Vé máy bay
             </a>
@@ -229,7 +230,7 @@ export default function Header() {
               isMenuOpen ? "[&>a]:max-h-12" : "[&>a]:max-h-0"
             }`}
             style={{
-              maxHeight: isMenuOpen ? "228px" : "0px ",
+              maxHeight: isMenuOpen ? "260px" : "0px ",
               opacity: isMenuOpen ? "1" : "0",
               zIndex: isMenuOpen ? "10" : "-1",
               transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
@@ -265,6 +266,13 @@ export default function Header() {
             <a href="#" className={styles.text_hover_default}>
               Điều khoản sử dụng
             </a>
+            <Link
+              href="/chinh-sach-bao-mat"
+              className={styles.text_hover_default}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              Chính sách bảo mật
+            </Link>
           </nav>
         </div>
       </div>

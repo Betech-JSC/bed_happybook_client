@@ -40,7 +40,7 @@ $color-blue-700: #2e90fa;
     }
   }
   &_sub_menu {
-    @apply flex flex-col transition-all lg:h-56 duration-500 ease-in-out 
+    @apply flex flex-col transition-all lg:h-72 duration-500 ease-in-out 
     border-gray-300 border-2 py-2 space-y-2 absolute right-0 w-[210px] 
     bg-white text-black px-4 rounded-sm [&>a]:duration-300 [&>a]:transition-all [&>a]:ease-in;
   }
