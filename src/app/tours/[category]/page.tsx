@@ -24,8 +24,8 @@ const dataSideBar: dataSideBarType = [
     title: "Điểm Khởi Hành",
     values: [
       { id: 1, title: "Từ Hà Nội" },
-      { id: 1, title: "Từ TP.HCM" },
-      { id: 1, title: "Từ Đà Nẵng" },
+      { id: 2, title: "Từ TP.HCM" },
+      { id: 3, title: "Từ Đà Nẵng" },
     ],
   },
   {

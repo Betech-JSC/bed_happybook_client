@@ -20,6 +20,7 @@ export default function Header() {
     "/dang-ky-ctv",
     "/tu-van-nhan-visa",
     "/tour",
+    "/visa",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
@@ -200,7 +201,11 @@ export default function Header() {
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
           <nav className="flex h-[26px] space-x-8">
-            <div className={`relative ${styles.header__menu_item}`}>
+            <div
+              className={clsx(`relative`, styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/tours"),
+              })}
+            >
               <Link href="/tours" className="py-4">
                 Tours
               </Link>
@@ -214,9 +219,14 @@ export default function Header() {
             <a href="#" className={`${styles.header__menu_item}`}>
               Vé máy bay
             </a>
-            <a href="#" className={`${styles.header__menu_item}`}>
+            <Link
+              href="/visa"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/visa"),
+              })}
+            >
               Visa
-            </a>
+            </Link>
             <a href="#" className={`${styles.header__menu_item}`}>
               Định cư
             </a>
