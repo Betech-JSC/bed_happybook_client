@@ -73,6 +73,40 @@ $color-blue-700: #2e90fa;
     }
   }
 }
+.header__menu_item {
+  &:hover .header__sub_menu_item {
+    color: #000;
+    max-height: 50px;
+    opacity: 1;
+    z-index: 10;
+    visibility: visible;
+    transform: translateY(0px);
+  }
+  .header__sub_menu_item {
+    @apply transition-all duration-300;
+    display: flex;
+    width: max-content;
+    left: -20px;
+    top: 40px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 14px 12px;
+    max-height: 0px;
+    opacity: 0;
+    z-index: -1;
+    transform: translateY(-10px);
+    visibility: hidden;
+    position: absolute;
+    & a {
+      margin: 0 12px;
+      &:hover {
+        @apply transition-colors duration-300 text-primary;
+      }
+    }
+  }
+}
+
 .header__menu_phone_contact {
   @extend .text_hover_default;
 }

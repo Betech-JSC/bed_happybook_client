@@ -200,9 +200,17 @@ export default function Header() {
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
           <nav className="flex h-[26px] space-x-8">
-            <Link href="/tour" className={`${styles.header__menu_item}`}>
-              Tours
-            </Link>
+            <div className={`relative ${styles.header__menu_item}`}>
+              <Link href="/tours" className="py-4">
+                Tours
+              </Link>
+              <div className={` ${styles.header__sub_menu_item}`}>
+                <Link href="/tours/tour-noi-dia">Tour Nội Địa</Link>
+                <Link href="/tours/tour-quoc-te">Tour Quốc Tế</Link>
+                <Link href="/tours/tour-du-thuyen">Tour Du Thuyền</Link>
+              </div>
+            </div>
+
             <a href="#" className={`${styles.header__menu_item}`}>
               Vé máy bay
             </a>

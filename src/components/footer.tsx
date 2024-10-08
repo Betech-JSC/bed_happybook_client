@@ -106,15 +106,24 @@ export default function Footer() {
               <p>
                 <strong>Dịch vụ</strong>
               </p>
-              <p className={`mt-4 ${styles.text_hover_default}`}>
+              <Link
+                href="/tours/tour-noi-dia"
+                className={`block mt-4 ${styles.text_hover_default}`}
+              >
                 Tour nội địa
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
+              </Link>
+              <Link
+                href="/tours/tour-quoc-te"
+                className={`block mt-3 ${styles.text_hover_default}`}
+              >
                 Tour quốc tế
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
+              </Link>
+              <Link
+                href="/tours/tour-du-thuyen"
+                className={`block mt-3 ${styles.text_hover_default}`}
+              >
                 Tour du thuyền
-              </p>
+              </Link>
               <p className={`mt-3 ${styles.text_hover_default}`}>
                 Vé máy bay nội địa
               </p>

@@ -263,7 +263,7 @@ export default function CategoryPosts({
                   <span>Sắp xếp</span>
                   <div className="w-40 bg-white border border-gray-200 rounded-lg">
                     <select
-                      className="px-4 py-2 rounded-lg w-[90%] outline-none"
+                      className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
                       name=""
                       id=""
                     >
@@ -280,7 +280,7 @@ export default function CategoryPosts({
                     className="flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 mt-4"
                   >
                     <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                      <Link href="/tour/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay">
+                      <Link href="/tours/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay">
                         <Image
                           className=" hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
                           src={`/tour/category/${item.image}.png`}
@@ -300,7 +300,7 @@ export default function CategoryPosts({
                     <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
                       <div>
                         <Link
-                          href="/tour/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay"
+                          href="/tours/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay"
                           className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                         >
                           {tour.title}
@@ -354,6 +354,29 @@ export default function CategoryPosts({
                   </div>
                 ))}
               </div>
+              <div className="mt-4 mb-8">
+                <button
+                  className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
+                justify-center items-center hover:border-primary"
+                >
+                  <span className="font-medium">Xem thêm</span>
+                  <svg
+                    className="group-hover:stroke-primary stroke-gray-700 duration-300"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 7.5L10 12.5L15 7.5"
+                      strokeWidth="1.66667"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
           {/* Section Before Footer */}
@@ -380,10 +403,13 @@ export default function CategoryPosts({
           </p>
           <Link
             href="#"
-            className="flex mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center"
+            className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center"
           >
-            <span className="font-medium">Xem thêm</span>
+            <span className="font-medium group-hover:text-primary duration-300">
+              Xem thêm
+            </span>
             <svg
+              className="group-hover:stroke-primary stroke-blue-700 duration-300"
               width="20"
               height="20"
               viewBox="0 0 20 20"
@@ -392,7 +418,6 @@ export default function CategoryPosts({
             >
               <path
                 d="M5 7.5L10 12.5L15 7.5"
-                stroke="#175CD3"
                 strokeWidth="1.66667"
                 strokeLinecap="round"
                 strokeLinejoin="round"

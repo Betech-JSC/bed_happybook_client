@@ -60,8 +60,8 @@ export default function FAQ() {
           className="pb-4 mb-6 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none border-b border-gray-200 cursor-pointer"
           onClick={() => toggleDropdown(item.id)}
         >
-          <div className="flex justify-between items-center">
-            <span className="font-18 font-semibold text-gray-900">
+          <div className="flex justify-between items-start">
+            <span className="font-18 font-semibold text-gray-900 max-w-[90%]">
               {item.question}
             </span>
             <button

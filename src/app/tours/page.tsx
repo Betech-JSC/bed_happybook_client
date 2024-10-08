@@ -174,7 +174,7 @@ export default function Tour() {
                 </h3>
               </div>
               <Link
-                href="/tour/noi-dia"
+                href="/tours/noi-dia"
                 className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
               >
                 <span className="text-[#175CD3] font-medium">Xem tất cả</span>

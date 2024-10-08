@@ -16,9 +16,9 @@ export default function Tabs() {
   const [currentTabWidth, setCurrentTabWidth] = useState(0);
   const tabContainerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [openDropdown, setOpenDropdown] = useState(1);
   const toggleDropdown = (id: number) => {
-    setOpenDropdown(openDropdown === id ? null : id);
+    setOpenDropdown(openDropdown === id ? 0 : id);
   };
 
   useEffect(() => {
@@ -96,149 +96,165 @@ export default function Tabs() {
           </div>
         )}
         {activeTab === 1 && (
-          <div className="bg-white rounded-2xl p-6">
-            <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <div className="bg-white rounded-2xl p-6 ">
+            <h3 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
               Lịch trình
             </h3>
-            <div
-              className="pb-4 mb-6 mt-4 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none border-b border-gray-200 cursor-pointer"
-              onClick={() => toggleDropdown(1)}
-            >
-              <div className="flex space-x-2 justify-between items-center">
-                <span className="font-18 font-semibold text-gray-900">
-                  Ngày 1: TP. Hồ Chí Minh - Tiền Giang - Bến Tre - Cần Thơ
-                </span>
-                <button
-                  className={`duration-300 ${
-                    openDropdown === 1 ? "rotate-180" : "rotate-0"
-                  }`}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+            <div className="border-l border-l-gray-300 pb-3">
+              <div className="cursor-pointer" onClick={() => toggleDropdown(1)}>
+                <div className="flex space-x-2 justify-between items-start">
+                  <div className="relative bottom-1">
+                    <span
+                      className={`absolute left-[-8px] top-1 bg-white  inline-block w-4 h-4 rounded-full border-2 ${
+                        openDropdown === 1
+                          ? "border-[#F27145]"
+                          : "border-[#4E6EB3]"
+                      }`}
+                    ></span>
+                    <div className={`ml-5 font-18 font-semibold text-gray-900`}>
+                      Ngày 1: TP. Hồ Chí Minh - Tiền Giang - Bến Tre - Cần Thơ
+                    </div>
+                  </div>
+                  <button
+                    className={`duration-300 ${
+                      openDropdown === 1 ? "rotate-180" : "rotate-0"
+                    }`}
                   >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="#175CD3"
-                      strokeWidth="1.66667"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div
-              className={`mt-3 transition-[max-height] ease-in-out duration-500 overflow-hidden 
-                ${openDropdown === 1 ? "max-h-[5000px]" : "max-h-0"}`}
-            >
-              <p className="font-semibold">Buổi sáng</p>
-              <p className="mt-4">
-                HDV và xe đón Quý khách tại điểm hẹn khu vực Quận 1 để khởi hành
-                đi Tiền Giang.
-              </p>
-              <p className="mt-4">
-                Đến Tiền Giang, đoàn xuống bến Tàu 30/04 bắt đầu hành trình du
-                lịch sông Tiền.
-              </p>
-              <p className="mt-4">
-                Tại đây, Quý khách sẽ được đến ngắm cảnh tại bốn Cù lao Long,
-                Lân, Qui, Phụng. Nơi đây được người dân gọi bằng cái tên mỹ miều
-                đó là &quot;tứ linh cồn&quot; nằm ngay sát nhau và được phù sa
-                màu mỡ bồi đắp hình thành nên. Bên cạnh đó, khi đến thăm sông
-                Tiền, Quý khách sẽ được tìm hiểu cách nuôi cá trên sông của
-                người dân, ngắm nhìn Cầu Rạch Miễu - cầu dây văng lớn thứ ba
-                được xây dựng ở đồng bằng sông Cửu Long.
-              </p>
-              <p className="mt-4">
-                Tiếp đó hành trình du lịch miền Tây, Quý khách di chuyển đến Cù
-                lao Thới Sơn thuộc Ấp Thới Hòa, Xã Thới Sơn hay còn được gọi là
-                cồn Lân có diện tích vô cùng lớn lên đến 1200 ha với cây xanh
-                bao trùm cùng hàng loạt sông, mương rạch chằng chịt mang lại
-                không khí vô cùng trong lành. Tới đây, Quý khách sẽ có cơ hội
-                tham quan vườn cây ăn trái, thưởng thức các loại trái cây theo
-                mùa, nghe đàn ca tài tử Nam Bộ và đến thăm trại nuôi ong mật,
-                thưởng thức trà mật ong chanh.
-              </p>
-              <p className="mt-4">
-                Sau khi tham quan, thuyền sẽ đưa Quý khách đến tỉnh Bến Tre vùng
-                đất trù phú với nhiều cảnh vật quyến rũ và thơ mộng. Tại đây,
-                đoàn di chuyển ghé thăm lò kẹo dừa đặc sản của Bến Tre, lò bánh
-                tráng ở xã Tân Thạch. Sau đó, đoàn có thể lên xe ngựa đi tham
-                quan đường làng xã Tân Thạch, tìm hiểu sống bình dị của người
-                dân xứ dừa.
-              </p>
-              <p className="mt-4">
-                Đến trưa, cả đoàn dùng cơm trưa với những món đặc trưng địa
-                phương.
-              </p>
-              <p className="mt-4 font-semibold">Buổi chiều</p>
-              <p className="mt-4">
-                Thuyền tiếp tục đưa Quý khách đến với Khu Du Lịch Cồn Phụng -
-                địa điểm không thể bỏ lỡ khi đến du lịch miền Tây, là cù lao nằm
-                giữa sông Tiền thơ mộng và bình yên. Tại đây, Quý khách sẽ được
-                tìm hiểu về sự tích Ông Đạo Dừa là người sáng lập Đạo Dừa, trải
-                nghiệm các trò chơi thú vị như câu cá sấu (chi phí tự túc), đi
-                cầu khỉ,…
-              </p>
-              <p className="mt-4">
-                Tiếp đó, đoàn trở lại thuyền về Mỹ Tho, khởi hành đi Cần Thơ.
-              </p>
-              <p className="mt-4">Buổi tối</p>
-              <p className="mt-4">
-                Đến Cần Thơ, đoàn khách dùng bữa tối và nhận phòng nghỉ ngơi
-                hoặc tự do khám phá thành phố về đêm.
-              </p>
-              <p className="mt-4">Bữa ăn: Bữa trưa / Bữa tối</p>
-              <div>
-                <Image
-                  src="/tour/detail/lich-trinh/image.png"
-                  width={800}
-                  height={380}
-                  alt="Image"
-                />
-                <p className="text-center">
-                  Cầu Rạch Miễu cầu dây văng lớn thứ ba tại đồng bằng sông Cửu
-                  Long
-                </p>
-              </div>
-            </div>
-            <div
-              className="pb-4 mb-6 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none border-b border-gray-200 cursor-pointer"
-              onClick={() => toggleDropdown(2)}
-            >
-              <div className="flex justify-between items-center">
-                <span className="font-18 font-semibold text-gray-900">
-                  Ngày 2:
-                </span>
-                <button
-                  className={`duration-300 ${
-                    openDropdown === 2 ? "rotate-180" : "rotate-0"
-                  }`}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="#175CD3"
-                      strokeWidth="1.66667"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 7.5L10 12.5L15 7.5"
+                        stroke="#175CD3"
+                        strokeWidth="1.66667"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div
-                className={`mt-3 transition-[max-height] ease-in-out duration-500 overflow-hidden  ${
-                  openDropdown === 2 ? "max-h-[200px]" : "max-h-0"
+                className={`mt-3 ml-5 transition-[max-height] ease-in-out duration-500 overflow-hidden border-b border-b-gray-200
+                ${openDropdown === 1 ? "max-h-[5000px] pb-4" : "max-h-0"}`}
+              >
+                <p className="font-semibold">Buổi sáng</p>
+                <p className="mt-4">
+                  HDV và xe đón Quý khách tại điểm hẹn khu vực Quận 1 để khởi
+                  hành đi Tiền Giang.
+                </p>
+                <p className="mt-4">
+                  Đến Tiền Giang, đoàn xuống bến Tàu 30/04 bắt đầu hành trình du
+                  lịch sông Tiền.
+                </p>
+                <p className="mt-4">
+                  Tại đây, Quý khách sẽ được đến ngắm cảnh tại bốn Cù lao Long,
+                  Lân, Qui, Phụng. Nơi đây được người dân gọi bằng cái tên mỹ
+                  miều đó là &quot;tứ linh cồn&quot; nằm ngay sát nhau và được
+                  phù sa màu mỡ bồi đắp hình thành nên. Bên cạnh đó, khi đến
+                  thăm sông Tiền, Quý khách sẽ được tìm hiểu cách nuôi cá trên
+                  sông của người dân, ngắm nhìn Cầu Rạch Miễu - cầu dây văng lớn
+                  thứ ba được xây dựng ở đồng bằng sông Cửu Long.
+                </p>
+                <p className="mt-4">
+                  Tiếp đó hành trình du lịch miền Tây, Quý khách di chuyển đến
+                  Cù lao Thới Sơn thuộc Ấp Thới Hòa, Xã Thới Sơn hay còn được
+                  gọi là cồn Lân có diện tích vô cùng lớn lên đến 1200 ha với
+                  cây xanh bao trùm cùng hàng loạt sông, mương rạch chằng chịt
+                  mang lại không khí vô cùng trong lành. Tới đây, Quý khách sẽ
+                  có cơ hội tham quan vườn cây ăn trái, thưởng thức các loại
+                  trái cây theo mùa, nghe đàn ca tài tử Nam Bộ và đến thăm trại
+                  nuôi ong mật, thưởng thức trà mật ong chanh.
+                </p>
+                <p className="mt-4">
+                  Sau khi tham quan, thuyền sẽ đưa Quý khách đến tỉnh Bến Tre
+                  vùng đất trù phú với nhiều cảnh vật quyến rũ và thơ mộng. Tại
+                  đây, đoàn di chuyển ghé thăm lò kẹo dừa đặc sản của Bến Tre,
+                  lò bánh tráng ở xã Tân Thạch. Sau đó, đoàn có thể lên xe ngựa
+                  đi tham quan đường làng xã Tân Thạch, tìm hiểu sống bình dị
+                  của người dân xứ dừa.
+                </p>
+                <p className="mt-4">
+                  Đến trưa, cả đoàn dùng cơm trưa với những món đặc trưng địa
+                  phương.
+                </p>
+                <p className="mt-4 font-semibold">Buổi chiều</p>
+                <p className="mt-4">
+                  Thuyền tiếp tục đưa Quý khách đến với Khu Du Lịch Cồn Phụng -
+                  địa điểm không thể bỏ lỡ khi đến du lịch miền Tây, là cù lao
+                  nằm giữa sông Tiền thơ mộng và bình yên. Tại đây, Quý khách sẽ
+                  được tìm hiểu về sự tích Ông Đạo Dừa là người sáng lập Đạo
+                  Dừa, trải nghiệm các trò chơi thú vị như câu cá sấu (chi phí
+                  tự túc), đi cầu khỉ,…
+                </p>
+                <p className="mt-4">
+                  Tiếp đó, đoàn trở lại thuyền về Mỹ Tho, khởi hành đi Cần Thơ.
+                </p>
+                <p className="mt-4">Buổi tối</p>
+                <p className="mt-4">
+                  Đến Cần Thơ, đoàn khách dùng bữa tối và nhận phòng nghỉ ngơi
+                  hoặc tự do khám phá thành phố về đêm.
+                </p>
+                <p className="mt-4">Bữa ăn: Bữa trưa / Bữa tối</p>
+                <div>
+                  <Image
+                    src="/tour/detail/lich-trinh/image.png"
+                    width={800}
+                    height={380}
+                    alt="Image"
+                  />
+                  <p className="text-center">
+                    Cầu Rạch Miễu cầu dây văng lớn thứ ba tại đồng bằng sông Cửu
+                    Long
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="border-l border-gray-300 pb-3">
+              <div className="cursor-pointer" onClick={() => toggleDropdown(2)}>
+                <div className="flex justify-between items-center">
+                  <div className="relative bottom-1">
+                    <span
+                      className={`absolute left-[-8px] top-1 bg-white  inline-block w-4 h-4 rounded-full border-2 ${
+                        openDropdown === 2
+                          ? "border-[#F27145]"
+                          : "border-[#4E6EB3]"
+                      }`}
+                    ></span>
+                    <div className={`ml-5 font-18 font-semibold text-gray-900`}>
+                      Ngày 2
+                    </div>
+                  </div>
+                  <button
+                    className={`duration-300 ${
+                      openDropdown === 2 ? "rotate-180" : "rotate-0"
+                    }`}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 7.5L10 12.5L15 7.5"
+                        stroke="#175CD3"
+                        strokeWidth="1.66667"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div
+                className={`mt-3 ml-5 transition-[max-height] ease-in-out duration-500 overflow-hidden border-b border-b-gray-200 ${
+                  openDropdown === 2 ? "max-h-[500px] " : "max-h-0"
                 }`}
               >
                 <p className="text-xl font-semibold">
@@ -246,39 +262,47 @@ export default function Tabs() {
                 </p>
               </div>
             </div>
-            <div
-              className="pb-4 mb-6 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none border-b border-gray-200 cursor-pointer"
-              onClick={() => toggleDropdown(3)}
-            >
-              <div className="flex justify-between items-center">
-                <span className="font-18 font-semibold text-gray-900">
-                  Ngày 3:
-                </span>
-                <button
-                  className={`duration-300 ${
-                    openDropdown === 3 ? "rotate-180" : "rotate-0"
-                  }`}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+            <div className="">
+              <div className="cursor-pointer" onClick={() => toggleDropdown(3)}>
+                <div className="flex justify-between items-center">
+                  <div className="relative bottom-1">
+                    <span
+                      className={`absolute left-[-8px] top-1 bg-white  inline-block w-4 h-4 rounded-full border-2 ${
+                        openDropdown === 3
+                          ? "border-[#F27145]"
+                          : "border-[#4E6EB3]"
+                      }`}
+                    ></span>
+                    <div className={`ml-5 font-18 font-semibold text-gray-900`}>
+                      Ngày 3
+                    </div>
+                  </div>
+                  <button
+                    className={`duration-300 ${
+                      openDropdown === 3 ? "rotate-180" : "rotate-0"
+                    }`}
                   >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="#175CD3"
-                      strokeWidth="1.66667"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 7.5L10 12.5L15 7.5"
+                        stroke="#175CD3"
+                        strokeWidth="1.66667"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div
-                className={`mt-3 transition-[max-height] ease-in-out duration-500 overflow-hidden  ${
-                  openDropdown === 3 ? "max-h-[200px]" : "max-h-0"
+                className={`mt-3 ml-5 transition-[max-height] ease-in-out duration-500 overflow-hidden  ${
+                  openDropdown === 3 ? "max-h-[500px]" : "max-h-0"
                 }`}
               >
                 <p className="text-xl font-semibold">

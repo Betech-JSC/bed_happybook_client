@@ -62,15 +62,27 @@ export default function HeaderMobile() {
             <p className="mt-3">
               <strong>Dịch vụ</strong>
             </p>
-            <p className="mt-4 cursor-pointer hover:text-[#F27145]">
+            <Link
+              href="/tours/tour-noi-dia"
+              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              className="block mt-4 cursor-pointer hover:text-[#F27145]"
+            >
               Tour nội địa
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            </Link>
+            <Link
+              href="/tours/tour-quoc-te"
+              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
               Tour quốc tế
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
+            </Link>
+            <Link
+              href="/tours/tour-du-thuyen"
+              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
               Tour du thuyền
-            </p>
+            </Link>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Vé máy bay nội địa
             </p>
