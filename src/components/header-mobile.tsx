@@ -100,7 +100,13 @@ export default function HeaderMobile() {
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Khách sạn
             </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">Combo</p>
+            <Link
+              href="/compo"
+              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              Combo
+            </Link>
           </div>
           <div className="mt-6">
             <p>
