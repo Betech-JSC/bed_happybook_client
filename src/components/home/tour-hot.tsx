@@ -8,6 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
 
 const tours = [
   {
@@ -80,7 +81,8 @@ export default function TourHot() {
             <div>
               <h3 className="text-[24px] lg:text-[32px] font-bold">Tour Hot</h3>
             </div>
-            <div
+            <Link
+              href="/tours/tour-noi-dia"
               className="hidden lg:flex bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3"
               style={{ transition: "0.3s" }}
             >
@@ -95,12 +97,15 @@ export default function TourHot() {
                 width={20}
                 height={20}
               />
-            </div>
+            </Link>
           </div>
           <p className="text-16 font-medium mt-3">
             Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
           </p>
-          <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
+          <Link
+            href="/tours/tour-noi-dia"
+            className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+          >
             <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
             <Image
               className=" hover:scale-110 ease-in duration-300"
@@ -109,7 +114,7 @@ export default function TourHot() {
               width={20}
               height={20}
             />
-          </div>
+          </Link>
           <div className="mt-8 w-full">
             <Carousel
               opts={{

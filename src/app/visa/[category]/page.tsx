@@ -235,7 +235,7 @@ export default function CategoryPosts({
                         <p className="line-through text-gray-500">
                           3.000.000 vnđ
                         </p>
-                        <p className="mt-2 text-xl text-primary font-bold">
+                        <p className="mt-2 text-xl text-primary font-semibold">
                           2.500.000 vnđ
                         </p>
                       </div>

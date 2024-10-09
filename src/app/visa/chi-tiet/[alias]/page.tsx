@@ -17,53 +17,36 @@ import {
 } from "@/components/ui/carousel";
 import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
+import QuestionAndAnswer from "@/components/QuestionAndAnswer";
 import ImageGallery from "../components/ImageGallery";
 import Tabs from "../components/Tabs";
-import QuestionAndAnswer from "@/components/QuestionAndAnswer";
-import TourItem from "@/components/tour-item";
+import VisaSteps from "@/components/home/visa-steps";
 
 export const metadata: Metadata = {
-  title:
-    "HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ (Tour bao gồm máy bay)",
+  title: "Dịch Vụ Hỗ Trợ Làm Thủ Tục Visa Nhật Bản",
   description: "Happy Book",
 };
-const tours = [
+
+const visa = [
   {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/1.png",
-    hot: 1,
+    title: "Visa Trung Quốc",
+    image: "/visa/1.png",
   },
   {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/2.png",
+    title: "Visa Đài Loan",
+    image: "/visa/2.png",
   },
   {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/3.png",
+    title: "Visa Nhật Bản",
+    image: "/visa/3.png",
   },
   {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/4.png",
-    vehicle: "aa",
+    title: "Visa Hàn Quốc",
+    image: "/visa/4.png",
   },
   {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/1.png",
+    title: "Visa Đài Loan",
+    image: "/visa/2.png",
   },
 ];
 
@@ -88,16 +71,16 @@ export default function CategoryPosts({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tour" className="text-blue-700">
-                    Tours
+                  <Link href="/visa" className="text-blue-700">
+                    Dịch vụ Visa
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tour/noi-dia" className="text-blue-700">
-                    Tours nội địa
+                  <Link href="/visa/visa-nhat-ban" className="text-blue-700">
+                    Visa Nhật Bản
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -105,8 +88,7 @@ export default function CategoryPosts({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="#" className="text-gray-700">
-                    HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ
-                    (Tour bao gồm máy bay)
+                    Dịch Vụ Hỗ Trợ Làm Thủ Tục Visa Nhật Bản
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -122,12 +104,11 @@ export default function CategoryPosts({
                 <QuestionAndAnswer />
               </div>
             </div>
-            <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
+            <div className="w-full lg:w-4/12 p-4 md:p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
                   <span className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ
-                    (Tour bao gồm máy bay)
+                    Dịch Vụ Hỗ Trợ Làm Thủ Tục Visa Nhật Bản
                   </span>
                   <div className="flex space-x-2 mt-2">
                     <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
@@ -171,10 +152,15 @@ export default function CategoryPosts({
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                  <p className="text-gray-500 line-through">8.004.927 vnđ</p>
-                  <p className="text-2xl text-primary font-bold mt-3">
-                    7.004.927 vnđ
+                  <p className="text-gray-500 line-through text-sm md:text-base">
+                    3.000.000 vnđ
                   </p>
+                  <div className="flex justify-between mt-3 items-end">
+                    <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
+                    <p className="text-base md:text-xl text-primary font-semibold">
+                      2.500.000 vnđ
+                    </p>
+                  </div>
                 </div>
                 <div className="mt-6">
                   <div className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center">
@@ -194,28 +180,92 @@ export default function CategoryPosts({
         </div>
       </div>
       <div>
+        <div>
+          <VisaSteps />
+        </div>
         <div className="bg-white">
           <div className="px-3 lg:px-[80px] max__screen">
-            <div className="mt-8 w-full">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-              >
-                <CarouselContent>
-                  {tours.map((tour, index) => (
-                    <CarouselItem
-                      key={index}
-                      className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                    >
-                      <TourItem {...tour} />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="hidden lg:inline-flex" />
-                <CarouselNext className="hidden lg:inline-flex" />
-              </Carousel>
+            <div className="mt-6">
+              <h3 className="text-2xl font-bold">Visa tương tự</h3>
+              <div className="mt-8">
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                >
+                  <CarouselContent>
+                    {visa.map((item, index) => (
+                      <CarouselItem
+                        key={index}
+                        className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+                      >
+                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                          <div className="overflow-hidden rounded-t-2xl	">
+                            <Image
+                              className="hover:scale-110 ease-in duration-300 cursor-pointer	"
+                              src={item.image}
+                              alt="Banner"
+                              width={200}
+                              height={160}
+                              sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                              style={{ height: "100%", width: "100%" }}
+                            />
+                          </div>
+                          <div className="py-3 px-4 lg:h-[72px] ">
+                            <p
+                              className={`text-base font-semibold line-clamp-2 text__default_hover`}
+                            >
+                              {item.title}
+                            </p>
+                          </div>
+                          <div className="text-end py-3 px-4 mt-2">
+                            <span className="text-[#F27145] font-semibold text-base lg:text-xl">
+                              800.000 vnđ
+                            </span>
+                          </div>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden lg:inline-flex" />
+                  <CarouselNext className="hidden lg:inline-flex" />
+                </Carousel>
+              </div>
+            </div>
+            {/* Blog */}
+            <div className="mt-8 rounded-2xl bg-gray-50 p-8">
+              <h3 className="text-2xl font-bold">
+                Trọn gói dịch vụ làm visa Nhật Bản cực kỳ đơn giản, chi phí hấp
+                dẫn
+              </h3>
+              <p className="mt-6 line-clamp-2">
+                Nếu bạn muốn đến Nhật Bản để du lịch, thăm thân hoặc công tác…
+                bạn cần có “giấy thông hành” chính là visa. Nhưng bạn lại lo
+                lắng, băn khoăn về thủ tục, lệ phí xin visa Nhật Bản. Hãy đến
+                với Lữ hành Việt Nam để đăng ký sử dụng dịch vụ làm visa Nhật
+                Bản trọn gói nhanh gọn và tiết kiệm.
+              </p>
+              <button className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center">
+                <span className="font-medium group-hover:text-primary duration-300">
+                  Xem thêm
+                </span>
+                <svg
+                  className="group-hover:stroke-primary stroke-blue-700 duration-300"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    strokeWidth="1.66667"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
             </div>
             {/* Faq */}
             <div className="my-8">

@@ -124,7 +124,7 @@ export default function Visa() {
                 </h3>
               </div>
               <Link
-                href="/visa/visa-duc"
+                href="/visa/visa-nhat-ban"
                 className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
                 style={{ transition: "0.3s" }}
               >
@@ -143,7 +143,10 @@ export default function Visa() {
             <p className="text-sm lg:text-16 font-medium mt-3">
               Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
             </p>
-            <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
+            <Link
+              href="/visa/visa-nhat-ban"
+              className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+            >
               <button className="text-[#175CD3] font-medium">
                 {" "}
                 Xem tất cả
@@ -155,7 +158,7 @@ export default function Visa() {
                 width={20}
                 height={20}
               />
-            </div>
+            </Link>
             <VisaItem tabs={tabs} />
           </div>
           <div className="mt-6">

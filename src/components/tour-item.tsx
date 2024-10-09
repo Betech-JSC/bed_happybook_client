@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
 
 export default function TourItem({
   category = "",
@@ -20,17 +21,19 @@ export default function TourItem({
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
-        <Image
-          className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
-          src={image}
-          alt="Banner"
-          width={200}
-          height={160}
-          sizes="(max-width: 768px) 100vw,
+        <Link href="/tours/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay">
+          <Image
+            className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
+            src={image}
+            alt="Banner"
+            width={200}
+            height={160}
+            sizes="(max-width: 768px) 100vw,
                   (max-width: 1200px) 50vw,
                   33vw"
-          style={{ height: "100%", width: "100%" }}
-        />
+            style={{ height: "100%", width: "100%" }}
+          />
+        </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
           <span>{category}</span>
         </div>
@@ -43,11 +46,12 @@ export default function TourItem({
         )}
       </div>
       <div className="py-3 px-4">
-        <p
+        <Link
+          href="/tours/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay"
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
           {title}
-        </p>
+        </Link>
         <p className="flex space-x-2 mt-2">
           <Image
             src="/icon/clock-check.svg"

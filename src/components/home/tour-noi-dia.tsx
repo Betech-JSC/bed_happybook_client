@@ -11,6 +11,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
 
 const tours = [
   {
@@ -84,7 +85,8 @@ export default function TourNoiDia() {
             <div>
               <h3 className="text-[32px] font-bold">Tour Nội địa</h3>
             </div>
-            <div
+            <Link
+              href="/tours/tour-noi-dia"
               className="flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
@@ -99,7 +101,7 @@ export default function TourNoiDia() {
                 width={20}
                 height={20}
               />
-            </div>
+            </Link>
           </div>
           <p className="text-16 font-medium mt-3">
             Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!

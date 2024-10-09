@@ -1,0 +1,76 @@
+"use client";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Thumbs } from "swiper/modules";
+import { useState } from "react";
+import Image from "next/image";
+import "swiper/css";
+import "swiper/css/thumbs";
+
+export default function ImageGallery() {
+  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+
+  const images = ["2.png", "3.png", "4.png", "5.png", "6.png", "7.png"];
+
+  return (
+    <div className="image-gallery">
+      <Swiper
+        spaceBetween={10}
+        thumbs={{ swiper: thumbsSwiper }}
+        modules={[Thumbs]}
+        className="main-swiper w-full h-[300px] md:h-[450px] rounded-lg"
+      >
+        {images.map((image, index) => (
+          <SwiperSlide key={index}>
+            <Image
+              className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
+              src={`/tour/detail/gallery/${image}`}
+              alt="Image"
+              width={845}
+              height={450}
+              sizes="100vw"
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      <div className="mt-3">
+        <Swiper
+          onSwiper={setThumbsSwiper}
+          slidesPerView={3}
+          spaceBetween={10}
+          breakpoints={{
+            1024: {
+              slidesPerView: 6,
+              spaceBetween: 10,
+              loop: true,
+            },
+            768: {
+              slidesPerView: 5,
+              spaceBetween: 10,
+              loop: true,
+            },
+            640: {
+              slidesPerView: 3,
+              spaceBetween: 20,
+              loop: true,
+            },
+          }}
+          watchSlidesProgress={true}
+          modules={[Thumbs]}
+          className="thumbs-swiper"
+        >
+          {images.map((image, index) => (
+            <SwiperSlide key={index} className="overflow-hidden rounded-lg">
+              <Image
+                className="cursor-pointer h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
+                src={`/visa-service/detail/gallery/thumb/${image}`}
+                alt="Image"
+                width={135}
+                height={120}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+    </div>
+  );
+}

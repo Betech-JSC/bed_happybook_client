@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
 
 const visa = [
   {
@@ -67,7 +68,8 @@ export default function VisaService() {
                 Dịch vụ Visa nổi bật
               </h3>
             </div>
-            <div
+            <Link
+              href="/visa"
               className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
@@ -82,12 +84,15 @@ export default function VisaService() {
                 width={20}
                 height={20}
               />
-            </div>
+            </Link>
           </div>
           <p className="text-sm lg:text-16 font-medium mt-3">
             Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
           </p>
-          <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
+          <Link
+            href="/visa"
+            className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+          >
             <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
             <Image
               className=" hover:scale-110 ease-in duration-300"
@@ -96,7 +101,7 @@ export default function VisaService() {
               width={20}
               height={20}
             />
-          </div>
+          </Link>
           {/* Tabs */}
           <div className="w-full mt-6">
             <div className="lg:space-x-3 mb-6 lg:mb-8">
@@ -139,9 +144,6 @@ export default function VisaService() {
                     align: "start",
                     loop: true,
                   }}
-                  // plugins={[plugin.current]}
-                  // onMouseEnter={plugin.current.stop}
-                  // onMouseLeave={plugin.current.reset}
                 >
                   <CarouselContent>
                     {visa.map((item, index) => (
@@ -151,22 +153,25 @@ export default function VisaService() {
                       >
                         <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
                           <div className="overflow-hidden rounded-t-2xl	">
-                            <Image
-                              className="hover:scale-110 ease-in duration-300 cursor-pointer	"
-                              src={item.image}
-                              alt="Banner"
-                              width={200}
-                              height={160}
-                              sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                              style={{ height: "100%", width: "100%" }}
-                            />
+                            <Link href="/visa/chi-tiet/visa-nhat-ban">
+                              <Image
+                                className="hover:scale-110 ease-in duration-300 cursor-pointer	"
+                                src={item.image}
+                                alt="Banner"
+                                width={200}
+                                height={160}
+                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                                style={{ height: "100%", width: "100%" }}
+                              />
+                            </Link>
                           </div>
                           <div className="py-3 px-4 lg:h-[72px] ">
-                            <p
+                            <Link
+                              href="/visa/chi-tiet/visa-nhat-ban"
                               className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
                             >
                               {item.title}
-                            </p>
+                            </Link>
                           </div>
                         </div>
                       </CarouselItem>

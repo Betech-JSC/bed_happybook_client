@@ -130,9 +130,12 @@ export default function Footer() {
               <p className={`mt-3 ${styles.text_hover_default}`}>
                 Vé máy bay quốc tế
               </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
+              <Link
+                href="/visa"
+                className={`block mt-3 ${styles.text_hover_default}`}
+              >
                 Dịch vụ làm Visa
-              </p>
+              </Link>
               <p className={`mt-3 ${styles.text_hover_default}`}>Định cư</p>
               <p className={`mt-3 ${styles.text_hover_default}`}>Khách sạn</p>
               <p className={`mt-3 ${styles.text_hover_default}`}>Combo</p>

@@ -13,7 +13,7 @@ import TourStyle from "@/styles/tour.module.scss";
 import FAQ from "@/components/FAQ";
 
 export const metadata: Metadata = {
-  title: "Tour",
+  title: "Tours",
   description: "Happy Book",
 };
 const tours = [
@@ -397,12 +397,12 @@ export default function Tour() {
                 bảo hành trình của bạn luôn trọn vẹn và thú vị.
               </span>
             </p>
-            <Link
-              href="#"
-              className="flex mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center"
-            >
-              <span className="font-medium">Xem thêm</span>
+            <button className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center">
+              <span className="font-medium group-hover:text-primary duration-300">
+                Xem thêm
+              </span>
               <svg
+                className="group-hover:stroke-primary stroke-blue-700 duration-300"
                 width="20"
                 height="20"
                 viewBox="0 0 20 20"
@@ -411,13 +411,12 @@ export default function Tour() {
               >
                 <path
                   d="M5 7.5L10 12.5L15 7.5"
-                  stroke="#175CD3"
                   strokeWidth="1.66667"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
               </svg>
-            </Link>
+            </button>
           </div>
           {/* Faq */}
           <div className="my-8">

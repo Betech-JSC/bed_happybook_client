@@ -12,6 +12,10 @@ import TourStyle from "@/styles/tour.module.scss";
 import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
 
+export const metadata: Metadata = {
+  title: "Tour Nội Địa",
+  description: "Happy Book",
+};
 type dataSideBarType = {
   title: string;
   values: {
