@@ -22,6 +22,7 @@ export default function Header() {
     "/tour",
     "/visa",
     "/compo",
+    "/dinh-cu",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
@@ -228,9 +229,14 @@ export default function Header() {
             >
               Visa
             </Link>
-            <a href="#" className={`${styles.header__menu_item}`}>
+            <Link
+              href="/dinh-cu"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/dinh-cu"),
+              })}
+            >
               Định cư
-            </a>
+            </Link>
             <a href="#" className={`${styles.header__menu_item}`}>
               Khách sạn
             </a>

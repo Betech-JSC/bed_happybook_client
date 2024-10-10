@@ -5,7 +5,7 @@ import TourItem from "@/components/tour-item";
 import FAQ from "@/components/FAQ";
 
 export const metadata: Metadata = {
-  title: "Combo du lịch nội địa",
+  title: "Combo du lịch",
   description: "Happy Book",
 };
 type tourItem = {

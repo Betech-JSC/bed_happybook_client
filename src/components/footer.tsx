@@ -136,9 +136,19 @@ export default function Footer() {
               >
                 Dịch vụ làm Visa
               </Link>
-              <p className={`mt-3 ${styles.text_hover_default}`}>Định cư</p>
+              <Link
+                href="/dinh-cu"
+                className={`block mt-3 ${styles.text_hover_default}`}
+              >
+                Định cư
+              </Link>
               <p className={`mt-3 ${styles.text_hover_default}`}>Khách sạn</p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>Combo</p>
+              <Link
+                href="/compo"
+                className={`block mt-3 ${styles.text_hover_default}`}
+              >
+                Combo
+              </Link>
             </div>
             <div>
               <p>
@@ -159,12 +169,6 @@ export default function Footer() {
               <p className={`mt-3 ${styles.text_hover_default} `}>
                 Điều khoản sử dụng
               </p>
-              <p className={`mt-3 ${styles.text_hover_default} `}>
-                Dịch vụ làm Visa
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default} `}>Định cư</p>
-              <p className={`mt-3 ${styles.text_hover_default} `}>Khách sạn</p>
-              <p className="mt-3 hover:text-[#F27145] cursor-pointer">Combo</p>
               <p className="mt-8">
                 <strong>Hình thức thanh toán</strong>
               </p>

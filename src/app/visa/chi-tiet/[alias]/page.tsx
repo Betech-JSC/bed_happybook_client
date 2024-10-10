@@ -110,45 +110,31 @@ export default function CategoryPosts({
                   <span className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
                     Dịch Vụ Hỗ Trợ Làm Thủ Tục Visa Nhật Bản
                   </span>
-                  <div className="flex space-x-2 mt-2">
-                    <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
-                      9.8
-                    </span>
-                    <span className="text-primary font-semibold">Xuất sắc</span>
-                    <span className="text-gray-500">234 đánh giá</span>
-                  </div>
-                  <div className="flex space-x-2 mt-6 items-center">
-                    <Image
-                      className="w-4 h-4"
-                      src="/icon/clock.svg"
-                      alt="Icon"
-                      width={18}
-                      height={18}
-                    />
-                    <span>2 ngày 1 đêm</span>
-                  </div>
-                  <div className="flex space-x-2 mt-3 items-center">
-                    <Image
-                      className="w-4 h-4"
-                      src="/icon/flag.svg"
-                      alt="Icon"
-                      width={18}
-                      height={18}
-                    />
-                    <span>Khởi hành từ Hồ Chí Minh Thứ 6, Thứ 7 hàng tuần</span>
-                  </div>
-                  <div className="flex space-x-2 mt-3 items-center">
-                    <Image
-                      className="w-4 h-4"
-                      src="/icon/marker-pin-01.svg"
-                      alt="Icon"
-                      width={18}
-                      height={18}
-                    />
-                    <span>
-                      Hồ Chí Minh - Cù lao Thới Sơn - Cồn Phụng - Chợ nổi Cái
-                      Răng
-                    </span>
+                  <div className="mt-6">
+                    <div>
+                      <span className="font-semibold">Mã visa:</span>{" "}
+                      <span>VS001</span>
+                    </div>
+                    <div className="mt-1">
+                      <span className="font-semibold">Loại Visa:</span>{" "}
+                      <span>Du lịch</span>
+                    </div>
+                    <div className="mt-1">
+                      <span className="font-semibold">Điểm Đến:</span>{" "}
+                      <span>Visa Nhật Bản</span>
+                    </div>
+                    <div className="mt-1">
+                      <span className="font-semibold">Thời gian làm Visa:</span>{" "}
+                      <span>10 ngày</span>
+                    </div>
+                    <div className="mt-1">
+                      <span className="font-semibold">Thời gian lưu trú:</span>{" "}
+                      <span>14 ngày</span>
+                    </div>
+                    <div className="mt-1">
+                      <span className="font-semibold">Số lần nhập cảnh:</span>{" "}
+                      <span>3 tháng 1 lần</span>
+                    </div>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">

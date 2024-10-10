@@ -96,7 +96,13 @@ export default function HeaderMobile() {
             >
               Dịch vụ làm Visa
             </Link>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">Định cư</p>
+            <Link
+              href="/dinh-cu"
+              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              Định cư
+            </Link>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Khách sạn
             </p>
