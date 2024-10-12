@@ -1,21 +1,11 @@
+import http from "@/lib/http";
 import { PostType, CategoryPostsType, SearchParamsProps } from "@/types/post";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
-const fetchNewsIndex = async ($locale = "vi"): Promise<any> => {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/news?locale=${$locale}`,
-      {
-        next: { revalidate: 0 },
-      }
-    );
-    const result = await response.json();
-    return result.data;
-  } catch (error) {
-    console.error("Error fetching news data:", error);
-    return [];
-  }
+const newsApi = {
+  fetchNewsIndex: (locale = "vi") =>
+    http.get<any>(`api/v1/news?locale=${locale}`, undefined, 3000),
 };
 
 const fetchNewsDetail = async (
@@ -75,7 +65,7 @@ const fetchCategoriesWithNews = async (): Promise<CategoryPostsType[]> => {
 };
 
 export {
-  fetchNewsIndex,
+  newsApi,
   fetchNewsDetail,
   fetchCategoryDetails,
   fetchCategoriesWithNews,

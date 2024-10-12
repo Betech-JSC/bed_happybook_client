@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import Link from "next/link";
+import FormContact from "./form";
 
 export const metadata: Metadata = {
   title: "Liên Hệ",
@@ -226,79 +226,7 @@ export default function Contact() {
               Bạn có thể gửi thông tin yêu cầu của mình qua mẫu liên hệ dưới
               đây, và chúng tôi sẽ phản hồi trong thời gian sớm nhất.
             </h3>
-            <div className="mt-3 rounded-xl">
-              <div className="relative">
-                <input
-                  id="serviceName"
-                  type="text"
-                  placeholder="Nhập tên dịch vụ"
-                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                />
-                <label
-                  htmlFor="serviceName"
-                  className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
-                >
-                  Tên dịch vụ <span className="text-red-500">*</span>
-                </label>
-              </div>
-              <div className="relative mt-4">
-                <input
-                  id="fullName"
-                  type="text"
-                  placeholder="Nhập họ và tên"
-                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                />
-                <label
-                  htmlFor="fullName"
-                  className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
-                >
-                  Họ và tên <span className="text-red-500">*</span>
-                </label>
-              </div>
-              <div className="mt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <input
-                      id="phone"
-                      type="text"
-                      placeholder="Nhập số điện thoại"
-                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                    />
-                    <label
-                      htmlFor="phone"
-                      className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
-                    >
-                      Số điện thoại <span className="text-red-500">*</span>
-                    </label>
-                  </div>
-                  <div className="relative">
-                    <input
-                      id="email"
-                      type="text"
-                      placeholder="Nhập email"
-                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                    />
-                    <label
-                      htmlFor="email"
-                      className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
-                    >
-                      Email <span className="text-red-500">*</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4">
-                <textarea
-                  name=""
-                  id=""
-                  placeholder="Hãy chia sẻ nhu cầu của bạn"
-                  className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
-                ></textarea>
-              </div>
-              <div className="mt-2 bg-blue-600 text-white py-2.5 rounded-lg text-center cursor-pointer text__default_hover">
-                <button>Gửi</button>
-              </div>
-            </div>
+            <FormContact />
           </div>
           {/* Iframe */}
           <div className="mt-8">

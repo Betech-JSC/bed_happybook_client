@@ -5,6 +5,8 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import HeaderMobile from "@/components/header-mobile";
 import BackToTopButton from "@/components/back-top-btn";
+import { Toaster } from "react-hot-toast";
+import { toastOptions } from "@/lib/toastConfig";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -30,6 +32,7 @@ export default function RootLayout({
         <Header></Header>
         <HeaderMobile></HeaderMobile>
         {children}
+        <Toaster toastOptions={toastOptions} />
         <BackToTopButton></BackToTopButton>
         <Footer></Footer>
       </body>

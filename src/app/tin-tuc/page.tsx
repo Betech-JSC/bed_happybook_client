@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Post from "@/styles/posts.module.scss";
-import { fetchNewsIndex } from "@/api/news";
+import { newsApi } from "@/api/news";
 import SideBar from "./components/side-bar";
 import { formatDate } from "@/lib/formatters";
 import { CategoryPostsType, PostType } from "@/types/post";
@@ -13,9 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Posts() {
-  const data = await fetchNewsIndex();
-  const lastestPosts: PostType[] = data.lastestPosts;
-  const categoriesWithPosts: CategoryPostsType[] = data.categoriesWithPosts;
+  const response = await newsApi.fetchNewsIndex();
+  const lastestPosts: PostType[] = response?.payload.data.lastestPosts ?? [];
+  const categoriesWithPosts: CategoryPostsType[] =
+    response?.payload.data.categoriesWithPosts ?? [];
   return (
     <main className="bg-white lg:pt-[132px] px-3 lg:px-[80px] pt-14 max__screen">
       {lastestPosts.length > 0 && (
