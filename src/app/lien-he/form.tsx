@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { Fragment } from "react";
 import LoadingButton from "@/components/LoadingButton";
+import { contactApi } from "@/api/contact";
 
 type FormData = ContactBodyType;
 
@@ -24,35 +25,36 @@ export default function FormContact() {
     resolver: zodResolver(ContactBody),
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     setLoading(true);
-    setTimeout(() => {
+    const respon = await contactApi.send(data);
+    setLoading(false);
+    if (respon?.status === 200) {
       reset();
-      setLoading(false);
       toast.dismiss();
       toast.success("Gửi thành công!");
-    }, 1000);
+    }
   };
   return (
     <Fragment>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-3 rounded-xl ">
         <div className="relative">
           <label
-            htmlFor="serviceName"
+            htmlFor="service"
             className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
           >
             Tên dịch vụ <span className="text-red-500">*</span>
           </label>
           <input
-            id="serviceName"
+            id="service"
             type="text"
             placeholder="Nhập tên dịch vụ"
             title="Nhập tên dịch vụ"
-            {...register("service_name")}
+            {...register("service")}
             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
           />
-          {errors.service_name && (
-            <p className="text-red-600">{errors.service_name.message}</p>
+          {errors.service && (
+            <p className="text-red-600">{errors.service.message}</p>
           )}
         </div>
         <div className="relative mt-4">
@@ -118,8 +120,7 @@ export default function FormContact() {
         </div>
         <div className="mt-4">
           <textarea
-            name=""
-            id=""
+            {...register("note")}
             placeholder="Hãy chia sẻ nhu cầu của bạn"
             className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
           ></textarea>

@@ -18,12 +18,13 @@ export const ContactBody = z.object({
     .regex(/^\d{10,11}$/, {
       message: "Số điện thoại không đúng định dạng",
     }),
-  service_name: z.string().trim().min(4, {
+  service: z.string().trim().min(4, {
     message: "Vui lòng điền thông tin này!",
   }),
   email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
     message: "Email không đúng định dạng",
   }),
+  note: z.string(),
 });
 
 export type ContactBodyType = z.infer<typeof ContactBody>;
