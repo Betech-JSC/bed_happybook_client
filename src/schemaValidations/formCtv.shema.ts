@@ -40,6 +40,7 @@ export const FormCtvBody = z.object({
   email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
     message: "Email không đúng định dạng",
   }),
+  required: z.string(),
 });
 
 export type FormCtvBodyType = z.infer<typeof FormCtvBody>;

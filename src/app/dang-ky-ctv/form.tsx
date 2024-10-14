@@ -11,12 +11,12 @@ import { Fragment } from "react";
 import LoadingButton from "@/components/LoadingButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import http from "@/lib/http";
 
 type FormData = FormCtvBodyType;
 
 export default function FormCtv() {
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const {
     register,
@@ -27,18 +27,16 @@ export default function FormCtv() {
   } = useForm<FormData>({
     resolver: zodResolver(FormCtvBody),
   });
-  const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
-  };
-  const onSubmit = (data: FormData) => {
+
+  const onSubmit = async (data: FormData) => {
     setLoading(true);
-    setTimeout(() => {
+    const response = await http.post<any>(`api/v1/register-collaborator`, data);
+    setLoading(false);
+    if (response?.status === 200) {
       reset();
-      setLoading(false);
       toast.dismiss();
       toast.success("Gửi thành công!");
-      console.log(data);
-    }, 1000);
+    }
   };
 
   return (
@@ -187,8 +185,7 @@ export default function FormCtv() {
         </div>
         <div className="mt-4">
           <textarea
-            name=""
-            id=""
+            {...register("required")}
             placeholder="Yêu Cầu Đặc Biệt"
             className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
           ></textarea>
