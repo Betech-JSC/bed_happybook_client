@@ -30,7 +30,6 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const news = await fetchNewsDetail(params.slug, {});
-
   return {
     title: news?.meta_title ?? news?.title,
     description: news?.meta_description,
@@ -42,7 +41,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       images: [
         {
-          url: news?.meta_image ?? "",
+          url: news?.meta_image
+            ? news.meta_image
+            : `${news?.image_url}${news?.image_location}`,
           alt: news?.meta_title,
         },
       ],
