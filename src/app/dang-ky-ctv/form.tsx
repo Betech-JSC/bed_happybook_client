@@ -48,7 +48,7 @@ export default function FormCtv() {
               htmlFor="full_name"
               className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Tên người đại diện
+              Tên người đại diện <span className="text-red-500">*</span>
             </label>
             <input
               id="full_name"
@@ -67,7 +67,7 @@ export default function FormCtv() {
                 htmlFor="phone"
                 className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
               >
-                Số điện thoại liên hệ
+                Số điện thoại liên hệ <span className="text-red-500">*</span>
               </label>
               <input
                 id="phone"
@@ -85,7 +85,7 @@ export default function FormCtv() {
                 htmlFor="email"
                 className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
               >
-                Email
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 id="email"
@@ -104,7 +104,7 @@ export default function FormCtv() {
               htmlFor="address"
               className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Địa chỉ liên hệ
+              Địa chỉ liên hệ <span className="text-red-500">*</span>
             </label>
             <input
               id="address"
@@ -124,7 +124,7 @@ export default function FormCtv() {
               htmlFor="ID"
               className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Số chứng minh thư
+              Số chứng minh thư <span className="text-red-500">*</span>
             </label>
             <input
               id="ID"
@@ -142,7 +142,7 @@ export default function FormCtv() {
               htmlFor="citizen_id_date"
               className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs z-10"
             >
-              Ngày cấp
+              Ngày cấp <span className="text-red-500">*</span>
             </label>
             <div className="w-full [&>div]:w-full">
               <Controller
@@ -169,7 +169,7 @@ export default function FormCtv() {
               htmlFor="issue_place"
               className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Nơi cấp
+              Nơi cấp <span className="text-red-500">*</span>
             </label>
             <input
               id="issue_place"
