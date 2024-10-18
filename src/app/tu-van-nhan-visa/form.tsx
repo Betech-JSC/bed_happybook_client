@@ -92,7 +92,7 @@ export default function VisaApplicationForm() {
                       <div className="flex space-x-3">
                         <input
                           type="radio"
-                          value={0}
+                          value={1}
                           id="is_visa_rejected_1"
                           {...register("is_visa_rejected")}
                         />
@@ -101,7 +101,7 @@ export default function VisaApplicationForm() {
                       <div className="flex space-x-3">
                         <input
                           type="radio"
-                          value={1}
+                          value={0}
                           id="is_visa_rejected_2"
                           {...register("is_visa_rejected")}
                         />

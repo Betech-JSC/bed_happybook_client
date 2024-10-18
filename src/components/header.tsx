@@ -16,6 +16,7 @@ export default function Header() {
   const excludePaths = [
     "/",
     "/dang-nhap",
+    "/dang-ky",
     "/lien-he",
     "/dang-ky-ctv",
     "/tu-van-nhan-visa",
