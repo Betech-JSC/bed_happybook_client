@@ -5,15 +5,13 @@ const nextConfig = {
       {
         protocol: process.env.NEXT_PUBLIC_PROTOCAL,
         hostname: process.env.NEXT_PUBLIC_HOSTNAME,
-        pathname: "/**",
-      },
-      {
-        protocol: process.env.NEXT_PUBLIC_PROTOCAL,
-        hostname: process.env.NEXT_PUBLIC_CDN_HOSTNAME,
-        port: process.env.NEXT_PUBLIC_PORT ?? "",
+        port: "",
         pathname: "/**",
       },
     ],
+    domains: [process.env.NEXT_PUBLIC_CDN_DOMAIN],
+    loader: "default",
+    path: process.env.NEXT_PUBLIC_CDN_URL,
   },
 };
 export default nextConfig;
