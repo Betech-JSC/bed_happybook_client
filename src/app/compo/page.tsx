@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import TourItem from "@/components/tour-item";
 import FAQ from "@/components/FAQ";
+import { getCdnUrl } from "@/utils/cdnHelper";
 
 export const metadata: Metadata = {
   title: "Combo du lịch",
@@ -47,7 +48,7 @@ export default function CompoTour() {
         <div className="absolute inset-0">
           <Image
             priority
-            src="/compo/bg-header.jpeg"
+            src={`${getCdnUrl("/compo/bg-header.jpeg")}`}
             width={1900}
             height={600}
             className="object-cover w-full h-full"
@@ -146,7 +147,7 @@ export default function CompoTour() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                 <div className="flex items-center space-x-3 h-20">
                   <Image
-                    src="/tour/adviser.svg"
+                    src={`${getCdnUrl("/tour/adviser.svg")}`}
                     alt="Icon"
                     className="h-11 w-11"
                     width={44}
