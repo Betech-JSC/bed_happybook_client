@@ -48,7 +48,7 @@ export default function CompoTour() {
         <div className="absolute inset-0">
           <Image
             priority
-            src={`${getCdnUrl("/compo/bg-header.jpeg")}`}
+            src={`/compo/bg-header.jpeg`}
             width={1900}
             height={600}
             className="object-cover w-full h-full"
