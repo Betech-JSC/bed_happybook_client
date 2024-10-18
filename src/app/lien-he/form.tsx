@@ -26,13 +26,18 @@ export default function FormContact() {
   });
 
   const onSubmit = async (data: FormData) => {
-    setLoading(true);
-    const respon = await contactApi.send(data);
-    setLoading(false);
-    if (respon?.status === 200) {
-      reset();
-      toast.dismiss();
-      toast.success("Gửi thành công!");
+    try {
+      setLoading(true);
+      const response = await contactApi.send(data);
+      if (response?.status === 200) {
+        reset();
+        toast.dismiss();
+        toast.success("Gửi thành công!");
+      }
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -41,7 +46,7 @@ export default function FormContact() {
         <div className="relative">
           <label
             htmlFor="service"
-            className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
           >
             Tên dịch vụ <span className="text-red-500">*</span>
           </label>
@@ -60,7 +65,7 @@ export default function FormContact() {
         <div className="relative mt-4">
           <label
             htmlFor="fullName"
-            className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
           >
             Họ và tên <span className="text-red-500">*</span>
           </label>
@@ -81,7 +86,7 @@ export default function FormContact() {
             <div className="relative">
               <label
                 htmlFor="phone"
-                className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+                className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
               >
                 Số điện thoại <span className="text-red-500">*</span>
               </label>

@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
 const newsApi = {
   fetchNewsIndex: (locale = "vi") =>
-    http.get<any>(`api/v1/news?locale=${locale}`, undefined, 3000),
+    http.get<any>(`news?locale=${locale}`, undefined, 3000),
 };
 
 const fetchNewsDetail = async (
@@ -14,7 +14,7 @@ const fetchNewsDetail = async (
 ): Promise<PostType | null> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/news/${slug}?locale=${searchParams.locale ?? ""}`,
+      `${API_BASE_URL}/news/${slug}?locale=${searchParams.locale ?? ""}`,
       {
         next: { revalidate: 0 },
       }
@@ -33,7 +33,7 @@ const fetchCategoryDetails = async (
 ): Promise<any> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/news/categoryDetail/${alias}?page=${
+      `${API_BASE_URL}/news/categoryDetail/${alias}?page=${
         searchParams.page ?? ""
       }&locale=${searchParams.locale ?? ""}`,
       {
@@ -50,12 +50,9 @@ const fetchCategoryDetails = async (
 
 const fetchCategoriesWithNews = async (): Promise<CategoryPostsType[]> => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/news/categories-with-news`,
-      {
-        next: { revalidate: 0 },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/news/categories-with-news`, {
+      next: { revalidate: 0 },
+    });
     const result = await response.json();
     return result.data;
   } catch (error) {

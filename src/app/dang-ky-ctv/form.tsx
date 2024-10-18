@@ -29,13 +29,18 @@ export default function FormCtv() {
   });
 
   const onSubmit = async (data: FormData) => {
-    setLoading(true);
-    const response = await http.post<any>(`api/v1/register-collaborator`, data);
-    setLoading(false);
-    if (response?.status === 200) {
-      reset();
-      toast.dismiss();
-      toast.success("Gửi thành công!");
+    try {
+      setLoading(true);
+      const response = await http.post<any>(`register-collaborator`, data);
+      if (response?.status === 200) {
+        reset();
+        toast.dismiss();
+        toast.success("Gửi thành công!");
+      }
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,7 +51,7 @@ export default function FormCtv() {
           <div className="relative">
             <label
               htmlFor="full_name"
-              className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+              className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
               Tên người đại diện <span className="text-red-500">*</span>
             </label>
@@ -65,7 +70,7 @@ export default function FormCtv() {
             <div className="relative">
               <label
                 htmlFor="phone"
-                className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+                className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
               >
                 Số điện thoại liên hệ <span className="text-red-500">*</span>
               </label>
@@ -83,7 +88,7 @@ export default function FormCtv() {
             <div className="relative">
               <label
                 htmlFor="email"
-                className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+                className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
               >
                 Email <span className="text-red-500">*</span>
               </label>
@@ -102,7 +107,7 @@ export default function FormCtv() {
           <div className="relative mt-3">
             <label
               htmlFor="address"
-              className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+              className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
               Địa chỉ liên hệ <span className="text-red-500">*</span>
             </label>
@@ -122,7 +127,7 @@ export default function FormCtv() {
           <div className="relative">
             <label
               htmlFor="ID"
-              className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+              className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
               Số chứng minh thư <span className="text-red-500">*</span>
             </label>
@@ -167,7 +172,7 @@ export default function FormCtv() {
           <div className="relative">
             <label
               htmlFor="issue_place"
-              className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+              className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
               Nơi cấp <span className="text-red-500">*</span>
             </label>
