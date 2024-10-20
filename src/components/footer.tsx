@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="basis-1/2">
             <div className="pb-12">
               <Image
-                src="/logo-footer.png"
+                src="/logo-footer.svg"
                 alt="Icon"
                 width={287}
                 height={72}

@@ -12,7 +12,7 @@ export default function Header() {
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
-  const logo = isSticky ? "/logo-2.svg" : "/logo.svg";
+  const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
   const excludePaths = [
     "/",
     "/dang-nhap",
@@ -24,6 +24,8 @@ export default function Header() {
     "/visa",
     "/compo",
     "/dinh-cu",
+    "/ve-may-bay",
+    "/ve-may-bay/tim-kiem",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
@@ -219,9 +221,14 @@ export default function Header() {
               </div>
             </div>
 
-            <a href="#" className={`${styles.header__menu_item}`}>
+            <Link
+              href="/ve-may-bay"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/ve-may-bay"),
+              })}
+            >
               Vé máy bay
-            </a>
+            </Link>
             <Link
               href="/visa"
               className={clsx(styles.header__menu_item, {

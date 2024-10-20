@@ -203,7 +203,7 @@ export default function CategoryPosts({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tour" className="text-blue-700">
+                  <Link href="/tours" className="text-blue-700">
                     Tours
                   </Link>
                 </BreadcrumbLink>
@@ -211,7 +211,7 @@ export default function CategoryPosts({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tour/noi-dia" className="text-gray-700">
+                  <Link href="/tours/noi-dia" className="text-gray-700">
                     Tours nội địa
                   </Link>
                 </BreadcrumbLink>
