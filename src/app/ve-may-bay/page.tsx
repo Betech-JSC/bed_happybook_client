@@ -12,6 +12,8 @@ import styles from "@/styles/styles.module.scss";
 import Image from "next/image";
 import FAQ from "@/components/FAQ";
 import Link from "next/link";
+import Search from "./components/Search";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Vé máy bay",
@@ -64,7 +66,7 @@ const tours = [
     type: 0,
   },
 ];
-export default function Home() {
+export default function AirlineTicket() {
   return (
     <Fragment>
       <div className="relative z-[0] h-max pb-12">
@@ -87,126 +89,9 @@ export default function Home() {
         ></div>
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-24 lg:mb-4 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-            <div>
-              <div className="grid grid-cols-2 gap-4 lg:flex lg:space-x-12 mb-4">
-                <label className="flex items-center space-x-2">
-                  <input type="radio" name="trip" className="form-radio" />
-                  <span className="text-black">Một chiều</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="radio" name="trip" className="form-radio" />
-                  <span className="text-black">Khứ hồi</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    name="cheap-tickets"
-                    className="form-checkbox"
-                  />
-                  <span className="text-black">Tìm vé rẻ</span>
-                </label>
-              </div>
-
-              <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
-                <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
-                  <div className="w-full md:w-1/2">
-                    <label className="block text-gray-700 mb-1">Từ</label>
-                    <div className="flex h-12 items-center border rounded-lg px-2">
-                      <Image
-                        src="/icon/AirplaneTakeoff.svg"
-                        alt="Icon"
-                        className="h-10"
-                        width={18}
-                        height={18}
-                      ></Image>
-                      <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                        <option>TP.Hồ Chí Minh</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="absolute right-0 md:right-[unset] top-[60%] md:top-3/4 md:left-[48%] md:-translate-x-[48%] -translate-y-3/4">
-                    <button className="border border-gray-300 p-2 rounded-full bg-white">
-                      <Image
-                        src="/icon/switch-horizontal.svg"
-                        alt="Icon"
-                        className="h-5"
-                        width={20}
-                        height={20}
-                      ></Image>
-                    </button>
-                  </div>
-                  <div className="w-full md:w-1/2">
-                    <label className="block text-gray-700 mb-1">Đến</label>
-                    <div className="flex h-12 items-center border rounded-lg px-2 pl-6">
-                      <Image
-                        src="/icon/AirplaneLanding.svg"
-                        alt="Icon"
-                        className="h-10"
-                        width={18}
-                        height={18}
-                      />
-                      <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                        <option>Hà Nội</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full lg:w-[22.5%]">
-                  <label className="block text-gray-700 mb-1">Ngày đi</label>
-                  <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
-                    <div className="flex items-center	w-full">
-                      <Image
-                        src="/icon/calendar.svg"
-                        alt="Icon"
-                        className="h-10"
-                        width={18}
-                        height={18}
-                      ></Image>
-                      <span>14/08/2024</span>
-                    </div>
-                    <div className="block md:hidden border-t border-black w-1/2"></div>
-                    <div>
-                      <span> 22/08/2024</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-full lg:w-[20%]">
-                  <label className="block text-gray-700 mb-1">
-                    Số lượng khách
-                  </label>
-                  <div className="flex items-center border rounded-lg px-2 h-12">
-                    <Image
-                      src="/icon/user-circle.svg"
-                      alt="Icon"
-                      className="h-10"
-                      width={18}
-                      height={18}
-                    ></Image>
-                    <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                      <option>1 người lớn</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="w-full lg:w-[15%]">
-                  <label className="block text-gray-700 mb-1 h-6"></label>
-                  <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
-                    <Image
-                      src="/icon/search.svg"
-                      alt="Icon"
-                      className="h-10 inline-block"
-                      width={18}
-                      height={18}
-                      style={{ width: 18, height: 18 }}
-                    />
-                    <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
-                      Tìm kiếm
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Suspense>
+              <Search />
+            </Suspense>
           </div>
         </div>
       </div>
