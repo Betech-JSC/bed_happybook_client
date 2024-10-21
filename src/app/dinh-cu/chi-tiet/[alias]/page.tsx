@@ -39,7 +39,7 @@ export default function SettleDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tour" className="text-blue-700">
+                  <Link href="/dinh-cu" className="text-blue-700">
                     Định cư
                   </Link>
                 </BreadcrumbLink>
@@ -47,7 +47,7 @@ export default function SettleDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tour/noi-dia" className="text-blue-700">
+                  <Link href="/dinh-cu/dinh-cu-my" className="text-blue-700">
                     Định cư Mỹ
                   </Link>
                 </BreadcrumbLink>

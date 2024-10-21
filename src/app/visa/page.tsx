@@ -4,7 +4,6 @@ import Link from "next/link";
 import VisaStyle from "@/styles/visaService.module.scss";
 import VisaItem from "./component/VisaItem";
 import TravelGuide from "./component/TravelGuide";
-import TouristSuggest from "./component/TouristSuggest";
 import VisaSteps from "@/components/home/visa-steps";
 
 export const metadata: Metadata = {
@@ -163,9 +162,6 @@ export default function Visa() {
           </div>
           <div className="mt-6">
             <TravelGuide />
-          </div>
-          <div className="mt-6">
-            <TouristSuggest />
           </div>
           <div className="mt-6">
             <div className="flex justify-between">

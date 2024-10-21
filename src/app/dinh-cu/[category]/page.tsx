@@ -12,7 +12,7 @@ import PostsItem from "../components/PostsItem";
 import FormContact from "../components/FormContact";
 
 export const metadata: Metadata = {
-  title: "Dịch vụ định cư",
+  title: "Dịch vụ định cư Mỹ",
   description: "Happy Book",
 };
 const arrPosts = [
