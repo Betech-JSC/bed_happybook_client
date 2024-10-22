@@ -1,50 +1,13 @@
 "use client";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Image from "next/image";
 
 export default function SearchMobile() {
   const [activeTabMb, setActiveTabMb] = useState(0);
   return (
-    <div className="mt-4 h-[828px]">
-      <div className="absolute inset-0 h-[828px]">
-        <Image
-          priority
-          src="/bg-image.png"
-          width={500}
-          height={584}
-          className="object-cover w-full h-full"
-          alt="Background"
-        />
-      </div>
-      <div
-        className="absolute w-full h-[828px]"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-        }}
-      ></div>
+    <Fragment>
       <div className="relative z-[1]">
-        <h3 className="pt-8 text-xl lg:text-2xl font-bold text-center text-white">
-          Bắt đầu hành trình với HappyBook
-        </h3>
         {/* Search Bar */}
-        <div className="flex items-center px-3 my-4">
-          <input
-            type="text"
-            placeholder="Tìm theo điểm đến, hoạt động"
-            className="p-2 w-full rounded-l-lg text-gray-700 h-12"
-          />
-          <button className="bg-blue-500 px-3 rounded-r-lg w-12 h-12">
-            <Image
-              src="/icon/search.svg"
-              alt="Search icon"
-              className="h-10"
-              width={20}
-              height={20}
-              style={{ width: 20, height: 20 }}
-            />
-          </button>
-        </div>
         <div className="grid grid-cols-4 gap-2 my-4 px-3">
           <div
             onClick={() => setActiveTabMb(0)}
@@ -441,6 +404,6 @@ export default function SearchMobile() {
           </div>
         </div>
       </div>
-    </div>
+    </Fragment>
   );
 }

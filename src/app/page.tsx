@@ -15,7 +15,6 @@ import Flight from "@/components/home/flight";
 import AosAnimate from "@/components/aos-animate";
 import FooterMenu from "@/components/footer-menu";
 import Search from "@/components/search";
-import SearchMobile from "@/components/search-mobile";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -27,9 +26,6 @@ export default function Home() {
   return (
     <Fragment>
       <Search />
-      <div className="mt-[68px] block lg:hidden">
-        <SearchMobile />
-      </div>
       <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
         <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
           <Banner></Banner>
