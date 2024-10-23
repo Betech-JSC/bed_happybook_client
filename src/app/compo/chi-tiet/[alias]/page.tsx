@@ -177,11 +177,14 @@ export default function CompoDetail({
                   <p className="text-blue-700 mt-3">+ 40 điểm</p>
                 </div>
                 <div className="mt-6">
-                  <div className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center">
-                    <button className="mx-auto text-base font-medium">
+                  <Link
+                    href="/compo/checkout"
+                    className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
+                  >
+                    <span className="block mx-auto text-base font-medium">
                       Yêu cầu đặt
-                    </button>
-                  </div>
+                    </span>
+                  </Link>
                 </div>
               </div>
             </div>
