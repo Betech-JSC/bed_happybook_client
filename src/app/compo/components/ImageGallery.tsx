@@ -23,7 +23,7 @@ export default function ImageGallery() {
           <SwiperSlide key={index}>
             <Image
               className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
-              src={`/tour/detail/gallery/${image}`}
+              src={`/compo/detail/gallery/${image}`}
               alt="Image"
               width={845}
               height={450}
@@ -62,7 +62,7 @@ export default function ImageGallery() {
             <SwiperSlide key={index} className="overflow-hidden rounded-lg">
               <Image
                 className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
-                src={`/visa-service/detail/gallery/thumb/${image}`}
+                src={`/compo/detail/gallery/thumb/${image}`}
                 alt="Image"
                 width={135}
                 height={120}

@@ -1,9 +1,16 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
-import TourItem from "@/components/tour-item";
 import FAQ from "@/components/FAQ";
-import { getCdnUrl } from "@/utils/cdnHelper";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import CompoItem from "@/components/CompoItem";
+import Search from "./components/Search";
 
 export const metadata: Metadata = {
   title: "Combo du lịch",
@@ -40,11 +47,33 @@ for (var i = 1; i < 15; i++) {
   tourItem.image = `/compo/tours/${i}.png`;
   arrTours.push(tourItem);
 }
-
+const compoHot = [
+  {
+    title: "Côn đảo",
+  },
+  {
+    title: "Phan Thiết",
+  },
+  {
+    title: "Nha Trang",
+  },
+  {
+    title: "Quy Nhơn",
+  },
+  {
+    title: "Côn đảo",
+  },
+  {
+    title: "Phan Thiết",
+  },
+  {
+    title: "Nha Trang",
+  },
+];
 export default function CompoTour() {
   return (
     <main>
-      <div className="relative h-[400px] lg:h-[500px]">
+      <div className="relative h-fit lg:h-[500px]">
         <div className="absolute inset-0">
           <Image
             priority
@@ -63,16 +92,54 @@ export default function CompoTour() {
           }}
         ></div>
         {/* Search */}
-        <div className="base__content h-full relative place-content-center">
-          <span className="text-32 font-bold text-white mb-6 block">
-            Combo du lịch
-          </span>
+        <div className="py-5">
+          <Search />
         </div>
       </div>
       <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           {/* Tours */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div className="w-full">
+            <h3 className="text-32 font-bold">Khám phá các điểm đến HOT</h3>
+            <div className="mt-8 overflow-hidden">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {compoHot.map((item, index) => (
+                    <CarouselItem
+                      key={index}
+                      className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
+                    >
+                      <div className="overflow-hidden rounded-lg relative">
+                        <Link href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang">
+                          <Image
+                            src={`/compo/hot/${index + 1}.png`}
+                            width={365}
+                            height={245}
+                            className=" h-56 rounded-lg hover:scale-110 ease-in duration-300"
+                            sizes="100vw"
+                            alt="Image"
+                          />
+                        </Link>
+                        <div className="absolute bottom-3 left-2 text-white px-3 py-1">
+                          <Link href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang">
+                            <span>{item.title}</span>
+                          </Link>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
             <h3 className="text-32 font-bold">Combo du lịch nội địa</h3>
             <div className="flex my-4 md:my-0 space-x-3 items-center">
               <span>Sắp xếp</span>
@@ -91,49 +158,9 @@ export default function CompoTour() {
           <div className="mt-8 grid md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
             {arrTours.map((tour, index) => (
               <div key={index}>
-                <TourItem {...tour} />
+                <CompoItem {...tour} />
               </div>
             ))}
-          </div>
-
-          {/* Blog */}
-          <div className="mt-8 rounded-2xl bg-gray-50 p-8">
-            <h3 className="text-2xl font-bold">
-              Tour Trong Nước - Khám Phá Vẻ Đẹp Việt Nam
-            </h3>
-            <p className="mt-6 line-clamp-3	">
-              Việt Nam, với thiên nhiên hùng vĩ và văn hóa đa dạng, là điểm đến
-              lý tưởng cho những chuyến tour trong nước. Từ núi rừng Tây Bắc
-              hùng vĩ, đồng bằng sông Cửu Long mênh mông, đến bãi biển miền
-              Trung tuyệt đẹp, mỗi vùng đất đều mang đến trải nghiệm đáng nhớ.
-              <span className="block mt-4">
-                Khi lựa chọn tour du lịch trong nước cùng HappyBook, bạn sẽ được
-                khám phá các địa điểm nổi tiếng như Hà Nội cổ kính, Đà Nẵng năng
-                động, Nha Trang biển xanh, hay Phú Quốc thiên đường nhiệt đới.
-                Ngoài ra, các dịch vụ hỗ trợ chuyên nghiệp của chúng tôi sẽ đảm
-                bảo hành trình của bạn luôn trọn vẹn và thú vị.
-              </span>
-            </p>
-            <button className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center">
-              <span className="font-medium group-hover:text-primary duration-300">
-                Xem thêm
-              </span>
-              <svg
-                className="group-hover:stroke-primary stroke-blue-700 duration-300"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M5 7.5L10 12.5L15 7.5"
-                  strokeWidth="1.66667"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
           </div>
           {/* Faq */}
           <div className="my-8">
@@ -147,7 +174,7 @@ export default function CompoTour() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                 <div className="flex items-center space-x-3 h-20">
                   <Image
-                    src={`${getCdnUrl("/tour/adviser.svg")}`}
+                    src="/tour/adviser.svg"
                     alt="Icon"
                     className="h-11 w-11"
                     width={44}

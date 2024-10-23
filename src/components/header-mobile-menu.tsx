@@ -2,7 +2,9 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 export default function HeaderMobileMenu() {
+  const pathname = usePathname();
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
   const [menuHeight, setMenuHeight] = useState("0px");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -15,6 +17,9 @@ export default function HeaderMobileMenu() {
       }
     }
   }, [isMenuMbOpen]);
+  useEffect(() => {
+    setIsMenuMbOpen(false);
+  }, [pathname]);
   return (
     <Fragment>
       <div
@@ -45,21 +50,18 @@ export default function HeaderMobileMenu() {
             </p>
             <Link
               href="/tours/tour-noi-dia"
-              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
               className="block mt-4 cursor-pointer hover:text-[#F27145]"
             >
               Tour nội địa
             </Link>
             <Link
               href="/tours/tour-quoc-te"
-              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
               Tour quốc tế
             </Link>
             <Link
               href="/tours/tour-du-thuyen"
-              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
               Tour du thuyền
@@ -72,14 +74,12 @@ export default function HeaderMobileMenu() {
             </p>
             <Link
               href="/visa"
-              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
               Dịch vụ làm Visa
             </Link>
             <Link
               href="/dinh-cu"
-              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
               Định cư
@@ -89,7 +89,6 @@ export default function HeaderMobileMenu() {
             </p>
             <Link
               href="/compo"
-              onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
               Combo
@@ -100,36 +99,16 @@ export default function HeaderMobileMenu() {
               <strong>Về Happy Book</strong>
             </p>
             <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link
-                href="/ve-chung-toi"
-                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-              >
-                Về chúng tôi
-              </Link>
+              <Link href="/ve-chung-toi">Về chúng tôi</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link
-                href="/tin-tuc"
-                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-              >
-                Tin tức
-              </Link>
+              <Link href="/tin-tuc">Tin tức</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link
-                href="/lien-he"
-                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-              >
-                Liên hệ chúng tôi
-              </Link>
+              <Link href="/lien-he">Liên hệ chúng tôi</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link
-                href="/dang-ky-ctv"
-                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-              >
-                Đăng ký CTV
-              </Link>
+              <Link href="/dang-ky-ctv">Đăng ký CTV</Link>
             </p>
           </div>
           <div className="my-6">
@@ -137,20 +116,10 @@ export default function HeaderMobileMenu() {
               <strong>Khác</strong>
             </p>
             <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link
-                href="/tu-van-nhan-visa"
-                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-              >
-                Tư vấn visa
-              </Link>
+              <Link href="/tu-van-nhan-visa">Tư vấn visa</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link
-                href="/huong-dan-thanh-toan"
-                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-              >
-                Hướng dẫn thanh toán
-              </Link>
+              <Link href="/huong-dan-thanh-toan">Hướng dẫn thanh toán</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Hướng dẫn đặt vé
@@ -162,12 +131,7 @@ export default function HeaderMobileMenu() {
               Điều khoản sử dụng
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link
-                href="/chinh-sach-bao-mat"
-                onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-              >
-                Chính sách bảo mật
-              </Link>
+              <Link href="/chinh-sach-bao-mat">Chính sách bảo mật</Link>
             </p>
           </div>
         </div>

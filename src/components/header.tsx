@@ -251,7 +251,7 @@ export default function Header() {
             <Link
               href="/compo"
               className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname == "/compo",
+                [styles.active]: pathname.startsWith("/compo"),
               })}
             >
               Combo

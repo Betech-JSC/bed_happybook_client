@@ -61,7 +61,7 @@ export default function ImageGallery() {
           {images.map((image, index) => (
             <SwiperSlide key={index} className="overflow-hidden rounded-lg">
               <Image
-                className="cursor-pointer h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
+                className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
                 src={`/tour/detail/gallery/thumb/${image}`}
                 alt="Image"
                 width={135}
