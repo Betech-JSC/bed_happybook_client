@@ -26,6 +26,8 @@ export default function Header() {
     "/dinh-cu",
     "/ve-may-bay",
     "/ve-may-bay/tim-kiem",
+    "/khach-san",
+    "/khach-san/tim-kiem",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
@@ -245,9 +247,14 @@ export default function Header() {
             >
               Định cư
             </Link>
-            <a href="#" className={`${styles.header__menu_item}`}>
+            <Link
+              href="/khach-san"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/khach-san"),
+              })}
+            >
               Khách sạn
-            </a>
+            </Link>
             <Link
               href="/compo"
               className={clsx(styles.header__menu_item, {
