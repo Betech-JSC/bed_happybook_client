@@ -14,20 +14,25 @@ export default function HotelItem({ hotel }: Props) {
       <div className="flex flex-col justify-between h-full">
         <div>
           <div className="overflow-hidden rounded-t-2xl relative h-52">
-            <Image
-              className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
-              src={hotel.image}
-              alt="Image"
-              width={310}
-              height={224}
-            />
+            <Link href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi">
+              <Image
+                className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
+                src={hotel.image}
+                alt="Image"
+                width={310}
+                height={224}
+              />
+            </Link>
             <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#F27145] rounded-tr-3xl">
               <span>Tiết kiệm {hotel.discountPercent}%</span>
             </div>
           </div>
-          <div className="text-base font-semibold line-clamp-2 text__default_hover mt-3 px-4">
+          <Link
+            href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
+            className="block text-base font-semibold line-clamp-2 text__default_hover mt-3 px-4"
+          >
             {hotel.title}
-          </div>
+          </Link>
         </div>
         <div className="mt-2 px-4">
           <div className="flex">

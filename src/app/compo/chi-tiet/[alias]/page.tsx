@@ -22,8 +22,7 @@ import Hotel from "../../components/Hotel";
 import CompoItem from "@/components/CompoItem";
 
 export const metadata: Metadata = {
-  title:
-    "HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ (Tour bao gồm máy bay)",
+  title: "Combo 3N2Đ Vinpearl Resort Nha Trang 5 sao + Vé máy bay",
   description: "Happy Book",
 };
 const tours = [
@@ -66,7 +65,7 @@ const tours = [
   },
 ];
 
-export default function CategoryPosts({
+export default function CompoDetail({
   params,
 }: {
   params: { category: string };

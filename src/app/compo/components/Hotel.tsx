@@ -71,7 +71,10 @@ export default function Hotel() {
           <div key={index} className="bg-white rounded-xl">
             <div className="p-3 flex flex-col justify-between h-full">
               <div className="flex-grow">
-                <div className="overflow-hidden rounded-xl">
+                <Link
+                  href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
+                  className="block overflow-hidden rounded-xl"
+                >
                   <Image
                     className="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300"
                     src={`/compo/detail/hotel/1.png`}
@@ -79,10 +82,13 @@ export default function Hotel() {
                     width={416}
                     height={256}
                   />
-                </div>
-                <p className="mt-2 text-18 font-semibold line-clamp-3">
+                </Link>
+                <Link
+                  href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
+                  className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
+                >
                   {item.title}
-                </p>
+                </Link>
                 <div className="mt-3 p-2 rounded-lg bg-gray-100">
                   <p className="">Bữa sáng miễn phí</p>
                   <p className="mt-3">Miễn phí WiFi</p>

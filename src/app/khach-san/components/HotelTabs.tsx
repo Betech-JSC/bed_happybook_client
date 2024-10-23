@@ -26,8 +26,7 @@ const hotels = [
     discountPercent: 22,
   },
   {
-    title:
-      "Livotel Hotel Lat Phrao Bangkok Livotel Hotel Lat Phrao Bangkok Livotel Hotel Lat Phrao Bangkok",
+    title: "Livotel Hotel Lat Phrao Bangkok",
     image: "/hotel/3.png",
     price: "1.200.00",
     discount: "800.000",

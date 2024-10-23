@@ -9,11 +9,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import TourStyle from "@/styles/tour.module.scss";
-import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
 
 export const metadata: Metadata = {
-  title: "Tour Nội Địa",
+  title: "Compo Nha Trang",
   description: "Happy Book",
 };
 type dataSideBarType = {
@@ -251,7 +250,7 @@ export default function SearchCompo({
                     className="flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mt-4"
                   >
                     <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
-                      <Link href="/tours/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay">
+                      <Link href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang">
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl"
                           src={`/compo/search/${item.image}.png`}
@@ -266,7 +265,7 @@ export default function SearchCompo({
                       <div className="my-4 mr-6">
                         <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                           <Link
-                            href="/tours/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay"
+                            href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang"
                             className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                           >
                             {item.title}

@@ -73,7 +73,7 @@ const compoHot = [
 export default function CompoTour() {
   return (
     <main>
-      <div className="relative h-fit lg:h-[500px]">
+      <div className="relative h-max">
         <div className="absolute inset-0">
           <Image
             priority
