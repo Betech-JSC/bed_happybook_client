@@ -29,11 +29,6 @@ const ourTeams = [
     image: "4",
   },
   {
-    name: "Diễm",
-    position: "Hộ Chiếu & Visa",
-    image: "5",
-  },
-  {
     name: "Huy Lớn",
     position: "Hộ Chiếu & Visa",
     image: "6",
