@@ -119,7 +119,7 @@ export default function Members() {
             <SwiperSlide key={index} className="rounded-2xl">
               <div className={AboutUs.member__item}>
                 <Image
-                  src={`/our-team/${index + 1}.png`}
+                  src={`/our-team/member-${index + 1}.png`}
                   alt="Member"
                   width={100}
                   height={100}
