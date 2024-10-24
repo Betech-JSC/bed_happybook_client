@@ -1,9 +1,17 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function Search() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
+  const handleSearchFlight = () => {
+    router.push(`/ve-may-bay/tim-kiem-ve`);
+  };
+  const handleSearchHotel = () => {
+    router.push(`/khach-san/tim-kiem`);
+  };
   return (
     <div className="relative z-[0] hidden lg:block">
       <div className="absolute inset-0">
@@ -180,7 +188,7 @@ export default function Search() {
                   </div>
                 </div>
 
-                <div className="w-[15%]">
+                <div className="w-[15%]" onClick={handleSearchFlight}>
                   <label className="block text-gray-700 mb-1 h-6"></label>
                   <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
                     <Image
@@ -259,7 +267,7 @@ export default function Search() {
                   </div>
                 </div>
 
-                <div className="w-[15%]">
+                <div className="w-[15%]" onClick={handleSearchHotel}>
                   <label className="block text-gray-700 mb-1 h-6"></label>
                   <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600  ">
                     <Image

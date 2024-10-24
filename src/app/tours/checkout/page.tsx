@@ -1,8 +1,7 @@
-import LoadingButton from "@/components/LoadingButton";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function CompoCheckout() {
+export default function TourCheckout() {
   return (
     <main className="bg-gray-100 mt-10">
       <div className="base__content ">
@@ -159,7 +158,7 @@ export default function CompoCheckout() {
                       </div>
                     </div>
                     <div className="mt-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div className="relative">
                           <label
                             htmlFor="phone"
@@ -217,7 +216,7 @@ export default function CompoCheckout() {
             <div className="overflow-hidden rounded-t-2xl">
               <Image
                 className="cursor-pointer w-full h-60 md:h-40 lg:h-[230px] rounded-t-2xl hover:scale-110 ease-in duration-300"
-                src={`/compo/detail/gallery/4.png`}
+                src={`/tour/detail/gallery/2.png`}
                 alt="Image"
                 width={410}
                 height={230}
@@ -229,7 +228,8 @@ export default function CompoCheckout() {
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
               >
-                Combo 3N2Đ Vinpearl Resort Nha Trang 5 sao + Vé máy bay
+                HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ (Tour
+                bao gồm máy bay)
               </Link>
               <div className="flex mt-4 space-x-2 items-center">
                 <Image
@@ -239,9 +239,19 @@ export default function CompoCheckout() {
                   width={18}
                   height={18}
                 />
-                <span>3 ngày 2 đêm</span>
+                <span>2 ngày 1 đêm</span>
               </div>
-              <div className="flex mt-3 space-x-2 items-center">
+              <div className="flex space-x-2 mt-3 items-center">
+                <Image
+                  className="w-4 h-4"
+                  src="/icon/flag.svg"
+                  alt="Icon"
+                  width={18}
+                  height={18}
+                />
+                <span>Khởi hành từ Hồ Chí Minh Thứ 6, Thứ 7 hàng tuần</span>
+              </div>
+              <div className="flex space-x-2 mt-3 items-center">
                 <Image
                   className="w-4 h-4"
                   src="/icon/marker-pin-01.svg"
@@ -249,11 +259,13 @@ export default function CompoCheckout() {
                   width={18}
                   height={18}
                 />
-                <span>Nha Trang</span>
+                <span>
+                  Hồ Chí Minh - Cù lao Thới Sơn - Cồn Phụng - Chợ nổi Cái Răng
+                </span>
               </div>
               <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
                 <span className="text-xl lg:text-2xl text-primary font-bold">
-                  3.999.000 vnđ
+                  7.004.927 vnđ
                 </span>
                 <span>/ khách</span>
                 <p className="text-blue-700 mt-3">+ 40 điểm</p>

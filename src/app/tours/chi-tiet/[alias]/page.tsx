@@ -177,11 +177,14 @@ export default function CategoryPosts({
                   </p>
                 </div>
                 <div className="mt-6">
-                  <div className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center">
-                    <button className="mx-auto text-base font-medium">
+                  <Link
+                    href="/tours/checkout"
+                    className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
+                  >
+                    <span className="mx-auto text-base font-medium">
                       Gửi yêu cầu
-                    </button>
-                  </div>
+                    </span>
+                  </Link>
                   <div className="text__default_hover text-gray-700 rounded-lg p-[10px] border border-gray-300 mt-3 inline-flex w-full items-center">
                     <button className="mx-auto text-base font-medium">
                       Xem lịch khởi hành
