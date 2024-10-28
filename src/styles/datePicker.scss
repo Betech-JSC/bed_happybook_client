@@ -1,0 +1,25 @@
+.react-datepicker-popper {
+  z-index: 9999;
+  margin-top: 8px;
+}
+.react-datepicker {
+  @apply w-[250px] md:w-[350px];
+  &__month-container {
+    width: 100%;
+  }
+  &__input-container input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+  }
+  font-size: 14px;
+  &__day-name,
+  &__day,
+  &__time-name {
+    @apply w-8 leading-8 md:w-12 md:leading-10;
+    display: inline-block;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+}

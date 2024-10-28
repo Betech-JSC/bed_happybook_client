@@ -33,6 +33,7 @@ export default function RootLayout({
         <HeaderMobile></HeaderMobile>
         {children}
         <Toaster toastOptions={toastOptions} />
+        <div id="datepicker-portal"></div>
         <BackToTopButton></BackToTopButton>
         <Footer></Footer>
       </body>

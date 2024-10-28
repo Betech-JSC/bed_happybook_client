@@ -1,167 +1,342 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "@/styles/datePicker.scss";
+import { vi } from "date-fns/locale";
+import { format, parse } from "date-fns";
+import LocationSwitcher from "./SelectLocation";
+import SelectMenu from "./Passenger/Menu";
+import { toast } from "react-hot-toast";
+import { Suspense } from "react";
+
+interface FormData {
+  from: string | null;
+  to: string | null;
+  departureDate: Date | null;
+  returnDate: Date | null;
+  Adt: number;
+  Chd: number;
+  Inf: number;
+  tripType: string;
+  cheapest: number;
+  fromPlace: string | null;
+  toPlace: string | null;
+}
 
 export default function Search() {
+  const today = new Date();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [ticket, setTicket] = useState<string>(
-    searchParams.get("ticket") || ""
-  );
-  const [flightPassenger, setFlightPassenger] = useState<string>("");
+  const [totalGuests, setTotalGuests] = useState<number>(1);
+
+  const [formData, setFormData] = useState<FormData>({
+    from: null,
+    fromPlace: null,
+    toPlace: null,
+    to: null,
+    departureDate: today,
+    returnDate: null,
+    Adt: 1,
+    Chd: 0,
+    Inf: 0,
+    tripType: "oneway",
+    cheapest: 0,
+  });
+
+  useEffect(() => {
+    const fromPlace = searchParams.get("from");
+    const toPlace = searchParams.get("to");
+    const from = searchParams.get("StartPoint");
+    const to = searchParams.get("EndPoint");
+    const departDate = searchParams.get("DepartDate");
+    const returnDate = searchParams.get("ReturnDate");
+    const passengerAdt = parseInt(searchParams.get("Adt") ?? "1");
+    const passengerChd = parseInt(searchParams.get("Chd") ?? "0");
+    const passengerInf = parseInt(searchParams.get("Inf") ?? "0");
+    const cheapest = parseInt(searchParams.get("cheapest") ?? "0");
+    const tripType = searchParams.get("tripType") || "oneWay";
+    setFormData({
+      from: from || null,
+      to: to || null,
+      fromPlace: fromPlace || null,
+      toPlace: toPlace || null,
+      departureDate: departDate
+        ? parse(departDate, "ddMMyyyy", new Date())
+        : new Date(),
+      returnDate: returnDate ? parse(returnDate, "ddMMyyyy", new Date()) : null,
+      Adt: passengerAdt,
+      Chd: passengerChd,
+      Inf: passengerInf,
+      tripType: tripType,
+      cheapest: cheapest,
+    });
+  }, [searchParams]);
+
   const [cheapest, setCheapest] = useState<string>(
     searchParams.get("cheapest") || "0"
   );
-  const [departDate, setDepart] = useState<string>("");
-  const [returnDate, setReturn] = useState<string>("");
+  const [tripType, setTripType] = useState<string>(
+    searchParams.get("tripType") || "oneWay"
+  );
+  useEffect(() => {
+    setTotalGuests(formData.Adt + formData.Chd + formData.Inf);
+    if (
+      formData.from &&
+      formData.to &&
+      tripType === "roundTrip" &&
+      !formData.returnDate
+    ) {
+      handleFocusNextDate(returnDateRef);
+    }
+  }, [formData, tripType]);
+
+  const departDateRef = useRef<DatePicker | null>(null);
+  const returnDateRef = useRef<DatePicker | null>(null);
+
+  const handleFocusNextDate = (nextRef: React.RefObject<DatePicker | null>) => {
+    if (nextRef.current) {
+      nextRef.current.setFocus();
+    }
+  };
+
   const handleCheckboxCheapest = () => {
     setCheapest(cheapest === "1" ? "0" : "1");
   };
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (ticket.trim()) params.append("ticket", ticket);
-    if (flightPassenger.trim())
-      params.append("flightPassenger", flightPassenger);
-    if (cheapest.trim()) params.append("cheapest", cheapest.toString());
-    if (departDate.trim()) params.append("departDate", departDate);
-    if (returnDate.trim()) params.append("returnDate", returnDate);
 
-    router.push(`/ve-may-bay/tim-kiem-ve?${params.toString()}`);
+  const handleTripChange = (type: "oneWay" | "roundTrip") => {
+    setTripType(type);
+    if (type === "roundTrip") {
+      if (formData.from && formData.to) {
+        setTimeout(() => {
+          handleFocusNextDate(returnDateRef);
+        }, 300);
+      }
+    } else formData.returnDate = null;
   };
+
+  const handleGuestChange = (key: string, value: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleLocationChange = useCallback(
+    (locations: { from: string | null; to: string | null }) => {
+      setFormData((prev) => ({
+        ...prev,
+        ...locations,
+      }));
+    },
+    []
+  );
+
+  const handleDepartDateChange = (date: Date | null) => {
+    if (!formData.returnDate) {
+      handleFocusNextDate(returnDateRef);
+    }
+    if (formData.returnDate && date && date > formData.returnDate) {
+      formData.returnDate = date;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      departureDate: date,
+    }));
+  };
+
+  const handleReturnDateChange = (date: Date | null) => {
+    if (formData.departureDate && date && date < formData.departureDate) {
+      date = formData.departureDate;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      returnDate: date,
+    }));
+  };
+
+  const handleSearch = () => {
+    const totalPassengers = formData.Adt + formData.Chd + formData.Inf;
+    const {
+      from,
+      fromPlace,
+      toPlace,
+      to,
+      departureDate,
+      returnDate,
+      Adt,
+      Chd,
+      Inf,
+    } = formData;
+    const checkTripType =
+      (tripType === "roundTrip" && returnDate) || tripType === "oneWay"
+        ? true
+        : false;
+
+    if (from && to && departureDate && totalPassengers && checkTripType) {
+      const formattedDate = departureDate
+        ? format(departureDate, "ddMMyyyy")
+        : "";
+      const formattedReturndate = returnDate
+        ? format(returnDate, "ddMMyyyy")
+        : "";
+      router.push(
+        `/ve-may-bay/tim-kiem-ve?tripType=${tripType}&cheapest=${cheapest}&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&ReturnDate=${formattedReturndate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}`
+      );
+    } else {
+      toast.dismiss();
+      toast.error("Vui lòng chọn đầy đủ thông tin");
+    }
+  };
+
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-4 lg:flex lg:space-x-12 mb-4">
-        <label className="flex items-center space-x-2">
-          <input
-            type="radio"
-            name="ticket"
-            className="form-radio"
-            value="oneway"
-            checked={ticket === "oneway"}
-            onChange={(e) => setTicket(e.target.value)}
-          />
-          <span className="text-black">Một chiều</span>
-        </label>
-        <label className="flex items-center space-x-2">
-          <input
-            type="radio"
-            name="ticket"
-            className="form-radio"
-            value="roundtrip"
-            checked={ticket === "roundtrip"}
-            onChange={(e) => setTicket(e.target.value)}
-          />
-          <span className="text-black">Khứ hồi</span>
-        </label>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            className="form-checkbox"
-            checked={cheapest === "1"}
-            onChange={handleCheckboxCheapest}
-          />
-          <span className="text-black">Tìm vé rẻ</span>
-        </label>
-      </div>
-
-      <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
-        <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
-          <div className="w-full md:w-1/2">
-            <label className="block text-gray-700 mb-1">Từ</label>
-            <div className="flex h-12 items-center border rounded-lg px-2">
-              <Image
-                src="/icon/AirplaneTakeoff.svg"
-                alt="Icon"
-                className="h-10"
-                width={18}
-                height={18}
-              ></Image>
-              <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                <option>TP.Hồ Chí Minh</option>
-              </select>
-            </div>
-          </div>
-          <div className="absolute right-0 md:right-[unset] top-[60%] md:top-3/4 md:left-[48%] md:-translate-x-[48%] -translate-y-3/4">
-            <button className="border border-gray-300 p-2 rounded-full bg-white">
-              <Image
-                src="/icon/switch-horizontal.svg"
-                alt="Icon"
-                className="h-5"
-                width={20}
-                height={20}
-              ></Image>
-            </button>
-          </div>
-          <div className="w-full md:w-1/2">
-            <label className="block text-gray-700 mb-1">Đến</label>
-            <div className="flex h-12 items-center border rounded-lg px-2 pl-6">
-              <Image
-                src="/icon/AirplaneLanding.svg"
-                alt="Icon"
-                className="h-10"
-                width={18}
-                height={18}
-              />
-              <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                <option>Hà Nội</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div className="w-full lg:w-[22.5%]">
-          <label className="block text-gray-700 mb-1">Ngày đi</label>
-          <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
-            <div className="flex items-center	w-full">
-              <Image
-                src="/icon/calendar.svg"
-                alt="Icon"
-                className="h-10"
-                width={18}
-                height={18}
-              ></Image>
-              <span>14/08/2024</span>
-            </div>
-            <div className="block md:hidden border-t border-black w-1/2"></div>
-            <div>
-              <span> 22/08/2024</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full lg:w-[20%]">
-          <label className="block text-gray-700 mb-1">Số lượng khách</label>
-          <div className="flex items-center border rounded-lg px-2 h-12">
-            <Image
-              src="/icon/user-circle.svg"
-              alt="Icon"
-              className="h-10"
-              width={18}
-              height={18}
-            ></Image>
-            <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-              <option>1 người lớn</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="w-full lg:w-[15%]" onClick={handleSearch}>
-          <label className="block text-gray-700 mb-1 h-6"></label>
-          <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
-            <Image
-              src="/icon/search.svg"
-              alt="Icon"
-              className="h-10 inline-block"
-              width={18}
-              height={18}
-              style={{ width: 18, height: 18 }}
+    <Suspense>
+      <div>
+        <div className="grid grid-cols-2 gap-4 lg:flex lg:space-x-12 mb-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="tripType"
+              className="form-radio"
+              value="oneway"
+              checked={tripType === "oneWay"}
+              onChange={() => handleTripChange("oneWay")}
             />
-            <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
-              Tìm kiếm
-            </button>
+            <span className="text-black">Một chiều</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="tripType"
+              className="form-radio"
+              checked={tripType === "roundTrip"}
+              onChange={() => handleTripChange("roundTrip")}
+            />
+            <span className="text-black">Khứ hồi</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              className="form-checkbox"
+              checked={cheapest === "1"}
+              onChange={handleCheckboxCheapest}
+            />
+            <span className="text-black">Tìm vé rẻ</span>
+          </label>
+        </div>
+
+        <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
+          <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
+            <LocationSwitcher onLocationChange={handleLocationChange} />
+          </div>
+          <div
+            className={`w-full ${
+              tripType === "roundTrip" ? "lg:w-[13.75%]" : "lg:w-[22.5%]"
+            }`}
+          >
+            <label className="block text-gray-700 mb-1">Ngày đi</label>
+            <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
+              <div className="flex items-center	w-full">
+                <Image
+                  src="/icon/calendar.svg"
+                  alt="Icon"
+                  className="h-10"
+                  width={18}
+                  height={18}
+                ></Image>
+                <div className="w-full [&>div]:w-full border-none">
+                  <DatePicker
+                    id="start_date"
+                    ref={departDateRef}
+                    selected={formData.departureDate}
+                    onChange={handleDepartDateChange}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Chọn ngày"
+                    locale={vi}
+                    popperPlacement="bottom-start"
+                    portalId="datepicker-portal"
+                    minDate={today}
+                    className="z-20 text-sm pl-4 w-full pt-6 pb-2 outline-none"
+                  />
+                </div>
+              </div>
+              <div className="block md:hidden border-t border-black w-1/2"></div>
+            </div>
+          </div>
+          {tripType === "roundTrip" && (
+            <div className="w-full lg:w-[13.75%]">
+              <label className="block text-gray-700 mb-1">Ngày về</label>
+              <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
+                <div className="flex items-center	w-full">
+                  <Image
+                    src="/icon/calendar.svg"
+                    alt="Icon"
+                    className="h-10"
+                    width={18}
+                    height={18}
+                  ></Image>
+                  <div className="w-full [&>div]:w-full border-none">
+                    <DatePicker
+                      ref={returnDateRef}
+                      id="return_date"
+                      selected={formData.returnDate}
+                      onChange={handleReturnDateChange}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="Chọn ngày"
+                      locale={vi}
+                      popperPlacement="bottom-start"
+                      portalId="datepicker-portal"
+                      minDate={today}
+                      className="z-20 text-sm pl-4 w-full pt-6 pb-2 outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="block md:hidden border-t border-black w-1/2"></div>
+              </div>
+            </div>
+          )}
+          <div
+            className={`w-full ${
+              tripType === "roundTrip" ? "lg:w-[15%]" : "lg:w-[20%]"
+            }`}
+          >
+            <label className="block text-gray-700 mb-1">Số lượng khách</label>
+            <div className="flex items-center border rounded-lg px-2 h-12">
+              <Image
+                src="/icon/user-circle.svg"
+                alt="Icon"
+                className="h-10"
+                width={18}
+                height={18}
+              ></Image>
+              <SelectMenu
+                formData={formData}
+                totalGuests={totalGuests}
+                onGuestsChange={handleGuestChange}
+              />
+            </div>
+          </div>
+
+          <div className="w-full lg:w-[15%]" onClick={handleSearch}>
+            <label className="block text-gray-700 mb-1 h-6"></label>
+            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
+              <Image
+                src="/icon/search.svg"
+                alt="Icon"
+                className="h-10 inline-block"
+                width={18}
+                height={18}
+                style={{ width: 18, height: 18 }}
+              />
+              <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
+                Tìm kiếm
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   );
 }

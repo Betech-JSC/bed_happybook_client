@@ -1,12 +1,9 @@
+import { PassengerType } from "@/types/flight";
 import React from "react";
-
-const PassengerTable: React.FC = () => {
-  const passengers = [
-    { type: "Người lớn", quantity: 1, price: "1,221,100 VND" },
-    { type: "Trẻ em", quantity: 2, price: "1,221,100 VND" },
-    { type: "Em bé", quantity: 1, price: "1,221,100 VND" },
-  ];
-
+interface Props {
+  passengers: PassengerType[];
+}
+export default function PassengerTable({ passengers }: Props) {
   return (
     <div className="overflow-auto">
       <table className="w-full border-collapse mt-4">
@@ -30,16 +27,17 @@ const PassengerTable: React.FC = () => {
           {passengers.map((passenger, index) => (
             <tr key={index}>
               <td className="border-b border-r border-gray-200 py-3 px-4 lg:px-12">
-                {passenger.type}
+                {passenger.title}
               </td>
               <td className="border-b border-r border-gray-200 py-3 px-4 lg:px-12 text-center">
                 {passenger.quantity}
               </td>
               <td className="border-b border-r border-gray-200 py-3 px-4 lg:px-12 text-right">
-                {passenger.price}
+                {passenger.price.toLocaleString("vi-VN")} {passenger.currency}
               </td>
               <td className="border-b border-r border-gray-200 py-3 px-4 lg:px-12 text-right">
-                {passenger.price}
+                {passenger.totalPrice.toLocaleString("vi-VN")}{" "}
+                {passenger.currency}
               </td>
             </tr>
           ))}
@@ -47,6 +45,4 @@ const PassengerTable: React.FC = () => {
       </table>
     </div>
   );
-};
-
-export default PassengerTable;
+}

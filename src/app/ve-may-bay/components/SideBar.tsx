@@ -51,10 +51,6 @@ export default function SideBar() {
           <input type="checkbox" name="price" id="airline_3" />
           <label htmlFor="airline_3">Vietnam Airlines</label>
         </div>
-        <div className="flex space-x-2 mt-3">
-          <input type="checkbox" name="price" id="airline_4" />
-          <label htmlFor="airline_4">Vietnam Airlines</label>
-        </div>
       </div>
       <button className="w-full mt-3 py-3 bg-blue-600 text-white rounded-lg font-medium">
         Xóa bộ lọc

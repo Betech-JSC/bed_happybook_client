@@ -69,7 +69,7 @@ const tours = [
 export default function AirlineTicket() {
   return (
     <Fragment>
-      <div className="relative z-[0] h-max pb-12">
+      <div className="relative z-[1] h-max pb-12">
         <div className="absolute inset-0">
           <Image
             priority

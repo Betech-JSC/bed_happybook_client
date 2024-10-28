@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import {
   Breadcrumb,
@@ -9,33 +9,38 @@ import {
 } from "@/components/ui/breadcrumb";
 import Image from "next/image";
 import FAQ from "@/components/FAQ";
-import Tabs from "../components/Tabs";
-import FlightDetails from "../components/FlightDetails";
 import Link from "next/link";
 import Partner from "../components/Partner";
 import Search from "../components/Search";
 import SideBar from "../components/SideBar";
+import ListFilght from "../components/ListFilght";
 
 export const metadata: Metadata = {
-  title: "Vé máy bay",
-  description: "Happy Book",
+  title: "Tìm kiếm Vé máy bay",
+  description: "Happy Book | Tìm kiếm Vé máy bay",
+  keywords: "Tìm kiếm Vé máy bay",
+  alternates: {
+    canonical: "/ve-may-bay/tim-kiem-ve",
+  },
 };
 
 interface SearchPageProps {
   searchParams: {
-    ticketType?: string;
-    flightPassenger?: string;
-    cheapest?: string;
-    departDate?: string;
-    returnDate?: string;
+    Adt: number;
+    Chd: number;
+    Inf: number;
+    tripType?: string;
+    StartPoint?: string;
+    EndPoint?: string;
+    DepartDate?: string;
+    ReturnDate?: string;
+    Cheapest?: string;
   };
 }
-export default function SearchTicket({ searchParams }: SearchPageProps) {
-  const { ticketType, departDate, returnDate, flightPassenger, cheapest } =
-    searchParams;
+export default async function SearchTicket() {
   return (
-    <Fragment>
-      <div className="relative z-[0] h-max pb-12">
+    <Suspense>
+      <div className="relative z-[1] h-max pb-12">
         <div className="absolute inset-0">
           <Image
             priority
@@ -80,50 +85,8 @@ export default function SearchTicket({ searchParams }: SearchPageProps) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
-            {/* Sidebar */}
-            <SideBar />
-            <div className="lg:col-span-9">
-              <div className="max-w-5xl mx-auto">
-                <div
-                  className="flex text-white p-4 rounded-t-2xl shadow-md space-x-4 items-center"
-                  style={{
-                    background:
-                      " linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
-                  }}
-                >
-                  <div className="w-10 h-10 p-2 bg-primary rounded-lg inline-flex items-center justify-center">
-                    <Image
-                      src="/icon/AirplaneTilt.svg"
-                      width={20}
-                      height={20}
-                      alt="Icon"
-                      className="w-5 h-5"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">
-                      Hồ Chí Minh, Việt Nam (SGN) - Hà Nội, Việt Nam (HAN)
-                    </h3>
-                    <p className="text-sm">01 Khách - 30/08</p>
-                  </div>
-                </div>
-
-                <Tabs />
-
-                <div className="my-6">
-                  {Array.from({ length: 7 }, (item, index) => {
-                    const firstItem = index === 0 ? 1 : 0;
-                    return (
-                      <FlightDetails
-                        flight={{ id: index + 1, firstItem: firstItem }}
-                        key={index}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+          <div className="min-h-40">
+            <ListFilght />
           </div>
         </div>
         <Partner />
@@ -235,6 +198,6 @@ export default function SearchTicket({ searchParams }: SearchPageProps) {
           </div>
         </div>
       </div>
-    </Fragment>
+    </Suspense>
   );
 }
