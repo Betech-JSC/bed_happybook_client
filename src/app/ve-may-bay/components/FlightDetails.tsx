@@ -10,7 +10,14 @@ import {
 } from "@/lib/formatters";
 import { PassengerType } from "@/types/flight";
 
-const FlightDetails = ({ FareData }: any) => {
+const FlightDetails = ({
+  FareData,
+  fromPlace = "",
+  toPlace = "",
+  onSelectFlight,
+  selectedFlight,
+  filters = {},
+}: any) => {
   const [showDetails, setShowDetails] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | string>(0);
@@ -20,24 +27,24 @@ const FlightDetails = ({ FareData }: any) => {
       type: "Adt",
       title: "Người lớn",
       quantity: FareData.Adt,
-      price: FareData.FareAdt,
-      totalPrice: FareData.Adt * FareData.FareAdt + FareData.TaxAdt,
+      price: FareData.FareAdt + FareData.TaxAdt,
+      totalPrice: FareData.Adt * (FareData.FareAdt + FareData.TaxAdt),
       currency: FareData.Currency,
     },
     {
       type: "Chd",
       title: "Trẻ em",
       quantity: FareData.Chd,
-      price: FareData.FareChd,
-      totalPrice: FareData.Chd * FareData.FareChd + FareData.TaxChd,
+      price: FareData.FareChd + FareData.TaxChd,
+      totalPrice: FareData.Chd * (FareData.FareChd + FareData.TaxChd),
       currency: FareData.Currency,
     },
     {
       type: "Adt",
       title: "Em bé",
       quantity: FareData.Inf,
-      price: FareData.FareInf,
-      totalPrice: FareData.Inf * FareData.FareInf + FareData.TaxInf,
+      price: FareData.FareInf + FareData.TaxInf,
+      totalPrice: FareData.Inf * (FareData.FareInf + FareData.TaxInf),
       currency: FareData.Currency,
     },
   ];
@@ -52,7 +59,6 @@ const FlightDetails = ({ FareData }: any) => {
     },
     [showDetails]
   );
-
   return (
     <Fragment>
       {flight && (
@@ -150,12 +156,19 @@ const FlightDetails = ({ FareData }: any) => {
                   Xem chi tiết
                 </button>
                 <p className="text-primary text-18 font-semibold text-right">
-                  {FareData.TotalPrice.toLocaleString("vi-VN")}{" "}
+                  {filters.priceWithoutTax === "1"
+                    ? FareData.TotalPriceWithOutTax.toLocaleString("vi-VN")
+                    : FareData.TotalPrice.toLocaleString("vi-VN")}{" "}
                   {FareData.Currency}
                 </p>
               </div>
-              <button className="block text-center mt-5 md:mt-3 w-full bg-blue-600 border text-white  py-2 rounded-lg hover:text-primary duration-300">
-                {flight.checkOut === true ? "Thay đổi" : "Chọn"}
+              <button
+                onClick={() => onSelectFlight(FareData)}
+                className="block text-center mt-5 md:mt-3 w-full bg-blue-600 border text-white  py-2 rounded-lg hover:text-primary duration-300"
+              >
+                {selectedFlight?.FareDataId === FareData.FareDataId
+                  ? "Thay đổi"
+                  : "Chọn"}
               </button>
             </div>
           </div>
@@ -221,7 +234,7 @@ const FlightDetails = ({ FareData }: any) => {
                   <div className="col-span-12 md:col-span-9 h-full w-full">
                     <div className="flex h-full items-start gap-2">
                       <div className="w-4/12 md:w-2/12 flex h-full justify-between flex-col items-end">
-                        <div className="text-center">
+                        <div className="text-center w-full">
                           <p className="text-22 font-bold">
                             {formatTime(segment.StartTime)}
                           </p>
@@ -229,7 +242,7 @@ const FlightDetails = ({ FareData }: any) => {
                             {formatDate(segment.StartTime)}
                           </p>
                         </div>
-                        <div className="font-semibold text-center">
+                        <div className="font-semibold text-center w-full">
                           <Image
                             src="/icon/AirplaneTiltBlue.svg"
                             width={20}
@@ -247,7 +260,7 @@ const FlightDetails = ({ FareData }: any) => {
                                 )}
                           </p>
                         </div>
-                        <div className="text-center">
+                        <div className="text-center w-full">
                           <p className="text-22 font-bold">
                             {formatTime(segment.EndTime)}
                           </p>
@@ -264,7 +277,7 @@ const FlightDetails = ({ FareData }: any) => {
                       <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                         <div>
                           <p className="text-22 font-bold">
-                            {segment.StartPoint}
+                            {`${fromPlace} (${segment.StartPoint})`}
                           </p>
                           <p className="text-gray-500 mt-1 h-6"></p>
                         </div>
@@ -284,7 +297,7 @@ const FlightDetails = ({ FareData }: any) => {
                         <div>
                           <p className="text-gray-500 mt-1 h-6"></p>
                           <p className="text-22 font-bold">
-                            {segment.EndPoint}
+                            {`${toPlace} (${segment.EndPoint})`}
                           </p>
                         </div>
                       </div>

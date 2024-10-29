@@ -156,12 +156,14 @@ export default function LocationSwitcher({
       }
     }
   }, [from, to, onLocationChange]);
+
   const handleSwitch = () => {
     setFrom((prevFrom) => {
       setTo(prevFrom);
       return to;
     });
   };
+
   useEffect(() => {
     const fromParam = searchParams.get("StartPoint");
     const toParam = searchParams.get("EndPoint");

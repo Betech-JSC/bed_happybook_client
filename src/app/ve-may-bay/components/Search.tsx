@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/datePicker.scss";
 import { vi } from "date-fns/locale";
-import { format, parse } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import LocationSwitcher from "./SelectLocation";
 import SelectMenu from "./Passenger/Menu";
 import { toast } from "react-hot-toast";
@@ -47,12 +47,18 @@ export default function Search() {
   });
 
   useEffect(() => {
-    const fromPlace = searchParams.get("from");
-    const toPlace = searchParams.get("to");
     const from = searchParams.get("StartPoint");
     const to = searchParams.get("EndPoint");
-    const departDate = searchParams.get("DepartDate");
-    const returnDate = searchParams.get("ReturnDate");
+    const departDate = parse(
+      searchParams.get("DepartDate") ?? "",
+      "ddMMyyyy",
+      new Date()
+    );
+    const returnDate = parse(
+      searchParams.get("ReturnDate") ?? "",
+      "ddMMyyyy",
+      new Date()
+    );
     const passengerAdt = parseInt(searchParams.get("Adt") ?? "1");
     const passengerChd = parseInt(searchParams.get("Chd") ?? "0");
     const passengerInf = parseInt(searchParams.get("Inf") ?? "0");
@@ -61,12 +67,10 @@ export default function Search() {
     setFormData({
       from: from || null,
       to: to || null,
-      fromPlace: fromPlace || null,
-      toPlace: toPlace || null,
-      departureDate: departDate
-        ? parse(departDate, "ddMMyyyy", new Date())
-        : new Date(),
-      returnDate: returnDate ? parse(returnDate, "ddMMyyyy", new Date()) : null,
+      fromPlace: null,
+      toPlace: null,
+      departureDate: isValid(departDate) ? departDate : new Date(),
+      returnDate: isValid(returnDate) ? returnDate : null,
       Adt: passengerAdt,
       Chd: passengerChd,
       Inf: passengerInf,
@@ -159,22 +163,11 @@ export default function Search() {
 
   const handleSearch = () => {
     const totalPassengers = formData.Adt + formData.Chd + formData.Inf;
-    const {
-      from,
-      fromPlace,
-      toPlace,
-      to,
-      departureDate,
-      returnDate,
-      Adt,
-      Chd,
-      Inf,
-    } = formData;
+    const { from, to, departureDate, returnDate, Adt, Chd, Inf } = formData;
     const checkTripType =
       (tripType === "roundTrip" && returnDate) || tripType === "oneWay"
         ? true
         : false;
-
     if (from && to && departureDate && totalPassengers && checkTripType) {
       const formattedDate = departureDate
         ? format(departureDate, "ddMMyyyy")
@@ -258,11 +251,14 @@ export default function Search() {
                     popperPlacement="bottom-start"
                     portalId="datepicker-portal"
                     minDate={today}
+                    onFocus={(e) => e.target.blur()}
+                    onKeyDown={(e) => {
+                      e.preventDefault();
+                    }}
                     className="z-20 text-sm pl-4 w-full pt-6 pb-2 outline-none"
                   />
                 </div>
               </div>
-              <div className="block md:hidden border-t border-black w-1/2"></div>
             </div>
           </div>
           {tripType === "roundTrip" && (
@@ -289,11 +285,14 @@ export default function Search() {
                       popperPlacement="bottom-start"
                       portalId="datepicker-portal"
                       minDate={today}
+                      onFocus={(e) => e.target.blur()}
+                      onKeyDown={(e) => {
+                        e.preventDefault();
+                      }}
                       className="z-20 text-sm pl-4 w-full pt-6 pb-2 outline-none"
                     />
                   </div>
                 </div>
-                <div className="block md:hidden border-t border-black w-1/2"></div>
               </div>
             </div>
           )}

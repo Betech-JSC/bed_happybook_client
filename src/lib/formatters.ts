@@ -1,4 +1,4 @@
-import { parseISO, format, min, parse } from "date-fns";
+import { parseISO, format, min, parse, isValid } from "date-fns";
 
 const formatDate = (isoDate: string) => {
   const date = new Date(isoDate);
@@ -12,7 +12,9 @@ const pareseDateFromString = (
   currentFormat: string,
   formatType: string
 ): string => {
-  const parsedDate = parse(input, currentFormat, new Date());
+  const parsedDate = isValid(parse(input, currentFormat, new Date()))
+    ? parse(input, currentFormat, new Date())
+    : new Date();
   return format(parsedDate, formatType);
 };
 
