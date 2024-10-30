@@ -47,7 +47,7 @@ const SelectMenu = ({
       </div>
 
       {isOpen && (
-        <div className="absolute top-14 left-[-10%] md:left-0 z-10 w-80 p-4 rounded-lg shadow-md bg-white">
+        <div className="absolute top-14 left-[-10%] md:left-0 z-10 w-64 md:w-80 p-4 rounded-lg shadow-md bg-white">
           <CounterGroup
             formData={formData}
             totalGuests={totalGuests}

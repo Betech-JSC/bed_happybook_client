@@ -29,9 +29,9 @@ export default function Home() {
     <Fragment>
       <Search />
       {/* Search Mobile */}
-      <div className="mt-[68px] block lg:hidden">
-        <div className="mt-4 h-[828px]">
-          <div className="absolute inset-0 h-[828px]">
+      <div className="mt-[68px] block lg:hidden relative h-max pb-10">
+        <div className="mt-4 h-full">
+          <div className="absolute inset-0 h-full">
             <Image
               priority
               src="/bg-image.png"
@@ -42,7 +42,7 @@ export default function Home() {
             />
           </div>
           <div
-            className="absolute w-full h-[828px]"
+            className="absolute w-full h-full"
             style={{
               backgroundImage:
                 "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",

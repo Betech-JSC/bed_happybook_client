@@ -65,13 +65,13 @@ const FlightDetails = ({
         <div className="h-fit">
           <div className="grid grid-cols-8 items-start md:items-center justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
             <div className="col-span-2 border-r border-gray-200">
-              <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 mb-3">
+              <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
                 <Image
                   src={`/airline/${flight.Airline}.svg`}
                   width={48}
                   height={48}
                   alt="AirLine"
-                  className="w-8 h-7 md:w-12 md:h-12"
+                  className="w-8 h-7 md:w-12 md:h-12 mx-auto md:mx-0"
                 />
                 <div>
                   <h3 className="text-sm md:text-18 font-semibold mb-1">

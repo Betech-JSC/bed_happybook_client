@@ -117,7 +117,7 @@ export default function SignUpReceiveCheapTickets() {
           </div>
         </div>
       </div>
-      <div className="w-full md:w-[40%] pl-0 md:pl-12 border-none md:border-l border-l-gray-300">
+      <div className="w-full md:w-[40%] pl-0 md:pl-12 border-l-none md:border-l border-l-gray-300">
         <div className="bg-white rounded-xl">
           <h3 className="text-18 font-semibold">Đặt vé nhanh tại Happy Book</h3>
         </div>

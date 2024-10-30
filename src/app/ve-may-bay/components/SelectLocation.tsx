@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
 import { forwardRef, Fragment, useEffect, useRef, useState } from "react";
-import Select, { SingleValue, components, StylesConfig } from "react-select";
+import Select, { SingleValue, StylesConfig } from "react-select";
 import { useSearchParams } from "next/navigation";
+import { highlightText, NoOptionsMessage } from "@/utils/jsxUtils";
 
 interface AirportOption {
   label: string;
@@ -49,7 +50,7 @@ const customStyles: StylesConfig<AirportOption, false> = {
     borderRadius: "8px",
     border: "1px solid #ccc",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    width: "500px",
+    width: window.innerWidth < 640 ? "260px" : "500px",
     cursor: "pointer",
   }),
   option: (provided, state) => ({
@@ -65,22 +66,6 @@ const customStyles: StylesConfig<AirportOption, false> = {
   dropdownIndicator: () => ({
     display: "none",
   }),
-};
-
-const highlightText = (text: string, highlight: string) => {
-  const sanitizedHighlight = highlight.trim();
-  if (!sanitizedHighlight) return text;
-
-  const parts = text.split(new RegExp(`(${sanitizedHighlight})`, "gi"));
-  return parts.map((part, index) =>
-    part.toLowerCase() === sanitizedHighlight.toLowerCase() ? (
-      <span key={index} className="text-blue-500 font-semibold">
-        {part}
-      </span>
-    ) : (
-      part
-    )
-  );
 };
 
 const CustomOption = (props: any) => {
@@ -109,11 +94,6 @@ const CustomOption = (props: any) => {
     </div>
   );
 };
-const NoOptionsMessage = (props: any) => (
-  <components.NoOptionsMessage {...props}>
-    <span className="text-gay-600 text-18">Không tìm thấy kết quả phù hợp</span>
-  </components.NoOptionsMessage>
-);
 
 const LocationSelect = forwardRef<any, LocationSelectProps>(
   ({ options, placeholder, value, onSelect }, ref) => (
@@ -217,7 +197,7 @@ export default function LocationSwitcher({
       </div>
       <div className="w-full md:w-1/2">
         <label className="block text-gray-700 mb-1">Đến</label>
-        <div className="flex h-12 items-center border rounded-lg px-2 pl-6">
+        <div className="flex h-12 items-center border rounded-lg px-2 md:pl-6">
           <Image
             src="/icon/AirplaneLanding.svg"
             alt="Icon"

@@ -25,4 +25,26 @@ const handleScrollSmooth = (ref: HTMLDivElement, timeScroll = 1000) => {
   const topOffset = ref.getBoundingClientRect().top + window.scrollY - 200;
   smoothScrollTo(topOffset, timeScroll);
 };
-export { handleScrollSmooth };
+
+const getDaysInMonth = (year: number, month: number) => {
+  return new Date(year, month, 0).getDate();
+};
+
+const generateMonth = (totalMonth: number) => {
+  const currentDate = new Date();
+  const months = [];
+
+  for (let i = 0; i < totalMonth; i++) {
+    const newDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + i
+    );
+    months.push({
+      month: newDate.getMonth() + 1,
+      year: newDate.getFullYear(),
+    });
+  }
+
+  return months;
+};
+export { handleScrollSmooth, generateMonth, getDaysInMonth };

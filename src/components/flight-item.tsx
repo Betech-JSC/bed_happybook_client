@@ -14,7 +14,7 @@ export default function FlightItem({
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
-        <Link href="/ve-may-bay/chi-tiet">
+        <Link href="/ve-may-bay">
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
             src={image}
@@ -36,7 +36,7 @@ export default function FlightItem({
           <p className="ml-2">{airlineName}</p>
         </div>
         <Link
-          href="/ve-may-bay/chi-tiet"
+          href="/ve-may-bay"
           className={`text-base min-h-6 font-semibold line-clamp-1 mt-2 ${styles.text_hover_default}`}
         >
           {title}

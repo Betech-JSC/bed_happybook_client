@@ -423,7 +423,10 @@ export default function ListFilght() {
   }
   return (
     <Fragment>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
+      <div
+        className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12"
+        ref={resultsRef}
+      >
         <aside className="lg:col-span-3 bg-white p-4 rounded-2xl">
           <div className="pb-3 border-b border-gray-200">
             <h2 className="font-semibold">Sắp xếp</h2>
@@ -545,7 +548,7 @@ export default function ListFilght() {
         </aside>
         <div className="lg:col-span-9">
           <div className="max-w-5xl mx-auto">
-            <div ref={resultsRef}>
+            <div>
               <div>
                 <div
                   className="flex text-white p-4 rounded-t-2xl shadow-md space-x-4 items-center"

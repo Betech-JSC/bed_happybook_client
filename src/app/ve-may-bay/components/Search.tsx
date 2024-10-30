@@ -175,9 +175,12 @@ export default function Search() {
       const formattedReturndate = returnDate
         ? format(returnDate, "ddMMyyyy")
         : "";
-      router.push(
-        `/ve-may-bay/tim-kiem-ve?tripType=${tripType}&cheapest=${cheapest}&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&ReturnDate=${formattedReturndate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}`
-      );
+      const queryString = `tripType=${tripType}&cheapest=${cheapest}&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&ReturnDate=${formattedReturndate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}`;
+      if (cheapest === "1") {
+        router.push(`/ve-may-bay/ve-may-bay-gia-re?${queryString}`);
+      } else {
+        router.push(`/ve-may-bay/tim-kiem-ve?${queryString}`);
+      }
     } else {
       toast.dismiss();
       toast.error("Vui lòng chọn đầy đủ thông tin");
