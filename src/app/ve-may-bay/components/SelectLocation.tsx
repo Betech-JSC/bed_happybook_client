@@ -3,7 +3,7 @@ import Image from "next/image";
 import { forwardRef, Fragment, useEffect, useRef, useState } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
 import { useSearchParams } from "next/navigation";
-import { highlightText, NoOptionsMessage } from "@/utils/jsxUtils";
+import { NoOptionsMessage } from "@/utils/jsxUtils";
 
 interface AirportOption {
   label: string;
@@ -20,21 +20,8 @@ interface LocationSwitcherProps {
     from: string | null;
     to: string | null;
   }) => void;
+  airports: AirportOption[];
 }
-const airports: AirportOption[] = [
-  {
-    label: "Hồ Chí Minh",
-    value: "SGN",
-  },
-  {
-    label: "Hà Nội",
-    value: "HAN",
-  },
-  {
-    label: "Nha Trang",
-    value: "CXR",
-  },
-];
 
 const customStyles: StylesConfig<AirportOption, false> = {
   control: (provided) => ({
@@ -50,8 +37,10 @@ const customStyles: StylesConfig<AirportOption, false> = {
     borderRadius: "8px",
     border: "1px solid #ccc",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    width: window.innerWidth < 640 ? "260px" : "500px",
+    width: window.innerWidth < 640 ? "260px" : "360px",
     cursor: "pointer",
+    maxHeight: "600px",
+    overflow: "auto",
   }),
   option: (provided, state) => ({
     ...provided,
@@ -66,6 +55,22 @@ const customStyles: StylesConfig<AirportOption, false> = {
   dropdownIndicator: () => ({
     display: "none",
   }),
+};
+
+const highlightText = (text: string, highlight: string) => {
+  const sanitizedHighlight = highlight.trim();
+  if (!sanitizedHighlight) return text;
+
+  const parts = text.split(new RegExp(`(${sanitizedHighlight})`, "gi"));
+  return parts.map((part, index) =>
+    part.toLowerCase() === sanitizedHighlight.toLowerCase() ? (
+      <span key={index} className="text-blue-500 font-semibold">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
 };
 
 const CustomOption = (props: any) => {
@@ -97,23 +102,49 @@ const CustomOption = (props: any) => {
 
 const LocationSelect = forwardRef<any, LocationSelectProps>(
   ({ options, placeholder, value, onSelect }, ref) => (
-    <Select
-      options={options}
-      value={value}
-      onChange={onSelect}
-      placeholder={placeholder}
-      styles={customStyles}
-      isClearable
-      ref={ref}
-      components={{ Option: CustomOption, NoOptionsMessage }}
-      menuPlacement="auto"
-    />
+    <Fragment>
+      <style>
+        {`
+      .custom-select__menu-list {
+        scrollbar-width: thin;
+        scrollbar-color: rgb(96 165 250) #f1f1f1;
+      }
+      .custom-select__menu-list::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-select__menu-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .custom-select__menu-list::-webkit-scrollbar-thumb {
+        background-color: #1570EF;
+        border-radius: 12px;
+        border: 2px solid #f1f1f1;
+      }
+      .custom-select__menu-list::-webkit-scrollbar-thumb:hover {
+        background: #1570EF;
+      }
+    `}
+      </style>
+      <Select
+        options={options}
+        value={value}
+        onChange={onSelect}
+        placeholder={placeholder}
+        styles={customStyles}
+        isClearable
+        ref={ref}
+        components={{ Option: CustomOption, NoOptionsMessage }}
+        menuPlacement="auto"
+        classNamePrefix="custom-select"
+      />
+    </Fragment>
   )
 );
 LocationSelect.displayName = "LocationSelect";
 
 export default function LocationSwitcher({
   onLocationChange,
+  airports,
 }: LocationSwitcherProps) {
   const searchParams = useSearchParams();
   const [from, setFrom] = useState<SingleValue<AirportOption> | null>(null);
@@ -147,12 +178,11 @@ export default function LocationSwitcher({
   useEffect(() => {
     const fromParam = searchParams.get("StartPoint");
     const toParam = searchParams.get("EndPoint");
-
     const fromOption = airports.find((loc) => loc.value === fromParam) || null;
     const toOption = airports.find((loc) => loc.value === toParam) || null;
     setFrom(fromOption);
     setTo(toOption);
-  }, [searchParams]);
+  }, [searchParams, airports]);
 
   const getFilteredOptions = (
     selected: SingleValue<AirportOption>

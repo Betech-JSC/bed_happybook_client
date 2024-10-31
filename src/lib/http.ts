@@ -1,12 +1,4 @@
-class HttpError extends Error {
-  status: number;
-  payload: any;
-  constructor({ status, payload }: { status: number; payload: any }) {
-    super("Http Error");
-    this.status = status;
-    this.payload = payload;
-  }
-}
+import { HttpError } from "./error";
 
 type httpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -49,18 +41,22 @@ const request = async <Response>(
     };
 
     if (!response.ok) {
-      const errorMessage = response.statusText || "Lỗi không xác định";
-      throw new HttpError({ status: response.status, payload: errorMessage });
+      throw new HttpError({ status: response.status, payload: payload });
     }
     return data;
   } catch (error) {
-    if (error instanceof Error) {
+    if (error instanceof HttpError) {
+      throw error;
+    } else if (error instanceof Error) {
       if (error.name === "AbortError") {
         throw new HttpError({ status: 408, payload: "Request timeout" });
       }
       throw new HttpError({ status: 500, payload: "Server Error" });
     } else {
-      console.error("Unknown error:123123");
+      throw new HttpError({
+        status: 500,
+        payload: "Unknown server error",
+      });
     }
   }
   return null;

@@ -16,26 +16,15 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { handleScrollSmooth } from "@/utils/Helper";
 import SignUpReceiveCheapTickets from "./SignUpReceiveCheapTickets";
+import { HttpError } from "@/lib/error";
+import { AirportOption, ListFilghtProps } from "@/types/flight";
 
 interface Day {
   label: string;
   date: Date;
   disabled: boolean;
 }
-const airports = [
-  {
-    label: "Hồ Chí Minh",
-    value: "SGN",
-  },
-  {
-    label: "Hà Nội",
-    value: "HAN",
-  },
-  {
-    label: "Nha Trang",
-    value: "CXR",
-  },
-];
+
 const defaultFilers = {
   priceWithoutTax: "0",
   timeDepart: "",
@@ -43,7 +32,7 @@ const defaultFilers = {
   sortPrice: "",
   airlines: [],
 };
-export default function ListFilght() {
+export default function ListFilght({ airports }: ListFilghtProps) {
   const [isRoundTrip, setIsRoundTrip] = useState<boolean>(false);
   const [selectedDepartFlight, setSelectedDepartFlight] = useState<any>(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState<any>(null);
@@ -67,7 +56,6 @@ export default function ListFilght() {
   const passengerAdt = parseInt(searchParams.get("Adt") ?? "1");
   const passengerChd = parseInt(searchParams.get("Chd") ?? "0");
   const passengerInf = parseInt(searchParams.get("Inf") ?? "0");
-  const cheapest = parseInt(searchParams.get("cheapest") ?? "0");
 
   const params = useMemo(() => {
     let ListFlightSearch = [
@@ -78,7 +66,7 @@ export default function ListFilght() {
         Airline: "",
       },
     ];
-    if (tripType === "roundTrip" && ReturnDate && ReturnDate !== DepartDate) {
+    if (tripType === "roundTrip" && ReturnDate) {
       ListFlightSearch.push({
         StartPoint: EndPoint,
         EndPoint: StartPoint,
@@ -110,10 +98,12 @@ export default function ListFilght() {
   // End
   const pathName: string = usePathname();
   const [data, setData] = useState<any>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [totalFlightLeg, setTotalFlightLeg] = useState<any[]>([]);
+
   const scrollToResultContainer = () => {
     if (resultsRef.current) {
       handleScrollSmooth(resultsRef.current);
@@ -224,6 +214,7 @@ export default function ListFilght() {
           scrollToResultContainer();
           const response = await FlightApi.search("flights/search", params);
           const listFareData = response?.payload.data.ListFareData ?? [];
+          const flightFleg: any = [];
           if (listFareData.length) {
             listFareData.forEach((flight: any) => {
               const priceAtdWithoutTax = flight.TaxAdt * flight.Adt;
@@ -232,8 +223,13 @@ export default function ListFilght() {
               flight.TotalPriceWithOutTax =
                 flight.TotalPrice -
                 (priceAtdWithoutTax + priceChdWithoutTax + priceInfWithoutTax);
+              const leg = flight.Leg;
+              if (!flightFleg[leg]) {
+                flightFleg[leg] = [];
+              }
             });
           }
+          setTotalFlightLeg(flightFleg);
           setData(listFareData);
           setFilteredData(listFareData);
           resetFilters();
@@ -245,7 +241,17 @@ export default function ListFilght() {
           toast.error("Vui lòng chọn đầy đủ thông tin");
         }
       } catch (error: any) {
-        setError(error.message);
+        if (error instanceof HttpError) {
+          if (error.payload.code === 400) {
+            setError(
+              "Không có chuyến bay nào trong ngày hôm nay, quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin cám ơn!"
+            );
+          }
+        } else {
+          setError(
+            `Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn`
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -255,19 +261,24 @@ export default function ListFilght() {
   }, [params, StartPoint, EndPoint, DepartDate, ReturnDate, tripType, router]);
 
   // Group Flights
-  const groupFlightsByDate = (flights: any[], dateKey: string) => {
+  const groupFlights = (flights: any[]) => {
     if (flights.length < 1) {
       if (isRoundTrip) return [{ 0: [] }, { 1: [] }];
       else return [{ 0: [] }];
     }
     const listFlights = flights.reduce((acc, flight) => {
-      const date = format(flight.ListFlight[0][dateKey], "yyyy-MM-dd");
-      if (!acc[date]) {
-        acc[date] = [];
+      const leg = flight.Leg;
+      if (!acc[leg]) {
+        acc[leg] = [];
       }
-      acc[date].push(flight);
+      acc[leg].push(flight);
       return acc;
     }, {} as { [key: string]: any[] });
+    totalFlightLeg.map((_, index) => {
+      if (!listFlights[index]) {
+        listFlights[index] = [];
+      }
+    });
     return Object.values(listFlights);
   };
 
@@ -312,7 +323,6 @@ export default function ListFilght() {
     if (isRoundTrip) {
       if (selectedDepartFlight && selectedReturnFlight) return;
     } else if (selectedDepartFlight) return;
-
     let filtered = data.map((flight: any) => ({ ...flight }));
     if (filtered.length > 0) {
       if (filters.airlines.length > 0) {
@@ -391,18 +401,14 @@ export default function ListFilght() {
   if (error) {
     return (
       <div ref={resultsRef} className="px-4 w-full mx-auto my-20 text-center">
-        <p className="text-18 font-semibold">
-          Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui
-          lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn.
-        </p>
+        <p className="text-18 font-semibold">{error}</p>
       </div>
     );
   }
-
   let flights: any = [];
   let checkOut = false;
   let totalPriceCheckout = 0;
-  flights = groupFlightsByDate(filteredData, "StartDate");
+  flights = groupFlights(filteredData);
   if (selectedDepartFlight) {
     flights[0] = [selectedDepartFlight];
   }

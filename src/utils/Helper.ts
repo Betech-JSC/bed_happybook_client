@@ -1,3 +1,5 @@
+import { AirportOption } from "@/types/flight";
+
 const smoothScrollTo = (targetPosition: number, duration: number) => {
   const startPosition = window.scrollY;
   const distance = targetPosition - startPosition;
@@ -47,4 +49,90 @@ const generateMonth = (totalMonth: number) => {
 
   return months;
 };
-export { handleScrollSmooth, generateMonth, getDaysInMonth };
+const getAirportsDefault = () => {
+  const object: AirportOption[] = [
+    {
+      label: "Hồ Chí Minh",
+      value: "SGN",
+    },
+    {
+      label: "Hà Nội",
+      value: "HAN",
+    },
+    {
+      label: "Vinh",
+      value: "VII",
+    },
+    {
+      label: "Huế",
+      value: "HUI",
+    },
+    {
+      label: "Đà Lạt",
+      value: "DLI",
+    },
+    {
+      label: "Phú Quốc",
+      value: "PQC",
+    },
+    {
+      label: "Hải Phòng",
+      value: "HBH",
+    },
+    {
+      label: "Quảng Bình",
+      value: "VDH",
+    },
+    {
+      label: "Quảng Nam",
+      value: "VCL",
+    },
+    {
+      label: "Buôn Mê Thuột",
+      value: "BMV",
+    },
+    {
+      label: "Kiên Giang",
+      value: "VKG",
+    },
+    {
+      label: "Cà Mau",
+      value: "CAH",
+    },
+    {
+      label: "Côn Đảo",
+      value: "VCS",
+    },
+    {
+      label: "Điện Biên Phủ",
+      value: "DIN",
+    },
+    {
+      label: "Đà Nẵng",
+      value: "DAD",
+    },
+    {
+      label: "Cần Thơ",
+      value: "VCA",
+    },
+    {
+      label: "Nha Trang",
+      value: "CXR",
+    },
+    {
+      label: "Qui Nhơn",
+      value: "UIH",
+    },
+    {
+      label: "Phú Yên",
+      value: "TBB",
+    },
+  ];
+  return object;
+};
+export {
+  handleScrollSmooth,
+  generateMonth,
+  getDaysInMonth,
+  getAirportsDefault,
+};

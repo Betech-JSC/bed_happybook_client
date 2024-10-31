@@ -14,6 +14,8 @@ import Partner from "../components/Partner";
 import Search from "../components/Search";
 import SideBar from "../components/SideBar";
 import ListFilght from "../components/ListFilght";
+import { AirportOption } from "@/types/flight";
+import { getAirportsDefault } from "@/utils/Helper";
 
 export const metadata: Metadata = {
   title: "Tìm kiếm Vé máy bay",
@@ -24,19 +26,7 @@ export const metadata: Metadata = {
   },
 };
 
-interface SearchPageProps {
-  searchParams: {
-    Adt: number;
-    Chd: number;
-    Inf: number;
-    tripType?: string;
-    StartPoint?: string;
-    EndPoint?: string;
-    DepartDate?: string;
-    ReturnDate?: string;
-    Cheapest?: string;
-  };
-}
+const airports = getAirportsDefault();
 export default async function SearchTicket() {
   return (
     <Suspense>
@@ -60,7 +50,7 @@ export default async function SearchTicket() {
         ></div>
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-24 lg:mb-4 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-            <Search />
+            <Search airports={airports} />
           </div>
         </div>
       </div>
@@ -86,7 +76,7 @@ export default async function SearchTicket() {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="min-h-40">
-            <ListFilght />
+            <ListFilght airports={airports} />
           </div>
         </div>
         <Partner />

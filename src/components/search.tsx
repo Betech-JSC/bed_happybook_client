@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 
-export default function Search() {
+export default function Search({ airports }: any) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
   const handleSearchHotel = () => {
@@ -98,7 +98,7 @@ export default function Search() {
           {activeTab === 0 && (
             <div className="mt-2">
               <Suspense>
-                <SearchFlight />
+                <SearchFlight airports={airports} />
               </Suspense>
             </div>
           )}

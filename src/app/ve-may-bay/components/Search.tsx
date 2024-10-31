@@ -11,22 +11,9 @@ import LocationSwitcher from "./SelectLocation";
 import SelectMenu from "./Passenger/Menu";
 import { toast } from "react-hot-toast";
 import { Suspense } from "react";
+import { FormData, SearchFilghtProps } from "@/types/flight";
 
-interface FormData {
-  from: string | null;
-  to: string | null;
-  departureDate: Date | null;
-  returnDate: Date | null;
-  Adt: number;
-  Chd: number;
-  Inf: number;
-  tripType: string;
-  cheapest: number;
-  fromPlace: string | null;
-  toPlace: string | null;
-}
-
-export default function Search() {
+export default function Search({ airports }: SearchFilghtProps) {
   const today = new Date();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -225,7 +212,10 @@ export default function Search() {
 
         <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
           <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
-            <LocationSwitcher onLocationChange={handleLocationChange} />
+            <LocationSwitcher
+              onLocationChange={handleLocationChange}
+              airports={airports}
+            />
           </div>
           <div
             className={`w-full ${

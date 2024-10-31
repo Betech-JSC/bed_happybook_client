@@ -3,7 +3,7 @@ import { Fragment, Suspense, useState } from "react";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import Image from "next/image";
 
-export default function SearchMobile() {
+export default function SearchMobile({ airports }: any) {
   const [activeTabMb, setActiveTabMb] = useState(0);
   return (
     <Fragment>
@@ -95,7 +95,7 @@ export default function SearchMobile() {
           {activeTabMb === 0 && (
             <div className="px-3">
               <Suspense>
-                <SearchFlight />
+                <SearchFlight airports={airports} />
               </Suspense>
             </div>
           )}

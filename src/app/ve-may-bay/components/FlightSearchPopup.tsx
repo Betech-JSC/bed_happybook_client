@@ -126,11 +126,14 @@ export default function FlightSearchPopup({
     const toOption = airports.find((loc) => loc.value === toParam) || null;
     setFrom(fromOption);
     setTo(toOption);
+  }, [searchParams, airports]);
+
+  useEffect(() => {
     setFormData((prev) => ({
       ...prev,
       departureDate: selectedDate,
     }));
-  }, [searchParams, airports, selectedDate]);
+  }, [selectedDate]);
 
   const handleSearch = () => {
     const totalPassengers = formData.Adt + formData.Chd + formData.Inf;

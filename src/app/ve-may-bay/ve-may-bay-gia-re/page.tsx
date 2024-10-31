@@ -13,7 +13,8 @@ import Link from "next/link";
 import Search from "../components/Search";
 import FlightCalendar from "../components/FlightCalendar";
 import SignUpReceiveCheapTickets from "../components/SignUpReceiveCheapTickets";
-import { AirportOption, SearchParamsProps } from "@/types/flight";
+import { SearchParamsProps } from "@/types/flight";
+import { getAirportsDefault } from "@/utils/Helper";
 
 export const metadata: Metadata = {
   title: "Vé máy bay giá rẻ",
@@ -23,20 +24,7 @@ export const metadata: Metadata = {
     canonical: "/ve-may-bay/ve-may-bay-gia-re",
   },
 };
-const airports: AirportOption[] = [
-  {
-    label: "Hồ Chí Minh",
-    value: "SGN",
-  },
-  {
-    label: "Hà Nội",
-    value: "HAN",
-  },
-  {
-    label: "Nha Trang",
-    value: "CXR",
-  },
-];
+const airports = getAirportsDefault();
 export default async function SearchTicketCheap({
   searchParams,
 }: {
@@ -68,7 +56,7 @@ export default async function SearchTicketCheap({
         ></div>
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-24 lg:mb-4 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-            <Search />
+            <Search airports={airports} />
           </div>
         </div>
       </div>

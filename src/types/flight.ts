@@ -41,3 +41,10 @@ export interface FlightCalendarProps {
   fromOption: AirportOption | null;
   toOption: AirportOption | null;
 }
+
+export interface ListFilghtProps {
+  airports: AirportOption[];
+}
+export interface SearchFilghtProps {
+  airports: AirportOption[];
+}

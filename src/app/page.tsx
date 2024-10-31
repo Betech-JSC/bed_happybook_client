@@ -18,16 +18,18 @@ import Search from "@/components/search";
 import type { Metadata } from "next";
 import Image from "next/image";
 import SearchMobile from "@/components/search-mobile";
+import { getAirportsDefault } from "@/utils/Helper";
 
 export const metadata: Metadata = {
   title: "Trang chủ",
   description: "Happy Book",
 };
+const airports = getAirportsDefault();
 
 export default function Home() {
   return (
     <Fragment>
-      <Search />
+      <Search airports={airports} />
       {/* Search Mobile */}
       <div className="mt-[68px] block lg:hidden relative h-max pb-10">
         <div className="mt-4 h-full">
@@ -70,7 +72,7 @@ export default function Home() {
                 />
               </button>
             </div>
-            <SearchMobile />
+            <SearchMobile airports={airports} />
           </div>
         </div>
       </div>
