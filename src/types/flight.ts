@@ -24,3 +24,20 @@ export interface FormData {
   fromPlace: string | null;
   toPlace: string | null;
 }
+export interface SearchParamsProps {
+  Adt: number;
+  Chd: number;
+  Inf: number;
+  tripType: string | null;
+  StartPoint: string | null;
+  EndPoint: string | null;
+  DepartDate: string | null;
+  ReturnDate: string | null;
+  Cheapest: string | null;
+}
+
+export interface FlightCalendarProps {
+  airports: AirportOption[];
+  fromOption: AirportOption | null;
+  toOption: AirportOption | null;
+}

@@ -23,13 +23,13 @@ interface FlightSearchPopupProps {
   onDateChange: (date: Date | null) => void;
 }
 
-const FlightSearchPopup: React.FC<FlightSearchPopupProps> = ({
+export default function FlightSearchPopup({
   isOpen,
   onClose,
   airports,
   selectedDate,
   onDateChange,
-}) => {
+}: FlightSearchPopupProps) {
   const today = new Date();
   const tripType: string = "oneWay";
   const searchParams = useSearchParams();
@@ -132,8 +132,6 @@ const FlightSearchPopup: React.FC<FlightSearchPopupProps> = ({
     }));
   }, [searchParams, airports, selectedDate]);
 
-  if (!isOpen) return null;
-  console.log(formData);
   const handleSearch = () => {
     const totalPassengers = formData.Adt + formData.Chd + formData.Inf;
     const { from, to, departureDate, Adt, Chd, Inf } = formData;
@@ -150,7 +148,14 @@ const FlightSearchPopup: React.FC<FlightSearchPopupProps> = ({
     }
   };
   return (
-    <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex justify-center items-center">
+    <div
+      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
+        isOpen ? "visible z-[9999]" : "invisible z-[-1]"
+      }`}
+      style={{
+        opacity: isOpen ? "100" : "0",
+      }}
+    >
       <div className="bg-white h-max p-6 md:w-[526px] rounded-2xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Tìm Vé Máy Bay</h2>
@@ -340,6 +345,4 @@ const FlightSearchPopup: React.FC<FlightSearchPopupProps> = ({
       </div>
     </div>
   );
-};
-
-export default FlightSearchPopup;
+}

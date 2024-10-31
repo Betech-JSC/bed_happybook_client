@@ -13,30 +13,39 @@ import Link from "next/link";
 import Search from "../components/Search";
 import FlightCalendar from "../components/FlightCalendar";
 import SignUpReceiveCheapTickets from "../components/SignUpReceiveCheapTickets";
+import { AirportOption, SearchParamsProps } from "@/types/flight";
 
 export const metadata: Metadata = {
   title: "Vé máy bay giá rẻ",
   description: "Happy Book | Vé máy bay giá rẻ",
-  keywords: "Tìm kiếm Vé máy bay",
+  keywords: "Vé máy bay giá rẻ",
   alternates: {
     canonical: "/ve-may-bay/ve-may-bay-gia-re",
   },
 };
-
-interface SearchPageProps {
-  searchParams: {
-    Adt: number;
-    Chd: number;
-    Inf: number;
-    tripType?: string;
-    StartPoint?: string;
-    EndPoint?: string;
-    DepartDate?: string;
-    ReturnDate?: string;
-    Cheapest?: string;
-  };
-}
-export default async function SearchTicket() {
+const airports: AirportOption[] = [
+  {
+    label: "Hồ Chí Minh",
+    value: "SGN",
+  },
+  {
+    label: "Hà Nội",
+    value: "HAN",
+  },
+  {
+    label: "Nha Trang",
+    value: "CXR",
+  },
+];
+export default async function SearchTicketCheap({
+  searchParams,
+}: {
+  searchParams: SearchParamsProps;
+}) {
+  const startPoint = searchParams?.StartPoint ?? "SGN";
+  const endPoint = searchParams?.EndPoint ?? "HAN";
+  const fromOption = airports.find((loc) => loc.value === startPoint) || null;
+  const toOption = airports.find((loc) => loc.value === endPoint) || null;
   return (
     <Suspense>
       <div className="relative z-[1] h-max pb-12">
@@ -86,7 +95,8 @@ export default async function SearchTicket() {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/ve-may-bay-gia-re" className="text-gray-700">
-                    Vé máy bay giá rẻ
+                    Vé máy bay từ {fromOption?.label ?? "Hồ Chí Minh"} {" tới "}
+                    {toOption?.label ?? "Hà Nội"}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -94,7 +104,11 @@ export default async function SearchTicket() {
           </Breadcrumb>
 
           <div className="min-h-40">
-            <FlightCalendar />
+            <FlightCalendar
+              airports={airports}
+              fromOption={fromOption}
+              toOption={toOption}
+            />
           </div>
           <div className="mt-8">
             <SignUpReceiveCheapTickets />

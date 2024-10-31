@@ -1,28 +1,18 @@
-"use client"; // Đảm bảo rằng component này được xử lý như một client component
+"use client";
 
 import Image from "next/image";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { AirportOption } from "@/types/flight";
-import { generateMonth, getDaysInMonth } from "@/utils/Helper";
+import {
+  generateMonth,
+  getDaysInMonth,
+  handleScrollSmooth,
+} from "@/utils/Helper";
 import { FlightApi } from "@/api/Fligt";
 import FlightSearchPopup from "./FlightSearchPopup";
 import { getDay, isValid, parse, format } from "date-fns";
+import { AirportOption, FlightCalendarProps } from "@/types/flight";
 
-const airports: AirportOption[] = [
-  {
-    label: "Hồ Chí Minh",
-    value: "SGN",
-  },
-  {
-    label: "Hà Nội",
-    value: "HAN",
-  },
-  {
-    label: "Nha Trang",
-    value: "CXR",
-  },
-];
 const airLines = [
   {
     label: "Vietjet Air",
@@ -59,25 +49,27 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
     : allFlights;
   if (filteredFlights.length === 0) return null;
   return filteredFlights.reduce((lowest, flight) =>
-    flight.price < lowest.price ? flight : lowest
+    flight.FareAdt < lowest.FareAdt ? flight : lowest
   );
 };
 const listNextMonth = generateMonth(12);
 
-export default function FlightCalendar() {
+export default function FlightCalendar({
+  airports,
+  fromOption,
+  toOption,
+}: FlightCalendarProps) {
   const searchParams = useSearchParams();
   const currentDate = new Date();
   const currentDay = currentDate.getDate();
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
   const [daysInMonth, setDaysInMonth] = useState<Array<number | null>>([]);
-  const [activeDay, setActiveDay] = useState<number>(currentDay);
-  const [month, setMonth] = useState<number>(currentMonth);
-  const [year, setYear] = useState<number>(currentYear);
-  const [fromLabel, setFromLabel] = useState<string>("Hồ Chí Minh");
-  const [toLabel, setToLabel] = useState<string>("Hà Nội");
+  const [activeDay, setActiveDay] = useState<number | null>(null);
+  const [month, setMonth] = useState<number>(0);
+  const [year, setYear] = useState<number>(0);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const [flightDataByDay, setFlightDataByDay] = useState<
+  const [dataFlightDepart, setDataFlightDepart] = useState<
     Record<number, { flights: any[] } | undefined>
   >({});
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -85,11 +77,19 @@ export default function FlightCalendar() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [tripType, setTripType] = useState<string>("oneWay");
+  const [from, setFrom] = useState<AirportOption | null>(null);
+  const [to, setTo] = useState<AirportOption | null>(null);
+  const scrollToResultContainer = () => {
+    if (resultsRef.current) {
+      handleScrollSmooth(resultsRef.current);
+    }
+  };
 
   useEffect(() => {
     const totalDays = getDaysInMonth(year, month);
     const firstDayOfMonth = getDay(new Date(year, month - 1, 1));
-    const daysArray: Array<number | null> = Array(firstDayOfMonth).fill(null); // Khoảng trống cho ngày trước
+    const daysArray: Array<number | null> = Array(firstDayOfMonth).fill(null);
     for (let i = 1; i <= totalDays; i++) {
       daysArray.push(i);
     }
@@ -103,13 +103,9 @@ export default function FlightCalendar() {
   }, [month, year, currentMonth, currentYear, currentDay]);
 
   useEffect(() => {
-    const fromParam = searchParams.get("StartPoint") ?? "SGN";
-    const toParam = searchParams.get("EndPoint") ?? "HAN";
     const departDateParam = searchParams.get("DepartDate") ?? "";
-    const fromOption = airports.find((loc) => loc.value === fromParam);
-    const toOption = airports.find((loc) => loc.value === toParam);
-    setFromLabel(fromOption?.label ?? "Hồ Chí Minh");
-    setToLabel(toOption?.label ?? "Hà Nội");
+    setFrom(fromOption);
+    setTo(toOption);
     const parsedDate = parse(departDateParam, "ddMMyyyy", new Date());
     const month = isValid(parsedDate)
       ? parseInt(format(parsedDate, "MM"))
@@ -117,26 +113,47 @@ export default function FlightCalendar() {
     const year = isValid(parsedDate)
       ? parseInt(format(parsedDate, "yyyy"))
       : currentYear;
+    const tripType = searchParams.get("tripType") ?? "oneWay";
+    setTripType(tripType);
     setMonth(month);
     setYear(year);
-  }, [searchParams, currentMonth, currentYear]);
-
+  }, [searchParams, airports, fromOption, toOption, currentMonth, currentYear]);
   //   Fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await FlightApi.search("flights/searchmonth", {
-          StartPoint: searchParams.get("StartPoint") ?? "SGN",
-          EndPoint: searchParams.get("EndPoint") ?? "HAN",
-          Airline: "",
-          Month: month,
-          Year: year,
-        });
-        const ListMinPrice = response?.payload.data.ListMinPrice ?? [];
-        const mappedData = mapDataByDay(ListMinPrice);
-        setFlightDataByDay(mappedData);
-        setError(null);
+        scrollToResultContainer();
+        const StartPoint = searchParams.get("StartPoint") ?? "SGN";
+        const EndPoint = searchParams.get("EndPoint") ?? "HAN";
+
+        // if (tripType === "roundTrip") {
+        //   const responseReturn = await FlightApi.search("flights/searchmonth", {
+        //     StartPoint: EndPoint,
+        //     EndPoint: StartPoint,
+        //     Airline: "",
+        //     Month: monthReturn,
+        //     Year: yearReturn,
+        //   });
+        //   const ListMinPriceReturn =
+        //     responseReturn?.payload.data.ListMinPrice ?? [];
+        //   const mappedData = mapDataByDay(ListMinPriceReturn);
+        //   setDataFlightReturn(mappedData);
+        // }
+        if (year && month) {
+          setAirlineFilter(null);
+          const response = await FlightApi.search("flights/searchmonth", {
+            StartPoint: StartPoint,
+            EndPoint: EndPoint,
+            Airline: "",
+            Month: month,
+            Year: year,
+          });
+          const ListMinPrice = response?.payload.data.ListMinPrice ?? [];
+          const mappedData = mapDataByDay(ListMinPrice);
+          setDataFlightDepart(mappedData);
+          setError(null);
+        }
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -192,10 +209,13 @@ export default function FlightCalendar() {
   return (
     <Fragment>
       <h1 className="text-32 font-bold mt-6">
-        Vé Máy Bay từ {fromLabel} tới {toLabel}
+        Vé Máy Bay từ {from?.label ?? "Hồ Chí Minh"} tới {to?.label ?? "Hà Nội"}
       </h1>
-      <div className="p-6 bg-white border border-gray-300 rounded-lg shadow-lg mt-6">
-        <div className="grid grid-cols-4 gap-8">
+      <div
+        ref={resultsRef}
+        className="bg-white border pb-6 border-gray-300 rounded-lg shadow-lg mt-6"
+      >
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           <div className="w-full">
             <label className="block text-gray-700 mb-1">Từ</label>
             <div className="flex h-12 items-center border rounded-lg px-2">
@@ -209,7 +229,7 @@ export default function FlightCalendar() {
               <div className="w-full cursor-pointer">
                 <input
                   type="text"
-                  value={fromLabel}
+                  value={from?.label ?? "Hồ Chí Minh"}
                   onFocus={(e) => e.target.blur()}
                   onKeyDown={(e) => {
                     e.preventDefault();
@@ -261,7 +281,7 @@ export default function FlightCalendar() {
               <div className="w-full cursor-pointer">
                 <input
                   type="text"
-                  value={toLabel}
+                  value={to?.label ?? "Hà Nội"}
                   onFocus={(e) => e.target.blur()}
                   onKeyDown={(e) => {
                     e.preventDefault();
@@ -351,23 +371,82 @@ export default function FlightCalendar() {
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-7 gap-3 text-center">
+        <div className="px-6 grid grid-cols-7 gap-1 md:gap-3 text-center">
           {[
-            "Chủ nhật",
-            "Thứ 2",
-            "Thứ 3",
-            "Thứ 4",
-            "Thứ 5",
-            "Thứ 6",
-            "Thứ 7",
-          ].map((dayName) => (
-            <div key={dayName} className="font-semibold mb-3">
-              {dayName}
-            </div>
-          ))}
-
+            {
+              label: "Chủ nhật",
+              type: "full",
+            },
+            {
+              label: "CN",
+              type: "short",
+            },
+            {
+              label: "Thứ 2",
+              type: "full",
+            },
+            {
+              label: "T2",
+              type: "short",
+            },
+            {
+              label: "Thứ 3",
+              type: "full",
+            },
+            {
+              label: "T3",
+              type: "short",
+            },
+            {
+              label: "Thứ 4",
+              type: "full",
+            },
+            {
+              label: "T4",
+              type: "short",
+            },
+            {
+              label: "Thứ 5",
+              type: "full",
+            },
+            {
+              label: "T5",
+              type: "short",
+            },
+            {
+              label: "Thứ 6",
+              type: "full",
+            },
+            {
+              label: "T6",
+              type: "short",
+            },
+            {
+              label: "Thứ 7",
+              type: "full",
+            },
+            {
+              label: "T7",
+              type: "short",
+            },
+          ].map((dayName, index) => {
+            return dayName.type === "full" ? (
+              <div key={index} className="font-semibold mb-3 hidden lg:block">
+                {dayName.label}
+              </div>
+            ) : (
+              <div
+                key={index}
+                className="text-sm font-semibold mb-3 block lg:hidden"
+              >
+                {dayName.label}
+              </div>
+            );
+          })}
+        </div>
+        <div className="lg:px-6 mt-2 p-1 grid grid-cols-7 gap-1 md:gap-3 text-center">
           {daysInMonth.map((day, index) => {
-            const flightData = flightDataByDay[day ?? 0];
+            const flightData = dataFlightDepart[day ?? 0];
             const flightLowestPrice =
               flightData && getLowestPrice(flightData.flights, airlineFilter);
             const disabled = isDisabled(day ?? 0);
@@ -376,17 +455,17 @@ export default function FlightCalendar() {
             return day ? (
               <div
                 key={day !== null ? day : `empty-${index}`}
-                className={`p-2 border rounded-xl lg:h-28 border-gray-200 transition-all duration-300 ${
+                className={`p-1 md:p-2 min-h-12 border rounded-lg md:rounded-xl lg:h-28 border-gray-200 transition-all duration-300 ${
                   disabled ? "opacity-50 cursor-not-allowed bg-gray-200" : ""
                 } ${isActive ? "bg-primary text-white" : ""}`}
               >
                 {!disabled && (
                   <div
-                    className="flex flex-col justify-between h-full cursor-pointer"
+                    className="flex flex-col space-y-1 justify-between h-full cursor-pointer"
                     onClick={() => handleDayClick(day)}
                   >
                     <div className="flex justify-between w-full items-start">
-                      <span className="font-normal">
+                      <span className="text-xs font-semibold md:font-normal  md:text-base">
                         {day.toString().padStart(2, "0")}
                       </span>
                       {flightLowestPrice && (
@@ -396,16 +475,22 @@ export default function FlightCalendar() {
                             alt={"VN"}
                             width={40}
                             height={40}
-                            className="w-10 h-10"
+                            className="w-4 h-4 md:w-6 md:h-6 lg:w-10 lg:h-10"
                           />
                         </div>
                       )}
                     </div>
                     <div className="font-semibold text-left">
                       {flightLowestPrice && (
-                        <div className="font-semibold">
-                          {flightLowestPrice.TotalPrice.toLocaleString()} vnd
-                        </div>
+                        <Fragment>
+                          <div className="font-semibold hidden lg:block">
+                            {flightLowestPrice.FareAdt.toLocaleString()} vnd
+                          </div>
+                          <div className="break-words text-sm md:text-base md:text-left text-center font-semibold block lg:hidden">
+                            {`${Math.floor(flightLowestPrice.FareAdt / 1000)}`}
+                            <span className="text-xs font-semibold">K</span>
+                          </div>
+                        </Fragment>
                       )}
                     </div>
                   </div>
