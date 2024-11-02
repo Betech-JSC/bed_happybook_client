@@ -3,7 +3,11 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SelectMenu from "./Passenger/Menu";
 import DatePicker from "react-datepicker";
-import { AirportOption, FormData } from "@/types/flight";
+import {
+  AirportOption,
+  FlightSearchPopupProps,
+  FormData,
+} from "@/types/flight";
 import { format } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -12,23 +16,13 @@ import "@/styles/datePicker.scss";
 import { vi } from "date-fns/locale";
 import Select, { SingleValue } from "react-select";
 
-interface FlightSearchPopupProps {
-  isOpen: boolean;
-  onClose: () => void;
-  airports: {
-    label: string;
-    value: string;
-  }[];
-  selectedDate: Date | null;
-  onDateChange: (date: Date | null) => void;
-}
-
 export default function FlightSearchPopup({
   isOpen,
   onClose,
   airports,
   selectedDate,
   onDateChange,
+  flightType,
 }: FlightSearchPopupProps) {
   const today = new Date();
   const tripType: string = "oneWay";
@@ -52,6 +46,8 @@ export default function FlightSearchPopup({
   const [to, setTo] = useState<SingleValue<AirportOption> | null>(null);
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
+  const keyFromParam = flightType === "return" ? "EndPoint" : "StartPoint";
+  const keyToParam = flightType === "return" ? "StartPoint" : "EndPoint";
 
   const handleGuestChange = (key: string, value: number) => {
     setFormData((prev) => ({
@@ -75,19 +71,6 @@ export default function FlightSearchPopup({
       setTo(prevFrom);
       return to;
     });
-  };
-
-  const handleFocusNextDate = (nextRef: React.RefObject<DatePicker | null>) => {
-    if (nextRef.current) {
-      nextRef.current.setFocus();
-    }
-  };
-
-  const handleDepartDateChange = (date: Date | null) => {
-    setFormData((prev) => ({
-      ...prev,
-      departureDate: date,
-    }));
   };
 
   useEffect(() => {
@@ -119,14 +102,13 @@ export default function FlightSearchPopup({
   }, [from, to, handleLocationChange]);
 
   useEffect(() => {
-    const fromParam = searchParams.get("StartPoint");
-    const toParam = searchParams.get("EndPoint");
-
+    const fromParam = searchParams.get(keyFromParam);
+    const toParam = searchParams.get(keyToParam);
     const fromOption = airports.find((loc) => loc.value === fromParam) || null;
     const toOption = airports.find((loc) => loc.value === toParam) || null;
     setFrom(fromOption);
     setTo(toOption);
-  }, [searchParams, airports]);
+  }, [searchParams, keyFromParam, keyToParam, airports]);
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -143,7 +125,7 @@ export default function FlightSearchPopup({
         ? format(departureDate, "ddMMyyyy")
         : "";
       router.push(
-        `/ve-may-bay/tim-kiem-ve?StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}`
+        `/ve-may-bay/tim-kiem-ve?tripType=oneWay&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}`
       );
     } else {
       toast.dismiss();

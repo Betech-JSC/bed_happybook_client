@@ -58,6 +58,7 @@ export default function FlightCalendar({
   airports,
   fromOption,
   toOption,
+  flightType,
 }: FlightCalendarProps) {
   const searchParams = useSearchParams();
   const currentDate = new Date();
@@ -80,6 +81,7 @@ export default function FlightCalendar({
   const [tripType, setTripType] = useState<string>("oneWay");
   const [from, setFrom] = useState<AirportOption | null>(null);
   const [to, setTo] = useState<AirportOption | null>(null);
+  const keyDateParams = flightType === "return" ? "ReturnDate" : "DepartDate";
   const scrollToResultContainer = () => {
     if (resultsRef.current) {
       handleScrollSmooth(resultsRef.current);
@@ -103,7 +105,7 @@ export default function FlightCalendar({
   }, [month, year, currentMonth, currentYear, currentDay]);
 
   useEffect(() => {
-    const departDateParam = searchParams.get("DepartDate") ?? "";
+    const departDateParam = searchParams.get(keyDateParams) ?? "";
     setFrom(fromOption);
     setTo(toOption);
     const parsedDate = parse(departDateParam, "ddMMyyyy", new Date());
@@ -117,29 +119,24 @@ export default function FlightCalendar({
     setTripType(tripType);
     setMonth(month);
     setYear(year);
-  }, [searchParams, airports, fromOption, toOption, currentMonth, currentYear]);
+  }, [
+    searchParams,
+    keyDateParams,
+    airports,
+    fromOption,
+    toOption,
+    currentMonth,
+    currentYear,
+  ]);
   //   Fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         scrollToResultContainer();
-        const StartPoint = searchParams.get("StartPoint") ?? "SGN";
-        const EndPoint = searchParams.get("EndPoint") ?? "HAN";
+        const StartPoint = fromOption?.value ?? "SGN";
+        const EndPoint = toOption?.value ?? "HAN";
 
-        // if (tripType === "roundTrip") {
-        //   const responseReturn = await FlightApi.search("flights/searchmonth", {
-        //     StartPoint: EndPoint,
-        //     EndPoint: StartPoint,
-        //     Airline: "",
-        //     Month: monthReturn,
-        //     Year: yearReturn,
-        //   });
-        //   const ListMinPriceReturn =
-        //     responseReturn?.payload.data.ListMinPrice ?? [];
-        //   const mappedData = mapDataByDay(ListMinPriceReturn);
-        //   setDataFlightReturn(mappedData);
-        // }
         if (year && month) {
           setAirlineFilter(null);
           const response = await FlightApi.search("flights/searchmonth", {
@@ -162,14 +159,14 @@ export default function FlightCalendar({
     };
 
     fetchData();
-  }, [searchParams, month, year]);
+  }, [searchParams, fromOption, toOption, month, year]);
 
   if (!month) return null;
   // Loading
   if (loading) {
     return (
       <div
-        ref={resultsRef}
+        ref={flightType === "depart" ? resultsRef : null}
         className={`flex my-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
@@ -181,7 +178,10 @@ export default function FlightCalendar({
   // Error Connect api
   if (error) {
     return (
-      <div ref={resultsRef} className="px-4 w-full mx-auto my-20 text-center">
+      <div
+        ref={flightType === "depart" ? resultsRef : null}
+        className="px-4 w-full mx-auto my-20 text-center"
+      >
         <p className="text-18 font-semibold">
           Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui
           lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn.
@@ -212,7 +212,7 @@ export default function FlightCalendar({
         Vé Máy Bay từ {from?.label ?? "Hồ Chí Minh"} tới {to?.label ?? "Hà Nội"}
       </h1>
       <div
-        ref={resultsRef}
+        ref={flightType === "depart" ? resultsRef : null}
         className="bg-white pb-4 border border-b-0 border-gray-300 rounded-t-lg mt-6"
       >
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
@@ -485,7 +485,7 @@ export default function FlightCalendar({
                           <div className="font-semibold hidden lg:block">
                             {flightLowestPrice.FareAdt.toLocaleString()} vnd
                           </div>
-                          <div className="break-words text-sm md:text-base md:text-left text-center font-semibold block lg:hidden">
+                          <div className="text-sm md:text-base md:text-left text-center font-semibold block lg:hidden">
                             {`${Math.floor(flightLowestPrice.FareAdt / 1000)}`}
                             <span className="text-xs font-semibold">K</span>
                           </div>
@@ -511,6 +511,7 @@ export default function FlightCalendar({
           selectedDate={selectedDate}
           onDateChange={(date) => setSelectedDate(date)}
           airports={airports}
+          flightType={flightType}
         />
       </div>
     </Fragment>

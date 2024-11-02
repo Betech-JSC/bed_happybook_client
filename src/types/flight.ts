@@ -40,6 +40,7 @@ export interface FlightCalendarProps {
   airports: AirportOption[];
   fromOption: AirportOption | null;
   toOption: AirportOption | null;
+  flightType: string;
 }
 
 export interface ListFilghtProps {
@@ -47,4 +48,16 @@ export interface ListFilghtProps {
 }
 export interface SearchFilghtProps {
   airports: AirportOption[];
+}
+
+export interface FlightSearchPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  airports: {
+    label: string;
+    value: string;
+  }[];
+  selectedDate: Date | null;
+  onDateChange: (date: Date | null) => void;
+  flightType: string;
 }

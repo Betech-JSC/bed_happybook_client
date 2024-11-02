@@ -32,6 +32,7 @@ export default async function SearchTicketCheap({
 }) {
   const startPoint = searchParams?.StartPoint ?? "SGN";
   const endPoint = searchParams?.EndPoint ?? "HAN";
+  const tripType = searchParams?.tripType ?? "oneWay";
   const fromOption = airports.find((loc) => loc.value === startPoint) || null;
   const toOption = airports.find((loc) => loc.value === endPoint) || null;
   return (
@@ -97,9 +98,22 @@ export default async function SearchTicketCheap({
               airports={airports}
               fromOption={fromOption}
               toOption={toOption}
+              flightType={"depart"}
             />
           </div>
         </div>
+        {tripType === "roundTrip" && (
+          <div className="px-0 md:px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
+            <div className="min-h-40">
+              <FlightCalendar
+                airports={airports}
+                fromOption={toOption}
+                toOption={fromOption}
+                flightType={"return"}
+              />
+            </div>
+          </div>
+        )}
         <div className="px-3 pb-12 lg:px-[50px] xl:px-[80px] max__screen">
           <div className="mt-8">
             <SignUpReceiveCheapTickets />
