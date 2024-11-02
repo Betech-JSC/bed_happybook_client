@@ -90,7 +90,8 @@ export default async function SearchTicketCheap({
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-
+        </div>
+        <div className="px-0 md:px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           <div className="min-h-40">
             <FlightCalendar
               airports={airports}
@@ -98,6 +99,8 @@ export default async function SearchTicketCheap({
               toOption={toOption}
             />
           </div>
+        </div>
+        <div className="px-3 pb-12 lg:px-[50px] xl:px-[80px] max__screen">
           <div className="mt-8">
             <SignUpReceiveCheapTickets />
           </div>

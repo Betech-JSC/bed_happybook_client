@@ -34,7 +34,7 @@ export default function SignUpReceiveCheapTickets() {
     }, 1500);
   };
   return (
-    <div className="flex flex-col md:flex-row mt-8 space-y-4 md:space-x-6 md:space-y-0 p-8 bg-white rounded-3xl">
+    <div className="flex flex-col md:flex-row mt-8 space-y-4 md:space-x-6 md:space-y-0 p-4 md:p-8 bg-white rounded-3xl">
       <div className="w-full md:w-[60%] pr-0 md:pr-8">
         <div className="bg-white">
           <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">

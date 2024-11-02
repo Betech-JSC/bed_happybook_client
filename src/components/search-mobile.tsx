@@ -90,7 +90,7 @@ export default function SearchMobile({ airports }: any) {
           </div>
         </div>
         {/* Tabs Fly */}
-        <div className="mx-3 pt-6 pb-4  h-[530px] bg-white rounded-2xl shadow-lg relative">
+        <div className="mx-3 h-fit pt-6 pb-4 bg-white rounded-2xl shadow-lg relative">
           {/* Tab Fly */}
           {activeTabMb === 0 && (
             <div className="px-3">

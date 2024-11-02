@@ -181,7 +181,7 @@ export default function Search({ airports }: SearchFilghtProps) {
           <label className="flex items-center space-x-2">
             <input
               type="radio"
-              name="tripType"
+              // name="tripType"
               className="form-radio"
               value="oneway"
               checked={tripType === "oneWay"}
@@ -192,7 +192,7 @@ export default function Search({ airports }: SearchFilghtProps) {
           <label className="flex items-center space-x-2">
             <input
               type="radio"
-              name="tripType"
+              // name="tripType"
               className="form-radio"
               checked={tripType === "roundTrip"}
               onChange={() => handleTripChange("roundTrip")}

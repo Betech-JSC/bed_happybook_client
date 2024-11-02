@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import { handleScrollSmooth } from "@/utils/Helper";
 import SignUpReceiveCheapTickets from "./SignUpReceiveCheapTickets";
 import { HttpError } from "@/lib/error";
-import { AirportOption, ListFilghtProps } from "@/types/flight";
+import { ListFilghtProps } from "@/types/flight";
 
 interface Day {
   label: string;
@@ -36,6 +36,9 @@ export default function ListFilght({ airports }: ListFilghtProps) {
   const [isRoundTrip, setIsRoundTrip] = useState<boolean>(false);
   const [selectedDepartFlight, setSelectedDepartFlight] = useState<any>(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState<any>(null);
+  const [displayType, setDisplayType] = useState<"desktop" | "mobile">(
+    "desktop"
+  );
   const router = useRouter();
   // Handle Params
   const searchParams = useSearchParams();
@@ -148,26 +151,29 @@ export default function ListFilght({ airports }: ListFilghtProps) {
     setCurrentReturnDay(currentReturnDate);
   }, [today, currentReturnDate]);
 
-  const generateDays = useCallback((baseDate: Date, type: string) => {
-    const newDays: Day[] = [];
+  const generateDays = useCallback(
+    (baseDate: Date, type: string, displayType: "desktop" | "mobile") => {
+      const newDays: Day[] = [];
 
-    for (let i = -3; i <= 3; i++) {
-      const date = addDays(baseDate, i);
-      const isDisabled =
-        isBefore(date, new Date()) && !isSameDay(date, new Date());
-      newDays.push({
-        label: getDayLabel(date.getDay()),
-        date,
-        disabled: isDisabled,
-      });
-    }
-    if (type === "depart") setDays(newDays);
-    else setReturnDays(newDays);
-  }, []);
+      for (let i = -3; i <= 3; i++) {
+        const date = addDays(baseDate, i);
+        const isDisabled =
+          isBefore(date, new Date()) && !isSameDay(date, new Date());
+        newDays.push({
+          label: getDayLabel(date.getDay(), displayType),
+          date,
+          disabled: isDisabled,
+        });
+      }
+      if (type === "depart") setDays(newDays);
+      else setReturnDays(newDays);
+    },
+    []
+  );
   useEffect(() => {
-    generateDays(currentDate, "depart");
-    if (isRoundTrip) generateDays(currentReturnDay, "return");
-  }, [currentDate, currentReturnDay, isRoundTrip, generateDays]);
+    generateDays(currentDate, "depart", displayType);
+    if (isRoundTrip) generateDays(currentReturnDay, "return", displayType);
+  }, [currentDate, currentReturnDay, isRoundTrip, displayType, generateDays]);
 
   const handleClickDate = (date: Date, typeDate: number) => {
     const formattedDate = format(date, "ddMMyyyy");
@@ -185,18 +191,28 @@ export default function ListFilght({ airports }: ListFilghtProps) {
     history.replaceState(null, "", `${pathName}?${params.toString()}`);
   };
 
-  const getDayLabel = (dayIndex: number) => {
-    const daysOfWeek = [
-      "Thứ 2",
-      "Thứ 3",
-      "Thứ 4",
-      "Thứ 5",
-      "Thứ 6",
-      "Thứ 7",
-      "Chủ nhật",
-    ];
+  const getDayLabel = (dayIndex: number, displayType: "desktop" | "mobile") => {
+    const daysOfWeek =
+      displayType === "desktop"
+        ? ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"]
+        : ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+
     return daysOfWeek[dayIndex] || "Không xác định";
   };
+  // Is desktop or Mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setDisplayType("desktop");
+      } else {
+        setDisplayType("mobile");
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Fetch and Handle Data
   useEffect(() => {
@@ -585,7 +601,7 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                   </div>
                 </div>
                 {/* Tabs day */}
-                <div className="grid grid-cols-7 items-center bg-white px-3 rounded-b-2xl">
+                <div className="grid grid-cols-7 items-center bg-white rounded-b-2xl">
                   {days.map((day, index) => (
                     <button
                       key={index}
@@ -602,8 +618,10 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                           : "text-black"
                       }`}
                     >
-                      <div className="font-semibold">{day.label}</div>
-                      <div className="text-sm mt-2">
+                      <div className="text-sm md:text-base font-semibold">
+                        {day.label}
+                      </div>
+                      <div className="text-xs md:text-sm mt-2">
                         {format(day.date, "dd/MM")}
                       </div>
                     </button>

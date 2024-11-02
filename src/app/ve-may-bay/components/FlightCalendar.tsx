@@ -208,12 +208,12 @@ export default function FlightCalendar({
 
   return (
     <Fragment>
-      <h1 className="text-32 font-bold mt-6">
+      <h1 className="text-32 font-bold mt-6 px-3 md:px-0">
         Vé Máy Bay từ {from?.label ?? "Hồ Chí Minh"} tới {to?.label ?? "Hà Nội"}
       </h1>
       <div
         ref={resultsRef}
-        className="bg-white border pb-6 border-gray-300 rounded-lg shadow-lg mt-6"
+        className="bg-white pb-4 border border-b-0 border-gray-300 rounded-t-lg mt-6"
       >
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           <div className="w-full">
@@ -370,8 +370,9 @@ export default function FlightCalendar({
             </div>
           </div>
         </div>
-
-        <div className="px-6 grid grid-cols-7 gap-1 md:gap-3 text-center">
+      </div>
+      <div className="bg-white border border-t-0 pb-6 border-gray-300 rounded-b-lg">
+        <div className="px-0 md:px-6 pt-0 grid grid-cols-7 gap-[2px] md:gap-3 text-center">
           {[
             {
               label: "Chủ nhật",
@@ -443,8 +444,6 @@ export default function FlightCalendar({
               </div>
             );
           })}
-        </div>
-        <div className="lg:px-6 mt-2 p-1 grid grid-cols-7 gap-1 md:gap-3 text-center">
           {daysInMonth.map((day, index) => {
             const flightData = dataFlightDepart[day ?? 0];
             const flightLowestPrice =
