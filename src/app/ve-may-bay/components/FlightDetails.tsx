@@ -1,27 +1,39 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { Fragment, useCallback, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import PassengerTable from "./PassengerTable";
 import {
   formatDate,
   formatNumberToHoursAndMinutesFlight,
   formatTime,
 } from "@/lib/formatters";
-import { PassengerType } from "@/types/flight";
+import { AirportOption, PassengerType } from "@/types/flight";
+import { HttpError } from "@/lib/error";
+import toast from "react-hot-toast";
+import { FlightApi } from "@/api/Flight";
 
 const FlightDetails = ({
+  session,
   FareData,
   fromPlace = "",
   toPlace = "",
   onSelectFlight,
   selectedFlight,
   filters = {},
+  airports,
 }: any) => {
   const [showDetails, setShowDetails] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | string>(0);
   const [hasHeight, setHasHeight] = useState<boolean>(false);
+  const [isLoadingRules, setIsLoadingRules] = useState<boolean>(false);
   const passengers: PassengerType[] = [
     {
       type: "Adt",
@@ -49,16 +61,57 @@ const FlightDetails = ({
     },
   ];
   const flight = FareData.ListFlight ? FareData.ListFlight[0] : null;
+  const fetchFareRules = useCallback(
+    async (FareData: any, flight: any) => {
+      try {
+        setIsLoadingRules(true);
+        const params = {
+          FlightRequest: {
+            ListFareData: [
+              {
+                Session: session,
+                FareDataId: FareData.FareDataId,
+                ListFlight: [
+                  {
+                    FlightValue: flight.FlightValue,
+                  },
+                ],
+              },
+            ],
+          },
+        };
+
+        const response = await FlightApi.getFareRules(
+          "flights/getfarerules",
+          params
+        );
+        const fareRules =
+          response?.payload.data.ListFareRules[0].ListRulesGroup[0]
+            .ListRulesText[0] ??
+          `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
+        return fareRules;
+      } catch (error: any) {
+        return `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
+      } finally {
+        setIsLoadingRules(false);
+      }
+    },
+    [session]
+  );
   const toggleShowDetails = useCallback(
-    (id: number) => {
-      if (contentRef.current) {
-        setHeight(showDetails ? 0 : contentRef.current.scrollHeight + 60);
-        setHasHeight(true);
+    async (id: number) => {
+      if (!flight.ListRulesTicket) {
+        flight.ListRulesTicket = await fetchFareRules(FareData, flight);
       }
       setShowDetails(showDetails === id ? null : id);
     },
-    [showDetails]
+    [showDetails, flight, FareData, fetchFareRules]
   );
+  useEffect(() => {
+    if (!contentRef.current) return;
+    setHeight(showDetails ? 0 : contentRef.current.scrollHeight + 60);
+    setHasHeight(true);
+  }, [showDetails]);
   return (
     <Fragment>
       {flight && (
@@ -83,8 +136,13 @@ const FlightDetails = ({
               <button
                 className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
                 onClick={() => toggleShowDetails(flight.id)}
+                disabled={isLoadingRules}
               >
-                Xem chi tiết
+                {isLoadingRules ? (
+                  <span className="loader_spiner"></span>
+                ) : (
+                  "Xem chi tiết"
+                )}
               </button>
             </div>
 
@@ -109,7 +167,11 @@ const FlightDetails = ({
                   />
                   <div className="flex flex-col items-center w-full">
                     <span className="text-sm text-gray-700 mb-2">
-                      {formatNumberToHoursAndMinutesFlight(flight.Duration)}
+                      {flight.Duration
+                        ? formatNumberToHoursAndMinutesFlight(flight.Duration)
+                        : formatNumberToHoursAndMinutesFlight(
+                            flight.ListSegment[0].Duration ?? 0
+                          )}
                     </span>
                     <div className="relative flex items-center w-full">
                       <div className="flex-grow h-px bg-gray-700"></div>
@@ -148,20 +210,25 @@ const FlightDetails = ({
               <div className="w-11 h-11 bg-gray-100 rounded-full"></div>
             </div>
             <div className="col-span-8 w-full md:col-span-2 text-center md:text-right md:pl-8 xl:pr-8">
-              <div className="flex justify-between mt-3 md:mt-0">
-                <button
-                  className="inline-block md:hidden text-blue-700 border-b border-blue-700 font-normal"
-                  onClick={() => toggleShowDetails(flight.id)}
-                >
-                  Xem chi tiết
-                </button>
-                <p className="text-primary text-18 font-semibold text-right">
-                  {filters.priceWithoutTax === "1"
-                    ? FareData.TotalPriceWithOutTax.toLocaleString("vi-VN")
-                    : FareData.TotalPrice.toLocaleString("vi-VN")}{" "}
-                  {FareData.Currency}
-                </p>
-              </div>
+              {isLoadingRules ? (
+                <span className="loader_spiner"></span>
+              ) : (
+                <div className="flex justify-between mt-3 md:mt-0">
+                  <button
+                    className="inline-block md:hidden text-blue-700 border-b border-blue-700 font-normal"
+                    onClick={() => toggleShowDetails(flight.id)}
+                    disabled={isLoadingRules}
+                  >
+                    Xem chi tiết
+                  </button>
+                  <p className="text-primary text-18 font-semibold text-right">
+                    {filters.priceWithoutTax === "1"
+                      ? FareData.TotalPriceWithOutTax.toLocaleString("vi-VN")
+                      : FareData.TotalPrice.toLocaleString("vi-VN")}{" "}
+                    {FareData.Currency}
+                  </p>
+                </div>
+              )}
               <button
                 onClick={() => onSelectFlight(FareData)}
                 className="block text-center mt-5 md:mt-3 w-full bg-blue-600 border text-white  py-2 rounded-lg hover:text-primary duration-300"
@@ -190,121 +257,137 @@ const FlightDetails = ({
               <h2 className="text-xl font-semibold text-orange-600 mb-4">
                 Chi tiết hành trình
               </h2>
-              {flight.ListSegment.map((segment: any, index: number) => (
-                <div
-                  className={`grid grid-cols-12 items-start gap-6 ${
-                    index > 0 ? "border-t-gray-300 border-t pt-4 mt-4" : ""
-                  }`}
-                  key={index}
-                >
-                  <div className="col-span-12 md:col-span-3 flex flex-col border-r border-gray-200 pr-8">
-                    <div className="flex gap-4">
-                      <Image
-                        src={`/airline/${flight.Airline}.svg`}
-                        width={48}
-                        height={48}
-                        alt="Logo"
-                        className="w-12 h-12"
-                      />
-                      <div>
-                        <h3 className="text-18 font-semibold mb-1">
-                          {segment.Airline}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {segment.FlightNumber}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-[#4E6EB3] font-semibold mt-4">
-                      Điều kiện vé
-                    </p>
-                    <ul className="text-sm text-gray-600 mt-1 list-disc list-inside md:min-h-36">
-                      <li>Hành lý xách tay: {segment.HandBaggage}</li>
-                      {/* <li>
-                  Thay đổi chuyến bay, ngày bay, chặng bay: thu phí + chênh lệch
-                  giá vé nếu có /chặng/lần thay đổi
-                </li> */}
-                      {/* <li>Thay đổi tên: Không được phép</li> */}
-                      <li>
-                        Hoàn vé:{" "}
-                        {flight.NoRefund ? "Không được phép " : "Được phép"}
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="col-span-12 md:col-span-9 h-full w-full">
-                    <div className="flex h-full items-start gap-2">
-                      <div className="w-4/12 md:w-2/12 flex h-full justify-between flex-col items-end">
-                        <div className="text-center w-full">
-                          <p className="text-22 font-bold">
-                            {formatTime(segment.StartTime)}
-                          </p>
-                          <p className="text-gray-500">
-                            {formatDate(segment.StartTime)}
-                          </p>
-                        </div>
-                        <div className="font-semibold text-center w-full">
-                          <Image
-                            src="/icon/AirplaneTiltBlue.svg"
-                            width={20}
-                            height={20}
-                            alt="Icon"
-                            className="w-5 h-5 mx-auto"
-                          />
-                          <p className="mt-2 text-22 text-[#4E6EB3]">
-                            {segment.Duration
-                              ? formatNumberToHoursAndMinutesFlight(
-                                  segment.Duration
-                                )
-                              : formatNumberToHoursAndMinutesFlight(
-                                  segment.StopTime
-                                )}
-                          </p>
-                        </div>
-                        <div className="text-center w-full">
-                          <p className="text-22 font-bold">
-                            {formatTime(segment.EndTime)}
-                          </p>
-                          <p className="text-gray-500">
-                            {formatDate(segment.EndTime)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="w-1/12 relative h-full py-5 flex flex-col items-center">
-                        <div className="w-[6px] h-[6px] bg-blue-700 rounded-full"></div>
-                        <div className="w-px h-full bg-blue-700"></div>
-                        <div className="w-[6px] h-[6px] bg-blue-700 rounded-full"></div>
-                      </div>
-                      <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
+              {flight.ListSegment.map((segment: any, index: number) => {
+                const airPortStartPoint: AirportOption =
+                  airports.find(
+                    (loc: any) => loc.value === segment.StartPoint
+                  ) || null;
+                const airPortEndPoint: AirportOption =
+                  airports.find((loc: any) => loc.value === segment.EndPoint) ||
+                  null;
+                return (
+                  <div
+                    className={`grid grid-cols-12 items-start gap-6 ${
+                      index > 0 ? "border-t-gray-300 border-t pt-4 mt-4" : ""
+                    }`}
+                    key={index}
+                  >
+                    <div className="col-span-12 md:col-span-3 flex flex-col border-r border-gray-200 pr-8">
+                      <div className="flex gap-4">
+                        <Image
+                          src={`/airline/${flight.Airline}.svg`}
+                          width={48}
+                          height={48}
+                          alt="Logo"
+                          className="w-12 h-12"
+                        />
                         <div>
-                          <p className="text-22 font-bold">
-                            {`${fromPlace} (${segment.StartPoint})`}
+                          <h3 className="text-18 font-semibold mb-1">
+                            {segment.Airline}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {segment.FlightNumber}
                           </p>
-                          <p className="text-gray-500 mt-1 h-6"></p>
                         </div>
+                      </div>
+                      <p className="text-[#4E6EB3] font-semibold mt-4">
+                        Điều kiện vé
+                      </p>
+                      {flight.ListRulesTicket ? (
                         <div
-                          className="rounded-lg text-white p-4"
-                          style={{
-                            background:
-                              "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                          className="text-sm text-gray-600 mt-1 list-disc list-inside md:min-h-36"
+                          dangerouslySetInnerHTML={{
+                            __html: flight.ListRulesTicket,
                           }}
-                        >
-                          <p className="text-sm">Máy bay: {segment.Plane}</p>
-                          <p className="text-sm">
-                            Chuyến bay: {segment.FlightNumber}
-                          </p>
-                          <p className="text-sm">Hạng: {flight.GroupClass}</p>
+                        ></div>
+                      ) : (
+                        <p>
+                          Xin vui lòng liên hệ với Happy Book để nhận thông tin
+                          chi tiết.
+                        </p>
+                      )}
+                    </div>
+                    <div className="col-span-12 md:col-span-9 h-full w-full">
+                      <div className="flex h-full items-start gap-2">
+                        <div className="w-4/12 md:w-2/12 flex h-full justify-between flex-col items-end">
+                          <div className="text-center w-full">
+                            <p className="text-22 font-bold">
+                              {formatTime(segment.StartTime)}
+                            </p>
+                            <p className="text-gray-500">
+                              {formatDate(segment.StartTime)}
+                            </p>
+                          </div>
+                          <div className="font-semibold text-center w-full">
+                            <Image
+                              src="/icon/AirplaneTiltBlue.svg"
+                              width={20}
+                              height={20}
+                              alt="Icon"
+                              className="w-5 h-5 mx-auto"
+                            />
+                            <p className="mt-2 text-22 text-[#4E6EB3]">
+                              {segment.Duration
+                                ? formatNumberToHoursAndMinutesFlight(
+                                    segment.Duration
+                                  )
+                                : formatNumberToHoursAndMinutesFlight(
+                                    segment.StopTime
+                                  )}
+                            </p>
+                          </div>
+                          <div className="text-center w-full">
+                            <p className="text-22 font-bold">
+                              {formatTime(segment.EndTime)}
+                            </p>
+                            <p className="text-gray-500">
+                              {formatDate(segment.EndTime)}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-gray-500 mt-1 h-6"></p>
-                          <p className="text-22 font-bold">
-                            {`${toPlace} (${segment.EndPoint})`}
-                          </p>
+                        <div className="w-1/12 relative h-full py-5 flex flex-col items-center">
+                          <div className="w-[6px] h-[6px] bg-blue-700 rounded-full"></div>
+                          <div className="w-px h-full bg-blue-700"></div>
+                          <div className="w-[6px] h-[6px] bg-blue-700 rounded-full"></div>
+                        </div>
+                        <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
+                          <div>
+                            <p className="text-22 font-bold">
+                              {`${airPortStartPoint?.label ?? ""} (${
+                                segment.StartPoint
+                              })`}
+                            </p>
+                            <p className="text-gray-500 mt-1 h-6"></p>
+                          </div>
+                          <div
+                            className="rounded-lg text-white p-4"
+                            style={{
+                              background:
+                                "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                            }}
+                          >
+                            <p className="text-sm">Máy bay: {segment.Plane}</p>
+                            <p className="text-sm">
+                              Chuyến bay: {segment.FlightNumber}
+                            </p>
+                            <p className="text-sm">
+                              Hạng: {flight.GroupClass ?? ""}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 mt-1 h-6"></p>
+                            <p className="text-22 font-bold">
+                              {`${airPortEndPoint?.label ?? ""} (${
+                                segment.EndPoint
+                              })`}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

@@ -4,11 +4,8 @@ import { forwardRef, Fragment, useEffect, useRef, useState } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
 import { useSearchParams } from "next/navigation";
 import { NoOptionsMessage } from "@/utils/jsxUtils";
+import { AirportOption } from "@/types/flight";
 
-interface AirportOption {
-  label: string;
-  value: string;
-}
 interface LocationSelectProps {
   options: AirportOption[];
   placeholder: string;
@@ -187,7 +184,12 @@ export default function LocationSwitcher({
   const getFilteredOptions = (
     selected: SingleValue<AirportOption>
   ): AirportOption[] => {
-    return airports.filter((airport) => airport.value !== selected?.value);
+    return airports.filter((airport) => {
+      if (selected?.type === "international") {
+        return airport.value !== selected?.value && airport.type === "domestic";
+      }
+      return airport.value !== selected?.value;
+    });
   };
 
   return (

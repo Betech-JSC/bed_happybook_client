@@ -54,78 +54,122 @@ const getAirportsDefault = () => {
     {
       label: "Hồ Chí Minh",
       value: "SGN",
+      type: "domestic",
     },
     {
       label: "Hà Nội",
       value: "HAN",
+      type: "domestic",
     },
     {
       label: "Vinh",
       value: "VII",
+      type: "domestic",
     },
     {
       label: "Huế",
       value: "HUI",
+      type: "domestic",
     },
     {
       label: "Đà Lạt",
       value: "DLI",
+      type: "domestic",
     },
     {
       label: "Phú Quốc",
       value: "PQC",
+      type: "domestic",
     },
     {
       label: "Hải Phòng",
       value: "HBH",
+      type: "domestic",
     },
     {
       label: "Quảng Bình",
       value: "VDH",
+      type: "domestic",
     },
     {
       label: "Quảng Nam",
       value: "VCL",
+      type: "domestic",
     },
     {
       label: "Buôn Mê Thuột",
       value: "BMV",
+      type: "domestic",
     },
     {
       label: "Kiên Giang",
       value: "VKG",
+      type: "domestic",
     },
     {
       label: "Cà Mau",
       value: "CAH",
+      type: "domestic",
     },
     {
       label: "Côn Đảo",
       value: "VCS",
+      type: "domestic",
     },
     {
       label: "Điện Biên Phủ",
       value: "DIN",
+      type: "domestic",
     },
     {
       label: "Đà Nẵng",
       value: "DAD",
+      type: "domestic",
     },
     {
       label: "Cần Thơ",
       value: "VCA",
+      type: "domestic",
     },
     {
       label: "Nha Trang",
       value: "CXR",
+      type: "domestic",
     },
     {
       label: "Qui Nhơn",
       value: "UIH",
+      type: "domestic",
     },
     {
       label: "Phú Yên",
       value: "TBB",
+      type: "domestic",
+    },
+    {
+      label: "Bangkok",
+      value: "BKK",
+      type: "international",
+    },
+    {
+      label: "Kuala Lumpur",
+      value: "KUL",
+      type: "international",
+    },
+    {
+      label: "Singapore",
+      value: "SIN",
+      type: "international",
+    },
+    {
+      label: "Bắc Kinh",
+      value: "PEK",
+      type: "international",
+    },
+    {
+      label: "Busan",
+      value: "PUS",
+      type: "international",
     },
   ];
   return object;

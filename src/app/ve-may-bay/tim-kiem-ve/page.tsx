@@ -12,9 +12,7 @@ import FAQ from "@/components/FAQ";
 import Link from "next/link";
 import Partner from "../components/Partner";
 import Search from "../components/Search";
-import SideBar from "../components/SideBar";
 import ListFilght from "../components/ListFilght";
-import { AirportOption } from "@/types/flight";
 import { getAirportsDefault } from "@/utils/Helper";
 
 export const metadata: Metadata = {

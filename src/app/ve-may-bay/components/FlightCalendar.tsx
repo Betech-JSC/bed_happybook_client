@@ -8,7 +8,7 @@ import {
   getDaysInMonth,
   handleScrollSmooth,
 } from "@/utils/Helper";
-import { FlightApi } from "@/api/Fligt";
+import { FlightApi } from "@/api/Flight";
 import FlightSearchPopup from "./FlightSearchPopup";
 import { getDay, isValid, parse, format } from "date-fns";
 import { AirportOption, FlightCalendarProps } from "@/types/flight";

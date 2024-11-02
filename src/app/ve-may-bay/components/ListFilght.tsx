@@ -1,5 +1,5 @@
 "use client";
-import { FlightApi } from "@/api/Fligt";
+import { FlightApi } from "@/api/Flight";
 import {
   Fragment,
   useCallback,
@@ -18,6 +18,7 @@ import { handleScrollSmooth } from "@/utils/Helper";
 import SignUpReceiveCheapTickets from "./SignUpReceiveCheapTickets";
 import { HttpError } from "@/lib/error";
 import { ListFilghtProps } from "@/types/flight";
+import Link from "next/link";
 
 interface Day {
   label: string;
@@ -39,6 +40,7 @@ export default function ListFilght({ airports }: ListFilghtProps) {
   const [displayType, setDisplayType] = useState<"desktop" | "mobile">(
     "desktop"
   );
+  const [apiFlightSession, setApiFlightSession] = useState<string>("");
   const router = useRouter();
   // Handle Params
   const searchParams = useSearchParams();
@@ -244,6 +246,7 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                 flightFleg[leg] = [];
               }
             });
+            setApiFlightSession(response?.payload.data.Session);
           }
           setTotalFlightLeg(flightFleg);
           setData(listFareData);
@@ -632,12 +635,14 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                     {flights[0].map((item: any, index: number) => (
                       <div key={index}>
                         <FlightDetails
+                          session={apiFlightSession}
                           FareData={item}
                           fromPlace={fromPlace}
                           toPlace={toPlace}
                           onSelectFlight={handleSelectDepartFlight}
                           selectedFlight={selectedDepartFlight}
                           filters={filters}
+                          airports={airports}
                         />
                       </div>
                     ))}
@@ -714,12 +719,14 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                       {flights[1].map((item: any, index: number) => (
                         <div key={index}>
                           <FlightDetails
+                            session={apiFlightSession}
                             FareData={item}
                             fromPlace={toPlace}
                             toPlace={fromPlace}
                             onSelectFlight={handleSelectReturnFlight}
                             selectedFlight={selectedReturnFlight}
                             filters={filters}
+                            airports={airports}
                           />
                         </div>
                       ))}
@@ -740,9 +747,12 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                     {totalPriceCheckout} VND
                   </p>
                 </div>
-                <button className="w-full md:w-fit mt-3 md:mt-0 text-center py-3 px-10 bg-blue-600 border text-white rounded-lg hover:text-primary duration-300">
+                <Link
+                  href="/ve-may-bay/thong-tin-hanh-khach"
+                  className="w-full md:w-fit mt-3 md:mt-0 text-center py-3 px-10 bg-blue-600 border text-white rounded-lg hover:text-primary duration-300"
+                >
                   Tiếp tục
-                </button>
+                </Link>
               </div>
             )}
             <SignUpReceiveCheapTickets />

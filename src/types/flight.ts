@@ -9,6 +9,7 @@ export interface PassengerType {
 export interface AirportOption {
   label: string;
   value: string;
+  type: string;
 }
 
 export interface FormData {
@@ -53,10 +54,7 @@ export interface SearchFilghtProps {
 export interface FlightSearchPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  airports: {
-    label: string;
-    value: string;
-  }[];
+  airports: AirportOption[];
   selectedDate: Date | null;
   onDateChange: (date: Date | null) => void;
   flightType: string;
