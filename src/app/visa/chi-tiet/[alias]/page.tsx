@@ -21,12 +21,36 @@ import QuestionAndAnswer from "@/components/QuestionAndAnswer";
 import ImageGallery from "../components/ImageGallery";
 import Tabs from "../components/Tabs";
 import VisaSteps from "@/components/home/visa-steps";
+import { VisaApi } from "@/api/Visa";
+import { notFound } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Dịch Vụ Hỗ Trợ Làm Thủ Tục Visa Nhật Bản",
-  description: "Happy Book",
-};
-
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const response = await VisaApi.detail(
+    "product-visa/get-by-slug?slug=visa-test",
+    null
+  );
+  const visaDetail = response?.payload.data;
+  return {
+    title: visaDetail?.meta_title ?? visaDetail?.title,
+    description: visaDetail?.meta_description,
+    robots: visaDetail?.meta_robots,
+    keywords: visaDetail?.keywords,
+    alternates: {
+      canonical:
+        visaDetail?.canonical_link ?? `/visa/chi-tiet/${visaDetail?.slug}`,
+    },
+    openGraph: {
+      images: [
+        {
+          url: visaDetail?.meta_image
+            ? visaDetail.meta_image
+            : `${visaDetail?.image_url}${visaDetail?.image_location}`,
+          alt: visaDetail?.meta_title,
+        },
+      ],
+    },
+  };
+}
 const visa = [
   {
     title: "Visa Trung Quốc",
@@ -50,11 +74,19 @@ const visa = [
   },
 ];
 
-export default function CategoryPosts({
+export default async function CategoryPosts({
   params,
 }: {
-  params: { category: string };
+  params: { alias: string };
 }) {
+  const response = await VisaApi.detail(
+    "product-visa/get-by-slug?slug=visa-test",
+    null
+  );
+  const detail = response?.payload.data;
+  if (!detail) {
+    notFound();
+  }
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -96,7 +128,10 @@ export default function CategoryPosts({
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery />
+              <ImageGallery
+                gallery={detail.gallery}
+                imageUrl={detail.image_url}
+              />
               <div className="mt-4">
                 <Tabs />
               </div>
@@ -113,38 +148,43 @@ export default function CategoryPosts({
                   <div className="mt-6">
                     <div>
                       <span className="font-semibold">Mã visa:</span>{" "}
-                      <span>VS001</span>
+                      <span>{detail.product_visa.ma_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Loại Visa:</span>{" "}
-                      <span>Du lịch</span>
+                      <span>{detail.product_visa.loai_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Điểm Đến:</span>{" "}
-                      <span>Visa Nhật Bản</span>
+                      <span>{detail.product_visa.diem_den}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Thời gian làm Visa:</span>{" "}
-                      <span>10 ngày</span>
+                      <span>{detail.product_visa.thoi_gian_lam_visa} ngày</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Thời gian lưu trú:</span>{" "}
-                      <span>14 ngày</span>
+                      <span>{detail.product_visa.thoi_gian_luu_tru} ngày</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Số lần nhập cảnh:</span>{" "}
-                      <span>3 tháng 1 lần</span>
+                      <span>
+                        {detail.product_visa.so_lan_nhap_canh} tháng 1 lần
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
                   <p className="text-gray-500 line-through text-sm md:text-base">
-                    3.000.000 vnđ
+                    {detail.price.toLocaleString("vi-VN")} vnđ
                   </p>
                   <div className="flex justify-between mt-3 items-end">
                     <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
                     <p className="text-base md:text-xl text-primary font-semibold">
-                      2.500.000 vnđ
+                      {(detail.price - detail.discount_price).toLocaleString(
+                        "vi-VN"
+                      )}{" "}
+                      vnđ
                     </p>
                   </div>
                 </div>
