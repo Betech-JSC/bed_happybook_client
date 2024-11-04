@@ -46,6 +46,7 @@ export default function Header() {
       setSticky(false);
       setStickyHeader(true);
     }
+    setIsMenuOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -196,14 +197,14 @@ export default function Header() {
             <span>Đăng nhập</span>
           </Link>
           {/* Menu Button */}
-          <div
+          {/* <div
             className={`${styles.nav_icon} ${isMenuOpen ? styles.open : ""}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <span></span>
             <span></span>
             <span></span>
-          </div>
+          </div> */}
         </div>
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
@@ -263,61 +264,69 @@ export default function Header() {
             >
               Combo
             </Link>
-            <a href="#" className={`${styles.header__menu_item}`}>
+            <div
+              onClick={() => {
+                setIsMenuOpen(!isMenuOpen);
+                return false;
+              }}
+              className={`relative cursor-pointer ${styles.header__menu_item}`}
+            >
               Khác
-            </a>
-          </nav>
-        </div>
-        {/* Menu */}
-        <div className="absolute top-[74px] lg:right-[50px] xl:right-20 z-1 bg-blue-800 ">
-          <nav
-            className={` ${styles.header__menu_sub_menu}  ${
-              isMenuOpen ? "[&>a]:max-h-12" : "[&>a]:max-h-0"
-            }`}
-            style={{
-              maxHeight: isMenuOpen ? "260px" : "0px ",
-              opacity: isMenuOpen ? "1" : "0",
-              zIndex: isMenuOpen ? "10" : "-1",
-              transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
-            }}
-          >
-            <Link
-              href="/dang-ky-ctv"
-              className={styles.text_hover_default}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              Đăng ký CTV
-            </Link>
-            <Link
-              href="/tu-van-nhan-visa"
-              className={styles.text_hover_default}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              Tư vấn visa
-            </Link>
-            <Link
-              href="/huong-dan-thanh-toan"
-              className={styles.text_hover_default}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              Hướng dẫn thanh toán
-            </Link>
-            <a href="#" className={styles.text_hover_default}>
-              Hướng dẫn đặt vé
-            </a>
-            <a href="#" className={styles.text_hover_default}>
-              Thông tin chuyển khoản
-            </a>
-            <a href="#" className={styles.text_hover_default}>
-              Điều khoản sử dụng
-            </a>
-            <Link
-              href="/chinh-sach-bao-mat"
-              className={styles.text_hover_default}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              Chính sách bảo mật
-            </Link>
+              {/* Menu */}
+              <nav
+                className={`absolute -left-full top-12 z-10 ${
+                  styles.header__menu_sub_menu
+                }  ${
+                  isMenuOpen
+                    ? "[&>a]:max-h-12 visible"
+                    : "[&>a]:max-h-0 invisible"
+                }`}
+                style={{
+                  maxHeight: isMenuOpen ? "240px" : "0px ",
+                  opacity: isMenuOpen ? "1" : "0",
+                  zIndex: isMenuOpen ? "10" : "-1",
+                  transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
+                }}
+              >
+                <Link
+                  href="/dang-ky-ctv"
+                  className={styles.text_hover_default}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  Đăng ký CTV
+                </Link>
+                <Link
+                  href="/tu-van-nhan-visa"
+                  className={styles.text_hover_default}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  Tư vấn visa
+                </Link>
+                <Link
+                  href="/huong-dan-thanh-toan"
+                  className={styles.text_hover_default}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  Hướng dẫn thanh toán
+                </Link>
+                <a href="#" className={styles.text_hover_default}>
+                  Hướng dẫn đặt vé
+                </a>
+                <a href="#" className={styles.text_hover_default}>
+                  Thông tin chuyển khoản
+                </a>
+                <a href="#" className={styles.text_hover_default}>
+                  Điều khoản sử dụng
+                </a>
+                <Link
+                  href="/chinh-sach-bao-mat"
+                  className={styles.text_hover_default}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  Chính sách bảo mật
+                </Link>
+              </nav>
+            </div>
           </nav>
         </div>
       </div>
