@@ -2,9 +2,9 @@ export default function Tabs() {
   return (
     <div className="w-full mt-6">
       <div className="bg-white rounded-2xl p-6">
-        <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+        <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
           COMBO BAO GỒM
-        </h3>
+        </h2>
         <p className="mt-4 text-gray-900">
           ✔️ Vé máy bay Nha Trang khứ hồi (Bao gồm 7kg hành lý xách tay + 20kg
           ký gửi, hãng hàng không Vietnam Airlines)
@@ -30,9 +30,9 @@ export default function Tabs() {
         </ul>
       </div>
       <div className="bg-white rounded-2xl p-6 mt-4">
-        <h3 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
+        <h2 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
           ĐIỀU KIỆN ÁP DỤNG
-        </h3>
+        </h2>
         <p className="mt-2">-Giá combo áp dụng cho 2 người lớn/phòng</p>
         <p className="mt-2">
           - Giá có thể thay đổi tùy thuộc vào giá vé hãng hàng không qui định

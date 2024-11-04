@@ -153,7 +153,7 @@ export default function CategoryPosts({
             </div>
             <div className="md:w-8/12 lg:w-9/12">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <h3 className="text-32 font-bold">Dịch vụ Visa</h3>
+                <h1 className="text-32 font-bold">Dịch vụ Visa</h1>
                 <div className="flex my-4 md:my-0 space-x-3 items-center">
                   <span>Sắp xếp</span>
                   <div className="w-40 bg-white border border-gray-200 rounded-lg">
@@ -197,7 +197,7 @@ export default function CategoryPosts({
                           href="/visa/chi-tiet/visa-nhat-ban"
                           className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                         >
-                          {tour.title}
+                          <h3>{tour.title}</h3>
                         </Link>
                         <div className="mt-3">
                           <span className="font-semibold">Loại Visa:</span>{" "}

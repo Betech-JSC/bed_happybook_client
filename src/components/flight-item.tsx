@@ -39,7 +39,7 @@ export default function FlightItem({
           href="/ve-may-bay"
           className={`text-base min-h-6 font-semibold line-clamp-1 mt-2 ${styles.text_hover_default}`}
         >
-          {title}
+          <h3>{title}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <span>{date}</span>

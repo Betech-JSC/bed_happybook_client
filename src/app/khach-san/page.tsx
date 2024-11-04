@@ -108,9 +108,9 @@ export default function Hotel() {
             <div>
               <div className="flex justify-between">
                 <div>
-                  <h3 className="text-[24px] lg:text-32 font-bold">
+                  <h2 className="text-[24px] lg:text-32 font-bold">
                     Khách Sạn Phổ Biến tại Việt Nam
-                  </h3>
+                  </h2>
                 </div>
               </div>
               <div className="mt-8 w-full">
@@ -120,9 +120,9 @@ export default function Hotel() {
           </div>
           {/* Province */}
           <div className="mt-6 ">
-            <h3 className="text-[24px] lg:text-32 font-bold">
+            <h2 className="text-[24px] lg:text-32 font-bold">
               Thành Phố Phổ Biến tại Việt Nam
-            </h3>
+            </h2>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {province.map((item, index) => (
                 <div
@@ -139,7 +139,7 @@ export default function Hotel() {
                     />
                   </div>
                   <div className="py-3 px-4 text-18 font-semibold text__default_hover">
-                    {item.title}
+                    <h3>{item.title}</h3>
                   </div>
                 </div>
               ))}
@@ -190,84 +190,84 @@ export default function Hotel() {
           </div>
           <div className="mt-8 py-12">
             <div>
-              <p className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+              <h2 className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
                 Thành phố đang hot
-              </p>
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Các khách sạn ở Hồ Chí Minh
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Các khách sạn ở Hà Nội
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Các khách sạn ở Hồ Chí Minh
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Các khách sạn ở Hà Nội
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Các khách sạn ở Hồ Chí Minh
-                </p>
+                </h3>
               </div>
             </div>
             <div className="mt-8">
-              <p className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+              <h2 className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
                 Khách sạn phổ biến
-              </p>
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Hà Nội
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Đà Nẵng
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   TP. Hồ Chí Minh
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Phú Quốc
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Nha Trang
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Đà Lạt
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Bangkok
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Singapore
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Tokyo
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Seoul
-                </p>
+                </h3>
               </div>
             </div>
             <div className="mt-8">
-              <p className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+              <h2 className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
                 Khám phá thêm
-              </p>
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Khách sạn 5 sao
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Resort ven biển
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Khách sạn trung tâm
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Homestay đẹp
-                </p>
-                <p className={`text-gray-700 font-medium text__default_hover`}>
+                </h3>
+                <h3 className={`text-gray-700 font-medium text__default_hover`}>
                   Khách sạn tiện nghi
-                </p>
+                </h3>
               </div>
             </div>
           </div>

@@ -26,9 +26,9 @@ export default function AboutUs() {
       {/* <AosAnimate> */}
       <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
         <div className="mt-8">
-          <p className="text-black text-center font-bold text-2xl">
+          <h1 className="text-black text-center font-bold text-2xl">
             HappyBook tự hào là đối tác tin cậy
-          </p>
+          </h1>
           <p className="font-medium text-black-700 text-center w-[836px] mx-auto mt-3  max-w-full">
             HappyBook luôn đặt chữ TÍN lên hàng đầu. Với sự phát triển không
             ngừng, chúng tôi đã xây dựng một đội ngũ chuyên viên năng động, giàu
@@ -49,9 +49,9 @@ export default function AboutUs() {
         </div>
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-16 items-center ">
           <div>
-            <h4 className="text-black font-bold text-2xl">
+            <h2 className="text-black font-bold text-2xl">
               10 năm hình thành và phát triển
-            </h4>
+            </h2>
             <p className="font-medium">
               HappyBook đã khẳng định vị thế của mình là đại lý cấp 1 chuyên
               cung cấp vé máy bay trong nước và quốc tế. Chúng tôi hiện là đối

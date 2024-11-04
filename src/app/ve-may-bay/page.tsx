@@ -152,9 +152,9 @@ export default function AirlineTicket() {
             <div>
               <div className="flex justify-between">
                 <div>
-                  <h3 className="text-[24px] lg:text-32 font-bold">
+                  <h2 className="text-[24px] lg:text-32 font-bold">
                     Những chuyến bay phổ biến
-                  </h3>
+                  </h2>
                 </div>
               </div>
               <div className="mt-8 w-full">
@@ -184,9 +184,9 @@ export default function AirlineTicket() {
             <div>
               <div className="flex justify-between">
                 <div>
-                  <h3 className="text-[24px] lg:text-32 font-bold">
+                  <h2 className="text-[24px] lg:text-32 font-bold">
                     Vé Máy Bay Một Chiều Dành Cho Bạn
-                  </h3>
+                  </h2>
                 </div>
               </div>
               <div className="mt-8 w-full">
@@ -216,7 +216,7 @@ export default function AirlineTicket() {
                             href="/ve-may-bay/chi-tiet"
                             className="mt-2 font-semibold block"
                           >
-                            {flight.title}
+                            <h3> {flight.title}</h3>
                           </Link>
                           <div className="mt-2 text-sm font-normal">
                             {flight.date}
@@ -279,9 +279,9 @@ export default function AirlineTicket() {
           </div>
           <div className="mt-8 py-12">
             <div>
-              <p className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+              <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
                 Vé máy bay phổ biến
-              </p>
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
                 <p
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}
@@ -321,9 +321,9 @@ export default function AirlineTicket() {
               </div>
             </div>
             <div className="mt-8">
-              <p className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+              <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
                 Điểm đến được yêu thích
-              </p>
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
                 <p
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}

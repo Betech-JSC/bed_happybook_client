@@ -64,9 +64,9 @@ export default function VisaService() {
         <div className="relative z-10">
           <div className="flex justify-between">
             <div>
-              <h3 className="text-[24px] lg:text-[32px] font-bold">
+              <h2 className="text-[24px] lg:text-[32px] font-bold">
                 Dịch vụ Visa nổi bật
-              </h3>
+              </h2>
             </div>
             <Link
               href="/visa"
@@ -170,7 +170,7 @@ export default function VisaService() {
                               href="/visa/chi-tiet/visa-nhat-ban"
                               className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
                             >
-                              {item.title}
+                              <h3> {item.title}</h3>
                             </Link>
                           </div>
                         </div>

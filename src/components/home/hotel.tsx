@@ -78,9 +78,9 @@ export default function Hotel() {
         <div className={`relative z-10 ${styles.hide__background_mb}`}>
           <div className="flex justify-between">
             <div>
-              <h3 className="text-[24px] lg:text-[32px] font-bold">
+              <h2 className="text-[24px] lg:text-[32px] font-bold">
                 Đa dạng lựa chọn khách sạn
-              </h3>
+              </h2>
             </div>
             <div
               className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"

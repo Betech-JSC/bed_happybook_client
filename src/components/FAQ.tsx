@@ -53,7 +53,7 @@ export default function FAQ() {
 
   return (
     <div className="rounded-2xl bg-gray-50 p-8">
-      <h3 className="text-32 font-bold mb-10">Câu Hỏi Thường Gặp</h3>
+      <h2 className="text-32 font-bold mb-10">Câu Hỏi Thường Gặp</h2>
       {dropdowns.map((item) => (
         <div
           key={item.id}
@@ -61,9 +61,9 @@ export default function FAQ() {
           onClick={() => toggleDropdown(item.id)}
         >
           <div className="flex justify-between items-start">
-            <span className="font-18 font-semibold text-gray-900 max-w-[90%]">
+            <h3 className="font-18 font-semibold text-gray-900 max-w-[90%]">
               {item.question}
-            </span>
+            </h3>
             <button
               className={`duration-300 ${
                 openDropdown === item.id ? "rotate-180" : "rotate-0"

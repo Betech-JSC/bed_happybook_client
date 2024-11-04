@@ -50,7 +50,7 @@ export default function CompoItem({
           href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang"
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
-          {title}
+          <h3>{title}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <Image

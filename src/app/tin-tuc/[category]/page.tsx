@@ -82,10 +82,10 @@ export default async function CategoryPosts({
       </Breadcrumb>
       <div className="flex flex-col md:flex-row mt-12 md:space-x-16">
         <div className="basis-[65%]">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
+          <h1 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
             {category.name}
             <div className="mt-6"></div>
-          </h3>
+          </h1>
           <div className="border-b-[1px] border-gray-300">
             <ul className="flex">
               {category.recursive_children.map((item: CategoryPostsType) => (
@@ -94,7 +94,7 @@ export default async function CategoryPosts({
                   className="text-sm font-medium text-gray-700 py-[6px] px-[10px] text__default_hover"
                 >
                   <Link href={`/tin-tuc/lam-visa/${item.alias}`}>
-                    {item.name}
+                    <h2> {item.name}</h2>
                   </Link>
                 </li>
               ))}
@@ -127,7 +127,7 @@ export default async function CategoryPosts({
                         href={`/tin-tuc/chi-tiet/${item.alias}`}
                         className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                       >
-                        {item.title}
+                        <h3>{item.title}</h3>
                       </Link>
                       <div
                         className="text-sm text-gray-700 line-clamp-3 mt-2"

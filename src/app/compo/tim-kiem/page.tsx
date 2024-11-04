@@ -228,7 +228,7 @@ export default function SearchCompo({
             </div>
             <div className="md:w-8/12 lg:w-9/12">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <h3 className="text-32 font-bold">Combo Nha Trang</h3>
+                <h1 className="text-32 font-bold">Combo Nha Trang</h1>
                 <div className="flex my-4 md:my-0 space-x-3 items-center">
                   <span>Sắp xếp</span>
                   <div className="w-40 bg-white border border-gray-200 rounded-lg">
@@ -268,7 +268,7 @@ export default function SearchCompo({
                             href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang"
                             className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                           >
-                            {item.title}
+                            <h2>{item.title}</h2>
                           </Link>
                           <div className="flex w-[20%] space-x-1">
                             {Array.from({ length: 5 }, (_, index) => (

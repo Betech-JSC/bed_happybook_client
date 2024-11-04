@@ -28,9 +28,9 @@ export default function Hotel() {
       <div className="bg-white p-6 rounded-2xl">
         <div className="flex flex-col md:flex-row justify-between">
           <div>
-            <h3 className="font-bold text-2xl">
+            <h2 className="font-bold text-2xl">
               Sofitel Legend Metropole Hà Nội
-            </h3>
+            </h2>
             <div className="flex space-x-2 items-center mt-3">
               <Image
                 className="w-4 h-4"
@@ -87,7 +87,7 @@ export default function Hotel() {
                   href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
                   className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
                 >
-                  {item.title}
+                  <h3> {item.title}</h3>
                 </Link>
                 <div className="mt-3 p-2 rounded-lg bg-gray-100">
                   <p className="">Bữa sáng miễn phí</p>

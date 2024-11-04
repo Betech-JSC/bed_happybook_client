@@ -52,9 +52,9 @@ export default function CompoHot() {
         <div className="mt-0 lg:mt-4 lg:flex">
           <div className="flex lg:w-[40%] flex-col justify-between lg:items-center">
             <div>
-              <h3 className="text-2xl lg:text-[32px] leading-9 font-bold text-white">
+              <h2 className="text-2xl lg:text-[32px] leading-9 font-bold text-white">
                 Combo siêu hot hôm nay
-              </h3>
+              </h2>
               <p className="text-16 font-medium text-white mt-3">
                 Đặt ngay hôm nay, kẻo lỡ cơ hội!
               </p>

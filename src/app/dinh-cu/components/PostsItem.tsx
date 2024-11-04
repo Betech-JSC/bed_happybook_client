@@ -27,11 +27,11 @@ export default function PostsItem({
       <Link
         href={`/dinh-cu/chi-tiet/dinh-cu-my-dien-tri-thuc-eb2-advanced-degree-eb3-professionals`}
       >
-        <p
+        <h3
           className={`ease-in duration-300 text-18 font-semibold mt-3 line-clamp-3 ${PostStyle.post__item_title}`}
         >
           {title}
-        </p>
+        </h3>
       </Link>
       <div
         className="text-base mt-2 line-clamp-2"

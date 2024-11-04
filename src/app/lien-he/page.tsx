@@ -20,9 +20,9 @@ export default function Contact() {
       ></div>
       <div className="base__content h-80 md:h-[405px] lg:pr-[200px]">
         <div className="flex justify-between items-center h-full">
-          <h4 className="text-32 text-white font-bold">
+          <h1 className="text-32 text-white font-bold">
             Liên Hệ Với HappyBook
-          </h4>
+          </h1>
           <div>
             <Image
               priority

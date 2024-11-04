@@ -91,12 +91,12 @@ export default function HotelDetailTabs() {
       {activeTab === 0 && (
         <div className="w-full mt-4">
           <div className="bg-white rounded-2xl p-6">
-            <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-              Thông tin về nơi lưu trú này
-            </h3>
-            <p className="mt-4 text-22 font-semibold">
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+              Tổng quan
+            </h2>
+            <h3 className="mt-4 text-22 font-semibold">
               Sofitel Legend Metropole Hà Nội
-            </p>
+            </h3>
             <p className="mt-2">Gần Tràng Tiền Plaza</p>
             <div className="mt-3 line-clamp-5">
               Gần Tràng Tiền Plaza Hãy để mình được chăm sóc thật đặc biệt với
@@ -121,6 +121,11 @@ export default function HotelDetailTabs() {
       )}
       {activeTab === 1 && (
         <Fragment>
+          <div>
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+              Phòng
+            </h2>
+          </div>
           <div className="rounded-2xl mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             {rooms.map((item, index) => (
               <div key={index} className="bg-white rounded-xl">
@@ -142,7 +147,7 @@ export default function HotelDetailTabs() {
                       href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
                       className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
                     >
-                      {item.title}
+                      <h3>{item.title}</h3>
                     </Link>
                     <div className="mt-3 p-2 rounded-lg bg-gray-100">
                       <p className="">Bữa sáng miễn phí</p>
@@ -194,7 +199,10 @@ export default function HotelDetailTabs() {
       )}
       {activeTab === 2 && (
         <div className="bg-white p-6 rounded-2xl">
-          <div className="flex flex-col md:flex-row justify-between">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            Địa điểm
+          </h2>
+          <div className="mt-4 flex flex-col md:flex-row justify-between">
             <div>
               <h3 className="font-bold text-2xl">
                 Sofitel Legend Metropole Hà Nội
@@ -241,9 +249,9 @@ export default function HotelDetailTabs() {
         <Fragment>
           <div className="w-full mt-6">
             <div className="bg-white rounded-2xl p-6">
-              <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-                Tiện nghi, dịch vụ nơi lưu trú
-              </h3>
+              <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+                Tiện nghi, dịch vụ
+              </h2>
               <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4">
                 <li>Có gói dịch vụ lãng mạn/cầu hôn</li>
                 <li>Số lượng hồ bơi ngoài trời: - 1</li>
@@ -265,7 +273,7 @@ export default function HotelDetailTabs() {
               </div>
             </div>
           </div>
-          <div className="w-full mt-6">
+          {/* <div className="w-full mt-6">
             <div className="bg-white rounded-2xl p-6">
               <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
                 Tiện nghi phòng
@@ -289,16 +297,16 @@ export default function HotelDetailTabs() {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </Fragment>
       )}
       {activeTab === 4 && (
         <Fragment>
           <div className="w-full mt-6">
             <div className="bg-white rounded-2xl p-6">
-              <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+              <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
                 Chính sách
-              </h3>
+              </h2>
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-18 font-semibold">Nhận phòng</p>
@@ -330,9 +338,9 @@ export default function HotelDetailTabs() {
           </div>
           <div className="w-full mt-6">
             <div className="bg-white rounded-2xl p-6">
-              <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+              <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
                 Thông tin quan trọng
-              </h3>
+              </h2>
               <p className="text-18 font-semibold mt-4">Tùy chọn</p>
               <ul className="mt-2 list-disc  pl-4">
                 <li className="mt-2">

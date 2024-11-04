@@ -35,7 +35,9 @@ export default function BackToTopButton() {
     <div className={styles.back__top}>
       <button
         onClick={scrollToTop}
-        className={styles.back__top_btn}
+        className={`${styles.back__top_btn} ${
+          isVisible ? "visible" : "invisible"
+        }`}
         style={{
           opacity: isVisible ? "0.5" : "0",
           transform: isVisible ? "translateY(0)" : "translateY(20px)",

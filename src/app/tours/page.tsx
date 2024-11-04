@@ -84,9 +84,9 @@ export default function Tour() {
         ></div>
         {/* Search */}
         <div className="base__content h-full relative place-content-center">
-          <span className="text-32 font-bold text-white mb-6 block">
+          <h1 className="text-32 font-bold text-white mb-6 block">
             Tour & Trải nghiệm
-          </span>
+          </h1>
           <div className="flex items-center w-full lg:w-1/2 relative">
             <div className="absolute left-4">
               <Image
@@ -169,9 +169,9 @@ export default function Tour() {
           <div className="mt-6">
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[24px] lg:text-[32px] font-bold">
+                <h2 className="text-[24px] lg:text-[32px] font-bold">
                   Tour trong nước
-                </h3>
+                </h2>
               </div>
               <Link
                 href="/tours/noi-dia"
@@ -229,9 +229,9 @@ export default function Tour() {
           <div className="mt-12">
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[24px] lg:text-[32px] font-bold">
+                <h2 className="text-[24px] lg:text-[32px] font-bold">
                   Tour Du Lịch Nước Ngoài Cao Cấp
-                </h3>
+                </h2>
               </div>
               <Link
                 href="#"
@@ -289,7 +289,7 @@ export default function Tour() {
           <div className="py-8 bg-[#FCFCFD] hidden lg:block">
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[32px] font-bold">Bạn muốn đi đâu chơi?</h3>
+                <h2 className="text-[32px] font-bold">Bạn muốn đi đâu chơi?</h2>
               </div>
             </div>
             <div className="mt-4 w-full">
@@ -323,9 +323,9 @@ export default function Tour() {
           <div className="mt-12">
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[24px] lg:text-[32px] font-bold">
+                <h2 className="text-[24px] lg:text-[32px] font-bold">
                   Tour Du Thuyền
-                </h3>
+                </h2>
               </div>
               <Link
                 href="#"

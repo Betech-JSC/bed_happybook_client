@@ -48,9 +48,9 @@ export default function Visa() {
         {/* Search */}
         <div className="base__content h-full relative place-content-center">
           <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-3/5">
-            <h3 className="text-18 font-semibold">
+            <h1 className="text-18 font-semibold">
               Tìm Visa theo địa danh, điểm đến
-            </h3>
+            </h1>
             <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:space-x-2 space-y-3 items-end justify-between">
               <div className="relative w-full md:w-1/2">
                 <div className="absolute left-4 top-1/2 translate-y-1/4">
@@ -118,9 +118,9 @@ export default function Visa() {
           <div className="">
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[24px] lg:text-[32px] font-bold">
+                <h2 className="text-[24px] lg:text-[32px] font-bold">
                   Dịch vụ Visa nổi bật
-                </h3>
+                </h2>
               </div>
               <Link
                 href="/visa/visa-nhat-ban"
@@ -166,9 +166,9 @@ export default function Visa() {
           <div className="mt-6">
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[24px] lg:text-[32px] font-bold">
+                <h2 className="text-[24px] lg:text-[32px] font-bold">
                   Châu Âu
-                </h3>
+                </h2>
               </div>
               <div
                 className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
@@ -201,7 +201,7 @@ export default function Visa() {
           <div className="mt-6">
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[24px] lg:text-[32px] font-bold">Châu Á</h3>
+                <h2 className="text-[24px] lg:text-[32px] font-bold">Châu Á</h2>
               </div>
               <div
                 className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
@@ -238,9 +238,9 @@ export default function Visa() {
       </div>
       <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
         <div>
-          <p className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
             Dịch vụ visa nổi bật
-          </p>
+          </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
             {[
               "Visa đi Mỹ",
@@ -252,12 +252,12 @@ export default function Visa() {
               "Visa định cư",
               "Visa công tác",
             ].map((item, index) => (
-              <p
+              <h3
                 key={index}
                 className={`text-gray-700 font-medium text__default_hover`}
               >
                 {item}
-              </p>
+              </h3>
             ))}
           </div>
         </div>

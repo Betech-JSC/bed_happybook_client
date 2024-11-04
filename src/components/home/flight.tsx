@@ -87,9 +87,9 @@ export default function Flight() {
           <div>
             <div className="flex justify-between">
               <div>
-                <h3 className="text-[24px] lg:text-[32px] font-bold">
+                <h2 className="text-[24px] lg:text-[32px] font-bold">
                   Những chuyến bay phổ biến
-                </h3>
+                </h2>
               </div>
               <div
                 className="hidden lg:flex bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3"

@@ -208,9 +208,9 @@ export default function FlightCalendar({
 
   return (
     <Fragment>
-      <h1 className="text-32 font-bold mt-6 px-3 md:px-0">
+      <h2 className="text-32 font-bold mt-6 px-3 md:px-0">
         Vé Máy Bay từ {from?.label ?? "Hồ Chí Minh"} tới {to?.label ?? "Hà Nội"}
-      </h1>
+      </h2>
       <div
         ref={flightType === "depart" ? resultsRef : null}
         className="bg-white pb-4 border border-b-0 border-gray-300 rounded-t-lg mt-6"

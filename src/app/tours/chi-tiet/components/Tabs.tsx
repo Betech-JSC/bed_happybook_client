@@ -64,9 +64,9 @@ export default function Tabs() {
       <div className="mt-4 transition-all duration-300">
         {activeTab === 0 && (
           <div className="bg-white rounded-2xl p-6">
-            <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               Tổng quan
-            </h3>
+            </h2>
             <p className="mt-4">
               Cùng rời xa những mệt mỏi bộn bề của công việc, nếp sống náo
               nhiệt, nhộn nhịp của chốn thành đô, cùng BestPrice đến tham quan
@@ -97,9 +97,9 @@ export default function Tabs() {
         )}
         {activeTab === 1 && (
           <div className="bg-white rounded-2xl p-6 ">
-            <h3 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
+            <h2 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
               Lịch trình
-            </h3>
+            </h2>
             <div className="border-l border-l-gray-300 pb-3">
               <div className="cursor-pointer" onClick={() => toggleDropdown(1)}>
                 <div className="flex space-x-2 justify-between items-start">
@@ -314,9 +314,9 @@ export default function Tabs() {
         )}
         {activeTab === 2 && (
           <div className="bg-white rounded-2xl p-6">
-            <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               Bảng giá
-            </h3>
+            </h2>
             <div className="mt-4">
               <table className="w-full text-left align-middle">
                 <tr className="bg-[#FEF8F5] text-primary">
@@ -349,9 +349,9 @@ export default function Tabs() {
         )}
         {activeTab === 3 && (
           <div className="bg-white rounded-2xl p-6">
-            <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               Quy định dịch vụ
-            </h3>
+            </h2>
             <div className="mt-4">
               <p className="text-xl font-semibold">
                 Nội dung đang cập nhật....
@@ -361,9 +361,9 @@ export default function Tabs() {
         )}
         {activeTab === 4 && (
           <div className="bg-white rounded-2xl p-6">
-            <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               Đánh giá
-            </h3>
+            </h2>
             <div className="mt-4 flex flex-col md:flex-row md:space-x-6 bg-gray-50 p-6 rounded-xl items-center">
               <div className="w-full md:w-[30%] text-center px-9 flex flex-col mb-5 md:mb-0">
                 <p className="text-primary font-semibold mt-1">Xuất sắc</p>

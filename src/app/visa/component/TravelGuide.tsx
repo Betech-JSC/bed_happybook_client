@@ -10,7 +10,7 @@ export default function TravelGuide() {
     <div className="pt-8 pb-12 bg-[#FCFCFD]">
       <div className="flex justify-between">
         <div>
-          <h3 className="text-[32px] font-bold">Cẩm nang visa</h3>
+          <h2 className="text-[32px] font-bold">Cẩm nang visa</h2>
         </div>
         <div
           className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
@@ -55,10 +55,10 @@ export default function TravelGuide() {
                   "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
               }}
             >
-              <span className="absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+              <h3 className="absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                 Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa 462 Úc
                 Tham Khảo
-              </span>
+              </h3>
             </div>
           </div>
         </div>
@@ -80,9 +80,9 @@ export default function TravelGuide() {
                   "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
               }}
             >
-              <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+              <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                 Hướng Dẫn Chi Tiết Gia Hạn Visa Việt Nam Cho Người Nước Ngoài
-              </span>
+              </h3>
             </div>
           </div>
           <div className="relative rounded-xl cursor-pointer group overflow-hidden w-full h-[280px]">
@@ -102,9 +102,9 @@ export default function TravelGuide() {
                   "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
               }}
             >
-              <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+              <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                 Làm Thế Nào Để Đăng Ký E visa Cho Người Nước Ngoài Vào Việt Nam?
-              </span>
+              </h3>
             </div>
           </div>
           <div className="relative rounded-xl cursor-pointer group overflow-hidden w-full h-[280px]">
@@ -124,10 +124,10 @@ export default function TravelGuide() {
                   "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
               }}
             >
-              <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+              <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                 Điểm Danh Những Khu Du Lịch Sinh Thái Bến Tre Được Nhiều Du
                 Khách Chọn Lựa
-              </span>
+              </h3>
             </div>
           </div>
           <div className="relative rounded-xl cursor-pointer group overflow-hidden w-full h-[280px]">
@@ -147,10 +147,10 @@ export default function TravelGuide() {
                   "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
               }}
             >
-              <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+              <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                 Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa 462 Úc
                 Tham Khảo
-              </span>
+              </h3>
             </div>
           </div>
         </div>
@@ -181,10 +181,10 @@ export default function TravelGuide() {
                         "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                     }}
                   >
-                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                    <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                       Hướng Dẫn Chi Tiết Gia Hạn Visa Việt Nam Cho Người Nước
                       Ngoài
-                    </span>
+                    </h3>
                   </div>
                 </div>
               </CarouselItem>
@@ -206,10 +206,10 @@ export default function TravelGuide() {
                         "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                     }}
                   >
-                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                    <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                       Làm Thế Nào Để Đăng Ký E visa Cho Người Nước Ngoài Vào
                       Việt Nam?
-                    </span>
+                    </h3>
                   </div>
                 </div>
               </CarouselItem>
@@ -231,10 +231,10 @@ export default function TravelGuide() {
                         "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                     }}
                   >
-                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                    <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                       Điểm Danh Những Khu Du Lịch Sinh Thái Bến Tre Được Nhiều
                       Du Khách Chọn Lựa
-                    </span>
+                    </h3>
                   </div>
                 </div>
               </CarouselItem>
@@ -256,10 +256,10 @@ export default function TravelGuide() {
                         "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                     }}
                   >
-                    <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                    <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                       Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa 462
                       Úc Tham Khảo
-                    </span>
+                    </h3>
                   </div>
                 </div>
               </CarouselItem>

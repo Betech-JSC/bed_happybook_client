@@ -125,10 +125,10 @@ export default function CategoryPosts({
             <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
-                  <span className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
+                  <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
                     HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ
                     (Tour bao gồm máy bay)
-                  </span>
+                  </h1>
                   <div className="flex space-x-2 mt-2">
                     <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
                       9.8

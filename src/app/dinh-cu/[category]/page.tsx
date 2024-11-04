@@ -122,7 +122,7 @@ export default function CompoTour() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-6">
-          <h3 className="text-32 font-bold">Dịch vụ định cư Mỹ</h3>
+          <h1 className="text-32 font-bold">Dịch vụ định cư Mỹ</h1>
           <div className="flex my-4 md:my-0 space-x-3 items-center">
             <span>Sắp xếp</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">

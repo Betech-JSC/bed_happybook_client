@@ -83,7 +83,7 @@ export default function TourNoiDia() {
         <div className="relative z-10">
           <div className="flex justify-between">
             <div>
-              <h3 className="text-[32px] font-bold">Tour Nội địa</h3>
+              <h2 className="text-[32px] font-bold">Tour Nội địa</h2>
             </div>
             <Link
               href="/tours/tour-noi-dia"

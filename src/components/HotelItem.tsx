@@ -31,7 +31,7 @@ export default function HotelItem({ hotel }: Props) {
             href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
             className="block text-base font-semibold line-clamp-2 text__default_hover mt-3 px-4"
           >
-            {hotel.title}
+            <h3> {hotel.title}</h3>
           </Link>
         </div>
         <div className="mt-2 px-4">

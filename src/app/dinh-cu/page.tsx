@@ -113,7 +113,7 @@ export default function CompoTour() {
       <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <h3 className="text-32 font-bold">Dịch vụ định cư</h3>
+            <h2 className="text-32 font-bold">Dịch vụ định cư</h2>
             <div className="flex my-4 md:my-0 space-x-3 items-center">
               <span>Sắp xếp</span>
               <div className="w-40 bg-white border border-gray-200 rounded-lg">
@@ -247,7 +247,7 @@ export default function CompoTour() {
             <div className="pt-8 pb-6">
               <div className="flex justify-between">
                 <div>
-                  <h3 className="text-[32px] font-bold">Tin tức</h3>
+                  <h2 className="text-[32px] font-bold">Tin tức</h2>
                 </div>
               </div>
               <div className="mt-8 w-full flex flex-col lg:flex-row lg:space-x-4 space-y-6 lg:space-y-0">
@@ -269,10 +269,10 @@ export default function CompoTour() {
                           "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                       }}
                     >
-                      <span className="absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      <h3 className="absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                         Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa
                         462 Úc Tham Khảo
-                      </span>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -294,10 +294,10 @@ export default function CompoTour() {
                           "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                       }}
                     >
-                      <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                         Hướng Dẫn Chi Tiết Gia Hạn Visa Việt Nam Cho Người Nước
                         Ngoài
-                      </span>
+                      </h3>
                     </div>
                   </div>
                   <div className="relative rounded-xl cursor-pointer group overflow-hidden w-full h-[280px]">
@@ -317,10 +317,10 @@ export default function CompoTour() {
                           "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                       }}
                     >
-                      <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                         Làm Thế Nào Để Đăng Ký E visa Cho Người Nước Ngoài Vào
                         Việt Nam?
-                      </span>
+                      </h3>
                     </div>
                   </div>
                   <div className="relative rounded-xl cursor-pointer group overflow-hidden w-full h-[280px]">
@@ -340,10 +340,10 @@ export default function CompoTour() {
                           "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                       }}
                     >
-                      <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                         Điểm Danh Những Khu Du Lịch Sinh Thái Bến Tre Được Nhiều
                         Du Khách Chọn Lựa
-                      </span>
+                      </h3>
                     </div>
                   </div>
                   <div className="relative rounded-xl cursor-pointer group overflow-hidden w-full h-[280px]">
@@ -363,10 +363,10 @@ export default function CompoTour() {
                           "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                       }}
                     >
-                      <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                      <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                         Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa
                         462 Úc Tham Khảo
-                      </span>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -397,10 +397,10 @@ export default function CompoTour() {
                                 "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                             }}
                           >
-                            <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                            <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                               Hướng Dẫn Chi Tiết Gia Hạn Visa Việt Nam Cho Người
                               Nước Ngoài
-                            </span>
+                            </h3>
                           </div>
                         </div>
                       </CarouselItem>
@@ -422,10 +422,10 @@ export default function CompoTour() {
                                 "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                             }}
                           >
-                            <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                            <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                               Làm Thế Nào Để Đăng Ký E visa Cho Người Nước Ngoài
                               Vào Việt Nam?
-                            </span>
+                            </h3>
                           </div>
                         </div>
                       </CarouselItem>
@@ -447,10 +447,10 @@ export default function CompoTour() {
                                 "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                             }}
                           >
-                            <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                            <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                               Điểm Danh Những Khu Du Lịch Sinh Thái Bến Tre Được
                               Nhiều Du Khách Chọn Lựa
-                            </span>
+                            </h3>
                           </div>
                         </div>
                       </CarouselItem>
@@ -472,10 +472,10 @@ export default function CompoTour() {
                                 "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                             }}
                           >
-                            <span className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                            <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
                               Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin
                               Visa 462 Úc Tham Khảo
-                            </span>
+                            </h3>
                           </div>
                         </div>
                       </CarouselItem>

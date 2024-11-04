@@ -12,7 +12,7 @@ export default function Search() {
     <Fragment>
       <div className="base__content h-full relative place-content-center my-12 lg:my-16">
         <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-[850px]">
-          <h3 className="text-18 font-semibold">Tìm Combo du lịch</h3>
+          <h1 className="text-18 font-semibold">Tìm Combo du lịch</h1>
           <div className="mt-4 md:mt-6 h-fit lg:h-20 flex flex-col lg:flex-row lg:space-x-2 space-y-3 items-end justify-between">
             <div className="relative w-full lg:w-1/4">
               <div className="absolute left-4 top-1/2 translate-y-1/4">

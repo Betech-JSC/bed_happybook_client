@@ -97,19 +97,19 @@ export default function VisaItem({ tabs }: Props) {
                         />
                       </Link>
                     </div>
-                    <div className="py-3 px-4 lg:h-[50px] ">
+                    <div className="py-3 px-4 lg:h-14">
                       <Link
                         href="/visa/chi-tiet/visa-nhat-ban"
                         className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
                       >
-                        {item.title}
+                        <h3> {item.title}</h3>
                       </Link>
                     </div>
-                    <div className="text-end py-3 px-4 mt-2">
+                    {/* <div className="text-end py-3 px-4 mt-2">
                       <span className="text-[#F27145] font-semibold text-base lg:text-xl">
                         800.000 vnđ
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 </CarouselItem>
               ))}

@@ -24,9 +24,9 @@ export default function Login() {
       </div>
       <div className="base__content">
         <div className="mx-auto mt-[74px] px-4 md:px-12 py-6 md:w-[520px] h-auto bg-white rounded-2xl  ">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h1 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Đăng nhập
-          </h3>
+          </h1>
           <FormLogin />
           <div className="mt-3">
             <p className="text-center text-18 text-gray-900 font-semibold">

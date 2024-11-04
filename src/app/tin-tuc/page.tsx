@@ -45,7 +45,7 @@ export default async function Posts() {
                   className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
                 >
                   <Link href={`/tin-tuc/chi-tiet/${lastestPosts[0].alias}`}>
-                    {lastestPosts[0].title ?? ""}
+                    <h3>{lastestPosts[0].title ?? ""}</h3>
                   </Link>
                 </h3>
                 <div
@@ -84,7 +84,7 @@ export default async function Posts() {
                         href={`/tin-tuc/chi-tiet/${item.alias}`}
                         className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
                       >
-                        {item.title ?? ""}
+                        <h3> {item.title ?? ""}</h3>
                       </Link>
                     </div>
                   </div>
@@ -100,9 +100,9 @@ export default async function Posts() {
             <div key={index} className="w-full mb-9">
               <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row justify-between">
                 <div className="lg:basis-10/12">
-                  <h3 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
+                  <h2 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
                     {item.name}
-                  </h3>
+                  </h2>
                 </div>
                 <Link
                   href={`/tin-tuc/${item.alias}`}
@@ -119,7 +119,7 @@ export default async function Posts() {
                 </Link>
               </div>
               {item.news.length > 0 ? (
-                <div className="grid grid-cols-3 gap-[26.33px]">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-[26.33px]">
                   {item.news.map((item, key) => (
                     <div key={key} className={`mt-8 ${Post.post__item}`}>
                       <div className="overflow-hidden rounded-xl">
@@ -135,11 +135,11 @@ export default async function Posts() {
                         </Link>
                       </div>
                       <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
-                        <p
+                        <h3
                           className={`ease-in duration-300 text-base font-semibold mt-3 line-clamp-3 ${Post.post__item_title}`}
                         >
                           {item.title}
-                        </p>
+                        </h3>
                       </Link>
                       <p className="text-sm mt-2">
                         {formatDate(item.created_at)}

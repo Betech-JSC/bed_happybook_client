@@ -21,7 +21,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 }
                 className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
               >
-                {item.name}
+                <h2>{item.name}</h2>
               </Link>
             ))
           ) : (
@@ -54,11 +54,11 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 </div>
                 <div className="basis-[65%]">
                   <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
-                    <p
+                    <h3
                       className={`text-base ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                     >
                       {item.title}
-                    </p>
+                    </h3>
                   </Link>
                   <p className="text-sm mt-2">{formatDate(item.created_at)}</p>
                 </div>

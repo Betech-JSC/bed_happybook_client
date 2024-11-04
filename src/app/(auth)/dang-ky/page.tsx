@@ -24,9 +24,9 @@ export default function Login() {
       </div>
       <div className="base__content">
         <div className="mx-auto mt-[74px] px-4 md:px-12 py-6 md:w-[520px] h-full bg-white rounded-2xl  ">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h1 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Đăng ký
-          </h3>
+          </h1>
           <div>
             <FormRegister />
           </div>

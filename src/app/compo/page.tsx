@@ -100,7 +100,7 @@ export default function CompoTour() {
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           {/* Tours */}
           <div className="w-full">
-            <h3 className="text-32 font-bold">Khám phá các điểm đến HOT</h3>
+            <h2 className="text-32 font-bold">Khám phá các điểm đến HOT</h2>
             <div className="mt-8 overflow-hidden">
               <Carousel
                 opts={{
@@ -127,7 +127,7 @@ export default function CompoTour() {
                         </Link>
                         <div className="absolute bottom-3 left-2 text-white px-3 py-1">
                           <Link href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang">
-                            <span>{item.title}</span>
+                            <h3>{item.title}</h3>
                           </Link>
                         </div>
                       </div>
@@ -140,7 +140,7 @@ export default function CompoTour() {
             </div>
           </div>
           <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
-            <h3 className="text-32 font-bold">Combo du lịch nội địa</h3>
+            <h2 className="text-32 font-bold">Combo du lịch nội địa</h2>
             <div className="flex my-4 md:my-0 space-x-3 items-center">
               <span>Sắp xếp</span>
               <div className="w-40 bg-white border border-gray-200 rounded-lg">
