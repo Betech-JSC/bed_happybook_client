@@ -402,7 +402,29 @@ export default function ListFilght({ airports }: ListFilghtProps) {
       scrollToResultContainer();
     }
   };
-
+  // Checkout Flight
+  const handleCheckOutFlight = () => {
+    if (typeof window !== "undefined") {
+      if (selectedDepartFlight) {
+        sessionStorage.setItem(
+          "departFlight",
+          JSON.stringify(selectedDepartFlight)
+        );
+      }
+      if (selectedReturnFlight) {
+        sessionStorage.setItem(
+          "returnFlight",
+          JSON.stringify(selectedReturnFlight)
+        );
+      } else {
+        sessionStorage.removeItem("returnFlight");
+      }
+      if (apiFlightSession) {
+        sessionStorage.setItem("flightSession", apiFlightSession);
+      }
+      router.push("/ve-may-bay/thong-tin-hanh-khach");
+    }
+  };
   // Loading
   if (loading) {
     return (
@@ -747,12 +769,14 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                     {totalPriceCheckout} VND
                   </p>
                 </div>
-                <Link
-                  href="/ve-may-bay/thong-tin-hanh-khach"
+                <button
+                  onClick={() => {
+                    handleCheckOutFlight();
+                  }}
                   className="w-full md:w-fit mt-3 md:mt-0 text-center py-3 px-10 bg-blue-600 border text-white rounded-lg hover:text-primary duration-300"
                 >
                   Tiếp tục
-                </Link>
+                </button>
               </div>
             )}
             <SignUpReceiveCheapTickets />
