@@ -18,6 +18,10 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { HttpError } from "@/lib/error";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "@/styles/datePicker.scss";
+import { vi } from "date-fns/locale";
 
 export default function FlightBookForm() {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
@@ -38,11 +42,13 @@ export default function FlightBookForm() {
     register,
     handleSubmit,
     reset,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm<FlightBookingInforType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
-      atd: [{ gender: "", firstName: "", lastName: "", baggage: "" }],
+      atd: [{ gender: "", firstName: "", lastName: "" }],
       PaymentMethod: "",
       checkBoxGenerateInvoice: false,
     },
@@ -57,46 +63,70 @@ export default function FlightBookForm() {
     const infArr = data.inf
       ? data.inf.map((item) => ({ value: item, Type: "INF" }))
       : [];
-    const ListPassenger = [...adtArr, ...chdArr, ...infArr].reduce(
+    const passengers = [...adtArr, ...chdArr, ...infArr].reduce(
       (acc: any, item, index) => {
         acc.push({
-          Index: index,
-          FirstName: item.value.firstName,
-          Gender: item.value.gender === "male" ? true : false,
-          Type: item.Type,
-          Birthday: "",
-          ListBaggage: [],
+          index: index,
+          first_name: item.value.firstName,
+          last_name: item.value.lastName,
+          gender: item.value.gender === "male" ? true : false,
+          type: item.Type,
+          birthday: "1990-12-10",
+          baggages: item.value.baggage,
         });
         return acc;
       },
       []
     );
+    data.book_type = "book-normal";
+    data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
-    const ListFareData = [
+    let flightValueParams: any = [];
+    flights.map((item, index) => {
+      flightValueParams.push({ flight_value: item.ListFlight[0].FlightValue });
+    });
+    const fare_data = [
       {
-        Session: "",
-        FareDataId: 0,
+        session: flightSession,
+        fare_data_id_api: flights[0].FareDataId,
         AutoIssue: false,
-        ListFlight: [
-          {
-            FlightValue: "",
-          },
-        ],
+        flights: flightValueParams,
       },
     ];
+    formatData.contact.gender =
+      formatData.contact.gender === "male" ? true : false;
     let finalData = {
       ...formatData,
-      ListPassenger,
-      ListFareData,
+      passengers,
+      fare_data,
     };
-    setTimeout(() => {
-      reset();
-      toast.success("Gửi thành công!");
-      setLoading(false);
-      setTimeout(() => {
-        router.push("/ve-may-bay");
-      }, 1500);
-    }, 2000);
+    const bookFlight = async () => {
+      try {
+        setLoading(true);
+        const respon = await FlightApi.bookFlight("book-flight", finalData);
+        reset();
+        toast.success("Gửi yêu cầu thành công!");
+        setTimeout(() => {
+          router.push("/ve-may-bay");
+        }, 1500);
+      } catch (error: any) {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (finalData) {
+      bookFlight();
+    }
+
+    // setTimeout(() => {
+    //   // reset();
+    //   toast.success("Gửi thành công!");
+    //   setLoading(false);
+    //   setTimeout(() => {
+    //     router.push("/ve-may-bay");
+    //   }, 1500);
+    // }, 2000);
   };
   useEffect(() => {
     let flightData = [];
@@ -259,6 +289,45 @@ export default function FlightBookForm() {
                         </p>
                       )}
                     </div>
+                    {/* <div className="relative">
+                      <label
+                        htmlFor="service"
+                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        Ngày sinh <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                        <DatePicker
+                          selected={
+                            getValues(`atd.${index}.birthday`)
+                              ? new Date(getValues(`atd.${index}.birthday`))
+                              : null
+                          }
+                          onChange={(date: Date | null) => {
+                            if (date) {
+                              const formattedDate = date
+                                .toISOString()
+                                .split("T")[0];
+                              setValue(`atd.${index}.birthday`, formattedDate); // Cập nhật giá trị ngày trong form
+                            } else {
+                              setValue(`atd.${index}.birthday`, ""); // Nếu người dùng xóa, đặt thành chuỗi rỗng
+                            }
+                          }}
+                          locale={vi}
+                          dateFormat="yyyy-MM-dd"
+                          placeholderText="Chọn ngày sinh"
+                        />
+                        <input
+                          type="hidden"
+                          {...register(`atd.${index}.birthday`)}
+                        />
+                      </div>
+                      {errors.atd?.[index]?.birthday && (
+                        <p className="text-red-600">
+                          {errors.atd[index].birthday?.message}
+                        </p>
+                      )}
+                    </div> */}
                     <div className="relative">
                       <label
                         htmlFor="service"
@@ -293,7 +362,7 @@ export default function FlightBookForm() {
                       <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                         <select
                           className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                          {...register(`atd.${index}.baggage`)}
+                          // {...register(`atd.${index}.baggage`)}
                         >
                           <option value="">Vui lòng chọn gói hành lý</option>
                           {/* <option value="male">Quý ông</option> */}
@@ -387,7 +456,7 @@ export default function FlightBookForm() {
                       </label>
                       <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                         <select
-                          {...register(`chd.${index}.baggage`)}
+                          // {...register(`chd.${index}.baggage`)}
                           className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                         >
                           <option value="">Vui lòng chọn gói hành lý</option>
@@ -482,7 +551,7 @@ export default function FlightBookForm() {
                       </label>
                       <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                         <select
-                          {...register(`inf.${index}.baggage`)}
+                          // {...register(`inf.${index}.baggage`)}
                           className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                         >
                           <option>Vui lòng chọn gói hành lý</option>
@@ -507,13 +576,13 @@ export default function FlightBookForm() {
                   <input
                     id="FirstName"
                     type="text"
-                    {...register("Contact.FirstName")}
+                    {...register("contact.first_name")}
                     placeholder="Nhập Họ"
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                   />
-                  {errors.Contact?.FirstName && (
+                  {errors.contact?.first_name && (
                     <p className="text-red-600">
-                      {errors.Contact?.FirstName.message}
+                      {errors.contact?.first_name.message}
                     </p>
                   )}
                 </div>
@@ -527,13 +596,13 @@ export default function FlightBookForm() {
                   <input
                     id="LastName"
                     type="text"
-                    {...register("Contact.LastName")}
+                    {...register("contact.last_name")}
                     placeholder="Nhập tên đệm & tên"
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                   />
-                  {errors.Contact?.LastName && (
+                  {errors.contact?.last_name && (
                     <p className="text-red-600">
-                      {errors.Contact?.LastName.message}
+                      {errors.contact?.last_name.message}
                     </p>
                   )}
                 </div>
@@ -547,7 +616,7 @@ export default function FlightBookForm() {
 
                   <select
                     id="gender_person_contact"
-                    {...register("Contact.Gender")}
+                    {...register("contact.gender")}
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                   >
                     <option value="" className="text-gray-300">
@@ -556,9 +625,9 @@ export default function FlightBookForm() {
                     <option value="male">Quý ông</option>
                     <option value="female">Quý bà</option>
                   </select>
-                  {errors.Contact?.Gender && (
+                  {errors.contact?.gender && (
                     <p className="text-red-600">
-                      {errors.Contact?.Gender.message}
+                      {errors.contact?.gender.message}
                     </p>
                   )}
                 </div>
@@ -572,13 +641,13 @@ export default function FlightBookForm() {
                   <input
                     id="phone"
                     type="text"
-                    {...register("Contact.Phone")}
+                    {...register("contact.phone")}
                     placeholder="Nhập số điện thoại"
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                   />
-                  {errors.Contact?.Phone && (
+                  {errors.contact?.phone && (
                     <p className="text-red-600">
-                      {errors.Contact?.Phone.message}
+                      {errors.contact?.phone.message}
                     </p>
                   )}
                 </div>
@@ -593,12 +662,12 @@ export default function FlightBookForm() {
                     id="email_person_contact"
                     type="text"
                     placeholder="Nhập email"
-                    {...register("Contact.Email")}
+                    {...register("contact.email")}
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                   />
-                  {errors.Contact?.Email && (
+                  {errors.contact?.email && (
                     <p className="text-red-600">
-                      {errors.Contact?.Email.message}
+                      {errors.contact?.email.message}
                     </p>
                   )}
                 </div>

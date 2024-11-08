@@ -31,7 +31,23 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
           .refine((value) => ["male", "female"].includes(value), {
             message: "Vui lòng điền thông tin này",
           }),
-        baggage: z.string(),
+        birthday: z
+          .string()
+          .regex(/^\d{2}-\d{2}-\d{4}$/, {
+            message: "Thông tin không đúng định dạng",
+          })
+          .optional(),
+        // .refine(
+        //   (date) => {
+        //     const [year, month, day] = date.split("-").map(Number);
+        //     const isValidDate = new Date(year, month - 1, day)
+        //       .toISOString()
+        //       .startsWith(date);
+        //     return isValidDate;
+        //   },
+        //   { message: "Ngày không hợp lệ" }
+        // ),
+        baggage: z.object({}).optional(),
       })
     ),
     chd: z
@@ -64,7 +80,8 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
             .refine((value) => ["male", "female"].includes(value), {
               message: "Vui lòng điền thông tin này",
             }),
-          baggage: z.string(),
+          birthday: z.string().optional(),
+          baggage: z.object({}).optional(),
         })
       )
       .optional(),
@@ -98,32 +115,36 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
             .refine((value) => ["male", "female"].includes(value), {
               message: "Vui lòng điền thông tin này",
             }),
-          baggage: z.string(),
+          birthday: z.string().optional(),
+          baggage: z.object({}).optional(),
         })
       )
       .optional(),
-    Contact: z.object({
-      Gender: z
-        .string()
-        .min(1, {
-          message: "Vui lòng điền thông tin này",
-        })
-        .refine((value) => ["male", "female"].includes(value), {
-          message: "Vui lòng điền thông tin này",
-        }),
-      FirstName: z
+    book_type: z.string().optional(),
+    trip: z.string().optional(),
+    contact: z.object({
+      gender: z
+        .union([z.string(), z.boolean()])
+        .refine(
+          (val) =>
+            val === true ||
+            val === false ||
+            ["male", "female"].includes(val as string),
+          { message: "Vui lòng điền thông tin này" }
+        ),
+      first_name: z
         .string()
         .min(3, { message: "Vui lòng điền thông tin này" })
         .max(30, {
           message: "Họ không hợp lệ!",
         }),
-      LastName: z
+      last_name: z
         .string()
         .min(1, { message: "Vui lòng điền thông tin này" })
         .max(100, {
           message: "Tên không hợp lệ!",
         }),
-      Phone: z
+      phone: z
         .string()
         .min(1, {
           message: "Vui lòng điền thông tin này",
@@ -131,13 +152,13 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
         .regex(/^\d{10,11}$/, {
           message: "Số điện thoại không đúng định dạng",
         }),
-      Email: z
+      email: z
         .string()
         .min(1, { message: "Vui lòng điền thông tin này" })
         .email({
           message: "Email không đúng định dạng",
         }),
-      Address: z.string().optional(),
+      address: z.string().optional(),
     }),
     Note: z.string(),
     PaymentMethod: z
