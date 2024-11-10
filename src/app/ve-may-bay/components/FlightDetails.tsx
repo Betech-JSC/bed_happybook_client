@@ -240,7 +240,7 @@ const FlightDetails = ({
             style={{
               maxHeight: showDetails === flight.id ? height : "0px",
             }}
-            className={`bg-gray-100 border-2 rounded-2xl relative z-10 transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
+            className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
               showDetails === flight.id && hasHeight
                 ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
                 : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"

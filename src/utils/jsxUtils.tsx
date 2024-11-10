@@ -9,22 +9,41 @@ const convertToUnaccentedLetters = (str: string) => {
     .toLowerCase();
 };
 
-const highlightText = (text: string, highlight: string) => {
-  if (!highlight.trim()) return text;
-
-  const sanitizedHighlight = convertToUnaccentedLetters(
-    highlight.toLowerCase()
-  );
+const highlightTextSearchAirport = (text: string, highlight: string) => {
+  const sanitizedHighlight = highlight.trim()
+    ? convertToUnaccentedLetters(highlight.toLowerCase())
+    : "";
   const sanitizedText = convertToUnaccentedLetters(text.toLowerCase());
 
-  const startIndex = sanitizedText.indexOf(sanitizedHighlight);
-  if (startIndex === -1) return text;
+  const startIndex = sanitizedHighlight
+    ? sanitizedText.indexOf(sanitizedHighlight)
+    : -1;
+
+  if (startIndex === -1) {
+    const airportCodeMatch = text.match(/\(([^)]+)\)$/);
+    const mainText = airportCodeMatch
+      ? text.replace(airportCodeMatch[0], "")
+      : text;
+    const airportCode = airportCodeMatch ? airportCodeMatch[0] : "";
+
+    return (
+      <>
+        {mainText}
+        {airportCode && <span style={{ opacity: "60%" }}>{airportCode}</span>}
+      </>
+    );
+  }
 
   const endIndex = startIndex + sanitizedHighlight.length;
-
   const before = text.slice(0, startIndex);
   const match = text.slice(startIndex, endIndex);
   const after = text.slice(endIndex);
+
+  const airportCodeMatch = after.match(/\(([^)]+)\)$/);
+  const afterText = airportCodeMatch
+    ? after.replace(airportCodeMatch[0], "")
+    : after;
+  const airportCode = airportCodeMatch ? airportCodeMatch[0] : "";
 
   return (
     <>
@@ -35,7 +54,8 @@ const highlightText = (text: string, highlight: string) => {
       >
         {match}
       </span>
-      {after}
+      {afterText}
+      {airportCode && <span style={{ opacity: "60%" }}>{airportCode}</span>}
     </>
   );
 };
@@ -45,4 +65,8 @@ const NoOptionsMessage = (props: any) => (
     <span className="text-gay-600 text-18">Không tìm thấy kết quả phù hợp</span>
   </components.NoOptionsMessage>
 );
-export { highlightText, NoOptionsMessage, convertToUnaccentedLetters };
+export {
+  highlightTextSearchAirport,
+  NoOptionsMessage,
+  convertToUnaccentedLetters,
+};

@@ -92,7 +92,7 @@ const getAirportsDefault = () => {
       id: 3,
       country: "Châu Á",
       airports: [
-        { city: "Bắc Kinh", code: "PKE", type: "international" },
+        { city: "Bắc Kinh", code: "PEK", type: "international" },
         { city: "Bangkok", code: "BKK", type: "international" },
         { city: "Busan", code: "PUS", type: "international" },
         { city: "Daegu", code: "TAE", type: "international" },

@@ -4,7 +4,10 @@ import {
   AirportPopupSelectorProps,
   AirportsCountry,
 } from "@/types/flight";
-import { convertToUnaccentedLetters, highlightText } from "@/utils/jsxUtils";
+import {
+  convertToUnaccentedLetters,
+  highlightTextSearchAirport,
+} from "@/utils/jsxUtils";
 import Image from "next/image";
 import React, {
   useState,
@@ -229,7 +232,7 @@ export default function AirportPopupSelector({
               onClick={() => handleInputClick("departure")}
               readOnly
               ref={fromRef}
-              className="w-full px-4 py-2  cursor-pointer"
+              className="w-full px-4 py-2 cursor-pointer focus:outline-none"
             />
           </div>
         </div>
@@ -278,7 +281,7 @@ export default function AirportPopupSelector({
       {isPopupVisible && (
         <div
           ref={popupRef}
-          className="fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-screen md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-10"
+          className="fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-screen md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] lg:w-[750px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-10"
         >
           <div className="flex items-center justify-between px-4 py-2 border-b">
             <h2 className="text-lg font-semibold text-orange-500">
@@ -316,14 +319,14 @@ export default function AirportPopupSelector({
               className="w-full px-4 py-2 border rounded-sm border-gray-300 focus:outline-none"
             />
           </div>
-          <div className="flex space-x-2 px-4 py-2">
+          <div className="flex flex-wrap md:flex-nowrap md:space-x-2 px-4 py-2">
             {airportsData &&
               airportsData.map(
                 (country, index) =>
                   country.airports.length > 0 && (
                     <button
                       key={index}
-                      className={`px-3 py-1 rounded-md border ${
+                      className={`px-3 py-1 mb-2 mr-2 md:mb-0 md:mr-0 rounded-md border ${
                         selectedTab === country.id
                           ? "bg-orange-500 text-white"
                           : "text-gray-600 border-gray-300"
@@ -336,14 +339,14 @@ export default function AirportPopupSelector({
               )}
           </div>
           {filteredAirports && filteredAirports.length > 0 ? (
-            <div className="grid grid-cols-1 my-2 md:grid-cols-3 gap-2 p-4 py-2 max-h-full overflow-y-auto">
+            <div className="grid grid-cols-2  mx-4 mt-2 mb-4 md:grid-cols-3 gap-2 border border-gray-300 rounded-lg py-2 max-h-full overflow-y-auto">
               {filteredAirports.map((airport) => (
                 <div
                   key={airport.code}
-                  className="px-3 py-2 text-left text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  className="font-normal px-3 py-2 text-left rounded-lg text__default_hover cursor-pointer"
                   onClick={() => handleAirportSelect(airport)}
                 >
-                  {highlightText(
+                  {highlightTextSearchAirport(
                     `${airport.city} (${airport.code})`,
                     searchQuery
                   )}
