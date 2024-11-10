@@ -6,10 +6,25 @@ export interface PassengerType {
   totalPrice: number;
   currency: string;
 }
+
 export interface AirportOption {
-  label: string;
-  value: string;
+  city: string;
+  code: string;
   type: string;
+}
+export interface AirportsCountry {
+  id: number;
+  country: string;
+  airports: AirportOption[];
+}
+export interface AirportPopupSelectorProps {
+  handleLocationChange: (locations: {
+    from: string | null;
+    to: string | null;
+  }) => void;
+  initialFrom: string | null;
+  initialTo: string | null;
+  airportsData: AirportsCountry[];
 }
 
 export interface FormData {
@@ -38,24 +53,41 @@ export interface SearchParamsProps {
 }
 
 export interface FlightCalendarProps {
-  airports: AirportOption[];
-  fromOption: AirportOption | null;
-  toOption: AirportOption | null;
+  airports: AirportsCountry[];
+  fromOption: AirportOption | undefined;
+  toOption: AirportOption | undefined;
   flightType: string;
 }
 
 export interface ListFilghtProps {
-  airports: AirportOption[];
+  airportsData: AirportsCountry[];
 }
 export interface SearchFilghtProps {
-  airports: AirportOption[];
+  airportsData: AirportsCountry[];
 }
 
+export interface FlightDetailProps {
+  session: string;
+  FareData: any;
+  onSelectFlight: (fligt: any) => void;
+  selectedFlight: any;
+  filters: {
+    priceWithoutTax: string;
+    timeDepart: string;
+    sortAirLine: string;
+    sortPrice: string;
+    airlines: string[];
+  };
+  airports: AirportsCountry[];
+  displayType: string;
+}
 export interface FlightSearchPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  airports: AirportOption[];
+  airportsData: AirportsCountry[];
   selectedDate: Date | null;
   onDateChange: (date: Date | null) => void;
+  fromOption: AirportOption | undefined;
+  toOption: AirportOption | undefined;
   flightType: string;
 }

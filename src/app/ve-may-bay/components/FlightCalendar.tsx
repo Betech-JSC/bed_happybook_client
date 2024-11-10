@@ -79,8 +79,8 @@ export default function FlightCalendar({
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [tripType, setTripType] = useState<string>("oneWay");
-  const [from, setFrom] = useState<AirportOption | null>(null);
-  const [to, setTo] = useState<AirportOption | null>(null);
+  const [from, setFrom] = useState<AirportOption | undefined>(undefined);
+  const [to, setTo] = useState<AirportOption | undefined>(undefined);
   const keyDateParams = flightType === "return" ? "ReturnDate" : "DepartDate";
   const scrollToResultContainer = () => {
     if (resultsRef.current) {
@@ -134,8 +134,8 @@ export default function FlightCalendar({
       try {
         setLoading(true);
         scrollToResultContainer();
-        const StartPoint = fromOption?.value ?? "SGN";
-        const EndPoint = toOption?.value ?? "HAN";
+        const StartPoint = fromOption?.code ?? "SGN";
+        const EndPoint = toOption?.code ?? "HAN";
 
         if (year && month) {
           setAirlineFilter(null);
@@ -209,7 +209,7 @@ export default function FlightCalendar({
   return (
     <Fragment>
       <h2 className="text-32 font-bold mt-6 px-3 md:px-0">
-        Vé Máy Bay từ {from?.label ?? "Hồ Chí Minh"} tới {to?.label ?? "Hà Nội"}
+        Vé Máy Bay từ {from?.city ?? "Hồ Chí Minh"} tới {to?.city ?? "Hà Nội"}
       </h2>
       <div
         ref={flightType === "depart" ? resultsRef : null}
@@ -229,7 +229,7 @@ export default function FlightCalendar({
               <div className="w-full cursor-pointer">
                 <input
                   type="text"
-                  value={from?.label ?? "Hồ Chí Minh"}
+                  value={from?.city ?? "Hồ Chí Minh"}
                   onFocus={(e) => e.target.blur()}
                   onKeyDown={(e) => {
                     e.preventDefault();
@@ -281,7 +281,7 @@ export default function FlightCalendar({
               <div className="w-full cursor-pointer">
                 <input
                   type="text"
-                  value={to?.label ?? "Hà Nội"}
+                  value={to?.city ?? "Hà Nội"}
                   onFocus={(e) => e.target.blur()}
                   onKeyDown={(e) => {
                     e.preventDefault();
@@ -510,7 +510,9 @@ export default function FlightCalendar({
           onClose={() => setPopupOpen(false)}
           selectedDate={selectedDate}
           onDateChange={(date) => setSelectedDate(date)}
-          airports={airports}
+          fromOption={fromOption}
+          toOption={toOption}
+          airportsData={airports}
           flightType={flightType}
         />
       </div>

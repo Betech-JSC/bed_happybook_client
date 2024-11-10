@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import Banner from "@/components/banner";
 import TourNoiDia from "@/components/home/tour-noi-dia";
 import TourHot from "@/components/home/tour-hot";
@@ -24,12 +24,14 @@ export const metadata: Metadata = {
   title: "Trang chủ",
   description: "Happy Book",
 };
-const airports = getAirportsDefault();
+const airportsData = getAirportsDefault();
 
-export default function Home() {
+export default async function Home() {
   return (
     <Fragment>
-      <Search airports={airports} />
+      <Suspense>
+        <Search airportsData={airportsData} />
+      </Suspense>
       {/* Search Mobile */}
       <div className="mt-[68px] block lg:hidden relative h-max pb-10">
         <div className="mt-4 h-full">
@@ -72,7 +74,7 @@ export default function Home() {
                 />
               </button>
             </div>
-            <SearchMobile airports={airports} />
+            <SearchMobile airportsData={airportsData} />
           </div>
         </div>
       </div>

@@ -33,8 +33,12 @@ export default async function SearchTicketCheap({
   const startPoint = searchParams?.StartPoint ?? "SGN";
   const endPoint = searchParams?.EndPoint ?? "HAN";
   const tripType = searchParams?.tripType ?? "oneWay";
-  const fromOption = airports.find((loc) => loc.value === startPoint) || null;
-  const toOption = airports.find((loc) => loc.value === endPoint) || null;
+  const fromOption = airports
+    .flatMap((country) => country.airports)
+    .find((airport) => airport.code === startPoint);
+  const toOption = airports
+    .flatMap((country) => country.airports)
+    .find((airport) => airport.code === endPoint);
   return (
     <Suspense>
       <div className="relative z-[1] h-max pb-12">
@@ -57,7 +61,7 @@ export default async function SearchTicketCheap({
         ></div>
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-24 lg:mb-4 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-            <Search airports={airports} />
+            <Search airportsData={airports} />
           </div>
         </div>
       </div>
@@ -84,8 +88,8 @@ export default async function SearchTicketCheap({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/ve-may-bay-gia-re" className="text-gray-700">
-                    Vé máy bay từ {fromOption?.label ?? "Hồ Chí Minh"} {" tới "}
-                    {toOption?.label ?? "Hà Nội"}
+                    Vé máy bay từ {fromOption?.city ?? "Hồ Chí Minh"} {" tới "}
+                    {toOption?.city ?? "Hà Nội"}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>

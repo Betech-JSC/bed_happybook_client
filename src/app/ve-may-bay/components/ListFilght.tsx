@@ -33,7 +33,7 @@ const defaultFilers = {
   sortPrice: "",
   airlines: [],
 };
-export default function ListFilght({ airports }: ListFilghtProps) {
+export default function ListFilght({ airportsData }: ListFilghtProps) {
   const [isRoundTrip, setIsRoundTrip] = useState<boolean>(false);
   const [selectedDepartFlight, setSelectedDepartFlight] = useState<any>(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState<any>(null);
@@ -44,16 +44,18 @@ export default function ListFilght({ airports }: ListFilghtProps) {
   const router = useRouter();
   // Handle Params
   const searchParams = useSearchParams();
-  const StartPoint = searchParams.get("StartPoint") ?? "";
-  const EndPoint = searchParams.get("EndPoint") ?? "";
-  const fromPlace = airports.reduce<string | null>(
-    (acc, air) => (air.value === StartPoint ? air.label : acc),
-    null
-  );
-  const toPlace = airports.reduce<string | null>(
-    (acc, air) => (air.value === EndPoint ? air.label : acc),
-    null
-  );
+  const StartPoint = searchParams.get("StartPoint") ?? "SGN";
+  const EndPoint = searchParams.get("EndPoint") ?? "HAN";
+
+  const fromPlace =
+    airportsData
+      .flatMap((country) => country.airports)
+      .find((airport) => airport.code === StartPoint)?.city ?? null;
+  const toPlace =
+    airportsData
+      .flatMap((country) => country.airports)
+      .find((airport) => airport.code === EndPoint)?.city ?? null;
+
   const DepartDate =
     searchParams.get("DepartDate") ?? format(new Date(), "ddMMyyy");
   const ReturnDate = searchParams.get("ReturnDate") ?? DepartDate;
@@ -659,12 +661,11 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                         <FlightDetails
                           session={apiFlightSession}
                           FareData={item}
-                          fromPlace={fromPlace}
-                          toPlace={toPlace}
                           onSelectFlight={handleSelectDepartFlight}
                           selectedFlight={selectedDepartFlight}
                           filters={filters}
-                          airports={airports}
+                          airports={airportsData}
+                          displayType={displayType}
                         />
                       </div>
                     ))}
@@ -743,12 +744,11 @@ export default function ListFilght({ airports }: ListFilghtProps) {
                           <FlightDetails
                             session={apiFlightSession}
                             FareData={item}
-                            fromPlace={toPlace}
-                            toPlace={fromPlace}
                             onSelectFlight={handleSelectReturnFlight}
                             selectedFlight={selectedReturnFlight}
                             filters={filters}
-                            airports={airports}
+                            airports={airportsData}
+                            displayType={displayType}
                           />
                         </div>
                       ))}

@@ -19,9 +19,11 @@ import Select, { SingleValue } from "react-select";
 export default function FlightSearchPopup({
   isOpen,
   onClose,
-  airports,
+  airportsData,
   selectedDate,
   onDateChange,
+  fromOption,
+  toOption,
   flightType,
 }: FlightSearchPopupProps) {
   const today = new Date();
@@ -42,8 +44,8 @@ export default function FlightSearchPopup({
   });
   const router = useRouter();
   const [totalGuests, setTotalGuests] = useState<number>(1);
-  const [from, setFrom] = useState<SingleValue<AirportOption> | null>(null);
-  const [to, setTo] = useState<SingleValue<AirportOption> | null>(null);
+  const [from, setFrom] = useState<AirportOption | undefined>(fromOption);
+  const [to, setTo] = useState<AirportOption | undefined>(toOption);
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
   const keyFromParam = flightType === "return" ? "EndPoint" : "StartPoint";
@@ -86,8 +88,8 @@ export default function FlightSearchPopup({
 
   useEffect(() => {
     handleLocationChange({
-      from: from?.value || null,
-      to: to?.value || null,
+      from: from?.code || null,
+      to: to?.code || null,
     });
     if (from || to) {
       if (!from) {
@@ -100,15 +102,6 @@ export default function FlightSearchPopup({
       }
     }
   }, [from, to, handleLocationChange]);
-
-  useEffect(() => {
-    const fromParam = searchParams.get(keyFromParam);
-    const toParam = searchParams.get(keyToParam);
-    const fromOption = airports.find((loc) => loc.value === fromParam) || null;
-    const toOption = airports.find((loc) => loc.value === toParam) || null;
-    setFrom(fromOption);
-    setTo(toOption);
-  }, [searchParams, keyFromParam, keyToParam, airports]);
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -166,37 +159,8 @@ export default function FlightSearchPopup({
                   width={18}
                   height={18}
                 />
-                <div className="w-full cursor-pointer">
-                  <Select
-                    options={airports}
-                    value={from}
-                    onChange={setFrom}
-                    placeholder={"Chọn điểm đi"}
-                    styles={{
-                      control: (provided) => ({
-                        ...provided,
-                        border: "none",
-                        boxShadow: "none",
-                        cursor: "pointer",
-                      }),
-                      menu: (provided) => ({
-                        ...provided,
-                        cursor: "pointer",
-                        width: "260px",
-                      }),
-                      indicatorSeparator: () => ({
-                        display: "none",
-                      }),
-                      dropdownIndicator: () => ({
-                        display: "none",
-                      }),
-                    }}
-                    onFocus={(e) => e.target.blur()}
-                    onKeyDown={(e) => {
-                      e.preventDefault();
-                    }}
-                    menuPlacement="auto"
-                  />
+                <div className="w-full ml-3">
+                  <input type="text" value={from?.city} readOnly />
                 </div>
               </div>
             </div>
@@ -222,39 +186,8 @@ export default function FlightSearchPopup({
                   width={18}
                   height={18}
                 />
-                <div className="w-full">
-                  <div className="w-full cursor-pointer">
-                    <Select
-                      options={airports}
-                      value={to}
-                      onChange={setTo}
-                      placeholder={"Chọn điểm đến"}
-                      onFocus={(e) => e.target.blur()}
-                      onKeyDown={(e) => {
-                        e.preventDefault();
-                      }}
-                      styles={{
-                        control: (provided) => ({
-                          ...provided,
-                          border: "none",
-                          boxShadow: "none",
-                          cursor: "pointer",
-                        }),
-                        menu: (provided) => ({
-                          ...provided,
-                          cursor: "pointer",
-                          width: "260px",
-                        }),
-                        indicatorSeparator: () => ({
-                          display: "none",
-                        }),
-                        dropdownIndicator: () => ({
-                          display: "none",
-                        }),
-                      }}
-                      menuPlacement="auto"
-                    />
-                  </div>
+                <div className="w-full ml-3">
+                  <input type="text" value={to?.city} readOnly />
                 </div>
               </div>
             </div>

@@ -3,8 +3,9 @@ import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
+import { SearchFilghtProps } from "@/types/flight";
 
-export default function Search({ airports }: any) {
+export default function Search({ airportsData }: SearchFilghtProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
   const handleSearchHotel = () => {
@@ -98,7 +99,7 @@ export default function Search({ airports }: any) {
           {activeTab === 0 && (
             <div className="mt-2">
               <Suspense>
-                <SearchFlight airports={airports} />
+                <SearchFlight airportsData={airportsData} />
               </Suspense>
             </div>
           )}

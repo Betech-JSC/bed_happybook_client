@@ -7,18 +7,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/datePicker.scss";
 import { vi } from "date-fns/locale";
 import { format, parse, isValid } from "date-fns";
-import LocationSwitcher from "./SelectLocation";
 import SelectMenu from "./Passenger/Menu";
 import { toast } from "react-hot-toast";
 import { Suspense } from "react";
 import { FormData, SearchFilghtProps } from "@/types/flight";
+import AirportSelector from "./AirportSelector";
 
-export default function Search({ airports }: SearchFilghtProps) {
+export default function Search({ airportsData }: SearchFilghtProps) {
   const today = new Date();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [totalGuests, setTotalGuests] = useState<number>(1);
-
   const [formData, setFormData] = useState<FormData>({
     from: null,
     fromPlace: null,
@@ -124,7 +123,6 @@ export default function Search({ airports }: SearchFilghtProps) {
     },
     []
   );
-
   const handleDepartDateChange = (date: Date | null) => {
     if (!formData.returnDate) {
       handleFocusNextDate(returnDateRef);
@@ -212,9 +210,11 @@ export default function Search({ airports }: SearchFilghtProps) {
 
         <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
           <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
-            <LocationSwitcher
-              onLocationChange={handleLocationChange}
-              airports={airports}
+            <AirportSelector
+              handleLocationChange={handleLocationChange}
+              initialFrom={formData.from}
+              initialTo={formData.to}
+              airportsData={airportsData}
             />
           </div>
           <div

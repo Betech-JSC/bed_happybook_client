@@ -50,126 +50,83 @@ const generateMonth = (totalMonth: number) => {
   return months;
 };
 const getAirportsDefault = () => {
-  const object: AirportOption[] = [
+  const object = [
     {
-      label: "Hồ Chí Minh",
-      value: "SGN",
-      type: "domestic",
+      id: 1,
+      country: "Việt Nam",
+      airports: [
+        { city: "Hà Nội", code: "HAN", type: "domestic" },
+        { city: "Hồ Chí Minh", code: "SGN", type: "domestic" },
+        { city: "Vinh", code: "VII", type: "domestic" },
+        { city: "Huế", code: "HUI", type: "domestic" },
+        { city: "Đà Lạt", code: "DLI", type: "domestic" },
+        { city: "Phú Quốc", code: "PQC", type: "domestic" },
+        { city: "Hải Phòng", code: "HBH", type: "domestic" },
+        { city: "Đà Nẵng", code: "DAD", type: "domestic" },
+        { city: "Buôn Mê Thuột", code: "BMV", type: "domestic" },
+        { city: "Kiên Giang", code: "VKG", type: "domestic" },
+        { city: "Cà Mau", code: "CAH", type: "domestic" },
+        { city: "Côn Đảo", code: "VCS", type: "domestic" },
+        { city: "Nha Trang", code: "CXR", type: "domestic" },
+        { city: "Điện Biên Phủ", code: "DIN", type: "domestic" },
+        { city: "Thanh Hóa", code: "THD", type: "domestic" },
+        { city: "Quảng Bình", code: "VDH", type: "domestic" },
+        { city: "Quảng Nam", code: "VCL", type: "domestic" },
+        { city: "Cần Thơ", code: "VCA", type: "domestic" },
+        { city: "Qui Nhơn", code: "UIH", type: "domestic" },
+        { city: "Phú Yên", code: "TBB", type: "domestic" },
+      ],
     },
     {
-      label: "Hà Nội",
-      value: "HAN",
-      type: "domestic",
+      id: 2,
+      country: "Đông Nam Á",
+      airports: [
+        { city: "Bangkok", code: "BKK", type: "international" },
+        { city: "Kuala Lumpur", code: "KUL", type: "international" },
+        { city: "Phnom Penh", code: "PNH", type: "international" },
+        { city: "Singapore", code: "SIN", type: "international" },
+        { city: "Phuket", code: "HKT", type: "international" },
+      ],
     },
     {
-      label: "Vinh",
-      value: "VII",
-      type: "domestic",
+      id: 3,
+      country: "Châu Á",
+      airports: [
+        { city: "Bắc Kinh", code: "PKE", type: "international" },
+        { city: "Bangkok", code: "BKK", type: "international" },
+        { city: "Busan", code: "PUS", type: "international" },
+        { city: "Daegu", code: "TAE", type: "international" },
+        { city: "Seoul", code: "ICN", type: "international" },
+      ],
     },
     {
-      label: "Huế",
-      value: "HUI",
-      type: "domestic",
+      id: 4,
+      country: "Châu Âu",
+      airports: [
+        { city: "Amsterdam", code: "AMS", type: "international" },
+        { city: "London", code: "LHR", type: "international" },
+        { city: "Milan", code: "MXP", type: "international" },
+        { city: "Paris", code: "CDG", type: "international" },
+        { city: "Seoul", code: "ICN", type: "international" },
+      ],
     },
     {
-      label: "Đà Lạt",
-      value: "DLI",
-      type: "domestic",
+      id: 5,
+      country: "Châu Úc",
+      airports: [
+        { city: "Sydney", code: "SYD", type: "international" },
+        { city: "Perth", code: "PER", type: "international" },
+      ],
     },
     {
-      label: "Phú Quốc",
-      value: "PQC",
-      type: "domestic",
-    },
-    {
-      label: "Hải Phòng",
-      value: "HBH",
-      type: "domestic",
-    },
-    {
-      label: "Quảng Bình",
-      value: "VDH",
-      type: "domestic",
-    },
-    {
-      label: "Quảng Nam",
-      value: "VCL",
-      type: "domestic",
-    },
-    {
-      label: "Buôn Mê Thuột",
-      value: "BMV",
-      type: "domestic",
-    },
-    {
-      label: "Kiên Giang",
-      value: "VKG",
-      type: "domestic",
-    },
-    {
-      label: "Cà Mau",
-      value: "CAH",
-      type: "domestic",
-    },
-    {
-      label: "Côn Đảo",
-      value: "VCS",
-      type: "domestic",
-    },
-    {
-      label: "Điện Biên Phủ",
-      value: "DIN",
-      type: "domestic",
-    },
-    {
-      label: "Đà Nẵng",
-      value: "DAD",
-      type: "domestic",
-    },
-    {
-      label: "Cần Thơ",
-      value: "VCA",
-      type: "domestic",
-    },
-    {
-      label: "Nha Trang",
-      value: "CXR",
-      type: "domestic",
-    },
-    {
-      label: "Qui Nhơn",
-      value: "UIH",
-      type: "domestic",
-    },
-    {
-      label: "Phú Yên",
-      value: "TBB",
-      type: "domestic",
-    },
-    {
-      label: "Bangkok",
-      value: "BKK",
-      type: "international",
-    },
-    {
-      label: "Kuala Lumpur",
-      value: "KUL",
-      type: "international",
-    },
-    {
-      label: "Singapore",
-      value: "SIN",
-      type: "international",
-    },
-    {
-      label: "Bắc Kinh",
-      value: "PEK",
-      type: "international",
-    },
-    {
-      label: "Busan",
-      value: "PUS",
-      type: "international",
+      id: 6,
+      country: "Châu Mỹ",
+      airports: [
+        { city: "Los Angeles", code: "LAX", type: "international" },
+        { city: "Washington", code: "WAS", type: "international" },
+        { city: "New York", code: "JFK", type: "international" },
+        { city: "Miami", code: "MIA", type: "international" },
+      ],
     },
   ];
   return object;

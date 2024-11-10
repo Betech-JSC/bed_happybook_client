@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
 };
 
-const airports = getAirportsDefault();
+const airportsData = getAirportsDefault();
 export default async function SearchTicket() {
   return (
     <Suspense>
@@ -48,7 +48,7 @@ export default async function SearchTicket() {
         ></div>
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-24 lg:mb-4 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-            <Search airports={airports} />
+            <Search airportsData={airportsData} />
           </div>
         </div>
       </div>
@@ -74,7 +74,7 @@ export default async function SearchTicket() {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="min-h-40">
-            <ListFilght airports={airports} />
+            <ListFilght airportsData={airportsData} />
           </div>
         </div>
         <Partner />

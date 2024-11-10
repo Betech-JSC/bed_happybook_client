@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import React, {
   Fragment,
   useCallback,
@@ -14,21 +13,18 @@ import {
   formatNumberToHoursAndMinutesFlight,
   formatTime,
 } from "@/lib/formatters";
-import { AirportOption, PassengerType } from "@/types/flight";
-import { HttpError } from "@/lib/error";
-import toast from "react-hot-toast";
+import { FlightDetailProps, PassengerType } from "@/types/flight";
 import { FlightApi } from "@/api/Flight";
 
 const FlightDetails = ({
   session,
   FareData,
-  fromPlace = "",
-  toPlace = "",
   onSelectFlight,
   selectedFlight,
-  filters = {},
+  filters,
   airports,
-}: any) => {
+  displayType,
+}: FlightDetailProps) => {
   const [showDetails, setShowDetails] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | string>(0);
@@ -210,7 +206,7 @@ const FlightDetails = ({
               <div className="w-11 h-11 bg-gray-100 rounded-full"></div>
             </div>
             <div className="col-span-8 w-full md:col-span-2 text-center md:text-right md:pl-8 xl:pr-8">
-              {isLoadingRules ? (
+              {isLoadingRules && displayType === "mobile" ? (
                 <span className="loader_spiner"></span>
               ) : (
                 <div className="flex justify-between mt-3 md:mt-0">
@@ -258,12 +254,15 @@ const FlightDetails = ({
                 Chi tiết hành trình
               </h2>
               {flight.ListSegment.map((segment: any, index: number) => {
-                const airPortStartPoint: AirportOption =
-                  airports.find(
-                    (loc: any) => loc.value === segment.StartPoint
-                  ) || null;
-                const airPortEndPoint: AirportOption =
-                  airports.find((loc: any) => loc.value === segment.EndPoint) ||
+                const airPortStartPoint =
+                  airports
+                    .flatMap((country) => country.airports)
+                    .find((airport) => airport.code === segment.StartPoint) ||
+                  null;
+                const airPortEndPoint =
+                  airports
+                    .flatMap((country) => country.airports)
+                    .find((airport) => airport.code === segment.EndPoint) ||
                   null;
                 return (
                   <div
@@ -353,7 +352,7 @@ const FlightDetails = ({
                         <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                           <div>
                             <p className="text-22 font-bold">
-                              {`${airPortStartPoint?.label ?? ""} (${
+                              {`${airPortStartPoint?.city ?? ""} (${
                                 segment.StartPoint
                               })`}
                             </p>
@@ -377,7 +376,7 @@ const FlightDetails = ({
                           <div>
                             <p className="text-gray-500 mt-1 h-6"></p>
                             <p className="text-22 font-bold">
-                              {`${airPortEndPoint?.label ?? ""} (${
+                              {`${airPortEndPoint?.city ?? ""} (${
                                 segment.EndPoint
                               })`}
                             </p>

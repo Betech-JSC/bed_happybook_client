@@ -14,7 +14,6 @@ import FAQ from "@/components/FAQ";
 import Link from "next/link";
 import Search from "./components/Search";
 import { Suspense } from "react";
-import { AirportOption } from "@/types/flight";
 import { getAirportsDefault } from "@/utils/Helper";
 
 export const metadata: Metadata = {
@@ -68,7 +67,7 @@ const tours = [
     type: 0,
   },
 ];
-const airports = getAirportsDefault();
+const airportsData = getAirportsDefault();
 export default function AirlineTicket() {
   return (
     <Fragment>
@@ -93,7 +92,7 @@ export default function AirlineTicket() {
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-24 lg:mb-4 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
             <Suspense>
-              <Search airports={airports} />
+              <Search airportsData={airportsData} />
             </Suspense>
           </div>
         </div>
