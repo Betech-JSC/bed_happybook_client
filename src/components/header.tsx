@@ -12,6 +12,7 @@ export default function Header() {
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
+  const subMenuRef = useRef<HTMLDivElement>(null);
   const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
   const excludePaths = [
     "/",
@@ -58,6 +59,21 @@ export default function Header() {
       };
     }
   }, [isStickyHeader]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        subMenuRef.current &&
+        !subMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [subMenuRef]);
 
   return (
     <header
@@ -265,13 +281,31 @@ export default function Header() {
               Combo
             </Link>
             <div
+              ref={subMenuRef}
               onClick={() => {
                 setIsMenuOpen(!isMenuOpen);
                 return false;
               }}
-              className={`relative cursor-pointer ${styles.header__menu_item}`}
+              className={`relative flex cursor-pointer ${styles.header__menu_item}`}
             >
-              Khác
+              <span>Khác</span>
+              <div className="h-5 self-center">
+                <svg
+                  width="16"
+                  height="14"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    stroke={isSticky ? "#283448" : "#fff"}
+                    strokeWidth="1.66667"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
               {/* Menu */}
               <nav
                 className={`absolute -left-full top-12 z-10 ${
