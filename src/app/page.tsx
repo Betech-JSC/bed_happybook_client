@@ -52,7 +52,7 @@ export default async function Home() {
                 "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
             }}
           ></div>
-          <div className="relative z-[1]">
+          <div className="relative">
             <h3 className="pt-8 text-xl lg:text-2xl font-bold text-center text-white">
               Bắt đầu hành trình với HappyBook
             </h3>

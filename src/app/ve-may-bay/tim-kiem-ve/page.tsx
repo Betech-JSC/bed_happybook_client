@@ -28,7 +28,7 @@ const airportsData = getAirportsDefault();
 export default async function SearchTicket() {
   return (
     <Suspense>
-      <div className="relative z-[1] h-max pb-12">
+      <div className="relative h-max pb-14">
         <div className="absolute inset-0">
           <Image
             priority

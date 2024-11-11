@@ -281,7 +281,7 @@ export default function AirportPopupSelector({
       {isPopupVisible && (
         <div
           ref={popupRef}
-          className="fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-screen md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] lg:w-[750px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-10"
+          className="fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-full overflow-y-auto md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] lg:w-[750px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-[9999]"
         >
           <div className="flex items-center justify-between px-4 py-2 border-b">
             <h2 className="text-lg font-semibold text-orange-500">

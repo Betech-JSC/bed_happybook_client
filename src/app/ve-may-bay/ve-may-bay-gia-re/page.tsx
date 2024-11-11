@@ -41,7 +41,7 @@ export default async function SearchTicketCheap({
     .find((airport) => airport.code === endPoint);
   return (
     <Suspense>
-      <div className="relative z-[1] h-max pb-12">
+      <div className="relative h-max pb-14">
         <div className="absolute inset-0">
           <Image
             priority

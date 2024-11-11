@@ -8,7 +8,7 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
   const [activeTabMb, setActiveTabMb] = useState(0);
   return (
     <Fragment>
-      <div className="relative z-[1]">
+      <div className="relative">
         {/* Search Bar */}
         <div className="grid grid-cols-4 gap-2 my-4 px-3">
           <div
