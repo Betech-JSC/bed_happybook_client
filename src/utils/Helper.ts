@@ -1,4 +1,42 @@
-import { AirportOption } from "@/types/flight";
+const handleSessionStorage = (
+  action: string,
+  key: string | string[],
+  value: any = null
+) => {
+  if (typeof window === "undefined") return;
+
+  const handleKey = (singleKey: string) => {
+    if (action === "save") {
+      sessionStorage.setItem(singleKey, JSON.stringify(value));
+    } else if (action === "remove") {
+      sessionStorage.removeItem(singleKey);
+    } else if (action === "get") {
+      const item = sessionStorage.getItem(singleKey);
+      return item ? JSON.parse(item) : null;
+    } else {
+      console.warn("Session error");
+    }
+  };
+
+  if (action === "get") {
+    if (typeof key === "string") {
+      return handleKey(key);
+    } else if (Array.isArray(key)) {
+      return key.map(handleKey);
+    } else {
+      console.warn("Session error.");
+      return null;
+    }
+  } else {
+    if (typeof key === "string") {
+      handleKey(key);
+    } else if (Array.isArray(key)) {
+      key.forEach(handleKey);
+    } else {
+      console.warn("Session error.");
+    }
+  }
+};
 
 const smoothScrollTo = (targetPosition: number, duration: number) => {
   const startPosition = window.scrollY;
@@ -132,6 +170,7 @@ const getAirportsDefault = () => {
   return object;
 };
 export {
+  handleSessionStorage,
   handleScrollSmooth,
   generateMonth,
   getDaysInMonth,

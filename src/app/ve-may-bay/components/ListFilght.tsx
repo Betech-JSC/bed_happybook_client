@@ -14,7 +14,7 @@ import Image from "next/image";
 import { pareseDateFromString } from "@/lib/formatters";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { handleScrollSmooth } from "@/utils/Helper";
+import { handleScrollSmooth, handleSessionStorage } from "@/utils/Helper";
 import SignUpReceiveCheapTickets from "./SignUpReceiveCheapTickets";
 import { HttpError } from "@/lib/error";
 import { ListFilghtProps } from "@/types/flight";
@@ -408,21 +408,15 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const handleCheckOutFlight = () => {
     if (typeof window !== "undefined") {
       if (selectedDepartFlight) {
-        sessionStorage.setItem(
-          "departFlight",
-          JSON.stringify(selectedDepartFlight)
-        );
+        handleSessionStorage("save", "departFlight", selectedDepartFlight);
       }
       if (selectedReturnFlight) {
-        sessionStorage.setItem(
-          "returnFlight",
-          JSON.stringify(selectedReturnFlight)
-        );
+        handleSessionStorage("save", "returnFlight", selectedReturnFlight);
       } else {
-        sessionStorage.removeItem("returnFlight");
+        handleSessionStorage("remove", "returnFlight");
       }
       if (apiFlightSession) {
-        sessionStorage.setItem("flightSession", apiFlightSession);
+        handleSessionStorage("save", "flightSession", apiFlightSession);
       }
       router.push("/ve-may-bay/thong-tin-hanh-khach");
     }

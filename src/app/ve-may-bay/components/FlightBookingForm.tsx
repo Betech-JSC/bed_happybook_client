@@ -22,6 +22,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/datePicker.scss";
 import { vi } from "date-fns/locale";
+import { handleSessionStorage } from "@/utils/Helper";
 
 export default function FlightBookForm() {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
@@ -56,7 +57,7 @@ export default function FlightBookForm() {
 
   const onSubmit = (data: FlightBookingInforType) => {
     setLoading(true);
-    const adtArr = data.atd.map((item) => ({ value: item, Type: "ATD" }));
+    const adtArr = data.atd.map((item) => ({ value: item, Type: "ADT" }));
     const chdArr = data.chd
       ? data.chd.map((item) => ({ value: item, Type: "CHD" }))
       : [];
@@ -81,18 +82,16 @@ export default function FlightBookForm() {
     data.book_type = "book-normal";
     data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
-    let flightValueParams: any = [];
+    let fare_data: any = [];
     flights.map((item, index) => {
-      flightValueParams.push({ flight_value: item.ListFlight[0].FlightValue });
-    });
-    const fare_data = [
-      {
+      fare_data.push({
         session: flightSession,
-        fare_data_id_api: flights[0].FareDataId,
+        fare_data_id_api: item.FareDataId,
         AutoIssue: false,
-        flights: flightValueParams,
-      },
-    ];
+        flights: [{ flight_value: item.ListFlight[0].FlightValue }],
+      });
+    });
+
     formatData.contact.gender =
       formatData.contact.gender === "male" ? true : false;
     let finalData = {
@@ -100,15 +99,26 @@ export default function FlightBookForm() {
       passengers,
       fare_data,
     };
+
     const bookFlight = async () => {
       try {
         setLoading(true);
         const respon = await FlightApi.bookFlight("book-flight", finalData);
         reset();
-        toast.success("Gửi yêu cầu thành công!");
-        setTimeout(() => {
-          router.push("/ve-may-bay");
-        }, 1500);
+        if (respon?.payload.data.ListBooking) {
+          toast.success("Gửi yêu cầu thành công!");
+          handleSessionStorage("save", "bookingFlight", respon?.payload.data);
+          handleSessionStorage("remove", [
+            "flightSession",
+            "departFlight",
+            "returnFlight",
+          ]);
+          setTimeout(() => {
+            router.push("/ve-may-bay/thong-tin-dat-cho");
+          }, 1000);
+        } else {
+          toast.success("Gửi yêu cầu thất bại!");
+        }
       } catch (error: any) {
         toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
       } finally {
@@ -118,26 +128,13 @@ export default function FlightBookForm() {
     if (finalData) {
       bookFlight();
     }
-
-    // setTimeout(() => {
-    //   // reset();
-    //   toast.success("Gửi thành công!");
-    //   setLoading(false);
-    //   setTimeout(() => {
-    //     router.push("/ve-may-bay");
-    //   }, 1500);
-    // }, 2000);
   };
   useEffect(() => {
     let flightData = [];
-    const departFlight = sessionStorage.getItem("departFlight")
-      ? JSON.parse(sessionStorage.getItem("departFlight") ?? "")
-      : null;
-    const returnFlight = sessionStorage.getItem("returnFlight")
-      ? JSON.parse(sessionStorage.getItem("returnFlight") ?? "")
-      : null;
+    const departFlight = handleSessionStorage("get", "departFlight");
+    const returnFlight = handleSessionStorage("get", "returnFlight");
+    const flightSession = handleSessionStorage("get", "flightSession");
 
-    const flightSession = sessionStorage.getItem("flightSession") ?? null;
     if (departFlight) flightData.push(departFlight);
     if (returnFlight) flightData.push(returnFlight);
 
@@ -154,7 +151,7 @@ export default function FlightBookForm() {
   let totalAdt = 1;
   let totalChd = 0;
   let totalInf = 0;
-  let totalPriceAdt = 1;
+  let totalPriceAdt = 0;
   let totalPriceChd = 0;
   let totalPriceInf = 0;
   let FareAdt: any = [];
