@@ -28,6 +28,7 @@ export default function FlightBookForm() {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [flights, setFlights] = useState<any[]>([]);
+  const [listBaggage, setListBaggage] = useState<any[]>([]);
   const [flightSession, setFlightSession] = useState<string | null>(null);
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const [schemaForm, setSchemaForm] = useState(() =>
@@ -171,43 +172,41 @@ export default function FlightBookForm() {
     FareInf[index] = item.FareInf + item.TaxInf;
   });
   // Fetch and Handle Data
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const params = {
-  //         ListFareData: [
-  //           {
-  //             Session: flightSession,
-  //             FareDataId: flights[0].FareDataId,
-  //             ListFlight: [
-  //               {
-  //                 FlightValue: flights[0].ListFlight[0].FlightValue,
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       };
-  //       console.log(params);
-  //       const response = await FlightApi.getBaggage(
-  //         "flights/getbaggage",
-  //         params
-  //       );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let params: any = {
+          ListFareData: [],
+        };
+        let listBaggage = [];
+        if (flightSession) {
+          flights.map((flight) => {
+            params["ListFareData"].push({
+              Session: flightSession,
+              FareDataId: flight.FareDataId,
+              ListFlight: [
+                {
+                  FlightValue: flight.ListFlight[0].FlightValue,
+                },
+              ],
+            });
+          });
+          const response = await FlightApi.getBaggage(
+            "flights/getbaggage",
+            params
+          );
+          listBaggage = response?.payload.data.ListBaggage ?? [];
+        }
+        setListBaggage(listBaggage);
+      } catch (error: any) {
+        setListBaggage([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //       const listFareData = response?.payload.data.ListFareData ?? [];
-  //     } catch (error: any) {
-  //       if (error instanceof HttpError) {
-  //         if (error.payload.code === 400) {
-  //           // alert("");
-  //           // router.push("/ve-may-bay");
-  //         }
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [flightSession, flights]);
+    fetchData();
+  }, [flightSession, flights]);
 
   if (!documentReady) {
     return (
@@ -348,25 +347,29 @@ export default function FlightBookForm() {
                         </p>
                       )}
                     </div>
-
-                    <div className="relative">
-                      <label
-                        htmlFor="service"
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Hành lý
-                      </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <select
-                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                          // {...register(`atd.${index}.baggage`)}
+                    {listBaggage.length > 0 && (
+                      <div className="relative">
+                        <label
+                          htmlFor="service"
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <option value="">Vui lòng chọn gói hành lý</option>
-                          {/* <option value="male">Quý ông</option> */}
-                          {/* <option value="female">Quý bà</option> */}
-                        </select>
+                          Hành lý
+                        </label>
+                        <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <select
+                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            // {...register(`atd.${index}.baggage`)}
+                          >
+                            <option value="">Vui lòng chọn gói hành lý</option>
+                            {listBaggage.map((baggage, key) => (
+                              <option key={key} value={baggage.Code}>
+                                {baggage.Name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -443,25 +446,29 @@ export default function FlightBookForm() {
                         </p>
                       )}
                     </div>
-
-                    <div className="relative">
-                      <label
-                        htmlFor="service"
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Hành lý
-                      </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <select
-                          // {...register(`chd.${index}.baggage`)}
-                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                    {listBaggage.length > 0 && (
+                      <div className="relative">
+                        <label
+                          htmlFor="service"
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <option value="">Vui lòng chọn gói hành lý</option>
-                          {/* <option value="male">Quý ông</option> */}
-                          {/* <option value="female">Quý bà</option> */}
-                        </select>
+                          Hành lý
+                        </label>
+                        <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <select
+                            // {...register(`chd.${index}.baggage`)}
+                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                          >
+                            <option value="">Vui lòng chọn gói hành lý</option>
+                            {listBaggage.map((baggage, key) => (
+                              <option key={key} value={baggage.Code}>
+                                {baggage.Name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -537,25 +544,6 @@ export default function FlightBookForm() {
                           {errors.inf[index].gender?.message}
                         </p>
                       )}
-                    </div>
-
-                    <div className="relative">
-                      <label
-                        htmlFor="service"
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Hành lý
-                      </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <select
-                          // {...register(`inf.${index}.baggage`)}
-                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                        >
-                          <option>Vui lòng chọn gói hành lý</option>
-                          {/* <option value="male">Quý ông</option> */}
-                          {/* <option value="female">Quý bà</option> */}
-                        </select>
-                      </div>
                     </div>
                   </div>
                 </div>

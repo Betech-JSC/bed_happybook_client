@@ -71,7 +71,7 @@ export default function BookingDetail() {
       item.ListFareData.map((fareData: any) => {
         priceAdt += fareData.FareAdt + fareData.TaxAdt;
         priceChd += fareData.FareChd + fareData.TaxChd;
-        priceChd += fareData.FareInf + fareData.TaxInf;
+        priceInf += fareData.FareInf + fareData.TaxInf;
       });
     });
   }
