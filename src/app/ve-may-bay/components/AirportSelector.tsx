@@ -339,7 +339,7 @@ export default function AirportPopupSelector({
               )}
           </div>
           {filteredAirports && filteredAirports.length > 0 ? (
-            <div className="grid grid-cols-2  mx-4 mt-2 mb-4 md:grid-cols-3 gap-2 border border-gray-300 rounded-lg py-2 h-full">
+            <div className="text-sm md:text-base grid grid-cols-2 mx-4 mt-2 mb-24 md:mb-4 md:grid-cols-3 gap-2 border border-gray-300 rounded-lg py-2 h-auto pb-3 ">
               {filteredAirports.map((airport) => (
                 <div
                   key={airport.code}

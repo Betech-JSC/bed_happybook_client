@@ -673,6 +673,7 @@ export default function FlightBookForm() {
                   onChange={(e) => {
                     setGenerateInvoice(e.target.checked);
                   }}
+                  className="w-4 h-4"
                 />
                 <span
                   className="text-sm"
@@ -835,15 +836,19 @@ export default function FlightBookForm() {
                 <span className="text-22 font-semibold">
                   Phương thức thanh toán
                 </span>
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex space-x-3 items-center">
+                <div className=" mt-4">
+                  <div className="flex space-x-3 items-start">
                     <input
                       type="radio"
                       value="cash"
                       id="payment_cash"
+                      className="w-5 h-5 mt-[2px]"
                       {...register("PaymentMethod")}
                     />
-                    <label htmlFor="payment_cash" className="flex space-x-3">
+                    <label
+                      htmlFor="payment_cash"
+                      className="flex space-x-1 max-w-[85%]"
+                    >
                       <div className="font-normal">
                         <Image
                           src="/payment-method/cash.svg"
@@ -853,8 +858,10 @@ export default function FlightBookForm() {
                           className="w-6 h-6"
                         />
                       </div>
-                      <div>
-                        <span>Thanh toán tiền mặt</span>
+                      <div className="max-w-[85%]">
+                        <span className="font-medium text-base">
+                          Thanh toán tiền mặt
+                        </span>
                         <p className="text-gray-500">
                           Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
                           hệ xác nhận
@@ -862,14 +869,15 @@ export default function FlightBookForm() {
                       </div>
                     </label>
                   </div>
-                  <div className="flex space-x-3 items-center">
+                  <div className="flex space-x-3 items-start mt-4">
                     <input
                       type="radio"
                       value="vnpay"
                       id="payment_vnpay"
+                      className="w-5 h-5 mt-[2px]"
                       {...register("PaymentMethod")}
                     />
-                    <label htmlFor="payment_vnpay" className=" flex space-x-3">
+                    <label htmlFor="payment_vnpay" className=" flex space-x-1">
                       <div className="font-normal">
                         <Image
                           src="/payment-method/vnpay.svg"
@@ -880,20 +888,23 @@ export default function FlightBookForm() {
                         />
                       </div>
                       <div>
-                        <span>Thanh toán bằng VNPAY</span>
+                        <span className="font-medium text-base max-width-[85%]">
+                          Thanh toán bằng VNPAY
+                        </span>
                       </div>
                     </label>
                   </div>
-                  <div className="flex space-x-3 items-center">
+                  <div className="flex space-x-3 items-start mt-4">
                     <input
                       type="radio"
                       value="bank_transfer"
                       id="payment_transfer"
+                      className="w-5 h-5 mt-[2px]"
                       {...register("PaymentMethod")}
                     />
                     <label
                       htmlFor="payment_transfer"
-                      className=" flex space-x-3"
+                      className=" flex space-x-1"
                     >
                       <div className="font-normal">
                         <Image
@@ -904,9 +915,14 @@ export default function FlightBookForm() {
                           className="w-6 h-6"
                         />
                       </div>
-                      <div>
-                        <span className="block">Chuyển khoản</span>
-                        <button className="text-blue-700 underline">
+                      <div className="max-width-[85%]">
+                        <span className="block text-base font-medium">
+                          Chuyển khoản
+                        </span>
+                        <button
+                          type="button"
+                          className="text-blue-700 underline"
+                        >
                           Thông tin chuyển khoản
                         </button>
                       </div>
