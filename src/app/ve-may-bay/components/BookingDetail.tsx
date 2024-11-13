@@ -92,7 +92,7 @@ export default function BookingDetail() {
           </h2>
         </div>
         <div className="bg-white rounded-2xl mt-6">
-          <div className="p-3 md:p-6 md:pb-0">
+          <div className="p-6 md:pb-0">
             <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               Chi tiết chuyến bay
             </h2>
@@ -111,7 +111,7 @@ export default function BookingDetail() {
                       .flatMap((country) => country.airports)
                       .find((airport) => airport.code === flight.EndPoint);
                     return (
-                      <Fragment key={index}>
+                      <div className="mb-8 last:mb-0" key={index}>
                         <div
                           className="flex flex-col md:flex-row space-x-0 md:space-x-4 space-y-3 md:space-y-0 justify-between text-white p-4 rounded-t-2xl shadow-md items-start"
                           style={{
@@ -269,7 +269,7 @@ export default function BookingDetail() {
                             }
                           )}
                         </div>
-                      </Fragment>
+                      </div>
                     );
                   })}
               </div>

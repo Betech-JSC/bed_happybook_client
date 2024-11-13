@@ -219,7 +219,7 @@ export default function FlightBookForm() {
     );
   }
   return (
-    <form className="mt-4 rounded-xl" onSubmit={handleSubmit(onSubmit)}>
+    <form className="mt-0 md:mt-4 rounded-xl" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
         <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 bg-white rounded-2xl">
           <div
@@ -935,10 +935,19 @@ export default function FlightBookForm() {
                   )}
                 </div>
               </div>
+              <div className="mt-6">
+                <div className="block md:hidden pb-0 py-4 px-3">
+                  <LoadingButton
+                    isLoading={loading}
+                    text="Thanh toán"
+                    disabled={false}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-6">
+        <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 md:pb-6">
           <div className="pb-0 py-4 px-3 lg:px-6">
             <div className="flex justify-between">
               <span className="text-22 font-semibold">Thông tin đặt chỗ</span>
@@ -1099,7 +1108,7 @@ export default function FlightBookForm() {
               </div>
             </div>
           </div>
-          <div className="pb-0 py-4 px-3 lg:px-6">
+          <div className="hidden md:block pb-0 py-4 px-3 lg:px-6">
             <LoadingButton
               isLoading={loading}
               text="Thanh toán"

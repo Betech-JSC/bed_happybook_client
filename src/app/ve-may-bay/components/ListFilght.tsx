@@ -107,15 +107,23 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [checkOut, setCheckOut] = useState<boolean>(false);
+  const [totalPriceCheckout, setTotalPriceCheckout] = useState<
+    string | number | null
+  >(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const departFlightRef = useRef<HTMLDivElement>(null);
+  const returnFlightRef = useRef<HTMLDivElement>(null);
+  const checkOutRef = useRef<HTMLDivElement>(null);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [totalFlightLeg, setTotalFlightLeg] = useState<any[]>([]);
 
-  const scrollToResultContainer = () => {
-    if (resultsRef.current) {
-      handleScrollSmooth(resultsRef.current);
+  const scrollToRef = (ref: any) => {
+    if (ref.current) {
+      handleScrollSmooth(ref.current);
     }
   };
+
   const [filters, setFilters] = useState({
     priceWithoutTax: "0",
     timeDepart: "",
@@ -226,12 +234,12 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
         setSelectedDepartFlight(null);
         setSelectedReturnFlight(null);
         setLoading(true);
+        scrollToRef(resultsRef);
         const checkTripType =
           (tripType === "roundTrip" && ReturnDate) || tripType === "oneWay"
             ? true
             : false;
         if (StartPoint && EndPoint && DepartDate && checkTripType) {
-          scrollToResultContainer();
           const response = await FlightApi.search("flights/search", params);
           const listFareData = response?.payload.data.ListFareData ?? [];
           const flightFleg: any = [];
@@ -255,6 +263,9 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
           setFilteredData(listFareData);
           resetFilters();
           setError(null);
+          setTimeout(() => {
+            scrollToRef(resultsRef);
+          }, 100);
         } else {
           router.push("/ve-may-bay");
           setData([]);
@@ -365,19 +376,6 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
         );
       }
 
-      // if (filters.sortPrice === "asc") {
-      //   filtered = [...filtered].sort((a, b) => {
-      //     const timeDiff =
-      //       new Date(a.ListFlight[0].StartDate).getTime() -
-      //       new Date(b.ListFlight[0].StartDate).getTime();
-
-      //     if (timeDiff === 0) {
-      //       return a.TotalPrice - b.TotalPrice;
-      //     }
-      //     return timeDiff;
-      //   });
-      // }
-
       if (filters.sortAirLine === "asc") {
         filtered = [...filtered].sort((a, b) =>
           a.Airline.localeCompare(b.Airline)
@@ -393,7 +391,6 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
       setSelectedDepartFlight(null);
     } else {
       setSelectedDepartFlight(flight);
-      scrollToResultContainer();
     }
   };
   const handleSelectReturnFlight = (flight: any) => {
@@ -401,7 +398,6 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
       setSelectedReturnFlight(null);
     } else {
       setSelectedReturnFlight(flight);
-      scrollToResultContainer();
     }
   };
   // Checkout Flight
@@ -421,12 +417,50 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
       router.push("/ve-may-bay/thong-tin-hanh-khach");
     }
   };
+
+  const isCheckout = useCallback(
+    (isRoundTrip: boolean, departFlight: any, returnFlight: any) => {
+      let totalPriceCheckout = 0;
+
+      if (isRoundTrip) {
+        if (departFlight && returnFlight) {
+          setCheckOut(true);
+          totalPriceCheckout = (
+            departFlight.TotalPrice + returnFlight.TotalPrice
+          ).toLocaleString("vi-VN");
+        } else {
+          if (departFlight) {
+            scrollToRef(returnFlightRef);
+          } else if (returnFlight) {
+            scrollToRef(departFlightRef);
+          } else {
+            scrollToRef(resultsRef);
+          }
+          setCheckOut(false);
+        }
+      } else if (departFlight) {
+        setCheckOut(true);
+        totalPriceCheckout = departFlight.TotalPrice.toLocaleString("vi-VN");
+      } else {
+        setCheckOut(false);
+        scrollToRef(resultsRef);
+      }
+      setTotalPriceCheckout(totalPriceCheckout);
+      if (checkOut) scrollToRef(checkOutRef);
+    },
+    [checkOut]
+  );
+
+  useEffect(() => {
+    isCheckout(isRoundTrip, selectedDepartFlight, selectedReturnFlight);
+  }, [isRoundTrip, selectedDepartFlight, selectedReturnFlight, isCheckout]);
+
   // Loading
   if (loading) {
     return (
       <div
         ref={resultsRef}
-        className={`flex my-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
+        className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
         <span className="text-18">Đang tải dữ liệu chuyến bay...</span>
@@ -443,8 +477,6 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
     );
   }
   let flights: any = [];
-  let checkOut = false;
-  let totalPriceCheckout = 0;
   flights = groupFlights(filteredData);
   if (selectedDepartFlight) {
     flights[0] = [selectedDepartFlight];
@@ -452,24 +484,9 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   if (selectedReturnFlight) {
     flights[1] = [selectedReturnFlight];
   }
-  if (isRoundTrip) {
-    if (selectedDepartFlight && selectedReturnFlight) {
-      checkOut = true;
-      totalPriceCheckout = (
-        selectedDepartFlight.TotalPrice + selectedReturnFlight.TotalPrice
-      ).toLocaleString("vi-VN");
-    }
-  } else if (selectedDepartFlight) {
-    checkOut = true;
-    totalPriceCheckout =
-      selectedDepartFlight.TotalPrice.toLocaleString("vi-VN");
-  }
   return (
     <Fragment>
-      <div
-        className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12"
-        ref={resultsRef}
-      >
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
         <aside className="lg:col-span-3 bg-white p-4 rounded-2xl">
           <div className="pb-3 border-b border-gray-200">
             <h2 className="font-semibold">Sắp xếp</h2>
@@ -589,10 +606,10 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
             Xóa bộ lọc
           </button>
         </aside>
-        <div className="lg:col-span-9">
+        <div className="lg:col-span-9" ref={resultsRef}>
           <div className="max-w-5xl mx-auto">
             <div>
-              <div>
+              <div ref={departFlightRef}>
                 <div
                   className="flex text-white p-4 rounded-t-2xl shadow-md space-x-4 items-center"
                   style={{
@@ -671,7 +688,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
                 )}
               </div>
               {flights.length > 1 && (
-                <div>
+                <div ref={returnFlightRef}>
                   <div
                     className="flex text-white p-4 rounded-t-2xl shadow-md space-x-4 items-center"
                     style={{
@@ -756,7 +773,10 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
               )}
             </div>
             {checkOut && (
-              <div className="flex items-center justify-between flex-wrap md:flex-nowrap mt-8 rounded-lg bg-white py-4 px-6">
+              <div
+                ref={checkOutRef}
+                className="flex items-center justify-between flex-wrap md:flex-nowrap mt-8 rounded-lg bg-white py-4 px-6"
+              >
                 <div className="w-full md:w-1/2 text-right md:text-left">
                   <p className="font-normal">Tổng tiền thanh toán:</p>
                   <p className="text-2xl text-primary font-bold mt-1">
