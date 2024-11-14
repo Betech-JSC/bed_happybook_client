@@ -206,8 +206,8 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const getDayLabel = (dayIndex: number, displayType: "desktop" | "mobile") => {
     const daysOfWeek =
       displayType === "desktop"
-        ? ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"]
-        : ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+        ? ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"]
+        : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
     return daysOfWeek[dayIndex] || "Không xác định";
   };
@@ -739,8 +739,10 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
                             : "text-black"
                         }`}
                       >
-                        <div className="font-semibold">{day.label}</div>
-                        <div className="text-sm mt-2">
+                        <div className="text-sm md:text-base font-semibold">
+                          {day.label}
+                        </div>
+                        <div className="text-xs md:text-sm mt-2">
                           {format(day.date, "dd/MM")}
                         </div>
                       </button>
