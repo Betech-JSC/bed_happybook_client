@@ -31,23 +31,16 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
           .refine((value) => ["male", "female"].includes(value), {
             message: "Vui lòng điền thông tin này",
           }),
-        birthday: z
-          .string()
-          .regex(/^\d{2}-\d{2}-\d{4}$/, {
-            message: "Thông tin không đúng định dạng",
-          })
+        birthday: z.date().optional(),
+        baggages: z
+          .array(
+            z
+              .object({
+                code: z.string(),
+              })
+              .optional()
+          )
           .optional(),
-        // .refine(
-        //   (date) => {
-        //     const [year, month, day] = date.split("-").map(Number);
-        //     const isValidDate = new Date(year, month - 1, day)
-        //       .toISOString()
-        //       .startsWith(date);
-        //     return isValidDate;
-        //   },
-        //   { message: "Ngày không hợp lệ" }
-        // ),
-        baggage: z.object({}).optional(),
       })
     ),
     chd: z
@@ -80,8 +73,19 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
             .refine((value) => ["male", "female"].includes(value), {
               message: "Vui lòng điền thông tin này",
             }),
-          birthday: z.string().optional(),
-          baggage: z.object({}).optional(),
+          birthday: z.date({
+            required_error: "Vui lòng điền thông tin này",
+            invalid_type_error: "Ngày cấp không đúng định dạng",
+          }),
+          baggages: z
+            .array(
+              z
+                .object({
+                  code: z.string(),
+                })
+                .optional()
+            )
+            .optional(),
         })
       )
       .optional(),
@@ -115,8 +119,19 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
             .refine((value) => ["male", "female"].includes(value), {
               message: "Vui lòng điền thông tin này",
             }),
-          birthday: z.string().optional(),
-          baggage: z.object({}).optional(),
+          birthday: z.date({
+            required_error: "Vui lòng điền thông tin này",
+            invalid_type_error: "Ngày cấp không đúng định dạng",
+          }),
+          baggages: z
+            .array(
+              z
+                .object({
+                  code: z.string(),
+                })
+                .optional()
+            )
+            .optional(),
         })
       )
       .optional(),

@@ -1,6 +1,6 @@
 "use client";
 import { FlightApi } from "@/api/Flight";
-import { differenceInSeconds } from "date-fns";
+import { differenceInSeconds, format } from "date-fns";
 import LoadingButton from "@/components/LoadingButton";
 import {
   formatNumberToHoursAndMinutesFlight,
@@ -15,12 +15,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { HttpError } from "@/lib/error";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "@/styles/datePicker.scss";
+import "@/styles/flightBooking.scss";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 
@@ -44,13 +43,18 @@ export default function FlightBookForm() {
     register,
     handleSubmit,
     reset,
-    getValues,
-    setValue,
+    control,
     formState: { errors },
   } = useForm<FlightBookingInforType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
-      atd: [{ gender: "", firstName: "", lastName: "" }],
+      atd: [
+        {
+          gender: "",
+          firstName: "",
+          lastName: "",
+        },
+      ],
       PaymentMethod: "",
       checkBoxGenerateInvoice: false,
     },
@@ -65,6 +69,7 @@ export default function FlightBookForm() {
     const infArr = data.inf
       ? data.inf.map((item) => ({ value: item, Type: "INF" }))
       : [];
+
     const passengers = [...adtArr, ...chdArr, ...infArr].reduce(
       (acc: any, item, index) => {
         acc.push({
@@ -73,8 +78,10 @@ export default function FlightBookForm() {
           last_name: item.value.lastName,
           gender: item.value.gender === "male" ? true : false,
           type: item.Type,
-          birthday: "1990-12-10",
-          baggages: item.value.baggage,
+          birthday: item.value.birthday
+            ? format(new Date(item.value.birthday), "yyyy-MM-dd")
+            : "1990-12-01",
+          // baggages: [{}],
         });
         return acc;
       },
@@ -100,7 +107,6 @@ export default function FlightBookForm() {
       passengers,
       fare_data,
     };
-
     const bookFlight = async () => {
       try {
         setLoading(true);
@@ -285,45 +291,6 @@ export default function FlightBookForm() {
                         </p>
                       )}
                     </div>
-                    {/* <div className="relative">
-                      <label
-                        htmlFor="service"
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Ngày sinh <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <DatePicker
-                          selected={
-                            getValues(`atd.${index}.birthday`)
-                              ? new Date(getValues(`atd.${index}.birthday`))
-                              : null
-                          }
-                          onChange={(date: Date | null) => {
-                            if (date) {
-                              const formattedDate = date
-                                .toISOString()
-                                .split("T")[0];
-                              setValue(`atd.${index}.birthday`, formattedDate); // Cập nhật giá trị ngày trong form
-                            } else {
-                              setValue(`atd.${index}.birthday`, ""); // Nếu người dùng xóa, đặt thành chuỗi rỗng
-                            }
-                          }}
-                          locale={vi}
-                          dateFormat="yyyy-MM-dd"
-                          placeholderText="Chọn ngày sinh"
-                        />
-                        <input
-                          type="hidden"
-                          {...register(`atd.${index}.birthday`)}
-                        />
-                      </div>
-                      {errors.atd?.[index]?.birthday && (
-                        <p className="text-red-600">
-                          {errors.atd[index].birthday?.message}
-                        </p>
-                      )}
-                    </div> */}
                     <div className="relative">
                       <label
                         htmlFor="service"
@@ -358,7 +325,7 @@ export default function FlightBookForm() {
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <select
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            // {...register(`atd.${index}.baggage`)}
+                            // {...register(`atd.${index}.baggages.0.code`)}
                           >
                             <option value="">Vui lòng chọn gói hành lý</option>
                             {listBaggage.map((baggage, key) => (
@@ -370,6 +337,47 @@ export default function FlightBookForm() {
                         </div>
                       </div>
                     )}
+                    {/* <div className="relative">
+                      <label
+                        id={`atd.${index}.birthday`}
+                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        Ngày sinh <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                        <Controller
+                          name={`atd.${index}.birthday`}
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              id={`atd.${index}.birthday`}
+                              selected={field.value || null}
+                              onChange={(date: Date | null) =>
+                                field.onChange(date)
+                              }
+                              placeholderText="Nhập ngày sinh"
+                              dateFormat="dd-MM-yyyy"
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                              locale={vi}
+                              maxDate={
+                                new Date(new Date().getFullYear() - 12, 11, 31)
+                              }
+                              minDate={
+                                new Date(new Date().getFullYear() - 100, 11, 31)
+                              }
+                              className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                            />
+                          )}
+                        />
+                      </div>
+                      {errors.atd?.[index]?.birthday && (
+                        <p className="text-red-600">
+                          {errors.atd[index].birthday?.message}
+                        </p>
+                      )}
+                    </div> */}
                   </div>
                 </div>
               ))}
@@ -456,7 +464,7 @@ export default function FlightBookForm() {
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <select
-                            // {...register(`chd.${index}.baggage`)}
+                            // {...register(`atd.${index}.baggages`)}
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                           >
                             <option value="">Vui lòng chọn gói hành lý</option>
@@ -469,6 +477,47 @@ export default function FlightBookForm() {
                         </div>
                       </div>
                     )}
+                    <div className="relative">
+                      <label
+                        id={`chd.${index}.birthday`}
+                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        Ngày sinh <span className="text-red-500">*</span>
+                      </label>
+                      <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                        <Controller
+                          name={`chd.${index}.birthday`}
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              id={`chd.${index}.birthday`}
+                              selected={field.value || null}
+                              onChange={(date: Date | null) =>
+                                field.onChange(date)
+                              }
+                              placeholderText="Nhập ngày sinh"
+                              dateFormat="dd-MM-yyyy"
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                              locale={vi}
+                              maxDate={
+                                new Date(new Date().getFullYear() - 2, 11, 31)
+                              }
+                              minDate={
+                                new Date(new Date().getFullYear() - 12, 0, 1)
+                              }
+                              className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                            />
+                          )}
+                        />
+                      </div>
+                      {errors.chd?.[index]?.birthday && (
+                        <p className="text-red-600">
+                          {errors.chd[index].birthday?.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -542,6 +591,47 @@ export default function FlightBookForm() {
                       {errors.inf?.[index]?.gender && (
                         <p className="text-red-600">
                           {errors.inf[index].gender?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <label
+                        id={`inf.${index}.birthday`}
+                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        Ngày sinh <span className="text-red-500">*</span>
+                      </label>
+                      <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                        <Controller
+                          name={`inf.${index}.birthday`}
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              id={`inf.${index}.birthday`}
+                              selected={field.value || null}
+                              onChange={(date: Date | null) =>
+                                field.onChange(date)
+                              }
+                              placeholderText="Nhập ngày sinh"
+                              dateFormat="dd-MM-yyyy"
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                              locale={vi}
+                              maxDate={
+                                new Date(new Date().getFullYear(), 11, 31)
+                              }
+                              minDate={
+                                new Date(new Date().getFullYear() - 2, 0, 1)
+                              }
+                              className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                            />
+                          )}
+                        />
+                      </div>
+                      {errors.inf?.[index]?.birthday && (
+                        <p className="text-red-600">
+                          {errors.inf[index].birthday?.message}
                         </p>
                       )}
                     </div>

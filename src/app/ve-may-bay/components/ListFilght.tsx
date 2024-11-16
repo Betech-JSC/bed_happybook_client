@@ -234,7 +234,6 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
         setSelectedDepartFlight(null);
         setSelectedReturnFlight(null);
         setLoading(true);
-        scrollToRef(resultsRef);
         const checkTripType =
           (tripType === "roundTrip" && ReturnDate) || tripType === "oneWay"
             ? true
@@ -265,7 +264,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
           setError(null);
           setTimeout(() => {
             scrollToRef(resultsRef);
-          }, 100);
+          }, 50);
         } else {
           router.push("/ve-may-bay");
           setData([]);
@@ -456,7 +455,9 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   }, [isRoundTrip, selectedDepartFlight, selectedReturnFlight, isCheckout]);
 
   // Loading
+
   if (loading) {
+    scrollToRef(resultsRef);
     return (
       <div
         ref={resultsRef}
