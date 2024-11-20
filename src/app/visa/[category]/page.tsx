@@ -197,7 +197,7 @@ export default function CategoryPosts({
                           href="/visa/chi-tiet/visa-nhat-ban"
                           className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                         >
-                          <h3>{tour.title}</h3>
+                          <h2>{tour.title}</h2>
                         </Link>
                         <div className="mt-3">
                           <span className="font-semibold">Loại Visa:</span>{" "}

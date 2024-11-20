@@ -196,7 +196,7 @@ export default function CompoDetail({
       </div>
       <div className="bg-white my-6">
         <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-          <h3 className="text-2xl md:text-32 font-bold">Các combo khác</h3>
+          <h2 className="text-2xl md:text-32 font-bold">Các combo khác</h2>
           <div className="mt-8 w-full">
             <Carousel
               opts={{

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import PostStyle from "@/styles/posts.module.scss";
+import DynamicTag from "@/components/DynamicTag";
 
 export default function PostsItem({
   title = "",
@@ -8,6 +9,7 @@ export default function PostsItem({
   image_url = "",
   image_location = "",
   description = "",
+  typeElement = "",
 }) {
   return (
     <div className={`${PostStyle.post__item}`}>
@@ -27,11 +29,12 @@ export default function PostsItem({
       <Link
         href={`/dinh-cu/chi-tiet/dinh-cu-my-dien-tri-thuc-eb2-advanced-degree-eb3-professionals`}
       >
-        <h3
+        <DynamicTag
+          typeElement={(typeElement || "h3") as keyof JSX.IntrinsicElements}
           className={`ease-in duration-300 text-18 font-semibold mt-3 line-clamp-3 ${PostStyle.post__item_title}`}
         >
           {title}
-        </h3>
+        </DynamicTag>
       </Link>
       <div
         className="text-base mt-2 line-clamp-2"

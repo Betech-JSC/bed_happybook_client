@@ -131,12 +131,12 @@ export default function Hotel() {
       </div>
       <div className="w-full mt-6">
         <div className="bg-white rounded-2xl p-6">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Thông tin về nơi lưu trú này
-          </h3>
-          <p className="mt-4 text-22 font-semibold">
+          </h2>
+          <h3 className="mt-4 text-22 font-semibold">
             Sofitel Legend Metropole Hà Nội
-          </p>
+          </h3>
           <p className="mt-2">Gần Tràng Tiền Plaza</p>
           <div className="mt-3 line-clamp-5">
             Gần Tràng Tiền Plaza Hãy để mình được chăm sóc thật đặc biệt với các
@@ -160,9 +160,9 @@ export default function Hotel() {
       </div>
       <div className="w-full mt-6">
         <div className="bg-white rounded-2xl p-6">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Tiện nghi, dịch vụ nơi lưu trú
-          </h3>
+          </h2>
           <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4">
             <li>Có gói dịch vụ lãng mạn/cầu hôn</li>
             <li>Số lượng hồ bơi ngoài trời: - 1</li>
@@ -186,9 +186,9 @@ export default function Hotel() {
       </div>
       <div className="w-full mt-6">
         <div className="bg-white rounded-2xl p-6">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Tiện nghi phòng
-          </h3>
+          </h2>
           <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4">
             <li>Có gói dịch vụ lãng mạn/cầu hôn</li>
             <li>Nhân viên thông thạo nhiều ngôn ngữ</li>
@@ -211,9 +211,9 @@ export default function Hotel() {
       </div>
       <div className="w-full mt-6">
         <div className="bg-white rounded-2xl p-6">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Chính sách
-          </h3>
+          </h2>
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-18 font-semibold">Nhận phòng</p>
@@ -245,9 +245,9 @@ export default function Hotel() {
       </div>
       <div className="w-full mt-6">
         <div className="bg-white rounded-2xl p-6">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Thông tin quan trọng
-          </h3>
+          </h2>
           <p className="text-18 font-semibold mt-4">Tùy chọn</p>
           <ul className="mt-2 list-disc  pl-4">
             <li className="mt-2">

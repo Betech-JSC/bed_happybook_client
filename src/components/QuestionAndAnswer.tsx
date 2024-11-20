@@ -16,29 +16,43 @@ export default function QuestionAndAnswer() {
             placeholder="Mời bạn nhập thắc mắc hoặc ý kiến của bạn"
           ></textarea>
         </div>
-        <div className="bg-gray-50 rounded-2xl flex flex-wrap lg:flex-nowrap space-y-4 lg:space-y-0 lg:space-x-3 p-5 lg:p-3 items-center">
-          <div className="rounded-2xl w-full lg:w-[40%]">
-            <div className="border-gray-300 border rounded-lg">
-              <input
-                className="outline-none w-full px-4 py-[10px] max-h-11 rounded-lg"
-                style={{
-                  boxShadow: "0px 1px 2px 0px #1018280D",
-                }}
-                type="text"
-                placeholder="Tên của bạn *"
-              />
+        <div className="bg-gray-50 rounded-2xl flex flex-wrap items-start lg:flex-nowrap space-y-4 lg:space-y-0 lg:space-x-3 p-5 lg:p-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl w-full lg:w-[80%]">
+            <div className="rounded-2xl">
+              <div className="border-gray-300 border rounded-lg">
+                <input
+                  className="outline-none w-full px-4 py-[10px] max-h-11 rounded-lg"
+                  style={{
+                    boxShadow: "0px 1px 2px 0px #1018280D",
+                  }}
+                  type="text"
+                  placeholder="Tên của bạn *"
+                />
+              </div>
             </div>
-          </div>
-          <div className="rounded-2xl w-full lg:w-[40%]">
-            <div className="border border-gray-300 rounded-lg">
-              <input
-                className="outline-none w-full px-4 py-[10px] max-h-11 rounded-lg"
-                style={{
-                  boxShadow: "0px 1px 2px 0px #1018280D",
-                }}
-                type="text"
-                placeholder="Email *"
-              />
+            <div className="rounded-2xl">
+              <div className="border border-gray-300 rounded-lg">
+                <input
+                  className="outline-none w-full px-4 py-[10px] max-h-11 rounded-lg"
+                  style={{
+                    boxShadow: "0px 1px 2px 0px #1018280D",
+                  }}
+                  type="text"
+                  placeholder="Email *"
+                />
+              </div>
+            </div>
+            <div className="rounded-2xl">
+              <div className="border border-gray-300 rounded-lg">
+                <input
+                  className="outline-none w-full px-4 py-[10px] max-h-11 rounded-lg"
+                  style={{
+                    boxShadow: "0px 1px 2px 0px #1018280D",
+                  }}
+                  type="text"
+                  placeholder="Website"
+                />
+              </div>
             </div>
           </div>
           <div className="w-full lg:w-[20%] bg-blue-600 max-h-11 text__default_hover p-[10px] text-white rounded-lg inline-flex items-center">
@@ -59,7 +73,15 @@ export default function QuestionAndAnswer() {
             </div>
             <div className="w-7/12 md:w-8/12">
               <div className="flex space-x-3 items-center">
-                <p className="text-sm md:text-18 font-semibold">Natasia</p>
+                <a
+                  target="_blank"
+                  href="#"
+                  className="text-sm md:text-18 font-semibold"
+                  rel="ugc external nofollow"
+                >
+                  Natasia
+                </a>
+                {/* <p className="text-sm md:text-18 font-semibold">Natasia</p> */}
                 <p className="w-4 h-[2px] bg-gray-300"></p>
                 <p className="text-sm">19/04/2024</p>
               </div>
@@ -125,7 +147,15 @@ export default function QuestionAndAnswer() {
             </div>
             <div className="w-7/12 md:8/12">
               <div className="flex space-x-3 items-center">
-                <p className="text-sm md:text-18 font-semibold">Le Phuong</p>
+                <a
+                  target="_blank"
+                  href="#"
+                  className="text-sm md:text-18 font-semibold"
+                  rel="ugc external nofollow"
+                >
+                  Le Phuong
+                </a>
+                {/* <p className="text-sm md:text-18 font-semibold">Le Phuong</p> */}
                 <p className="w-4 h-[2px] bg-gray-300"></p>
                 <p className="text-sm">19/04/2024</p>
               </div>
@@ -158,7 +188,15 @@ export default function QuestionAndAnswer() {
             </div>
             <div className="w-7/12">
               <div className="flex space-x-3 items-center">
-                <p className="text-sm md:text-18 font-semibold">Diễm</p>
+                <a
+                  target="_blank"
+                  href="#"
+                  className="text-sm md:text-18 font-semibold"
+                  rel="ugc external nofollow"
+                >
+                  Diễm
+                </a>
+                {/* <p className="text-sm md:text-18 font-semibold">Diễm</p> */}
                 <p className="w-4 h-[2px] bg-gray-300"></p>
                 <p className="text-sm">19/04/2024</p>
               </div>

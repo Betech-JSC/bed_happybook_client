@@ -31,9 +31,9 @@ export default function Tabs() {
     <div className="w-full mt-6">
       <div className="mt-4 transition-all duration-300">
         <div className="bg-white rounded-2xl p-6">
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Tổng quan
-          </h3>
+          </h2>
           <p className="mt-4 text-22 font-bold">
             DIỆN EB2 ADVANCED DEGREE / DIỆN EB3 PROFESSIONALS LÀ GÌ?
           </p>
@@ -60,9 +60,9 @@ export default function Tabs() {
           </p>
         </div>
         <div className="bg-white rounded-2xl p-6 mt-4">
-          <h3 className="pl-2 border-l-4 mb-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 mb-4 border-[#F27145] text-22 font-bold">
             Đối tượng thỏa điều kiện
-          </h3>
+          </h2>
           <div>
             <p className="text-18 font-semibold">
               ĐỐI TƯỢNG THỎA ĐIỀU KIỆN EB-2 ADVANCED DEGREE
@@ -101,10 +101,10 @@ export default function Tabs() {
           </div>
         </div>
         <div className="bg-white rounded-2xl p-6 mt-4">
-          <h3 className="pl-2 border-l-4 mb-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 mb-4 border-[#F27145] text-22 font-bold">
             Những lợI ích khi lấy thẻ xanh diện EB2 Advanced Degree / Eb3
             Professionals
-          </h3>
+          </h2>
           <div>
             <ul className="mt-4 list-disc pl-5">
               <li>

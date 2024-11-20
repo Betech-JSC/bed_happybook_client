@@ -307,7 +307,7 @@ export default function CategoryPosts({
                           href="/tours/chi-tiet/hcm-ha-noi-sapa-lao-cai-ninh-binh-ha-long-5n-4d-tour-bao-gom-may-bay"
                           className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                         >
-                          <h3>{tour.title}</h3>
+                          <h2>{tour.title}</h2>
                         </Link>
                         <div className="flex space-x-2 mt-2">
                           <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">

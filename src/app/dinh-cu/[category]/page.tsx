@@ -23,6 +23,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/1.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Dịch vụ bảo lãnh định cư Mỹ diện hôn phu hôn thê",
@@ -31,6 +32,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/2.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Bảo lãnh định cư Mỹ diện đoàn tụ gia đình",
@@ -39,6 +41,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/3.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Dịch vụ tư vấn bảo lãnh trọn gói định cư Mỹ miễn phí",
@@ -47,6 +50,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/4.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Bảo lãnh định cư Mỹ diện hôn nhân đồng giới",
@@ -55,6 +59,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/5.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Bảo lãnh định cư Mỹ diện đoàn tụ gia đình",
@@ -63,6 +68,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/6.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Dịch vụ bảo lãnh định cư Mỹ diện hôn phu hôn thê",
@@ -71,6 +77,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/7.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Dịch vụ tư vấn bảo lãnh trọn gói định cư Mỹ miễn phí",
@@ -79,6 +86,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/8.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
   {
     title: "Bảo lãnh định cư Mỹ diện vợ chồng",
@@ -87,6 +95,7 @@ const arrPosts = [
     image_location: "/settle-service/posts/9.png",
     description:
       "Bảng giá làm visa các nước uy tín tùy mỗi nước khác nhau, nếu bạn không thành thạo việc xin visa ra nước ngoài, thì quá trình chuẩn bị giấy tờ xin visa sẽ rất dễ xảy ra thiếu sót.",
+    typeElement: "h2",
   },
 ];
 
