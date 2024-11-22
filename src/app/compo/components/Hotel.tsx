@@ -28,9 +28,9 @@ export default function Hotel() {
       <div className="bg-white p-6 rounded-2xl">
         <div className="flex flex-col md:flex-row justify-between">
           <div>
-            <h2 className="font-bold text-2xl">
+            <h3 className="font-bold text-2xl">
               Sofitel Legend Metropole Hà Nội
-            </h2>
+            </h3>
             <div className="flex space-x-2 items-center mt-3">
               <Image
                 className="w-4 h-4"
