@@ -315,7 +315,7 @@ export default function BookingDetail() {
                     </td>
                     <td className="border-b border-r border-gray-200 py-3 px-4 lg:px-12">
                       {format(
-                        parse(passenger.Birthday, "ddMMyyyy", new Date()),
+                        parse(passenger.Birthday, "yyyy-MM-dd", new Date()),
                         "dd-MM-yyyy"
                       )}
                     </td>

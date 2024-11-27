@@ -80,7 +80,7 @@ export default function FlightBookForm() {
           type: item.Type,
           birthday: item.value.birthday
             ? format(new Date(item.value.birthday), "yyyy-MM-dd")
-            : "1990-12-01",
+            : "",
           // baggages: [{}],
         });
         return acc;
@@ -106,15 +106,17 @@ export default function FlightBookForm() {
       ...formatData,
       passengers,
       fare_data,
+      is_invoice: generateInvoice,
     };
     const bookFlight = async () => {
       try {
         setLoading(true);
         const respon = await FlightApi.bookFlight("book-flight", finalData);
         reset();
-        if (respon?.payload.data.ListBooking) {
+        console.log(respon);
+        if (respon?.payload.ListBooking) {
           toast.success("Gửi yêu cầu thành công!");
-          handleSessionStorage("save", "bookingFlight", respon?.payload.data);
+          handleSessionStorage("save", "bookingFlight", respon?.payload);
           handleSessionStorage("remove", [
             "flightSession",
             "departFlight",
@@ -184,25 +186,25 @@ export default function FlightBookForm() {
         let params: any = {
           ListFareData: [],
         };
-        let listBaggage = [];
-        if (flightSession) {
-          flights.map((flight) => {
-            params["ListFareData"].push({
-              Session: flightSession,
-              FareDataId: flight.FareDataId,
-              ListFlight: [
-                {
-                  FlightValue: flight.ListFlight[0].FlightValue,
-                },
-              ],
-            });
-          });
-          const response = await FlightApi.getBaggage(
-            "flights/getbaggage",
-            params
-          );
-          listBaggage = response?.payload.data.ListBaggage ?? [];
-        }
+        let listBaggage: any = [];
+        // if (flightSession) {
+        //   flights.map((flight) => {
+        //     params["ListFareData"].push({
+        //       Session: flightSession,
+        //       FareDataId: flight.FareDataId,
+        //       ListFlight: [
+        //         {
+        //           FlightValue: flight.ListFlight[0].FlightValue,
+        //         },
+        //       ],
+        //     });
+        //   });
+        //   const response = await FlightApi.getBaggage(
+        //     "flights/getbaggage",
+        //     params
+        //   );
+        //   listBaggage = response?.payload.data.ListBaggage ?? [];
+        // }
         setListBaggage(listBaggage);
       } catch (error: any) {
         setListBaggage([]);
@@ -337,14 +339,14 @@ export default function FlightBookForm() {
                         </div>
                       </div>
                     )}
-                    {/* <div className="relative">
+                    <div className="relative">
                       <label
                         id={`atd.${index}.birthday`}
                         className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                       >
                         Ngày sinh <span className="text-red-500">*</span>
                       </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                      <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                         <Controller
                           name={`atd.${index}.birthday`}
                           control={control}
@@ -377,7 +379,7 @@ export default function FlightBookForm() {
                           {errors.atd[index].birthday?.message}
                         </p>
                       )}
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -788,13 +790,13 @@ export default function FlightBookForm() {
                       <input
                         id="GenerateInvoice_company_name"
                         type="text"
-                        {...register(`GenerateInvoice.company_name`)}
+                        {...register(`invoice.company_name`)}
                         placeholder="Nhập tên công ty"
                         className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                       />
-                      {errors.GenerateInvoice?.company_name && (
+                      {errors.invoice?.company_name && (
                         <p className="text-red-600">
-                          {errors.GenerateInvoice?.company_name?.message}
+                          {errors.invoice?.company_name?.message}
                         </p>
                       )}
                     </div>
@@ -809,12 +811,12 @@ export default function FlightBookForm() {
                         id="GenerateInvoice_company_address"
                         type="text"
                         placeholder="Nhập địa chỉ công ty"
-                        {...register(`GenerateInvoice.company_address`)}
+                        {...register(`invoice.address`)}
                         className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                       />
-                      {errors.GenerateInvoice?.company_address && (
+                      {errors.invoice?.address && (
                         <p className="text-red-600">
-                          {errors.GenerateInvoice?.company_address?.message}
+                          {errors.invoice?.address?.message}
                         </p>
                       )}
                     </div>
@@ -829,12 +831,12 @@ export default function FlightBookForm() {
                         id="GenerateInvoice_city"
                         type="text"
                         placeholder="Nhập thành phố"
-                        {...register(`GenerateInvoice.city`)}
+                        {...register(`invoice.city`)}
                         className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                       />
-                      {errors.GenerateInvoice?.city && (
+                      {errors.invoice?.city && (
                         <p className="text-red-600">
-                          {errors.GenerateInvoice?.city?.message}
+                          {errors.invoice?.city?.message}
                         </p>
                       )}
                     </div>
@@ -849,12 +851,12 @@ export default function FlightBookForm() {
                         id="GenerateInvoice_tax_code"
                         type="text"
                         placeholder="Nhập mã số thuế"
-                        {...register(`GenerateInvoice.tax_code`)}
+                        {...register(`invoice.mst`)}
                         className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                       />
-                      {errors.GenerateInvoice?.tax_code && (
+                      {errors.invoice?.mst && (
                         <p className="text-red-600">
-                          {errors.GenerateInvoice?.tax_code?.message}
+                          {errors.invoice?.mst?.message}
                         </p>
                       )}
                     </div>
@@ -870,12 +872,12 @@ export default function FlightBookForm() {
                         id="GenerateInvoice_recipient_name"
                         type="text"
                         placeholder="Nhập họ và tên người nhận"
-                        {...register(`GenerateInvoice.recipient_name`)}
+                        {...register(`invoice.contact_name`)}
                         className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                       />
-                      {errors.GenerateInvoice?.recipient_name && (
+                      {errors.invoice?.contact_name && (
                         <p className="text-red-600">
-                          {errors.GenerateInvoice?.recipient_name?.message}
+                          {errors.invoice?.contact_name?.message}
                         </p>
                       )}
                     </div>
@@ -890,12 +892,12 @@ export default function FlightBookForm() {
                         id="GenerateInvoice_phone"
                         type="text"
                         placeholder="Nhập số điện thoại người nhận"
-                        {...register(`GenerateInvoice.phone`)}
+                        {...register(`invoice.phone`)}
                         className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                       />
-                      {errors.GenerateInvoice?.phone && (
+                      {errors.invoice?.phone && (
                         <p className="text-red-600">
-                          {errors.GenerateInvoice?.phone?.message}
+                          {errors.invoice?.phone?.message}
                         </p>
                       )}
                     </div>
@@ -910,12 +912,12 @@ export default function FlightBookForm() {
                         id="GenerateInvoice_email"
                         type="text"
                         placeholder="Nhập Email"
-                        {...register(`GenerateInvoice.email`)}
+                        {...register(`invoice.email`)}
                         className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                       />
-                      {errors.GenerateInvoice?.email && (
+                      {errors.invoice?.email && (
                         <p className="text-red-600">
-                          {errors.GenerateInvoice?.email?.message}
+                          {errors.invoice?.email?.message}
                         </p>
                       )}
                     </div>
