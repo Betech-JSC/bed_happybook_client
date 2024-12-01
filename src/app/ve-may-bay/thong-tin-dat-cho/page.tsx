@@ -8,9 +8,7 @@ export const metadata: Metadata = {
   keywords: "Thông tin đặt chỗ",
 };
 export default async function BookingFlight() {
-  const airportsReponse = await FlightApi.airPorts(
-    "danh-sach-diem-di-den-ve-may-bay"
-  );
+  const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <main className="bg-gray-100 mt-10">

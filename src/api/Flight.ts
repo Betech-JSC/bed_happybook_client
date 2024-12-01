@@ -6,7 +6,7 @@ const FlightApi = {
   getFareRules: (url: string, data: any) => http.post<any>(url, data),
   getBaggage: (url: string, data: any) => http.post<any>(url, data),
   bookFlight: (url: string, data: any) => http.post<any>(url, data),
-  airPorts: (url: string) => http.get<any>(url),
+  airPorts: () => http.get<any>("danh-sach-diem-di-den-ve-may-bay"),
 };
 
 export { FlightApi };

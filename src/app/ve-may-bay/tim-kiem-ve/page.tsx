@@ -25,9 +25,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SearchTicket() {
-  const airportsReponse = await FlightApi.airPorts(
-    "danh-sach-diem-di-den-ve-may-bay"
-  );
+  const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <Suspense>

@@ -33,9 +33,7 @@ export default async function SearchTicketCheap({
 }: {
   searchParams: SearchParamsProps;
 }) {
-  const airportsReponse = await FlightApi.airPorts(
-    "danh-sach-diem-di-den-ve-may-bay"
-  );
+  const airportsReponse = await FlightApi.airPorts();
   const airports = airportsReponse?.payload.data ?? [];
   const startPoint = searchParams?.StartPoint ?? "SGN";
   const endPoint = searchParams?.EndPoint ?? "HAN";

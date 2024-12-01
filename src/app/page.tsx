@@ -19,6 +19,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import SearchMobile from "@/components/search-mobile";
 import { FlightApi } from "@/api/Flight";
+import { HomeApi } from "@/api/Home";
 
 export const metadata: Metadata = {
   title: "Trang chủ",
@@ -26,10 +27,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const airportsReponse = await FlightApi.airPorts(
-    "danh-sach-diem-di-den-ve-may-bay"
-  );
+  const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
+  // const homeApiReponse = await HomeApi.index();
+  // const homeData = homeApiReponse?.payload.data ?? [];
   return (
     <Fragment>
       <Suspense>

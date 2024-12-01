@@ -68,9 +68,7 @@ const tours = [
   },
 ];
 export default async function AirlineTicket() {
-  const airportsReponse = await FlightApi.airPorts(
-    "danh-sach-diem-di-den-ve-may-bay"
-  );
+  const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <Fragment>
