@@ -13,7 +13,7 @@ import Link from "next/link";
 import Partner from "../components/Partner";
 import Search from "../components/Search";
 import ListFilght from "../components/ListFilght";
-import { getAirportsDefault } from "@/utils/Helper";
+import { FlightApi } from "@/api/Flight";
 
 export const metadata: Metadata = {
   title: "Tìm kiếm Vé máy bay",
@@ -24,8 +24,11 @@ export const metadata: Metadata = {
   },
 };
 
-const airportsData = getAirportsDefault();
 export default async function SearchTicket() {
+  const airportsReponse = await FlightApi.airPorts(
+    "danh-sach-diem-di-den-ve-may-bay"
+  );
+  const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <Suspense>
       <div className="relative h-max pb-14">

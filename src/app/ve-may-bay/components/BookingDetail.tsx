@@ -7,14 +7,12 @@ import {
 import Image from "next/image";
 import { Fragment, useEffect, useState } from "react";
 import { format, parse } from "date-fns";
-import { getAirportsDefault, handleSessionStorage } from "@/utils/Helper";
+import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
-import { abort } from "process";
 import { notFound } from "next/navigation";
+import { BookingDetailProps } from "@/types/flight";
 
-const airports = getAirportsDefault();
-
-export default function BookingDetail() {
+export default function BookingDetail({ airports }: BookingDetailProps) {
   let priceAdt = 0;
   let priceChd = 0;
   let priceInf = 0;

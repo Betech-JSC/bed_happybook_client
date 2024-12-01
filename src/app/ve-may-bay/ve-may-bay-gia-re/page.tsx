@@ -13,8 +13,12 @@ import Link from "next/link";
 import Search from "../components/Search";
 import FlightCalendar from "../components/FlightCalendar";
 import SignUpReceiveCheapTickets from "../components/SignUpReceiveCheapTickets";
-import { SearchParamsProps } from "@/types/flight";
-import { getAirportsDefault } from "@/utils/Helper";
+import {
+  AirportOption,
+  AirportsCountry,
+  SearchParamsProps,
+} from "@/types/flight";
+import { FlightApi } from "@/api/Flight";
 
 export const metadata: Metadata = {
   title: "Vé máy bay giá rẻ",
@@ -24,21 +28,24 @@ export const metadata: Metadata = {
     canonical: "/ve-may-bay/ve-may-bay-gia-re",
   },
 };
-const airports = getAirportsDefault();
 export default async function SearchTicketCheap({
   searchParams,
 }: {
   searchParams: SearchParamsProps;
 }) {
+  const airportsReponse = await FlightApi.airPorts(
+    "danh-sach-diem-di-den-ve-may-bay"
+  );
+  const airports = airportsReponse?.payload.data ?? [];
   const startPoint = searchParams?.StartPoint ?? "SGN";
   const endPoint = searchParams?.EndPoint ?? "HAN";
   const tripType = searchParams?.tripType ?? "oneWay";
   const fromOption = airports
-    .flatMap((country) => country.airports)
-    .find((airport) => airport.code === startPoint);
+    .flatMap((country: AirportsCountry) => country.airports)
+    .find((airport: AirportOption) => airport.code === startPoint);
   const toOption = airports
-    .flatMap((country) => country.airports)
-    .find((airport) => airport.code === endPoint);
+    .flatMap((country: AirportsCountry) => country.airports)
+    .find((airport: AirportOption) => airport.code === endPoint);
   return (
     <Suspense>
       <div className="relative h-max pb-14">

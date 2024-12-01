@@ -14,7 +14,7 @@ import FAQ from "@/components/FAQ";
 import Link from "next/link";
 import Search from "./components/Search";
 import { Suspense } from "react";
-import { getAirportsDefault } from "@/utils/Helper";
+import { FlightApi } from "@/api/Flight";
 
 export const metadata: Metadata = {
   title: "Vé máy bay",
@@ -67,8 +67,11 @@ const tours = [
     type: 0,
   },
 ];
-const airportsData = getAirportsDefault();
-export default function AirlineTicket() {
+export default async function AirlineTicket() {
+  const airportsReponse = await FlightApi.airPorts(
+    "danh-sach-diem-di-den-ve-may-bay"
+  );
+  const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <Fragment>
       <div className="relative h-max pb-14">

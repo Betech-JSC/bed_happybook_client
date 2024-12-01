@@ -91,3 +91,7 @@ export interface FlightSearchPopupProps {
   toOption: AirportOption | undefined;
   flightType: string;
 }
+
+export interface BookingDetailProps {
+  airports: AirportsCountry[];
+}

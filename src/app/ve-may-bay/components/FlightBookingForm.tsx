@@ -113,7 +113,7 @@ export default function FlightBookForm() {
         setLoading(true);
         const respon = await FlightApi.bookFlight("book-flight", finalData);
         reset();
-        console.log(respon);
+
         if (respon?.payload.ListBooking) {
           toast.success("Gửi yêu cầu thành công!");
           handleSessionStorage("save", "bookingFlight", respon?.payload);

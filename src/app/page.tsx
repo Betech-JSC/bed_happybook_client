@@ -18,15 +18,18 @@ import Search from "@/components/search";
 import type { Metadata } from "next";
 import Image from "next/image";
 import SearchMobile from "@/components/search-mobile";
-import { getAirportsDefault } from "@/utils/Helper";
+import { FlightApi } from "@/api/Flight";
 
 export const metadata: Metadata = {
   title: "Trang chủ",
   description: "Happy Book",
 };
-const airportsData = getAirportsDefault();
 
 export default async function Home() {
+  const airportsReponse = await FlightApi.airPorts(
+    "danh-sach-diem-di-den-ve-may-bay"
+  );
+  const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <Fragment>
       <Suspense>
