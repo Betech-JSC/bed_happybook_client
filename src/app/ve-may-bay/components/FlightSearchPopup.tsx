@@ -46,10 +46,10 @@ export default function FlightSearchPopup({
   const [totalGuests, setTotalGuests] = useState<number>(1);
   const [from, setFrom] = useState<AirportOption | undefined>(fromOption);
   const [to, setTo] = useState<AirportOption | undefined>(toOption);
+  const [fromPlace, setFromPlace] = useState<string | null>("");
+  const [toPlace, setToPlace] = useState<string | null>("");
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
-  const keyFromParam = flightType === "return" ? "EndPoint" : "StartPoint";
-  const keyToParam = flightType === "return" ? "StartPoint" : "EndPoint";
 
   const handleGuestChange = (key: string, value: number) => {
     setFormData((prev) => ({
@@ -67,23 +67,30 @@ export default function FlightSearchPopup({
     },
     []
   );
+  const handleLocationPlaceChange = useCallback(
+    (locations: { fromPlace: string | null; toPlace: string | null }) => {
+      setFormData((prev) => ({
+        ...prev,
+        ...locations,
+      }));
+    },
+    []
+  );
 
   const handleSwitch = () => {
     setFrom((prevFrom) => {
       setTo(prevFrom);
       return to;
     });
+
+    setFromPlace((prevFromPlace) => {
+      setToPlace(prevFromPlace);
+      return toPlace;
+    });
   };
 
   useEffect(() => {
     setTotalGuests(formData.Adt + formData.Chd + formData.Inf);
-    if (
-      formData.from &&
-      formData.to &&
-      tripType === "roundTrip" &&
-      !formData.returnDate
-    ) {
-    }
   }, [formData, tripType]);
 
   useEffect(() => {
@@ -104,6 +111,13 @@ export default function FlightSearchPopup({
   }, [from, to, handleLocationChange]);
 
   useEffect(() => {
+    handleLocationPlaceChange({
+      fromPlace: from?.city || null,
+      toPlace: to?.city || null,
+    });
+  }, [from, to, handleLocationPlaceChange]);
+
+  useEffect(() => {
     setFormData((prev) => ({
       ...prev,
       departureDate: selectedDate,
@@ -112,13 +126,14 @@ export default function FlightSearchPopup({
 
   const handleSearch = () => {
     const totalPassengers = formData.Adt + formData.Chd + formData.Inf;
-    const { from, to, departureDate, Adt, Chd, Inf } = formData;
+    const { from, to, fromPlace, toPlace, departureDate, Adt, Chd, Inf } =
+      formData;
     if (from && to && departureDate && totalPassengers) {
       const formattedDate = departureDate
         ? format(departureDate, "ddMMyyyy")
         : "";
       router.push(
-        `/ve-may-bay/tim-kiem-ve?tripType=oneWay&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}`
+        `/ve-may-bay/tim-kiem-ve?tripType=oneWay&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}&from=${fromPlace}&to=${toPlace}`
       );
     } else {
       toast.dismiss();

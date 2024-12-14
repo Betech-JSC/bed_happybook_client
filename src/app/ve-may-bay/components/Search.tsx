@@ -35,6 +35,8 @@ export default function Search({ airportsData }: SearchFilghtProps) {
   useEffect(() => {
     const from = searchParams.get("StartPoint");
     const to = searchParams.get("EndPoint");
+    const fromPlace = searchParams.get("from");
+    const toPlace = searchParams.get("to");
     const departDate = parse(
       searchParams.get("DepartDate") ?? "",
       "ddMMyyyy",
@@ -53,8 +55,8 @@ export default function Search({ airportsData }: SearchFilghtProps) {
     setFormData({
       from: from || null,
       to: to || null,
-      fromPlace: null,
-      toPlace: null,
+      fromPlace: fromPlace || null,
+      toPlace: toPlace || null,
       departureDate: isValid(departDate) ? departDate : new Date(),
       returnDate: isValid(returnDate) ? returnDate : null,
       Adt: passengerAdt,
@@ -123,6 +125,17 @@ export default function Search({ airportsData }: SearchFilghtProps) {
     },
     []
   );
+
+  const handleLocationPlaceChange = useCallback(
+    (locations: { fromPlace: string | null; toPlace: string | null }) => {
+      setFormData((prev) => ({
+        ...prev,
+        ...locations,
+      }));
+    },
+    []
+  );
+
   const handleDepartDateChange = (date: Date | null) => {
     if (!formData.returnDate) {
       handleFocusNextDate(returnDateRef);
@@ -148,7 +161,17 @@ export default function Search({ airportsData }: SearchFilghtProps) {
 
   const handleSearch = () => {
     const totalPassengers = formData.Adt + formData.Chd + formData.Inf;
-    const { from, to, departureDate, returnDate, Adt, Chd, Inf } = formData;
+    const {
+      from,
+      to,
+      fromPlace,
+      toPlace,
+      departureDate,
+      returnDate,
+      Adt,
+      Chd,
+      Inf,
+    } = formData;
     const checkTripType =
       (tripType === "roundTrip" && returnDate) || tripType === "oneWay"
         ? true
@@ -160,7 +183,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
       const formattedReturndate = returnDate
         ? format(returnDate, "ddMMyyyy")
         : "";
-      const queryString = `tripType=${tripType}&cheapest=${cheapest}&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&ReturnDate=${formattedReturndate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}`;
+      const queryString = `tripType=${tripType}&cheapest=${cheapest}&StartPoint=${from}&EndPoint=${to}&DepartDate=${formattedDate}&ReturnDate=${formattedReturndate}&Adt=${Adt}&Chd=${Chd}&Inf=${Inf}&from=${fromPlace}&to=${toPlace}`;
       if (cheapest === "1") {
         router.push(`/ve-may-bay/ve-may-bay-gia-re?${queryString}`);
       } else {
@@ -211,9 +234,12 @@ export default function Search({ airportsData }: SearchFilghtProps) {
         <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
           <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
             <AirportSelector
+              handleLocationPlaceChange={handleLocationPlaceChange}
               handleLocationChange={handleLocationChange}
               initialFrom={formData.from}
               initialTo={formData.to}
+              initialFromPlace={formData.fromPlace}
+              initialToPlace={formData.toPlace}
               airportsData={airportsData}
             />
           </div>

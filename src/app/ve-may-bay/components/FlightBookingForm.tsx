@@ -166,6 +166,7 @@ export default function FlightBookForm() {
   let FareAdt: any = [];
   let FareChd: any = [];
   let FareInf: any = [];
+  let keyLoopPassenger = 1;
 
   flights.map((item, index) => {
     totalPrice += item.TotalPrice;
@@ -187,24 +188,24 @@ export default function FlightBookForm() {
           ListFareData: [],
         };
         let listBaggage: any = [];
-        // if (flightSession) {
-        //   flights.map((flight) => {
-        //     params["ListFareData"].push({
-        //       Session: flightSession,
-        //       FareDataId: flight.FareDataId,
-        //       ListFlight: [
-        //         {
-        //           FlightValue: flight.ListFlight[0].FlightValue,
-        //         },
-        //       ],
-        //     });
-        //   });
-        //   const response = await FlightApi.getBaggage(
-        //     "flights/getbaggage",
-        //     params
-        //   );
-        //   listBaggage = response?.payload.data.ListBaggage ?? [];
-        // }
+        if (flightSession) {
+          flights.map((flight) => {
+            params["ListFareData"].push({
+              Session: flightSession,
+              FareDataId: flight.FareDataId,
+              ListFlight: [
+                {
+                  FlightValue: flight.ListFlight[0].FlightValue,
+                },
+              ],
+            });
+          });
+          const response = await FlightApi.getBaggage(
+            "flights/getbaggage",
+            params
+          );
+          listBaggage = response?.payload.data.ListBaggage ?? [];
+        }
         setListBaggage(listBaggage);
       } catch (error: any) {
         setListBaggage([]);
@@ -229,813 +230,891 @@ export default function FlightBookForm() {
   return (
     <form className="mt-0 md:mt-4 rounded-xl" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
-        <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 bg-white rounded-2xl">
+        <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
           <div
-            className="rounded-t-xl"
+            className="rounded-2xl"
             style={{
               background:
                 "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
             }}
           >
             <h3 className="text-22 py-4 px-8 font-semibold text-white">
-              Thông tin khách hàng
+              Thông tin đặt hàng
             </h3>
           </div>
-
-          <div className="mt-4 pt-4 pb-8 px-4 md:px-8">
-            {totalAdt > 0 &&
-              Array.from({ length: totalAdt }, (_, index) => (
-                <div key={index} className="mb-3">
-                  <div className="p-4 bg-gray-100 rounded-lg">
-                    <span className="text-22 font-semibold px-4">
-                      {index + 1}. người lớn
-                    </span>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label
-                        htmlFor="fullName"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Họ <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        {...register(`atd.${index}.firstName`)}
-                        placeholder="Nhập họ"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.atd?.[index]?.firstName && (
-                        <p className="text-red-600">
-                          {errors.atd[index].firstName?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="fullName"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Tên đệm & Tên <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        {...register(`atd.${index}.lastName`)}
-                        placeholder="Nhập tên đệm và tên"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.atd?.[index]?.lastName && (
-                        <p className="text-red-600">
-                          {errors.atd[index].lastName?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="service"
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Giới tính <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <select
-                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                          {...register(`atd.${index}.gender`)}
-                        >
-                          <option value="">Vui lòng chọn giới tính</option>
-                          <option value="male">Quý ông</option>
-                          <option value="female">Quý bà</option>
-                        </select>
-                      </div>
-                      {errors.atd?.[index]?.gender && (
-                        <p className="text-red-600">
-                          {errors.atd[index].gender?.message}
-                        </p>
-                      )}
-                    </div>
-                    {listBaggage.length > 0 && (
-                      <div className="relative">
-                        <label
-                          htmlFor="service"
-                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Hành lý
-                        </label>
-                        <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                          <select
-                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            // {...register(`atd.${index}.baggages.0.code`)}
-                          >
-                            <option value="">Vui lòng chọn gói hành lý</option>
-                            {listBaggage.map((baggage, key) => (
-                              <option key={key} value={baggage.Code}>
-                                {baggage.Name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
+          <div className="mt-6">
+            <p className="font-bold text-18">Thông tin liên hệ</p>
+            <div className="bg-white rounded-xl py-4 px-6 mt-3">
+              <div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="relative">
+                    <label
+                      htmlFor="FirstName"
+                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                    >
+                      Họ <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="FirstName"
+                      type="text"
+                      {...register("contact.first_name")}
+                      placeholder="Nhập Họ"
+                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                    />
+                    {errors.contact?.first_name && (
+                      <p className="text-red-600">
+                        {errors.contact?.first_name.message}
+                      </p>
                     )}
-                    <div className="relative">
-                      <label
-                        id={`atd.${index}.birthday`}
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Ngày sinh <span className="text-red-500">*</span>
-                      </label>
-                      <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <Controller
-                          name={`atd.${index}.birthday`}
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              id={`atd.${index}.birthday`}
-                              selected={field.value || null}
-                              onChange={(date: Date | null) =>
-                                field.onChange(date)
-                              }
-                              placeholderText="Nhập ngày sinh"
-                              dateFormat="dd-MM-yyyy"
-                              showMonthDropdown
-                              showYearDropdown
-                              dropdownMode="select"
-                              locale={vi}
-                              maxDate={
-                                new Date(new Date().getFullYear() - 12, 11, 31)
-                              }
-                              minDate={
-                                new Date(new Date().getFullYear() - 100, 11, 31)
-                              }
-                              className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
-                            />
-                          )}
-                        />
-                      </div>
-                      {errors.atd?.[index]?.birthday && (
-                        <p className="text-red-600">
-                          {errors.atd[index].birthday?.message}
-                        </p>
-                      )}
-                    </div>
                   </div>
-                </div>
-              ))}
-            {totalChd > 0 &&
-              Array.from({ length: totalChd }, (_, index) => (
-                <div key={index} className="mb-3">
-                  <div className="p-4 bg-gray-100 rounded-lg">
-                    <span className="text-22 font-semibold px-4">
-                      {index + 1}. trẻ em
-                    </span>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label
-                        htmlFor="fullName"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Họ <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        {...register(`chd.${index}.firstName`)}
-                        placeholder="Nhập họ"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.chd?.[index]?.firstName && (
-                        <p className="text-red-600">
-                          {errors.chd[index].firstName?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="fullName"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Tên đệm & Tên <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        {...register(`chd.${index}.lastName`)}
-                        placeholder="Nhập tên đệm và tên"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.chd?.[index]?.lastName && (
-                        <p className="text-red-600">
-                          {errors.chd[index].lastName?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="service"
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Giới tính <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <select
-                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                          {...register(`chd.${index}.gender`)}
-                        >
-                          <option value="">Vui lòng chọn giới tính</option>
-                          <option value="male">Nam</option>
-                          <option value="female">Nữ</option>
-                        </select>
-                      </div>
-                      {errors.chd?.[index]?.gender && (
-                        <p className="text-red-600">
-                          {errors.chd[index].gender?.message}
-                        </p>
-                      )}
-                    </div>
-                    {listBaggage.length > 0 && (
-                      <div className="relative">
-                        <label
-                          htmlFor="service"
-                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Hành lý
-                        </label>
-                        <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                          <select
-                            // {...register(`atd.${index}.baggages`)}
-                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                          >
-                            <option value="">Vui lòng chọn gói hành lý</option>
-                            {listBaggage.map((baggage, key) => (
-                              <option key={key} value={baggage.Code}>
-                                {baggage.Name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
+                  <div className="relative">
+                    <label
+                      htmlFor="LastName"
+                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                    >
+                      Tên đệm & Tên <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="LastName"
+                      type="text"
+                      {...register("contact.last_name")}
+                      placeholder="Nhập tên đệm & tên"
+                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                    />
+                    {errors.contact?.last_name && (
+                      <p className="text-red-600">
+                        {errors.contact?.last_name.message}
+                      </p>
                     )}
-                    <div className="relative">
-                      <label
-                        id={`chd.${index}.birthday`}
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Ngày sinh <span className="text-red-500">*</span>
-                      </label>
-                      <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <Controller
-                          name={`chd.${index}.birthday`}
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              id={`chd.${index}.birthday`}
-                              selected={field.value || null}
-                              onChange={(date: Date | null) =>
-                                field.onChange(date)
-                              }
-                              placeholderText="Nhập ngày sinh"
-                              dateFormat="dd-MM-yyyy"
-                              showMonthDropdown
-                              showYearDropdown
-                              dropdownMode="select"
-                              locale={vi}
-                              maxDate={
-                                new Date(new Date().getFullYear() - 2, 11, 31)
-                              }
-                              minDate={
-                                new Date(new Date().getFullYear() - 12, 0, 1)
-                              }
-                              className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
-                            />
-                          )}
-                        />
-                      </div>
-                      {errors.chd?.[index]?.birthday && (
-                        <p className="text-red-600">
-                          {errors.chd[index].birthday?.message}
-                        </p>
-                      )}
-                    </div>
+                  </div>
+                  <div className="relative">
+                    <label
+                      htmlFor="gender_person_contact"
+                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                    >
+                      Giới tính <span className="text-red-500">*</span>
+                    </label>
+
+                    <select
+                      id="gender_person_contact"
+                      {...register("contact.gender")}
+                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                    >
+                      <option value="" className="text-gray-300">
+                        Vui lòng chọn giới tính
+                      </option>
+                      <option value="male">Quý ông</option>
+                      <option value="female">Quý bà</option>
+                    </select>
+                    {errors.contact?.gender && (
+                      <p className="text-red-600">
+                        {errors.contact?.gender.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <label
+                      htmlFor="phone"
+                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                    >
+                      Số điện thoại <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="phone"
+                      type="text"
+                      {...register("contact.phone")}
+                      placeholder="Nhập số điện thoại"
+                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                    />
+                    {errors.contact?.phone && (
+                      <p className="text-red-600">
+                        {errors.contact?.phone.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <label
+                      htmlFor="email"
+                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                    >
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="email_person_contact"
+                      type="text"
+                      placeholder="Nhập email"
+                      {...register("contact.email")}
+                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                    />
+                    {errors.contact?.email && (
+                      <p className="text-red-600">
+                        {errors.contact?.email.message}
+                      </p>
+                    )}
                   </div>
                 </div>
-              ))}
-            {totalInf > 0 &&
-              Array.from({ length: totalInf }, (_, index) => (
-                <div key={index} className="mb-3">
-                  <div className="p-4 bg-gray-100 rounded-lg">
-                    <span className="text-22 font-semibold px-4">
-                      {index + 1}. em bé
-                    </span>
-                  </div>
 
-                  <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label
-                        htmlFor="fullName"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Họ <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        {...register(`inf.${index}.firstName`)}
-                        placeholder="Nhập họ"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.inf?.[index]?.firstName && (
-                        <p className="text-red-600">
-                          {errors.inf[index].firstName?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="fullName"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Tên đệm & Tên <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        {...register(`inf.${index}.lastName`)}
-                        placeholder="Nhập tên đệm và tên"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.inf?.[index]?.lastName && (
-                        <p className="text-red-600">
-                          {errors.inf[index].lastName?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="service"
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Giới tính <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <select
-                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                          {...register(`inf.${index}.gender`)}
-                        >
-                          <option value="">Vui lòng chọn giới tính</option>
-                          <option value="male">Nam</option>
-                          <option value="female">Nữ</option>
-                        </select>
-                      </div>
-                      {errors.inf?.[index]?.gender && (
-                        <p className="text-red-600">
-                          {errors.inf[index].gender?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        id={`inf.${index}.birthday`}
-                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Ngày sinh <span className="text-red-500">*</span>
-                      </label>
-                      <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                        <Controller
-                          name={`inf.${index}.birthday`}
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              id={`inf.${index}.birthday`}
-                              selected={field.value || null}
-                              onChange={(date: Date | null) =>
-                                field.onChange(date)
-                              }
-                              placeholderText="Nhập ngày sinh"
-                              dateFormat="dd-MM-yyyy"
-                              showMonthDropdown
-                              showYearDropdown
-                              dropdownMode="select"
-                              locale={vi}
-                              maxDate={
-                                new Date(new Date().getFullYear(), 11, 31)
-                              }
-                              minDate={
-                                new Date(new Date().getFullYear() - 2, 0, 1)
-                              }
-                              className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
-                            />
-                          )}
-                        />
-                      </div>
-                      {errors.inf?.[index]?.birthday && (
-                        <p className="text-red-600">
-                          {errors.inf[index].birthday?.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            <div className="mt-6 rounded-xl">
-              <div className="text-22 font-semibold">Thông tin liên hệ</div>
-              <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="relative">
-                  <label
-                    htmlFor="FirstName"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Họ <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="FirstName"
-                    type="text"
-                    {...register("contact.first_name")}
-                    placeholder="Nhập Họ"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                  />
-                  {errors.contact?.first_name && (
-                    <p className="text-red-600">
-                      {errors.contact?.first_name.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="LastName"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Tên đệm & Tên <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="LastName"
-                    type="text"
-                    {...register("contact.last_name")}
-                    placeholder="Nhập tên đệm & tên"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                  />
-                  {errors.contact?.last_name && (
-                    <p className="text-red-600">
-                      {errors.contact?.last_name.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="gender_person_contact"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Giới tính <span className="text-red-500">*</span>
-                  </label>
-
-                  <select
-                    id="gender_person_contact"
-                    {...register("contact.gender")}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                  >
-                    <option value="" className="text-gray-300">
-                      Vui lòng chọn giới tính
-                    </option>
-                    <option value="male">Quý ông</option>
-                    <option value="female">Quý bà</option>
-                  </select>
-                  {errors.contact?.gender && (
-                    <p className="text-red-600">
-                      {errors.contact?.gender.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="phone"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Số điện thoại <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="phone"
-                    type="text"
-                    {...register("contact.phone")}
-                    placeholder="Nhập số điện thoại"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                  />
-                  {errors.contact?.phone && (
-                    <p className="text-red-600">
-                      {errors.contact?.phone.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="email"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="email_person_contact"
-                    type="text"
-                    placeholder="Nhập email"
-                    {...register("contact.email")}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                  {errors.contact?.email && (
-                    <p className="text-red-600">
-                      {errors.contact?.email.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <textarea
-                  placeholder="Yêu cầu đặc biệt"
-                  {...register("Note")}
-                  className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
-                ></textarea>
-              </div>
-              <div className="mt-2 flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  {...register("checkBoxGenerateInvoice")}
-                  checked={generateInvoice}
-                  onChange={(e) => {
-                    setGenerateInvoice(e.target.checked);
-                  }}
-                  className="w-4 h-4"
-                />
-                <span
-                  className="text-sm"
-                  onClick={() => {
-                    setGenerateInvoice(!generateInvoice);
-                  }}
-                >
-                  Tôi muốn xuất hóa đơn
-                </span>
-              </div>
-              {/* generateInvoice */}
-              {generateInvoice && (
                 <div className="mt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_company_name"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Tên công ty <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_company_name"
-                        type="text"
-                        {...register(`invoice.company_name`)}
-                        placeholder="Nhập tên công ty"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.company_name && (
-                        <p className="text-red-600">
-                          {errors.invoice?.company_name?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_company_address"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Địa chỉ <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_company_address"
-                        type="text"
-                        placeholder="Nhập địa chỉ công ty"
-                        {...register(`invoice.address`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.address && (
-                        <p className="text-red-600">
-                          {errors.invoice?.address?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_city"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Thành phố <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_city"
-                        type="text"
-                        placeholder="Nhập thành phố"
-                        {...register(`invoice.city`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.city && (
-                        <p className="text-red-600">
-                          {errors.invoice?.city?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_tax_code"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Mã số thuế <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_tax_code"
-                        type="text"
-                        placeholder="Nhập mã số thuế"
-                        {...register(`invoice.mst`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.mst && (
-                        <p className="text-red-600">
-                          {errors.invoice?.mst?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_recipient_name"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Người nhận hóa đơn
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_recipient_name"
-                        type="text"
-                        placeholder="Nhập họ và tên người nhận"
-                        {...register(`invoice.contact_name`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.contact_name && (
-                        <p className="text-red-600">
-                          {errors.invoice?.contact_name?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_phone"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Số điện thoại <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_phone"
-                        type="text"
-                        placeholder="Nhập số điện thoại người nhận"
-                        {...register(`invoice.phone`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.phone && (
-                        <p className="text-red-600">
-                          {errors.invoice?.phone?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_email"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        Email <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_email"
-                        type="text"
-                        placeholder="Nhập Email"
-                        {...register(`invoice.email`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.email && (
-                        <p className="text-red-600">
-                          {errors.invoice?.email?.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <textarea
+                    placeholder="Yêu cầu đặc biệt"
+                    {...register("Note")}
+                    className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
+                  ></textarea>
                 </div>
-              )}
-              <div className="mt-6">
-                <span className="text-22 font-semibold">
-                  Phương thức thanh toán
-                </span>
-                <div className=" mt-4">
-                  <div className="flex space-x-3 items-start">
-                    <input
-                      type="radio"
-                      value="cash"
-                      id="payment_cash"
-                      className="w-5 h-5 mt-[2px]"
-                      {...register("PaymentMethod")}
-                    />
-                    <label
-                      htmlFor="payment_cash"
-                      className="flex space-x-1 max-w-[85%]"
-                    >
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/cash.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div className="max-w-[85%]">
-                        <span className="font-medium text-base">
-                          Thanh toán tiền mặt
-                        </span>
-                        <p className="text-gray-500">
-                          Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
-                          hệ xác nhận
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                  <div className="flex space-x-3 items-start mt-4">
-                    <input
-                      type="radio"
-                      value="vnpay"
-                      id="payment_vnpay"
-                      className="w-5 h-5 mt-[2px]"
-                      {...register("PaymentMethod")}
-                    />
-                    <label htmlFor="payment_vnpay" className=" flex space-x-1">
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/vnpay.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div>
-                        <span className="font-medium text-base max-width-[85%]">
-                          Thanh toán bằng VNPAY
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-                  <div className="flex space-x-3 items-start mt-4">
-                    <input
-                      type="radio"
-                      value="bank_transfer"
-                      id="payment_transfer"
-                      className="w-5 h-5 mt-[2px]"
-                      {...register("PaymentMethod")}
-                    />
-                    <label
-                      htmlFor="payment_transfer"
-                      className=" flex space-x-1"
-                    >
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/transfer.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div className="max-width-[85%]">
-                        <span className="block text-base font-medium">
-                          Chuyển khoản
-                        </span>
-                        <button
-                          type="button"
-                          className="text-blue-700 underline"
-                        >
-                          Thông tin chuyển khoản
-                        </button>
-                      </div>
-                    </label>
-                  </div>
-                  {errors.PaymentMethod && (
-                    <p className="text-red-600">
-                      {errors.PaymentMethod.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="mt-6">
-                <div className="block md:hidden pb-0 py-4 px-3">
-                  <LoadingButton
-                    isLoading={loading}
-                    text="Thanh toán"
-                    disabled={false}
+                <div className="mt-2 flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    {...register("checkBoxGenerateInvoice")}
+                    checked={generateInvoice}
+                    onChange={(e) => {
+                      setGenerateInvoice(e.target.checked);
+                    }}
+                    className="w-4 h-4"
                   />
+                  <span
+                    className="text-sm"
+                    onClick={() => {
+                      setGenerateInvoice(!generateInvoice);
+                    }}
+                  >
+                    Tôi muốn xuất hóa đơn
+                  </span>
+                </div>
+                {/* generateInvoice */}
+                {generateInvoice && (
+                  <div className="mt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="relative">
+                        <label
+                          htmlFor="GenerateInvoice_company_name"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Tên công ty <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="GenerateInvoice_company_name"
+                          type="text"
+                          {...register(`invoice.company_name`)}
+                          placeholder="Nhập tên công ty"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.invoice?.company_name && (
+                          <p className="text-red-600">
+                            {errors.invoice?.company_name?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="GenerateInvoice_company_address"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Địa chỉ <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="GenerateInvoice_company_address"
+                          type="text"
+                          placeholder="Nhập địa chỉ công ty"
+                          {...register(`invoice.address`)}
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                        />
+                        {errors.invoice?.address && (
+                          <p className="text-red-600">
+                            {errors.invoice?.address?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="GenerateInvoice_city"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Thành phố <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="GenerateInvoice_city"
+                          type="text"
+                          placeholder="Nhập thành phố"
+                          {...register(`invoice.city`)}
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                        />
+                        {errors.invoice?.city && (
+                          <p className="text-red-600">
+                            {errors.invoice?.city?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="GenerateInvoice_tax_code"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Mã số thuế <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="GenerateInvoice_tax_code"
+                          type="text"
+                          placeholder="Nhập mã số thuế"
+                          {...register(`invoice.mst`)}
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                        />
+                        {errors.invoice?.mst && (
+                          <p className="text-red-600">
+                            {errors.invoice?.mst?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="GenerateInvoice_recipient_name"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Người nhận hóa đơn
+                          <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="GenerateInvoice_recipient_name"
+                          type="text"
+                          placeholder="Nhập họ và tên người nhận"
+                          {...register(`invoice.contact_name`)}
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                        />
+                        {errors.invoice?.contact_name && (
+                          <p className="text-red-600">
+                            {errors.invoice?.contact_name?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="GenerateInvoice_phone"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Số điện thoại <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="GenerateInvoice_phone"
+                          type="text"
+                          placeholder="Nhập số điện thoại người nhận"
+                          {...register(`invoice.phone`)}
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                        />
+                        {errors.invoice?.phone && (
+                          <p className="text-red-600">
+                            {errors.invoice?.phone?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="GenerateInvoice_email"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Email <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="GenerateInvoice_email"
+                          type="text"
+                          placeholder="Nhập Email"
+                          {...register(`invoice.email`)}
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                        />
+                        {errors.invoice?.email && (
+                          <p className="text-red-600">
+                            {errors.invoice?.email?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {/* <div className="mt-6">
+                  <span className="text-22 font-semibold">
+                    Phương thức thanh toán
+                  </span>
+                  <div className=" mt-4">
+                    <div className="flex space-x-3 items-start">
+                      <input
+                        type="radio"
+                        value="cash"
+                        id="payment_cash"
+                        className="w-5 h-5 mt-[2px]"
+                        {...register("PaymentMethod")}
+                      />
+                      <label
+                        htmlFor="payment_cash"
+                        className="flex space-x-1 max-w-[85%]"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/cash.svg"
+                            alt="Icon"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div className="max-w-[85%]">
+                          <span className="font-medium text-base">
+                            Thanh toán tiền mặt
+                          </span>
+                          <p className="text-gray-500">
+                            Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
+                            hệ xác nhận
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                    <div className="flex space-x-3 items-start mt-4">
+                      <input
+                        type="radio"
+                        value="vnpay"
+                        id="payment_vnpay"
+                        className="w-5 h-5 mt-[2px]"
+                        {...register("PaymentMethod")}
+                      />
+                      <label
+                        htmlFor="payment_vnpay"
+                        className=" flex space-x-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/vnpay.svg"
+                            alt="Icon"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            Thanh toán bằng VNPAY
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                    <div className="flex space-x-3 items-start mt-4">
+                      <input
+                        type="radio"
+                        value="bank_transfer"
+                        id="payment_transfer"
+                        className="w-5 h-5 mt-[2px]"
+                        {...register("PaymentMethod")}
+                      />
+                      <label
+                        htmlFor="payment_transfer"
+                        className=" flex space-x-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/transfer.svg"
+                            alt="Icon"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div className="max-width-[85%]">
+                          <span className="block text-base font-medium">
+                            Chuyển khoản
+                          </span>
+                          <button
+                            type="button"
+                            className="text-blue-700 underline"
+                          >
+                            Thông tin chuyển khoản
+                          </button>
+                        </div>
+                      </label>
+                    </div>
+                    {errors.PaymentMethod && (
+                      <p className="text-red-600">
+                        {errors.PaymentMethod.message}
+                      </p>
+                    )}
+                  </div>
+                </div> */}
+                <div className="mt-6">
+                  <div className="block md:hidden pb-0 py-4 px-3">
+                    <LoadingButton
+                      isLoading={loading}
+                      text="Thanh toán"
+                      disabled={false}
+                    />
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="mt-6">
+            <p className="font-bold text-18">Thông tin hành khách</p>
+            <div>
+              {totalAdt > 0 &&
+                Array.from({ length: totalAdt }, (_, index) => (
+                  <div
+                    key={keyLoopPassenger++}
+                    className="bg-white rounded-xl py-4 px-6 mt-3"
+                  >
+                    <div className="py-1 px-2 bg-gray-100 rounded-lg">
+                      <span className="text-18 font-bold">
+                        Hành khách {keyLoopPassenger}
+                      </span>
+                      <span className="text-base ml-4">(vé người lớn)</span>
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="relative">
+                        <label
+                          htmlFor="fullName"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Họ <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          type="text"
+                          {...register(`atd.${index}.firstName`)}
+                          placeholder="Nhập họ"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.atd?.[index]?.firstName && (
+                          <p className="text-red-600">
+                            {errors.atd[index].firstName?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="fullName"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Tên đệm & Tên <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          type="text"
+                          {...register(`atd.${index}.lastName`)}
+                          placeholder="Nhập tên đệm và tên"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.atd?.[index]?.lastName && (
+                          <p className="text-red-600">
+                            {errors.atd[index].lastName?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="service"
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Giới tính <span className="text-red-500">*</span>
+                        </label>
+                        <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <select
+                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            {...register(`atd.${index}.gender`)}
+                          >
+                            <option value="">Vui lòng chọn giới tính</option>
+                            <option value="male">Quý ông</option>
+                            <option value="female">Quý bà</option>
+                          </select>
+                        </div>
+                        {errors.atd?.[index]?.gender && (
+                          <p className="text-red-600">
+                            {errors.atd[index].gender?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          id={`atd.${index}.birthday`}
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Ngày sinh <span className="text-red-500">*</span>
+                        </label>
+                        <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <Controller
+                            name={`atd.${index}.birthday`}
+                            control={control}
+                            render={({ field }) => (
+                              <DatePicker
+                                id={`atd.${index}.birthday`}
+                                selected={field.value || null}
+                                onChange={(date: Date | null) =>
+                                  field.onChange(date)
+                                }
+                                placeholderText="Nhập ngày sinh"
+                                dateFormat="dd-MM-yyyy"
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                locale={vi}
+                                maxDate={
+                                  new Date(
+                                    new Date().getFullYear() - 12,
+                                    11,
+                                    31
+                                  )
+                                }
+                                minDate={
+                                  new Date(
+                                    new Date().getFullYear() - 100,
+                                    11,
+                                    31
+                                  )
+                                }
+                                className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                              />
+                            )}
+                          />
+                        </div>
+                        {errors.atd?.[index]?.birthday && (
+                          <p className="text-red-600">
+                            {errors.atd[index].birthday?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          id={`atd.${index}.cccd`}
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          CCCD <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id={`atd.${index}.cccd`}
+                          type="text"
+                          // {...register("contact.phone")}
+                          placeholder="Nhập số CCCD"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.contact?.phone && (
+                          <p className="text-red-600">
+                            {errors.contact?.phone.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          id={`atd.${index}.cccd_date`}
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Ngày hết hạn <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id={`atd.${index}.cccd_date`}
+                          type="text"
+                          // {...register("contact.phone")}
+                          placeholder="Nhập ngày hết hạn"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.contact?.phone && (
+                          <p className="text-red-600">
+                            {errors.contact?.phone.message}
+                          </p>
+                        )}
+                      </div>
+                      {listBaggage.length > 0 && (
+                        <div className="relative">
+                          <label
+                            htmlFor="service"
+                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                          >
+                            Hành lý
+                          </label>
+                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                            <select
+                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                              // {...register(`atd.${index}.baggages.0.code`)}
+                            >
+                              <option value="">
+                                Vui lòng chọn gói hành lý
+                              </option>
+                              {listBaggage.map((baggage, key) => (
+                                <option key={key} value={baggage.Code}>
+                                  {baggage.Name} {" / "}
+                                  {baggage.Price.toLocaleString("vi-VN")}{" "}
+                                  {baggage.Currency}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+            <div>
+              {totalChd > 0 &&
+                Array.from({ length: totalChd }, (_, index) => (
+                  <div
+                    key={keyLoopPassenger++}
+                    className="bg-white rounded-xl py-4 px-6 mt-3"
+                  >
+                    <div className="py-1 px-2 bg-gray-100 rounded-lg">
+                      <span className="text-18 font-bold">
+                        Hành khách {keyLoopPassenger}
+                      </span>
+                      <span className="text-base ml-4">( vé trẻ em)</span>
+                    </div>
+                    <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="relative">
+                        <label
+                          htmlFor="fullName"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Họ <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          type="text"
+                          {...register(`chd.${index}.firstName`)}
+                          placeholder="Nhập họ"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.chd?.[index]?.firstName && (
+                          <p className="text-red-600">
+                            {errors.chd[index].firstName?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="fullName"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Tên đệm & Tên <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          type="text"
+                          {...register(`chd.${index}.lastName`)}
+                          placeholder="Nhập tên đệm và tên"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.chd?.[index]?.lastName && (
+                          <p className="text-red-600">
+                            {errors.chd[index].lastName?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="service"
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Giới tính <span className="text-red-500">*</span>
+                        </label>
+                        <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <select
+                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            {...register(`chd.${index}.gender`)}
+                          >
+                            <option value="">Vui lòng chọn giới tính</option>
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                          </select>
+                        </div>
+                        {errors.chd?.[index]?.gender && (
+                          <p className="text-red-600">
+                            {errors.chd[index].gender?.message}
+                          </p>
+                        )}
+                      </div>
+                      {listBaggage.length > 0 && (
+                        <div className="relative">
+                          <label
+                            htmlFor="service"
+                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                          >
+                            Hành lý
+                          </label>
+                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                            <select
+                              // {...register(`atd.${index}.baggages`)}
+                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            >
+                              <option value="">
+                                Vui lòng chọn gói hành lý
+                              </option>
+                              {listBaggage.map((baggage, key) => (
+                                <option key={key} value={baggage.Code}>
+                                  {baggage.Name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      <div className="relative">
+                        <label
+                          id={`chd.${index}.birthday`}
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Ngày sinh <span className="text-red-500">*</span>
+                        </label>
+                        <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <Controller
+                            name={`chd.${index}.birthday`}
+                            control={control}
+                            render={({ field }) => (
+                              <DatePicker
+                                id={`chd.${index}.birthday`}
+                                selected={field.value || null}
+                                onChange={(date: Date | null) =>
+                                  field.onChange(date)
+                                }
+                                placeholderText="Nhập ngày sinh"
+                                dateFormat="dd-MM-yyyy"
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                locale={vi}
+                                maxDate={
+                                  new Date(new Date().getFullYear() - 2, 11, 31)
+                                }
+                                minDate={
+                                  new Date(new Date().getFullYear() - 12, 0, 1)
+                                }
+                                className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                              />
+                            )}
+                          />
+                        </div>
+                        {errors.chd?.[index]?.birthday && (
+                          <p className="text-red-600">
+                            {errors.chd[index].birthday?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+            <div>
+              {totalInf > 0 &&
+                Array.from({ length: totalInf }, (_, index) => (
+                  <div
+                    key={keyLoopPassenger++}
+                    className="bg-white rounded-xl py-4 px-6 mt-3"
+                  >
+                    <div className="py-1 px-2 bg-gray-100 rounded-lg">
+                      <span className="text-18 font-bold">
+                        Hành khách {keyLoopPassenger}
+                      </span>
+                      <span className="text-base ml-4">( vé em bé)</span>
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="relative">
+                        <label
+                          htmlFor="fullName"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Họ <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          type="text"
+                          {...register(`inf.${index}.firstName`)}
+                          placeholder="Nhập họ"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.inf?.[index]?.firstName && (
+                          <p className="text-red-600">
+                            {errors.inf[index].firstName?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="fullName"
+                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Tên đệm & Tên <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          type="text"
+                          {...register(`inf.${index}.lastName`)}
+                          placeholder="Nhập tên đệm và tên"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                        />
+                        {errors.inf?.[index]?.lastName && (
+                          <p className="text-red-600">
+                            {errors.inf[index].lastName?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          htmlFor="service"
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Giới tính <span className="text-red-500">*</span>
+                        </label>
+                        <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <select
+                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            {...register(`inf.${index}.gender`)}
+                          >
+                            <option value="">Vui lòng chọn giới tính</option>
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                          </select>
+                        </div>
+                        {errors.inf?.[index]?.gender && (
+                          <p className="text-red-600">
+                            {errors.inf[index].gender?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <label
+                          id={`inf.${index}.birthday`}
+                          className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                        >
+                          Ngày sinh <span className="text-red-500">*</span>
+                        </label>
+                        <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <Controller
+                            name={`inf.${index}.birthday`}
+                            control={control}
+                            render={({ field }) => (
+                              <DatePicker
+                                id={`inf.${index}.birthday`}
+                                selected={field.value || null}
+                                onChange={(date: Date | null) =>
+                                  field.onChange(date)
+                                }
+                                placeholderText="Nhập ngày sinh"
+                                dateFormat="dd-MM-yyyy"
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                locale={vi}
+                                maxDate={
+                                  new Date(new Date().getFullYear(), 11, 31)
+                                }
+                                minDate={
+                                  new Date(new Date().getFullYear() - 2, 0, 1)
+                                }
+                                className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                              />
+                            )}
+                          />
+                        </div>
+                        {errors.inf?.[index]?.birthday && (
+                          <p className="text-red-600">
+                            {errors.inf[index].birthday?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
         </div>

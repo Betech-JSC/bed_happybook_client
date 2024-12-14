@@ -7,6 +7,8 @@ const FlightApi = {
   getBaggage: (url: string, data: any) => http.post<any>(url, data),
   bookFlight: (url: string, data: any) => http.post<any>(url, data),
   airPorts: () => http.get<any>("danh-sach-diem-di-den-ve-may-bay"),
+  searchAirPorts: (searchParams: string) =>
+    http.get<any>(`airport/search?keyword=${searchParams}`),
 };
 
 export { FlightApi };

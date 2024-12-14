@@ -1,4 +1,5 @@
 "use client";
+import { FlightApi } from "@/api/Flight";
 import {
   AirportOption,
   AirportPopupSelectorProps,
@@ -16,16 +17,24 @@ import React, {
   Fragment,
   useCallback,
 } from "react";
+import debounce from "lodash.debounce";
 
 export default function AirportPopupSelector({
   handleLocationChange,
+  handleLocationPlaceChange,
   initialFrom,
+  initialFromPlace,
   initialTo,
+  initialToPlace,
   airportsData,
 }: AirportPopupSelectorProps) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [departureDisplayText, setDepartureDisplayText] = useState("");
-  const [destinationDisplayText, setDestinationDisplayText] = useState("");
+  const [departureDisplayText, setDepartureDisplayText] = useState<
+    string | null
+  >(initialFromPlace);
+  const [destinationDisplayText, setDestinationDisplayText] = useState<
+    string | null
+  >(initialToPlace);
   const [selectedDeparture, setSelectedDeparture] = useState<string | null>(
     initialFrom
   );
@@ -43,40 +52,23 @@ export default function AirportPopupSelector({
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
   const inputSearchRef = useRef<any>(null);
-
+  const debounceRef = useRef<any>(null);
+  const [airPortSeach, setAirPortSeach] = useState<any>([]);
   const handleInputClick = (input: "departure" | "destination") => {
     setActiveInput(input);
     setIsPopupVisible(true);
     setSearchQuery("");
   };
-
-  const findAirportName = useCallback(
-    (code: string | null): string => {
-      if (!code) return "";
-      if (!airportsData) return "";
-      for (const region of airportsData) {
-        const airport = region.airports.find(
-          (airport) => airport.code === code
-        );
-        if (airport) {
-          return `${airport.city} (${airport.code})`;
-        }
-      }
-      return "";
-    },
-    [airportsData]
-  );
-
   useEffect(() => {
     if (initialFrom) {
-      setDepartureDisplayText(findAirportName(initialFrom));
       setSelectedDeparture(initialFrom);
+      setDepartureDisplayText(initialFromPlace);
     }
     if (initialTo) {
       setSelectedDestination(initialTo);
-      setDestinationDisplayText(findAirportName(initialTo));
+      setDestinationDisplayText(initialToPlace);
     }
-  }, [initialFrom, initialTo, findAirportName]);
+  }, [initialFrom, initialTo, initialFromPlace, initialToPlace]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -110,91 +102,89 @@ export default function AirportPopupSelector({
     }
   }, [isPopupVisible]);
 
-  const handleAirportSelect = (airport: AirportOption) => {
-    const displayText = `${airport.city} (${airport.code})`;
-    const code = airport.code;
+  useEffect(() => {
+    debounceRef.current = debounce((query: string) => {
+      if (query) {
+        const searchAirPortsResponse = FlightApi.searchAirPorts(query);
+        try {
+          searchAirPortsResponse.then((response: any) => {
+            setAirPortSeach(response?.payload.data);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }, 300);
+  }, []);
 
+  useEffect(() => {
+    if (searchQuery.length > 1) {
+      debounceRef.current(searchQuery);
+    } else {
+      setAirPortSeach([]);
+    }
+  }, [searchQuery]);
+
+  const handleAirportSelect = (
+    airport: AirportOption | null,
+    airportSearch: any = null
+  ) => {
+    let displayText = "";
+    let code = "";
+    if (airportSearch) {
+      displayText = `${airportSearch.name_vi} (${airportSearch.code})`;
+      code = airportSearch.code;
+    } else {
+      displayText = `${airport?.city} (${airport?.code})`;
+      code = airport ? airport.code : "undefined";
+    }
     if (activeInput === "departure") {
       setDepartureDisplayText(displayText);
       setSelectedDeparture(code);
       handleLocationChange({ from: code, to: selectedDestination });
+      handleLocationPlaceChange({
+        fromPlace: displayText,
+        toPlace: destinationDisplayText,
+      });
     } else if (activeInput === "destination") {
       setDestinationDisplayText(displayText);
       setSelectedDestination(code);
       handleLocationChange({ from: selectedDeparture, to: code });
+      handleLocationPlaceChange({
+        fromPlace: departureDisplayText,
+        toPlace: displayText,
+      });
     }
+    setAirPortSeach([]);
     setIsPopupVisible(false);
   };
 
-  const filteredAirports = searchQuery
-    ? airportsData
-        .flatMap((countryData: AirportsCountry) =>
-          countryData.airports.filter((airport) => {
-            const matchesSearch =
-              convertToUnaccentedLetters(airport.city).includes(
-                convertToUnaccentedLetters(searchQuery)
-              ) ||
-              convertToUnaccentedLetters(airport.code).includes(
-                convertToUnaccentedLetters(searchQuery)
-              );
+  const filteredAirports =
+    airportsData
+      .find((countryData: AirportsCountry) => countryData.id === selectedTab)
+      ?.airports.filter((airport) => {
+        const selectedType =
+          activeInput === "departure"
+            ? airportsData
+                .flatMap((data) => data.airports)
+                .find((a) => a.code === selectedDestination)?.type
+            : airportsData
+                .flatMap((data) => data.airports)
+                .find((a) => a.code === selectedDeparture)?.type;
 
-            const selectedType =
-              activeInput === "departure"
-                ? airportsData
-                    .flatMap((data) => data.airports)
-                    .find((a) => a.code === selectedDestination)?.type
-                : airportsData
-                    .flatMap((data) => data.airports)
-                    .find((a) => a.code === selectedDeparture)?.type;
+        const filterByType =
+          !selectedType ||
+          (selectedType === "international"
+            ? airport.type === "domestic"
+            : true);
 
-            const filterByType =
-              !selectedType ||
-              (selectedType === "international"
-                ? airport.type === "domestic"
-                : true);
-
-            return (
-              matchesSearch &&
-              filterByType &&
-              (activeInput === "departure"
-                ? airport.code !== selectedDestination
-                : airport.code !== selectedDeparture)
-            );
-          })
-        )
-        .reduce<AirportOption[]>((uniqueAirports, airport) => {
-          if (!uniqueAirports.some((a) => a.code === airport.code)) {
-            uniqueAirports.push(airport);
-          }
-          return uniqueAirports;
-        }, [])
-    : airportsData
-    ? airportsData
-        .find((countryData: AirportsCountry) => countryData.id === selectedTab)
-        ?.airports.filter((airport) => {
-          const selectedType =
-            activeInput === "departure"
-              ? airportsData
-                  .flatMap((data) => data.airports)
-                  .find((a) => a.code === selectedDestination)?.type
-              : airportsData
-                  .flatMap((data) => data.airports)
-                  .find((a) => a.code === selectedDeparture)?.type;
-
-          const filterByType =
-            !selectedType ||
-            (selectedType === "international"
-              ? airport.type === "domestic"
-              : true);
-
-          return (
-            filterByType &&
-            (activeInput === "departure"
-              ? airport.code !== selectedDestination
-              : airport.code !== selectedDeparture)
-          );
-        }) || []
-    : [];
+        return (
+          filterByType &&
+          (activeInput === "departure"
+            ? airport.code !== selectedDestination
+            : airport.code !== selectedDeparture)
+        );
+      }) || [];
 
   const handleSwitch = () => {
     setSelectedDeparture((prevDeparture) => {
@@ -202,10 +192,13 @@ export default function AirportPopupSelector({
       return selectedDestination;
     });
 
-    setDepartureDisplayText(findAirportName(selectedDestination));
-    setDestinationDisplayText(findAirportName(selectedDeparture));
-
+    setDepartureDisplayText(destinationDisplayText);
+    setDestinationDisplayText(departureDisplayText);
     handleLocationChange({ from: selectedDestination, to: selectedDeparture });
+    handleLocationPlaceChange({
+      fromPlace: destinationDisplayText,
+      toPlace: departureDisplayText,
+    });
   };
 
   return (
@@ -228,7 +221,7 @@ export default function AirportPopupSelector({
               id="departure-input"
               type="text"
               placeholder="Chọn điểm đi"
-              value={departureDisplayText}
+              value={departureDisplayText ?? ""}
               onClick={() => handleInputClick("departure")}
               readOnly
               ref={fromRef}
@@ -268,7 +261,7 @@ export default function AirportPopupSelector({
               id="destination-input"
               type="text"
               placeholder="Chọn điểm đến"
-              value={destinationDisplayText}
+              value={destinationDisplayText ?? ""}
               onClick={() => handleInputClick("destination")}
               readOnly
               ref={toRef}
@@ -307,18 +300,29 @@ export default function AirportPopupSelector({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onBlur={() => setSearchQuery((prev) => prev.trim())}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setSearchQuery((prev) => prev.trim());
-                  if (filteredAirports.length > 0) {
-                    handleAirportSelect(filteredAirports[0]);
-                  }
-                }
-              }}
               ref={inputSearchRef}
               className="w-full px-4 py-2 border rounded-sm border-gray-300 focus:outline-none"
             />
           </div>
+          {searchQuery && (
+            <div>
+              {airPortSeach.length > 0 && (
+                <div className="px-4 py-2 absolute left-4 bg-white border border-gray-300 rounded-lg w-11/12 max-h-[320px] z-30 h-auto overflow-y-auto">
+                  <div>
+                    {airPortSeach.map((item: any, index: number) => (
+                      <div
+                        key={index}
+                        className="font-normal py-2 text-left rounded-lg text__default_hover cursor-pointer"
+                        onClick={() => handleAirportSelect(null, item)}
+                      >
+                        <b>{item.code}</b> - <span>{item.name_vi}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <div className="flex flex-wrap md:flex-nowrap md:space-x-2 px-4 py-2">
             {airportsData &&
               airportsData.map(

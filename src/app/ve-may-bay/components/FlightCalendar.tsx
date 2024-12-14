@@ -12,6 +12,7 @@ import { FlightApi } from "@/api/Flight";
 import FlightSearchPopup from "./FlightSearchPopup";
 import { getDay, isValid, parse, format } from "date-fns";
 import { AirportOption, FlightCalendarProps } from "@/types/flight";
+import { HttpError } from "@/lib/error";
 
 const airLines = [
   {
@@ -136,7 +137,6 @@ export default function FlightCalendar({
         scrollToResultContainer();
         const StartPoint = fromOption?.code ?? "SGN";
         const EndPoint = toOption?.code ?? "HAN";
-
         if (year && month) {
           setAirlineFilter(null);
           const response = await FlightApi.search("flights/searchmonth", {
@@ -152,7 +152,17 @@ export default function FlightCalendar({
           setError(null);
         }
       } catch (error: any) {
-        setError(error.message);
+        if (error instanceof HttpError) {
+          if (error.payload.code === 400) {
+            setError(
+              "Không tìm thấy chuyến bay phù hợp, quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin cám ơn! !"
+            );
+          }
+        } else {
+          setError(
+            `Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn`
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -182,10 +192,7 @@ export default function FlightCalendar({
         ref={flightType === "depart" ? resultsRef : null}
         className="px-4 w-full mx-auto my-20 text-center"
       >
-        <p className="text-18 font-semibold">
-          Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui
-          lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn.
-        </p>
+        <p className="text-18 font-semibold">{error}</p>
       </div>
     );
   }

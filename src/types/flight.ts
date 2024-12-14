@@ -22,7 +22,13 @@ export interface AirportPopupSelectorProps {
     from: string | null;
     to: string | null;
   }) => void;
+  handleLocationPlaceChange: (locations: {
+    fromPlace: string | null;
+    toPlace: string | null;
+  }) => void;
   initialFrom: string | null;
+  initialFromPlace: string | null;
+  initialToPlace: string | null;
   initialTo: string | null;
   airportsData: AirportsCountry[];
 }
@@ -50,6 +56,8 @@ export interface SearchParamsProps {
   DepartDate: string | null;
   ReturnDate: string | null;
   Cheapest: string | null;
+  FromPlace: string | null;
+  ToPlace: string | null;
 }
 
 export interface FlightCalendarProps {

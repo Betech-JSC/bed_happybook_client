@@ -38,12 +38,19 @@ export default async function SearchTicketCheap({
   const startPoint = searchParams?.StartPoint ?? "SGN";
   const endPoint = searchParams?.EndPoint ?? "HAN";
   const tripType = searchParams?.tripType ?? "oneWay";
-  const fromOption = airports
-    .flatMap((country: AirportsCountry) => country.airports)
-    .find((airport: AirportOption) => airport.code === startPoint);
-  const toOption = airports
-    .flatMap((country: AirportsCountry) => country.airports)
-    .find((airport: AirportOption) => airport.code === endPoint);
+  const fromPlace = searchParams?.FromPlace ?? "Hồ Chí Minh (SGN)";
+  const toPlace = searchParams?.ToPlace ?? "Hà Nội (HAN)";
+  const fromOption = {
+    city: fromPlace,
+    code: startPoint,
+    type: "",
+  };
+  const toOption = {
+    city: toPlace,
+    code: endPoint,
+    type: "",
+  };
+
   return (
     <Suspense>
       <div className="relative h-max pb-14">

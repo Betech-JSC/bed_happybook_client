@@ -26,6 +26,7 @@ const FlightDetails = ({
   displayType,
 }: FlightDetailProps) => {
   const [showDetails, setShowDetails] = useState<number | null>(null);
+  const [showRuleTicket, setShowRuleTicket] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | string>(0);
   const [hasHeight, setHasHeight] = useState<boolean>(false);
@@ -96,18 +97,34 @@ const FlightDetails = ({
   );
   const toggleShowDetails = useCallback(
     async (id: number) => {
-      if (!flight.ListRulesTicket) {
-        flight.ListRulesTicket = await fetchFareRules(FareData, flight);
-      }
       setShowDetails(showDetails === id ? null : id);
     },
-    [showDetails, flight, FareData, fetchFareRules]
+    [showDetails]
   );
+
   useEffect(() => {
     if (!contentRef.current) return;
+
     setHeight(showDetails ? 0 : contentRef.current.scrollHeight + 60);
     setHasHeight(true);
   }, [showDetails]);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    setHeight(showRuleTicket ? 0 : contentRef.current.scrollHeight + 60);
+    setHasHeight(true);
+  }, [showRuleTicket]);
+
+  const toggleShowRuleTicket = useCallback(
+    async (id: number) => {
+      if (!flight.ListRulesTicket) {
+        flight.ListRulesTicket = await fetchFareRules(FareData, flight);
+      }
+      setShowRuleTicket(showRuleTicket === id ? null : id);
+    },
+    [showRuleTicket, flight, FareData, fetchFareRules]
+  );
+
   return (
     <Fragment>
       {flight && (
@@ -132,13 +149,8 @@ const FlightDetails = ({
               <button
                 className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
                 onClick={() => toggleShowDetails(flight.id)}
-                disabled={isLoadingRules}
               >
-                {isLoadingRules ? (
-                  <span className="loader_spiner"></span>
-                ) : (
-                  "Xem chi tiết"
-                )}
+                Xem chi tiết
               </button>
             </div>
 
@@ -206,28 +218,24 @@ const FlightDetails = ({
               <div className="w-11 h-11 bg-gray-100 rounded-full"></div>
             </div>
             <div className="col-span-8 w-full md:col-span-2 text-center md:text-right md:pl-8 xl:pr-8">
-              {isLoadingRules && displayType === "mobile" ? (
-                <span className="loader_spiner"></span>
-              ) : (
-                <div className="flex justify-between mt-3 md:mt-0">
-                  <button
-                    className="inline-block md:hidden text-blue-700 border-b border-blue-700 font-normal"
-                    onClick={() => toggleShowDetails(flight.id)}
-                    disabled={isLoadingRules}
-                  >
-                    Xem chi tiết
-                  </button>
-                  <p className="text-primary text-18 font-semibold text-right">
-                    {filters.priceWithoutTax === "1"
-                      ? FareData.TotalPriceWithOutTax.toLocaleString("vi-VN")
-                      : FareData.TotalPrice.toLocaleString("vi-VN")}{" "}
-                    {FareData.Currency}
-                  </p>
-                </div>
-              )}
+              <div className="flex justify-between mt-3 md:mt-0">
+                <button
+                  className="inline-block md:hidden text-blue-700 border-b border-blue-700 font-normal"
+                  onClick={() => toggleShowDetails(flight.id)}
+                >
+                  Xem chi tiết
+                </button>
+                <p className="text-primary text-18 font-bold text-right">
+                  {filters.priceWithoutTax === "1"
+                    ? FareData.TotalPriceWithOutTax.toLocaleString("vi-VN")
+                    : FareData.TotalPrice.toLocaleString("vi-VN")}{" "}
+                  {FareData.Currency}
+                </p>
+              </div>
+
               <button
                 onClick={() => onSelectFlight(FareData)}
-                className="block text-center mt-5 md:mt-3 w-full bg-blue-600 border text-white  py-2 rounded-lg hover:text-primary duration-300"
+                className="block text-center mt-5 md:mt-3 w-full bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300"
               >
                 {selectedFlight?.FareDataId === FareData.FareDataId
                   ? "Thay đổi"
@@ -246,10 +254,141 @@ const FlightDetails = ({
                 : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
             }`}
           >
-            <div className="bg-white p-4 rounded-lg">
-              <PassengerTable passengers={passengers} />
+            <div className="rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="py-3 px-6 bg-white rounded-lg">
+                  <p className="text-gray-900 text-18 font-bold">Economy</p>
+                  <div className="my-4 pb-4 border-b border-gray-200">
+                    <div className="flex justify-between items-end w-3/4">
+                      <p className="text-sm text-gray-700">Hạng vé</p>
+                      <p className="font-medium text-sm">01_ECO</p>
+                    </div>
+                    <div className="flex justify-between items-end w-3/4 mt-3">
+                      <p className="text-sm text-gray-700">Hành lý xách tay</p>
+                      <p className="font-medium text-sm">7 kg</p>
+                    </div>
+                    <div className="flex justify-between items-end w-3/4 mt-3">
+                      <p className="text-sm text-gray-700">Hành lý ký gửi</p>
+                      <p className="font-medium text-sm">20 kg</p>
+                    </div>
+                    <button
+                      className="mt-3 text-blue-700 border-b border-blue-700 font-medium"
+                      onClick={() => toggleShowRuleTicket(flight.id)}
+                      disabled={isLoadingRules}
+                    >
+                      {isLoadingRules ? (
+                        <span className="loader_spiner"></span>
+                      ) : (
+                        "Chi tiết"
+                      )}
+                    </button>
+                    {showRuleTicket === flight.id && (
+                      <div className="mt-3">
+                        <p className="text-[#4E6EB3] font-semibold ">
+                          Điều kiện vé
+                        </p>
+                        {flight.ListRulesTicket ? (
+                          <div
+                            className="text-sm text-gray-600 mt-1 list-disc list-inside"
+                            dangerouslySetInnerHTML={{
+                              __html: flight.ListRulesTicket,
+                            }}
+                          ></div>
+                        ) : (
+                          <p>
+                            Xin vui lòng liên hệ với Happy Book để nhận thông
+                            tin chi tiết.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-primary text-22 font-bold">
+                      1,436,000 vnđ
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      Tổng : 2,872,000 vnđ
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
+                      Đặt vé
+                    </button>
+                  </div>
+                </div>
+                <div className="py-3 px-6 bg-white rounded-lg">
+                  <p className="text-gray-900 text-18 font-bold">Economy</p>
+                  <div className="my-4 pb-4 border-b border-gray-200">
+                    <div className="flex justify-between items-end w-3/4">
+                      <p className="text-sm text-gray-700">Hạng vé</p>
+                      <p className="font-medium text-sm">01_ECO</p>
+                    </div>
+                    <div className="flex justify-between items-end w-3/4 mt-3">
+                      <p className="text-sm text-gray-700">Hành lý xách tay</p>
+                      <p className="font-medium text-sm">7 kg</p>
+                    </div>
+                    <div className="flex justify-between items-end w-3/4 mt-3">
+                      <p className="text-sm text-gray-700">Hành lý ký gửi</p>
+                      <p className="font-medium text-sm">20 kg</p>
+                    </div>
+                    <button className="mt-3 text-blue-700 border-b border-blue-700 font-medium">
+                      Chi tiết
+                    </button>
+                  </div>
+                  <div>
+                    <p className="text-primary text-22 font-bold">
+                      1,436,000 vnđ
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      Tổng : 2,872,000 vnđ
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
+                      Đặt vé
+                    </button>
+                  </div>
+                </div>
+                <div className="py-3 px-6 bg-white rounded-lg">
+                  <p className="text-gray-900 text-18 font-bold">Economy</p>
+                  <div className="my-4 pb-4 border-b border-gray-200">
+                    <div className="flex justify-between items-end w-3/4">
+                      <p className="text-sm text-gray-700">Hạng vé</p>
+                      <p className="font-medium text-sm">01_ECO</p>
+                    </div>
+                    <div className="flex justify-between items-end w-3/4 mt-3">
+                      <p className="text-sm text-gray-700">Hành lý xách tay</p>
+                      <p className="font-medium text-sm">7 kg</p>
+                    </div>
+                    <div className="flex justify-between items-end w-3/4 mt-3">
+                      <p className="text-sm text-gray-700">Hành lý ký gửi</p>
+                      <p className="font-medium text-sm">20 kg</p>
+                    </div>
+                    <button className="mt-3 text-blue-700 border-b border-blue-700 font-medium">
+                      Chi tiết
+                    </button>
+                  </div>
+                  <div>
+                    <p className="text-primary text-22 font-bold">
+                      1,436,000 vnđ
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      Tổng : 2,872,000 vnđ
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
+                      Đặt vé
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-6 rounded-lg p-3 md:p-6 bg-white">
+            {/* <div className="bg-white p-4 rounded-lg">
+              <PassengerTable passengers={passengers} />
+            </div> */}
+            {/* <div className="mt-6 rounded-lg p-3 md:p-6 bg-white">
               <h2 className="text-xl font-semibold text-orange-600 mb-4">
                 Chi tiết hành trình
               </h2>
@@ -387,7 +526,7 @@ const FlightDetails = ({
                   </div>
                 );
               })}
-            </div>
+            </div> */}
           </div>
         </div>
       )}
