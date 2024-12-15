@@ -31,32 +31,32 @@ const FlightDetails = ({
   const [height, setHeight] = useState<number | string>(0);
   const [hasHeight, setHasHeight] = useState<boolean>(false);
   const [isLoadingRules, setIsLoadingRules] = useState<boolean>(false);
-  const passengers: PassengerType[] = [
-    {
-      type: "Adt",
-      title: "Người lớn",
-      quantity: FareData.Adt,
-      price: FareData.FareAdt + FareData.TaxAdt,
-      totalPrice: FareData.Adt * (FareData.FareAdt + FareData.TaxAdt),
-      currency: FareData.Currency,
-    },
-    {
-      type: "Chd",
-      title: "Trẻ em",
-      quantity: FareData.Chd,
-      price: FareData.FareChd + FareData.TaxChd,
-      totalPrice: FareData.Chd * (FareData.FareChd + FareData.TaxChd),
-      currency: FareData.Currency,
-    },
-    {
-      type: "Adt",
-      title: "Em bé",
-      quantity: FareData.Inf,
-      price: FareData.FareInf + FareData.TaxInf,
-      totalPrice: FareData.Inf * (FareData.FareInf + FareData.TaxInf),
-      currency: FareData.Currency,
-    },
-  ];
+  // const passengers: PassengerType[] = [
+  //   {
+  //     type: "Adt",
+  //     title: "Người lớn",
+  //     quantity: FareData.Adt,
+  //     price: FareData.FareAdt + FareData.TaxAdt,
+  //     totalPrice: FareData.Adt * (FareData.FareAdt + FareData.TaxAdt),
+  //     currency: FareData.Currency,
+  //   },
+  //   {
+  //     type: "Chd",
+  //     title: "Trẻ em",
+  //     quantity: FareData.Chd,
+  //     price: FareData.FareChd + FareData.TaxChd,
+  //     totalPrice: FareData.Chd * (FareData.FareChd + FareData.TaxChd),
+  //     currency: FareData.Currency,
+  //   },
+  //   {
+  //     type: "Adt",
+  //     title: "Em bé",
+  //     quantity: FareData.Inf,
+  //     price: FareData.FareInf + FareData.TaxInf,
+  //     totalPrice: FareData.Inf * (FareData.FareInf + FareData.TaxInf),
+  //     currency: FareData.Currency,
+  //   },
+  // ];
   const flight = FareData.ListFlight ? FareData.ListFlight[0] : null;
   const fetchFareRules = useCallback(
     async (FareData: any, flight: any) => {
@@ -146,12 +146,12 @@ const FlightDetails = ({
                   <p className="text-sm text-gray-500">{flight.FlightNumber}</p>
                 </div>
               </div>
-              <button
+              {/* <button
                 className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
                 onClick={() => toggleShowDetails(flight.id)}
               >
                 Xem chi tiết
-              </button>
+              </button> */}
             </div>
 
             <div className="col-span-6 md:col-span-4 text-center flex justify-between">
@@ -218,13 +218,13 @@ const FlightDetails = ({
               <div className="w-11 h-11 bg-gray-100 rounded-full"></div>
             </div>
             <div className="col-span-8 w-full md:col-span-2 text-center md:text-right md:pl-8 xl:pr-8">
-              <div className="flex justify-between mt-3 md:mt-0">
-                <button
+              <div className="mt-3 md:mt-0">
+                {/* <button
                   className="inline-block md:hidden text-blue-700 border-b border-blue-700 font-normal"
                   onClick={() => toggleShowDetails(flight.id)}
                 >
                   Xem chi tiết
-                </button>
+                </button> */}
                 <p className="text-primary text-18 font-bold text-right">
                   {filters.priceWithoutTax === "1"
                     ? FareData.TotalPriceWithOutTax.toLocaleString("vi-VN")
@@ -234,12 +234,10 @@ const FlightDetails = ({
               </div>
 
               <button
-                onClick={() => onSelectFlight(FareData)}
+                onClick={() => toggleShowDetails(flight.id)}
                 className="block text-center mt-5 md:mt-3 w-full bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300"
               >
-                {selectedFlight?.FareDataId === FareData.FareDataId
-                  ? "Thay đổi"
-                  : "Chọn"}
+                Chọn
               </button>
             </div>
           </div>
@@ -255,132 +253,145 @@ const FlightDetails = ({
             }`}
           >
             <div className="rounded-lg">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="py-3 px-6 bg-white rounded-lg">
-                  <p className="text-gray-900 text-18 font-bold">Economy</p>
-                  <div className="my-4 pb-4 border-b border-gray-200">
-                    <div className="flex justify-between items-end w-3/4">
-                      <p className="text-sm text-gray-700">Hạng vé</p>
-                      <p className="font-medium text-sm">01_ECO</p>
-                    </div>
-                    <div className="flex justify-between items-end w-3/4 mt-3">
-                      <p className="text-sm text-gray-700">Hành lý xách tay</p>
-                      <p className="font-medium text-sm">7 kg</p>
-                    </div>
-                    <div className="flex justify-between items-end w-3/4 mt-3">
-                      <p className="text-sm text-gray-700">Hành lý ký gửi</p>
-                      <p className="font-medium text-sm">20 kg</p>
-                    </div>
-                    <button
-                      className="mt-3 text-blue-700 border-b border-blue-700 font-medium"
-                      onClick={() => toggleShowRuleTicket(flight.id)}
-                      disabled={isLoadingRules}
-                    >
-                      {isLoadingRules ? (
-                        <span className="loader_spiner"></span>
-                      ) : (
-                        "Chi tiết"
-                      )}
-                    </button>
-                    {showRuleTicket === flight.id && (
-                      <div className="mt-3">
-                        <p className="text-[#4E6EB3] font-semibold ">
-                          Điều kiện vé
-                        </p>
-                        {flight.ListRulesTicket ? (
-                          <div
-                            className="text-sm text-gray-600 mt-1 list-disc list-inside"
-                            dangerouslySetInnerHTML={{
-                              __html: flight.ListRulesTicket,
-                            }}
-                          ></div>
-                        ) : (
-                          <p>
-                            Xin vui lòng liên hệ với Happy Book để nhận thông
-                            tin chi tiết.
-                          </p>
-                        )}
+              <div className="overflow-x-auto">
+                <div className="inline-grid md:grid grid-cols-3 w-max md:w-[unset] gap-3">
+                  <div className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[240px] max-w-[240px] md:min-w-[unset] md:max-w-[unset]">
+                    <p className="text-gray-900 text-18 font-bold">Economy</p>
+                    <div className="my-4 pb-4 border-b border-gray-200">
+                      <div className="flex justify-between items-end lg:w-3/4">
+                        <p className="text-sm text-gray-700">Hạng vé</p>
+                        <p className="font-medium text-sm">01_ECO</p>
                       </div>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-primary text-22 font-bold">
-                      1,436,000 vnđ
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Tổng : 2,872,000 vnđ
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
-                      Đặt vé
-                    </button>
-                  </div>
-                </div>
-                <div className="py-3 px-6 bg-white rounded-lg">
-                  <p className="text-gray-900 text-18 font-bold">Economy</p>
-                  <div className="my-4 pb-4 border-b border-gray-200">
-                    <div className="flex justify-between items-end w-3/4">
-                      <p className="text-sm text-gray-700">Hạng vé</p>
-                      <p className="font-medium text-sm">01_ECO</p>
+                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
+                        <p className="text-sm text-gray-700">
+                          Hành lý xách tay
+                        </p>
+                        <p className="font-medium text-sm">7 kg</p>
+                      </div>
+                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
+                        <p className="text-sm text-gray-700">Hành lý ký gửi</p>
+                        <p className="font-medium text-sm">20 kg</p>
+                      </div>
+                      <button
+                        className="mt-3 text-blue-700 border-b border-blue-700 font-medium"
+                        onClick={() => toggleShowRuleTicket(flight.id)}
+                        disabled={isLoadingRules}
+                      >
+                        {isLoadingRules ? (
+                          <span className="loader_spiner"></span>
+                        ) : (
+                          "Chi tiết"
+                        )}
+                      </button>
+                      {showRuleTicket === flight.id && (
+                        <div className="mt-3">
+                          <p className="text-[#4E6EB3] font-semibold ">
+                            Điều kiện vé
+                          </p>
+                          {flight.ListRulesTicket ? (
+                            <div
+                              className="text-sm text-gray-600 mt-1 list-disc list-inside"
+                              dangerouslySetInnerHTML={{
+                                __html: flight.ListRulesTicket,
+                              }}
+                            ></div>
+                          ) : (
+                            <p>
+                              Xin vui lòng liên hệ với Happy Book để nhận thông
+                              tin chi tiết.
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between items-end w-3/4 mt-3">
-                      <p className="text-sm text-gray-700">Hành lý xách tay</p>
-                      <p className="font-medium text-sm">7 kg</p>
+                    <div>
+                      <p className="text-primary text-22 font-bold">
+                        1,436,000 vnđ
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        Tổng : 2,872,000 vnđ
+                      </p>
                     </div>
-                    <div className="flex justify-between items-end w-3/4 mt-3">
-                      <p className="text-sm text-gray-700">Hành lý ký gửi</p>
-                      <p className="font-medium text-sm">20 kg</p>
+                    <div className="mt-4">
+                      <button
+                        onClick={() => onSelectFlight(FareData)}
+                        className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
+                      >
+                        {selectedFlight?.FareDataId === FareData.FareDataId
+                          ? "Thay đổi"
+                          : "Đặt vé"}
+                      </button>
                     </div>
-                    <button className="mt-3 text-blue-700 border-b border-blue-700 font-medium">
-                      Chi tiết
-                    </button>
                   </div>
-                  <div>
-                    <p className="text-primary text-22 font-bold">
-                      1,436,000 vnđ
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Tổng : 2,872,000 vnđ
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
-                      Đặt vé
-                    </button>
-                  </div>
-                </div>
-                <div className="py-3 px-6 bg-white rounded-lg">
-                  <p className="text-gray-900 text-18 font-bold">Economy</p>
-                  <div className="my-4 pb-4 border-b border-gray-200">
-                    <div className="flex justify-between items-end w-3/4">
-                      <p className="text-sm text-gray-700">Hạng vé</p>
-                      <p className="font-medium text-sm">01_ECO</p>
+                  <div className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[240px] max-w-[240px] md:min-w-[unset] md:max-w-[unset]">
+                    <p className="text-gray-900 text-18 font-bold">Economy</p>
+                    <div className="my-4 pb-4 border-b border-gray-200">
+                      <div className="flex justify-between items-end lg:w-3/4">
+                        <p className="text-sm text-gray-700">Hạng vé</p>
+                        <p className="font-medium text-sm">01_ECO</p>
+                      </div>
+                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
+                        <p className="text-sm text-gray-700">
+                          Hành lý xách tay
+                        </p>
+                        <p className="font-medium text-sm">7 kg</p>
+                      </div>
+                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
+                        <p className="text-sm text-gray-700">Hành lý ký gửi</p>
+                        <p className="font-medium text-sm">20 kg</p>
+                      </div>
+                      <button className="mt-3 text-blue-700 border-b border-blue-700 font-medium">
+                        Chi tiết
+                      </button>
                     </div>
-                    <div className="flex justify-between items-end w-3/4 mt-3">
-                      <p className="text-sm text-gray-700">Hành lý xách tay</p>
-                      <p className="font-medium text-sm">7 kg</p>
+                    <div>
+                      <p className="text-primary text-22 font-bold">
+                        1,436,000 vnđ
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        Tổng : 2,872,000 vnđ
+                      </p>
                     </div>
-                    <div className="flex justify-between items-end w-3/4 mt-3">
-                      <p className="text-sm text-gray-700">Hành lý ký gửi</p>
-                      <p className="font-medium text-sm">20 kg</p>
+                    <div className="mt-4">
+                      <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
+                        Đặt vé
+                      </button>
                     </div>
-                    <button className="mt-3 text-blue-700 border-b border-blue-700 font-medium">
-                      Chi tiết
-                    </button>
                   </div>
-                  <div>
-                    <p className="text-primary text-22 font-bold">
-                      1,436,000 vnđ
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Tổng : 2,872,000 vnđ
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
-                      Đặt vé
-                    </button>
+                  <div className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[240px] max-w-[240px] md:min-w-[unset] md:max-w-[unset]">
+                    <p className="text-gray-900 text-18 font-bold">Economy</p>
+                    <div className="my-4 pb-4 border-b border-gray-200">
+                      <div className="flex justify-between items-end lg:w-3/4">
+                        <p className="text-sm text-gray-700">Hạng vé</p>
+                        <p className="font-medium text-sm">01_ECO</p>
+                      </div>
+                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
+                        <p className="text-sm text-gray-700">
+                          Hành lý xách tay
+                        </p>
+                        <p className="font-medium text-sm">7 kg</p>
+                      </div>
+                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
+                        <p className="text-sm text-gray-700">Hành lý ký gửi</p>
+                        <p className="font-medium text-sm">20 kg</p>
+                      </div>
+                      <button className="mt-3 text-blue-700 border-b border-blue-700 font-medium">
+                        Chi tiết
+                      </button>
+                    </div>
+                    <div>
+                      <p className="text-primary text-22 font-bold">
+                        1,436,000 vnđ
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        Tổng : 2,872,000 vnđ
+                      </p>
+                    </div>
+                    <div className="mt-4">
+                      <button className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300">
+                        Đặt vé
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

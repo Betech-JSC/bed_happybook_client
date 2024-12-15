@@ -30,6 +30,11 @@ export default function FlightBookForm() {
   const [listBaggage, setListBaggage] = useState<any[]>([]);
   const [flightSession, setFlightSession] = useState<string | null>(null);
   const [documentReady, setDocumentReady] = useState<boolean>(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(0);
+  const toggleDropdown = (index: number) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
+
   const [schemaForm, setSchemaForm] = useState(() =>
     FlightBookingInforBody(generateInvoice)
   );
@@ -167,7 +172,14 @@ export default function FlightBookForm() {
   let FareChd: any = [];
   let FareInf: any = [];
   let keyLoopPassenger = 1;
-
+  let keyLoopDropdown = 1;
+  let totalPriceTicketAdt = 0;
+  let totalPriceTicketChd = 0;
+  let totalPriceTicketInf = 0;
+  let totalTaxAdt = 0;
+  let totalTaxChd = 0;
+  let totalTaxInf = 0;
+  let dropdown: any = [];
   flights.map((item, index) => {
     totalPrice += item.TotalPrice;
     totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
@@ -179,7 +191,43 @@ export default function FlightBookForm() {
     FareAdt[index] = item.FareAdt + item.TaxAdt;
     FareChd[index] = item.FareChd + item.TaxChd;
     FareInf[index] = item.FareInf + item.TaxInf;
+    totalPriceTicketAdt += item.FareAdt * item.Adt;
+    totalPriceTicketChd += item.FareChd * item.Chd;
+    totalPriceTicketInf += item.FareInf * item.Inf;
+    totalTaxAdt += item.TaxAdt * item.Adt;
+    totalTaxChd += item.TaxChd * item.Chd;
+    totalTaxInf += item.TaxInf * item.Inf;
   });
+  if (totalAdt) {
+    dropdown.push({
+      totalPrice: totalPriceAdt,
+      quantity: totalAdt,
+      totalPriceTicket: totalPriceTicketAdt,
+      totalTax: totalTaxAdt,
+      type: "Adt",
+      title: "Vé người lớn",
+    });
+  }
+  if (totalChd) {
+    dropdown.push({
+      totalPrice: totalPriceChd,
+      quantity: totalChd,
+      totalPriceTicket: totalPriceTicketChd,
+      totalTax: totalTaxChd,
+      type: "Chd",
+      title: "Vé trẻ em",
+    });
+  }
+  if (totalInf) {
+    dropdown.push({
+      totalPrice: totalPriceInf,
+      quantity: totalInf,
+      totalPriceTicket: totalPriceTicketInf,
+      totalTax: totalTaxInf,
+      type: "Inf",
+      title: "Vé em bé",
+    });
+  }
   // Fetch and Handle Data
   useEffect(() => {
     const fetchData = async () => {
@@ -528,112 +576,7 @@ export default function FlightBookForm() {
                     </div>
                   </div>
                 )}
-                {/* <div className="mt-6">
-                  <span className="text-22 font-semibold">
-                    Phương thức thanh toán
-                  </span>
-                  <div className=" mt-4">
-                    <div className="flex space-x-3 items-start">
-                      <input
-                        type="radio"
-                        value="cash"
-                        id="payment_cash"
-                        className="w-5 h-5 mt-[2px]"
-                        {...register("PaymentMethod")}
-                      />
-                      <label
-                        htmlFor="payment_cash"
-                        className="flex space-x-1 max-w-[85%]"
-                      >
-                        <div className="font-normal">
-                          <Image
-                            src="/payment-method/cash.svg"
-                            alt="Icon"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
-                          />
-                        </div>
-                        <div className="max-w-[85%]">
-                          <span className="font-medium text-base">
-                            Thanh toán tiền mặt
-                          </span>
-                          <p className="text-gray-500">
-                            Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
-                            hệ xác nhận
-                          </p>
-                        </div>
-                      </label>
-                    </div>
-                    <div className="flex space-x-3 items-start mt-4">
-                      <input
-                        type="radio"
-                        value="vnpay"
-                        id="payment_vnpay"
-                        className="w-5 h-5 mt-[2px]"
-                        {...register("PaymentMethod")}
-                      />
-                      <label
-                        htmlFor="payment_vnpay"
-                        className=" flex space-x-1"
-                      >
-                        <div className="font-normal">
-                          <Image
-                            src="/payment-method/vnpay.svg"
-                            alt="Icon"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
-                          />
-                        </div>
-                        <div>
-                          <span className="font-medium text-base max-width-[85%]">
-                            Thanh toán bằng VNPAY
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                    <div className="flex space-x-3 items-start mt-4">
-                      <input
-                        type="radio"
-                        value="bank_transfer"
-                        id="payment_transfer"
-                        className="w-5 h-5 mt-[2px]"
-                        {...register("PaymentMethod")}
-                      />
-                      <label
-                        htmlFor="payment_transfer"
-                        className=" flex space-x-1"
-                      >
-                        <div className="font-normal">
-                          <Image
-                            src="/payment-method/transfer.svg"
-                            alt="Icon"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
-                          />
-                        </div>
-                        <div className="max-width-[85%]">
-                          <span className="block text-base font-medium">
-                            Chuyển khoản
-                          </span>
-                          <button
-                            type="button"
-                            className="text-blue-700 underline"
-                          >
-                            Thông tin chuyển khoản
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-                    {errors.PaymentMethod && (
-                      <p className="text-red-600">
-                        {errors.PaymentMethod.message}
-                      </p>
-                    )}
-                  </div>
-                </div> */}
+
                 <div className="mt-6">
                   <div className="block md:hidden pb-0 py-4 px-3">
                     <LoadingButton
@@ -802,13 +745,42 @@ export default function FlightBookForm() {
                         >
                           Ngày hết hạn <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          id={`atd.${index}.cccd_date`}
-                          type="text"
-                          // {...register("contact.phone")}
-                          placeholder="Nhập ngày hết hạn"
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                        />
+                        <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                          <Controller
+                            name={`atd.${index}.birthday`}
+                            control={control}
+                            render={({ field }) => (
+                              <DatePicker
+                                id={`atd.${index}.cccd_date`}
+                                selected={field.value || null}
+                                onChange={(date: Date | null) =>
+                                  field.onChange(date)
+                                }
+                                placeholderText="Nhập ngày hết hạn"
+                                dateFormat="dd-MM-yyyy"
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                locale={vi}
+                                maxDate={
+                                  new Date(
+                                    new Date().getFullYear() + 50,
+                                    11,
+                                    31
+                                  )
+                                }
+                                minDate={
+                                  new Date(
+                                    new Date().getFullYear(),
+                                    new Date().getMonth(),
+                                    new Date().getDate()
+                                  )
+                                }
+                                className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                              />
+                            )}
+                          />
+                        </div>
                         {errors.contact?.phone && (
                           <p className="text-red-600">
                             {errors.contact?.phone.message}
@@ -1136,9 +1108,19 @@ export default function FlightBookForm() {
                   new Date(flight.EndDate),
                   new Date(flight.StartDate)
                 ) / 60;
-
+              const startDateLocale = format(
+                new Date(flight.StartDate),
+                "EEEE dd/MM/yyyy",
+                { locale: vi }
+              );
               return (
-                <div className="pb-0 py-4 px-3 lg:px-6" key={index}>
+                <div className="pb-0 py-2 px-3 lg:px-6" key={index}>
+                  <div className="flex justify-between">
+                    <p className="font-bold">
+                      {flight.Leg ? "Chiều về" : "Chiều đi"}
+                    </p>
+                    <p className="text-sm text-gray-500">{startDateLocale}</p>
+                  </div>
                   <div className="flex my-3 item-start items-center text-left space-x-3">
                     <Image
                       src={`/airline/${flight.Airline}.svg`}
@@ -1159,10 +1141,10 @@ export default function FlightBookForm() {
                   <div className="text-center mt-3 flex justify-between">
                     <div className="flex items-center justify-between gap-4 w-full">
                       <div className="flex flex-col items-center">
-                        <span className="text-lg font-semibold">
+                        <span className="text-sm">
                           {formatTime(flight.StartDate)}
                         </span>
-                        <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
+                        <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
                           {flight.StartPoint}
                         </span>
                       </div>
@@ -1201,10 +1183,10 @@ export default function FlightBookForm() {
                       </div>
 
                       <div className="flex flex-col items-center">
-                        <span className="text-lg font-semibold">
+                        <span className="text-sm">
                           {formatTime(flight.EndDate)}
                         </span>
-                        <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
+                        <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
                           {flight.EndPoint}
                         </span>
                       </div>
@@ -1223,51 +1205,79 @@ export default function FlightBookForm() {
               <div className="w-8 h-8 bg-gray-100 rounded-full -mr-3"></div>
             </div>
             <div className="py-4 px-3 lg:px-6">
-              <p className="text-22 font-semibold">Thông tin thanh toán</p>
-              <div className="flex justify-between mt-2">
-                <span className="text-sm text-gray-500 ">
-                  Người lớn (
-                  {`${FareAdt.reduce(
-                    (total: number, num: number) => total + num,
-                    0
-                  ).toLocaleString("vi-VN")} x ${totalAdt}`}
-                  )
-                </span>
-                <p className="font-semibold">
-                  {totalPriceAdt.toLocaleString("vi-VN")} vnđ
-                </p>
-              </div>
-              {totalChd > 0 && (
-                <div className="flex justify-between mt-2">
-                  <span className="text-sm text-gray-500 ">
-                    Trẻ em (
-                    {`${FareChd.reduce(
-                      (total: number, num: number) => total + num,
-                      0
-                    ).toLocaleString("vi-VN")} x ${totalChd}`}
-                    )
-                  </span>
-                  <p className="font-semibold">
-                    {totalPriceChd.toLocaleString("vi-VN")} vnđ
-                  </p>
+              <p className="text-22 font-bold mb-2">Giá chi tiết</p>
+              {dropdown.map((item: any, index: number) => (
+                <div key={index} className="mb-4">
+                  <button
+                    type="button"
+                    onClick={() => toggleDropdown(index)}
+                    className="flex justify-between text-sm items-start space-x-3 w-full text-left outline-none"
+                  >
+                    <div className="flex w-8/12">
+                      <span>
+                        {item.title} (
+                        {Array.from({ length: item.quantity }, (_, key) => (
+                          <span key={keyLoopDropdown++}>
+                            hành khách {keyLoopDropdown}
+                            {key < item.quantity - 1 && ", "}
+                          </span>
+                        ))}
+                        )
+                      </span>
+                      <span className="ml-1">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d={
+                              activeIndex === index
+                                ? "M15 12.5L10 7.5L5 12.5"
+                                : "M5 7.5L10 12.5L15 7.5"
+                            }
+                            stroke="#667085"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+
+                    <div className="text-gray-900 font-bold w-4/12 text-right">
+                      {item.totalPrice.toLocaleString("vi-VN")}đ x{" "}
+                      {item.quantity}
+                    </div>
+                  </button>
+                  <div
+                    className={`rounded-lg transition-all delay-300 ease-in ${
+                      activeIndex === index
+                        ? "max-h-16 opacity-100 visible"
+                        : "max-h-0 opacity-0 invisible"
+                    } `}
+                  >
+                    <div className="text-sm text-gray-500 flex justify-between mt-1">
+                      <span>Vé</span>
+                      <span>
+                        {item.totalPriceTicket.toLocaleString("vi-VN")}đ x{" "}
+                        {item.quantity}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-500 flex justify-between mt-1">
+                      <span>Thuế và phí</span>
+                      <span>
+                        {item.totalTax.toLocaleString("vi-VN")}đ x{" "}
+                        {item.quantity}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              )}
-              {totalInf > 0 && (
-                <div className="flex justify-between mt-2">
-                  <span className="text-sm text-gray-500 ">
-                    Em bé (
-                    {`${FareInf.reduce(
-                      (total: number, num: number) => total + num,
-                      0
-                    ).toLocaleString("vi-VN")} x ${totalInf}`}
-                    )
-                  </span>
-                  <p className="font-semibold">
-                    {totalPriceInf.toLocaleString("vi-VN")} vnđ
-                  </p>
-                </div>
-              )}
-              <div className="flex justify-between mt-3">
+              ))}
+
+              <div className="flex justify-between">
                 <span className="text-sm text-gray-500 ">Hành lý bổ sung</span>
                 <p className="font-semibold">0 vnđ</p>
               </div>
