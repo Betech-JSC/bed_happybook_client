@@ -272,7 +272,10 @@ const FlightDetails = ({
             >
               <div className="overflow-x-auto rounded-lg">
                 <div
-                  className={`inline-grid grid-cols-${ticketClasses.length} w-max gap-3`}
+                  className={`inline-grid w-max gap-3`}
+                  style={{
+                    gridTemplateColumns: `repeat(${ticketClasses.length}, minmax(0, 1fr)`,
+                  }}
                 >
                   {ticketClasses.map((ticket: any, index: number) => {
                     const ticketFlight = ticket.ListFlight[0];
