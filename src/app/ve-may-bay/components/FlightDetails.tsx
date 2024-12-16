@@ -7,13 +7,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import PassengerTable from "./PassengerTable";
 import {
-  formatDate,
   formatNumberToHoursAndMinutesFlight,
   formatTime,
 } from "@/lib/formatters";
-import { FlightDetailProps, PassengerType } from "@/types/flight";
+import { FlightDetailProps } from "@/types/flight";
 import { FlightApi } from "@/api/Flight";
 
 const FlightDetails = ({
@@ -57,7 +55,11 @@ const FlightDetails = ({
   //     currency: FareData.Currency,
   //   },
   // ];
+  if (selectedFlight) {
+    FareData = selectedFlight;
+  }
   const flight = FareData.ListFlight ? FareData.ListFlight[0] : null;
+  const ticketClasses = FareData.ticketClasses ? FareData.ticketClasses : [];
   const fetchFareRules = useCallback(
     async (FareData: any, flight: any) => {
       try {
@@ -96,10 +98,14 @@ const FlightDetails = ({
     [session]
   );
   const toggleShowDetails = useCallback(
-    async (id: number) => {
-      setShowDetails(showDetails === id ? null : id);
+    (id: number, flightSelected: any) => {
+      if (flightSelected) {
+        onSelectFlight(flightSelected);
+      } else {
+        setShowDetails(showDetails === id ? null : id);
+      }
     },
-    [showDetails]
+    [showDetails, onSelectFlight]
   );
 
   useEffect(() => {
@@ -111,18 +117,27 @@ const FlightDetails = ({
 
   useEffect(() => {
     if (!contentRef.current) return;
-    setHeight(showRuleTicket ? 0 : contentRef.current.scrollHeight + 60);
-    setHasHeight(true);
+    if (showRuleTicket) {
+      setHeight(contentRef.current.scrollHeight);
+      setHasHeight(true);
+    }
   }, [showRuleTicket]);
 
   const toggleShowRuleTicket = useCallback(
-    async (id: number) => {
-      if (!flight.ListRulesTicket) {
-        flight.ListRulesTicket = await fetchFareRules(FareData, flight);
+    async (flightClass: any) => {
+      setShowRuleTicket(
+        showRuleTicket === flightClass.FareDataId
+          ? null
+          : flightClass.FareDataId
+      );
+      if (!flightClass.ListRulesTicket) {
+        flightClass.ListRulesTicket = await fetchFareRules(
+          flightClass,
+          flightClass.ListFlight[0]
+        );
       }
-      setShowRuleTicket(showRuleTicket === id ? null : id);
     },
-    [showRuleTicket, flight, FareData, fetchFareRules]
+    [showRuleTicket, fetchFareRules]
   );
 
   return (
@@ -133,11 +148,11 @@ const FlightDetails = ({
             <div className="col-span-2 border-r border-gray-200">
               <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
                 <Image
-                  src={`/airline/${flight.Airline}.svg`}
-                  width={48}
-                  height={48}
+                  src={`http://cms.happybooktravel.com/assets/images/airline/${flight.Airline.toLowerCase()}.gif`}
+                  width={80}
+                  height={24}
                   alt="AirLine"
-                  className="w-8 h-7 md:w-12 md:h-12 mx-auto md:mx-0"
+                  className="max-w-16 md:max-w-20 max-h-10 mx-auto md:mx-0"
                 />
                 <div>
                   <h3 className="text-sm md:text-18 font-semibold mb-1">
@@ -234,96 +249,124 @@ const FlightDetails = ({
               </div>
 
               <button
-                onClick={() => toggleShowDetails(flight.id)}
+                onClick={() => toggleShowDetails(flight.id, selectedFlight)}
                 className="block text-center mt-5 md:mt-3 w-full bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300"
               >
-                Chọn
+                {selectedFlight && selectedFlight.FareDataId
+                  ? "Thay đổi"
+                  : "Chọn"}
               </button>
             </div>
           </div>
-          <div
-            ref={contentRef}
-            style={{
-              maxHeight: showDetails === flight.id ? height : "0px",
-            }}
-            className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
-              showDetails === flight.id && hasHeight
-                ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
-                : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
-            }`}
-          >
-            <div className="rounded-lg">
-              <div className="overflow-x-auto">
-                <div className="inline-grid md:grid grid-cols-3 w-max md:w-[unset] gap-3">
-                  <div className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[240px] max-w-[240px] md:min-w-[unset] md:max-w-[unset]">
-                    <p className="text-gray-900 text-18 font-bold">Economy</p>
-                    <div className="my-4 pb-4 border-b border-gray-200">
-                      <div className="flex justify-between items-end lg:w-3/4">
-                        <p className="text-sm text-gray-700">Hạng vé</p>
-                        <p className="font-medium text-sm">01_ECO</p>
-                      </div>
-                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
-                        <p className="text-sm text-gray-700">
-                          Hành lý xách tay
-                        </p>
-                        <p className="font-medium text-sm">7 kg</p>
-                      </div>
-                      <div className="flex justify-between items-end lg:w-3/4 mt-3">
-                        <p className="text-sm text-gray-700">Hành lý ký gửi</p>
-                        <p className="font-medium text-sm">20 kg</p>
-                      </div>
-                      <button
-                        className="mt-3 text-blue-700 border-b border-blue-700 font-medium"
-                        onClick={() => toggleShowRuleTicket(flight.id)}
-                        disabled={isLoadingRules}
+          {ticketClasses.length > 0 && (
+            <div
+              ref={contentRef}
+              style={{
+                maxHeight: showDetails === flight.id ? height : "0px",
+              }}
+              className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
+                showDetails === flight.id && hasHeight
+                  ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
+                  : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
+              }`}
+            >
+              <div className="overflow-x-auto rounded-lg">
+                <div
+                  className={`inline-grid grid-cols-${ticketClasses.length} w-max gap-3`}
+                >
+                  {ticketClasses.map((ticket: any, index: number) => {
+                    const ticketFlight = ticket.ListFlight[0];
+                    const priceTicket =
+                      ticket.FareAdt * ticket.Adt +
+                      ticket.FareChd * ticket.Chd +
+                      ticket.FareInf * ticket.Inf;
+                    return (
+                      <div
+                        key={index}
+                        className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[250px] max-w-[250px] md:min-w-[296px] md:max-w-[296px]"
                       >
-                        {isLoadingRules ? (
-                          <span className="loader_spiner"></span>
-                        ) : (
-                          "Chi tiết"
-                        )}
-                      </button>
-                      {showRuleTicket === flight.id && (
-                        <div className="mt-3">
-                          <p className="text-[#4E6EB3] font-semibold ">
-                            Điều kiện vé
-                          </p>
-                          {flight.ListRulesTicket ? (
-                            <div
-                              className="text-sm text-gray-600 mt-1 list-disc list-inside"
-                              dangerouslySetInnerHTML={{
-                                __html: flight.ListRulesTicket,
-                              }}
-                            ></div>
-                          ) : (
-                            <p>
-                              Xin vui lòng liên hệ với Happy Book để nhận thông
-                              tin chi tiết.
+                        <p className="text-gray-900 text-18 font-bold">
+                          {ticketFlight.GroupClass}
+                        </p>
+                        <div className="my-4 pb-4 border-b border-gray-200">
+                          <div className="flex justify-between items-end lg:w-11/12">
+                            <p className="text-sm text-gray-700">Hạng vé</p>
+                            <p className="font-medium text-sm">
+                              {ticketFlight.FareClass}
                             </p>
+                          </div>
+                          <div className="flex justify-between items-end lg:w-11/12 mt-3">
+                            <p className="text-sm text-gray-700">
+                              Hành lý xách tay
+                            </p>
+                            <p className="font-medium text-sm">
+                              {ticketFlight.ListSegment[0].HandBaggage}
+                            </p>
+                          </div>
+                          <div className="flex justify-between items-end lg:w-11/12 mt-3">
+                            <p className="text-sm text-gray-700">
+                              Hành lý ký gửi
+                            </p>
+                            <p className="font-medium text-sm">
+                              {ticketFlight.ListSegment[0].AllowanceBaggage
+                                ? ticketFlight.ListSegment[0].AllowanceBaggage
+                                : "Chưa bao gồm"}
+                            </p>
+                          </div>
+                          <button
+                            className="mt-3 text-blue-700 border-b border-blue-700 font-medium"
+                            onClick={() => toggleShowRuleTicket(ticket)}
+                            disabled={isLoadingRules}
+                          >
+                            {showRuleTicket === ticket.FareDataId &&
+                            isLoadingRules ? (
+                              <span className="loader_spiner"></span>
+                            ) : (
+                              "Chi tiết"
+                            )}
+                          </button>
+                          {showRuleTicket === ticket.FareDataId && (
+                            <div className="mt-3">
+                              <p className="text-[#4E6EB3] font-semibold ">
+                                Điều kiện vé
+                              </p>
+                              {ticketFlight.ListRulesTicket ? (
+                                <div
+                                  className="text-sm text-gray-600 mt-1 list-disc list-inside"
+                                  dangerouslySetInnerHTML={{
+                                    __html: ticketFlight.ListRulesTicket,
+                                  }}
+                                ></div>
+                              ) : (
+                                <p>
+                                  Xin vui lòng liên hệ với Happy Book để nhận
+                                  thông tin chi tiết.
+                                </p>
+                              )}
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-primary text-22 font-bold">
-                        1,436,000 vnđ
-                      </p>
-                      <p className="text-sm text-gray-700">
-                        Tổng : 2,872,000 vnđ
-                      </p>
-                    </div>
-                    <div className="mt-4">
-                      <button
-                        onClick={() => onSelectFlight(FareData)}
-                        className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
-                      >
-                        {selectedFlight?.FareDataId === FareData.FareDataId
-                          ? "Thay đổi"
-                          : "Đặt vé"}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[240px] max-w-[240px] md:min-w-[unset] md:max-w-[unset]">
+                        <div>
+                          <p className="text-primary text-22 font-bold">
+                            {priceTicket.toLocaleString("vi-VN")} vnđ
+                          </p>
+                          <p className="text-sm text-gray-700">
+                            Tổng : {ticket.TotalPrice.toLocaleString("vi-VN")}{" "}
+                            vnđ
+                          </p>
+                        </div>
+                        <div className="mt-4">
+                          <button
+                            onClick={() => onSelectFlight(ticket)}
+                            className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
+                          >
+                            Đặt vé
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {/* <div className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[240px] max-w-[240px] md:min-w-[unset] md:max-w-[unset]">
                     <p className="text-gray-900 text-18 font-bold">Economy</p>
                     <div className="my-4 pb-4 border-b border-gray-200">
                       <div className="flex justify-between items-end lg:w-3/4">
@@ -392,14 +435,13 @@ const FlightDetails = ({
                         Đặt vé
                       </button>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
-            </div>
-            {/* <div className="bg-white p-4 rounded-lg">
+              {/* <div className="bg-white p-4 rounded-lg">
               <PassengerTable passengers={passengers} />
             </div> */}
-            {/* <div className="mt-6 rounded-lg p-3 md:p-6 bg-white">
+              {/* <div className="mt-6 rounded-lg p-3 md:p-6 bg-white">
               <h2 className="text-xl font-semibold text-orange-600 mb-4">
                 Chi tiết hành trình
               </h2>
@@ -538,7 +580,8 @@ const FlightDetails = ({
                 );
               })}
             </div> */}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </Fragment>

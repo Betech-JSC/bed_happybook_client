@@ -35,6 +35,18 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
           required_error: "Vui lòng điền thông tin này",
           invalid_type_error: "Ngày sinh không đúng định dạng",
         }),
+        cccd: z
+          .string()
+          .min(1, {
+            message: "Vui lòng điền thông tin này",
+          })
+          .regex(/^\d{12}$/, {
+            message: "CCCD không đúng định dạng",
+          }),
+        cccd_date: z.date({
+          required_error: "Vui lòng điền thông tin này",
+          invalid_type_error: "Thông tin không đúng định dạng",
+        }),
         baggages: z
           .array(
             z
@@ -179,12 +191,12 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
       address: z.string().optional(),
     }),
     Note: z.string(),
-    PaymentMethod: z
-      .string()
-      .min(1, { message: "Vui lòng chọn phương thức thanh toán" })
-      .refine((value) => ["cash", "vnpay", "bank_transfer"].includes(value), {
-        message: "Vui lòng điền thông tin này",
-      }),
+    // PaymentMethod: z
+    //   .string()
+    //   .min(1, { message: "Vui lòng chọn phương thức thanh toán" })
+    //   .refine((value) => ["cash", "vnpay", "bank_transfer"].includes(value), {
+    //     message: "Vui lòng điền thông tin này",
+    //   }),
     invoice: checkBoxGenerateInvoice
       ? z.object({
           company_name: z

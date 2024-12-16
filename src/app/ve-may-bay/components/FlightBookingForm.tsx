@@ -20,14 +20,18 @@ import { toast } from "react-hot-toast";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/flightBooking.scss";
-import { vi } from "date-fns/locale";
+import { fi, vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 
 export default function FlightBookForm() {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
+  const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [finalPrice, setFinalPrice] = useState<number>(0);
+  const [baggagePrice, setBaggagePrice] = useState<number>(0);
   const [flights, setFlights] = useState<any[]>([]);
   const [listBaggage, setListBaggage] = useState<any[]>([]);
+  const [listBaggagePassenger, setListBaggagePassenger] = useState<any>([]);
   const [flightSession, setFlightSession] = useState<string | null>(null);
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
@@ -60,16 +64,25 @@ export default function FlightBookForm() {
           lastName: "",
         },
       ],
-      PaymentMethod: "",
       checkBoxGenerateInvoice: false,
     },
   });
 
   const onSubmit = (data: FlightBookingInforType) => {
     setLoading(true);
-    const adtArr = data.atd.map((item) => ({ value: item, Type: "ADT" }));
+    const adtArr = data.atd.map((item, index) => {
+      if (listBaggagePassenger.atd && listBaggagePassenger.atd[index]) {
+        item.baggages = listBaggagePassenger.atd[index];
+      }
+      return { value: item, Type: "ADT" };
+    });
     const chdArr = data.chd
-      ? data.chd.map((item) => ({ value: item, Type: "CHD" }))
+      ? data.chd.map((item, index) => {
+          if (listBaggagePassenger.chd && listBaggagePassenger.chd[index]) {
+            item.baggages = listBaggagePassenger.chd[index];
+          }
+          return { value: item, Type: "CHD" };
+        })
       : [];
     const infArr = data.inf
       ? data.inf.map((item) => ({ value: item, Type: "INF" }))
@@ -77,7 +90,7 @@ export default function FlightBookForm() {
 
     const passengers = [...adtArr, ...chdArr, ...infArr].reduce(
       (acc: any, item, index) => {
-        acc.push({
+        const passengerObj: any = {
           index: index,
           first_name: item.value.firstName,
           last_name: item.value.lastName,
@@ -86,8 +99,11 @@ export default function FlightBookForm() {
           birthday: item.value.birthday
             ? format(new Date(item.value.birthday), "yyyy-MM-dd")
             : "",
-          // baggages: [{}],
-        });
+        };
+        if (item.value.baggages && item.value.baggages.length > 0) {
+          passengerObj.baggages = item.value.baggages;
+        }
+        acc.push(passengerObj);
         return acc;
       },
       []
@@ -96,7 +112,7 @@ export default function FlightBookForm() {
     data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
     let fare_data: any = [];
-    flights.map((item, index) => {
+    flights.map((item, _) => {
       fare_data.push({
         session: flightSession,
         fare_data_id_api: item.FareDataId,
@@ -140,7 +156,13 @@ export default function FlightBookForm() {
       }
     };
     if (finalData) {
-      bookFlight();
+      setLoading(false);
+      toast.success("Gửi yêu cầu thành công!");
+      reset();
+      setTimeout(() => {
+        router.push("/ve-may-bay");
+      }, 1000);
+      // bookFlight();
     }
   };
   useEffect(() => {
@@ -155,6 +177,8 @@ export default function FlightBookForm() {
     if (!flightData.length || !flightSession) {
       router.push("/ve-may-bay");
     }
+
+    if (departFlight && returnFlight) setIsRoundTrip(true);
 
     setFlights(flightData);
     setFlightSession(flightSession);
@@ -180,6 +204,7 @@ export default function FlightBookForm() {
   let totalTaxChd = 0;
   let totalTaxInf = 0;
   let dropdown: any = [];
+
   flights.map((item, index) => {
     totalPrice += item.TotalPrice;
     totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
@@ -228,6 +253,83 @@ export default function FlightBookForm() {
       title: "Vé em bé",
     });
   }
+
+  const calculateTotalBaggagePrice = (data: Record<string, any>) => {
+    return Object.values(data)
+      .flat(2)
+      .reduce((sum, item) => {
+        const price = Number(item.price);
+        return sum + (isNaN(price) ? 0 : price);
+      }, 0);
+  };
+
+  const handleChooseBaggage = (
+    leg: number,
+    code: string,
+    typePassenger: string,
+    passengerIndex: number
+  ) => {
+    if (listBaggage.length) {
+      if (!listBaggagePassenger[typePassenger]) {
+        listBaggagePassenger[typePassenger] = [];
+      }
+      if (!listBaggagePassenger[typePassenger][passengerIndex]) {
+        listBaggagePassenger[typePassenger][passengerIndex] = [];
+      }
+      if (code) {
+        listBaggage.find((item) => {
+          if (item.Code === code && item.Leg === leg) {
+            let finalPriceTmp = finalPrice + item.Price;
+            const baggageObj = {
+              airline: item.Airline,
+              leg: item.Leg,
+              route: item.Route,
+              code: item.Code,
+              currency: item.Currency,
+              name: item.Name,
+              price: item.Price,
+              value: item.Value,
+            };
+            const index = listBaggagePassenger[typePassenger][
+              passengerIndex
+            ].findIndex((item: any) => {
+              if (item.leg === leg) {
+                finalPriceTmp -= item.price;
+                return item;
+              }
+            });
+
+            if (index >= 0) {
+              listBaggagePassenger[typePassenger][passengerIndex][index] =
+                baggageObj;
+            } else {
+              listBaggagePassenger[typePassenger][passengerIndex].push(
+                baggageObj
+              );
+            }
+            setFinalPrice(finalPriceTmp);
+            setBaggagePrice(calculateTotalBaggagePrice(listBaggagePassenger));
+          }
+        });
+      } else {
+        listBaggagePassenger[typePassenger][passengerIndex].map(
+          (item: any, index: number) => {
+            if (item.leg === leg) {
+              setFinalPrice(finalPrice - item.price);
+              listBaggagePassenger[typePassenger][passengerIndex].splice(
+                index,
+                1
+              );
+            }
+          }
+        );
+        setBaggagePrice(calculateTotalBaggagePrice(listBaggagePassenger));
+      }
+    }
+  };
+  useEffect(() => {
+    setFinalPrice(totalPrice);
+  }, [totalPrice]);
   // Fetch and Handle Data
   useEffect(() => {
     const fetchData = async () => {
@@ -620,6 +722,10 @@ export default function FlightBookForm() {
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
+                        <span className="text-xs text-gray-500">
+                          Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
+                          giấy tờ tùy thân
+                        </span>
                         {errors.atd?.[index]?.firstName && (
                           <p className="text-red-600">
                             {errors.atd[index].firstName?.message}
@@ -640,6 +746,10 @@ export default function FlightBookForm() {
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
+                        <span className="text-xs text-gray-500">
+                          Vui lòng nhập tên của hành khách đúng như trên giấy tờ
+                          tùy thân
+                        </span>
                         {errors.atd?.[index]?.lastName && (
                           <p className="text-red-600">
                             {errors.atd[index].lastName?.message}
@@ -728,13 +838,13 @@ export default function FlightBookForm() {
                         <input
                           id={`atd.${index}.cccd`}
                           type="text"
-                          // {...register("contact.phone")}
+                          {...register(`atd.${index}.cccd`)}
                           placeholder="Nhập số CCCD"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
-                        {errors.contact?.phone && (
+                        {errors.atd?.[index]?.cccd && (
                           <p className="text-red-600">
-                            {errors.contact?.phone.message}
+                            {errors.atd?.[index]?.cccd.message}
                           </p>
                         )}
                       </div>
@@ -747,7 +857,7 @@ export default function FlightBookForm() {
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <Controller
-                            name={`atd.${index}.birthday`}
+                            name={`atd.${index}.cccd_date`}
                             control={control}
                             render={({ field }) => (
                               <DatePicker
@@ -781,9 +891,9 @@ export default function FlightBookForm() {
                             )}
                           />
                         </div>
-                        {errors.contact?.phone && (
+                        {errors.atd?.[index]?.cccd_date && (
                           <p className="text-red-600">
-                            {errors.contact?.phone.message}
+                            {errors.atd?.[index]?.cccd_date.message}
                           </p>
                         )}
                       </div>
@@ -793,23 +903,72 @@ export default function FlightBookForm() {
                             htmlFor="service"
                             className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                           >
-                            Hành lý
+                            Hành lý chiều đi
                           </label>
                           <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                             <select
+                              onChange={(event) => {
+                                handleChooseBaggage(
+                                  0,
+                                  event.target.value,
+                                  "atd",
+                                  index
+                                );
+                              }}
                               className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                              // {...register(`atd.${index}.baggages.0.code`)}
                             >
-                              <option value="">
-                                Vui lòng chọn gói hành lý
-                              </option>
-                              {listBaggage.map((baggage, key) => (
-                                <option key={key} value={baggage.Code}>
-                                  {baggage.Name} {" / "}
-                                  {baggage.Price.toLocaleString("vi-VN")}{" "}
-                                  {baggage.Currency}
-                                </option>
-                              ))}
+                              <option value="">Chọn gói hành lý</option>
+                              {listBaggage.map((baggage, key) => {
+                                if (baggage.Leg === 0) {
+                                  return (
+                                    <option key={key} value={baggage.Code}>
+                                      {baggage.Name} {" / "}
+                                      {baggage.Price.toLocaleString(
+                                        "vi-VN"
+                                      )}{" "}
+                                      {baggage.Currency}
+                                    </option>
+                                  );
+                                }
+                              })}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      {isRoundTrip && listBaggage.length > 0 && (
+                        <div className="relative">
+                          <label
+                            htmlFor="service"
+                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                          >
+                            Hành lý chiều về
+                          </label>
+                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                            <select
+                              onChange={(event) => {
+                                handleChooseBaggage(
+                                  1,
+                                  event.target.value,
+                                  "atd",
+                                  index
+                                );
+                              }}
+                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            >
+                              <option value="">Chọn gói hành lý</option>
+                              {listBaggage.map((baggage, key) => {
+                                if (baggage.Leg === 1) {
+                                  return (
+                                    <option key={key} value={baggage.Code}>
+                                      {baggage.Name} {" / "}
+                                      {baggage.Price.toLocaleString(
+                                        "vi-VN"
+                                      )}{" "}
+                                      {baggage.Currency}
+                                    </option>
+                                  );
+                                }
+                              })}
                             </select>
                           </div>
                         </div>
@@ -846,6 +1005,10 @@ export default function FlightBookForm() {
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
+                        <span className="text-xs text-gray-500">
+                          Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
+                          giấy tờ tùy thân
+                        </span>
                         {errors.chd?.[index]?.firstName && (
                           <p className="text-red-600">
                             {errors.chd[index].firstName?.message}
@@ -866,6 +1029,10 @@ export default function FlightBookForm() {
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
+                        <span className="text-xs text-gray-500">
+                          Vui lòng nhập tên của hành khách đúng như trên giấy tờ
+                          tùy thân
+                        </span>
                         {errors.chd?.[index]?.lastName && (
                           <p className="text-red-600">
                             {errors.chd[index].lastName?.message}
@@ -895,31 +1062,6 @@ export default function FlightBookForm() {
                           </p>
                         )}
                       </div>
-                      {listBaggage.length > 0 && (
-                        <div className="relative">
-                          <label
-                            htmlFor="service"
-                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                          >
-                            Hành lý
-                          </label>
-                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                            <select
-                              // {...register(`atd.${index}.baggages`)}
-                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            >
-                              <option value="">
-                                Vui lòng chọn gói hành lý
-                              </option>
-                              {listBaggage.map((baggage, key) => (
-                                <option key={key} value={baggage.Code}>
-                                  {baggage.Name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                      )}
                       <div className="relative">
                         <label
                           id={`chd.${index}.birthday`}
@@ -961,6 +1103,82 @@ export default function FlightBookForm() {
                           </p>
                         )}
                       </div>
+                      {listBaggage.length > 0 && (
+                        <div className="relative">
+                          <label
+                            htmlFor="service"
+                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                          >
+                            Hành lý chiều đi
+                          </label>
+                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                            <select
+                              onChange={(event) => {
+                                handleChooseBaggage(
+                                  0,
+                                  event.target.value,
+                                  "chd",
+                                  index
+                                );
+                              }}
+                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            >
+                              <option value="">Chọn gói hành lý</option>
+                              {listBaggage.map((baggage, key) => {
+                                if (baggage.Leg === 0) {
+                                  return (
+                                    <option key={key} value={baggage.Code}>
+                                      {baggage.Name} {" / "}
+                                      {baggage.Price.toLocaleString(
+                                        "vi-VN"
+                                      )}{" "}
+                                      {baggage.Currency}
+                                    </option>
+                                  );
+                                }
+                              })}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      {isRoundTrip && listBaggage.length > 0 && (
+                        <div className="relative">
+                          <label
+                            htmlFor="service"
+                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                          >
+                            Hành lý chiều về
+                          </label>
+                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                            <select
+                              onChange={(event) => {
+                                handleChooseBaggage(
+                                  1,
+                                  event.target.value,
+                                  "chd",
+                                  index
+                                );
+                              }}
+                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                            >
+                              <option value="">Chọn gói hành lý</option>
+                              {listBaggage.map((baggage, key) => {
+                                if (baggage.Leg === 1) {
+                                  return (
+                                    <option key={key} value={baggage.Code}>
+                                      {baggage.Name} {" / "}
+                                      {baggage.Price.toLocaleString(
+                                        "vi-VN"
+                                      )}{" "}
+                                      {baggage.Currency}
+                                    </option>
+                                  );
+                                }
+                              })}
+                            </select>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -994,6 +1212,10 @@ export default function FlightBookForm() {
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
+                        <span className="text-xs text-gray-500">
+                          Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
+                          giấy tờ tùy thân
+                        </span>
                         {errors.inf?.[index]?.firstName && (
                           <p className="text-red-600">
                             {errors.inf[index].firstName?.message}
@@ -1014,6 +1236,10 @@ export default function FlightBookForm() {
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
+                        <span className="text-xs text-gray-500">
+                          Vui lòng nhập tên của hành khách đúng như trên giấy tờ
+                          tùy thân
+                        </span>
                         {errors.inf?.[index]?.lastName && (
                           <p className="text-red-600">
                             {errors.inf[index].lastName?.message}
@@ -1279,12 +1505,14 @@ export default function FlightBookForm() {
 
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500 ">Hành lý bổ sung</span>
-                <p className="font-semibold">0 vnđ</p>
+                <p className="font-semibold">
+                  {baggagePrice.toLocaleString("vi-VN")} vnđ
+                </p>
               </div>
               <div className="flex mt-4 pt-4 pb-6 justify-between border-t border-t-gray-200">
                 <span className="text-sm text-gray-500 ">Tổng cộng</span>
                 <p className="font-semibold text-primary">
-                  {totalPrice.toLocaleString("vi-VN")} vnđ
+                  {finalPrice.toLocaleString("vi-VN")} vnđ
                 </p>
               </div>
             </div>
