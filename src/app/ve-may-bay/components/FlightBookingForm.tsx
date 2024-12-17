@@ -160,7 +160,7 @@ export default function FlightBookForm() {
       toast.success("Gửi yêu cầu thành công!");
       reset();
       setTimeout(() => {
-        router.push("/ve-may-bay");
+        router.push("/ve-may-bay/thong-tin-don-hang");
       }, 1000);
       // bookFlight();
     }
