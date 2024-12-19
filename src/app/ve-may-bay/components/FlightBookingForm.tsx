@@ -28,10 +28,13 @@ export default function FlightBookForm() {
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [loading, setLoading] = useState(false);
   const [finalPrice, setFinalPrice] = useState<number>(0);
-  const [baggagePrice, setBaggagePrice] = useState<number>(0);
   const [flights, setFlights] = useState<any[]>([]);
   const [listBaggage, setListBaggage] = useState<any[]>([]);
   const [listBaggagePassenger, setListBaggagePassenger] = useState<any>([]);
+  const [totalBaggages, setTotalBaggages] = useState<{
+    price: number;
+    quantity: number;
+  }>({ price: 0, quantity: 0 });
   const [flightSession, setFlightSession] = useState<string | null>(null);
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
@@ -257,10 +260,15 @@ export default function FlightBookForm() {
   const calculateTotalBaggagePrice = (data: Record<string, any>) => {
     return Object.values(data)
       .flat(2)
-      .reduce((sum, item) => {
-        const price = Number(item.price);
-        return sum + (isNaN(price) ? 0 : price);
-      }, 0);
+      .reduce(
+        (acc: { price: number; quantity: number }, item) => {
+          const price = Number(item.price);
+          acc.price += isNaN(price) ? 0 : price;
+          acc.quantity++;
+          return acc;
+        },
+        { price: 0, quantity: 0 }
+      );
   };
 
   const handleChooseBaggage = (
@@ -308,7 +316,7 @@ export default function FlightBookForm() {
               );
             }
             setFinalPrice(finalPriceTmp);
-            setBaggagePrice(calculateTotalBaggagePrice(listBaggagePassenger));
+            setTotalBaggages(calculateTotalBaggagePrice(listBaggagePassenger));
           }
         });
       } else {
@@ -323,7 +331,7 @@ export default function FlightBookForm() {
             }
           }
         );
-        setBaggagePrice(calculateTotalBaggagePrice(listBaggagePassenger));
+        setTotalBaggages(calculateTotalBaggagePrice(listBaggagePassenger));
       }
     }
   };
@@ -1340,10 +1348,10 @@ export default function FlightBookForm() {
                 { locale: vi }
               );
               return (
-                <div className="pb-0 py-2 px-3 lg:px-6" key={index}>
+                <div className="pb-0 py-2 px-3 lg:px-6 mb-3" key={index}>
                   <div className="flex justify-between">
                     <p className="font-bold">
-                      {flight.Leg ? "Chiều về" : "Chiều đi"}
+                      {item.Leg ? "Chiều về" : "Chiều đi"}
                     </p>
                     <p className="text-sm text-gray-500">{startDateLocale}</p>
                   </div>
@@ -1506,7 +1514,11 @@ export default function FlightBookForm() {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500 ">Hành lý bổ sung</span>
                 <p className="font-semibold">
-                  {baggagePrice.toLocaleString("vi-VN")} vnđ
+                  {totalBaggages.price && totalBaggages.quantity
+                    ? `${totalBaggages.price.toLocaleString("vi-VN")}đ x ${
+                        totalBaggages.quantity
+                      }`
+                    : "0đ"}
                 </p>
               </div>
               <div className="flex mt-4 pt-4 pb-6 justify-between border-t border-t-gray-200">

@@ -4,7 +4,7 @@ import {
   formatTime,
 } from "@/lib/formatters";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { format, parse } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
@@ -12,6 +12,7 @@ import { toast } from "react-hot-toast";
 import { notFound } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/LoadingButton";
+import { FlightApi } from "@/api/Flight";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
@@ -20,6 +21,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     price: number;
     quantity: number;
   }>({ price: 0, quantity: 0 });
+  const [isLoadingRules, setIsLoadingRules] = useState<boolean>(false);
+  const [showRuleTicket, setShowRuleTicket] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -102,13 +105,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           (acc: { price: number; quantity: number }, item: any) => {
             if (Array.isArray(item.baggages)) {
               item.baggages.forEach((bag: any) => {
-                acc.price += bag.price; // Tổng giá tiền
-                acc.quantity++; // Tổng số lượng
+                acc.price += bag.price;
+                acc.quantity++;
               });
             }
             return acc;
           },
-          { price: 0, quantity: 0 } // Giá trị khởi tạo
+          { price: 0, quantity: 0 }
         );
         setTotalBaggages(accumulated);
       }
@@ -144,6 +147,54 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
 
     return () => clearInterval(timer);
   }, [targetTime]);
+
+  const fetchFareRules = useCallback(async (FareData: any) => {
+    try {
+      setIsLoadingRules(true);
+      const flight = FareData.ListFlight[0];
+      const params = {
+        FlightRequest: {
+          ListFareData: [
+            {
+              Session: FareData.Session,
+              FareDataId: FareData.FareDataId,
+              ListFlight: [
+                {
+                  FlightValue: flight.FlightValue,
+                },
+              ],
+            },
+          ],
+        },
+      };
+
+      const response = await FlightApi.getFareRules(
+        "flights/getfarerules",
+        params
+      );
+      const fareRules =
+        response?.payload.data.ListFareRules[0].ListRulesGroup[0]
+          .ListRulesText[0] ??
+        `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
+      return fareRules;
+    } catch (error: any) {
+      return `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
+    } finally {
+      setIsLoadingRules(false);
+    }
+  }, []);
+
+  const toggleShowRuleTicket = useCallback(
+    async (FareData: any) => {
+      setShowRuleTicket(
+        showRuleTicket === FareData.FareDataId ? null : FareData.FareDataId
+      );
+      if (!FareData.ListRulesTicket) {
+        FareData.ListRulesTicket = await fetchFareRules(FareData);
+      }
+    },
+    [showRuleTicket, fetchFareRules]
+  );
 
   if (loading) {
     return (
@@ -233,9 +284,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           Hạng: {flight.FareClass}
                         </p>
                       </div>
-                      <button className="mt-3 text-blue-700 border-b border-blue-700 font-medium">
-                        Điều kiện vé
-                      </button>
                     </div>
                   </div>
                   <div className="lg:w-10/12 text-center flex justify-between">
@@ -280,9 +328,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           </div>
                           <span className="text-sm text-gray-700">
                             {flight.Duration
-                              ? `${Math.floor(flight.Duration / 60)} giờ ${
-                                  Math.floor(flight.Duration / 60) % 60
-                                } phút`
+                              ? `${Math.floor(
+                                  flight.Duration / 60
+                                )} giờ ${Math.floor(flight.Duration % 60)} phút`
                               : ""}
                           </span>
                           <span className="text-sm text-gray-500">
@@ -311,6 +359,28 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         </span>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div>
+                  <button
+                    className=" text-blue-700 border-b border-blue-700 font-medium"
+                    onClick={() => toggleShowRuleTicket(item)}
+                    disabled={isLoadingRules}
+                  >
+                    Điều kiện vé
+                  </button>
+                  <div>
+                    {showRuleTicket === item.FareDataId && isLoadingRules && (
+                      <span className="loader_spiner mt-2"></span>
+                    )}
+                    {showRuleTicket === item.FareDataId && !isLoadingRules && (
+                      <div
+                        className="mt -2text-sm text-gray-600 mt-1 list-disc list-inside"
+                        dangerouslySetInnerHTML={{
+                          __html: item.ListRulesTicket,
+                        }}
+                      ></div>
+                    )}
                   </div>
                 </div>
               </div>
