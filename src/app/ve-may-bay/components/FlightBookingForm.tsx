@@ -89,17 +89,24 @@ export default function FlightBookForm() {
       : [];
 
     const passengers = [...adtArr, ...chdArr, ...infArr].reduce(
-      (acc: any, item, index) => {
+      (acc: any, item: any, index) => {
         const passengerObj: any = {
           index: index,
           first_name: item.value.firstName,
           last_name: item.value.lastName,
           gender: item.value.gender === "male" ? true : false,
           type: item.Type,
+
           birthday: item.value.birthday
             ? format(new Date(item.value.birthday), "yyyy-MM-dd")
             : "",
         };
+        if (item.Type === "ADT") {
+          passengerObj.cccd = item.value.cccd ? item.value.cccd : "";
+          passengerObj.cccd_date = item.value.cccd_date
+            ? format(new Date(item.value.cccd_date), "yyyy-MM-dd")
+            : "";
+        }
         if (item.value.baggages && item.value.baggages.length > 0) {
           passengerObj.baggages = item.value.baggages;
         }
@@ -133,9 +140,8 @@ export default function FlightBookForm() {
       try {
         setLoading(true);
         const respon = await FlightApi.bookFlight("book-flight", finalData);
-        reset();
-
-        if (respon?.payload.ListBooking) {
+        if (respon?.status === 200) {
+          reset();
           toast.success("Gửi yêu cầu thành công!");
           handleSessionStorage("save", "bookingFlight", respon?.payload);
           handleSessionStorage("remove", [
@@ -144,10 +150,10 @@ export default function FlightBookForm() {
             "returnFlight",
           ]);
           setTimeout(() => {
-            router.push("/ve-may-bay/thong-tin-dat-cho");
+            router.push("/ve-may-bay/thong-tin-don-hang");
           }, 1000);
         } else {
-          toast.success("Gửi yêu cầu thất bại!");
+          toast.error("Gửi yêu cầu thất bại!");
         }
       } catch (error: any) {
         toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
@@ -156,13 +162,7 @@ export default function FlightBookForm() {
       }
     };
     if (finalData) {
-      setLoading(false);
-      toast.success("Gửi yêu cầu thành công!");
-      reset();
-      setTimeout(() => {
-        router.push("/ve-may-bay/thong-tin-don-hang");
-      }, 1000);
-      // bookFlight();
+      bookFlight();
     }
   };
   useEffect(() => {
