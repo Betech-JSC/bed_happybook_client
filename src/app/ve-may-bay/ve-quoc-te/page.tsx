@@ -12,8 +12,10 @@ import FAQ from "@/components/FAQ";
 import Link from "next/link";
 import Partner from "../components/Partner";
 import Search from "../components/Search";
-import ListFilght from "../components/ListFilght";
 import { FlightApi } from "@/api/Flight";
+import ListFilght from "../components/International/List";
+import { AirportsCountry } from "@/types/flight";
+import { format, parse, isValid } from "date-fns";
 
 export const metadata: Metadata = {
   title: "Tìm kiếm Vé máy bay",
@@ -24,12 +26,33 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function SearchTicket() {
+export default async function TicketAirlineInternational({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+}) {
+  let pararmsFormatted: any = {};
   const airportsReponse = await FlightApi.airPorts();
-  const airportsData = airportsReponse?.payload.data ?? [];
+  const airportsData: AirportsCountry[] = airportsReponse?.payload.data ?? [];
+  const departDate = parse(searchParams.DepartDate, "ddMMyyyy", new Date());
+  const returnDate = parse(searchParams.ReturnDate, "ddMMyyyy", new Date());
+  pararmsFormatted.tripType = searchParams.tripType ?? "oneWay";
+  pararmsFormatted.From = searchParams.from ?? "Hồ Chí Minh";
+  pararmsFormatted.To = searchParams.to ?? "Hà Nội";
+  pararmsFormatted.StartPoint = searchParams.StartPoint ?? "SGN";
+  pararmsFormatted.EndPoint = searchParams.EndPoint ?? "HAN";
+  pararmsFormatted.DepartDate = isValid(departDate)
+    ? format(departDate, "ddMMyyyy")
+    : format(new Date(), "ddMMyyyy");
+  pararmsFormatted.ReturnDate = isValid(returnDate)
+    ? format(returnDate, "ddMMyyyy")
+    : null;
+  pararmsFormatted.passengerAdt = parseInt(searchParams.Adt ?? "1");
+  pararmsFormatted.passengerChd = parseInt(searchParams.Chd ?? "0");
+  pararmsFormatted.passengerInf = parseInt(searchParams.Inf ?? "0");
   return (
     <Suspense>
-      <div className="relative h-max pb-14" key={Math.random()}>
+      <div className="relative h-max pb-14">
         <div className="absolute inset-0">
           <Image
             priority
@@ -75,7 +98,10 @@ export default async function SearchTicket() {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="min-h-40">
-            <ListFilght airportsData={airportsData} />
+            {/* <ListFilght
+              airports={airportsData}
+              searchParams={pararmsFormatted}
+            /> */}
           </div>
         </div>
         <Partner />

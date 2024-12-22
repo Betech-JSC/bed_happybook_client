@@ -74,21 +74,6 @@ export interface SearchFilghtProps {
   airportsData: AirportsCountry[];
 }
 
-export interface FlightDetailProps {
-  session: string;
-  FareData: any;
-  onSelectFlight: (fligt: any) => void;
-  selectedFlight: any;
-  filters: {
-    priceWithoutTax: string;
-    timeDepart: string;
-    sortAirLine: string;
-    sortPrice: string;
-    airlines: string[];
-  };
-  airports: AirportsCountry[];
-  displayType: string;
-}
 export interface FlightSearchPopupProps {
   isOpen: boolean;
   onClose: () => void;
@@ -102,4 +87,83 @@ export interface FlightSearchPopupProps {
 
 export interface BookingDetailProps {
   airports: AirportsCountry[];
+}
+
+export interface TabDays {
+  label: string;
+  date: Date;
+  disabled: boolean;
+}
+
+export interface filtersFlight {
+  priceWithoutTax: string;
+  timeDepart: string;
+  sortAirLine: string;
+  sortPrice: string;
+  airlines: string[];
+}
+export interface ListFlight {
+  airportsData: AirportsCountry[];
+  flightSession: string;
+  flights: any;
+  from: string | null;
+  to: string | null;
+  returnDate: any;
+  departDate: any;
+  currentDate: any;
+  currentReturnDay: any;
+  departDays: TabDays[];
+  returnDays: TabDays[];
+  displayType: string;
+  isRoundTrip: boolean;
+  totalFlightLeg: number[];
+  totalPassengers: number;
+  handleClickDate: (date: Date, TypeIndex: number) => void;
+  flightType?: string;
+}
+export interface FlightDetailPopupProps {
+  isOpen: boolean;
+  tabs?: {
+    id: number;
+    name: string;
+  }[];
+  airports: AirportsCountry[];
+  flights: any;
+  onClose: () => void;
+}
+
+export interface FlightDetailInternationalProps {
+  FareData: any;
+  filters: {
+    priceWithoutTax: string;
+    timeDepart: string;
+    sortAirLine: string;
+    sortPrice: string;
+    airlines: string[];
+  };
+  onSelectFlight: (flight: any) => void;
+  setFlightDetail: (FareData: any, indexFlight: number) => void;
+  leg: number;
+}
+
+export interface FlightDetailDomesticProps {
+  FareData: any;
+  filters: {
+    priceWithoutTax: string;
+    timeDepart: string;
+    sortAirLine: string;
+    sortPrice: string;
+    airlines: string[];
+  };
+  selectedFlight: any;
+  totalPassengers: number;
+  onSelectFlight: (flight: any) => void;
+  setFlightDetail: (
+    flight: any,
+    tabs: {
+      id: number;
+      name: string;
+    }[],
+    showRuleTicket?: boolean
+  ) => void;
 }

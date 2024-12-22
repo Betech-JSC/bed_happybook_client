@@ -87,92 +87,19 @@ const generateMonth = (totalMonth: number) => {
 
   return months;
 };
-const getAirportsDefault = () => {
-  const object = [
-    {
-      id: 1,
-      country: "Việt Nam",
-      airports: [
-        { city: "Hà Nội", code: "HAN", type: "domestic" },
-        { city: "Hồ Chí Minh", code: "SGN", type: "domestic" },
-        { city: "Vinh", code: "VII", type: "domestic" },
-        { city: "Huế", code: "HUI", type: "domestic" },
-        { city: "Đà Lạt", code: "DLI", type: "domestic" },
-        { city: "Phú Quốc", code: "PQC", type: "domestic" },
-        { city: "Hải Phòng", code: "HBH", type: "domestic" },
-        { city: "Đà Nẵng", code: "DAD", type: "domestic" },
-        { city: "Buôn Mê Thuột", code: "BMV", type: "domestic" },
-        { city: "Kiên Giang", code: "VKG", type: "domestic" },
-        { city: "Cà Mau", code: "CAH", type: "domestic" },
-        { city: "Côn Đảo", code: "VCS", type: "domestic" },
-        { city: "Nha Trang", code: "CXR", type: "domestic" },
-        { city: "Điện Biên Phủ", code: "DIN", type: "domestic" },
-        { city: "Thanh Hóa", code: "THD", type: "domestic" },
-        { city: "Quảng Bình", code: "VDH", type: "domestic" },
-        { city: "Quảng Nam", code: "VCL", type: "domestic" },
-        { city: "Cần Thơ", code: "VCA", type: "domestic" },
-        { city: "Qui Nhơn", code: "UIH", type: "domestic" },
-        { city: "Phú Yên", code: "TBB", type: "domestic" },
-      ],
-    },
-    {
-      id: 2,
-      country: "Đông Nam Á",
-      airports: [
-        { city: "Bangkok", code: "BKK", type: "international" },
-        { city: "Kuala Lumpur", code: "KUL", type: "international" },
-        { city: "Phnom Penh", code: "PNH", type: "international" },
-        { city: "Singapore", code: "SIN", type: "international" },
-        { city: "Phuket", code: "HKT", type: "international" },
-      ],
-    },
-    {
-      id: 3,
-      country: "Châu Á",
-      airports: [
-        { city: "Bắc Kinh", code: "PEK", type: "international" },
-        { city: "Bangkok", code: "BKK", type: "international" },
-        { city: "Busan", code: "PUS", type: "international" },
-        { city: "Daegu", code: "TAE", type: "international" },
-        { city: "Seoul", code: "ICN", type: "international" },
-      ],
-    },
-    {
-      id: 4,
-      country: "Châu Âu",
-      airports: [
-        { city: "Amsterdam", code: "AMS", type: "international" },
-        { city: "London", code: "LHR", type: "international" },
-        { city: "Milan", code: "MXP", type: "international" },
-        { city: "Paris", code: "CDG", type: "international" },
-        { city: "Seoul", code: "ICN", type: "international" },
-      ],
-    },
-    {
-      id: 5,
-      country: "Châu Úc",
-      airports: [
-        { city: "Sydney", code: "SYD", type: "international" },
-        { city: "Perth", code: "PER", type: "international" },
-      ],
-    },
-    {
-      id: 6,
-      country: "Châu Mỹ",
-      airports: [
-        { city: "Los Angeles", code: "LAX", type: "international" },
-        { city: "Washington", code: "WAS", type: "international" },
-        { city: "New York", code: "JFK", type: "international" },
-        { city: "Miami", code: "MIA", type: "international" },
-      ],
-    },
-  ];
-  return object;
+const getDayLabel = (dayIndex: number, displayType: "desktop" | "mobile") => {
+  const daysOfWeek =
+    displayType === "desktop"
+      ? ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"]
+      : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+
+  return daysOfWeek[dayIndex] || "Không xác định";
 };
+
 export {
   handleSessionStorage,
   handleScrollSmooth,
   generateMonth,
   getDaysInMonth,
-  getAirportsDefault,
+  getDayLabel,
 };

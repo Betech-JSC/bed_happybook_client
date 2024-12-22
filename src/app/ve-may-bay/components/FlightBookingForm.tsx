@@ -12,7 +12,6 @@ import {
 } from "@/schemaValidations/flightBookingInfor.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -20,15 +19,18 @@ import { toast } from "react-hot-toast";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/flightBooking.scss";
-import { fi, vi } from "date-fns/locale";
+import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
+import FlightDetailPopup from "./FlightDetailPopup";
 
-export default function FlightBookForm() {
+export default function FlightBookForm({ airportsData }: any) {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [loading, setLoading] = useState(false);
   const [finalPrice, setFinalPrice] = useState<number>(0);
   const [flights, setFlights] = useState<any[]>([]);
+  const [flightsDetail, setFlightsDetail] = useState<any[]>([]);
+  const [flightType, setFlightType] = useState<string>("");
   const [listBaggage, setListBaggage] = useState<any[]>([]);
   const [listBaggagePassenger, setListBaggagePassenger] = useState<any>([]);
   const [totalBaggages, setTotalBaggages] = useState<{
@@ -38,6 +40,8 @@ export default function FlightBookForm() {
   const [flightSession, setFlightSession] = useState<string | null>(null);
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
+  const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
+
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
@@ -122,14 +126,30 @@ export default function FlightBookForm() {
     data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
     let fare_data: any = [];
-    flights.map((item, _) => {
+    if (flightType === "international") {
       fare_data.push({
         session: flightSession,
-        fare_data_id_api: item.FareDataId,
+        fare_data_id_api: flights[0].FareDataId,
         AutoIssue: false,
-        flights: [{ flight_value: item.ListFlight[0].FlightValue }],
+        flights: [],
       });
-    });
+      let ListFlightObj: any = [];
+      flights.map((item, _) => {
+        ListFlightObj.push({ flight_value: item.ListFlight[0].FlightValue });
+      });
+      if (ListFlightObj.length) {
+        fare_data[0].flights = ListFlightObj;
+      }
+    } else {
+      flights.map((item, _) => {
+        fare_data.push({
+          session: flightSession,
+          fare_data_id_api: item.FareDataId,
+          AutoIssue: false,
+          flights: [{ flight_value: item.ListFlight[0].FlightValue }],
+        });
+      });
+    }
 
     formatData.contact.gender =
       formatData.contact.gender === "male" ? true : false;
@@ -138,6 +158,7 @@ export default function FlightBookForm() {
       passengers,
       fare_data,
       is_invoice: generateInvoice,
+      flightType: flightType,
     };
     const bookFlight = async () => {
       try {
@@ -151,9 +172,10 @@ export default function FlightBookForm() {
             "flightSession",
             "departFlight",
             "returnFlight",
+            "flightType",
           ]);
           setTimeout(() => {
-            router.push("/ve-may-bay/thong-tin-don-hang");
+            router.push("/ve-may-bay/thong-tin-dat-cho");
           }, 1000);
         } else {
           toast.error("Gửi yêu cầu thất bại!");
@@ -170,20 +192,31 @@ export default function FlightBookForm() {
   };
   useEffect(() => {
     let flightData = [];
+    let flightDetailData: any = [];
     const departFlight = handleSessionStorage("get", "departFlight");
     const returnFlight = handleSessionStorage("get", "returnFlight");
     const flightSession = handleSessionStorage("get", "flightSession");
-
-    if (departFlight) flightData.push(departFlight);
-    if (returnFlight) flightData.push(returnFlight);
-
-    if (!flightData.length || !flightSession) {
+    const flightType = handleSessionStorage("get", "flightType") ?? "";
+    if (departFlight) {
+      flightData.push(departFlight);
+      flightDetailData.push(departFlight.ListFlight[0]);
+    }
+    if (returnFlight) {
+      flightData.push(returnFlight);
+      flightDetailData.push(returnFlight.ListFlight[0]);
+    }
+    if (
+      !flightData.length ||
+      !flightSession ||
+      !["domestic", "international"].includes(flightType)
+    ) {
       router.push("/ve-may-bay");
     }
 
     if (departFlight && returnFlight) setIsRoundTrip(true);
-
     setFlights(flightData);
+    setFlightType(flightType);
+    setFlightsDetail(flightDetailData);
     setFlightSession(flightSession);
     setDocumentReady(true);
   }, [router]);
@@ -208,23 +241,27 @@ export default function FlightBookForm() {
   let totalTaxInf = 0;
   let dropdown: any = [];
 
+  let shouldStopMapFlights = false;
+
   flights.map((item, index) => {
+    if (shouldStopMapFlights) return;
     totalPrice += item.TotalPrice;
     totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
     totalChd = item.Chd > totalChd ? item.Chd : totalChd;
     totalInf = item.Inf > totalInf ? item.Inf : totalInf;
-    totalPriceAdt += (item.FareAdt + item.TaxAdt) * item.Adt;
-    totalPriceChd += (item.FareChd + item.TaxChd) * item.Chd;
-    totalPriceInf += (item.FareInf + item.TaxInf) * item.Inf;
+    totalPriceAdt += item.FareAdt + item.TaxAdt;
+    totalPriceChd += item.FareChd + item.TaxChd;
+    totalPriceInf += item.FareInf + item.TaxInf;
     FareAdt[index] = item.FareAdt + item.TaxAdt;
     FareChd[index] = item.FareChd + item.TaxChd;
     FareInf[index] = item.FareInf + item.TaxInf;
-    totalPriceTicketAdt += item.FareAdt * item.Adt;
-    totalPriceTicketChd += item.FareChd * item.Chd;
-    totalPriceTicketInf += item.FareInf * item.Inf;
-    totalTaxAdt += item.TaxAdt * item.Adt;
-    totalTaxChd += item.TaxChd * item.Chd;
-    totalTaxInf += item.TaxInf * item.Inf;
+    totalPriceTicketAdt += item.FareAdt;
+    totalPriceTicketChd += item.FareChd;
+    totalPriceTicketInf += item.FareInf;
+    totalTaxAdt += item.TaxAdt;
+    totalTaxChd += item.TaxChd;
+    totalTaxInf += item.TaxInf;
+    if (flightType === "international") shouldStopMapFlights = true;
   });
   if (totalAdt) {
     dropdown.push({
@@ -374,6 +411,10 @@ export default function FlightBookForm() {
 
     fetchData();
   }, [flightSession, flights]);
+
+  const handleClosePopupFlightDetail = () => {
+    setShowFlightDetail(false);
+  };
 
   if (!documentReady) {
     return (
@@ -686,16 +727,6 @@ export default function FlightBookForm() {
                     </div>
                   </div>
                 )}
-
-                <div className="mt-6">
-                  <div className="block md:hidden pb-0 py-4 px-3">
-                    <LoadingButton
-                      isLoading={loading}
-                      text="Thanh toán"
-                      disabled={false}
-                    />
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -1322,15 +1353,29 @@ export default function FlightBookForm() {
                   </div>
                 ))}
             </div>
+            <div className="mt-6">
+              <LoadingButton
+                isLoading={loading}
+                text="Tiếp tục"
+                disabled={false}
+              />
+            </div>
           </div>
         </div>
-        <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 md:pb-6">
+        <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 ">
           <div className="pb-0 py-4 px-3 lg:px-6">
             <div className="flex justify-between">
               <span className="text-22 font-semibold">Thông tin đặt chỗ</span>
-              <Link href="/ve-may-bay" className="underline text-blue-700">
-                Đổi chuyến
-              </Link>
+              <button
+                type="button"
+                className="underline underline-offset-8	 text-blue-700 pb-1 cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowFlightDetail(true);
+                }}
+              >
+                Xem chi tiết
+              </button>
             </div>
           </div>
           {/* Flight */}
@@ -1348,7 +1393,12 @@ export default function FlightBookForm() {
                 { locale: vi }
               );
               return (
-                <div className="pb-0 py-2 px-3 lg:px-6 mb-3" key={index}>
+                <div
+                  className={`py-3 px-3 lg:px-6 mb-3 border-t-gray-300 ${
+                    index > 0 ? "border-t" : "border-t-0"
+                  }`}
+                  key={index}
+                >
                   <div className="flex justify-between">
                     <p className="font-bold">
                       {item.Leg ? "Chiều về" : "Chiều đi"}
@@ -1511,7 +1561,7 @@ export default function FlightBookForm() {
                 </div>
               ))}
 
-              <div className="flex justify-between">
+              <div className="flex justify-between pb-4">
                 <span className="text-sm text-gray-500 ">Hành lý bổ sung</span>
                 <p className="font-semibold">
                   {totalBaggages.price && totalBaggages.quantity
@@ -1521,23 +1571,32 @@ export default function FlightBookForm() {
                     : "0đ"}
                 </p>
               </div>
-              <div className="flex mt-4 pt-4 pb-6 justify-between border-t border-t-gray-200">
-                <span className="text-sm text-gray-500 ">Tổng cộng</span>
-                <p className="font-semibold text-primary">
+              <div className="flex pt-4 justify-between border-t border-t-gray-200">
+                <span className=" text-gray-700 font-bold">Tổng cộng</span>
+                <p className="font-bold text-primary">
                   {finalPrice.toLocaleString("vi-VN")} vnđ
                 </p>
               </div>
             </div>
           </div>
-          <div className="hidden md:block pb-0 py-4 px-3 lg:px-6">
+          {/* <div className="hidden md:block pb-0 py-4 px-3 lg:px-6">
             <LoadingButton
               isLoading={loading}
               text="Thanh toán"
               disabled={false}
             />
-          </div>
+          </div> */}
         </div>
       </div>
+      {flightsDetail.length > 0 && (
+        <FlightDetailPopup
+          airports={airportsData}
+          tabs={[{ id: 1, name: "Chi tiết hành trình" }]}
+          flights={flightsDetail}
+          isOpen={showFlightDetail}
+          onClose={handleClosePopupFlightDetail}
+        />
+      )}
     </form>
   );
 }
