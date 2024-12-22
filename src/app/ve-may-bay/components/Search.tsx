@@ -231,7 +231,10 @@ export default function Search({ airportsData }: SearchFilghtProps) {
           </label>
         </div>
 
-        <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
+        <div
+          id="searchFlight"
+          className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0"
+        >
           <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
             <AirportSelector
               handleLocationPlaceChange={handleLocationPlaceChange}
@@ -268,7 +271,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                     placeholderText="Chọn ngày"
                     locale={vi}
                     popperPlacement="bottom-start"
-                    portalId="datepicker-portal"
+                    portalId="datepicker-search-flight"
                     minDate={today}
                     onFocus={(e) => e.target.blur()}
                     onKeyDown={(e) => {
@@ -302,7 +305,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                       placeholderText="Chọn ngày"
                       locale={vi}
                       popperPlacement="bottom-start"
-                      portalId="datepicker-portal"
+                      portalId="datepicker-search-flight"
                       minDate={today}
                       onFocus={(e) => e.target.blur()}
                       onKeyDown={(e) => {
