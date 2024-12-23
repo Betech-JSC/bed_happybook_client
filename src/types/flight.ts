@@ -56,8 +56,8 @@ export interface SearchParamsProps {
   DepartDate: string | null;
   ReturnDate: string | null;
   Cheapest: string | null;
-  FromPlace: string | null;
-  ToPlace: string | null;
+  from: string | null;
+  to: string | null;
 }
 
 export interface FlightCalendarProps {
@@ -102,6 +102,15 @@ export interface filtersFlight {
   sortPrice: string;
   airlines: string[];
 }
+
+export interface filtersFlightDomestic {
+  priceWithoutTax: string;
+  timeDepart: string;
+  sortAirLine: string;
+  sortPrice: string;
+  airlines: string[];
+  stopNum: string[];
+}
 export interface ListFlight {
   airportsData: AirportsCountry[];
   flightSession: string;
@@ -120,6 +129,7 @@ export interface ListFlight {
   totalPassengers: number;
   handleClickDate: (date: Date, TypeIndex: number) => void;
   flightType?: string;
+  flightStopNum?: number[];
 }
 export interface FlightDetailPopupProps {
   isOpen: boolean;

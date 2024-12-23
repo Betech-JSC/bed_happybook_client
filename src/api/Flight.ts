@@ -9,6 +9,8 @@ const FlightApi = {
   airPorts: () => http.get<any>("danh-sach-diem-di-den-ve-may-bay"),
   searchAirPorts: (searchParams: string) =>
     http.get<any>(`airport/search?keyword=${searchParams}`),
+  updatePaymentMethod: (data: any) =>
+    http.post<any>(`update-payment-booking-flight`, data),
 };
 
 export { FlightApi };
