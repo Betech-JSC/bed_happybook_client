@@ -6,12 +6,19 @@ import { differenceInSeconds, format, parse } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/LoadingButton";
 import { FlightApi } from "@/api/Flight";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  CheckOutBody,
+  CheckOutBodyType,
+} from "@/schemaValidations/checkOut.schema";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [data, setData] = useState<any>(null);
   const [totalBaggages, setTotalBaggages] = useState<{
@@ -21,11 +28,51 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [isLoadingRules, setIsLoadingRules] = useState<boolean>(false);
   const [showRuleTicket, setShowRuleTicket] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
+
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
   const [isStickySideBar, setStickySideBar] = useState<boolean>(true);
   const [showTransferInfor, setShowTransferInfor] = useState<boolean>(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CheckOutBodyType>({
+    resolver: zodResolver(CheckOutBody),
+    mode: "onSubmit",
+  });
+  const onSubmit = (dataForm: CheckOutBodyType) => {
+    const finalData = {
+      ...dataForm,
+      sku: data?.orderInfo.sku,
+    } as CheckOutBodyType & { sku: string };
+    const updatePaymentMethod = async () => {
+      try {
+        setLoadingSubmitForm(true);
+        const respon = await FlightApi.updatePaymentMethod(finalData);
+        if (respon?.status === 200) {
+          reset();
+          toast.success("Gửi yêu cầu thành công!");
+          handleSessionStorage("remove", ["bookingFlight"]);
+          setTimeout(() => {
+            router.push("/ve-may-bay");
+          }, 600);
+        } else {
+          toast.error("Gửi yêu cầu thất bại!");
+        }
+      } catch (error: any) {
+        toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+      } finally {
+        setLoadingSubmitForm(false);
+      }
+    };
+    if (finalData) {
+      updatePaymentMethod();
+    }
+  };
 
   let keyLoopDropdown = 1;
   let totalPrice = 0;
@@ -136,16 +183,16 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     return timeLeft;
   };
 
-  const [targetTime] = useState(calculateTargetTime());
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(targetTime));
+  // const [targetTime] = useState(calculateTargetTime());
+  // const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(targetTime));
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(targetTime));
-    }, 1000);
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setTimeLeft(calculateTimeLeft(targetTime));
+  //   }, 1000);
 
-    return () => clearInterval(timer);
-  }, [targetTime]);
+  //   return () => clearInterval(timer);
+  // }, [targetTime]);
 
   const fetchFareRules = useCallback(async (FareData: any) => {
     try {
@@ -242,7 +289,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             <p className="text-22 font-bold text-white">
               Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất{" "}
             </p>
-            <div className="mt-3 lg:mt-0 flex space-x-2 items-center text-22 font-bold text-[#FF9258]">
+            {/* <div className="mt-3 lg:mt-0 flex space-x-2 items-center text-22 font-bold text-[#FF9258]">
               <p>
                 00:{String(timeLeft.minutes).padStart(2, "0")}:
                 {String(timeLeft.seconds).padStart(2, "0")}
@@ -254,7 +301,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 alt="Icon"
                 className="w-5 h-5"
               />
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="mt-6">
@@ -524,177 +571,203 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </div>
           ))}
         </div>
-        <div className="mt-6">
-          <p className="font-bold text-18">Hình thức thanh toán</p>
-          <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-            <div className="flex space-x-3 items-start">
-              <input
-                type="radio"
-                value="cash"
-                id="payment_cash"
-                name="payment_method"
-                className="w-5 h-5 mt-[2px]"
-              />
-              <label htmlFor="payment_cash" className="flex space-x-1 w-full">
-                <div className="font-normal">
-                  <Image
-                    src="/payment-method/cash.svg"
-                    alt="Icon"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
-                  />
-                </div>
-                <div className="max-w-[85%]">
-                  <span className="font-medium text-base">
-                    Thanh toán tiền mặt
-                  </span>
-                  <p className="text-gray-500">
-                    Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên hệ xác
-                    nhận
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div className="flex space-x-3 items-start mt-4">
-              <input
-                type="radio"
-                value="vnpay"
-                id="payment_vnpay"
-                name="payment_method"
-                className="w-5 h-5 mt-[2px]"
-              />
-              <label htmlFor="payment_vnpay" className=" flex space-x-1">
-                <div className="font-normal">
-                  <Image
-                    src="/payment-method/vnpay.svg"
-                    alt="Icon"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
-                  />
-                </div>
-                <div>
-                  <span className="font-medium text-base max-width-[85%]">
-                    Thanh toán bằng VNPAY
-                  </span>
-                </div>
-              </label>
-            </div>
-            <div className="flex space-x-3 items-start mt-4">
-              <input
-                type="radio"
-                value="bank_transfer"
-                id="payment_transfer"
-                name="payment_method"
-                className="w-5 h-5 mt-[2px]"
-              />
-              <label htmlFor="payment_transfer" className=" flex space-x-1">
-                <div className="font-normal">
-                  <Image
-                    src="/payment-method/transfer.svg"
-                    alt="Icon"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
-                  />
-                </div>
-                <div className="max-width-[85%]">
-                  <span className="block text-base font-medium">
-                    Thẻ quốc tế (Visa, Master, JCB)
-                  </span>
-                </div>
-              </label>
-            </div>
-            <div className="flex space-x-3 items-start mt-4">
-              <div className="w-5 h-5">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-6">
+            <p className="font-bold text-18">Hình thức thanh toán</p>
+            <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
+              <div className="flex space-x-3 items-start">
                 <input
                   type="radio"
-                  value="bank_transfer"
-                  name="payment_method"
-                  id="bank_transfer"
+                  value="cash"
+                  id="payment_cash"
+                  {...register("payment_method")}
                   className="w-5 h-5 mt-[2px]"
                 />
+                <label htmlFor="payment_cash" className="flex space-x-1 w-full">
+                  <div className="font-normal">
+                    <Image
+                      src="/payment-method/cash.svg"
+                      alt="Icon"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
+                  </div>
+                  <div className="max-w-[85%]">
+                    <span className="font-medium text-base">
+                      Thanh toán tiền mặt
+                    </span>
+                    <p className="text-gray-500">
+                      Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên hệ
+                      xác nhận
+                    </p>
+                  </div>
+                </label>
               </div>
-              <label htmlFor="bank_transfer" className="flex space-x-1">
-                <div className="font-normal">
-                  <Image
-                    src="/payment-method/transfer.svg"
-                    alt="Icon"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
+              <div className="flex space-x-3 items-start mt-4">
+                <input
+                  type="radio"
+                  value="vnpay"
+                  id="payment_vnpay"
+                  {...register("payment_method")}
+                  className="w-5 h-5 mt-[2px]"
+                />
+                <label htmlFor="payment_vnpay" className=" flex space-x-1">
+                  <div className="font-normal">
+                    <Image
+                      src="/payment-method/vnpay.svg"
+                      alt="Icon"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
+                  </div>
+                  <div>
+                    <span className="font-medium text-base max-width-[85%]">
+                      Thanh toán bằng VNPAY
+                    </span>
+                  </div>
+                </label>
+              </div>
+              <div className="flex space-x-3 items-start mt-4">
+                <input
+                  type="radio"
+                  value="international_card"
+                  id="international_card"
+                  {...register("payment_method")}
+                  className="w-5 h-5 mt-[2px]"
+                />
+                <label htmlFor="international_card" className=" flex space-x-1">
+                  <div className="font-normal">
+                    <Image
+                      src="/payment-method/transfer.svg"
+                      alt="Icon"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
+                  </div>
+                  <div className="max-width-[85%]">
+                    <span className="block text-base font-medium">
+                      Thẻ quốc tế (Visa, Master, JCB)
+                    </span>
+                  </div>
+                </label>
+              </div>
+              <div className="flex space-x-3 items-start mt-4">
+                <div className="w-5 h-5">
+                  <input
+                    type="radio"
+                    value="bank_transfer"
+                    {...register("payment_method")}
+                    id="bank_transfer"
+                    className="w-5 h-5 mt-[2px]"
                   />
                 </div>
-                <div className="max-width-[85%] w-fit">
-                  <span className="block text-base font-medium">
-                    Chuyển khoản
-                  </span>
-                  <button
-                    type="button"
-                    className="text-blue-700 underline"
-                    onClick={() => {
-                      setShowTransferInfor(!showTransferInfor);
-                    }}
-                  >
-                    Thông tin chuyển khoản
-                  </button>
-                  {showTransferInfor && (
-                    <div
-                      className={`mt-4 pb-3 overflow-hidden bg-white rounded-2xl`}
+                <label htmlFor="bank_transfer" className="flex space-x-1">
+                  <div className="font-normal">
+                    <Image
+                      src="/payment-method/transfer.svg"
+                      alt="Icon"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6"
+                    />
+                  </div>
+                  <div className="max-width-[85%] w-fit">
+                    <span className="block text-base font-medium">
+                      Chuyển khoản
+                    </span>
+                    <button
+                      type="button"
+                      className="text-blue-700 underline flex items-end"
+                      onClick={() => {
+                        setShowTransferInfor(!showTransferInfor);
+                      }}
                     >
-                      <div>
-                        <p>
-                          Nội dung chuyển khoản quý khách hàng cần ghi rõ:MÃ ĐẶT
-                          CHỖ/MÃ ĐƠN HÀNG
-                        </p>
-                        <p className="text-22 text-gray-900 font-semibold mt-4">
-                          THÔNG TIN NGÂN HÀNG CỦA SỐ TÀI KHOẢN CÁ NHÂN
-                        </p>
-                        <p className="text-base text-gray-900">
-                          Nội dung chuyển khoản quý khách hàng cần ghi rõ: MÃ
-                          ĐẶT CHỖ/MÃ ĐƠN HÀNG
-                        </p>
-                        <p className="text-base text-gray-900 mt-3">
-                          THÔNG TIN NGÂN HÀNG CỦA SỐ TÀI KHOẢN CÁ NHÂN
-                        </p>
-                        <p className="text-base text-gray-900 mt-3">
-                          ACB - Ngân hàng TMCP Á Châu - CN PGD Phước Bình
-                        </p>
-                        <p className="text-base text-gray-900 mt-1">
-                          Số tài khoản: 223.702.679
-                        </p>
-                        <p className="text-base text-gray-900 mt-1">
-                          Chủ tài khoản: VŨ THỊ VĂN
-                        </p>
-                        <p className="text-base text-gray-900 mt-3">
-                          Happy Book CAM KẾT những thông tin chuyển khoản bên
-                          trên hoàn toàn của chính chủ, nhân viên của Happy
-                          Book, nên bạn hoàn toàn có thể an tâm.
-                        </p>
-                        <p className="text-base text-gray-900 mt-3">
-                          Happy Book xin chân thành cảm ơn sự đóng góp và đồng
-                          hành của tất cả các quý khách hàng đã tin tưởng tại
-                          chúng tôi. Happy Book đảm bảo sẽ mang cho bạn đến
-                          những lựa chọn tốt nhất, trên cả sự mong đợi nhé. Nếu
-                          có gặp khó khăn về vé máy bay hay làm visa, bạn có thể
-                          liên hệ qua:
-                        </p>
+                      Thông tin chuyển khoản{" "}
+                      <span className="ml-1">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d={
+                              showTransferInfor
+                                ? "M15 12.5L10 7.5L5 12.5"
+                                : "M5 7.5L10 12.5L15 7.5"
+                            }
+                            stroke="#175CD3"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    {showTransferInfor && (
+                      <div
+                        className={`mt-4 pb-3 overflow-hidden bg-white rounded-2xl`}
+                      >
+                        <div>
+                          <p>
+                            Nội dung chuyển khoản quý khách hàng cần ghi rõ:MÃ
+                            ĐẶT CHỖ/MÃ ĐƠN HÀNG
+                          </p>
+                          <p className="text-22 text-gray-900 font-semibold mt-4">
+                            THÔNG TIN NGÂN HÀNG CỦA SỐ TÀI KHOẢN CÁ NHÂN
+                          </p>
+                          <p className="text-base text-gray-900">
+                            Nội dung chuyển khoản quý khách hàng cần ghi rõ: MÃ
+                            ĐẶT CHỖ/MÃ ĐƠN HÀNG
+                          </p>
+                          <p className="text-base text-gray-900 mt-3">
+                            THÔNG TIN NGÂN HÀNG CỦA SỐ TÀI KHOẢN CÁ NHÂN
+                          </p>
+                          <p className="text-base text-gray-900 mt-3">
+                            ACB - Ngân hàng TMCP Á Châu - CN PGD Phước Bình
+                          </p>
+                          <p className="text-base text-gray-900 mt-1">
+                            Số tài khoản: 223.702.679
+                          </p>
+                          <p className="text-base text-gray-900 mt-1">
+                            Chủ tài khoản: VŨ THỊ VĂN
+                          </p>
+                          <p className="text-base text-gray-900 mt-3">
+                            Happy Book CAM KẾT những thông tin chuyển khoản bên
+                            trên hoàn toàn của chính chủ, nhân viên của Happy
+                            Book, nên bạn hoàn toàn có thể an tâm.
+                          </p>
+                          <p className="text-base text-gray-900 mt-3">
+                            Happy Book xin chân thành cảm ơn sự đóng góp và đồng
+                            hành của tất cả các quý khách hàng đã tin tưởng tại
+                            chúng tôi. Happy Book đảm bảo sẽ mang cho bạn đến
+                            những lựa chọn tốt nhất, trên cả sự mong đợi nhé.
+                            Nếu có gặp khó khăn về vé máy bay hay làm visa, bạn
+                            có thể liên hệ qua:
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </label>
+                    )}
+                  </div>
+                </label>
+              </div>
+              {errors.payment_method && (
+                <p className="text-red-600">{errors.payment_method.message}</p>
+              )}
             </div>
           </div>
-        </div>
-        <div className="mt-6">
-          <LoadingButton
-            isLoading={false}
-            text="Xác nhận thanh toán"
-            disabled={false}
-          />
-        </div>
+          <div className="mt-6">
+            <LoadingButton
+              isLoading={loadingSubmitForm}
+              text="Xác nhận thanh toán"
+              disabled={false}
+            />
+          </div>
+        </form>
       </div>
       <div
         className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl p-3 lg:p-6  ${

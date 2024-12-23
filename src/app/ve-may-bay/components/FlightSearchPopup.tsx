@@ -174,8 +174,13 @@ export default function FlightSearchPopup({
                   width={18}
                   height={18}
                 />
-                <div className="w-full ml-3">
-                  <input type="text" value={from?.city} readOnly />
+                <div className="w-full ml-3 overflow-x-hidden">
+                  <input
+                    className="w-full"
+                    type="text"
+                    value={from?.city}
+                    readOnly
+                  />
                 </div>
               </div>
             </div>
@@ -201,8 +206,13 @@ export default function FlightSearchPopup({
                   width={18}
                   height={18}
                 />
-                <div className="w-full ml-3">
-                  <input type="text" value={to?.city} readOnly />
+                <div className="w-full ml-3 overflow-x-hidden">
+                  <input
+                    type="text"
+                    className="w-full"
+                    value={to?.city}
+                    readOnly
+                  />
                 </div>
               </div>
             </div>
@@ -218,7 +228,7 @@ export default function FlightSearchPopup({
                   width={18}
                   height={18}
                 ></Image>
-                <div className="w-full [&>div]:w-full border-none">
+                <div className="w-full [&>div]:w-full border-none datepicker-search-flight">
                   <DatePicker
                     id="start_date"
                     selected={selectedDate}
@@ -227,12 +237,13 @@ export default function FlightSearchPopup({
                     placeholderText="Chọn ngày"
                     locale={vi}
                     popperPlacement="bottom-start"
-                    portalId="datepicker-portal"
+                    portalId="datepicker-search-flight-popup"
                     minDate={today}
                     onFocus={(e) => e.target.blur()}
                     onKeyDown={(e) => {
                       e.preventDefault();
                     }}
+                    calendarClassName="custom-calendar-datepicker"
                     className="z-20 text-sm pl-4 w-full pt-6 pb-2 outline-none"
                   />
                 </div>

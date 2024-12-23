@@ -38,8 +38,8 @@ export default async function SearchTicketCheap({
   const startPoint = searchParams?.StartPoint ?? "SGN";
   const endPoint = searchParams?.EndPoint ?? "HAN";
   const tripType = searchParams?.tripType ?? "oneWay";
-  const fromPlace = searchParams?.FromPlace ?? "Hồ Chí Minh (SGN)";
-  const toPlace = searchParams?.ToPlace ?? "Hà Nội (HAN)";
+  const fromPlace = searchParams?.from ?? "Hồ Chí Minh (SGN)";
+  const toPlace = searchParams?.to ?? "Hà Nội (HAN)";
   const fromOption = {
     city: fromPlace,
     code: startPoint,

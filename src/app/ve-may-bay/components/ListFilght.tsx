@@ -87,6 +87,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const [totalFlightLeg, setTotalFlightLeg] = useState<any[]>([
     { 0: [], 1: [] },
   ]);
+  const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
   const [flightType, setFlightType] = useState<string>("");
 
   const scrollToRef = (ref: any) => {
@@ -194,7 +195,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
           const response = await FlightApi.search("flights/search", params);
           const dataRespon = response?.payload.data;
           const listFareData = dataRespon.ListFareData ?? [];
-          const flightFleg: any = [];
+          const flightStopNum: number[] = [];
 
           if (listFareData.length) {
             listFareData.forEach((flight: any) => {
@@ -205,16 +206,20 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
                 flight.TotalPrice -
                 (priceAtdWithoutTax + priceChdWithoutTax + priceInfWithoutTax);
               if (dataRespon.FlightType === "domestic" || !isRoundTrip) {
-                const leg = flight.Leg;
-                // if (!flightFleg[leg]) {
-                //   flightFleg[leg] = [];
-                // }
+                const stopNum = flight.ListFlight[0].StopNum;
+                if (!flightStopNum[stopNum]) {
+                  flightStopNum[stopNum] = stopNum;
+                }
               }
             });
             setApiFlightSession(response?.payload.data.Session);
           }
           setFlightType(dataRespon.FlightType);
-          // setTotalFlightLeg(flightFleg);
+          setStopNumFilters(
+            flightStopNum.filter(
+              (item: any) => item !== undefined && item !== null
+            )
+          );
           setData(listFareData);
           setError(null);
         } else {
@@ -252,13 +257,16 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
     router,
   ]);
 
-  useEffect(() => {
-    if (displayType === "mobile") {
-      setTimeout(() => {
-        scrollToRef(resultsRef);
-      }, 50);
-    }
-  }, [displayType, data]);
+  // useEffect(() => {
+  //   if (displayType === "mobile") {
+  //     const scrollResultMobileTimeout = setTimeout(() => {
+  //       scrollToRef(resultsRef);
+  //     }, 100);
+  //     return () => {
+  //       clearTimeout(scrollResultMobileTimeout);
+  //     };
+  //   }
+  // }, [displayType, data]);
 
   // Loading
   if (loading) {
@@ -303,6 +311,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
             isRoundTrip={isRoundTrip}
             totalPassengers={totalPassengers}
             flightType={flightType}
+            flightStopNum={stopNumFilters}
           />
         ) : (
           <FlightInternationalList

@@ -1,8 +1,4 @@
-#searchFlight {
-  .react-datepicker-popper {
-    z-index: 9999;
-    margin-top: 8px;
-  }
+.datepicker-search-flight {
   .react-datepicker {
     @apply w-[250px] md:w-[350px];
     font-size: 14px;
@@ -14,8 +10,17 @@
   }
 }
 
+#datepicker-search-flight-popup,
 #datepicker-search-flight {
+  .react-datepicker-popper {
+    z-index: 9999;
+    margin-top: 8px;
+  }
   .react-datepicker {
+    &__input-container input {
+      width: 100%;
+      font-size: 16px;
+    }
     &__month-container {
       width: 100%;
     }

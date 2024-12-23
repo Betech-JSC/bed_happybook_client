@@ -231,10 +231,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
           </label>
         </div>
 
-        <div
-          id="searchFlight"
-          className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0"
-        >
+        <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0 datepicker-search-flight">
           <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap space-y-2 md:space-y-0 md:space-x-2 relative">
             <AirportSelector
               handleLocationPlaceChange={handleLocationPlaceChange}

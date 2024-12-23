@@ -73,6 +73,7 @@ const FlightDomesticDetail = ({
                 </div>
               </div>
               <button
+                type="button"
                 className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
                 onClick={() =>
                   setFlightDetail(flight, [
@@ -148,8 +149,9 @@ const FlightDomesticDetail = ({
               <div className="w-11 h-11 bg-gray-100 rounded-full"></div>
             </div>
             <div className="col-span-8 w-full md:col-span-2 text-center md:text-right md:pl-8 xl:pr-8">
-              <div className="mt-3 md:mt-0">
+              <div className="mt-3 md:mt-0 flex justify-between">
                 <button
+                  type="button"
                   className="inline-block md:hidden text-blue-700 border-b border-blue-700 font-normal"
                   onClick={() =>
                     setFlightDetail(flight, [

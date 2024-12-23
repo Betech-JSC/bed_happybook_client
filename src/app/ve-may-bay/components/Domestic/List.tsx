@@ -5,18 +5,19 @@ import Image from "next/image";
 import { pareseDateFromString } from "@/lib/formatters";
 import { handleScrollSmooth, handleSessionStorage } from "@/utils/Helper";
 import FlightDomesticDetail from "./Detail";
-import { filtersFlight, ListFlight } from "@/types/flight";
+import { filtersFlightDomestic, ListFlight } from "@/types/flight";
 import { useRouter } from "next/navigation";
 import SignUpReceiveCheapTickets from "../SignUpReceiveCheapTickets";
 import FlightDetailPopup from "../FlightDetailPopup";
 import { FlightApi } from "@/api/Flight";
 
-const defaultFilers: filtersFlight = {
+const defaultFilers: filtersFlightDomestic = {
   priceWithoutTax: "0",
   timeDepart: "",
   sortAirLine: "",
   sortPrice: "",
   airlines: [],
+  stopNum: [],
 };
 
 export default function FilghtDomesticList({
@@ -37,6 +38,7 @@ export default function FilghtDomesticList({
   totalFlightLeg,
   totalPassengers,
   flightType,
+  flightStopNum,
 }: ListFlight) {
   const router = useRouter();
   const departFlightRef = useRef<HTMLDivElement>(null);
@@ -57,19 +59,13 @@ export default function FilghtDomesticList({
     sortAirLine: "",
     sortPrice: "",
     airlines: [] as string[],
+    stopNum: [] as string[],
   });
   const scrollToRef = (ref: any) => {
     if (ref.current) {
       handleScrollSmooth(ref.current);
     }
   };
-
-  if (selectedDepartFlight && !selectedReturnFlight) {
-    scrollToRef(returnFlightRef);
-  }
-  if (selectedReturnFlight && !selectedDepartFlight) {
-    scrollToRef(departFlightRef);
-  }
 
   const resetFilters = () => {
     setFilters(defaultFilers);
@@ -128,6 +124,13 @@ export default function FilghtDomesticList({
           return {
             ...prev,
             sortAirLine: checked ? value : "",
+          };
+        } else if (name === "stopNum") {
+          return {
+            ...prev,
+            stopNum: checked
+              ? [...prev.stopNum, value]
+              : prev.stopNum.filter((itemStopNum) => itemStopNum !== value),
           };
         }
         return prev;
@@ -225,6 +228,16 @@ export default function FilghtDomesticList({
         });
       }
 
+      if (filters.stopNum.length > 0) {
+        filtered = filtered.filter((flight: any) => {
+          const match = filters.stopNum.some((stopNumber) => {
+            const intStopNum = parseInt(stopNumber) ?? 0;
+            return intStopNum === flight.ListFlight[0].StopNum;
+          });
+          return match;
+        });
+      }
+
       if (filters.timeDepart === "asc") {
         filtered = [...filtered].sort(
           (a, b) =>
@@ -239,6 +252,34 @@ export default function FilghtDomesticList({
         );
       }
     }
+    if (isRoundTrip) {
+      if (selectedDepartFlight && !selectedReturnFlight) {
+        const departureTimeGo = new Date(
+          selectedDepartFlight.ListFlight[0].EndDate
+        ).getTime();
+        filtered = filtered.filter((flight: any) => {
+          if (flight.Leg) {
+            const departureTimeReturn = new Date(
+              flight.ListFlight[0].StartDate
+            ).getTime();
+            return departureTimeReturn >= departureTimeGo + 2 * 60 * 60 * 1000;
+          }
+        });
+      } else if (!selectedDepartFlight && selectedReturnFlight) {
+        const departureTimeReturn = new Date(
+          selectedReturnFlight.ListFlight[0].StartDate
+        ).getTime();
+        filtered = filtered.filter((flight: any) => {
+          if (flight.Leg === 0) {
+            const departureTimeGo = new Date(
+              flight.ListFlight[0].EndDate
+            ).getTime();
+            return departureTimeGo <= departureTimeReturn - 2 * 60 * 60 * 1000;
+          }
+        });
+      }
+    }
+
     setFilteredData(filtered);
   }, [
     filters,
@@ -250,15 +291,29 @@ export default function FilghtDomesticList({
 
   // Select Depart and Return Flight
   const handleSelectDepartFlight = (flight: any) => {
-    if (selectedDepartFlight?.FareDataId === flight.FareDataId)
+    if (selectedDepartFlight?.FareDataId === flight.FareDataId) {
       setSelectedDepartFlight(null);
-    else setSelectedDepartFlight(flight);
+    } else {
+      setSelectedDepartFlight(flight);
+      if (isRoundTrip && !selectedReturnFlight) {
+        setTimeout(() => {
+          scrollToRef(returnFlightRef);
+        }, 100);
+      }
+    }
   };
 
   const handleSelectReturnFlight = (flight: any) => {
-    if (selectedReturnFlight?.FareDataId === flight.FareDataId)
+    if (selectedReturnFlight?.FareDataId === flight.FareDataId) {
       setSelectedReturnFlight(null);
-    else setSelectedReturnFlight(flight);
+    } else {
+      setSelectedReturnFlight(flight);
+      if (isRoundTrip && !selectedDepartFlight) {
+        setTimeout(() => {
+          scrollToRef(departFlightRef);
+        }, 100);
+      }
+    }
   };
 
   useEffect(() => {
@@ -319,6 +374,26 @@ export default function FilghtDomesticList({
               <option value="">Đề xuất</option>
             </select>
           </div>
+          {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
+            <div className="mt-3 pb-3 border-b border-gray-200">
+              <h2 className="font-semibold">Số điểm dừng</h2>
+              {flightStopNum.map((stopNum: number, index: number) => (
+                <div key={index} className="flex space-x-2 mt-3">
+                  <input
+                    type="checkbox"
+                    name="stopNum"
+                    value={`${stopNum}`}
+                    id={`stopNum_${index}`}
+                    onChange={handleCheckboxChange}
+                    checked={filters.stopNum.includes(`${stopNum}`)}
+                  />
+                  <label htmlFor={`${`stopNum_${index}`}`}>
+                    {stopNum < 1 ? "Chuyến bay thẳng" : `${stopNum} điểm dừng`}
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">Hiển thị giá</h2>
             {/* <div className="flex space-x-2 mt-3">
@@ -587,7 +662,11 @@ export default function FilghtDomesticList({
                     </div>
                   ) : (
                     <div className="w-full mt-12 text-center text-2xl font-semibold">
-                      Không tìm thấy chuyến bay phù hợp...
+                      <p>Không có chuyến bay nào trong ngày hôm nay.</p>
+                      <p className="mt-1">
+                        Quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin
+                        cám ơn!
+                      </p>
                     </div>
                   )}
                 </div>
