@@ -47,7 +47,7 @@ const FlightInternationalDetail = ({
                         <h3 className="text-sm md:text-18 font-semibold mb-1">
                           {flight.Airline}
                         </h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 break-words">
                           {flight.FlightNumber}
                         </p>
                       </div>

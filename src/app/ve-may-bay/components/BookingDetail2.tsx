@@ -16,6 +16,7 @@ import {
   CheckOutBody,
   CheckOutBodyType,
 } from "@/schemaValidations/checkOut.schema";
+import CountDownCheckOut from "./CountDownCheckOut";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const router = useRouter();
@@ -29,6 +30,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [showRuleTicket, setShowRuleTicket] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
+  const [ticketPaymentTimeout, setTicketPaymentTimeout] =
+    useState<boolean>(false);
 
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -98,8 +101,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
       totalChd = item.Chd > totalChd ? item.Chd : totalChd;
       totalInf = item.Inf > totalInf ? item.Inf : totalInf;
-      totalPriceAdt += (item.FareAdt + item.TaxAdt) * item.Adt;
-      totalPriceChd += (item.FareChd + item.TaxChd) * item.Chd;
+      totalPriceAdt +=
+        (item.FareAdt + item.TaxAdt + item.ServiceFeeAdt) * item.Adt;
+      totalPriceChd +=
+        (item.FareChd + item.TaxChd + item.ServiceFeeChd) * item.Chd;
+      totalPriceInf +=
+        (item.FareInf + item.TaxInf + item.ServiceFeeInf) * item.Inf;
       totalPriceTicketAdt += item.FareAdt * item.Adt;
       totalPriceTicketChd += item.FareChd * item.Chd;
       totalPriceTicketInf += item.FareInf * item.Inf;
@@ -164,36 +171,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     }
   }, []);
 
-  const calculateTargetTime = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
-    return now;
-  };
-
-  const calculateTimeLeft = (targetTime: Date) => {
-    const difference = +targetTime - +new Date();
-    let timeLeft = { minutes: 0, seconds: 0 };
-
-    if (difference > 0) {
-      timeLeft = {
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-    return timeLeft;
-  };
-
-  // const [targetTime] = useState(calculateTargetTime());
-  // const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(targetTime));
-
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setTimeLeft(calculateTimeLeft(targetTime));
-  //   }, 1000);
-
-  //   return () => clearInterval(timer);
-  // }, [targetTime]);
-
   const fetchFareRules = useCallback(async (FareData: any) => {
     try {
       setIsLoadingRules(true);
@@ -246,6 +223,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     },
     [showRuleTicket, fetchFareRules]
   );
+  const handleTicketPaymentTimeout = () => {
+    setTicketPaymentTimeout(true);
+  };
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -262,7 +242,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
   if (loading) {
     return (
       <div
@@ -289,19 +268,23 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             <p className="text-22 font-bold text-white">
               Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất{" "}
             </p>
-            {/* <div className="mt-3 lg:mt-0 flex space-x-2 items-center text-22 font-bold text-[#FF9258]">
-              <p>
-                00:{String(timeLeft.minutes).padStart(2, "0")}:
-                {String(timeLeft.seconds).padStart(2, "0")}
-              </p>
-              <Image
-                src={`/icon/clock-stopwatch.svg`}
-                width={20}
-                height={20}
-                alt="Icon"
-                className="w-5 h-5"
+            {!ticketPaymentTimeout && data.orderInfo.booking_deadline ? (
+              <CountDownCheckOut
+                timeCountDown={data.orderInfo.booking_deadline}
+                handleTicketPaymentTimeout={handleTicketPaymentTimeout}
               />
-            </div> */}
+            ) : (
+              <div className="mt-3 lg:mt-0 flex space-x-2 items-center text-22 font-bold text-[#FF9258]">
+                <p>00:00:00</p>
+                <Image
+                  src={`/icon/clock-stopwatch.svg`}
+                  width={20}
+                  height={20}
+                  alt="Icon"
+                  className="w-5 h-5"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-6">
@@ -763,8 +746,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           <div className="mt-6">
             <LoadingButton
               isLoading={loadingSubmitForm}
-              text="Xác nhận thanh toán"
-              disabled={false}
+              text={
+                ticketPaymentTimeout
+                  ? "Đã hết thời gian thanh toán"
+                  : "Xác nhận thanh toán"
+              }
+              disabled={ticketPaymentTimeout ? true : false}
+              style={ticketPaymentTimeout ? "disabled:cursor-not-allowed" : ""}
             />
           </div>
         </form>
@@ -776,7 +764,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             : "w-full"
         }`}
       >
-        <div className="p-3 lg:py-4 lg:px-6">
+        <div className="p-3 lg:py-4 lg:px-4">
           <p className="text-22 font-bold mb-2">Giá chi tiết</p>
           {dropdown.map((item: any, index: number) => (
             <div key={index} className="mb-4">
