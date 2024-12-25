@@ -249,9 +249,9 @@ export default function FlightBookForm({ airportsData }: any) {
     totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
     totalChd = item.Chd > totalChd ? item.Chd : totalChd;
     totalInf = item.Inf > totalInf ? item.Inf : totalInf;
-    totalPriceAdt += item.FareAdt + item.TaxAdt;
-    totalPriceChd += item.FareChd + item.TaxChd;
-    totalPriceInf += item.FareInf + item.TaxInf;
+    totalPriceAdt += item.FareAdt + item.TaxAdt + item.ServiceFeeAdt;
+    totalPriceChd += item.FareChd + item.TaxChd + item.ServiceFeeChd;
+    totalPriceInf += item.FareInf + item.TaxInf + item.ServiceFeeInf;
     FareAdt[index] = item.FareAdt + item.TaxAdt;
     FareChd[index] = item.FareChd + item.TaxChd;
     FareInf[index] = item.FareInf + item.TaxInf;
