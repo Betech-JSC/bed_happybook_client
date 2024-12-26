@@ -7,6 +7,7 @@ import {
   formatTime,
 } from "@/lib/formatters";
 import { FlightDetailPopupProps } from "@/types/flight";
+import DisplayImage from "@/components/DisplayImage";
 
 export default function FlightDetailPopup({
   isOpen,
@@ -210,12 +211,14 @@ export default function FlightDetailPopup({
                                 </div>
                                 <div className="rounded-lg py-3 px-4 bg-gray-50">
                                   <div className="flex space-x-3">
-                                    <Image
-                                      src={`http://cms.happybooktravel.com/assets/images/airline/${segment.Airline.toLowerCase()}.gif`}
+                                    <DisplayImage
+                                      imagePath={`assets/images/airline/${segment.Airline.toLowerCase()}.gif`}
                                       width={82}
                                       height={24}
-                                      alt="AirLine"
-                                      className="max-w-20 md:max-w-24 max-h-10"
+                                      alt={"AirLine"}
+                                      classStyle={
+                                        "max-w-20 md:max-w-24 max-h-10"
+                                      }
                                     />
                                     <p className="font-bold">
                                       {segment.Airline}
@@ -227,7 +230,11 @@ export default function FlightDetailPopup({
                                     <p>Hạng: {flight.GroupClass ?? ""}</p>
                                   </div>
                                   <div className="mt-3 flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0 text-sm font-medium">
-                                    <p>{`Hành lý xách tay: ${segment.HandBaggage}`}</p>
+                                    <p>{`Hành lý xách tay: ${
+                                      segment.HandBaggage
+                                        ? segment.HandBaggage
+                                        : ""
+                                    }`}</p>
                                     {segment.AllowanceBaggage && (
                                       <p>{`Hành lý ký gửi: ${segment.AllowanceBaggage}`}</p>
                                     )}

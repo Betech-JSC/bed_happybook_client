@@ -22,6 +22,7 @@ import "@/styles/flightBooking.scss";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import FlightDetailPopup from "./FlightDetailPopup";
+import DisplayImage from "@/components/DisplayImage";
 
 export default function FlightBookForm({ airportsData }: any) {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
@@ -382,7 +383,6 @@ export default function FlightBookForm({ airportsData }: any) {
         let params: any = {
           ListFareData: [],
         };
-        let listBaggage: any = [];
         if (flightSession) {
           flights.map((flight) => {
             params["ListFareData"].push({
@@ -399,16 +399,14 @@ export default function FlightBookForm({ airportsData }: any) {
             "flights/getbaggage",
             params
           );
-          listBaggage = response?.payload.data.ListBaggage ?? [];
+          setListBaggage(response?.payload.ListBaggage ?? []);
         }
-        setListBaggage(listBaggage);
       } catch (error: any) {
         setListBaggage([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [flightSession, flights]);
 
@@ -1406,12 +1404,12 @@ export default function FlightBookForm({ airportsData }: any) {
                     <p className="text-sm text-gray-500">{startDateLocale}</p>
                   </div>
                   <div className="flex my-3 item-start items-center text-left space-x-3">
-                    <Image
-                      src={`/airline/${flight.Airline}.svg`}
-                      width={48}
-                      height={48}
-                      alt="AirLine"
-                      className="w-12 h-12"
+                    <DisplayImage
+                      imagePath={`assets/images/airline/${flight.Airline.toLowerCase()}.gif`}
+                      width={80}
+                      height={24}
+                      alt={"AirLine"}
+                      classStyle={"max-w-16 md:max-w-20 max-h-10"}
                     />
                     <div>
                       <h3 className="text-sm md:text-18 font-semibold mb-1">
