@@ -17,6 +17,7 @@ import {
   CheckOutBodyType,
 } from "@/schemaValidations/checkOut.schema";
 import CountDownCheckOut from "./CountDownCheckOut";
+import DisplayImage from "@/components/DisplayImage";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const router = useRouter();
@@ -337,12 +338,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           <div className="w-full lg:w-2/12 mt-5 lg:mt-0">
                             <div className="flex flex-row lg:flex-col justify-between lg:justify-normal items-center md:items-baseline w-full text-left mb-3">
                               <div>
-                                <Image
-                                  src={`http://cms.happybooktravel.com/assets/images/airline/${segment.Airline.toLowerCase()}.gif`}
+                                <DisplayImage
+                                  imagePath={`assets/images/airline/${segment.Airline.toLowerCase()}.gif`}
                                   width={80}
                                   height={24}
-                                  alt="AirLine"
-                                  className="max-w-16 md:max-w-20 max-h-10"
+                                  alt={"AirLine"}
+                                  classStyle={"max-w-16 md:max-w-20 max-h-10"}
                                 />
                               </div>
                               <div className="">

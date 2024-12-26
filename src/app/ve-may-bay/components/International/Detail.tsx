@@ -7,6 +7,7 @@ import {
 } from "@/lib/formatters";
 import _ from "lodash";
 import { FlightDetailInternationalProps } from "@/types/flight";
+import DisplayImage from "@/components/DisplayImage";
 
 const FlightInternationalDetail = ({
   FareData,
@@ -36,12 +37,14 @@ const FlightInternationalDetail = ({
                 >
                   <div className="col-span-2 border-r border-gray-200">
                     <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
-                      <Image
-                        src={`http://cms.happybooktravel.com/assets/images/airline/${flight.Airline.toLowerCase()}.gif`}
+                      <DisplayImage
+                        imagePath={`assets/images/airline/${flight.Airline.toLowerCase()}.gif`}
                         width={80}
                         height={24}
-                        alt="AirLine"
-                        className="max-w-16 md:max-w-20 max-h-10 mx-auto md:mx-0"
+                        alt={"AirLine"}
+                        classStyle={
+                          "max-w-16 md:max-w-20 max-h-10 mx-auto md:mx-0"
+                        }
                       />
                       <div>
                         <h3 className="text-sm md:text-18 font-semibold mb-1">
