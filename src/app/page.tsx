@@ -20,10 +20,15 @@ import Image from "next/image";
 import SearchMobile from "@/components/search-mobile";
 import { FlightApi } from "@/api/Flight";
 import { HomeApi } from "@/api/Home";
+import { siteUrl } from "@/constants";
+import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 
 export const metadata: Metadata = {
   title: "Trang chủ",
   description: "Happy Book",
+  alternates: {
+    canonical: siteUrl,
+  },
 };
 
 export default async function Home() {
@@ -33,6 +38,8 @@ export default async function Home() {
   // const homeData = homeApiReponse?.payload.data ?? [];
   return (
     <Fragment>
+      <WebsiteSchema {...(metadata as any)} url={siteUrl} />
+
       <Suspense>
         <Search airportsData={airportsData} />
       </Suspense>

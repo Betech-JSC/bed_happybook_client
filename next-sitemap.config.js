@@ -5,12 +5,12 @@ module.exports = {
   changefreq: "daily",
   priority: 1,
   generateRobotsTxt: true,
-  alternateRefs: [
-    {
-      href: process.env.SITE_URL || "http://client.happybooktravel.com",
-      hreflang: "vi",
-    },
-  ],
+  // alternateRefs: [
+  //   {
+  //     href: process.env.SITE_URL || "http://client.happybooktravel.com",
+  //     hreflang: "vi",
+  //   },
+  // ],
   additionalPaths: async (config) => [await config.transform(config, "/")],
   // Default transformation function
   transform: async (config, path) => {
@@ -19,7 +19,7 @@ module.exports = {
       changefreq: config.changefreq,
       priority: config.priority,
       lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
-      alternateRefs: config.alternateRefs ?? [],
+      // alternateRefs: config.alternateRefs ?? [],
     };
   },
   exclude: ["/server-sitemap-index.xml"], // <= exclude here

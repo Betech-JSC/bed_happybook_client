@@ -1,11 +1,12 @@
 import { parseISO, format, min, parse, isValid } from "date-fns";
 
-const formatDate = (isoDate: string) => {
+const formatDate = (isoDate: string, format: string = "d/m/y") => {
   const date = new Date(isoDate);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  const year = String(date.getFullYear());
+
+  return format.replace("d", day).replace("m", month).replace("y", year);
 };
 const pareseDateFromString = (
   input: string,

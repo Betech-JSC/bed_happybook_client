@@ -15,6 +15,9 @@ import { PostType, SearchParamsProps } from "@/types/post";
 import { formatDate } from "@/lib/formatters";
 import SideBar from "../../components/side-bar";
 import { Suspense } from "react";
+import Script from "next/script";
+import { siteUrl } from "@/constants";
+import { newsCategoryUrl, newsUrl } from "@/utils/Urls";
 
 type Props = {
   params: { subCategory: string };
@@ -54,6 +57,52 @@ export default async function SubCategoryPosts({
   const currentPage = parseInt(searchParams?.page || "1");
   return (
     <main className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
+      <Script
+        id="website-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: category?.title,
+            alternateName: category?.description,
+            url: newsCategoryUrl(category.alias, true),
+            dateModified: category?.updated_at,
+          }),
+        }}
+      />
+
+      <Script
+        id="breadcrumb-list-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: siteUrl,
+                item: "Trang chủ",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: newsUrl(true),
+                item: "Tin tức",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: newsCategoryUrl(category.alias, true),
+                item: category.name,
+              },
+            ],
+          }),
+        }}
+      />
+
       <Breadcrumb className="pt-3">
         <BreadcrumbList>
           <BreadcrumbItem>
