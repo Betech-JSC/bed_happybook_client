@@ -9,14 +9,15 @@ import {
 } from "@/components/ui/breadcrumb";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Chính sách bảo mật",
   description: "Happy Book",
   alternates: {
     canonical: pageUrl("chinh-sach-bao-mat", true),
   },
-};
+});
 
 export default function PrivacyPolicy() {
   return (

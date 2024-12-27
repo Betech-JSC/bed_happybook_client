@@ -2,11 +2,16 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import FormContact from "./form";
 import SeoSchema from "@/components/schema";
+import { pageUrl } from "@/utils/Urls";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Liên Hệ",
   description: "Happy Book",
-};
+  alternates: {
+    canonical: pageUrl("lien-he", true),
+  },
+});
 
 export default function Contact() {
   return (

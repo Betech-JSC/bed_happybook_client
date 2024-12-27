@@ -3,14 +3,15 @@ import type { Metadata } from "next";
 import FormCtv from "./form";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Đăng ký làm CTV bán vé máy bay.",
   description: "Happy Book",
   alternates: {
     canonical: pageUrl("dang-ky-ctv", true),
   },
-};
+});
 
 export default function SignUpCollaborator() {
   return (

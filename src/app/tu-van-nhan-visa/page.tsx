@@ -4,14 +4,15 @@ import Link from "next/link";
 import VisaApplicationForm from "./form";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Tư vấn nhận Visa",
   description: "Happy Book",
   alternates: {
     canonical: pageUrl("tu-van-nhan-visa", true),
   },
-};
+});
 
 export default function VisaConsulting() {
   return (

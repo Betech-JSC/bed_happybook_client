@@ -15,11 +15,18 @@ import Link from "next/link";
 import Search from "./components/Search";
 import { Suspense } from "react";
 import { FlightApi } from "@/api/Flight";
+import { formatMetadata } from "@/lib/formatters";
+import { pageUrl } from "@/utils/Urls";
+import SeoSchema from "@/components/schema";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Vé máy bay",
   description: "Happy Book",
-};
+  alternates: {
+    canonical: pageUrl("ve-may-bay"),
+  },
+});
+
 const tours = [
   {
     title: "Hà Nội - Hồ Chí Minh",
@@ -71,7 +78,16 @@ export default async function AirlineTicket() {
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   return (
-    <Fragment>
+    <SeoSchema
+      {...(metadata as any)}
+      url={metadata.alternates?.canonical as string}
+      breadscrumbItems={[
+        {
+          name: metadata.alternates?.canonical as string,
+          item: metadata.title as string,
+        },
+      ]}
+    >
       <div className="relative h-max pb-14">
         <div className="absolute inset-0">
           <Image
@@ -380,6 +396,6 @@ export default async function AirlineTicket() {
           </div>
         </div>
       </main>
-    </Fragment>
+    </SeoSchema>
   );
 }

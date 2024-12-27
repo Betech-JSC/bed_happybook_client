@@ -1,4 +1,9 @@
 import { parseISO, format, min, parse, isValid } from "date-fns";
+import { Metadata } from "next";
+import {
+  AlternateLinkDescriptor,
+  Languages,
+} from "next/dist/lib/metadata/types/alternative-urls-types";
 
 const formatDate = (isoDate: string, format: string = "d/m/y") => {
   const date = new Date(isoDate);
@@ -41,10 +46,27 @@ const formatNumberToHoursAndMinutesFlight = function (
   return `${hours}${minutes}`;
 };
 
+const formatMetadata = (metadata: Metadata): Metadata => {
+  const { alternates, ..._metadata } = metadata;
+  const languages: Languages<null | string | URL | AlternateLinkDescriptor[]> =
+    {
+      vi: (alternates?.canonical as string) || "",
+    };
+
+  return {
+    alternates: {
+      ...alternates,
+      languages: alternates?.languages || languages,
+    },
+    ..._metadata,
+  };
+};
+
 export {
   formatDate,
   formatTime,
   formatCurrency,
   formatNumberToHoursAndMinutesFlight,
   pareseDateFromString,
+  formatMetadata,
 };

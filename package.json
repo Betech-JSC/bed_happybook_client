@@ -28,6 +28,7 @@
     "react-hook-form": "^7.53.0",
     "react-hot-toast": "^2.4.1",
     "react-select": "^5.8.1",
+    "schema-dts": "^1.1.2",
     "sharp": "^0.33.5",
     "swiper": "^11.1.12",
     "tailwind-merge": "^2.5.2",

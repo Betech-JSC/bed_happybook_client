@@ -18,15 +18,16 @@ import Script from "next/script";
 import { pageUrl } from "@/utils/Urls";
 import { siteUrl } from "@/constants";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Tìm kiếm Vé máy bay",
   description: "Happy Book | Tìm kiếm Vé máy bay",
   keywords: "Tìm kiếm Vé máy bay",
   alternates: {
     canonical: pageUrl("ve-may-bay/tim-kiem-ve", true),
   },
-};
+});
 
 export default async function SearchTicket() {
   const airportsReponse = await FlightApi.airPorts();

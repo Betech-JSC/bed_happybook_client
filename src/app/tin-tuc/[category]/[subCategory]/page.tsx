@@ -12,7 +12,7 @@ import {
 import Pagination from "@/components/pagination";
 import { fetchCategoryDetails } from "@/api/news";
 import { PostType, SearchParamsProps } from "@/types/post";
-import { formatDate } from "@/lib/formatters";
+import { formatDate, formatMetadata } from "@/lib/formatters";
 import SideBar from "../../components/side-bar";
 import { Suspense } from "react";
 import Script from "next/script";
@@ -24,7 +24,7 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await fetchCategoryDetails(params.subCategory, {});
-  return {
+  return formatMetadata({
     title: data.category?.meta_title ?? data.category?.name,
     description: data.category?.meta_description,
     robots: data.category?.meta_robots,
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
       ],
     },
-  };
+  });
 }
 export default async function SubCategoryPosts({
   params,

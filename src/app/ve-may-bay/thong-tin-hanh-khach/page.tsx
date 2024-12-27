@@ -5,15 +5,16 @@ import Script from "next/script";
 import { pageUrl } from "@/utils/Urls";
 import { siteUrl } from "@/constants";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Vé máy bay",
   description: "Happy Book | Vé máy bay",
   keywords: "TVé máy bay",
   alternates: {
     canonical: pageUrl("ve-may-bay/thong-tin-khach-hang", true),
   },
-};
+});
 export default async function CustomerInfo() {
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];

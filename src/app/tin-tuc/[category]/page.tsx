@@ -14,10 +14,8 @@ import Pagination from "@/components/pagination";
 import { fetchCategoryDetails } from "@/api/news";
 import { notFound } from "next/navigation";
 import { CategoryPostsType, PostType, SearchParamsProps } from "@/types/post";
-import { formatDate } from "@/lib/formatters";
+import { formatDate, formatMetadata } from "@/lib/formatters";
 import SideBar from "../components/side-bar";
-import Script from "next/script";
-import { siteUrl } from "@/constants";
 import { newsCategoryUrl, newsUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 
@@ -26,7 +24,7 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await fetchCategoryDetails(params.category, {});
-  return {
+  return formatMetadata({
     title: data.category?.meta_title ?? data.category?.name,
     description: data.category?.meta_description,
     robots: data.category?.meta_robots,
@@ -43,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
       ],
     },
-  };
+  });
 }
 
 export default async function CategoryPosts({

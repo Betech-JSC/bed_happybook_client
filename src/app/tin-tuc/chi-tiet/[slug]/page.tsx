@@ -20,7 +20,7 @@ import {
 import { fetchNewsDetail } from "@/api/news";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
-import { formatDate } from "@/lib/formatters";
+import { formatDate, formatMetadata } from "@/lib/formatters";
 import SideBar from "../../components/side-bar";
 import { PostType, SearchParamsProps } from "@/types/post";
 import TableOfContents from "./components/table-content";
@@ -32,7 +32,7 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const news = await fetchNewsDetail(params.slug, {});
-  return {
+  return formatMetadata({
     title: news?.meta_title ?? news?.title,
     description: news?.meta_description,
     robots: news?.meta_robots,
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
       ],
     },
-  };
+  });
 }
 export default async function Posts({
   params,

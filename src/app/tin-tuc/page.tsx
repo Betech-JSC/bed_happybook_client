@@ -4,18 +4,18 @@ import Link from "next/link";
 import Post from "@/styles/posts.module.scss";
 import { newsApi } from "@/api/news";
 import SideBar from "./components/side-bar";
-import { formatDate } from "@/lib/formatters";
+import { formatDate, formatMetadata } from "@/lib/formatters";
 import { CategoryPostsType, PostType } from "@/types/post";
 import { newsUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Tin tức",
   description: "Happy Book",
   alternates: {
     canonical: newsUrl(true),
   },
-};
+});
 
 export default async function Posts() {
   const response = await newsApi.fetchNewsIndex();

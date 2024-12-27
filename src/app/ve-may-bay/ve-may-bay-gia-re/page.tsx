@@ -21,15 +21,16 @@ import {
 import { FlightApi } from "@/api/Flight";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Vé máy bay giá rẻ",
   description: "Happy Book | Vé máy bay giá rẻ",
   keywords: "Vé máy bay giá rẻ",
   alternates: {
     canonical: pageUrl("/ve-may-bay/ve-may-bay-gia-re", true),
   },
-};
+});
 export default async function SearchTicketCheap({
   searchParams,
 }: {

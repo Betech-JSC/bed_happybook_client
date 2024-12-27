@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
 type post = {
   title: string;
@@ -16,13 +17,13 @@ type post = {
   description: string | null;
   date: string;
 };
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Hướng dẫn thanh toán",
   description: "Happy Book",
   alternates: {
     canonical: pageUrl("huong-dan-thanh-toan", true),
   },
-};
+});
 
 export default function PaymentInstructions() {
   return (

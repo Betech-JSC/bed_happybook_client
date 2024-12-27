@@ -8,14 +8,15 @@ import Script from "next/script";
 import { pageUrl } from "@/utils/Urls";
 import { siteUrl } from "@/constants";
 import SeoSchema from "@/components/schema";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = formatMetadata({
   title: "Về chúng tôi",
   description: "Happy Book",
   alternates: {
     canonical: pageUrl("ve-chung-toi", true),
   },
-};
+});
 export default function AboutUs() {
   return (
     <SeoSchema
