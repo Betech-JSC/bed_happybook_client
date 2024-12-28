@@ -34,13 +34,17 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   );
 
   const data = res?.payload.data;
+
+  console.log(data);
+  
+
   return formatMetadata({
     title: data?.meta_title ?? data?.title,
     description: data?.meta_description,
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl(data?.alias, BlogTypes.VISA, true),
+      canonical: pageUrl(data?.slug, BlogTypes.VISA, true),
     },
     openGraph: {
       images: [
