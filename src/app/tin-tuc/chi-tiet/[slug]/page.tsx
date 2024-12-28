@@ -24,8 +24,8 @@ import { formatDate, formatMetadata } from "@/lib/formatters";
 import SideBar from "../../components/side-bar";
 import { PostType, SearchParamsProps } from "@/types/post";
 import TableOfContents from "./components/table-content";
-import { newsDetailUrl, newsUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
 
 type Props = {
   params: { slug: string };
@@ -66,15 +66,15 @@ export default async function Posts({
   }
   return (
     <SeoSchema
-      article={detail}
+      blog={detail}
       breadscrumbItems={[
         {
-          name: newsUrl(true),
-          item: "Tin tức",
+          url: pageUrl(BlogTypes.NEWS, true),
+          name: "Tin tức",
         },
         {
-          name: newsDetailUrl(detail.alias, true),
-          item: detail.title as string,
+          url: blogUrl(BlogTypes.NEWS, detail.alias, true),
+          name: detail.title as string,
         },
       ]}
     >

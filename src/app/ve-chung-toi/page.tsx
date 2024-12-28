@@ -4,15 +4,14 @@ import Partner from "./components/partner";
 import Service from "./components/service";
 import AosAnimate from "@/components/aos-animate";
 import type { Metadata } from "next";
-import Script from "next/script";
 import { pageUrl } from "@/utils/Urls";
-import { siteUrl } from "@/constants";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Về chúng tôi",
-  description: "Happy Book",
+  title: "Về chúng tôi - Tầm Nhìn Sứ Mệnh HappyBook Travel ✈️",
+  description:
+    "Giới thiệu về Happy Book là một trong những đại lý cung cấp nhiều dịch vụ vé máy bay nội địa, vé máy bay quốc tế, dịch vụ làm visa trọn gói giá rẻ và tour du lịch trên khắp thế giời và định cư nước ngoài. Khi bạn có nhu cầu trông 4 dịch vụ trên có thể liên hệ với Happy Book ngay để được hỗ trợ nhé!",
   alternates: {
     canonical: pageUrl("ve-chung-toi", true),
   },
@@ -20,12 +19,11 @@ export const metadata: Metadata = formatMetadata({
 export default function AboutUs() {
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

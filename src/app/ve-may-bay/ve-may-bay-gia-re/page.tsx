@@ -56,16 +56,15 @@ export default async function SearchTicketCheap({
 
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: pageUrl("ve-may-bay", true),
-          item: "Vé máy bay",
+          url: pageUrl("ve-may-bay", true),
+          name: "Vé máy bay",
         },
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

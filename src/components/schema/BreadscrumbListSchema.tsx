@@ -1,8 +1,10 @@
 import { siteUrl } from "@/constants";
 import Script from "next/script";
 
-export type BreadscrumbListSchemaProps = {
-  items: { item: string; name: string }[];
+export type BreadscrumbItemSchemaType = { url: string; name: string };
+
+type BreadscrumbListSchemaProps = {
+  items: BreadscrumbItemSchemaType[];
 };
 
 export function BreadscrumbListSchema({ items }: BreadscrumbListSchemaProps) {
@@ -21,11 +23,13 @@ export function BreadscrumbListSchema({ items }: BreadscrumbListSchemaProps) {
               name: siteUrl,
               item: "Trang chủ",
             },
-            ...items.map(({ name, item }, index) => ({
+            ...items.map(({ name, url }, index) => ({
               "@type": "ListItem",
               position: index + 2,
-              name,
-              item,
+              item: {
+                "@id": url,
+                name,
+              },
             })),
           ],
         }),

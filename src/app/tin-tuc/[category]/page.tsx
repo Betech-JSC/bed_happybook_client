@@ -16,8 +16,8 @@ import { notFound } from "next/navigation";
 import { CategoryPostsType, PostType, SearchParamsProps } from "@/types/post";
 import { formatDate, formatMetadata } from "@/lib/formatters";
 import SideBar from "../components/side-bar";
-import { newsCategoryUrl, newsUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
 
 type Props = {
   params: { category: string };
@@ -62,15 +62,13 @@ export default async function CategoryPosts({
   const currentPage = parseInt(searchParams?.page || "1");
   return (
     <SeoSchema
-      title={category?.title}
-      description={category?.description}
-      url={newsCategoryUrl(category?.alias, true)}
-      dateModified={category?.updated_at}
+      article={category}
+      type={BlogTypes.NEWS}
       breadscrumbItems={[
-        { name: newsUrl(true), item: "Tin tức" },
+        { url: pageUrl("", BlogTypes.NEWS, true), name: "Tin tức" },
         {
-          name: newsCategoryUrl(category?.alias, true),
-          item: category?.title,
+          url: pageUrl(category?.alias, BlogTypes.NEWS, true),
+          name: category?.name,
         },
       ]}
     >

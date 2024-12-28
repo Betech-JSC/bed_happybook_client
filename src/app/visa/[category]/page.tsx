@@ -11,11 +11,26 @@ import {
 import TourStyle from "@/styles/tour.module.scss";
 import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
+import SeoSchema from "@/components/schema";
+import { VisaApi } from "@/api/Visa";
+import { notFound } from "next/navigation";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
-  title: "Visa Nhật Bản",
-  description: "Happy Book",
-};
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const res = (await VisaApi.getCategory("visa")) as any;
+
+  const data = res?.payload.data;
+  return formatMetadata({
+    title: data?.meta_title ?? data?.title,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: pageUrl(data?.alias, BlogTypes.VISA, true),
+    },
+  });
+}
 
 type dataSideBarType = {
   title: string;
@@ -73,13 +88,30 @@ for (var i = 1; i < 8; i++) {
   }
   arrTours.push(tourItem);
 }
-export default function CategoryPosts({
+export default async function CategoryPosts({
   params,
 }: {
   params: { category: string };
 }) {
+  const res = (await VisaApi.getCategory("visa")) as any;
+  const category = res?.payload?.data;
+
+  if (!category) {
+    notFound();
+  }
+
   return (
-    <Fragment>
+    <SeoSchema
+      article={category}
+      type={BlogTypes.VISA}
+      breadscrumbItems={[
+        { url: pageUrl(BlogTypes.VISA, true), name: "Visa" },
+        {
+          url: pageUrl(category?.alias, BlogTypes.VISA, true),
+          name: category?.name,
+        },
+      ]}
+    >
       <div className="bg-gray-100">
         <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
           <Breadcrumb className="pt-3">
@@ -379,6 +411,6 @@ export default function CategoryPosts({
           </div>
         </div>
       </div>
-    </Fragment>
+    </SeoSchema>
   );
 }

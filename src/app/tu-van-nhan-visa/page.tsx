@@ -7,8 +7,9 @@ import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Tư vấn nhận Visa",
-  description: "Happy Book",
+  title: "Phiếu Tiếp Nhận Thông Tin Xin Thị Thực (Visa) | Happy Book",
+  description:
+    "Đây là phiếu tiếp nhận thông tin xin thị thực visa tại Happy Book! Mọi vấn đề liên hệ với Hotline 0904.221.293 (Làm visa) để biết thêm chi tiết! Happy Book là đơn vị làm visa UY TÍN hàng đầu tại Việt Nam với tỷ lệ đậu lên đến 100%.",
   alternates: {
     canonical: pageUrl("tu-van-nhan-visa", true),
   },
@@ -17,12 +18,11 @@ export const metadata: Metadata = formatMetadata({
 export default function VisaConsulting() {
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

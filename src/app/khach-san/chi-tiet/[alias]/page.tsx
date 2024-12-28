@@ -11,19 +11,63 @@ import {
 import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
 import HotelDetailTabs from "../../components/HotalDetaiTabs";
+import SeoSchema from "@/components/schema";
+import { notFound } from "next/navigation";
+import { HotelApi } from "@/api/Hotel";
+import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
-  title: "Sofitel Legend Metropole Hà Nội",
-  description: "Happy Book",
-};
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const res = (await HotelApi.detail("tesst1")) as any;
 
-export default function HotelDetail({
+  const data = res?.payload.data;
+  return formatMetadata({
+    title: data?.meta_title ?? data?.title,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: pageUrl(data?.alias, BlogTypes.HOTEL, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
+
+export default async function HotelDetail({
   params,
 }: {
   params: { category: string };
 }) {
+  const res = (await HotelApi.detail("tesst1")) as any;
+  const detail = res?.payload?.data;
+
+  if (!detail) {
+    notFound();
+  }
+
   return (
-    <Fragment>
+    <SeoSchema
+      blog={detail}
+      breadscrumbItems={[
+        {
+          url: pageUrl(BlogTypes.HOTEL, true),
+          name: "Visa",
+        },
+        {
+          url: blogUrl(BlogTypes.HOTEL, detail.slug, true),
+          name: detail?.title as string,
+        },
+      ]}
+    >
       <div className="bg-gray-100">
         <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
           <Breadcrumb className="pt-3">
@@ -200,6 +244,6 @@ export default function HotelDetail({
           </div>
         </div>
       </div>
-    </Fragment>
+    </SeoSchema>
   );
 }

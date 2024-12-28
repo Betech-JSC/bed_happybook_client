@@ -23,34 +23,38 @@ import Tabs from "../components/Tabs";
 import VisaSteps from "@/components/home/visa-steps";
 import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
+import SeoSchema from "@/components/schema";
+import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
+import { formatMetadata } from "@/lib/formatters";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const response = await VisaApi.detail(
+  const res = await VisaApi.detail(
     "product-visa/get-by-slug?slug=visa-test",
     null
   );
-  const visaDetail = response?.payload.data;
-  return {
-    title: visaDetail?.meta_title ?? visaDetail?.title,
-    description: visaDetail?.meta_description,
-    robots: visaDetail?.meta_robots,
-    keywords: visaDetail?.keywords,
+
+  const data = res?.payload.data;
+  return formatMetadata({
+    title: data?.meta_title ?? data?.title,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
     alternates: {
-      canonical:
-        visaDetail?.canonical_link ?? `/visa/chi-tiet/${visaDetail?.slug}`,
+      canonical: pageUrl(data?.alias, BlogTypes.VISA, true),
     },
     openGraph: {
       images: [
         {
-          url: visaDetail?.meta_image
-            ? visaDetail.meta_image
-            : `${visaDetail?.image_url}${visaDetail?.image_location}`,
-          alt: visaDetail?.meta_title,
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}${data?.image_location}`,
+          alt: data?.meta_title,
         },
       ],
     },
-  };
+  });
 }
+
 const visa = [
   {
     title: "Visa Trung Quốc",
@@ -84,11 +88,24 @@ export default async function CategoryPosts({
     null
   );
   const detail = response?.payload.data;
+
   if (!detail) {
     notFound();
   }
   return (
-    <Fragment>
+    <SeoSchema
+      blog={detail}
+      breadscrumbItems={[
+        {
+          url: pageUrl(BlogTypes.VISA, true),
+          name: "Visa",
+        },
+        {
+          url: blogUrl(BlogTypes.VISA, detail.slug, true),
+          name: detail?.title as string,
+        },
+      ]}
+    >
       <div className="bg-gray-100">
         <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
           <Breadcrumb className="pt-3">
@@ -360,6 +377,6 @@ export default async function CategoryPosts({
           </div>
         </div>
       </div>
-    </Fragment>
+    </SeoSchema>
   );
 }

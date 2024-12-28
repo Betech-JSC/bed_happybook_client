@@ -12,8 +12,9 @@ import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Chính sách bảo mật",
-  description: "Happy Book",
+  title: "Chính sách bảo mật tại HappyBook Travel ✈️",
+  description:
+    "Những chính sách bảo mật tại Happy Book đảm bảo bạn sẽ được bảo mật thông tin khi thực hiện các giao dịch với chúng tôi. Liên hệ: ???? Hotline: 0904.221.293 (Làm Visa) ???? Hotline: 0983.488.937 (Nội địa) ???? Hotline: 0367.008.027 (Quốc tế)",
   alternates: {
     canonical: pageUrl("chinh-sach-bao-mat", true),
   },
@@ -22,12 +23,11 @@ export const metadata: Metadata = formatMetadata({
 export default function PrivacyPolicy() {
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

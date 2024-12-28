@@ -14,9 +14,7 @@ import Partner from "../components/Partner";
 import Search from "../components/Search";
 import ListFilght from "../components/ListFilght";
 import { FlightApi } from "@/api/Flight";
-import Script from "next/script";
 import { pageUrl } from "@/utils/Urls";
-import { siteUrl } from "@/constants";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 
@@ -34,16 +32,15 @@ export default async function SearchTicket() {
   const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: pageUrl("ve-may-bay", true),
-          item: "Vé máy bay",
+          url: pageUrl("ve-may-bay", true),
+          name: "Vé máy bay",
         },
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

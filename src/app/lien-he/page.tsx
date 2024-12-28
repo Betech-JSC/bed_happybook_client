@@ -6,8 +6,9 @@ import { pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Liên Hệ",
-  description: "Happy Book",
+  title: "Liên Hệ - Đại Lý Vé Máy Bay Giá Rẻ #1 Toàn Quốc | HAPPY BOOK",
+  description:
+    "Liên hệ ngay đến Đại lý đặt vé máy bay trong và ngoài nước với giá cả phải chăng. Phù hợp cho mọi nhóm khách hàng. Gọi ngay ???? Hotline: 0983.488.937 nếu bạn chưa biết thông tin về chúng tôi. Happy Book luôn sẵng sàng hỗ trợ bạn nhé!",
   alternates: {
     canonical: pageUrl("lien-he", true),
   },
@@ -16,12 +17,11 @@ export const metadata: Metadata = formatMetadata({
 export default function Contact() {
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

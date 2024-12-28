@@ -20,8 +20,10 @@ import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Vé máy bay",
-  description: "Happy Book",
+  title:
+    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
+  description:
+    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   alternates: {
     canonical: pageUrl("ve-may-bay"),
   },
@@ -79,12 +81,11 @@ export default async function AirlineTicket() {
   const airportsData = airportsReponse?.payload.data ?? [];
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

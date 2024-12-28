@@ -13,11 +13,18 @@ import FAQ from "@/components/FAQ";
 import { Suspense } from "react";
 import Search from "./components/Search";
 import HotelTabs from "./components/HotelTabs";
+import SeoSchema from "@/components/schema";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
+import { formatMetadata } from "@/lib/formatters";
 
-export const metadata: Metadata = {
-  title: "Khách sạn",
-  description: "Happy Book",
-};
+export const metadata: Metadata = formatMetadata({
+  title: "Khách Sạn | Happy Book ????️ Đại Lý Đặt Vé Máy Bay Giá Rẻ #1",
+  description:
+    "Khi đặt khách sạn tại HappyBook Travel với hơn 2.000 khách sạn và hơn 30.000 khách sạn Quốc tế. Quý khách liên hệ đặc online hoặc gọi Hotline 0904.221.293. XÁC NHẬN qua Gmail và SMS.k",
+  alternates: {
+    canonical: pageUrl(BlogTypes.HOTEL, true),
+  },
+});
 const province = [
   { id: 1, title: "TP Hồ Chí Minh" },
   { id: 2, title: "Hà Nội" },
@@ -27,7 +34,15 @@ const province = [
 ];
 export default function Hotel() {
   return (
-    <Fragment>
+    <SeoSchema
+      metadata={metadata}
+      breadscrumbItems={[
+        {
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
+        },
+      ]}
+    >
       <div className="relative z-[0] h-max pb-12">
         <div className="absolute inset-0">
           <Image
@@ -273,6 +288,6 @@ export default function Hotel() {
           </div>
         </div>
       </main>
-    </Fragment>
+    </SeoSchema>
   );
 }

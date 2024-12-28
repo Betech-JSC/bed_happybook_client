@@ -6,8 +6,9 @@ import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Đăng ký làm CTV bán vé máy bay.",
-  description: "Happy Book",
+  title: "Đăng Ký CTV Tại HappyBook Travel ✈️",
+  description:
+    "Form đăng ký làm CTV bán vé máy bay. Quý khách vui lòng điền đầy đủ thông tin bên dưới. Nhân viên của chúng tôi sẽ liên hệ lại ngay sau khi nhận được thông tin",
   alternates: {
     canonical: pageUrl("dang-ky-ctv", true),
   },
@@ -16,12 +17,11 @@ export const metadata: Metadata = formatMetadata({
 export default function SignUpCollaborator() {
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

@@ -6,14 +6,15 @@ import { newsApi } from "@/api/news";
 import SideBar from "./components/side-bar";
 import { formatDate, formatMetadata } from "@/lib/formatters";
 import { CategoryPostsType, PostType } from "@/types/post";
-import { newsUrl } from "@/utils/Urls";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Tin tức",
-  description: "Happy Book",
+  title: "Blog - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
+  description:
+    "Happy Book là đại lý cung cấp dịch vụ làm visa lớn và uy tín hàng đầu Việt Nam",
   alternates: {
-    canonical: newsUrl(true),
+    canonical: pageUrl("", BlogTypes.NEWS, true),
   },
 });
 
@@ -25,12 +26,11 @@ export default async function Posts() {
 
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >

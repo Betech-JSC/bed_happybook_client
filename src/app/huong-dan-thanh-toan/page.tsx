@@ -18,8 +18,9 @@ type post = {
   date: string;
 };
 export const metadata: Metadata = formatMetadata({
-  title: "Hướng dẫn thanh toán",
-  description: "Happy Book",
+  title: "Hướng Dẫn Thanh Toán Tại HappyBook Travel ✈️",
+  description:
+    "Bạn cần đọc qua hướng dẫn thanh toán tại Happy Book để có thể hoàn thành các dịch vụ như thủ tục làm visa, đặt vé máy bay nội địa, vé máy bay đi quốc tế hay đặt tour du lịch tại đây. Chúng tôi cam kết những thông tin cung cấp trên hoàn toàn của chính chủ và không có sự lừa đảo nào hết nhé!",
   alternates: {
     canonical: pageUrl("huong-dan-thanh-toan", true),
   },
@@ -28,12 +29,11 @@ export const metadata: Metadata = formatMetadata({
 export default function PaymentInstructions() {
   return (
     <SeoSchema
-      {...(metadata as any)}
-      url={metadata.alternates?.canonical as string}
+      metadata={metadata}
       breadscrumbItems={[
         {
-          name: metadata.alternates?.canonical as string,
-          item: metadata.title as string,
+          url: metadata.alternates?.canonical as string,
+          name: metadata.title as string,
         },
       ]}
     >
