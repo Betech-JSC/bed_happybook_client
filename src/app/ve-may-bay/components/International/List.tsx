@@ -393,13 +393,10 @@ export default function FlightInternationalList({
                 {filteredData.length > 0 ? (
                   <div className="my-6">
                     {filteredData.map((data: any, index: number) => (
-                      <div
-                        key={index}
-                        className="bg-[#FCFCFD] rounded-2xl mb-4"
-                      >
+                      <div key={index} className="bg-white rounded-2xl mb-4">
                         {Array.from({ length: 2 }, (_, leg) => (
                           <Fragment key={leg}>
-                            <div className="mb-2">
+                            <div className="pb-2 bg-[#FCFCFD]">
                               <div className="flex py-4 px-8 rounded-t-2xl space-x-4 items-center bg-blue-50">
                                 <div className="inline-flex items-center justify-center">
                                   <Image
@@ -418,7 +415,7 @@ export default function FlightInternationalList({
                                   </h3>
 
                                   <p className="text-sm">
-                                    {1} Khách -{" "}
+                                    {totalPassengers} Khách -{" "}
                                     {leg
                                       ? returnDate
                                         ? pareseDateFromString(
@@ -447,15 +444,18 @@ export default function FlightInternationalList({
                             </div>
                           </Fragment>
                         ))}
-                        <div className="flex justify-between mt-6 px-4 py-6 items-center">
+                        <div className="flex justify-between px-4 py-6 items-center">
                           <div>
                             <span className="font-medium">
                               Tổng tiền thanh toán:{" "}
                             </span>
                             <span className="text-2xl font-bold text-primary">
-                              {`${data.TotalPrice.toLocaleString("vi-VN")} ${
-                                data.Currency
-                              }`}
+                              {filters.priceWithoutTax === "1"
+                                ? data.TotalPriceWithOutTax.toLocaleString(
+                                    "vi-VN"
+                                  )
+                                : data.TotalPrice.toLocaleString("vi-VN")}{" "}
+                              {data.Currency}
                             </span>
                           </div>
                           <button

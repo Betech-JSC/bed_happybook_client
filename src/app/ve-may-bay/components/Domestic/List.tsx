@@ -603,9 +603,9 @@ export default function FilghtDomesticList({
                       />
                     </div>
                     <div>
-                      <h3 className="font-semibold">{`${from} - ${to} `}</h3>
+                      <h3 className="font-semibold">{`${to} - ${from} `}</h3>
                       <p className="text-sm">
-                        {1} Khách -{" "}
+                        {totalPassengers} Khách -{" "}
                         {returnDate
                           ? pareseDateFromString(
                               returnDate,
