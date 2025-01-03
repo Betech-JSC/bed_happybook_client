@@ -172,14 +172,14 @@ export default function AirportPopupSelector({
                 .flatMap((data) => data.airports)
                 .find((a) => a.code === selectedDeparture)?.type;
 
-        const filterByType =
-          !selectedType ||
-          (selectedType === "international"
-            ? airport.type === "domestic"
-            : true);
+        // const filterByType =
+        //   !selectedType ||
+        //   (selectedType === "international"
+        //     ? airport.type === "domestic"
+        //     : true);
 
         return (
-          filterByType &&
+          // filterByType &&
           (activeInput === "departure"
             ? airport.code !== selectedDestination
             : airport.code !== selectedDeparture)
