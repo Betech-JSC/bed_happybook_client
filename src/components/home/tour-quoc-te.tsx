@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import TourItem from "@/components/tour-item";
 import Image from "next/image";
 import {
   Carousel,
@@ -9,51 +8,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
+import TourItem from "@/components/tour-item";
 
-const tours = [
-  {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-quoc-te/1.png",
-  },
-  {
-    category: "Du lịch miền Bắc",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-quoc-te/2.png",
-    hot: 1,
-  },
-  {
-    category: "Du lịch miền Trung",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-quoc-te/3.png",
-    hot: 1,
-  },
-  {
-    category: "Du lịch miền Trung",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-quoc-te/4.png",
-  },
-  {
-    category: "Du lịch miền Bắc",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000 đồng",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-quoc-te/2.png",
-    hot: 1,
-  },
-];
-export default function TourQuocTe() {
-  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+export default function TourQuocTe({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="hidden lg:block px-3 lg:px-[50px] xl:px-[80px] max__screen">
@@ -86,7 +44,7 @@ export default function TourQuocTe() {
               <h2 className="text-[32px] font-bold">Tour quốc tế</h2>
             </div>
             <Link
-              href="/tours/tour-noi-dia"
+              href="/tours/tour-quoc-te"
               className="flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
@@ -110,69 +68,62 @@ export default function TourQuocTe() {
           <div className="w-full mt-6">
             <div className="border-b border-gray-200">
               <div className="flex space-x-3 mb-8">
-                {[
-                  "Tour Đông Nam Á",
-                  "Tour châu Á",
-                  "Tour châu Âu - Úc",
-                  "Tour châu Mỹ - Phi",
-                ].map((tab, index) => (
-                  <button
-                    key={index}
-                    className={`px-4 py-2 focus:outline-none rounded-[8px] duration-300 ${
-                      activeTab === index
-                        ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                        : "text-gray-500 border-solid border-[#D0D5DD] border-2  hover:bg-gray-200"
-                    }`}
-                    onClick={() => setActiveTab(index)}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-              <div className="">
-                {activeTab === 0 && (
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: true,
-                    }}
-                    // plugins={[plugin.current]}
-                    // onMouseEnter={plugin.current.stop}
-                    // onMouseLeave={plugin.current.reset}
-                  >
-                    <CarouselContent>
-                      {tours.map((tour, index) => (
-                        <CarouselItem key={index} className="basis-1/4">
-                          <TourItem key={index} {...tour} />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                  </Carousel>
-                )}
-                {activeTab === 1 && (
-                  <div className="min-h-[100px] content-center text-center">
-                    <p className="font-bold text-xl">
-                      Thông tin đang được cập nhật.....
-                    </p>
-                  </div>
-                )}
-                {activeTab === 2 && (
-                  <div className="min-h-[100px] content-center text-center">
-                    <p className="font-bold text-xl">
-                      Thông tin đang được cập nhật.....
-                    </p>
-                  </div>
-                )}
-                {activeTab === 3 && (
-                  <div className="min-h-[100px] content-center text-center">
-                    <p className="font-bold text-xl">
-                      Thông tin đang được cập nhật.....
-                    </p>
-                  </div>
+                {data.map(
+                  (
+                    category: {
+                      name: string;
+                      id: number;
+                      type_tour: number;
+                      tours: any[];
+                    },
+                    index: number
+                  ) => (
+                    <button
+                      key={index}
+                      className={`px-4 py-2 focus:outline-none rounded-[8px] duration-300 ${
+                        activeTab === index
+                          ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                          : "text-gray-500 border-solid border-[#D0D5DD] border-2 hover:bg-gray-100"
+                      }`}
+                      onClick={() => setActiveTab(index)}
+                    >
+                      {category.name}
+                    </button>
+                  )
                 )}
               </div>
+              {data.map(
+                (
+                  category: {
+                    name: string;
+                    id: number;
+                    type_tour: number;
+                    tours: any[];
+                  },
+                  tabIndex: number
+                ) => (
+                  <div className="" key={tabIndex}>
+                    {activeTab === tabIndex && (
+                      <Carousel
+                        opts={{
+                          align: "start",
+                          loop: true,
+                        }}
+                      >
+                        <CarouselContent>
+                          {category.tours.map((tour, index) => (
+                            <CarouselItem key={index} className="basis-1/4">
+                              <TourItem key={index} tour={tour} />
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                      </Carousel>
+                    )}
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>

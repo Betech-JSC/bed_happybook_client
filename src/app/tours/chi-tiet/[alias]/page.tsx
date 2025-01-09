@@ -17,58 +17,20 @@ import {
 } from "@/components/ui/carousel";
 import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
-import ImageGallery from "../components/ImageGallery";
-import Tabs from "../components/Tabs";
+import ImageGallery from "../../components/ImageGallery";
+import Tabs from "../../components/Tabs";
 import QuestionAndAnswer from "@/components/QuestionAndAnswer";
 import TourItem from "@/components/tour-item";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
-import { formatMetadata } from "@/lib/formatters";
+import { formatMetadata, formatMoney } from "@/lib/formatters";
 
-const tours = [
-  {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/1.png",
-    hot: 1,
-  },
-  {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/2.png",
-  },
-  {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/3.png",
-  },
-  {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/4.png",
-    vehicle: "aa",
-  },
-  {
-    category: "Du lịch miền Nam",
-    title: "Sài Gòn - Mỹ Tho - Bến Tre - Châu Đốc - Cần Thơ - Sóc Trăng ....",
-    price: "800.000",
-    duration: "3 ngày 2 đêm",
-    image: "/tour-noi-dia/1.png",
-  },
-];
+const tours = [];
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = (await TourApi.detail("dev1232")) as any;
+  const res = (await TourApi.detail(params.alias)) as any;
 
   const data = res?.payload.data;
   return formatMetadata({
@@ -92,18 +54,28 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   });
 }
 
-export default async function CategoryPosts({
+export default async function TourDetail({
   params,
 }: {
   params: { alias: string };
 }) {
-  const res = (await TourApi.detail("dev1232")) as any;
+  const res = (await TourApi.detail(params.alias)) as any;
   const detail = res?.payload?.data;
-
   if (!detail) {
     notFound();
   }
-
+  let typeTourText: string = "Tour nội địa";
+  let categorySlug: string = "tour-noi-dia";
+  switch (detail.tour.type_tour) {
+    case 1:
+      typeTourText = "Tour quốc tế";
+      categorySlug = "tour-quoc-te";
+      break;
+    case 2:
+      typeTourText = "Tour du thuyền";
+      categorySlug = "tour-du-thuyen";
+      break;
+  }
   return (
     <SeoSchema
       blog={detail}
@@ -140,8 +112,11 @@ export default async function CategoryPosts({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tours/noi-dia" className="text-blue-700">
-                    Tours nội địa
+                  <Link
+                    href={`/tours/${categorySlug}`}
+                    className="text-blue-700"
+                  >
+                    {typeTourText}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -158,9 +133,9 @@ export default async function CategoryPosts({
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery />
+              <ImageGallery gallery={detail.gallery} />
               <div className="mt-4">
-                <Tabs />
+                <Tabs detail={detail} />
               </div>
               <div className="mt-4 mb-8">
                 <QuestionAndAnswer />
@@ -170,15 +145,22 @@ export default async function CategoryPosts({
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
                   <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ
-                    (Tour bao gồm máy bay)
+                    {detail.locale[0].name ?? ""}
                   </h1>
                   <div className="flex space-x-2 mt-2">
-                    <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
-                      9.8
+                    {detail.tour.rating && (
+                      <Fragment>
+                        <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
+                          9.8
+                        </span>
+                        <span className="text-primary font-semibold">
+                          Xuất sắc
+                        </span>
+                      </Fragment>
+                    )}
+                    <span className="text-gray-500">
+                      {detail.tour.review ?? 0} đánh giá
                     </span>
-                    <span className="text-primary font-semibold">Xuất sắc</span>
-                    <span className="text-gray-500">234 đánh giá</span>
                   </div>
                   <div className="flex space-x-2 mt-6 items-center">
                     <Image
@@ -188,7 +170,9 @@ export default async function CategoryPosts({
                       width={18}
                       height={18}
                     />
-                    <span>2 ngày 1 đêm</span>
+                    <span>
+                      {detail.tour.day} ngày {detail.tour.night} đêm
+                    </span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
                     <Image
@@ -198,7 +182,7 @@ export default async function CategoryPosts({
                       width={18}
                       height={18}
                     />
-                    <span>Khởi hành từ Hồ Chí Minh Thứ 6, Thứ 7 hàng tuần</span>
+                    <span>{detail.tour.from ?? ""}</span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
                     <Image
@@ -208,21 +192,27 @@ export default async function CategoryPosts({
                       width={18}
                       height={18}
                     />
-                    <span>
-                      Hồ Chí Minh - Cù lao Thới Sơn - Cồn Phụng - Chợ nổi Cái
-                      Răng
-                    </span>
+                    <span>{detail.tour.to ?? ""}</span>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                  <p className="text-gray-500 line-through">8.004.927 vnđ</p>
+                  <p className="text-gray-500 line-through">
+                    {detail.discount_price > 0 &&
+                    detail.discount_price < detail.price
+                      ? `${formatMoney(detail.price)} vnđ`
+                      : ""}
+                  </p>
                   <p className="text-2xl text-primary font-bold mt-3">
-                    7.004.927 vnđ
+                    {detail.discount_price < detail.price
+                      ? `${formatMoney(
+                          detail.price - detail.discount_price
+                        )} vnđ`
+                      : formatMoney(detail.price)}
                   </p>
                 </div>
                 <div className="mt-6">
                   <Link
-                    href="/tours/checkout"
+                    href={`/tours/chi-tiet/${detail.slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
                     <span className="mx-auto text-base font-medium">
@@ -243,27 +233,30 @@ export default async function CategoryPosts({
       <div>
         <div className="bg-white">
           <div className="px-3 lg:px-[80px] max__screen">
-            <div className="mt-8 w-full">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-              >
-                <CarouselContent>
-                  {tours.map((tour, index) => (
-                    <CarouselItem
-                      key={index}
-                      className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                    >
-                      <TourItem {...tour} />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="hidden lg:inline-flex" />
-                <CarouselNext className="hidden lg:inline-flex" />
-              </Carousel>
-            </div>
+            {detail.similar_tours.length > 0 && (
+              <div className="w-full">
+                <p className="text-32 font-bold my-6">Tour du lịch tương tự</p>
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                >
+                  <CarouselContent>
+                    {detail.similar_tours.map((tour: any, index: number) => (
+                      <CarouselItem
+                        key={index}
+                        className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
+                      >
+                        <TourItem tour={tour} />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden lg:inline-flex" />
+                  <CarouselNext className="hidden lg:inline-flex" />
+                </Carousel>
+              </div>
+            )}
             {/* Faq */}
             <div className="my-8">
               <FAQ />
