@@ -35,6 +35,25 @@ const formatCurrency = (value: number) => {
     currency: "VND",
   });
 };
+
+const formatMoney = (
+  value: any,
+  locale: string | undefined = undefined,
+  fixed: boolean = false,
+  digits: number = 2
+) => {
+  if (!value) return "";
+  const number = Number(value);
+  if (fixed) {
+    return number.toLocaleString(locale, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: digits,
+    });
+  } else {
+    return Math.round(number).toLocaleString();
+  }
+};
+
 const formatNumberToHoursAndMinutesFlight = function (
   totalMinutes: number
 ): string {
@@ -66,6 +85,7 @@ export {
   formatDate,
   formatTime,
   formatCurrency,
+  formatMoney,
   formatNumberToHoursAndMinutesFlight,
   pareseDateFromString,
   formatMetadata,

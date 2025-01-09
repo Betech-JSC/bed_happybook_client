@@ -36,8 +36,8 @@ export const metadata: Metadata = formatMetadata({
 export default async function Home() {
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
-  // const homeApiReponse = await HomeApi.index();
-  // const homeData = homeApiReponse?.payload.data ?? [];
+  const homeApiReponse = await HomeApi.index();
+  const homeData = homeApiReponse?.payload.data ?? [];
   return (
     <Fragment>
       <WebsiteSchema {...(metadata as any)} url={siteUrl} />
@@ -103,15 +103,24 @@ export default async function Home() {
         <AosAnimate>
           <Flight></Flight>
         </AosAnimate>
-        <AosAnimate>
-          <TourHot></TourHot>
-        </AosAnimate>
-        <AosAnimate>
-          <TourNoiDia></TourNoiDia>
-        </AosAnimate>
-        <AosAnimate>
-          <TourQuocTe></TourQuocTe>
-        </AosAnimate>
+        {homeData?.tours?.hot.length > 0 && (
+          <AosAnimate>
+            <TourHot data={homeData.tours.hot}></TourHot>
+          </AosAnimate>
+        )}
+
+        {homeData?.tours?.domestic.length > 0 && (
+          <AosAnimate>
+            <TourNoiDia data={homeData.tours.domestic}></TourNoiDia>
+          </AosAnimate>
+        )}
+
+        {homeData?.tours?.international.length > 0 && (
+          <AosAnimate>
+            <TourQuocTe data={homeData.tours.international}></TourQuocTe>
+          </AosAnimate>
+        )}
+
         <AosAnimate>
           <VisaService></VisaService>
         </AosAnimate>
