@@ -87,6 +87,26 @@ const generateMonth = (totalMonth: number) => {
 
   return months;
 };
+const buildSearch = (params: {
+  [key: string]: string | number | boolean | Array<any>;
+}) => {
+  if (params && Object.keys(params).length > 0) {
+    const search = new URLSearchParams();
+    for (const key in params) {
+      const value = params[key];
+      if (value !== undefined && value !== null && value !== "") {
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            search.append(key, item.toString());
+          });
+        } else {
+          search.set(key, value.toString());
+        }
+      }
+    }
+    return `?${search.toString()}`;
+  }
+};
 const getDayLabel = (dayIndex: number, displayType: "desktop" | "mobile") => {
   const daysOfWeek =
     displayType === "desktop"
@@ -95,11 +115,19 @@ const getDayLabel = (dayIndex: number, displayType: "desktop" | "mobile") => {
 
   return daysOfWeek[dayIndex] || "Không xác định";
 };
-
+const calculatorDiscountPercent = (
+  discountPrice: number,
+  totalPrice: number
+) => {
+  if (!discountPrice && !totalPrice) return "0%";
+  return Math.round((discountPrice / totalPrice) * 100) + "%";
+};
 export {
+  buildSearch,
   handleSessionStorage,
   handleScrollSmooth,
   generateMonth,
   getDaysInMonth,
   getDayLabel,
+  calculatorDiscountPercent,
 };

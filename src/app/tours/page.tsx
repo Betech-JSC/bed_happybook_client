@@ -146,7 +146,7 @@ export default async function Tours() {
               </div>
             </div>
             {/* Tour nội địa */}
-            {data.tourDomestic.length > 0 && (
+            {data?.tourDomestic?.length > 0 && (
               <div className="mt-6">
                 <div className="flex justify-between">
                   <div>
@@ -210,7 +210,7 @@ export default async function Tours() {
               </div>
             )}
             {/* Tour nước ngoài */}
-            {data.tourInternational.length > 0 && (
+            {data?.tourInternational?.length > 0 && (
               <div className="mt-12">
                 <div className="flex justify-between">
                   <div>
@@ -312,7 +312,7 @@ export default async function Tours() {
               </div>
             </div>
             {/* Tour du thuyền */}
-            {data.tourYacht.length > 0 && (
+            {data?.tourYacht?.length > 0 && (
               <div className="mt-12">
                 <div className="flex justify-between">
                   <div>

@@ -95,11 +95,14 @@ export default async function Home() {
         <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
           <Banner></Banner>
         </div>
-        <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <CompoHot></CompoHot>
-          </div>
-        </AosAnimate>
+        {homeData?.compoHot.length > 0 && (
+          <AosAnimate>
+            <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
+              <CompoHot data={homeData?.compoHot}></CompoHot>
+            </div>
+          </AosAnimate>
+        )}
+
         <AosAnimate>
           <Flight></Flight>
         </AosAnimate>
@@ -121,12 +124,18 @@ export default async function Home() {
           </AosAnimate>
         )}
 
-        <AosAnimate>
-          <VisaService></VisaService>
-        </AosAnimate>
-        <AosAnimate>
-          <Hotel></Hotel>
-        </AosAnimate>
+        {homeData?.visa.length > 0 && (
+          <AosAnimate>
+            <VisaService data={homeData.visa}></VisaService>
+          </AosAnimate>
+        )}
+
+        {homeData?.hotels.length > 0 && (
+          <AosAnimate>
+            <Hotel data={homeData.hotels}></Hotel>
+          </AosAnimate>
+        )}
+
         <AosAnimate>
           <VisaSteps></VisaSteps>
         </AosAnimate>
