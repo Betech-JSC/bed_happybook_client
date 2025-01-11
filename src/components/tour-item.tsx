@@ -1,6 +1,7 @@
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/formatters";
 
 export default function TourItem({ tour }: any) {
   const vehicleIcon = ["AirplaneTilt-2", "bus"];
@@ -74,9 +75,7 @@ export default function TourItem({ tour }: any) {
             <span>chỉ từ</span>
             <span className="text-[#F27145] font-semibold text-base lg:text-xl">
               {" "}
-              {tour.price > 0
-                ? `${tour.price.toLocaleString()} vnđ`
-                : "Liên hệ"}
+              {tour.price > 0 ? formatCurrency(tour.price) : "Liên hệ"}
             </span>
           </div>
         </div>

@@ -11,30 +11,7 @@ import {
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 
-const visa = [
-  {
-    title: "Visa Trung Quốc",
-    image: "/visa/1.png",
-  },
-  {
-    title: "Visa Đài Loan",
-    image: "/visa/2.png",
-  },
-  {
-    title: "Visa Nhật Bản",
-    image: "/visa/3.png",
-  },
-  {
-    title: "Visa Hàn Quốc",
-    image: "/visa/4.png",
-  },
-  {
-    title: "Visa Đài Loan",
-    image: "/visa/2.png",
-  },
-];
-export default function VisaService() {
-  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+export default function VisaService({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
@@ -112,14 +89,7 @@ export default function VisaService() {
                 }}
               >
                 <CarouselContent>
-                  {[
-                    "Visa Hot",
-                    "Visa Châu Á",
-                    "Visa Châu Phi",
-                    "Visa Châu Úc",
-                    "Visa Châu Mỹ",
-                    "Visa Châu Âu",
-                  ].map((tab, index) => (
+                  {data.map((tab: any, index: number) => (
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         key={index}
@@ -130,91 +100,70 @@ export default function VisaService() {
                         }`}
                         onClick={() => setActiveTab(index)}
                       >
-                        {tab}
+                        {tab.name}
                       </button>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
               </Carousel>
             </div>
-            <div className="">
-              {activeTab === 0 && (
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {visa.map((item, index) => (
-                      <CarouselItem
-                        key={index}
-                        className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+            <div>
+              {data.map((category: any, index: number) =>
+                category.products.length > 0 ? (
+                  <>
+                    {activeTab === index && (
+                      <Carousel
+                        opts={{
+                          align: "start",
+                          loop: true,
+                        }}
                       >
-                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="overflow-hidden rounded-t-2xl	">
-                            <Link href="/visa/chi-tiet/visa-nhat-ban">
-                              <Image
-                                className="hover:scale-110 ease-in duration-300 cursor-pointer	"
-                                src={item.image}
-                                alt="Banner"
-                                width={200}
-                                height={160}
-                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                style={{ height: "100%", width: "100%" }}
-                              />
-                            </Link>
-                          </div>
-                          <div className="py-3 px-4 lg:h-[72px] ">
-                            <Link
-                              href="/visa/chi-tiet/visa-nhat-ban"
-                              className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
+                        <CarouselContent>
+                          {category.products.map((visa: any, index: number) => (
+                            <CarouselItem
+                              key={index}
+                              className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                             >
-                              <h3> {item.title}</h3>
-                            </Link>
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden lg:inline-flex" />
-                  <CarouselNext className="hidden lg:inline-flex" />
-                </Carousel>
-              )}
-              {activeTab === 1 && (
-                <div className="min-h-[100px] content-center text-center">
-                  <p className="font-bold text-xl">
-                    Thông tin đang được cập nhật.....
-                  </p>
-                </div>
-              )}
-              {activeTab === 2 && (
-                <div className="min-h-[100px] content-center text-center">
-                  <p className="font-bold text-xl">
-                    Thông tin đang được cập nhật.....
-                  </p>
-                </div>
-              )}
-              {activeTab === 3 && (
-                <div className="min-h-[100px] content-center text-center">
-                  <p className="font-bold text-xl">
-                    Thông tin đang được cập nhật.....
-                  </p>
-                </div>
-              )}
-              {activeTab === 4 && (
-                <div className="min-h-[100px] content-center text-center">
-                  <p className="font-bold text-xl">
-                    Thông tin đang được cập nhật.....
-                  </p>
-                </div>
-              )}
-              {activeTab === 5 && (
-                <div className="min-h-[100px] content-center text-center">
-                  <p className="font-bold text-xl">
-                    Thông tin đang được cập nhật.....
-                  </p>
-                </div>
+                              <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                                <div className="overflow-hidden rounded-t-2xl	">
+                                  <Link href={`/visa/chi-tiet/${visa.slug}`}>
+                                    <Image
+                                      className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
+                                      src={`${visa.image_url}/${visa.image_location}`}
+                                      alt="Visa Image"
+                                      width={320}
+                                      height={320}
+                                      sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                                      style={{ height: 220, width: "100%" }}
+                                    />
+                                  </Link>
+                                </div>
+                                <div className="py-3 px-4 lg:h-[72px] ">
+                                  <Link
+                                    href="/visa/chi-tiet/visa-nhat-ban"
+                                    className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
+                                  >
+                                    <h3> {visa.name}</h3>
+                                  </Link>
+                                </div>
+                              </div>
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="hidden lg:inline-flex" />
+                        <CarouselNext className="hidden lg:inline-flex" />
+                      </Carousel>
+                    )}
+                  </>
+                ) : (
+                  activeTab === index && (
+                    <div className="min-h-[100px] content-center text-center">
+                      <p className="font-bold text-xl">
+                        Thông tin đang được cập nhật.....
+                      </p>
+                    </div>
+                  )
+                )
               )}
             </div>
           </div>

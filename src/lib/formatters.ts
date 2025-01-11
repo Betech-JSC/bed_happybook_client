@@ -29,11 +29,16 @@ const formatTime = (isoString: string) => {
   return format(date, "HH:mm");
 };
 
-const formatCurrency = (value: number) => {
-  return value.toLocaleString("vi-VN", {
+const formatCurrency = (
+  value: number,
+  language: string = "vi",
+  digits: number = 0
+) => {
+  return new Intl.NumberFormat(language, {
     style: "currency",
-    currency: "VND",
-  });
+    currency: language === "vi" ? "VND" : "USD",
+    minimumFractionDigits: digits,
+  }).format(value);
 };
 
 const formatMoney = (

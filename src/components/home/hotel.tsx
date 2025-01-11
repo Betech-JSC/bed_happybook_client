@@ -9,47 +9,12 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
+import { formatCurrency, formatMoney } from "@/lib/formatters";
+import { calculatorDiscountPercent } from "@/utils/Helper";
+import Link from "next/link";
 
-const hotels = [
-  {
-    title: "Night Hotel",
-    image: "/hotel/1.png",
-    price: "1.200.00",
-    discount: "800.000",
-    discountPercent: "22%",
-  },
-  {
-    title: "Melia Bavi Mountain Retreat",
-    image: "/hotel/2.png",
-    price: "1.200.00",
-    discount: "800.000",
-    discountPercent: "22%",
-  },
-  {
-    title: "Livotel Hotel Lat Phrao Bangkok",
-    image: "/hotel/3.png",
-    price: "1.200.00",
-    discount: "800.000",
-    discountPercent: "22%",
-  },
-  {
-    title: "BAIYOKE SKY HOTEL",
-    image: "/hotel/4.png",
-    price: "1.200.00",
-    discount: "800.000",
-    discountPercent: "22%",
-  },
-  {
-    title: "Melia Bavi Mountain Retreat",
-    image: "/hotel/2.png",
-    price: "1.200.00",
-    discount: "800.000",
-    discountPercent: "22%",
-  },
-];
-export default function Hotel() {
-  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
-  const [activeTab, setActiveTab] = useState(0);
+export default function Hotel({ data }: any) {
+  const [activeTab, setActiveTab] = useState<number>(0);
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="relative lg:mb-8 lg:mt-12 lg:px-6 py-6 lg:py-8">
@@ -120,123 +85,136 @@ export default function Hotel() {
                   }}
                 >
                   <CarouselContent>
-                    {["Phổ biến", "Hà Nội", "Hồ Chí Minh", "Đà Lạt"].map(
-                      (tab, index) => (
-                        <CarouselItem key={index} className="basis-1/8">
-                          <button
-                            key={index}
-                            className={`px-4 py-2 focus:outline-none rounded-[8px] duration-300 ${
-                              activeTab === index
-                                ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                                : "text-gray-500 border-solid border-[#D0D5DD] border-2 hover:bg-gray-100"
-                            }`}
-                            onClick={() => setActiveTab(index)}
-                          >
-                            {tab}
-                          </button>
-                        </CarouselItem>
-                      )
-                    )}
+                    {data.map((tab: any, index: number) => (
+                      <CarouselItem key={index} className="basis-1/8">
+                        <button
+                          key={index}
+                          className={`px-4 py-2 focus:outline-none rounded-[8px] duration-300 ${
+                            activeTab === index
+                              ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                              : "text-gray-500 border-solid border-[#D0D5DD] border-2 hover:bg-gray-100"
+                          }`}
+                          onClick={() => setActiveTab(index)}
+                        >
+                          {tab.name}
+                        </button>
+                      </CarouselItem>
+                    ))}
                   </CarouselContent>
                 </Carousel>
               </div>
-              <div className="">
-                {activeTab === 0 && (
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: true,
-                    }}
-                    // plugins={[plugin.current]}
-                    // onMouseEnter={plugin.current.stop}
-                    // onMouseLeave={plugin.current.reset}
-                  >
-                    <CarouselContent>
-                      {hotels.map((hotel, index) => (
-                        <CarouselItem
-                          key={index}
-                          className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+              <div>
+                {data.map((category: any, index: number) =>
+                  category.products.length > 0 ? (
+                    <>
+                      {activeTab === index && (
+                        <Carousel
+                          opts={{
+                            align: "start",
+                            loop: true,
+                          }}
                         >
-                          <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                            <div className="overflow-hidden rounded-2xl relative">
-                              <Image
-                                className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
-                                src={hotel.image}
-                                alt="Banner"
-                                width={200}
-                                height={160}
-                                sizes="(max-width: 768px) 100vw,
-                        (max-width: 1200px) 50vw,33vw"
-                                style={{ height: "100%", width: "100%" }}
-                              />
-                              <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#F27145] rounded-tr-3xl">
-                                <span>Tiết kiệm {hotel.discountPercent}</span>
-                              </div>
-                            </div>
-                            <div className="py-3 px-4">
-                              <p
-                                className={`text-base font-semibold min-h-12 line-clamp-2 ${styles.text_hover_default}`}
-                              >
-                                {hotel.title}
-                              </p>
-                              <div className="flex mt-2">
-                                {Array.from({ length: 4 }).map((_, index) => (
-                                  <div key={index}>
-                                    <Image
-                                      src="/icon/start-icon.svg"
-                                      alt="start icon"
-                                      width={16}
-                                      height={16}
-                                    />
+                          <CarouselContent>
+                            {category.products.map(
+                              (hotel: any, index: number) => (
+                                <CarouselItem
+                                  key={index}
+                                  className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+                                >
+                                  <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                                    <div className="overflow-hidden rounded-2xl relative">
+                                      <Link
+                                        href={`/khach-san/chi-tiet/${hotel.slug}`}
+                                      >
+                                        <Image
+                                          className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
+                                          src={`${hotel.image_url}/${hotel.image_location}`}
+                                          alt="Hotel Image"
+                                          width={320}
+                                          height={320}
+                                          sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                                          style={{ height: 220, width: "100%" }}
+                                        />
+                                      </Link>
+                                      {hotel.discount_price > 0 && (
+                                        <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#F27145] rounded-tr-3xl">
+                                          <span>
+                                            Tiết kiệm{" "}
+                                            {calculatorDiscountPercent(
+                                              hotel.discount_price,
+                                              hotel.price
+                                            )}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="py-3 px-4">
+                                      <p
+                                        className={`text-base font-semibold min-h-12 line-clamp-2 ${styles.text_hover_default}`}
+                                      >
+                                        {hotel.name}
+                                      </p>
+                                      <div className="flex mt-2">
+                                        {Array.from({ length: 4 }).map(
+                                          (_, index) => (
+                                            <div key={index}>
+                                              <Image
+                                                src="/icon/start-icon.svg"
+                                                alt="start icon"
+                                                width={16}
+                                                height={16}
+                                              />
+                                            </div>
+                                          )
+                                        )}
+                                        <div>
+                                          <Image
+                                            src="/icon/start.svg"
+                                            alt="start icon"
+                                            width={16}
+                                            height={16}
+                                            style={{
+                                              width: "16px",
+                                              height: "16px",
+                                            }}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="line-through text-[#667085] font-semibold h-6">
+                                          {hotel.discount_price
+                                            ? formatCurrency(hotel.price)
+                                            : ""}
+                                        </p>
+
+                                        <p className="text-[#F27145] text-xl font-semibold">
+                                          {hotel.discount_price
+                                            ? formatCurrency(
+                                                hotel.discount_price
+                                              )
+                                            : formatCurrency(hotel.price)}
+                                        </p>
+                                      </div>
+                                    </div>
                                   </div>
-                                ))}
-                                <div>
-                                  <Image
-                                    src="/icon/start.svg"
-                                    alt="start icon"
-                                    width={16}
-                                    height={16}
-                                    style={{ width: "16px", height: "16px" }}
-                                  />
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="line-through text-[#667085] font-semibold">
-                                  800.000 vnđ
-                                </p>
-                                <p className="text-[#F27145] text-xl font-semibold">
-                                  1.200.000 vnđ
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden lg:inline-flex" />
-                    <CarouselNext className="hidden lg:inline-flex" />
-                  </Carousel>
-                )}
-                {activeTab === 1 && (
-                  <div className="min-h-[100px] content-center text-center">
-                    <p className="font-bold text-xl">
-                      Thông tin đang được cập nhật.....
-                    </p>
-                  </div>
-                )}
-                {activeTab === 2 && (
-                  <div className="min-h-[100px] content-center text-center">
-                    <p className="font-bold text-xl">
-                      Thông tin đang được cập nhật.....
-                    </p>
-                  </div>
-                )}
-                {activeTab === 3 && (
-                  <div className="min-h-[100px] content-center text-center">
-                    <p className="font-bold text-xl">
-                      Thông tin đang được cập nhật.....
-                    </p>
-                  </div>
+                                </CarouselItem>
+                              )
+                            )}
+                          </CarouselContent>
+                          <CarouselPrevious className="hidden lg:inline-flex" />
+                          <CarouselNext className="hidden lg:inline-flex" />
+                        </Carousel>
+                      )}
+                    </>
+                  ) : (
+                    activeTab === index && (
+                      <div className="min-h-[100px] content-center text-center">
+                        <p className="font-bold text-xl">
+                          Thông tin đang được cập nhật.....
+                        </p>
+                      </div>
+                    )
+                  )
                 )}
               </div>
             </div>

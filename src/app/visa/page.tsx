@@ -2,12 +2,13 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import VisaStyle from "@/styles/visaService.module.scss";
-import VisaItem from "./component/VisaItem";
-import TravelGuide from "./component/TravelGuide";
+import VisaItem from "./components/VisaItem";
+import TravelGuide from "./components/TravelGuide";
 import VisaSteps from "@/components/home/visa-steps";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
+import { VisaApi } from "@/api/Visa";
 
 export const metadata: Metadata = formatMetadata({
   title: "Dịch Vụ Làm Visa Trọn Gói Giá Rẻ Tại TPHCM | Tỷ Lệ Đậu 90%",
@@ -18,20 +19,9 @@ export const metadata: Metadata = formatMetadata({
   },
 });
 
-const tabs = [
-  { name: "Visa Hot" },
-  { name: "Visa Châu Á" },
-  { name: "Visa Châu Phi" },
-  { name: "Visa Châu Úc" },
-  { name: "Visa Châu Mỹ" },
-  { name: "Visa Châu Âu" },
-];
-const tabs2 = [
-  { name: "Visa Nhật Bản" },
-  { name: "Visa Hàn Quốc" },
-  { name: "Visa Ấn Độ" },
-];
-export default function Visa() {
+export default async function Visa() {
+  const res = (await VisaApi.getAll()) as any;
+  const data = res?.payload?.data;
   return (
     <SeoSchema
       metadata={metadata}
@@ -131,14 +121,15 @@ export default function Visa() {
         </div>
         <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
-            <div className="">
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-[24px] lg:text-[32px] font-bold">
-                    Dịch vụ Visa nổi bật
-                  </h2>
-                </div>
-                <Link
+            {data?.visaOutstanding?.length > 0 && (
+              <div className="">
+                <div className="flex justify-between">
+                  <div>
+                    <h2 className="text-[24px] lg:text-[32px] font-bold">
+                      Dịch vụ Visa nổi bật
+                    </h2>
+                  </div>
+                  {/* <Link
                   href="/visa/visa-nhat-ban"
                   className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
                   style={{ transition: "0.3s" }}
@@ -153,107 +144,78 @@ export default function Visa() {
                     width={20}
                     height={20}
                   />
-                </Link>
+                </Link> */}
+                </div>
+                <p className="text-sm lg:text-16 font-medium mt-3">
+                  Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu
+                  cao!
+                </p>
+                {/* <Link
+                  href="/visa/visa-nhat-ban"
+                  className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+                >
+                  <button className="text-[#175CD3] font-medium">
+                    {" "}
+                    Xem tất cả
+                  </button>
+                  <Image
+                    className=" hover:scale-110 ease-in duration-300"
+                    src="/icon/chevron-right.svg"
+                    alt="Icon"
+                    width={20}
+                    height={20}
+                  />
+                </Link> */}
+                <VisaItem data={data.visaOutstanding} />
               </div>
-              <p className="text-sm lg:text-16 font-medium mt-3">
-                Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu
-                cao!
-              </p>
-              <Link
-                href="/visa/visa-nhat-ban"
-                className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
-              >
-                <button className="text-[#175CD3] font-medium">
-                  {" "}
-                  Xem tất cả
-                </button>
-                <Image
-                  className=" hover:scale-110 ease-in duration-300"
-                  src="/icon/chevron-right.svg"
-                  alt="Icon"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-              <VisaItem tabs={tabs} />
-            </div>
+            )}
             <div className="mt-6">
               <TravelGuide />
             </div>
-            <div className="mt-6">
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-[24px] lg:text-[32px] font-bold">
-                    Châu Âu
-                  </h2>
+            {data?.visaByCategory?.length > 0 &&
+              data.visaByCategory.map((parentCategory: any, index: number) => (
+                <div className="mt-6" key={index}>
+                  <div className="flex justify-between">
+                    <div>
+                      <h2 className="text-[24px] lg:text-[32px] font-bold">
+                        {parentCategory.name}
+                      </h2>
+                    </div>
+                    <Link
+                      href={`/visa/${parentCategory.alias}`}
+                      className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
+                      style={{ transition: "0.3s" }}
+                    >
+                      <button className="text-[#175CD3] font-medium">
+                        Xem tất cả
+                      </button>
+                      <Image
+                        className=" hover:scale-110 ease-in duration-300"
+                        src="/icon/chevron-right.svg"
+                        alt="Icon"
+                        width={20}
+                        height={20}
+                      />
+                    </Link>
+                  </div>
+                  <Link
+                    href={`/visa/${parentCategory.alias}`}
+                    className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+                  >
+                    <button className="text-[#175CD3] font-medium">
+                      Xem tất cả
+                    </button>
+                    <Image
+                      className=" hover:scale-110 ease-in duration-300"
+                      src="/icon/chevron-right.svg"
+                      alt="Icon"
+                      width={20}
+                      height={20}
+                    />
+                  </Link>
+                  <VisaItem data={parentCategory.children} />
                 </div>
-                <div
-                  className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
-                  style={{ transition: "0.3s" }}
-                >
-                  <button className="text-[#175CD3] font-medium">
-                    Xem tất cả
-                  </button>
-                  <Image
-                    className=" hover:scale-110 ease-in duration-300"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </div>
-              </div>
-              <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
-                <button className="text-[#175CD3] font-medium">
-                  Xem tất cả
-                </button>
-                <Image
-                  className=" hover:scale-110 ease-in duration-300"
-                  src="/icon/chevron-right.svg"
-                  alt="Icon"
-                  width={20}
-                  height={20}
-                />
-              </div>
-              <VisaItem tabs={tabs2} />
-            </div>
-            <div className="mt-6">
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-[24px] lg:text-[32px] font-bold">
-                    Châu Á
-                  </h2>
-                </div>
-                <div
-                  className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
-                  style={{ transition: "0.3s" }}
-                >
-                  <button className="text-[#175CD3] font-medium">
-                    Xem tất cả
-                  </button>
-                  <Image
-                    className=" hover:scale-110 ease-in duration-300"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </div>
-              </div>
-              <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
-                <button className="text-[#175CD3] font-medium">
-                  Xem tất cả
-                </button>
-                <Image
-                  className=" hover:scale-110 ease-in duration-300"
-                  src="/icon/chevron-right.svg"
-                  alt="Icon"
-                  width={20}
-                  height={20}
-                />
-              </div>
-              <VisaItem tabs={tabs2} />
-            </div>
+              ))}
           </div>
         </div>
         <div className="mt-8">
