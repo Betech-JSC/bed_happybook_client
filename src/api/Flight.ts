@@ -11,6 +11,7 @@ const FlightApi = {
     http.get<any>(`airport/search?keyword=${searchParams}`),
   updatePaymentMethod: (data: any) =>
     http.post<any>(`update-payment-booking-flight`, data),
+  getPopularFlights: () => http.get<any>("home/lay-chuyen-bay-pho-bien"),
 };
 
 export { FlightApi };

@@ -36,9 +36,9 @@ export default function ListTour({
     type_tour: type_tour,
     text: searchParams.get("text"),
   });
-  const [textLoading, setTextLoading] = useState<string>("Đang tải dữ liệu...");
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
+  const [isFilters, setIsFilters] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const loadData = useCallback(async () => {
@@ -48,7 +48,9 @@ export default function ListTour({
       const res = await TourApi.search(`/product/tours/search${search}`);
       const result = res?.payload?.data;
       setData((prevData: any) =>
-        result.items.length > 0 ? [...prevData, ...result.items] : [...prevData]
+        result.items.length > 0 && !isFilters
+          ? [...prevData, ...result.items]
+          : result.items
       );
       if (result?.last_page === query.page) {
         setIsLastPage(true);
@@ -57,11 +59,14 @@ export default function ListTour({
       console.log("Error search: " + error);
     } finally {
       setFirstLoad(false);
+      setIsFilters(false);
       setLoadingLoadMore(false);
     }
-  }, [query]);
+  }, [query, isFilters]);
 
   const handleFilterChange = (group: string, value: string) => {
+    setData([]);
+    setIsFilters(true);
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -78,12 +83,12 @@ export default function ListTour({
         };
       }
     });
-    setData([]);
   };
   const handleSortData = (value: string) => {
+    setData([]);
+    setIsFilters(true);
     const [sort, order] = value.split("|");
     setQuery({ ...query, sort: sort, order: order });
-    setData([]);
   };
 
   useEffect(() => {
@@ -96,7 +101,7 @@ export default function ListTour({
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">{textLoading}</span>
+        <span className="text-18">Đang tải dữ liệu...</span>
       </div>
     );
   }

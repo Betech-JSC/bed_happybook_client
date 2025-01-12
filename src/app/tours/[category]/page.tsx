@@ -15,6 +15,7 @@ import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import ListTour from "../components/ListTour";
+import { Suspense } from "react";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.getCategory("tour")) as any;
@@ -104,11 +105,13 @@ export default async function CategoryPosts({
             </BreadcrumbList>
           </Breadcrumb>
           {/* Section Tour */}
-          <ListTour
-            type_tour={typeTour ?? undefined}
-            titlePage={titlePage}
-            optionsFilter={optionsFilter}
-          />
+          <Suspense>
+            <ListTour
+              type_tour={typeTour ?? undefined}
+              titlePage={titlePage}
+              optionsFilter={optionsFilter}
+            />
+          </Suspense>
           {/* <div className="min-h-52 text-center mt-20 text-xl">
             Dữ liệu đang được cập nhật....
           </div> */}

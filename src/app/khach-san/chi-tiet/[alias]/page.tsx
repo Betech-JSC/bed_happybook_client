@@ -45,15 +45,13 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 export default async function HotelDetail({
   params,
 }: {
-  params: { category: string };
+  params: { alias: string };
 }) {
-  const res = (await HotelApi.detail("tesst1")) as any;
+  const res = (await HotelApi.detail(params.alias)) as any;
   const detail = res?.payload?.data;
-
   if (!detail) {
     notFound();
   }
-
   return (
     <SeoSchema
       blog={detail}
@@ -63,7 +61,7 @@ export default async function HotelDetail({
           name: "Visa",
         },
         {
-          url: blogUrl(BlogTypes.HOTEL, detail.slug, true),
+          url: blogUrl(BlogTypes.HOTEL, detail?.slug, true),
           name: detail?.title as string,
         },
       ]}
@@ -90,11 +88,8 @@ export default async function HotelDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link
-                    href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
-                    className="text-gray-700"
-                  >
-                    Sofitel Legend Metropole Hà Nội
+                  <Link href="#" className="text-gray-700">
+                    {detail.name ?? ""}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -105,30 +100,36 @@ export default async function HotelDetail({
               <div className="overflow-hidden rounded-lg">
                 <Image
                   className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
-                  src={`/hotel/detail/1.png`}
+                  src={`${detail.image_url}/${detail.image_location}`}
                   alt="Image"
                   width={700}
                   height={450}
                   sizes="100vw"
+                  style={{ height: 450, width: "100%" }}
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {[1, 2, 3, 4].map((_, index) => (
-                  <div className="overflow-hidden rounded-lg" key={index}>
-                    <Image
-                      className="cursor-pointer w-full h-32 md:h-[220px] rounded-lg hover:scale-110 ease-in duration-300"
-                      src={`/hotel/detail/${index + 2}.png`}
-                      alt="Image"
-                      width={320}
-                      height={220}
-                      sizes="100vw"
-                    />
-                  </div>
-                ))}
+                {detail?.gallery?.length > 0 &&
+                  detail.gallery.map(
+                    (item: any, index: number) =>
+                      index <= 4 && (
+                        <div className="overflow-hidden rounded-lg" key={index}>
+                          <Image
+                            className="cursor-pointer w-full h-32 md:h-[220px] rounded-lg hover:scale-110 ease-in duration-300"
+                            src={`${item.image_url}${item.image_300}`}
+                            alt="Image"
+                            width={320}
+                            height={220}
+                            sizes="100vw"
+                            style={{ height: 220, width: "100%" }}
+                          />
+                        </div>
+                      )
+                  )}
               </div>
             </div>
             <div className="mt-4">
-              <HotelDetailTabs />
+              <HotelDetailTabs data={detail} />
             </div>
           </div>
         </div>

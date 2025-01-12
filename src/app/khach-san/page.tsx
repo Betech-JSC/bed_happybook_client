@@ -46,7 +46,7 @@ export default async function Hotel() {
         },
       ]}
     >
-      <div className="relative z-[0] h-max pb-12">
+      <div className="relative h-max pb-12">
         <div className="absolute inset-0">
           <Image
             priority

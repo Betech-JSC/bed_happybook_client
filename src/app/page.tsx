@@ -24,6 +24,7 @@ import { siteUrl } from "@/constants";
 import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 import { formatMetadata } from "@/lib/formatters";
 import { BannerApi } from "@/api/Banner";
+import { cloneItemsCarousel } from "@/utils/Helper";
 
 export const metadata: Metadata = formatMetadata({
   title: "HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
@@ -41,6 +42,12 @@ export default async function Home() {
   const homeData = homeApiReponse?.payload.data ?? [];
   const bannerData = (await BannerApi.getBannerPage("home"))?.payload
     ?.data as any;
+  let popularFlights = (await FlightApi.getPopularFlights())?.payload
+    ?.data as any;
+  if (popularFlights.length > 0 && popularFlights.length < 5) {
+    popularFlights = cloneItemsCarousel(popularFlights, 8);
+  }
+
   return (
     <Fragment>
       <WebsiteSchema {...(metadata as any)} url={siteUrl} />
@@ -107,10 +114,12 @@ export default async function Home() {
             </div>
           </AosAnimate>
         )}
+        {popularFlights?.length > 0 && (
+          <AosAnimate>
+            <Flight data={popularFlights}></Flight>
+          </AosAnimate>
+        )}
 
-        <AosAnimate>
-          <Flight></Flight>
-        </AosAnimate>
         {homeData?.tours?.hot.length > 0 && (
           <AosAnimate>
             <TourHot data={homeData.tours.hot}></TourHot>
