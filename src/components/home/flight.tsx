@@ -9,55 +9,8 @@ import {
 import styles from "@/styles/styles.module.scss";
 import FlightItem from "@/components/flight-item";
 
-const tours = [
-  {
-    title: "Hà Nội - Hồ Chí Minh",
-    image: "/flight/1.png",
-    price: "800.000 đồng",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-  {
-    title: "Hà Nội - Đà Lạt",
-    image: "/flight/2.png",
-    price: "800.000 đồng",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 1,
-  },
-  {
-    title: "Hồ Chí Minh - Nha Trang",
-    image: "/flight/3.png",
-    price: "800.000 đồng",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-  {
-    title: "Hồ Chí Minh - Hà Nội",
-    image: "/flight/4.png",
-    price: "800.000 đồng",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-  {
-    title: "Hà Nội - Hồ Chí Minh",
-    image: "/flight/1.png",
-    price: "800.000 đồng",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-];
-export default function Flight() {
-  // const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+export default function Flight({ data }: any) {
+  if (!data) return;
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen ">
       <div className="relative lg:mt-12 lg:px-6 py-6 lg:py-8 hidden lg:block">
@@ -91,7 +44,7 @@ export default function Flight() {
                   Những chuyến bay phổ biến
                 </h2>
               </div>
-              <div
+              {/* <div
                 className="hidden lg:flex bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3"
                 style={{ transition: "0.3s" }}
               >
@@ -106,12 +59,12 @@ export default function Flight() {
                   width={20}
                   height={20}
                 />
-              </div>
+              </div> */}
             </div>
             <p className="text-16 font-medium mt-3">
               Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
             </p>
-            <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
+            {/* <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
               <button className="text-[#175CD3] font-medium">
                 {" "}
                 Xem tất cả
@@ -123,24 +76,21 @@ export default function Flight() {
                 width={20}
                 height={20}
               />
-            </div>
+            </div> */}
             <div className="mt-8 w-full">
               <Carousel
                 opts={{
                   align: "start",
                   loop: true,
                 }}
-                // plugins={[plugin.current]}
-                // onMouseEnter={plugin.current.stop}
-                // onMouseLeave={plugin.current.reset}
               >
                 <CarouselContent>
-                  {tours.map((tour, index) => (
+                  {data.map((flight: any) => (
                     <CarouselItem
-                      key={index}
+                      key={flight.id}
                       className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
                     >
-                      <FlightItem {...tour} />
+                      <FlightItem data={flight} />
                     </CarouselItem>
                   ))}
                 </CarouselContent>

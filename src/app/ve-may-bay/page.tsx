@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import type { Metadata } from "next";
 import {
   Carousel,
@@ -15,9 +14,10 @@ import Link from "next/link";
 import Search from "./components/Search";
 import { Suspense } from "react";
 import { FlightApi } from "@/api/Flight";
-import { formatMetadata } from "@/lib/formatters";
+import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { cloneItemsCarousel } from "@/utils/Helper";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -29,56 +29,14 @@ export const metadata: Metadata = formatMetadata({
   },
 });
 
-const tours = [
-  {
-    title: "Hà Nội - Hồ Chí Minh",
-    image: "/flight/1.png",
-    price: "800.000",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-  {
-    title: "Hà Nội - Đà Lạt",
-    image: "/flight/2.png",
-    price: "800.000",
-    airlineName: "Vietnam Airlines",
-    airlineLogo: "/airline/VN.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-  {
-    title: "Hồ Chí Minh - Nha Trang",
-    image: "/flight/3.png",
-    price: "800.000",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-  {
-    title: "Hồ Chí Minh - Hà Nội",
-    image: "/flight/4.png",
-    price: "800.000",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-  {
-    title: "Hà Nội - Hồ Chí Minh",
-    image: "/flight/1.png",
-    price: "800.000",
-    airlineName: "Vietjet Air",
-    airlineLogo: "/airline/VJ.svg",
-    date: "15/09/2024",
-    type: 0,
-  },
-];
 export default async function AirlineTicket() {
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
+  let popularFlights = (await FlightApi.getPopularFlights())?.payload
+    ?.data as any;
+  if (popularFlights.length > 0 && popularFlights.length < 5) {
+    popularFlights = cloneItemsCarousel(popularFlights, 8);
+  }
   return (
     <SeoSchema
       metadata={metadata}
@@ -165,38 +123,40 @@ export default async function AirlineTicket() {
             </div>
           </div>
           {/* Flight */}
-          <div className="mt-6 py-6">
-            <div>
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-[24px] lg:text-32 font-bold">
-                    Những chuyến bay phổ biến
-                  </h2>
+          {popularFlights?.length > 0 && (
+            <div className="mt-6 py-6">
+              <div>
+                <div className="flex justify-between">
+                  <div>
+                    <h2 className="text-[24px] lg:text-32 font-bold">
+                      Những chuyến bay phổ biến
+                    </h2>
+                  </div>
+                </div>
+                <div className="mt-8 w-full">
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
+                    }}
+                  >
+                    <CarouselContent>
+                      {popularFlights.map((flight: any) => (
+                        <CarouselItem
+                          key={flight.id}
+                          className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
+                        >
+                          <FlightItem data={flight} />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden lg:inline-flex" />
+                    <CarouselNext className="hidden lg:inline-flex" />
+                  </Carousel>
                 </div>
               </div>
-              <div className="mt-8 w-full">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {tours.map((tour, index) => (
-                      <CarouselItem
-                        key={index}
-                        className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                      >
-                        <FlightItem {...tour} />
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden lg:inline-flex" />
-                  <CarouselNext className="hidden lg:inline-flex" />
-                </Carousel>
-              </div>
             </div>
-          </div>
+          )}
           <div className="mt-6 py-6">
             <div>
               <div className="flex justify-between">
@@ -214,32 +174,31 @@ export default async function AirlineTicket() {
                   }}
                 >
                   <CarouselContent>
-                    {tours.map((flight, index) => (
+                    {popularFlights.map((item: any) => (
                       <CarouselItem
-                        key={index}
+                        key={item.id}
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
                       >
                         <div className="px-4 py-3 border border-gray-200 rounded-2xl">
                           <div className="flex text-sm h-5">
                             <Image
-                              src={flight.airlineLogo}
+                              src={`${item.image_url}/${item.flight.data_hang_bay.logo}`}
                               alt="Airline logo"
-                              width={24}
+                              width={66}
                               height={24}
                             />
-                            <p className="ml-2">{flight.airlineName}</p>
+                            <p className="ml-2">
+                              {item.flight.data_hang_bay.name}
+                            </p>
                           </div>
-                          <Link
-                            href="/ve-may-bay/chi-tiet"
-                            className="mt-2 font-semibold block"
-                          >
-                            <h3> {flight.title}</h3>
+                          <Link href="#" className="mt-2 font-semibold block">
+                            <h3>{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
                           </Link>
                           <div className="mt-2 text-sm font-normal">
-                            {flight.date}
+                            {item.flight.ngay_khoi_hanh}
                           </div>
                           <div className="mt-3 text-right text-xl font-semibold text-primary">
-                            {flight.price ?? "800.000"} vnđ
+                            {formatCurrency(item.price)}
                           </div>
                         </div>
                       </CarouselItem>

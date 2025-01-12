@@ -1,53 +1,15 @@
 "use client";
+import { formatCurrency } from "@/lib/formatters";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect, Fragment } from "react";
-const rooms = [
-  {
-    id: 1,
-    title: "Phòng Cao cấp, 1 giường cỡ queen (Heritage Wing)",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-  {
-    id: 2,
-    title:
-      "Phòng 2 giường đơn Grand, 2 giường đơn, quyền sử dụng Business Lounge (Opera Wing)",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-  {
-    id: 3,
-    title: "Grand Luxury King Room, Club Metropole Access, Heritage Wing",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-  {
-    id: 4,
-    title: "Grand Luxury King Room, Club Metropole Access, Heritage Wing",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-  {
-    id: 5,
-    title: "Grand Luxury King Room, Club Metropole Access, Heritage Wing",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-  {
-    id: 6,
-    title: "Grand Luxury King Room, Club Metropole Access, Heritage Wing",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-];
 
-export default function HotelDetailTabs() {
+export default function HotelDetailTabs({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
   const [currentTabWidth, setCurrentTabWidth] = useState(0);
   const tabContainerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
+  console.log(data);
   useEffect(() => {
     if (tabRefs.current[activeTab]) {
       setCurrentTabWidth(tabRefs.current[activeTab].offsetWidth);
@@ -94,28 +56,19 @@ export default function HotelDetailTabs() {
             <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               Tổng quan
             </h2>
-            <h3 className="mt-4 text-22 font-semibold">
-              Sofitel Legend Metropole Hà Nội
-            </h3>
-            <p className="mt-2">Gần Tràng Tiền Plaza</p>
-            <div className="mt-3 line-clamp-5">
-              Gần Tràng Tiền Plaza Hãy để mình được chăm sóc thật đặc biệt với
-              các dịch vụ massage, trị liệu toàn thân chăm sóc da mặt ngay trong
-              khuôn viên. Đừng bỏ qua cơ hội tận hưởng những dịch vụ, tiện nghi
-              thể thao, giải trí như hộp đêm, câu lạc bộ sức khỏe hay hồ bơi
-              ngoài trời. Các tiện ích, dịch vụ khác tại Khách sạn phong cách
-              kiến trúc Thuộc địa này bao gồm quyền truy cập Internet không dây
-              miễn phí, dịch vụ tư vấn/hỗ trợ khách và dịch vụ trông trẻ (phụ
-              phí). Hãy tự thưởng cho mình những ngày nghỉ tại một trong 364
-              phòng được trang bị lò sưởi. Giường nệm có lớp đệm bông đi cùng
-              chăn bông và bộ đồ giường cao cấp
-            </div>
+            <h3 className="mt-4 text-22 font-semibold">{data.name ?? ""}</h3>
+            <div
+              className="mt-3 line-clamp-5"
+              dangerouslySetInnerHTML={{
+                __html: data.hotel.about ?? "Nội dung đang cập nhật",
+              }}
+            ></div>
 
-            <div className="w-full mt-4 text-center">
+            {/* <div className="w-full mt-4 text-center">
               <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
                 Xem thêm
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
@@ -127,123 +80,136 @@ export default function HotelDetailTabs() {
             </h2>
           </div>
           <div className="rounded-2xl mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {rooms.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl">
-                <div className="p-3 flex flex-col justify-between h-full">
-                  <div className="flex-grow">
-                    <Link
-                      href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
-                      className="block overflow-hidden rounded-xl"
-                    >
-                      <Image
-                        className="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300"
-                        src={`/compo/detail/hotel/1.png`}
-                        alt="Image"
-                        width={416}
-                        height={256}
-                      />
-                    </Link>
-                    <Link
-                      href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
-                      className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
-                    >
-                      <h3>{item.title}</h3>
-                    </Link>
-                    <div className="mt-3 p-2 rounded-lg bg-gray-100">
-                      <p className="">Bữa sáng miễn phí</p>
-                      <p className="mt-3">Miễn phí WiFi</p>
-                      <p className="mt-3">
-                        Miễn phí bữa sáng buffet cho 1 người mỗi ngày
-                      </p>
-                      <p className="mt-3">32 mét vuông</p>
-                      <p className="mt-3">2 khách</p>
-                      <p className="mt-3">1 giường cỡ queen</p>
-                      <p className="mt-3">
-                        46 USD dùng thanh toán thức ăn và đồ uống mỗi phòng, mỗi
-                        lần lưu trú
-                      </p>
-                      <p className="mt-3">
-                        Nhận phòng sớm miễn phí (sớm 2 giờ)
-                      </p>
-                      <p className="mt-3">
-                        Trả phòng muộn miễn phí (muộn 2 giờ)
-                      </p>
+            {data.hotel.rooms.length > 0 ? (
+              data.hotel.rooms.map((item: any, index: number) => (
+                <div key={index} className="bg-white rounded-xl">
+                  <div className="p-3 flex flex-col justify-between h-full">
+                    <div className="flex-grow">
+                      <Link
+                        href="#"
+                        className="block overflow-hidden rounded-xl"
+                      >
+                        <Image
+                          className="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300"
+                          src={`${data.image_url}/${item.image_location}`}
+                          alt="Image"
+                          width={416}
+                          height={256}
+                          style={{ height: 275, width: "100%" }}
+                        />
+                      </Link>
+                      <Link
+                        href="#"
+                        className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
+                      >
+                        <h3>{item.name}</h3>
+                      </Link>
+                      {item.description && (
+                        <div className="mt-3 p-2 rounded-lg bg-gray-100">
+                          {item.description}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <div>
-                    <div className="mt-4 text-right">
-                      <p className="text-gray-500">11.693.130 ₫</p>
-                      <p>
-                        <span className="text-gray-500">Tổng:</span>{" "}
-                        <span className="mt-2 text-22 font-semibold text-primary">
-                          40.217.611 ₫
-                        </span>
-                      </p>
-                      <p className="mt-2 text-sm text-gray-500">
-                        bao gồm thuế phí
-                      </p>
-                    </div>
-                    <div className="mt-4">
-                      <div className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center">
-                        <button className="mx-auto text-base font-medium">
-                          Yêu cầu đặt
-                        </button>
+                    <div>
+                      <div className="mt-4 text-right">
+                        <p className="text-gray-500">
+                          {formatCurrency(item.discount_price)}
+                        </p>
+                        <p>
+                          <span className="text-gray-500">Tổng:</span>{" "}
+                          <span className="mt-2 text-22 font-semibold text-primary">
+                            {formatCurrency(item.price)}
+                          </span>
+                        </p>
+                        <p className="mt-2 text-sm text-gray-500">
+                          bao gồm thuế phí
+                        </p>
+                      </div>
+                      <div className="mt-4">
+                        <div className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center">
+                          <button className="mx-auto text-base font-medium">
+                            Yêu cầu đặt
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-18 font-medium">
+                Nội dung đang cập nhật...
               </div>
-            ))}
+            )}
           </div>
         </Fragment>
       )}
       {activeTab === 2 && (
-        <div className="bg-white p-6 rounded-2xl">
-          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-            Địa điểm
-          </h2>
-          <div className="mt-4 flex flex-col md:flex-row justify-between">
-            <div>
-              <h3 className="font-bold text-2xl">
-                Sofitel Legend Metropole Hà Nội
-              </h3>
-              <div className="flex space-x-2 items-center mt-3">
-                <Image
-                  className="w-4 h-4"
-                  src="/icon/marker-pin-01.svg"
-                  alt="Icon"
-                  width={18}
-                  height={18}
-                />
-                <span className="text-sm">
-                  15 Ngô Quyền, Hoàn Kiếm - Hà Nội
+        <>
+          <div className="bg-white p-6 rounded-2xl">
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+              Địa điểm
+            </h2>
+            <div className="mt-4 flex flex-col md:flex-row justify-between">
+              <div>
+                <h3 className="font-bold text-2xl">{data.name}</h3>
+                <div className="flex space-x-2 items-center mt-3">
+                  <Image
+                    className="w-4 h-4"
+                    src="/icon/marker-pin-01.svg"
+                    alt="Icon"
+                    width={18}
+                    height={18}
+                  />
+                  <span className="text-sm">{data.hotel.address}</span>
+                </div>
+              </div>
+              <div className="flex mt-3 md:mt-0 space-x-1">
+                <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
+                  9.8
                 </span>
+                <div className="flex flex-col space-y-1">
+                  <span className="text-primary text-sm font-semibold">
+                    Xuất sắc
+                  </span>
+                  <span className="text-gray-500 text-xs">234 đánh giá</span>
+                </div>
               </div>
             </div>
-            <div className="flex mt-3 md:mt-0 space-x-1">
-              <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-                9.8
-              </span>
-              <div className="flex flex-col space-y-1">
-                <span className="text-primary text-sm font-semibold">
-                  Xuất sắc
-                </span>
-                <span className="text-gray-500 text-xs">234 đánh giá</span>
-              </div>
+            <div className="mt-4">
+              <p className="text-18 font-semibold">Tiện nghi dịch vụ</p>
+              <ul
+                className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2 list-disc pl-4 leading-6"
+                key=""
+              >
+                {data.hotel.amenities.length > 0 ? (
+                  data.hotel.amenities.map((item: any) => (
+                    <li key={item.hotel_amenity.id}>
+                      {item.hotel_amenity.name}
+                    </li>
+                  ))
+                ) : (
+                  <div className="text-18">Nội dung đang cập nhật...</div>
+                )}
+              </ul>
             </div>
           </div>
-          <div className="mt-4">
-            <p className="text-18 font-semibold">Tiện nghi dịch vụ</p>
-            <ul className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2 list-disc pl-4">
-              <li>Có gói dịch vụ lãng mạn/cầu hôn</li>
-              <li>Trông/giữ trẻ (phụ phí)</li>
-              <li>Bàn ghế ngoài trời</li>
-              <li>Dốc cho xe lăn ở cửa trước</li>
-              <li>Khu giải trí ngoài trời</li>
-              <li>Internet có dây miễn phí</li>
-            </ul>
-          </div>
-        </div>
+          {data.hotel.reside_information && (
+            <div className="w-full mt-6">
+              <div className="bg-white rounded-2xl p-6">
+                <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+                  Thông tin về nơi lưu trú này
+                </h2>
+                <div
+                  className="mt-4"
+                  dangerouslySetInnerHTML={{
+                    __html: data.hotel.reside_information,
+                  }}
+                ></div>
+              </div>
+            </div>
+          )}
+        </>
       )}
       {activeTab == 3 && (
         <Fragment>
@@ -252,52 +218,23 @@ export default function HotelDetailTabs() {
               <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
                 Tiện nghi, dịch vụ
               </h2>
-              <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4">
-                <li>Có gói dịch vụ lãng mạn/cầu hôn</li>
-                <li>Số lượng hồ bơi ngoài trời: - 1</li>
-                <li>Bóng đèn LED</li>
-                <li>Trông/giữ trẻ (phụ phí)</li>
-                <li>Dịch vụ hỗ trợ tour/vé du lịch</li>
-                <li>Có lựa chọn thực đơn thuần chay</li>
-                <li>Bàn ghế ngoài trời</li>
-                <li>Sử dụng điện hoàn toàn từ nguồn năng lượng tái tạo</li>
-                <li>Khu lounge phù hợp cho xe lăn</li>
-                <li>Dốc cho xe lăn ở cửa trước</li>
-                <li>Không có dịch vụ đưa đón phù hợp cho người khuyết tật</li>
-              </ul>
+              {data.hotel.amenity_service.length > 0 ? (
+                <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4 leading-6">
+                  {data.hotel.amenity_service.map((item: any) => (
+                    <li key={item.id}>{item.hotel_amenity_service.name}</li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-18">Nội dung đang cập nhật...</div>
+              )}
 
-              <div className="w-full mt-4 text-center">
+              {/* <div className="w-full mt-4 text-center">
                 <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
                   Xem thêm
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
-          {/* <div className="w-full mt-6">
-            <div className="bg-white rounded-2xl p-6">
-              <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-                Tiện nghi phòng
-              </h3>
-              <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4">
-                <li>Có gói dịch vụ lãng mạn/cầu hôn</li>
-                <li>Nhân viên thông thạo nhiều ngôn ngữ</li>
-                <li>Thực phẩm hữu cơ</li>
-                <li>Trông/giữ trẻ (phụ phí)</li>
-                <li>Trung tâm Hội nghị</li>
-                <li>Nền tảng quảng bá nghệ sĩ địa phương</li>
-                <li>Có xe lăn trong khuôn viên</li>
-                <li>Phòng khiêu vũ</li>
-                <li>Khu lounge phù hợp cho xe lăn</li>
-                <li>Phục vụ bữa sáng (phụ phí)</li>
-                <li>Bàn concierge phù hợp cho xe lăn</li>
-              </ul>
-              <div className="w-full mt-4 text-center">
-                <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
-                  Xem thêm
-                </button>
-              </div>
-            </div>
-          </div> */}
         </Fragment>
       )}
       {activeTab === 4 && (
@@ -307,41 +244,27 @@ export default function HotelDetailTabs() {
               <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
                 Chính sách
               </h2>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-18 font-semibold">Nhận phòng</p>
-                  <p className="mt-2">Giờ nhận phòng bắt đầu từ 14:00</p>
-                  <p className="mt-2">Kết thúc mọi thời điểm </p>
-                </div>
-                <div>
-                  <p className="text-18 font-semibold">Trả phòng</p>
-                  <p className="mt-2">Trả phòng trước 12:00</p>
-                </div>
-              </div>
-              <p className="text-18 font-semibold mt-4">
-                Hướng dẫn nhận phòng đặc biệt
-              </p>
-              <p className="mt-2">
-                Nơi lưu trú này có dịch vụ đón khách từ sân bay (có thể tính phụ
-                phí). Để sử dụng dịch vụ, khách phải liên hệ nơi lưu trú qua
-                thông tin liên hệ được cung cấp trong xác nhận đặt phòng 24 giờ
-                trước khi đến. Nhân viên tiếp tân sẽ đón tiếp khách tại nơi lưu
-                trú. Nơi lưu trú này cho phép tối đa 1 nôi/cũi (giường cho trẻ
-                sơ sinh) hoặc 1 giường gấp/giường phụ trong một số phòng khách.
-              </p>
-              <p className="text-18 font-semibold mt-4">Vật nuôi</p>
-              <ul className="mt-2 list-disc  pl-4">
-                <li>Không được mang vật nuôi hỗ trợ người khuyết tật</li>
-                <li>Không được phép mang vật nuôi</li>
-              </ul>
+              <div
+                className="mt-4"
+                dangerouslySetInnerHTML={{
+                  __html: data.hotel.policy ?? "Nội dung đang cập nhật",
+                }}
+              ></div>
             </div>
           </div>
-          <div className="w-full mt-6">
-            <div className="bg-white rounded-2xl p-6">
-              <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-                Thông tin quan trọng
-              </h2>
-              <p className="text-18 font-semibold mt-4">Tùy chọn</p>
+          {data.hotel.information && (
+            <div className="w-full mt-6">
+              <div className="bg-white rounded-2xl p-6">
+                <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+                  Thông tin quan trọng
+                </h2>
+                <div
+                  className="mt-4"
+                  dangerouslySetInnerHTML={{
+                    __html: data.hotel.information,
+                  }}
+                ></div>
+                {/* <p className="text-18 font-semibold mt-4">Tùy chọn</p>
               <ul className="mt-2 list-disc  pl-4">
                 <li className="mt-2">
                   Phụ phí bữa sáng buffet (ước tính): người lớn - 57 USD; trẻ em
@@ -430,9 +353,10 @@ export default function HotelDetailTabs() {
                   Nơi lưu trú này chào đón khách thuộc mọi xu hướng tính dục và
                   nhận dạng giới (thân thiện với cộng đồng LGBTQ+).
                 </li>
-              </ul>
+              </ul> */}
+              </div>
             </div>
-          </div>
+          )}
         </Fragment>
       )}
     </div>
