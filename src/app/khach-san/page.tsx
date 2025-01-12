@@ -16,6 +16,7 @@ import HotelTabs from "./components/HotelTabs";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
+import { HotelApi } from "@/api/Hotel";
 
 export const metadata: Metadata = formatMetadata({
   title: "Khách Sạn | Happy Book ????️ Đại Lý Đặt Vé Máy Bay Giá Rẻ #1",
@@ -32,7 +33,9 @@ const province = [
   { id: 4, title: "Nha Trang" },
   { id: 5, title: "Phú Quốc" },
 ];
-export default function Hotel() {
+export default async function Hotel() {
+  const locations = (await HotelApi.getLocations())?.payload?.data as any;
+  const hotelData = (await HotelApi.getAll())?.payload?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -64,7 +67,7 @@ export default function Hotel() {
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-28 lg:mb-10 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
             <Suspense>
-              <Search />
+              <Search locations={locations} />
             </Suspense>
           </div>
         </div>
@@ -119,20 +122,22 @@ export default function Hotel() {
             </div>
           </div>
           {/* Hotel */}
-          <div className="mt-6 py-6">
-            <div>
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-[24px] lg:text-32 font-bold">
-                    Khách Sạn Phổ Biến tại Việt Nam
-                  </h2>
+          {hotelData?.length > 0 && (
+            <div className="mt-6 py-6">
+              <div>
+                <div className="flex justify-between">
+                  <div>
+                    <h2 className="text-[24px] lg:text-32 font-bold">
+                      Khách Sạn Phổ Biến tại Việt Nam
+                    </h2>
+                  </div>
+                </div>
+                <div className="mt-8 w-full">
+                  <HotelTabs data={hotelData} />
                 </div>
               </div>
-              <div className="mt-8 w-full">
-                <HotelTabs />
-              </div>
             </div>
-          </div>
+          )}
           {/* Province */}
           <div className="mt-6 ">
             <h2 className="text-[24px] lg:text-32 font-bold">

@@ -13,47 +13,17 @@ import SeoSchema from "@/components/schema";
 import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
-import { formatMetadata } from "@/lib/formatters";
 import ListVisa from "../components/ListVisa";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = (await VisaApi.getCategory(params.alias)) as any;
-  const data = res?.payload.data;
-  return formatMetadata({
-    title: data?.meta_title ?? data?.title,
-    description: data?.meta_description,
-    robots: data?.meta_robots,
-    keywords: data?.keywords,
-    alternates: {
-      canonical: pageUrl(data?.alias, BlogTypes.VISA, true),
-    },
-  });
-}
-
-export default async function CategoryPosts({
-  params,
+export default async function SearchVisa({
+  searchParams,
 }: {
-  params: { alias: string };
+  searchParams: { [key: string]: string };
 }) {
-  const res = (await VisaApi.getCategory(params.alias)) as any;
-  const category = res?.payload?.data;
-  if (!category) {
-    notFound();
-  }
   const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
     ?.data as any;
   return (
-    <SeoSchema
-      article={category}
-      type={BlogTypes.VISA}
-      breadscrumbItems={[
-        { url: pageUrl(BlogTypes.VISA, true), name: "Visa" },
-        {
-          url: pageUrl(category?.alias, BlogTypes.VISA, true),
-          name: category?.name,
-        },
-      ]}
-    >
+    <>
       <div className="bg-gray-100">
         <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
           <Breadcrumb className="pt-3">
@@ -68,7 +38,7 @@ export default async function CategoryPosts({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/tour" className="text-blue-700">
+                  <Link href="/visa" className="text-blue-700">
                     Dịch vụ Visa
                   </Link>
                 </BreadcrumbLink>
@@ -77,14 +47,14 @@ export default async function CategoryPosts({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="#" className="text-gray-700">
-                    {category?.name ?? ""}
+                    Tìm kiếm
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           {/* Section Visa */}
-          <ListVisa alias={params.alias} optionsFilter={optionsFilter} />
+          <ListVisa searchParams={searchParams} optionsFilter={optionsFilter} />
           {/* Section Before Footer */}
         </div>
       </div>
@@ -196,6 +166,6 @@ export default async function CategoryPosts({
           </div>
         </div>
       </div>
-    </SeoSchema>
+    </>
   );
 }

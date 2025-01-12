@@ -10,8 +10,10 @@ import { buildSearch } from "@/utils/Helper";
 export default function ListVisa({
   alias,
   optionsFilter,
+  searchParams,
 }: {
-  alias: string;
+  alias?: string;
+  searchParams?: { [key: string]: string };
   optionsFilter: {
     label: string;
     name: string;
@@ -27,15 +29,19 @@ export default function ListVisa({
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
+    slug: alias ?? "",
+    text: searchParams?.text ?? "",
+    "loai_visa[]":
+      searchParams && searchParams["loai_visa[]"]
+        ? [searchParams["loai_visa[]"]]
+        : [],
   });
   const loadData = useCallback(
     async (reset: boolean = false) => {
       try {
         setLoadingLoadMore(true);
         const search = buildSearch(query);
-        const res = await VisaApi.getListByCategory(
-          `/product/visa/list-by-category/${alias}${search}`
-        );
+        const res = await VisaApi.search(`/product/visa/search${search}`);
         const result = res?.payload?.data;
         setData((prevData: any) =>
           reset ? result : [...prevData, ...result.items]
@@ -50,16 +56,14 @@ export default function ListVisa({
         setLoadingLoadMore(false);
       }
     },
-    [query, alias]
+    [query]
   );
-
-  useEffect(() => {
-    loadData();
-  }, [query, loadData]);
 
   const handleFilterChange = (group: string, value: string) => {
     setQuery((prevFilters) => {
-      const groupFilters = prevFilters[group] || [];
+      const groupFilters = Array.isArray(prevFilters[group])
+        ? prevFilters[group]
+        : [];
       if (groupFilters.includes(value)) {
         return {
           ...prevFilters,
@@ -79,6 +83,10 @@ export default function ListVisa({
     setQuery({ ...query, sort: sort, order: order });
     setData([]);
   };
+
+  useEffect(() => {
+    loadData();
+  }, [query, loadData]);
 
   if (firstLoad) {
     return (
@@ -103,7 +111,7 @@ export default function ListVisa({
               <p className="font-semibold">{item.label}</p>
               {item.option.map((value: string, index: number) => {
                 return (
-                  index < 10 && (
+                  index < 20 && (
                     <div
                       key={index}
                       className="mt-3 flex space-x-2 items-center"
@@ -112,6 +120,11 @@ export default function ListVisa({
                         type="checkbox"
                         id={item.name + index}
                         value={value}
+                        defaultChecked={
+                          searchParams && searchParams["loai_visa[]"]
+                            ? searchParams["loai_visa[]"] === value
+                            : undefined
+                        }
                         className={TourStyle.custom_checkbox}
                         onChange={(e) =>
                           handleFilterChange(`${item.name}[]`, e.target.value)
@@ -157,7 +170,7 @@ export default function ListVisa({
           </div>
         </div>
         <div className="mb-4">
-          {data.length > 0 &&
+          {data.length > 0 ? (
             data.map((item: any, index: number) => (
               <div
                 key={index}
@@ -232,9 +245,17 @@ export default function ListVisa({
                         </div> */}
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <div
+              className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
+            >
+              <span className="!border-blue-500 !border-t-blue-200"></span>
+              <span className="text-18">Không tìm thấy dữ liệu phù hợp...</span>
+            </div>
+          )}
         </div>
-        {!isLastPage && (
+        {data.length > 0 && !isLastPage && (
           <div className="mt-4">
             <button
               onClick={() => {

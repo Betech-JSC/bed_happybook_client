@@ -190,7 +190,8 @@ export default function Hotel({ data }: any) {
                                         <p className="text-[#F27145] text-xl font-semibold">
                                           {hotel.discount_price
                                             ? formatCurrency(
-                                                hotel.discount_price
+                                                hotel.price -
+                                                  hotel.discount_price
                                               )
                                             : formatCurrency(hotel.price)}
                                         </p>

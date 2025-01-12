@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
-import VisaStyle from "@/styles/visaService.module.scss";
 import VisaItem from "./components/VisaItem";
 import TravelGuide from "./components/TravelGuide";
 import VisaSteps from "@/components/home/visa-steps";
@@ -9,6 +8,7 @@ import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { VisaApi } from "@/api/Visa";
+import SearchForm from "./components/SeachForm";
 
 export const metadata: Metadata = formatMetadata({
   title: "Dịch Vụ Làm Visa Trọn Gói Giá Rẻ Tại TPHCM | Tỷ Lệ Đậu 90%",
@@ -22,6 +22,8 @@ export const metadata: Metadata = formatMetadata({
 export default async function Visa() {
   const res = (await VisaApi.getAll()) as any;
   const data = res?.payload?.data;
+  const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
+    ?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -57,65 +59,7 @@ export default async function Visa() {
               <h1 className="text-18 font-semibold">
                 Tìm Visa theo địa danh, điểm đến
               </h1>
-              <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:space-x-2 space-y-3 items-end justify-between">
-                <div className="relative w-full md:w-1/2">
-                  <div className="absolute left-4 top-1/2 translate-y-1/4">
-                    <Image
-                      src="/icon/place.svg"
-                      alt="Icon"
-                      className="h-10"
-                      width={20}
-                      height={20}
-                      style={{ width: 20, height: 20 }}
-                    ></Image>
-                  </div>
-                  <label htmlFor="searchInput" className="font-medium block">
-                    Theo địa danh, điểm đến
-                  </label>
-                  <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Tìm theo điểm đến, hoạt động"
-                    className={`mt-2 w-full ${VisaStyle.input} h-12 indent-10`}
-                  />
-                </div>
-                <div className="w-full md:w-[30%]">
-                  <label htmlFor="typeVisa" className="font-medium block">
-                    Theo địa danh, điểm đến
-                  </label>
-                  <div
-                    className="mt-2 border border-gray-300 rounded-lg h-12"
-                    style={{
-                      boxShadow: "0px 1px 2px 0px rgba(16, 24, 40, 0.05)",
-                    }}
-                  >
-                    <select
-                      id="typeVisa"
-                      className={`px-3 py-3 w-[90%] outline-none rounded-lg h-full ${VisaStyle.select_custom}`}
-                    >
-                      <option value="" disabled selected hidden>
-                        Loại Visa
-                      </option>
-                      <option value="visa-phap">Visa Pháp</option>
-                      <option value="visa-duc">Visa Đức</option>
-                      <option value="visa-canada">Visa Cananda</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
-                  <button className="ml-2 inline-flex items-center space-x-2 h-12 text-white">
-                    <Image
-                      src="/icon/search.svg"
-                      alt="Search icon"
-                      className="h-10 mr-2"
-                      width={20}
-                      height={20}
-                      style={{ width: 20, height: 20 }}
-                    ></Image>
-                    Tìm kiếm
-                  </button>
-                </div>
-              </div>
+              <SearchForm optionsFilter={optionsFilter} />
             </div>
           </div>
         </div>
