@@ -47,13 +47,12 @@ export default async function HotelDetail({
 }: {
   params: { category: string };
 }) {
-  // const res = (await HotelApi.detail("tesst1")) as any;
-  // const detail = res?.payload?.data;
-  const detail : any = {};
+  const res = (await HotelApi.detail("tesst1")) as any;
+  const detail = res?.payload?.data;
 
-  // if (!detail) {
-  //   notFound();
-  // }
+  if (!detail) {
+    notFound();
+  }
 
   return (
     <SeoSchema

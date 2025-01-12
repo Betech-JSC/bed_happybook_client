@@ -2,12 +2,21 @@
 import { Fragment, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { HotelApi } from "@/api/Hotel";
 
-export default function Search() {
+type LocationType = {
+  id: number;
+  name: string;
+};
+type PropsType = {
+  locations: LocationType[];
+};
+export default function Search({ locations }: PropsType) {
   const router = useRouter();
   const handleSearch = () => {
     router.push(`/khach-san/tim-kiem`);
   };
+
   return (
     <Fragment>
       <div className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0">
@@ -24,8 +33,16 @@ export default function Search() {
                 width={18}
                 height={18}
               ></Image>
-              <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                <option>TP.Hồ Chí Minh</option>
+              <select
+                className="pl-3 flex-1 focus:outline-none text-black appearance-none"
+                name="location"
+              >
+                {locations.length > 0 &&
+                  locations.map((item: LocationType, index: number) => (
+                    <option value={item.id} key={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>

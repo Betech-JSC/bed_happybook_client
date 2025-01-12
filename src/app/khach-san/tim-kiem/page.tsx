@@ -12,6 +12,7 @@ import TourStyle from "@/styles/tour.module.scss";
 import FAQ from "@/components/FAQ";
 import { Fragment, Suspense } from "react";
 import Search from "../components/Search";
+import { HotelApi } from "@/api/Hotel";
 
 export const metadata: Metadata = {
   title: "Khách sạn",
@@ -201,11 +202,13 @@ for (var i = 1; i <= 7; i++) {
   }
   arrTours.push(tourItem);
 }
-export default function SearchHotel({
+export default async function SearchHotel({
   params,
 }: {
   params: { category: string };
 }) {
+  const locations = (await HotelApi.getLocations())?.payload?.data as any;
+
   return (
     <Fragment>
       <div className="relative z-[0] h-max pb-12">
@@ -229,7 +232,7 @@ export default function SearchHotel({
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-28 lg:mb-10 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
             <Suspense>
-              <Search />
+              <Search locations={locations} />
             </Suspense>
           </div>
         </div>
