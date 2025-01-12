@@ -23,6 +23,7 @@ import { HomeApi } from "@/api/Home";
 import { siteUrl } from "@/constants";
 import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 import { formatMetadata } from "@/lib/formatters";
+import { BannerApi } from "@/api/Banner";
 
 export const metadata: Metadata = formatMetadata({
   title: "HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
@@ -38,6 +39,8 @@ export default async function Home() {
   const airportsData = airportsReponse?.payload.data ?? [];
   const homeApiReponse = await HomeApi.index();
   const homeData = homeApiReponse?.payload.data ?? [];
+  const bannerData = (await BannerApi.getBannerPage("home"))?.payload
+    ?.data as any;
   return (
     <Fragment>
       <WebsiteSchema {...(metadata as any)} url={siteUrl} />
@@ -92,9 +95,11 @@ export default async function Home() {
         </div>
       </div>
       <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
-        <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-          <Banner></Banner>
-        </div>
+        {bannerData?.length > 0 && (
+          <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
+            <Banner data={bannerData}></Banner>
+          </div>
+        )}
         {homeData?.compoHot.length > 0 && (
           <AosAnimate>
             <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">

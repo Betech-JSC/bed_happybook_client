@@ -22,6 +22,7 @@ export default function ListVisa({
 }) {
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
+  const [isFilters, setIsFilters] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [query, setQuery] = useState<{
@@ -36,30 +37,32 @@ export default function ListVisa({
         ? [searchParams["loai_visa[]"]]
         : [],
   });
-  const loadData = useCallback(
-    async (reset: boolean = false) => {
-      try {
-        setLoadingLoadMore(true);
-        const search = buildSearch(query);
-        const res = await VisaApi.search(`/product/visa/search${search}`);
-        const result = res?.payload?.data;
-        setData((prevData: any) =>
-          reset ? result : [...prevData, ...result.items]
-        );
-        if (result?.last_page === query.page) {
-          setIsLastPage(true);
-        }
-      } catch (error) {
-        console.log("Error search: " + error);
-      } finally {
-        setFirstLoad(false);
-        setLoadingLoadMore(false);
+  const loadData = useCallback(async () => {
+    try {
+      setLoadingLoadMore(true);
+      const search = buildSearch(query);
+      const res = await VisaApi.search(`/product/visa/search${search}`);
+      const result = res?.payload?.data;
+      setData((prevData: any) =>
+        result.items.length > 0 && !isFilters
+          ? [...prevData, ...result.items]
+          : result.items
+      );
+      if (result?.last_page === query.page) {
+        setIsLastPage(true);
       }
-    },
-    [query]
-  );
+    } catch (error) {
+      console.log("Error search: " + error);
+    } finally {
+      setFirstLoad(false);
+      setLoadingLoadMore(false);
+      setIsFilters(false);
+    }
+  }, [query, isFilters]);
 
   const handleFilterChange = (group: string, value: string) => {
+    setData([]);
+    setIsFilters(true);
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -76,12 +79,12 @@ export default function ListVisa({
         };
       }
     });
-    setData([]);
   };
   const handleSortData = (value: string) => {
+    setData([]);
+    setIsFilters(true);
     const [sort, order] = value.split("|");
     setQuery({ ...query, sort: sort, order: order });
-    setData([]);
   };
 
   useEffect(() => {
@@ -227,13 +230,11 @@ export default function ListVisa({
                         {`Số lần nhập cảnh: ${item.so_lan_nhap_canh ?? ""}`}
                       </span>
                     </div>
-                    {item.phi_nop_tai_dsq && (
-                      <div className="mt-3">
-                        <span className="font-semibold">
-                          {`Phí nộp tại ĐSQ: ${item.phi_nop_tai_dsq ?? ""}`}
-                        </span>
-                      </div>
-                    )}
+                    <div className="mt-3">
+                      <span className="font-semibold">
+                        {`Phí nộp tại ĐSQ: ${item.phi_nop_tai_dsq ?? ""}`}
+                      </span>
+                    </div>
                   </div>
                   {/* <div className="text-end mt-3">
                           <p className="line-through text-gray-500">
@@ -251,7 +252,16 @@ export default function ListVisa({
               className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
             >
               <span className="!border-blue-500 !border-t-blue-200"></span>
-              <span className="text-18">Không tìm thấy dữ liệu phù hợp...</span>
+              {loadingLoadMore ? (
+                <>
+                  <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
+                  <span className="text-18"> Đang tải dữ liệu...</span>
+                </>
+              ) : (
+                <span className="text-18">
+                  Không tìm thấy dữ liệu phù hợp...
+                </span>
+              )}
             </div>
           )}
         </div>
