@@ -18,7 +18,6 @@ import ListTour from "../components/ListTour";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.getCategory("tour")) as any;
-
   const data = res?.payload.data;
   return formatMetadata({
     title: data?.meta_title ?? data?.title,
@@ -36,10 +35,13 @@ export default async function CategoryPosts({
 }: {
   params: { category: string };
 }) {
-  // const res = (await TourApi.getCategory("tour")) as any;
-  let typeTour: number = 0;
-  let titlePage = "Tour nội địa";
+  let typeTour: number | undefined;
+  let titlePage: string;
   switch (params.category) {
+    case "tour-noi-dia":
+      typeTour = 0;
+      titlePage = "Tour nội địa";
+      break;
     case "tour-quoc-te":
       typeTour = 1;
       titlePage = "Tour quốc tế";
@@ -48,14 +50,18 @@ export default async function CategoryPosts({
       typeTour = 2;
       titlePage = "Tour du thuyền";
       break;
+    default:
+      typeTour = undefined;
+      titlePage = "Tìm kiếm";
   }
-  const res = (await TourApi.getToursByType(typeTour)) as any;
-  const category = res?.payload?.data;
-
+  // const res = (await TourApi.getToursByType(typeTour)) as any;
+  // const category = res?.payload?.data;
+  const category: any = [];
   if (!category) {
     notFound();
   }
-
+  const optionsFilter = (await TourApi.getOptionsFilter())?.payload
+    ?.data as any;
   return (
     <SeoSchema
       article={category}
@@ -98,13 +104,14 @@ export default async function CategoryPosts({
             </BreadcrumbList>
           </Breadcrumb>
           {/* Section Tour */}
-          {category.total > 0 ? (
-            <ListTour data={category} titlePage={titlePage} />
-          ) : (
-            <div className="min-h-52 text-center mt-20 text-xl">
-              Dữ liệu đang được cập nhật....
-            </div>
-          )}
+          <ListTour
+            type_tour={typeTour ?? undefined}
+            titlePage={titlePage}
+            optionsFilter={optionsFilter}
+          />
+          {/* <div className="min-h-52 text-center mt-20 text-xl">
+            Dữ liệu đang được cập nhật....
+          </div> */}
           {/* Section Before Footer */}
         </div>
       </div>

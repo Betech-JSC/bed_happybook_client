@@ -107,6 +107,20 @@ const buildSearch = (params: {
     return `?${search.toString()}`;
   }
 };
+
+const cloneItemsCarousel = (items: any[], minItems: number) => {
+  if (items.length >= minItems) return items;
+
+  const clonesNeeded = minItems - items.length;
+  return [
+    ...items,
+    ...Array.from({ length: clonesNeeded }, (_, i) => ({
+      ...items[i % items.length],
+      id: `clone-${i}`,
+    })),
+  ];
+};
+
 const getDayLabel = (dayIndex: number, displayType: "desktop" | "mobile") => {
   const daysOfWeek =
     displayType === "desktop"
@@ -124,6 +138,7 @@ const calculatorDiscountPercent = (
 };
 export {
   buildSearch,
+  cloneItemsCarousel,
   handleSessionStorage,
   handleScrollSmooth,
   generateMonth,

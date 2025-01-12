@@ -66,7 +66,7 @@ export default async function TourDetail({
   }
   let typeTourText: string = "Tour nội địa";
   let categorySlug: string = "tour-noi-dia";
-  switch (detail.tour.type_tour) {
+  switch (detail.type_tour) {
     case 1:
       typeTourText = "Tour quốc tế";
       categorySlug = "tour-quoc-te";
@@ -86,7 +86,7 @@ export default async function TourDetail({
         },
         {
           url: blogUrl(BlogTypes.TOURS, detail.slug, true),
-          name: detail?.title as string,
+          name: detail?.name as string,
         },
       ]}
     >
@@ -124,8 +124,7 @@ export default async function TourDetail({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="#" className="text-gray-700">
-                    HCM - Hà Nội - Sapa - Lào Cai - Ninh Bình - Hạ Long 5N4Đ
-                    (Tour bao gồm máy bay)
+                    {detail.name ?? ""}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -145,10 +144,10 @@ export default async function TourDetail({
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
                   <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    {detail.locale[0].name ?? ""}
+                    {detail.name ?? ""}
                   </h1>
                   <div className="flex space-x-2 mt-2">
-                    {detail.tour.rating && (
+                    {detail.rating && (
                       <Fragment>
                         <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
                           9.8
@@ -159,7 +158,7 @@ export default async function TourDetail({
                       </Fragment>
                     )}
                     <span className="text-gray-500">
-                      {detail.tour.review ?? 0} đánh giá
+                      {detail.review ?? 0} đánh giá
                     </span>
                   </div>
                   <div className="flex space-x-2 mt-6 items-center">
@@ -171,7 +170,9 @@ export default async function TourDetail({
                       height={18}
                     />
                     <span>
-                      {detail.tour.day} ngày {detail.tour.night} đêm
+                      {`${detail.day ? detail.day : ""} ngày ${
+                        detail.night ? detail.night : ""
+                      } đêm`}
                     </span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
@@ -182,7 +183,7 @@ export default async function TourDetail({
                       width={18}
                       height={18}
                     />
-                    <span>{detail.tour.from ?? ""}</span>
+                    <span>{detail.depart_point ?? ""}</span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
                     <Image
@@ -192,7 +193,7 @@ export default async function TourDetail({
                       width={18}
                       height={18}
                     />
-                    <span>{detail.tour.to ?? ""}</span>
+                    <span>{detail.destination_point ?? ""}</span>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">

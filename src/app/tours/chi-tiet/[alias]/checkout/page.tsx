@@ -3,7 +3,7 @@ import Link from "next/link";
 import CheckOutTourForm from "../../../components/FormCheckOut";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
-import { formatMoney } from "@/lib/formatters";
+import { formatCurrency, formatMoney } from "@/lib/formatters";
 
 export default async function TourCheckout({
   params,
@@ -52,7 +52,7 @@ export default async function TourCheckout({
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
               >
-                {detail.locale[0].name}
+                {detail.name}
               </Link>
               <div className="flex mt-4 space-x-2 items-center">
                 <Image
@@ -63,7 +63,9 @@ export default async function TourCheckout({
                   height={18}
                 />
                 <span>
-                  {detail.tour.day} ngày {detail.tour.night} đêm
+                  {`${detail.day ? detail.day : ""} ngày ${
+                    detail.night ? detail.night : ""
+                  } đêm`}
                 </span>
               </div>
               <div className="flex space-x-2 mt-3 items-center">
@@ -74,7 +76,7 @@ export default async function TourCheckout({
                   width={18}
                   height={18}
                 />
-                <span>{detail.tour.form ?? ""}</span>
+                <span>{detail.depart_point ?? ""}</span>
               </div>
               <div className="flex space-x-2 mt-3 items-center">
                 <Image
@@ -84,11 +86,15 @@ export default async function TourCheckout({
                   width={18}
                   height={18}
                 />
-                <span>{detail.tour.to ?? ""}</span>
+                <span>{detail.destination_point ?? ""}</span>
               </div>
               <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
                 <span className="text-xl lg:text-2xl text-primary font-bold">
-                  {formatMoney(detail.price)}đ
+                  {formatCurrency(
+                    detail.discount_price
+                      ? detail.price - detail.discount_price
+                      : detail.price
+                  )}
                 </span>
                 {/* <span>/ khách</span> */}
                 <p className="text-blue-700 mt-3">+ 40 điểm</p>

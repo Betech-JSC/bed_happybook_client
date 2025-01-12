@@ -10,8 +10,8 @@ const TourApi = {
 
   getAll: () => http.get<any>("/product/tours/all"),
 
-  getToursByType: (typeTour: number) =>
-    http.get<any>(`/product/tours/list-by-type-tour/${typeTour}`),
+  search: (url: string) => http.get<any>(url),
+  getOptionsFilter: () => http.get<any>("product/tours/options-filter"),
 };
 
 export { TourApi };

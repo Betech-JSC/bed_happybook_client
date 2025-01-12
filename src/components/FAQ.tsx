@@ -1,62 +1,29 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FAQSchema from "./schema/FAQSchema";
+import { FaqApi } from "@/api/Faq";
 
-interface DropdownProps {
-  id: number;
-  question: string;
-  answer: string;
-}
-
-const dropdowns: DropdownProps[] = [
-  {
-    id: 1,
-    question: "Làm thế nào để đặt vé máy bay trên HappyBook?",
-    answer:
-      "Có, bạn có thể hủy hoặc thay đổi chuyến bay sau khi đã đặt, tuy nhiên điều này phụ thuộc vào điều kiện vé của từng hãng hàng không và thời gian bạn yêu cầu. Vui lòng liên hệ với đội ngũ hỗ trợ của HappyBook để được tư vấn chi tiết về các khoản phí và thủ tục liên quan.",
-  },
-  {
-    id: 2,
-    question: "Tôi có thể hủy hoặc thay đổi chuyến bay sau khi đã đặt không?",
-    answer:
-      "Có, bạn có thể hủy hoặc thay đổi chuyến bay sau khi đã đặt, tuy nhiên điều này phụ thuộc vào điều kiện vé của từng hãng hàng không và thời gian bạn yêu cầu. Vui lòng liên hệ với đội ngũ hỗ trợ của HappyBook để được tư vấn chi tiết về các khoản phí và thủ tục liên quan.",
-  },
-  {
-    id: 3,
-    question: "Chính sách hoàn tiền của HappyBook là gì?",
-    answer:
-      "Có, bạn có thể hủy hoặc thay đổi chuyến bay sau khi đã đặt, tuy nhiên điều này phụ thuộc vào điều kiện vé của từng hãng hàng không và thời gian bạn yêu cầu. Vui lòng liên hệ với đội ngũ hỗ trợ của HappyBook để được tư vấn chi tiết về các khoản phí và thủ tục liên quan.",
-  },
-  {
-    id: 4,
-    question: "Phương thức thanh toán nào được chấp nhận?",
-    answer:
-      "Có, bạn có thể hủy hoặc thay đổi chuyến bay sau khi đã đặt, tuy nhiên điều này phụ thuộc vào điều kiện vé của từng hãng hàng không và thời gian bạn yêu cầu. Vui lòng liên hệ với đội ngũ hỗ trợ của HappyBook để được tư vấn chi tiết về các khoản phí và thủ tục liên quan.",
-  },
-  {
-    id: 5,
-    question: "Làm thế nào để đặt vé máy bay trên HappyBook?",
-    answer:
-      "Có, bạn có thể hủy hoặc thay đổi chuyến bay sau khi đã đặt, tuy nhiên điều này phụ thuộc vào điều kiện vé của từng hãng hàng không và thời gian bạn yêu cầu. Vui lòng liên hệ với đội ngũ hỗ trợ của HappyBook để được tư vấn chi tiết về các khoản phí và thủ tục liên quan.",
-  },
-  {
-    id: 6,
-    question: "HappyBook có hỗ trợ làm visa không?",
-    answer:
-      "Có, bạn có thể hủy hoặc thay đổi chuyến bay sau khi đã đặt, tuy nhiên điều này phụ thuộc vào điều kiện vé của từng hãng hàng không và thời gian bạn yêu cầu. Vui lòng liên hệ với đội ngũ hỗ trợ của HappyBook để được tư vấn chi tiết về các khoản phí và thủ tục liên quan.",
-  },
-];
 export default function FAQ() {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const toggleDropdown = (id: number) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
+  const [data, setData] = useState<any[]>([]);
+  const loadData = async () => {
+    const faqData = (await FaqApi.list())?.payload?.data as any;
+    setData(faqData);
+  };
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  if (!data?.length) return;
   return (
-    <FAQSchema data={dropdowns}>
+    <FAQSchema data={data}>
       <div className="rounded-2xl bg-gray-50 p-8">
         <h2 className="text-32 font-bold mb-10">Câu Hỏi Thường Gặp</h2>
-        {dropdowns.map((item) => (
+        {data.map((item) => (
           <div
             key={item.id}
             className="pb-4 mb-6 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none border-b border-gray-200 cursor-pointer"
@@ -91,9 +58,10 @@ export default function FAQ() {
             <div
               className={`mt-3 transition-[max-height] ease-in-out duration-500 overflow-hidden 
                 ${openDropdown === item.id ? "max-h-screen" : "max-h-0"}`}
-            >
-              {item.answer}
-            </div>
+              dangerouslySetInnerHTML={{
+                __html: item.answer,
+              }}
+            ></div>
           </div>
         ))}
       </div>

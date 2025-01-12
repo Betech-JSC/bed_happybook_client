@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/carousel";
 import Link from "next/link";
 import TourItem from "@/components/tour-item";
-import TourStyle from "@/styles/tour.module.scss";
 import FAQ from "@/components/FAQ";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import { TourApi } from "@/api/Tour";
+import SearchTour from "./components/Search";
 
 export const metadata: Metadata = formatMetadata({
   title: "Đặt Tour Du Lịch Gia Đình, Bạn Bè | Tour Giá Rẻ 2024",
@@ -63,38 +63,7 @@ export default async function Tours() {
             }}
           ></div>
           {/* Search */}
-          <div className="base__content h-full relative place-content-center">
-            <h1 className="text-32 font-bold text-white mb-6 block">
-              Tour & Trải nghiệm
-            </h1>
-            <div className="flex items-center w-full lg:w-1/2 relative">
-              <div className="absolute left-4">
-                <Image
-                  src="/icon/place.svg"
-                  alt="Icon"
-                  className="h-10"
-                  width={20}
-                  height={20}
-                  style={{ width: 20, height: 20 }}
-                ></Image>
-              </div>
-              <input
-                type="text"
-                placeholder="Tìm theo điểm đến, hoạt động"
-                className={TourStyle.search_input}
-              />
-              <button className="bg-blue-500 px-3 rounded-r-lg w-16 h-16">
-                <Image
-                  src="/icon/search.svg"
-                  alt="Search icon"
-                  className="h-10 mx-auto"
-                  width={20}
-                  height={20}
-                  style={{ width: 20, height: 20 }}
-                ></Image>
-              </button>
-            </div>
-          </div>
+          <SearchTour />
         </div>
         <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
