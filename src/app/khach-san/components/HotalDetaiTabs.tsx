@@ -50,221 +50,211 @@ export default function HotelDetailTabs({ data }: any) {
           }}
         ></div>
       </div>
-      {activeTab === 0 && (
-        <div className="w-full mt-4">
-          <div className="bg-white rounded-2xl p-6">
-            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-              Tổng quan
-            </h2>
-            <h3 className="mt-4 text-22 font-semibold">{data.name ?? ""}</h3>
-            <div
-              className="mt-3 line-clamp-5"
-              dangerouslySetInnerHTML={{
-                __html: data.hotel.about ?? "Nội dung đang cập nhật",
-              }}
-            ></div>
+      <div className={`w-full ${activeTab === 0 ? "block" : "hidden"}`}>
+        <div className="bg-white rounded-2xl p-6">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            Tổng quan
+          </h2>
+          <h3 className="mt-4 text-22 font-semibold">{data.name ?? ""}</h3>
+          <div
+            className="mt-3 line-clamp-5"
+            dangerouslySetInnerHTML={{
+              __html: data.hotel.about ?? "Nội dung đang cập nhật",
+            }}
+          ></div>
 
-            {/* <div className="w-full mt-4 text-center">
+          {/* <div className="w-full mt-4 text-center">
               <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
                 Xem thêm
               </button>
             </div> */}
-          </div>
         </div>
-      )}
-      {activeTab === 1 && (
-        <Fragment>
-          <div>
-            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-              Phòng
-            </h2>
-          </div>
-          <div className="rounded-2xl mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {data.hotel.rooms.length > 0 ? (
-              data.hotel.rooms.map((item: any, index: number) => (
-                <div key={index} className="bg-white rounded-xl">
-                  <div className="p-3 flex flex-col justify-between h-full">
-                    <div className="flex-grow">
-                      <Link
-                        href="#"
-                        className="block overflow-hidden rounded-xl"
-                      >
-                        <Image
-                          className="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300"
-                          src={`${data.image_url}/${item.image_location}`}
-                          alt="Image"
-                          width={416}
-                          height={256}
-                          style={{ height: 275, width: "100%" }}
-                        />
-                      </Link>
-                      <Link
-                        href="#"
-                        className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
-                      >
-                        <h3>{item.name}</h3>
-                      </Link>
-                      {item.description && (
-                        <div className="mt-3 p-2 rounded-lg bg-gray-100">
-                          {item.description}
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <div className="mt-4 text-right">
-                        <p className="text-gray-500">
-                          {formatCurrency(item.discount_price)}
-                        </p>
-                        <p>
-                          <span className="text-gray-500">Tổng:</span>{" "}
-                          <span className="mt-2 text-22 font-semibold text-primary">
-                            {formatCurrency(item.price)}
-                          </span>
-                        </p>
-                        <p className="mt-2 text-sm text-gray-500">
-                          bao gồm thuế phí
-                        </p>
+      </div>
+
+      <div className={`${activeTab === 1 ? "block" : "hidden"}`}>
+        <div>
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            Phòng
+          </h2>
+        </div>
+        <div className="rounded-2xl mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {data.hotel.rooms.length > 0 ? (
+            data.hotel.rooms.map((item: any, index: number) => (
+              <div key={index} className="bg-white rounded-xl">
+                <div className="p-3 flex flex-col justify-between h-full">
+                  <div className="flex-grow">
+                    <Link href="#" className="block overflow-hidden rounded-xl">
+                      <Image
+                        className="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300"
+                        src={`${data.image_url}/${item.image_location}`}
+                        alt="Image"
+                        width={416}
+                        height={256}
+                        style={{ height: 275, width: "100%" }}
+                      />
+                    </Link>
+                    <Link
+                      href="#"
+                      className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
+                    >
+                      <h3>{item.name}</h3>
+                    </Link>
+                    {item.description && (
+                      <div className="mt-3 p-2 rounded-lg bg-gray-100">
+                        {item.description}
                       </div>
-                      <div className="mt-4">
-                        <div className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center">
-                          <button className="mx-auto text-base font-medium">
-                            Yêu cầu đặt
-                          </button>
-                        </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="mt-4 text-right">
+                      <p className="text-gray-500">
+                        {formatCurrency(item.discount_price)}
+                      </p>
+                      <p>
+                        <span className="text-gray-500">Tổng:</span>{" "}
+                        <span className="mt-2 text-22 font-semibold text-primary">
+                          {formatCurrency(item.price)}
+                        </span>
+                      </p>
+                      <p className="mt-2 text-sm text-gray-500">
+                        bao gồm thuế phí
+                      </p>
+                    </div>
+                    <div className="mt-4">
+                      <div className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center">
+                        <button className="mx-auto text-base font-medium">
+                          Yêu cầu đặt
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="text-18 font-medium">
-                Nội dung đang cập nhật...
               </div>
-            )}
-          </div>
-        </Fragment>
-      )}
-      {activeTab === 2 && (
-        <>
-          <div className="bg-white p-6 rounded-2xl">
-            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-              Địa điểm
-            </h2>
-            <div className="mt-4 flex flex-col md:flex-row justify-between">
-              <div>
-                <h3 className="font-bold text-2xl">{data.name}</h3>
-                <div className="flex space-x-2 items-center mt-3">
-                  <Image
-                    className="w-4 h-4"
-                    src="/icon/marker-pin-01.svg"
-                    alt="Icon"
-                    width={18}
-                    height={18}
-                  />
-                  <span className="text-sm">{data.hotel.address}</span>
-                </div>
-              </div>
-              <div className="flex mt-3 md:mt-0 space-x-1">
-                <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-                  9.8
-                </span>
-                <div className="flex flex-col space-y-1">
-                  <span className="text-primary text-sm font-semibold">
-                    Xuất sắc
-                  </span>
-                  <span className="text-gray-500 text-xs">234 đánh giá</span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4">
-              <p className="text-18 font-semibold">Tiện nghi dịch vụ</p>
-              <ul
-                className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2 list-disc pl-4 leading-6"
-                key=""
-              >
-                {data.hotel.amenities.length > 0 ? (
-                  data.hotel.amenities.map((item: any) => (
-                    <li key={item.hotel_amenity.id}>
-                      {item.hotel_amenity.name}
-                    </li>
-                  ))
-                ) : (
-                  <div className="text-18">Nội dung đang cập nhật...</div>
-                )}
-              </ul>
-            </div>
-          </div>
-          {data.hotel.reside_information && (
-            <div className="w-full mt-6">
-              <div className="bg-white rounded-2xl p-6">
-                <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-                  Thông tin về nơi lưu trú này
-                </h2>
-                <div
-                  className="mt-4"
-                  dangerouslySetInnerHTML={{
-                    __html: data.hotel.reside_information,
-                  }}
-                ></div>
-              </div>
-            </div>
+            ))
+          ) : (
+            <div className="text-18 font-medium">Nội dung đang cập nhật...</div>
           )}
-        </>
-      )}
-      {activeTab == 3 && (
-        <Fragment>
-          <div className="w-full mt-6">
-            <div className="bg-white rounded-2xl p-6">
-              <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-                Tiện nghi, dịch vụ
-              </h2>
-              {data.hotel.amenity_service.length > 0 ? (
-                <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4 leading-6">
-                  {data.hotel.amenity_service.map((item: any) => (
-                    <li key={item.id}>{item.hotel_amenity_service.name}</li>
-                  ))}
-                </ul>
+        </div>
+      </div>
+
+      <div className={`${activeTab === 2 ? "block" : "hidden"}`}>
+        <div className="bg-white p-6 rounded-2xl">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            Địa điểm
+          </h2>
+          <div className="mt-4 flex flex-col md:flex-row justify-between">
+            <div>
+              <h3 className="font-bold text-2xl">{data.name}</h3>
+              <div className="flex space-x-2 items-center mt-3">
+                <Image
+                  className="w-4 h-4"
+                  src="/icon/marker-pin-01.svg"
+                  alt="Icon"
+                  width={18}
+                  height={18}
+                />
+                <span className="text-sm">{data.hotel.address}</span>
+              </div>
+            </div>
+            <div className="flex mt-3 md:mt-0 space-x-1">
+              <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
+                {data.hotel.rating ?? 0}
+              </span>
+
+              <div className="flex flex-col space-y-1">
+                <span className="text-primary text-sm font-semibold">
+                  {data.hotel.rating_text ?? ""}
+                </span>
+
+                <span className="text-gray-500 text-xs">
+                  {data.hotel.review ?? 0} đánh giá
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4">
+            <p className="text-18 font-semibold">Tiện nghi dịch vụ</p>
+            <ul
+              className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2 list-disc pl-4 leading-6"
+              key=""
+            >
+              {data.hotel.amenities.length > 0 ? (
+                data.hotel.amenities.map((item: any) => (
+                  <li key={item.hotel_amenity.id}>{item.hotel_amenity.name}</li>
+                ))
               ) : (
                 <div className="text-18">Nội dung đang cập nhật...</div>
               )}
-
-              {/* <div className="w-full mt-4 text-center">
-                <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
-                  Xem thêm
-                </button>
-              </div> */}
-            </div>
+            </ul>
           </div>
-        </Fragment>
-      )}
-      {activeTab === 4 && (
-        <Fragment>
+        </div>
+        {data.hotel.reside_information && (
           <div className="w-full mt-6">
             <div className="bg-white rounded-2xl p-6">
               <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-                Chính sách
+                Thông tin về nơi lưu trú này
               </h2>
               <div
                 className="mt-4"
                 dangerouslySetInnerHTML={{
-                  __html: data.hotel.policy ?? "Nội dung đang cập nhật",
+                  __html: data.hotel.reside_information,
                 }}
               ></div>
             </div>
           </div>
-          {data.hotel.information && (
-            <div className="w-full mt-6">
-              <div className="bg-white rounded-2xl p-6">
-                <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-                  Thông tin quan trọng
-                </h2>
-                <div
-                  className="mt-4"
-                  dangerouslySetInnerHTML={{
-                    __html: data.hotel.information,
-                  }}
-                ></div>
-                {/* <p className="text-18 font-semibold mt-4">Tùy chọn</p>
+        )}
+      </div>
+
+      <div className={`w-full ${activeTab === 3 ? "block" : "hidden"}`}>
+        <div className="bg-white rounded-2xl p-6">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            Tiện nghi, dịch vụ
+          </h2>
+          {data.hotel.amenity_service.length > 0 ? (
+            <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4 leading-6">
+              {data.hotel.amenity_service.map((item: any) => (
+                <li key={item.id}>{item.hotel_amenity_service.name}</li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-18">Nội dung đang cập nhật...</div>
+          )}
+
+          {/* <div className="w-full mt-4 text-center">
+                <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
+                  Xem thêm
+                </button>
+              </div> */}
+        </div>
+      </div>
+
+      <div className={`w-full ${activeTab === 4 ? "block" : "hidden"}`}>
+        <div className="w-full">
+          <div className="bg-white rounded-2xl p-6">
+            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+              Chính sách
+            </h2>
+            <div
+              className="mt-4"
+              dangerouslySetInnerHTML={{
+                __html: data.hotel.policy ?? "Nội dung đang cập nhật",
+              }}
+            ></div>
+          </div>
+        </div>
+        {data.hotel.information && (
+          <div className="w-full mt-6">
+            <div className="bg-white rounded-2xl p-6">
+              <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+                Thông tin quan trọng
+              </h2>
+              <div
+                className="mt-4"
+                dangerouslySetInnerHTML={{
+                  __html: data.hotel.information,
+                }}
+              ></div>
+              {/* <p className="text-18 font-semibold mt-4">Tùy chọn</p>
               <ul className="mt-2 list-disc  pl-4">
                 <li className="mt-2">
                   Phụ phí bữa sáng buffet (ước tính): người lớn - 57 USD; trẻ em
@@ -354,11 +344,10 @@ export default function HotelDetailTabs({ data }: any) {
                   nhận dạng giới (thân thiện với cộng đồng LGBTQ+).
                 </li>
               </ul> */}
-              </div>
             </div>
-          )}
-        </Fragment>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

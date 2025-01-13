@@ -23,7 +23,7 @@ export default function Header() {
     "/tu-van-nhan-visa",
     "/tour",
     "/visa",
-    "/compo",
+    "/combo",
     "/dinh-cu",
     "/ve-may-bay",
     "/ve-may-bay/tim-kiem",
@@ -273,9 +273,9 @@ export default function Header() {
               Khách sạn
             </Link>
             <Link
-              href="/compo"
+              href="/combo"
               className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/compo"),
+                [styles.active]: pathname.startsWith("/combo"),
               })}
             >
               Combo

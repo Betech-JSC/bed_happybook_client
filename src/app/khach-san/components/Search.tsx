@@ -14,7 +14,7 @@ type LocationType = {
 type PropsType = {
   locations: LocationType[];
 };
-export default function Search({ locations }: PropsType) {
+export default function Search() {
   const router = useRouter();
   const pathname: string = usePathname();
 
@@ -22,6 +22,7 @@ export default function Search({ locations }: PropsType) {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [totalGuests, setTotalGuests] = useState<number>(1);
+  const [totalRooms, setTotalRooms] = useState<number>(1);
   const [queryText, setQueryText] = useState<string>("");
   const handleSubmit = (e: React.FormEvent) => {
     if (pathname !== "/khach-san/tim-kiem") {
@@ -33,10 +34,12 @@ export default function Search({ locations }: PropsType) {
     adt: number;
     chd: number;
     inf: number;
+    room: number;
   }>({
     adt: 1,
     chd: 0,
     inf: 0,
+    room: 1,
   });
   const handleGuestChange = (key: string, value: number) => {
     setFormData((prev) => ({
@@ -44,6 +47,15 @@ export default function Search({ locations }: PropsType) {
       [key]: value,
     }));
   };
+
+  const handleRoomChange = (key: string, value: number) => {
+    console.log(formData);
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
     setStartDate(start || undefined);
@@ -52,6 +64,7 @@ export default function Search({ locations }: PropsType) {
 
   useEffect(() => {
     setTotalGuests(formData.adt + formData.chd + formData.inf);
+    setTotalRooms(formData.room);
   }, [formData]);
 
   return (
@@ -93,9 +106,9 @@ export default function Search({ locations }: PropsType) {
           </div>
           <div className="w-full lg:w-[22.5%]">
             <label className="block text-gray-700 mb-1">
-              Từ ngày - đến ngày
+              Ngày nhận phòng và trả phòng
             </label>
-            <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
+            <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black ">
               <div className="flex items-center	w-full">
                 <Image
                   src="/icon/calendar.svg"
@@ -139,6 +152,8 @@ export default function Search({ locations }: PropsType) {
               <SelectMenu
                 formData={formData}
                 totalGuests={totalGuests}
+                totalRooms={totalRooms}
+                onRoomsChange={handleRoomChange}
                 onGuestsChange={handleGuestChange}
               />
             </div>

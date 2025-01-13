@@ -93,11 +93,12 @@ export default function VisaService({ data }: any) {
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         key={index}
-                        className={`h-10 text-sm lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300 ${
-                          activeTab === index
-                            ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                            : "text-gray-500 border-solid border-[#D0D5DD] border-2 hover:bg-gray-100"
-                        }`}
+                        className={`h-10 text-sm outline-none lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300  border-solid  border-2 
+                           ${
+                             activeTab === index
+                               ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                               : "text-gray-500border-[#D0D5DD] hover:bg-gray-100"
+                           }`}
                         onClick={() => setActiveTab(index)}
                       >
                         {tab.name}
@@ -140,7 +141,7 @@ export default function VisaService({ data }: any) {
                                 </div>
                                 <div className="py-3 px-4 lg:h-[72px] ">
                                   <Link
-                                    href="/visa/chi-tiet/visa-nhat-ban"
+                                    href={`/visa/chi-tiet/${visa.slug}`}
                                     className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
                                   >
                                     <h3> {visa.name}</h3>

@@ -9,6 +9,8 @@ import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { VisaApi } from "@/api/Visa";
 import SearchForm from "./components/SeachForm";
+import NewsByPage from "@/components/NewsByPage";
+import { newsApi } from "@/api/news";
 
 export const metadata: Metadata = formatMetadata({
   title: "Dịch Vụ Làm Visa Trọn Gói Giá Rẻ Tại TPHCM | Tỷ Lệ Đậu 90%",
@@ -23,6 +25,8 @@ export default async function Visa() {
   const res = (await VisaApi.getAll()) as any;
   const data = res?.payload?.data;
   const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
+    ?.data as any;
+  const newsByPage = (await newsApi.getLastedNewsByPage())?.payload
     ?.data as any;
   return (
     <SeoSchema
@@ -113,9 +117,11 @@ export default async function Visa() {
                 <VisaItem data={data.visaOutstanding} />
               </div>
             )}
-            <div className="mt-6">
-              <TravelGuide />
-            </div>
+            {newsByPage.length > 0 && (
+              <div className="mt-6">
+                <NewsByPage title={"Cẩm nang visa"} data={newsByPage} />
+              </div>
+            )}
             {data?.visaByCategory?.length > 0 &&
               data.visaByCategory.map((parentCategory: any, index: number) => (
                 <div className="mt-6" key={index}>

@@ -36,8 +36,7 @@ export default function Banner({ data }: any) {
                   width={628}
                   height={210}
                   sizes="100vw"
-                  className="rounded-xl"
-                  style={{ width: "100%", height: 210 }}
+                  className="rounded-xl w-full h-32 md:h-[210px]"
                 />
               </CarouselItem>
             ))}

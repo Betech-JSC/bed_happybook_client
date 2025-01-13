@@ -6,6 +6,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const newsApi = {
   fetchNewsIndex: (locale = "vi") =>
     http.get<any>(`news?locale=${locale}`, undefined, 3000),
+  getLastedNewsByPage: (page: string = "") =>
+    http.get<any>(`news/lastest-news-by-page?page=${page}`),
 };
 
 const fetchNewsDetail = async (

@@ -1,13 +1,4 @@
-import { Fragment } from "react";
 import type { Metadata } from "next";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import styles from "@/styles/styles.module.scss";
 import Image from "next/image";
 import FAQ from "@/components/FAQ";
 import { Suspense } from "react";
@@ -67,7 +58,7 @@ export default async function Hotel() {
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-0 lg:mt-28 lg:mb-10 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
             <Suspense>
-              <Search locations={locations} />
+              <Search />
             </Suspense>
           </div>
         </div>

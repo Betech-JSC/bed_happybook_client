@@ -2,8 +2,12 @@
 import { Fragment, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { LocationType } from "@/types/location";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { vi } from "date-fns/locale";
 
-export default function Search() {
+export default function Search({ locations }: { locations: LocationType[] }) {
   const router = useRouter();
   const handleSearch = () => {
     router.push(`/compo/tim-kiem`);
@@ -28,12 +32,18 @@ export default function Search() {
               <label htmlFor="from" className="font-medium block">
                 Khởi hành từ
               </label>
-              <input
-                type="text"
+              <select
                 id="from"
-                placeholder="Hồ Chí Minh"
+                defaultValue={""}
                 className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
-              />
+              >
+                <option value="">Chọn điểm đi</option>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="w-full lg:w-1/4 relative">
               <div className="absolute left-4 top-1/2 translate-y-1/4">
@@ -49,15 +59,20 @@ export default function Search() {
               <label htmlFor="to" className="font-medium block">
                 Điểm đến
               </label>
-              <input
-                type="text"
+              <select
                 id="to"
-                placeholder="Điểm đến"
                 className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
-              />
+              >
+                <option value="">Chọn điểm đến</option>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="w-full lg:w-[30%] relative">
-              <div className="absolute left-4 top-1/2 translate-y-1/4">
+              <div className="absolute left-4 top-1/2 translate-y-1/4 z-10">
                 <Image
                   src="/icon/calendar.svg"
                   alt="Icon"
@@ -70,12 +85,16 @@ export default function Search() {
               <label htmlFor="typeVisa" className="font-medium block">
                 Ngày khởi hành
               </label>
-              <input
-                type="text"
-                id="to"
-                placeholder="14/08/2024"
-                className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
-              />
+              <div className="w-full  [&>div]:w-full border-none">
+                <DatePicker
+                  selectsRange
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Chọn ngày khởi hành"
+                  minDate={new Date()}
+                  locale={vi}
+                  className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
+                />
+              </div>
             </div>
             <div className="w-full lg:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
               <button
