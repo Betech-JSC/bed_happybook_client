@@ -58,16 +58,19 @@ export default function HotelItem({ hotel }: any) {
               />
             </div>
           </div>
-          <div className="text-right">
-            <p className="line-through text-[#667085] font-semibold h-6">
-              {hotel.discount_price ? formatCurrency(hotel.price) : ""}
-            </p>
-
-            <p className="text-[#F27145] text-xl font-semibold">
-              {hotel.discount_price
-                ? formatCurrency(hotel.price - hotel.discount_price)
-                : formatCurrency(hotel.price)}
-            </p>
+          <div className={`text-right ${hotel.price > 0 ? "" : "pb-4"}`}>
+            {hotel.discount_price > 0 && (
+              <p className="line-through text-[#667085] font-semibold h-6">
+                {formatCurrency(hotel.price)}
+              </p>
+            )}
+            {hotel.price > 0 && (
+              <p className="text-[#F27145] text-xl font-semibold">
+                {hotel.discount_price
+                  ? formatCurrency(hotel.price - hotel.discount_price)
+                  : formatCurrency(hotel.price)}
+              </p>
+            )}
           </div>
         </div>
       </div>

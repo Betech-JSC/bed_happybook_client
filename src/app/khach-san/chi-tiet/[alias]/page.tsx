@@ -9,7 +9,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import FAQ from "@/components/FAQ";
-import { Fragment } from "react";
 import HotelDetailTabs from "../../components/HotalDetaiTabs";
 import SeoSchema from "@/components/schema";
 import { notFound } from "next/navigation";

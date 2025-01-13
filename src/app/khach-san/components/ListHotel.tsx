@@ -279,16 +279,14 @@ export default function ListHotel({
                     <div className="flex space-x-1">
                       {item.rating && (
                         <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-                          {item.rating}
+                          {item.rating ?? 0}
                         </span>
                       )}
-
                       <div className="flex flex-col space-y-1">
-                        {item.rating_text && (
-                          <span className="text-primary text-sm font-semibold">
-                            Xuất sắc
-                          </span>
-                        )}
+                        <span className="text-primary text-sm font-semibold">
+                          {item.rating_text ?? ""}
+                        </span>
+
                         <span className="text-gray-500 text-xs">
                           {item.totalReview ?? 0} đánh giá
                         </span>
@@ -314,9 +312,7 @@ export default function ListHotel({
                         )}
                       </div>
                       <div className="text-base md:text-xl text-primary font-semibold text-end">
-                        {item.price - item.discount_price <= 0 ? (
-                          <span>0 đ</span>
-                        ) : (
+                        {item.price > 0 && (
                           <>
                             <span className="text-gray-500 text-sm md:text-base mr-2">
                               chỉ từ

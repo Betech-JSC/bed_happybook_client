@@ -27,8 +27,6 @@ import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
 import { formatMetadata, formatMoney } from "@/lib/formatters";
 
-const tours = [];
-
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.detail(params.alias)) as any;
 
@@ -220,11 +218,11 @@ export default async function TourDetail({
                       Gửi yêu cầu
                     </span>
                   </Link>
-                  <div className="text__default_hover text-gray-700 rounded-lg p-[10px] border border-gray-300 mt-3 inline-flex w-full items-center">
+                  {/* <div className="text__default_hover text-gray-700 rounded-lg p-[10px] border border-gray-300 mt-3 inline-flex w-full items-center">
                     <button className="mx-auto text-base font-medium">
                       Xem lịch khởi hành
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
