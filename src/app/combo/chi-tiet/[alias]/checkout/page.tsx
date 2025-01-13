@@ -1,17 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import CheckOutTourForm from "../../../components/FormCheckOut";
-import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
-import { formatCurrency, formatMoney } from "@/lib/formatters";
+import { formatCurrency } from "@/lib/formatters";
+import { ComboApi } from "@/api/Combo";
+import FormCheckOut from "@/app/combo/components/FormCheckOut";
 
-export default async function TourCheckout({
+export default async function ComboCheckout({
   params,
 }: {
   params: { alias: string };
 }) {
-  const res = (await TourApi.detail(params.alias)) as any;
+  const res = (await ComboApi.detail(params.alias)) as any;
   const detail = res?.payload?.data;
+
   if (!detail) {
     notFound();
   }
@@ -33,7 +34,7 @@ export default async function TourCheckout({
             </div>
 
             <div className="mt-4">
-              <CheckOutTourForm />
+              <FormCheckOut />
             </div>
           </div>
           <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl">
@@ -48,13 +49,14 @@ export default async function TourCheckout({
               />
             </div>
             <div className="py-4 px-3 lg:px-6">
+              {" "}
               <Link
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
               >
                 {detail.name}
               </Link>
-              <div className="flex mt-4 space-x-2 items-center">
+              <div className="flex space-x-2 mt-6 items-center">
                 <Image
                   className="w-4 h-4"
                   src="/icon/clock.svg"
@@ -63,41 +65,26 @@ export default async function TourCheckout({
                   height={18}
                 />
                 <span>
-                  {`${detail.day ? `${detail.day} ngày ` : ""}  ${
-                    detail.night ? `${detail.night} đêm ` : ""
-                  }
-                  `}
+                  {`${detail.combo.day ? detail.combo.day : ""} ngày ${
+                    detail.combo.night ? detail.combo.night : ""
+                  } đêm`}
                 </span>
               </div>
-              <div className="flex space-x-2 mt-3 items-start">
+              <div className="flex space-x-2 mt-3 items-center">
                 <Image
-                  className="w-4 h-4 mt-1"
-                  src="/icon/flag.svg"
-                  alt="Icon"
-                  width={18}
-                  height={18}
-                />
-                <span>{detail.depart_point ?? ""}</span>
-              </div>
-              <div className="flex space-x-2 mt-3 items-start">
-                <Image
-                  className="w-4 h-4 mt-1"
+                  className="w-4 h-4"
                   src="/icon/marker-pin-01.svg"
                   alt="Icon"
                   width={18}
                   height={18}
                 />
-                <span>{detail.address ?? ""}</span>
+                <span>{detail.combo.address}</span>
               </div>
               <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
-                <span className="text-xl lg:text-2xl text-primary font-bold">
-                  {formatCurrency(
-                    detail.discount_price
-                      ? detail.price - detail.discount_price
-                      : detail.price
-                  )}
-                </span>
-                {/* <span>/ khách</span> */}
+                <span className="text-2xl text-primary font-bold">
+                  {formatCurrency(detail.price)}
+                </span>{" "}
+                <span>/ khách</span>
                 <p className="text-blue-700 mt-3">+ 40 điểm</p>
               </div>
             </div>

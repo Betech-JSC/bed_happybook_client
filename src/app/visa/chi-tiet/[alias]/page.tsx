@@ -131,7 +131,7 @@ export default async function CategoryPosts({
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
                   <span className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    Dịch Vụ Hỗ Trợ Làm Thủ Tục Visa Nhật Bản
+                    {detail.name}
                   </span>
                   <div className="mt-6">
                     <div>
@@ -162,23 +162,28 @@ export default async function CategoryPosts({
                     </div>
                   </div>
                 </div>
-                <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                  <p className="text-gray-500 line-through text-sm md:text-base">
-                    {formatCurrency(detail.price)}
-                  </p>
-                  <div className="flex justify-between mt-3 items-end">
-                    <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
-                    <p className="text-base md:text-xl text-primary font-semibold">
-                      {formatCurrency(detail.price - detail.discount_price)}
+                {detail.price > 0 && (
+                  <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
+                    <p className="text-gray-500 line-through text-sm md:text-base">
+                      {formatCurrency(detail.price)}
                     </p>
+                    <div className="flex justify-between mt-3 items-end">
+                      <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
+                      <p className="text-base md:text-xl text-primary font-semibold">
+                        {formatCurrency(detail.price - detail.discount_price)}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="mt-6">
-                  <div className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center">
+                  <Link
+                    href={`/visa/chi-tiet/${detail.slug}/checkout`}
+                    className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
+                  >
                     <button className="mx-auto text-base font-medium">
                       Gửi yêu cầu
                     </button>
-                  </div>
+                  </Link>
                   {/* <div className="text__default_hover text-gray-700 rounded-lg p-[10px] border border-gray-300 mt-3 inline-flex w-full items-center">
                     <button className="mx-auto text-base font-medium">
                       Xem lịch khởi hành

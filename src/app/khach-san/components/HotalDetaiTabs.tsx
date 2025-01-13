@@ -57,7 +57,7 @@ export default function HotelDetailTabs({ data }: any) {
           </h2>
           <h3 className="mt-4 text-22 font-semibold">{data.name ?? ""}</h3>
           <div
-            className="mt-3 line-clamp-5"
+            className="mt-3 leading-6"
             dangerouslySetInnerHTML={{
               __html: data.hotel.about ?? "Nội dung đang cập nhật",
             }}
@@ -121,11 +121,14 @@ export default function HotelDetailTabs({ data }: any) {
                       </p>
                     </div>
                     <div className="mt-4">
-                      <div className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center">
+                      <Link
+                        href={`/khach-san/dat-phong/${data.slug}/${item.id}`}
+                        className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center"
+                      >
                         <button className="mx-auto text-base font-medium">
                           Yêu cầu đặt
                         </button>
-                      </div>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -195,7 +198,7 @@ export default function HotelDetailTabs({ data }: any) {
                 Thông tin về nơi lưu trú này
               </h2>
               <div
-                className="mt-4"
+                className="mt-4 leading-6"
                 dangerouslySetInnerHTML={{
                   __html: data.hotel.reside_information,
                 }}
@@ -235,7 +238,7 @@ export default function HotelDetailTabs({ data }: any) {
               Chính sách
             </h2>
             <div
-              className="mt-4"
+              className="mt-4 leading-6"
               dangerouslySetInnerHTML={{
                 __html: data.hotel.policy ?? "Nội dung đang cập nhật",
               }}
@@ -249,7 +252,7 @@ export default function HotelDetailTabs({ data }: any) {
                 Thông tin quan trọng
               </h2>
               <div
-                className="mt-4"
+                className="mt-4 leading-6"
                 dangerouslySetInnerHTML={{
                   __html: data.hotel.information,
                 }}

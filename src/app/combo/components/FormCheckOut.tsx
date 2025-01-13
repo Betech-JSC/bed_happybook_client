@@ -13,7 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { toast } from "react-hot-toast";
 
-export default function CheckOutTourForm() {
+export default function FormCheckOut() {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [schemaForm, setSchemaForm] = useState(() =>

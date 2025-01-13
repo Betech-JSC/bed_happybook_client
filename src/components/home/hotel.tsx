@@ -12,6 +12,7 @@ import styles from "@/styles/styles.module.scss";
 import { formatCurrency, formatMoney } from "@/lib/formatters";
 import { calculatorDiscountPercent } from "@/utils/Helper";
 import Link from "next/link";
+import HotelItem from "../HotelItem";
 
 export default function Hotel({ data }: any) {
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -125,83 +126,7 @@ export default function Hotel({ data }: any) {
                                   key={index}
                                   className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                                 >
-                                  <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                                    <div className="overflow-hidden rounded-2xl relative">
-                                      <Link
-                                        href={`/khach-san/chi-tiet/${hotel.slug}`}
-                                      >
-                                        <Image
-                                          className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
-                                          src={`${hotel.image_url}/${hotel.image_location}`}
-                                          alt="Hotel Image"
-                                          width={320}
-                                          height={320}
-                                          sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                          style={{ height: 220, width: "100%" }}
-                                        />
-                                      </Link>
-                                      {hotel.discount_price > 0 && (
-                                        <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#F27145] rounded-tr-3xl">
-                                          <span>
-                                            Tiết kiệm{" "}
-                                            {calculatorDiscountPercent(
-                                              hotel.discount_price,
-                                              hotel.price
-                                            )}
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="py-3 px-4">
-                                      <p
-                                        className={`text-base font-semibold min-h-12 line-clamp-2 ${styles.text_hover_default}`}
-                                      >
-                                        {hotel.name}
-                                      </p>
-                                      <div className="flex mt-2">
-                                        {Array.from({ length: 4 }).map(
-                                          (_, index) => (
-                                            <div key={index}>
-                                              <Image
-                                                src="/icon/start-icon.svg"
-                                                alt="start icon"
-                                                width={16}
-                                                height={16}
-                                              />
-                                            </div>
-                                          )
-                                        )}
-                                        <div>
-                                          <Image
-                                            src="/icon/start.svg"
-                                            alt="start icon"
-                                            width={16}
-                                            height={16}
-                                            style={{
-                                              width: "16px",
-                                              height: "16px",
-                                            }}
-                                          />
-                                        </div>
-                                      </div>
-                                      <div className="text-right">
-                                        <p className="line-through text-[#667085] font-semibold h-6">
-                                          {hotel.discount_price
-                                            ? formatCurrency(hotel.price)
-                                            : ""}
-                                        </p>
-
-                                        <p className="text-[#F27145] text-xl font-semibold">
-                                          {hotel.discount_price
-                                            ? formatCurrency(
-                                                hotel.price -
-                                                  hotel.discount_price
-                                              )
-                                            : formatCurrency(hotel.price)}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
+                                  <HotelItem hotel={hotel} />
                                 </CarouselItem>
                               )
                             )}

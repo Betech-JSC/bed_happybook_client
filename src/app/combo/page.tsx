@@ -27,6 +27,30 @@ export const metadata: Metadata = formatMetadata({
   },
 });
 
+const hotDestination = [
+  {
+    name: "Côn đảo",
+  },
+  {
+    name: "Phan Thiết",
+  },
+  {
+    name: "Nha Trang",
+  },
+  {
+    name: "Quy Nhơn",
+  },
+  {
+    name: "Côn đảo",
+  },
+  {
+    name: "Phan Thiết",
+  },
+  {
+    name: "Nha Trang",
+  },
+];
+
 export default async function CompoTour() {
   const locationsData =
     ((await ProductLocation.list())?.payload?.data as any) ?? [];
@@ -68,7 +92,7 @@ export default async function CompoTour() {
         <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
             {/* Tours */}
-            {comboData?.comboHot.length > 0 && (
+            {hotDestination.length > 0 && (
               <div className="w-full">
                 <h2 className="text-32 font-bold">Khám phá các điểm đến HOT</h2>
                 <div className="mt-8 overflow-hidden">
@@ -79,15 +103,16 @@ export default async function CompoTour() {
                     }}
                   >
                     <CarouselContent>
-                      {comboData?.comboHot.map((combo: any) => (
+                      {hotDestination.map((item: any, index: number) => (
                         <CarouselItem
-                          key={combo.id}
+                          key={index}
                           className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
                         >
                           <div className="overflow-hidden rounded-lg relative">
-                            <Link href={`/compo/chi-tiet/${combo.slug}`}>
+                            <Link href="#">
                               <Image
-                                src={`${combo.image_url}/${combo.image_location}`}
+                                // src={`${combo.image_url}/${combo.image_location}`}
+                                src={`/compo/hot/${index + 1}.png`}
                                 width={365}
                                 height={245}
                                 className=" h-56 rounded-lg hover:scale-110 ease-in duration-300"
@@ -96,8 +121,8 @@ export default async function CompoTour() {
                               />
                             </Link>
                             <div className="absolute bottom-3 left-2 text-white px-3 py-1">
-                              <Link href={`/compo/chi-tiet/${combo.slug}`}>
-                                <h3 className="line-clamp-2">{combo.name}</h3>
+                              <Link href="#">
+                                <h3 className="line-clamp-2">{item.name}</h3>
                               </Link>
                             </div>
                           </div>
