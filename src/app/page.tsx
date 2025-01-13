@@ -10,7 +10,6 @@ import VisaSteps from "@/components/home/visa-steps";
 import Partner from "@/components/home/partner";
 import OurTeam from "@/components/home/our-team";
 import TouristSuggest from "@/components/home/tourist-suggest";
-import TravelGuide from "@/components/home/travel-guide";
 import Flight from "@/components/home/flight";
 import AosAnimate from "@/components/aos-animate";
 import FooterMenu from "@/components/footer-menu";
@@ -25,6 +24,8 @@ import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 import { formatMetadata } from "@/lib/formatters";
 import { BannerApi } from "@/api/Banner";
 import { cloneItemsCarousel } from "@/utils/Helper";
+import NewsByPage from "@/components/NewsByPage";
+import { newsApi } from "@/api/news";
 
 export const metadata: Metadata = formatMetadata({
   title: "HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
@@ -47,7 +48,8 @@ export default async function Home() {
   if (popularFlights.length > 0 && popularFlights.length < 5) {
     popularFlights = cloneItemsCarousel(popularFlights, 8);
   }
-
+  const lastestNews =
+    ((await newsApi.getLastedNewsByPage())?.payload?.data as any) ?? [];
   return (
     <Fragment>
       <WebsiteSchema {...(metadata as any)} url={siteUrl} />
@@ -161,11 +163,15 @@ export default async function Home() {
             <TouristSuggest></TouristSuggest>
           </div>
         </AosAnimate>
-        <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <TravelGuide></TravelGuide>
-          </div>
-        </AosAnimate>
+
+        {lastestNews.length > 0 && (
+          <AosAnimate>
+            <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
+              <NewsByPage title={"Cẩm nang du lịch"} data={lastestNews} />
+            </div>
+          </AosAnimate>
+        )}
+
         <AosAnimate>
           <Partner></Partner>
         </AosAnimate>

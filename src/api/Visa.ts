@@ -4,7 +4,8 @@ import http from "@/lib/http";
 const path = "/products/visa";
 
 const VisaApi = {
-  detail: (url: string, data: any = null) => http.get<any>(url, data),
+  detail: (alias: string) =>
+    http.get<any>(`product-visa/get-by-slug?slug=${alias}`),
   getCategory: (alias: string, data: any = null) =>
     http.get<any>(`${path}/categories/${alias}`, data),
   getAll: () => http.get<any>("/product/visa/all"),

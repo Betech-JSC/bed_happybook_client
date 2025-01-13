@@ -105,7 +105,6 @@ export default async function HotelDetail({
                   width={700}
                   height={450}
                   sizes="100vw"
-                  style={{ height: 450, width: "100%" }}
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -113,15 +112,18 @@ export default async function HotelDetail({
                   detail.gallery.map(
                     (item: any, index: number) =>
                       index <= 4 && (
-                        <div className="overflow-hidden rounded-lg" key={index}>
+                        <div
+                          className="overflow-hidden rounded-lg h-[220px]"
+                          key={index}
+                        >
                           <Image
                             className="cursor-pointer w-full h-32 md:h-[220px] rounded-lg hover:scale-110 ease-in duration-300"
-                            src={`${item.image_url}${item.image_300}`}
+                            src={`${item.image_url}${item.image}`}
                             alt="Image"
                             width={320}
                             height={220}
                             sizes="100vw"
-                            style={{ height: 220, width: "100%" }}
+                            style={{ height: "100%", width: "100%" }}
                           />
                         </div>
                       )

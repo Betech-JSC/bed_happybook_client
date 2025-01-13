@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import { SearchFilghtProps } from "@/types/flight";
+import SearchHotel from "@/app/khach-san/components/Search";
 
 export default function Search({ airportsData }: SearchFilghtProps) {
   const router = useRouter();
@@ -105,8 +106,8 @@ export default function Search({ airportsData }: SearchFilghtProps) {
           )}
           {/* Tabs 2 */}
           {activeTab === 1 && (
-            <div className="mt-10">
-              <div className="flex lg:space-x-1 xl:space-x-2">
+            <div className="mt-8">
+              {/* <div className="flex lg:space-x-1 xl:space-x-2">
                 <div className="w-[40%]">
                   <label className="block text-gray-700 mb-1">
                     Thành phố, địa điểm hoặc tên khách sạn:
@@ -179,7 +180,8 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                     </button>
                   </div>
                 </div>
-              </div>
+              </div> */}
+              <SearchHotel />
             </div>
           )}
           {/* Tabs 3 */}

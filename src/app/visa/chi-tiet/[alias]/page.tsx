@@ -16,7 +16,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import FAQ from "@/components/FAQ";
-import { Fragment } from "react";
 import QuestionAndAnswer from "@/components/QuestionAndAnswer";
 import ImageGallery from "../components/ImageGallery";
 import Tabs from "../components/Tabs";
@@ -25,18 +24,12 @@ import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
-import { formatMetadata } from "@/lib/formatters";
+import { formatCurrency, formatMetadata } from "@/lib/formatters";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = await VisaApi.detail(
-    "product-visa/get-by-slug?slug=visa-test",
-    null
-  );
+  const res = await VisaApi.detail(params.alias);
 
   const data = res?.payload.data;
-
-  console.log(data);
-  
 
   return formatMetadata({
     title: data?.meta_title ?? data?.title,
@@ -59,38 +52,12 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   });
 }
 
-const visa = [
-  {
-    title: "Visa Trung Quốc",
-    image: "/visa/1.png",
-  },
-  {
-    title: "Visa Đài Loan",
-    image: "/visa/2.png",
-  },
-  {
-    title: "Visa Nhật Bản",
-    image: "/visa/3.png",
-  },
-  {
-    title: "Visa Hàn Quốc",
-    image: "/visa/4.png",
-  },
-  {
-    title: "Visa Đài Loan",
-    image: "/visa/2.png",
-  },
-];
-
 export default async function CategoryPosts({
   params,
 }: {
   params: { alias: string };
 }) {
-  const response = await VisaApi.detail(
-    "product-visa/get-by-slug?slug=visa-test",
-    null
-  );
+  const response = await VisaApi.detail(params.alias);
   const detail = response?.payload.data;
 
   if (!detail) {
@@ -154,7 +121,7 @@ export default async function CategoryPosts({
                 imageUrl={detail.image_url}
               />
               <div className="mt-4">
-                <Tabs />
+                <Tabs detail={detail} />
               </div>
               <div className="mt-4 mb-8">
                 <QuestionAndAnswer />
@@ -197,15 +164,12 @@ export default async function CategoryPosts({
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
                   <p className="text-gray-500 line-through text-sm md:text-base">
-                    {detail.price.toLocaleString("vi-VN")} vnđ
+                    {formatCurrency(detail.price)}
                   </p>
                   <div className="flex justify-between mt-3 items-end">
                     <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
                     <p className="text-base md:text-xl text-primary font-semibold">
-                      {(detail.price - detail.discount_price).toLocaleString(
-                        "vi-VN"
-                      )}{" "}
-                      vnđ
+                      {formatCurrency(detail.price - detail.discount_price)}
                     </p>
                   </div>
                 </div>
@@ -215,11 +179,11 @@ export default async function CategoryPosts({
                       Gửi yêu cầu
                     </button>
                   </div>
-                  <div className="text__default_hover text-gray-700 rounded-lg p-[10px] border border-gray-300 mt-3 inline-flex w-full items-center">
+                  {/* <div className="text__default_hover text-gray-700 rounded-lg p-[10px] border border-gray-300 mt-3 inline-flex w-full items-center">
                     <button className="mx-auto text-base font-medium">
                       Xem lịch khởi hành
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -232,54 +196,62 @@ export default async function CategoryPosts({
         </div>
         <div className="bg-white">
           <div className="px-3 lg:px-[80px] max__screen">
-            <div className="mt-6">
-              <h3 className="text-2xl font-bold">Visa tương tự</h3>
-              <div className="mt-8">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {visa.map((item, index) => (
-                      <CarouselItem
-                        key={index}
-                        className="basis-10/12 md:basis-5/12 lg:basis-1/4"
-                      >
-                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="overflow-hidden rounded-t-2xl	">
-                            <Image
-                              className="hover:scale-110 ease-in duration-300 cursor-pointer	"
-                              src={item.image}
-                              alt="Banner"
-                              width={200}
-                              height={160}
-                              sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                              style={{ height: "100%", width: "100%" }}
-                            />
-                          </div>
-                          <div className="py-3 px-4 lg:h-[72px] ">
-                            <p
-                              className={`text-base font-semibold line-clamp-2 text__default_hover`}
+            {detail?.similar_visa.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-2xl font-bold">Visa tương tự</h3>
+                <div className="mt-8">
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
+                    }}
+                  >
+                    <CarouselContent>
+                      {detail.similar_visa.map((item: any, index: number) => (
+                        <CarouselItem
+                          key={index}
+                          className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+                        >
+                          <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                            <Link
+                              href={`/visa/chi-tiet/${item.slug}`}
+                              className="block overflow-hidden rounded-t-2xl	"
                             >
-                              {item.title}
-                            </p>
+                              <Image
+                                className="hover:scale-110 ease-in duration-300 cursor-pointer	"
+                                src={`${item.image_url}/${item.image_location}`}
+                                alt="Banner"
+                                width={200}
+                                height={160}
+                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                                style={{ height: 220, width: "100%" }}
+                              />
+                            </Link>
+                            <Link
+                              href={`/visa/chi-tiet/${item.slug}`}
+                              className="block py-3 px-4 lg:h-[72px] "
+                            >
+                              <p
+                                className={`text-base font-semibold line-clamp-2 text__default_hover`}
+                              >
+                                {item.name}
+                              </p>
+                            </Link>
+                            {/* <div className="text-end py-3 px-4 mt-2">
+                              <span className="text-[#F27145] font-semibold text-base lg:text-xl">
+                                {formatCurrency(item.price)}
+                              </span>
+                            </div> */}
                           </div>
-                          <div className="text-end py-3 px-4 mt-2">
-                            <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-                              800.000 vnđ
-                            </span>
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden lg:inline-flex" />
-                  <CarouselNext className="hidden lg:inline-flex" />
-                </Carousel>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden lg:inline-flex" />
+                    <CarouselNext className="hidden lg:inline-flex" />
+                  </Carousel>
+                </div>
               </div>
-            </div>
+            )}
             {/* Blog */}
             <div className="mt-8 rounded-2xl bg-gray-50 p-8">
               <h3 className="text-2xl font-bold">

@@ -80,10 +80,10 @@ export default function TourQuocTe({ data }: any) {
                   ) => (
                     <button
                       key={index}
-                      className={`px-4 py-2 focus:outline-none rounded-[8px] duration-300 ${
+                      className={`px-4 py-2 outline-none rounded-[8px] duration-300 border-2 border-solid ${
                         activeTab === index
                           ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                          : "text-gray-500 border-solid border-[#D0D5DD] border-2 hover:bg-gray-100"
+                          : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
                       }`}
                       onClick={() => setActiveTab(index)}
                     >

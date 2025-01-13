@@ -1,30 +1,18 @@
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/formatters";
 
-export default function CompoItem({
-  category = "",
-  title = "",
-  price = "",
-  duration = "",
-  image = "",
-  hot = 0,
-  vehicle = "",
-}) {
-  const vehicleIcon = ["AirplaneTilt-2", "bus"];
-  if (vehicle === "fly" || !vehicle) {
-    vehicleIcon.splice(1, 1);
-  } else if (vehicle === "bus") {
-    vehicleIcon.splice(0, 1);
-  }
-
+export default function CompoItem({ data }: any) {
+  if (!data) return;
+  const vehicleIcon = ["bus"];
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
         <Link href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang">
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
-            src={image}
+            src={`${data.image_url}/${data.image_location}`}
             alt="Banner"
             width={200}
             height={160}
@@ -35,14 +23,12 @@ export default function CompoItem({
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
-          <span>{category}</span>
+          <span>Du lịch nội địa</span>
         </div>
-        {hot ? (
+        {data.is_hot && (
           <div className="absolute top-3 left-3 text-white px-3 py-1 bg-[#F27145] rounded-md">
             <span>Hot tour</span>
           </div>
-        ) : (
-          ""
         )}
       </div>
       <div className="py-3 px-4">
@@ -50,7 +36,7 @@ export default function CompoItem({
           href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang"
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
-          <h3>{title}</h3>
+          <h3>{data.name}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <Image
@@ -59,7 +45,11 @@ export default function CompoItem({
             width={20}
             height={20}
           />
-          <span>{duration}</span>
+          <span>
+            {`${data.day ? data.day : ""} ngày ${
+              data.night ? data.night : ""
+            } đêm`}
+          </span>
         </p>
         <div className="flex justify-between mt-[14px]">
           <div className="flex space-x-2">
@@ -74,10 +64,9 @@ export default function CompoItem({
             ))}
           </div>
           <div>
-            <span>chỉ từ</span>
+            <span>chỉ từ </span>
             <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-              {" "}
-              {price} vnđ
+              {formatCurrency(data.price - data.discount_price)}
             </span>
           </div>
         </div>

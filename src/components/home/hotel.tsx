@@ -47,7 +47,8 @@ export default function Hotel({ data }: any) {
                 Đa dạng lựa chọn khách sạn
               </h2>
             </div>
-            <div
+            <Link
+              href="/khach-san"
               className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
@@ -59,12 +60,15 @@ export default function Hotel({ data }: any) {
                 width={20}
                 height={20}
               />
-            </div>
+            </Link>
           </div>
           <p className="text-sm lg:text-base font-medium mt-3">
             Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
           </p>
-          <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
+          <Link
+            href="/khach-san"
+            className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+          >
             <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
             <Image
               className=" hover:scale-110 ease-in duration-300"
@@ -73,7 +77,7 @@ export default function Hotel({ data }: any) {
               width={20}
               height={20}
             />
-          </div>
+          </Link>
           {/* Tabs */}
           <div className="w-full mt-6">
             <div className="">
@@ -89,10 +93,10 @@ export default function Hotel({ data }: any) {
                       <CarouselItem key={index} className="basis-1/8">
                         <button
                           key={index}
-                          className={`px-4 py-2 focus:outline-none rounded-[8px] duration-300 ${
+                          className={`px-4 py-2 outline-none rounded-[8px] duration-300 border-2  border-solid ${
                             activeTab === index
                               ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                              : "text-gray-500 border-solid border-[#D0D5DD] border-2 hover:bg-gray-100"
+                              : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
                           }`}
                           onClick={() => setActiveTab(index)}
                         >

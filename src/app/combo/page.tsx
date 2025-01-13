@@ -14,6 +14,8 @@ import Search from "./components/Search";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
+import { ComboApi } from "@/api/Combo";
+import { ProductLocation } from "@/api/ProductLocation";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -25,61 +27,10 @@ export const metadata: Metadata = formatMetadata({
   },
 });
 
-type tourItem = {
-  title: string;
-  image: string;
-  category: string;
-  hot: number;
-  duration: string;
-  price: string;
-  vehicle: string;
-};
-const arrTours: tourItem[] = [];
-const tour: tourItem = {
-  title: "COMBO 4N3Đ BÃI DÀI + KHÁCH SẠN 4* SUNKISS NHA TRANG",
-  image: "",
-  category: "Du lịch nội địa",
-  hot: 0,
-  duration: "3 ngày 2 đêm",
-  price: "800.000",
-  vehicle: "",
-};
-for (var i = 1; i < 15; i++) {
-  const tourItem = { ...tour };
-  if (i == 1 || i == 5 || i == 9 || i == 13) {
-    tourItem.hot = 1;
-    tourItem.vehicle = "bus";
-  }
-  if (i == 4 || i == 8 || i == 12) {
-    tourItem.vehicle = "aboth";
-  }
-  tourItem.image = `/compo/tours/${i}.png`;
-  arrTours.push(tourItem);
-}
-const compoHot = [
-  {
-    title: "Côn đảo",
-  },
-  {
-    title: "Phan Thiết",
-  },
-  {
-    title: "Nha Trang",
-  },
-  {
-    title: "Quy Nhơn",
-  },
-  {
-    title: "Côn đảo",
-  },
-  {
-    title: "Phan Thiết",
-  },
-  {
-    title: "Nha Trang",
-  },
-];
-export default function CompoTour() {
+export default async function CompoTour() {
+  const locationsData =
+    ((await ProductLocation.list())?.payload?.data as any) ?? [];
+  const comboData = ((await ComboApi.getAll())?.payload?.data as any) ?? [];
   return (
     <SeoSchema
       metadata={metadata}
@@ -111,75 +62,83 @@ export default function CompoTour() {
           ></div>
           {/* Search */}
           <div className="py-5">
-            <Search />
+            <Search locations={locationsData} />
           </div>
         </div>
         <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
             {/* Tours */}
-            <div className="w-full">
-              <h2 className="text-32 font-bold">Khám phá các điểm đến HOT</h2>
-              <div className="mt-8 overflow-hidden">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {compoHot.map((item, index) => (
-                      <CarouselItem
-                        key={index}
-                        className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
-                      >
-                        <div className="overflow-hidden rounded-lg relative">
-                          <Link href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang">
-                            <Image
-                              src={`/compo/hot/${index + 1}.png`}
-                              width={365}
-                              height={245}
-                              className=" h-56 rounded-lg hover:scale-110 ease-in duration-300"
-                              sizes="100vw"
-                              alt="Image"
-                            />
-                          </Link>
-                          <div className="absolute bottom-3 left-2 text-white px-3 py-1">
-                            <Link href="/compo/chi-tiet/compo-3n2d-vinpearl-resort-nha-trang">
-                              <h3>{item.title}</h3>
-                            </Link>
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-                </Carousel>
-              </div>
-            </div>
-            <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
-              <h2 className="text-32 font-bold">Combo du lịch nội địa</h2>
-              <div className="flex my-4 md:my-0 space-x-3 items-center">
-                <span>Sắp xếp</span>
-                <div className="w-40 bg-white border border-gray-200 rounded-lg">
-                  <select
-                    className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
-                    name=""
-                    id=""
+            {comboData?.comboHot.length > 0 && (
+              <div className="w-full">
+                <h2 className="text-32 font-bold">Khám phá các điểm đến HOT</h2>
+                <div className="mt-8 overflow-hidden">
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
+                    }}
                   >
-                    <option value="">Mới nhất</option>
-                    <option value="">Cũ nhất</option>
-                  </select>
+                    <CarouselContent>
+                      {comboData?.comboHot.map((combo: any) => (
+                        <CarouselItem
+                          key={combo.id}
+                          className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
+                        >
+                          <div className="overflow-hidden rounded-lg relative">
+                            <Link href={`/compo/chi-tiet/${combo.slug}`}>
+                              <Image
+                                src={`${combo.image_url}/${combo.image_location}`}
+                                width={365}
+                                height={245}
+                                className=" h-56 rounded-lg hover:scale-110 ease-in duration-300"
+                                sizes="100vw"
+                                alt="Image"
+                              />
+                            </Link>
+                            <div className="absolute bottom-3 left-2 text-white px-3 py-1">
+                              <Link href={`/compo/chi-tiet/${combo.slug}`}>
+                                <h3 className="line-clamp-2">{combo.name}</h3>
+                              </Link>
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
                 </div>
               </div>
-            </div>
-            <div className="mt-8 grid md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-              {arrTours.map((tour, index) => (
-                <div key={index}>
-                  <CompoItem {...tour} />
+            )}
+            {comboData?.comboDomestic.length > 0 && (
+              <>
+                <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
+                  <h2 className="text-32 font-bold">
+                    Các combo du lịch ưu đãi
+                  </h2>
+                  <div className="flex my-4 md:my-0 space-x-3 items-center">
+                    <span>Sắp xếp</span>
+                    <div className="w-40 bg-white border border-gray-200 rounded-lg">
+                      <select
+                        className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
+                        name=""
+                        id=""
+                      >
+                        <option value="">Mới nhất</option>
+                        <option value="">Cũ nhất</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="mt-8 grid md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+                  {comboData?.comboDomestic.map((combo: any) => (
+                    <div key={combo.id}>
+                      <CompoItem data={combo} />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
             {/* Faq */}
             <div className="my-8">
               <FAQ />

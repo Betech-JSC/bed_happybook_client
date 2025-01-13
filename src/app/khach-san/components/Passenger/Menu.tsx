@@ -8,14 +8,19 @@ interface SelectMenuProps {
     adt: number;
     chd: number;
     inf: number;
+    room: number;
   };
   totalGuests: number;
+  totalRooms: number;
   onGuestsChange: (key: string, value: number) => void;
+  onRoomsChange: (key: string, value: number) => void;
 }
 const SelectMenu = ({
   formData,
   totalGuests,
+  totalRooms,
   onGuestsChange,
+  onRoomsChange,
 }: SelectMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -40,7 +45,9 @@ const SelectMenu = ({
         onClick={toggleMenu}
         className="p-3 rounded-md flex items-center gap-2 cursor-pointer"
       >
-        <span>{totalGuests} khách</span>
+        <span>
+          {totalGuests} khách, {totalRooms} phòng
+        </span>
       </div>
 
       {isOpen && (
@@ -48,7 +55,9 @@ const SelectMenu = ({
           <CounterGroup
             formData={formData}
             totalGuests={totalGuests}
+            totalRooms={totalRooms}
             onGuestsChange={onGuestsChange}
+            onRoomsChange={onRoomsChange}
           />
         </div>
       )}

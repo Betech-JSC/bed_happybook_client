@@ -31,17 +31,18 @@ export default function ListHotel({
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
-  const [isFilters, setIsFilters] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const loadData = useCallback(async () => {
     try {
       setLoadingLoadMore(true);
+      setIsDisabled(true);
       const search = buildSearch(query);
       const res = await HotelApi.search(`/product/hotel/search${search}`);
       const result = res?.payload?.data;
       setData((prevData: any) =>
-        result.items.length > 0 && !isFilters
+        result.items.length > 0 && !query.isFilters
           ? [...prevData, ...result.items]
           : result.items
       );
@@ -52,14 +53,13 @@ export default function ListHotel({
       console.log("Error search: " + error);
     } finally {
       setFirstLoad(false);
-      setIsFilters(false);
+      setIsDisabled(false);
       setLoadingLoadMore(false);
     }
-  }, [query, isFilters]);
+  }, [query]);
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
-    setIsFilters(true);
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -68,20 +68,21 @@ export default function ListHotel({
         return {
           ...prevFilters,
           [group]: groupFilters.filter((item: string) => item !== value),
+          isFilter: true,
         };
       } else {
         return {
           ...prevFilters,
           [group]: [...groupFilters, value],
+          isFilter: true,
         };
       }
     });
   };
   const handleSortData = (value: string) => {
     setData([]);
-    setIsFilters(true);
     const [sort, order] = value.split("|");
-    setQuery({ ...query, sort: sort, order: order });
+    setQuery({ ...query, sort: sort, order: order, isFilter: true });
   };
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export default function ListHotel({
                   >
                     <input
                       type="checkbox"
-                      disabled={isFilters ? true : false}
+                      disabled={isDisabled}
                       id={item.name + index}
                       value={option.value}
                       className={TourStyle.custom_checkbox}

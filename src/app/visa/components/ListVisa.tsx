@@ -22,7 +22,7 @@ export default function ListVisa({
 }) {
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
-  const [isFilters, setIsFilters] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [query, setQuery] = useState<{
@@ -40,11 +40,12 @@ export default function ListVisa({
   const loadData = useCallback(async () => {
     try {
       setLoadingLoadMore(true);
+      setIsDisabled(true);
       const search = buildSearch(query);
       const res = await VisaApi.search(`/product/visa/search${search}`);
       const result = res?.payload?.data;
       setData((prevData: any) =>
-        result.items.length > 0 && !isFilters
+        result.items.length > 0 && !query.isFilters
           ? [...prevData, ...result.items]
           : result.items
       );
@@ -55,14 +56,13 @@ export default function ListVisa({
       console.log("Error search: " + error);
     } finally {
       setFirstLoad(false);
+      setIsDisabled(false);
       setLoadingLoadMore(false);
-      setIsFilters(false);
     }
-  }, [query, isFilters]);
+  }, [query]);
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
-    setIsFilters(true);
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -71,20 +71,21 @@ export default function ListVisa({
         return {
           ...prevFilters,
           [group]: groupFilters.filter((item: string) => item !== value),
+          isFilter: true,
         };
       } else {
         return {
           ...prevFilters,
           [group]: [...groupFilters, value],
+          isFilter: true,
         };
       }
     });
   };
   const handleSortData = (value: string) => {
     setData([]);
-    setIsFilters(true);
     const [sort, order] = value.split("|");
-    setQuery({ ...query, sort: sort, order: order });
+    setQuery({ ...query, sort: sort, order: order, isFilter: true });
   };
 
   useEffect(() => {
@@ -123,6 +124,7 @@ export default function ListVisa({
                         type="checkbox"
                         id={item.name + index}
                         value={value}
+                        disabled={isDisabled}
                         defaultChecked={
                           searchParams && searchParams["loai_visa[]"]
                             ? searchParams["loai_visa[]"] === value
@@ -180,7 +182,7 @@ export default function ListVisa({
                 className="flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 mt-4"
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                  <Link href="/visa/chi-tiet/visa-nhat-ban">
+                  <Link href={`/visa/chi-tiet/${item.slug}`}>
                     <Image
                       className=" hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
                       src={`${item.image_url}/${item.image_location}`}
@@ -200,7 +202,7 @@ export default function ListVisa({
                 <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
                   <div>
                     <Link
-                      href="/visa/chi-tiet/visa-nhat-ban"
+                      href={`/visa/chi-tiet/${item.slug}`}
                       className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                     >
                       <h2>{item.name}</h2>

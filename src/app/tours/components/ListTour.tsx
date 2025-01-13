@@ -38,17 +38,18 @@ export default function ListTour({
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
-  const [isFilters, setIsFilters] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const loadData = useCallback(async () => {
     try {
       setLoadingLoadMore(true);
+      setIsDisabled(true);
       const search = buildSearch(query);
       const res = await TourApi.search(`/product/tours/search${search}`);
       const result = res?.payload?.data;
       setData((prevData: any) =>
-        result.items.length > 0 && !isFilters
+        result.items.length > 0 && !query.isFilters
           ? [...prevData, ...result.items]
           : result.items
       );
@@ -59,14 +60,13 @@ export default function ListTour({
       console.log("Error search: " + error);
     } finally {
       setFirstLoad(false);
-      setIsFilters(false);
       setLoadingLoadMore(false);
+      setIsDisabled(false);
     }
-  }, [query, isFilters]);
+  }, [query]);
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
-    setIsFilters(true);
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -75,20 +75,21 @@ export default function ListTour({
         return {
           ...prevFilters,
           [group]: groupFilters.filter((item: string) => item !== value),
+          isFilter: true,
         };
       } else {
         return {
           ...prevFilters,
           [group]: [...groupFilters, value],
+          isFilter: true,
         };
       }
     });
   };
   const handleSortData = (value: string) => {
     setData([]);
-    setIsFilters(true);
     const [sort, order] = value.split("|");
-    setQuery({ ...query, sort: sort, order: order });
+    setQuery({ ...query, sort: sort, order: order, isFilters: true });
   };
 
   useEffect(() => {
@@ -127,6 +128,7 @@ export default function ListTour({
                         id={item.name + index}
                         type="checkbox"
                         value={option.value}
+                        disabled={isDisabled}
                         className={TourStyle.custom_checkbox}
                         onChange={(e) =>
                           handleFilterChange(`${item.name}[]`, e.target.value)
@@ -293,6 +295,7 @@ export default function ListTour({
                 setQuery({
                   ...query,
                   page: query.page + 1,
+                  isFilters: false,
                 });
               }}
               className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover

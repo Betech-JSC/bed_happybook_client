@@ -157,59 +157,61 @@ export default async function AirlineTicket() {
               </div>
             </div>
           )}
-          <div className="mt-6 py-6">
-            <div>
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-[24px] lg:text-32 font-bold">
-                    Vé Máy Bay Một Chiều Dành Cho Bạn
-                  </h2>
+          {popularFlights.length > 0 && (
+            <div className="mt-6 py-6">
+              <div>
+                <div className="flex justify-between">
+                  <div>
+                    <h2 className="text-[24px] lg:text-32 font-bold">
+                      Vé Máy Bay Một Chiều Dành Cho Bạn
+                    </h2>
+                  </div>
+                </div>
+                <div className="mt-8 w-full">
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
+                    }}
+                  >
+                    <CarouselContent>
+                      {popularFlights.map((item: any) => (
+                        <CarouselItem
+                          key={item.id}
+                          className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
+                        >
+                          <div className="px-4 py-3 border border-gray-200 rounded-2xl">
+                            <div className="flex text-sm h-5">
+                              <Image
+                                src={`${item.image_url}/${item.flight.data_hang_bay.logo}`}
+                                alt="Airline logo"
+                                width={66}
+                                height={24}
+                              />
+                              <p className="ml-2">
+                                {item.flight.data_hang_bay.name}
+                              </p>
+                            </div>
+                            <Link href="#" className="mt-2 font-semibold block">
+                              <h3>{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
+                            </Link>
+                            <div className="mt-2 text-sm font-normal">
+                              {item.flight.ngay_khoi_hanh}
+                            </div>
+                            <div className="mt-3 text-right text-xl font-semibold text-primary">
+                              {formatCurrency(item.price)}
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden lg:inline-flex" />
+                    <CarouselNext className="hidden lg:inline-flex" />
+                  </Carousel>
                 </div>
               </div>
-              <div className="mt-8 w-full">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {popularFlights.map((item: any) => (
-                      <CarouselItem
-                        key={item.id}
-                        className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                      >
-                        <div className="px-4 py-3 border border-gray-200 rounded-2xl">
-                          <div className="flex text-sm h-5">
-                            <Image
-                              src={`${item.image_url}/${item.flight.data_hang_bay.logo}`}
-                              alt="Airline logo"
-                              width={66}
-                              height={24}
-                            />
-                            <p className="ml-2">
-                              {item.flight.data_hang_bay.name}
-                            </p>
-                          </div>
-                          <Link href="#" className="mt-2 font-semibold block">
-                            <h3>{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
-                          </Link>
-                          <div className="mt-2 text-sm font-normal">
-                            {item.flight.ngay_khoi_hanh}
-                          </div>
-                          <div className="mt-3 text-right text-xl font-semibold text-primary">
-                            {formatCurrency(item.price)}
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden lg:inline-flex" />
-                  <CarouselNext className="hidden lg:inline-flex" />
-                </Carousel>
-              </div>
             </div>
-          </div>
+          )}
           {/* Blog */}
           <div className="mt-8 rounded-2xl bg-gray-50 p-8">
             <h3 className="text-2xl font-bold">

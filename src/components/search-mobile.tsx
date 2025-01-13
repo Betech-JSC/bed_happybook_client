@@ -3,6 +3,7 @@ import { Fragment, Suspense, useState } from "react";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import Image from "next/image";
 import { SearchFilghtProps } from "@/types/flight";
+import SearchHotel from "@/app/khach-san/components/Search";
 
 export default function SearchMobile({ airportsData }: SearchFilghtProps) {
   const [activeTabMb, setActiveTabMb] = useState(0);
@@ -103,7 +104,7 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
           {/* Tabs Hotel */}
           {activeTabMb === 1 && (
             <div className="px-3">
-              <div className="grid grid-cols-1">
+              {/* <div className="grid grid-cols-1">
                 <div className="mb-2">
                   <label className="block text-gray-700 mb-1">
                     Thành phố, địa điểm hoặc tên khách sạn:
@@ -175,7 +176,8 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
                     Tìm kiếm
                   </span>
                 </button>
-              </div>
+              </div> */}
+              <SearchHotel />
             </div>
           )}
           {/* Tab */}
