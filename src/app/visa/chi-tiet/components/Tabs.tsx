@@ -50,7 +50,7 @@ export default function Tabs({ detail }: any) {
       <div className="mt-4 transition-all duration-300">
         <div
           className={`bg-white rounded-2xl p-6 ${
-            activeTab === 0 ? "block" : "none"
+            activeTab === 0 ? "block" : "hidden"
           }`}
         >
           <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
@@ -68,7 +68,7 @@ export default function Tabs({ detail }: any) {
 
         <div
           className={`bg-white rounded-2xl p-6 ${
-            activeTab === 1 ? "block" : "none"
+            activeTab === 1 ? "block" : "hidden"
           }`}
         >
           <h3 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
@@ -86,7 +86,7 @@ export default function Tabs({ detail }: any) {
 
         <div
           className={`bg-white rounded-2xl p-6 ${
-            activeTab === 2 ? "block" : "none"
+            activeTab === 2 ? "block" : "hidden"
           }`}
         >
           <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
