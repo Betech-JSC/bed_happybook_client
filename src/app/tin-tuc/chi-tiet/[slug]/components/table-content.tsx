@@ -22,10 +22,10 @@ const TableOfContents = ({ toc }: Props) => {
   return (
     <div
       className={`px-6 py-3 overflow-hidden my-8 border-l-4 h-auto border-[#F27145] bg-gray-50 rounded-r-xl lg:w-[520px] transition-all duration-700 ease-in-out 
-        ${isOpen ? "max-h-[600px]" : "max-h-12"}`}
+        ${isOpen ? "max-h-[3000px]" : "max-h-12"}`}
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Mục lục</h2>
+        <h3 className="text-xl font-semibold">Mục lục</h3>
         <div className="relative w-5 h-5">
           <Image
             onClick={toggleMenu}
