@@ -37,7 +37,7 @@ export default async function Hotel() {
         },
       ]}
     >
-      <div className="relative h-max pb-12">
+      <div className="relative pb-12 h-[400px] lg:h-[450px] place-content-center">
         <div className="absolute inset-0">
           <Image
             priority
@@ -56,7 +56,7 @@ export default async function Hotel() {
           }}
         ></div>
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
-          <div className="mt-0 lg:mt-28 lg:mb-10 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
+          <div className="mt-0 lg:mt-28 lg:mb-10 p-6 bg-white rounded-lg shadow-lg relative lg:w-1/2 ">
             <Suspense>
               <Search />
             </Suspense>

@@ -53,9 +53,9 @@ export default function TourItem({ tour }: any) {
             width={20}
             height={20}
           />
-          {`${tour.day ? tour.day : ""} ngày ${
+          <span>{`${tour.day ? tour.day : ""} ngày ${
             tour.night ? tour.night : ""
-          } đêm`}
+          } đêm`}</span>
         </p>
         <div className="flex justify-between mt-[14px]">
           <div className="flex space-x-2">

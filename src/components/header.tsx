@@ -21,7 +21,7 @@ export default function Header() {
     "/lien-he",
     "/dang-ky-ctv",
     "/tu-van-nhan-visa",
-    "/tour",
+    "/tours",
     "/visa",
     "/combo",
     "/dinh-cu",

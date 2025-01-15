@@ -53,9 +53,9 @@ export default function Tabs({ detail }: any) {
             activeTab === 0 ? "block" : "hidden"
           }`}
         >
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Tìm hiểu Visa
-          </h3>
+          </h2>
           <div
             className="mt-4 leading-6"
             dangerouslySetInnerHTML={{
@@ -71,9 +71,9 @@ export default function Tabs({ detail }: any) {
             activeTab === 1 ? "block" : "hidden"
           }`}
         >
-          <h3 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
             Giá dịch vụ, phí nộp ĐSQ, chuẩn bị hồ sơ
-          </h3>
+          </h2>
           <div
             className="mt-4 leading-6"
             dangerouslySetInnerHTML={{
@@ -89,9 +89,9 @@ export default function Tabs({ detail }: any) {
             activeTab === 2 ? "block" : "hidden"
           }`}
         >
-          <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Đánh giá
-          </h3>
+          </h2>
           <div className="mt-4 flex flex-col md:flex-row md:space-x-6 bg-gray-50 p-6 rounded-xl items-center">
             <div className="w-full md:w-[30%] text-center px-9 flex flex-col mb-5 md:mb-0">
               <p className="text-primary font-semibold mt-1">Xuất sắc</p>

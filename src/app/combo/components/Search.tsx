@@ -10,7 +10,7 @@ import { vi } from "date-fns/locale";
 export default function Search({ locations }: { locations: LocationType[] }) {
   const router = useRouter();
   const handleSearch = () => {
-    router.push(`/compo/tim-kiem`);
+    router.push(`/combo/tim-kiem`);
   };
   return (
     <Fragment>

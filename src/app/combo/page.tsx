@@ -141,7 +141,7 @@ export default async function CompoTour() {
                   <h2 className="text-32 font-bold">
                     Các combo du lịch ưu đãi
                   </h2>
-                  <div className="flex my-4 md:my-0 space-x-3 items-center">
+                  {/* <div className="flex my-4 md:my-0 space-x-3 items-center">
                     <span>Sắp xếp</span>
                     <div className="w-40 bg-white border border-gray-200 rounded-lg">
                       <select
@@ -153,7 +153,7 @@ export default async function CompoTour() {
                         <option value="">Cũ nhất</option>
                       </select>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="mt-8 grid md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                   {comboData?.comboDomestic.map((combo: any) => (

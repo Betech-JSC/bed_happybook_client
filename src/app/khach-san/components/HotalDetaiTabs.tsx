@@ -9,7 +9,6 @@ export default function HotelDetailTabs({ data }: any) {
   const [currentTabWidth, setCurrentTabWidth] = useState(0);
   const tabContainerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  console.log(data);
   useEffect(() => {
     if (tabRefs.current[activeTab]) {
       setCurrentTabWidth(tabRefs.current[activeTab].offsetWidth);
@@ -107,13 +106,15 @@ export default function HotelDetailTabs({ data }: any) {
                   </div>
                   <div>
                     <div className="mt-4 text-right">
-                      <p className="text-gray-500">
-                        {formatCurrency(item.discount_price)}
+                      <p className="text-gray-500 h-6">
+                        {item.discount_price > 0
+                          ? formatCurrency(item.discount_price)
+                          : ""}
                       </p>
                       <p>
                         <span className="text-gray-500">Tổng:</span>{" "}
                         <span className="mt-2 text-22 font-semibold text-primary">
-                          {formatCurrency(item.price)}
+                          {formatCurrency(item.price - item.discount_price)}
                         </span>
                       </p>
                       <p className="mt-2 text-sm text-gray-500">

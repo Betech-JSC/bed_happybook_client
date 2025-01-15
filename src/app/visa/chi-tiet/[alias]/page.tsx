@@ -130,9 +130,9 @@ export default async function CategoryPosts({
             <div className="w-full lg:w-4/12 p-4 md:p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
-                  <span className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
+                  <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
                     {detail.name}
-                  </span>
+                  </h1>
                   <div className="mt-6">
                     <div>
                       <span className="font-semibold">Mã visa:</span>{" "}
