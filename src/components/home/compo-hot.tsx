@@ -85,7 +85,9 @@ export default function CompoHot({ data }: any) {
                             width={20}
                             height={20}
                           />
-                          <span>{`${combo.day} ngày ${combo.night} đêm`}</span>
+                          <span>{`${combo.day ? combo.day : ""} ngày ${
+                            combo.night ? combo.night : ""
+                          } đêm`}</span>
                         </p>
                         <div className="flex justify-between mt-[14px]">
                           <div className="flex space-x-2">

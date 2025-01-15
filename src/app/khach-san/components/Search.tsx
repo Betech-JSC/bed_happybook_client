@@ -6,6 +6,8 @@ import SelectMenu from "./Passenger/Menu";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
+import { buildSearch } from "@/utils/Helper";
+import { format } from "date-fns";
 
 type LocationType = {
   id: number;
@@ -27,10 +29,18 @@ export default function Search() {
   const handleSubmit = (e: React.FormEvent) => {
     if (pathname !== "/khach-san/tim-kiem") {
       e.preventDefault();
+      setFormData((prev) => ({
+        ...prev,
+        ["text"]: queryText,
+      }));
+      const querySearch = buildSearch(formData);
       router.push(`/khach-san/tim-kiem?text=${queryText}`);
     }
   };
   const [formData, setFormData] = useState<{
+    text?: string;
+    // checkInDate?: Date | undefined;
+    // checkOutDate?: Date | undefined;
     adt: number;
     chd: number;
     inf: number;
@@ -49,7 +59,6 @@ export default function Search() {
   };
 
   const handleRoomChange = (key: string, value: number) => {
-    console.log(formData);
     setFormData((prev) => ({
       ...prev,
       [key]: value,
@@ -69,12 +78,9 @@ export default function Search() {
 
   return (
     <Fragment>
-      <form
-        className="flex flex-wrap lg:flex-nowrap lg:space-x-1 xl:space-x-2 space-y-2 lg:space-y-0"
-        onSubmit={handleSubmit}
-      >
-        <div className="w-full flex flex-wrap lg:flex-nowrap space-y-2 lg:space-y-0 lg:space-x-2 relative">
-          <div className="w-full lg:w-1/2">
+      <form onSubmit={handleSubmit}>
+        <div className="w-full flex flex-wrap md:flex-nowrap lg:space-x-2 relative">
+          <div className="w-full md:w-9/12">
             <label className="block text-gray-700 mb-1">
               Thành phố, địa điểm hoặc tên khách sạn:
             </label>
@@ -104,7 +110,7 @@ export default function Search() {
               </input>
             </div>
           </div>
-          <div className="w-full lg:w-[22.5%]">
+          {/* <div className="w-full lg:w-[22.5%]">
             <label className="block text-gray-700 mb-1">
               Ngày nhận phòng và trả phòng
             </label>
@@ -132,14 +138,10 @@ export default function Search() {
                   />
                 </div>
               </div>
-              {/* <div className="block md:hidden border-t border-black w-1/2"></div>
-              <div>
-                <span> 22/08/2024</span>
-              </div> */}
             </div>
-          </div>
+          </div> */}
 
-          <div className="w-full lg:w-[20%]">
+          {/* <div className="w-full lg:w-[20%]">
             <label className="block text-gray-700 mb-1">Khách</label>
             <div className="flex items-center border rounded-lg px-2 h-12">
               <Image
@@ -157,9 +159,9 @@ export default function Search() {
                 onGuestsChange={handleGuestChange}
               />
             </div>
-          </div>
+          </div> */}
 
-          <div className="w-full lg:w-[15%]">
+          <div className="w-full md:w-3/12">
             <label className="block text-gray-700 mb-1 h-6"></label>
             <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
               <Image

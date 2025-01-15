@@ -19,7 +19,7 @@ export default function CompoItem({ data }: any) {
             sizes="(max-width: 768px) 100vw,
                   (max-width: 1200px) 50vw,
                   33vw"
-            style={{ height: "100%", width: "100%" }}
+            style={{ height: 220, width: "100%" }}
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
