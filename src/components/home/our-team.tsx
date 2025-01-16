@@ -6,86 +6,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
 import styles from "@/styles/styles.module.scss";
+import { cloneItemsCarousel } from "@/utils/Helper";
 
-const ourTeams = [
-  {
-    name: "Chị Văn",
-    position: "Tổng Giám Đốc",
-    image: "1",
-  },
-  {
-    name: "Hòa",
-    position: "Leader Booker Quốc Tế",
-    image: "2",
-  },
-  {
-    name: "Ngà",
-    position: "Leader Booker Nội Địa",
-    image: "3",
-  },
-  {
-    name: "Nhu",
-    position: "Leader Marketing",
-    image: "4",
-  },
-  {
-    name: "Huy Lớn",
-    position: "Hộ Chiếu & Visa",
-    image: "6",
-  },
-  {
-    name: "Huy Nhỏ",
-    position: "Content Creator",
-    image: "1",
-  },
-  {
-    name: "Tươi",
-    position: "Content Marketing",
-    image: "1",
-  },
-  {
-    name: "Kiệt",
-    position: "ADS Marketing",
-    image: "1",
-  },
-  {
-    name: "My",
-    position: "S.E.O Website",
-    image: "1",
-  },
-  {
-    name: "Anh Thành",
-    position: "Tour Du Lịch",
-    image: "1",
-  },
-  {
-    name: "Chị Thoa",
-    position: "CTV Vé Máy Bay",
-    image: "1",
-  },
-  {
-    name: "Kiều",
-    position: "Booker",
-    image: "1",
-  },
-  {
-    name: "Vy",
-    position: "Booker",
-    image: "1",
-  },
-  {
-    name: "Thắm",
-    position: "HR",
-    image: "1",
-  },
-  {
-    name: "Tuyết",
-    position: "Kế Toán",
-    image: "1",
-  },
-];
-
-export default function OurTeam() {
+export default function OurTeam({ data }: any) {
+  if (data.length > 0 && data.length < 6) {
+    data = cloneItemsCarousel(data, 12);
+  }
   const swiperRef = useRef<SwiperType | null>(null);
   let transformValue: string;
 
@@ -135,23 +61,23 @@ export default function OurTeam() {
             swiper.wrapperEl.style.transitionTimingFunction = "linear";
           }}
         >
-          {ourTeams.map((member, index) => (
-            <SwiperSlide key={index} className="basis-1/6">
+          {data.map((member: any) => (
+            <SwiperSlide key={member.id} className="basis-1/6">
               <div className={styles.member__item}>
                 <Image
-                  src={`/our-team/member-${index + 1}.png`}
-                  alt="Member"
+                  src={`${member.image_url}/${member.image_location}`}
+                  alt="Image"
                   width={100}
                   height={100}
                   sizes="100vw"
                   className={styles.member__img}
-                  style={{ width: "90%", height: "auto" }}
+                  style={{ width: "90%", height: 255 }}
                 />
                 <div className={styles.member__info}>
                   <div className={`m-3 text-white`}>
                     <p className="font-semibold">{member.name}</p>
                     <p className="font-medium text-sm mt-[6px]">
-                      {member.position}
+                      {member.sub_title}
                     </p>
                   </div>
                 </div>

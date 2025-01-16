@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Members from "./components/members";
-import Partner from "./components/partner";
 import Service from "./components/service";
 import AosAnimate from "@/components/aos-animate";
 import type { Metadata } from "next";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
+import { BannerApi } from "@/api/Banner";
+import Partner from "@/components/home/partner";
 
 export const metadata: Metadata = formatMetadata({
   title: "Về chúng tôi - Tầm Nhìn Sứ Mệnh HappyBook Travel ✈️",
@@ -16,7 +17,11 @@ export const metadata: Metadata = formatMetadata({
     canonical: pageUrl("ve-chung-toi", true),
   },
 });
-export default function AboutUs() {
+export default async function AboutUs() {
+  const members = (await BannerApi.getBannerPage("home-doingu"))?.payload
+    ?.data as any;
+  const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
+    ?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -89,17 +94,10 @@ export default function AboutUs() {
             </div>
           </div>
         </div>
-        {/* </AosAnimate> */}
-        {/* <AosAnimate> */}
-        <Partner></Partner>
-        {/* </AosAnimate> */}
-        {/* <AosAnimate> */}
-        <Members></Members>
-        {/* </AosAnimate> */}
-        {/* <AosAnimate> */}
+        {partners?.length > 0 && <Partner data={partners}></Partner>}
+        {members?.length > 0 && <Members data={members}></Members>}
         <Service></Service>
-        {/* </AosAnimate> */}
-        {/* <AosAnimate> */}
+
         <div className="bg-[#F9FAFB]">
           <div className="py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <p className="text-[32px] leading-[38.4px] font-bold text-center">

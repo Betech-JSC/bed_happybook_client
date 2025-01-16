@@ -18,6 +18,7 @@ import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { cloneItemsCarousel } from "@/utils/Helper";
+import { format, parse, isValid } from "date-fns";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -195,8 +196,13 @@ export default async function AirlineTicket() {
                             <Link href="#" className="mt-2 font-semibold block">
                               <h3>{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
                             </Link>
-                            <div className="mt-2 text-sm font-normal">
-                              {item.flight.ngay_khoi_hanh}
+                            <div className="mt-2 text-sm font-normal h-6">
+                              {isValid(item.flight.ngay_khoi_hanh)
+                                ? format(
+                                    item.flight.ngay_khoi_hanh,
+                                    "dd-MM-yyyy"
+                                  )
+                                : ""}
                             </div>
                             <div className="mt-3 text-right text-xl font-semibold text-primary">
                               {formatCurrency(item.price)}

@@ -48,6 +48,12 @@ export default async function Home() {
   if (popularFlights.length > 0 && popularFlights.length < 5) {
     popularFlights = cloneItemsCarousel(popularFlights, 8);
   }
+  const membersData = (await BannerApi.getBannerPage("home-doingu"))?.payload
+    ?.data as any;
+  const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
+    ?.data as any;
+  const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
+    ?.data as any;
   const lastestNews =
     ((await newsApi.getLastedNewsByPage())?.payload?.data as any) ?? [];
   return (
@@ -155,14 +161,20 @@ export default async function Home() {
         <AosAnimate>
           <VisaSteps></VisaSteps>
         </AosAnimate>
-        <AosAnimate>
-          <OurTeam></OurTeam>
-        </AosAnimate>
-        <AosAnimate>
-          <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <TouristSuggest></TouristSuggest>
-          </div>
-        </AosAnimate>
+
+        {membersData?.length > 0 && (
+          <AosAnimate>
+            <OurTeam data={membersData}></OurTeam>
+          </AosAnimate>
+        )}
+
+        {touristSuggest?.length > 0 && (
+          <AosAnimate>
+            <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
+              <TouristSuggest data={touristSuggest}></TouristSuggest>
+            </div>
+          </AosAnimate>
+        )}
 
         {lastestNews.length > 0 && (
           <AosAnimate>
@@ -172,9 +184,11 @@ export default async function Home() {
           </AosAnimate>
         )}
 
-        <AosAnimate>
-          <Partner></Partner>
-        </AosAnimate>
+        {partners?.length > 0 && (
+          <AosAnimate>
+            <Partner data={partners}></Partner>
+          </AosAnimate>
+        )}
         <AosAnimate>
           <FooterMenu></FooterMenu>
         </AosAnimate>
