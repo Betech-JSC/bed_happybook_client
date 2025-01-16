@@ -6,12 +6,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Link from "next/link";
 
 const tourist: string[] = [];
 for (let i = 1; i <= 8; i++) {
   tourist.push(`/tourist-suggest/${i}.png`);
 }
-export default function TouristSuggest() {
+export default function TouristSuggest({ data }: any) {
   return (
     <div className="py-8 bg-[#FCFCFD] hidden lg:block">
       <div className="flex justify-between">
@@ -27,17 +28,17 @@ export default function TouristSuggest() {
           }}
         >
           <CarouselContent>
-            {tourist.map((place, index) => (
-              <CarouselItem key={index} className="basis-1/6">
-                <div>
+            {data.map((item: any) => (
+              <CarouselItem key={item.id} className="basis-1/6">
+                <Link href={item.url}>
                   <Image
-                    src={place}
-                    alt="Tourist Destination"
+                    src={`${item.image_url}/${item.image_location}`}
+                    alt="Image"
                     width={194}
                     height={295}
-                    className="rounded-xl cursor-pointer"
+                    className="rounded-xl cursor-pointer w-full h-[240px]"
                   />
-                </div>
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

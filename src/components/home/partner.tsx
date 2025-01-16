@@ -5,16 +5,12 @@ import { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
+import { cloneItemsCarousel } from "@/utils/Helper";
 
-const arrPartner: string[] = [];
-for (let i = 1; i <= 7; i++) {
-  arrPartner.push(`/partner/slide-1/${i}.svg`);
-}
-const arrPartner2: string[] = [];
-for (let i = 1; i <= 11; i++) {
-  arrPartner2.push(`/partner/slide-2/${i}.svg`);
-}
-export default function Partner() {
+export default function Partner({ data }: any) {
+  if (data.length > 0 && data.length < 6) {
+    data = cloneItemsCarousel(data, 12);
+  }
   const swiperRef = useRef<SwiperType | null>(null);
   const swiperRef2 = useRef<SwiperType | null>(null);
 
@@ -85,14 +81,14 @@ export default function Partner() {
               swiper.wrapperEl.style.transitionTimingFunction = "linear";
             }}
           >
-            {arrPartner.map((partNer, index) => (
-              <SwiperSlide key={index} className="basis-1/6">
+            {data.map((item: any) => (
+              <SwiperSlide key={item.id} className="basis-1/6">
                 <Image
-                  src={partNer}
-                  alt="Partner"
-                  width={0}
-                  height={0}
-                  style={{ width: "auto", height: "auto", margin: "0 auto" }}
+                  src={`${item.image_url}/${item.image_location}`}
+                  alt="Image"
+                  width={250}
+                  height={60}
+                  style={{ width: "auto", height: "42px", margin: "0 auto" }}
                 />
               </SwiperSlide>
             ))}
@@ -121,17 +117,17 @@ export default function Partner() {
                 swiper.wrapperEl.style.transitionTimingFunction = "linear";
               }}
             >
-              {arrPartner2.map((partNer, index) => (
-                <SwiperSlide key={index} className="basis-1/6">
+              {data.map((item: any) => (
+                <SwiperSlide key={item.id} className="basis-1/6">
                   <div>
                     <Image
-                      src={partNer}
-                      alt="Partner"
-                      width={0}
-                      height={0}
+                      src={`${item.image_url}/${item.image_location}`}
+                      alt="Image"
+                      width={250}
+                      height={60}
                       style={{
                         width: "auto",
-                        height: "40px",
+                        height: "42px",
                         margin: "0 auto",
                       }}
                     />

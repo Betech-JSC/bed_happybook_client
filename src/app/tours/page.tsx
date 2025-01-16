@@ -15,6 +15,8 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import { TourApi } from "@/api/Tour";
 import SearchTour from "./components/Search";
+import { BannerApi } from "@/api/Banner";
+import TouristSuggest from "@/components/home/tourist-suggest";
 
 export const metadata: Metadata = formatMetadata({
   title: "Đặt Tour Du Lịch Gia Đình, Bạn Bè | Tour Giá Rẻ 2024",
@@ -33,6 +35,8 @@ for (let i = 1; i <= 8; i++) {
 export default async function Tours() {
   const res = (await TourApi.getAll()) as any;
   const data = res?.payload?.data;
+  const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
+    ?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -245,41 +249,11 @@ export default async function Tours() {
               </div>
             )}
             {/* Suggest Tour */}
-            <div className="py-8 bg-[#FCFCFD] hidden lg:block">
-              <div className="flex justify-between">
-                <div>
-                  <h2 className="text-[32px] font-bold">
-                    Bạn muốn đi đâu chơi?
-                  </h2>
-                </div>
+            {touristSuggest?.length > 0 && (
+              <div className="mt-6">
+                <TouristSuggest data={touristSuggest}></TouristSuggest>
               </div>
-              <div className="mt-4 w-full">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {tourist.map((place, index) => (
-                      <CarouselItem key={index} className="basis-1/6">
-                        <div>
-                          <Image
-                            src={place}
-                            alt="Tourist Destination"
-                            width={194}
-                            height={295}
-                            className="rounded-xl cursor-pointer"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-                </Carousel>
-              </div>
-            </div>
+            )}
             {/* Tour du thuyền */}
             {data?.tourYacht?.length > 0 && (
               <div className="mt-12">

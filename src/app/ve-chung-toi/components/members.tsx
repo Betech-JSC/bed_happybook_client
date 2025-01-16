@@ -84,7 +84,7 @@ const ourTeams = [
   },
 ];
 
-export default function Members() {
+export default function Members({ data }: any) {
   return (
     <div className="pt-8 pb-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="flex justify-between">
@@ -115,23 +115,23 @@ export default function Members() {
             },
           }}
         >
-          {ourTeams.map((member, index) => (
-            <SwiperSlide key={index} className="rounded-2xl">
+          {data.map((member: any) => (
+            <SwiperSlide key={member.id} className="rounded-2xl">
               <div className={AboutUs.member__item}>
                 <Image
-                  src={`/our-team/member-${index + 1}.png`}
-                  alt="Member"
+                  src={`${member.image_url}/${member.image_location}`}
+                  alt="Image"
                   width={100}
                   height={100}
                   sizes="100vw"
                   className={AboutUs.member__img}
-                  style={{ width: "100%", height: "auto" }}
+                  style={{ width: "100%", height: 255 }}
                 />
                 <div className={AboutUs.member__info}>
                   <div className={`m-3 text-white`}>
                     <p className="font-semibold">{member.name}</p>
                     <p className="font-medium text-sm mt-[6px]">
-                      {member.position}
+                      {member.sub_title}
                     </p>
                   </div>
                 </div>
