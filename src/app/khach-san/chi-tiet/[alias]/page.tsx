@@ -13,7 +13,13 @@ import HotelDetailTabs from "../../components/HotalDetaiTabs";
 import SeoSchema from "@/components/schema";
 import { notFound } from "next/navigation";
 import { HotelApi } from "@/api/Hotel";
-import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
+import {
+  BlogTypes,
+  blogUrl,
+  pageUrl,
+  ProductTypes,
+  productUrl,
+} from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
@@ -26,7 +32,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl(data?.slug, BlogTypes.HOTEL, true),
+      canonical: productUrl(data?.slug, ProductTypes.HOTEL, true),
     },
     openGraph: {
       images: [
@@ -53,14 +59,15 @@ export default async function HotelDetail({
   }
   return (
     <SeoSchema
-      blog={detail}
+      product={detail}
+      type={ProductTypes.HOTEL}
       breadscrumbItems={[
         {
-          url: pageUrl(BlogTypes.HOTEL, true),
-          name: "Visa",
+          url: pageUrl(ProductTypes.HOTEL, true),
+          name: "Khách sạn",
         },
         {
-          url: blogUrl(BlogTypes.HOTEL, detail?.slug, true),
+          url: productUrl(ProductTypes.HOTEL, detail?.slug, true),
           name: detail?.title as string,
         },
       ]}

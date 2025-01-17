@@ -3,7 +3,13 @@ import { PostType } from "@/types/post";
 import { Metadata } from "next";
 import Script from "next/script";
 import { BreadscrumbItemSchemaType } from "./BreadscrumbListSchema";
-import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
+import {
+  BlogTypes,
+  blogUrl,
+  pageUrl,
+  ProductTypes,
+  productUrl,
+} from "@/utils/Urls";
 
 type BlogPostingSchemaType = {
   blog: PostType & { slug?: string };
@@ -17,14 +23,26 @@ type ArticleSchemaType = {
   breadscrumbItems: BreadscrumbItemSchemaType[];
 };
 
+type ProductSchemaType = {
+  product: any;
+  breadscrumbItems: BreadscrumbItemSchemaType[];
+  type: ProductTypes;
+};
+
 type ArticleStaticSchemaType = {
   metadata?: Metadata;
   breadscrumbItems: BreadscrumbItemSchemaType[];
+  type?: undefined;
 };
 
 type BlogPostingSchemaProps = {
   children: React.ReactNode;
-} & (ArticleStaticSchemaType | BlogPostingSchemaType | ArticleSchemaType);
+} & (
+  | ArticleStaticSchemaType
+  | BlogPostingSchemaType
+  | ArticleSchemaType
+  | ProductSchemaType
+);
 
 export default function SeoSchema({
   breadscrumbItems,
@@ -32,9 +50,12 @@ export default function SeoSchema({
   ...props
 }: BlogPostingSchemaProps) {
   const metadata = (props as ArticleStaticSchemaType)?.metadata;
+  const product = (props as ProductSchemaType)?.product;
   const blog = (props as BlogPostingSchemaType)?.blog;
   const article = (props as ArticleSchemaType)?.article;
-  const type = (props as ArticleSchemaType | BlogPostingSchemaType)?.type;
+  const type = (
+    props as ArticleSchemaType | BlogPostingSchemaType | ProductSchemaType
+  )?.type;
 
   const siteName = "Happy Book 🎉 Đại Lý Đặt Vé Máy Bay Giá Rẻ #1 Toàn Quốc";
 
@@ -155,11 +176,9 @@ export default function SeoSchema({
 
     ldJson["@graph"].push(...articleJson);
   } else if (blog) {
-    breacdscrumbJson["@id"] = `${blogUrl(
-      type,
-      blog?.slug || blog?.alias,
-      true
-    )}#breadcrumb`;
+    const url = blogUrl(type as BlogTypes, blog?.slug || blog?.alias, true);
+
+    breacdscrumbJson["@id"] = `${url}#breadcrumb`;
     const blogJson: Array<any> = [
       {
         "@type": "ImageObject",
@@ -173,8 +192,8 @@ export default function SeoSchema({
       breacdscrumbJson,
       {
         "@type": "WebPage",
-        "@id": `${blogUrl(type, blog?.slug || blog?.alias, true)}#webpage`,
-        url: blogUrl(type, blog?.slug || blog?.alias, true),
+        "@id": `${url}#webpage`,
+        url: url,
         name: blog?.meta_title,
         datePublished: blog?.created_at,
         dateModified: blog?.updated_at,
@@ -184,7 +203,7 @@ export default function SeoSchema({
         },
         inLanguage: "vi",
         breadcrumb: {
-          "@id": `${blogUrl(type, blog?.slug || blog?.alias, true)}#breadcrumb`,
+          "@id": `${url}#breadcrumb`,
         },
       },
       persionJson,
@@ -202,23 +221,87 @@ export default function SeoSchema({
         publisher: { "@id": `${siteUrl}#person` },
         description: blog?.meta_description,
         name: blog?.meta_title,
-        "@id": `${blogUrl(type, blog?.slug || blog?.alias, true)}#richSnippet`,
+        "@id": `${url}#richSnippet`,
         isPartOf: {
-          "@id": `${blogUrl(type, blog?.slug || blog?.alias, true)}#webpage`,
+          "@id": `${url}#webpage`,
         },
         image: {
-          "@id": blog?.image_url,
+          "@id": `${blog.image_url}${blog.image_location}`,
         },
         inLanguage: "vi",
         mainEntityOfPage: {
-          "@id": `${blogUrl(type, blog?.slug || blog?.alias, true)}#webpage`,
+          "@id": `${url}#webpage`,
         },
       },
     ];
 
     ldJson["@graph"].push(...blogJson);
-  }
+  } else if (product) {
+    const url = productUrl(
+      type as ProductTypes,
+      product?.slug || product?.alias,
+      true
+    );
 
+    breacdscrumbJson["@id"] = `${url}#breadcrumb`;
+    const productJson: Array<any> = [
+      {
+        "@type": "ImageObject",
+        "@id": product?.image_url,
+        url: product?.image_url,
+        width: "1200",
+        height: "800",
+        caption: product?.title,
+        inLanguage: "vi",
+      },
+      breacdscrumbJson,
+      {
+        "@type": "ItemPage",
+        "@id": `${url}#webpage`,
+        url: url,
+        name: product?.meta_title,
+        datePublished: product?.created_at,
+        dateModified: product?.updated_at,
+        isPartOf: { "@id": `${siteUrl}#website` },
+        primaryImageOfPage: {
+          "@id": product?.image_url,
+        },
+        inLanguage: "vi",
+        breadcrumb: {
+          "@id": `${url}#breadcrumb`,
+        },
+      },
+      persionJson,
+      {
+        "@type": "Product",
+        name: product?.meta_title,
+        description: product?.meta_description,
+        category: "Tour",
+        mainEntityOfPage: {
+          "@id": `${url}#webpage`,
+        },
+        image: product?.gallery?.map((v: any) => ({
+          "@type": "ImageObject",
+          url: `${v.image_url}${v.image}`,
+          // height: "891",
+          // width: "1200",
+        })),
+        offers: {
+          "@type": "Offer",
+          price: product.price,
+          priceCurrency: "VND",
+          priceValidUntil: product?.updated_at?.substr(0, 10),
+          availability: "https://schema.org/InStock",
+          itemCondition: "NewCondition",
+          url: url,
+          seller: persionJson,
+        },
+        "@id": `${url}#richSnippet`,
+      },
+    ];
+
+    ldJson["@graph"].push(...productJson);
+  }
   return (
     <>
       <Script
