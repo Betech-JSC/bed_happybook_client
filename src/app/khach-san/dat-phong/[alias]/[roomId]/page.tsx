@@ -87,7 +87,7 @@ export default async function VisaCheckOut({
                 </ul>
               )}
               <div></div>
-              <div className="mt-6 flex w-full">
+              {/* <div className="mt-6 flex w-full">
                 <div className="w-1/2">
                   <p className="font-bold">Nhận phòng</p>
                   <p className="mt-2">02/09/2024</p>
@@ -96,7 +96,7 @@ export default async function VisaCheckOut({
                   <p className="font-bold">Trả phòng</p>
                   <p className="mt-2">05/09/2024</p>
                 </div>
-              </div>
+              </div> */}
               {room.price > 0 && (
                 <div className="flex justify-between border-t border-solid border-gray-200 text-end pt-4 rounded-lg mt-5">
                   <span className="text-sm text-gray-500">Tổng cộng</span>

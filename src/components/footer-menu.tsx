@@ -1,186 +1,107 @@
+import { PageApi } from "@/api/Page";
 import styles from "@/styles/styles.module.scss";
+import Link from "next/link";
+import { format, isValid } from "date-fns";
+import { buildSearch } from "@/utils/Helper";
 
-export default function FooterMenu() {
+export default async function FooterMenu({ page }: { page: string }) {
+  const data = (await PageApi.footerMenu(page))?.payload as any;
+  const buildSearchFlight = (flightItem: any) => {
+    const pararmSearch = {
+      tripType: "oneWay",
+      cheapest: 0,
+      StartPoint: flightItem.flight.data_diem_di.ma_dia_diem,
+      EndPoint: flightItem.flight.data_diem_den.ma_dia_diem,
+      DepartDate: isValid(new Date(flightItem.flight.ngay_khoi_hanh))
+        ? format(flightItem.flight.ngay_khoi_hanh, "ddMMyyyy")
+        : format(new Date(), "ddMMyyyy"),
+      ReturnDate: "",
+      Adt: 1,
+      Chd: 0,
+      Inf: 0,
+      from: flightItem.flight.data_diem_di.ten_dia_diem,
+      to: flightItem.flight.data_diem_den.ten_dia_diem,
+    };
+    return `/ve-may-bay/tim-kiem-ve${buildSearch(pararmSearch)}`;
+  };
+
   return (
     <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-      <div>
-        <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-          Vé máy bay phổ biến
-        </h2>
-        <div className="grid grid-cols-5 gap-4 mt-3">
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Vietnam Airlines
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            VietJetAir
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Bamboo Airways
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Jetstar Pacific
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Vé máy bay giá rẻ
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Vé máy bay quốc tế
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Vé máy bay nội địa
-          </h3>
+      {data?.flight?.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+            Vé máy bay phổ biến
+          </h2>
+          <div className="grid grid-cols-5 gap-4 mt-3">
+            {data.flight.map((item: any) => (
+              <Link key={item.id} href={buildSearchFlight(item)}>
+                <h3
+                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                >
+                  {`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}
+                </h3>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-          Điểm đến được yêu thích
-        </h2>
-        <div className="grid grid-cols-5 gap-4 mt-3">
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Hà Nội
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Đà Nẵng
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            TP. Hồ Chí Minh
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Phú Quốc
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Nha Trang
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Đà Lạt
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Bangkok
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Singapore
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Tokyo
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Seoul
-          </h3>
+      )}
+
+      {data?.locations_favorite?.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+            Điểm đến được yêu thích
+          </h2>
+          <div className="grid grid-cols-5 gap-4 mt-3">
+            {data.locations_favorite.map((item: any) => (
+              <Link href={`/tours/tim-kiem?text=${item.name}`} key={item.id}>
+                <h3
+                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                >
+                  {item.name}
+                </h3>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-          Khách sạn nổi bật
-        </h2>
-        <div className="grid grid-cols-5 gap-4 mt-3">
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Khách sạn 5 sao
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Resort ven biển
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Khách sạn trung tâm
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Homestay đẹp
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Khách sạn tiện nghi
-          </h3>
+      )}
+
+      {data?.hotel?.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+            Khách sạn nổi bật
+          </h2>
+          <div className="grid grid-cols-5 gap-4 mt-3">
+            {data.hotel.map((hotel: any) => (
+              <Link href={`/khach-san/chi-tiet/${hotel.slug}`} key={hotel.id}>
+                <h3
+                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                >
+                  {hotel.name}
+                </h3>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-          Dịch vụ visa nổi bật
-        </h2>
-        <div className="grid grid-cols-5 gap-4 mt-3">
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa đi Mỹ
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa đi Canada
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa đi Úc
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa đi Hàn Quốc
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa đi Nhật Bản
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa du lịch châu Âu
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa định cư
-          </h3>
-          <h3
-            className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-          >
-            Visa công tác
-          </h3>
+      )}
+
+      {data?.visa?.length > 0 && (
+        <div className="mb-0">
+          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+            Dịch vụ visa nổi bật
+          </h2>
+          <div className="grid grid-cols-5 gap-4 mt-3">
+            {data.visa.map((visa: any) => (
+              <Link href={`/visa/chi-tiet/${visa.slug}`} key={visa.id}>
+                <h3
+                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                >
+                  {visa.name}
+                </h3>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -58,9 +58,6 @@ export default async function CategoryPosts({
   // const res = (await TourApi.getToursByType(typeTour)) as any;
   // const category = res?.payload?.data;
   const category: any = [];
-  if (!category) {
-    notFound();
-  }
   const optionsFilter = (await TourApi.getOptionsFilter())?.payload
     ?.data as any;
   return (

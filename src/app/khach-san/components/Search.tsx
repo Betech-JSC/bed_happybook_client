@@ -33,48 +33,36 @@ export default function Search() {
         ...prev,
         ["text"]: queryText,
       }));
-      const querySearch = buildSearch(formData);
       router.push(`/khach-san/tim-kiem?text=${queryText}`);
     }
   };
   const [formData, setFormData] = useState<{
     text?: string;
-    // checkInDate?: Date | undefined;
-    // checkOutDate?: Date | undefined;
-    adt: number;
-    chd: number;
-    inf: number;
-    room: number;
-  }>({
-    adt: 1,
-    chd: 0,
-    inf: 0,
-    room: 1,
-  });
-  const handleGuestChange = (key: string, value: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+  }>({});
+  // const handleGuestChange = (key: string, value: number) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [key]: value,
+  //   }));
+  // };
 
-  const handleRoomChange = (key: string, value: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+  // const handleRoomChange = (key: string, value: number) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [key]: value,
+  //   }));
+  // };
 
-  const handleDateChange = (dates: [Date | null, Date | null]) => {
-    const [start, end] = dates;
-    setStartDate(start || undefined);
-    setEndDate(end || undefined);
-  };
+  // const handleDateChange = (dates: [Date | null, Date | null]) => {
+  //   const [start, end] = dates;
+  //   setStartDate(start || undefined);
+  //   setEndDate(end || undefined);
+  // };
 
-  useEffect(() => {
-    setTotalGuests(formData.adt + formData.chd + formData.inf);
-    setTotalRooms(formData.room);
-  }, [formData]);
+  // useEffect(() => {
+  //   setTotalGuests(formData.adt + formData.chd + formData.inf);
+  //   setTotalRooms(formData.room);
+  // }, [formData]);
 
   return (
     <Fragment>
@@ -95,6 +83,7 @@ export default function Search() {
               <input
                 className="pl-3 flex-1 focus:outline-none text-black appearance-none"
                 name="text"
+                required
                 placeholder="Tìm kiếm..."
                 defaultValue={searchParams.get("text") ?? ""}
                 onChange={(e) => {

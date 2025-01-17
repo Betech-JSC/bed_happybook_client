@@ -4,11 +4,45 @@ import SearchFlight from "@/app/ve-may-bay/components/Search";
 import Image from "next/image";
 import { SearchFilghtProps } from "@/types/flight";
 import SearchHotel from "@/app/khach-san/components/Search";
+import { useRouter } from "next/navigation";
 
 export default function SearchMobile({ airportsData }: SearchFilghtProps) {
   const [activeTabMb, setActiveTabMb] = useState(0);
+  const router = useRouter();
+  const [querySeach, setQuerySeach] = useState<string>();
+
   return (
     <Fragment>
+      <h3 className="pt-8 text-xl lg:text-2xl font-bold text-center text-white">
+        Bắt đầu hành trình với HappyBook
+      </h3>
+      {/* Search Bar */}
+      <form
+        className="flex items-center px-3 my-4"
+        onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault();
+          router.push(`tours/tim-kiem?text=${querySeach}`);
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Tìm theo điểm đến, hoạt động"
+          onChange={(e) => {
+            setQuerySeach(e.target.value);
+          }}
+          className="p-2 w-full rounded-l-lg text-gray-700 h-12"
+        />
+        <button className="bg-blue-500 px-3 rounded-r-lg w-12 h-12">
+          <Image
+            src="/icon/search.svg"
+            alt="Search icon"
+            className="h-10"
+            width={20}
+            height={20}
+            style={{ width: 20, height: 20 }}
+          />
+        </button>
+      </form>
       <div className="relative">
         {/* Search Bar */}
         <div className="grid grid-cols-4 gap-2 my-4 px-3">
