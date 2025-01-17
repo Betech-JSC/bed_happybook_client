@@ -8,6 +8,7 @@ import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import { HotelApi } from "@/api/Hotel";
+import FooterMenu from "@/components/footer-menu";
 
 export const metadata: Metadata = formatMetadata({
   title: "Khách Sạn | Happy Book ????️ Đại Lý Đặt Vé Máy Bay Giá Rẻ #1",
@@ -199,90 +200,8 @@ export default async function Hotel() {
           <div className="my-8">
             <FAQ />
           </div>
-          <div className="mt-8 py-12">
-            <div>
-              <h2 className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-                Thành phố đang hot
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Các khách sạn ở Hồ Chí Minh
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Các khách sạn ở Hà Nội
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Các khách sạn ở Hồ Chí Minh
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Các khách sạn ở Hà Nội
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Các khách sạn ở Hồ Chí Minh
-                </h3>
-              </div>
-            </div>
-            <div className="mt-8">
-              <h2 className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-                Khách sạn phổ biến
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Hà Nội
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Đà Nẵng
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  TP. Hồ Chí Minh
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Phú Quốc
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Nha Trang
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Đà Lạt
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Bangkok
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Singapore
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Tokyo
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Seoul
-                </h3>
-              </div>
-            </div>
-            <div className="mt-8">
-              <h2 className="text-22 pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-                Khám phá thêm
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Khách sạn 5 sao
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Resort ven biển
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Khách sạn trung tâm
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Homestay đẹp
-                </h3>
-                <h3 className={`text-gray-700 font-medium text__default_hover`}>
-                  Khách sạn tiện nghi
-                </h3>
-              </div>
-            </div>
-          </div>
         </div>
+        <FooterMenu page="hotel" />
       </main>
     </SeoSchema>
   );

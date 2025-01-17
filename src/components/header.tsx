@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import clsx from "clsx";
@@ -9,6 +9,8 @@ import clsx from "clsx";
 export default function Header() {
   let headerClass = "";
   const pathname: string = usePathname();
+  const router = useRouter();
+  const [querySeach, setQuerySeach] = useState<string>();
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
@@ -106,11 +108,23 @@ export default function Header() {
           </div>
 
           {/* Search Bar */}
-          <div className="hidden xl:flex items-center xl:w-[25%]">
+          <form
+            className="hidden xl:flex items-center xl:w-[25%]"
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+              if (pathname !== "/tours/tim-kiem") {
+                e.preventDefault();
+                router.push(`tours/tim-kiem?text=${querySeach}`);
+              }
+            }}
+          >
             <input
               type="text"
               placeholder="Tìm theo điểm đến, hoạt động"
-              className={`p-2 w-full rounded-l-lg text-gray-700 h-12 ${styles.header__menu_search}`}
+              onChange={(e) => {
+                setQuerySeach(e.target.value);
+              }}
+              required
+              className={`p-2 w-full outline-none rounded-l-lg text-gray-700 h-12 ${styles.header__menu_search}`}
             />
             <button className="bg-blue-500 px-3 rounded-r-lg w-12 h-12">
               <Image
@@ -122,7 +136,7 @@ export default function Header() {
                 style={{ width: 20, height: 20 }}
               ></Image>
             </button>
-          </div>
+          </form>
 
           <div>
             <Link

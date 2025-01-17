@@ -12,7 +12,7 @@ export default function FlightItem({ data }: any) {
     cheapest: 0,
     StartPoint: data.flight.data_diem_di.ma_dia_diem,
     EndPoint: data.flight.data_diem_den.ma_dia_diem,
-    DepartDate: isValid(data.flight.ngay_khoi_hanh)
+    DepartDate: isValid(new Date(data.flight.ngay_khoi_hanh))
       ? format(data.flight.ngay_khoi_hanh, "ddMMyyyy")
       : format(new Date(), "ddMMyyyy"),
     ReturnDate: "",

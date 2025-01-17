@@ -84,27 +84,6 @@ export default async function Home() {
             }}
           ></div>
           <div className="relative">
-            <h3 className="pt-8 text-xl lg:text-2xl font-bold text-center text-white">
-              Bắt đầu hành trình với HappyBook
-            </h3>
-            {/* Search Bar */}
-            <div className="flex items-center px-3 my-4">
-              <input
-                type="text"
-                placeholder="Tìm theo điểm đến, hoạt động"
-                className="p-2 w-full rounded-l-lg text-gray-700 h-12"
-              />
-              <button className="bg-blue-500 px-3 rounded-r-lg w-12 h-12">
-                <Image
-                  src="/icon/search.svg"
-                  alt="Search icon"
-                  className="h-10"
-                  width={20}
-                  height={20}
-                  style={{ width: 20, height: 20 }}
-                />
-              </button>
-            </div>
             <SearchMobile airportsData={airportsData} />
           </div>
         </div>
@@ -189,8 +168,9 @@ export default async function Home() {
             <Partner data={partners}></Partner>
           </AosAnimate>
         )}
+
         <AosAnimate>
-          <FooterMenu></FooterMenu>
+          <FooterMenu page={"home"}></FooterMenu>
         </AosAnimate>
       </main>
     </Fragment>

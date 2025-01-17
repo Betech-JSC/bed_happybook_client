@@ -11,6 +11,7 @@ import { VisaApi } from "@/api/Visa";
 import SearchForm from "./components/SeachForm";
 import NewsByPage from "@/components/NewsByPage";
 import { newsApi } from "@/api/news";
+import FooterMenu from "@/components/footer-menu";
 
 export const metadata: Metadata = formatMetadata({
   title: "Dịch Vụ Làm Visa Trọn Gói Giá Rẻ Tại TPHCM | Tỷ Lệ Đậu 90%",
@@ -171,32 +172,7 @@ export default async function Visa() {
         <div className="mt-8">
           <VisaSteps />
         </div>
-        <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-          <div>
-            <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-              Dịch vụ visa nổi bật
-            </h2>
-            <div className="grid grid-cols-5 gap-4 mt-3">
-              {[
-                "Visa đi Mỹ",
-                "Visa đi Canada",
-                "Visa đi Úc",
-                "Visa đi Hàn Quốc",
-                "Visa đi Nhật Bản",
-                "Visa du lịch châu Âu",
-                "Visa định cư",
-                "Visa công tác",
-              ].map((item, index) => (
-                <h3
-                  key={index}
-                  className={`text-gray-700 font-medium text__default_hover`}
-                >
-                  {item}
-                </h3>
-              ))}
-            </div>
-          </div>
-        </div>
+        <FooterMenu page="visa" />
       </main>
     </SeoSchema>
   );
