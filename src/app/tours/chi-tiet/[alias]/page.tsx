@@ -24,7 +24,7 @@ import TourItem from "@/components/tour-item";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
-import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
+import { pageUrl, ProductTypes, productUrl } from "@/utils/Urls";
 import { formatMetadata, formatMoney } from "@/lib/formatters";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl(data?.slug, BlogTypes.TOURS, true),
+      canonical: pageUrl(data?.slug, ProductTypes.TOURS, true),
     },
     openGraph: {
       images: [
@@ -76,14 +76,15 @@ export default async function TourDetail({
   }
   return (
     <SeoSchema
-      blog={detail}
+      product={detail}
+      type={ProductTypes.TOURS}
       breadscrumbItems={[
         {
-          url: pageUrl(BlogTypes.TOURS, true),
-          name: "Visa",
+          url: pageUrl(ProductTypes.TOURS, true),
+          name: "Tours",
         },
         {
-          url: blogUrl(BlogTypes.TOURS, detail.slug, true),
+          url: productUrl(ProductTypes.TOURS, detail.slug, true),
           name: detail?.name as string,
         },
       ]}

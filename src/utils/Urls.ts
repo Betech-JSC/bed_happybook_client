@@ -10,6 +10,13 @@ export enum BlogTypes {
   COMPO = "compo",
 }
 
+export enum ProductTypes {
+  VISA = "visa",
+  TOURS = "tours",
+  HOTEL = "khach-san",
+  SETTLE = "dinh-cu",
+}
+
 export function pageUrl(
   slug: string,
   type: Omit<BlogTypes, BlogTypes.HOTEL> | null | boolean = null,
@@ -25,6 +32,14 @@ export function pageUrl(
 
 export function blogUrl(
   type: BlogTypes,
+  slug: string,
+  hasOrigin: boolean = false
+) {
+  return pageUrl(`chi-tiet/${slug}`, type, hasOrigin);
+}
+
+export function productUrl(
+  type: ProductTypes,
   slug: string,
   hasOrigin: boolean = false
 ) {
