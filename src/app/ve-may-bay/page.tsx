@@ -19,6 +19,9 @@ import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { cloneItemsCarousel } from "@/utils/Helper";
 import { format, parse, isValid } from "date-fns";
+import ContentByPage from "@/components/ContentByPage";
+import { PageApi } from "@/api/Page";
+import FooterMenu from "@/components/footer-menu";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -38,6 +41,9 @@ export default async function AirlineTicket() {
   if (popularFlights.length > 0 && popularFlights.length < 5) {
     popularFlights = cloneItemsCarousel(popularFlights, 8);
   }
+
+  const contentPage = (await PageApi.getContent("ve-may-bay"))?.payload
+    ?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -219,150 +225,17 @@ export default async function AirlineTicket() {
             </div>
           )}
           {/* Blog */}
-          <div className="mt-8 rounded-2xl bg-gray-50 p-8">
-            <h3 className="text-2xl font-bold">
-              Tour Trong Nước - Khám Phá Vẻ Đẹp Việt Nam
-            </h3>
-            <p className="mt-6 line-clamp-3	">
-              Việt Nam, với thiên nhiên hùng vĩ và văn hóa đa dạng, là điểm đến
-              lý tưởng cho những chuyến tour trong nước. Từ núi rừng Tây Bắc
-              hùng vĩ, đồng bằng sông Cửu Long mênh mông, đến bãi biển miền
-              Trung tuyệt đẹp, mỗi vùng đất đều mang đến trải nghiệm đáng nhớ.
-              <span className="block mt-4">
-                Khi lựa chọn tour du lịch trong nước cùng HappyBook, bạn sẽ được
-                khám phá các địa điểm nổi tiếng như Hà Nội cổ kính, Đà Nẵng năng
-                động, Nha Trang biển xanh, hay Phú Quốc thiên đường nhiệt đới.
-                Ngoài ra, các dịch vụ hỗ trợ chuyên nghiệp của chúng tôi sẽ đảm
-                bảo hành trình của bạn luôn trọn vẹn và thú vị.
-              </span>
-            </p>
-            <button className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center">
-              <span className="font-medium group-hover:text-primary duration-300">
-                Xem thêm
-              </span>
-              <svg
-                className="group-hover:stroke-primary stroke-blue-700 duration-300"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M5 7.5L10 12.5L15 7.5"
-                  strokeWidth="1.66667"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
+          {contentPage?.content && (
+            <div className="mt-8 rounded-2xl bg-gray-50 p-8">
+              <ContentByPage data={contentPage} />
+            </div>
+          )}
           {/* Faq */}
           <div className="my-8">
             <FAQ />
           </div>
-          <div className="mt-8 py-12">
-            <div>
-              <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-                Vé máy bay phổ biến
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Vietnam Airlines
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  VietJetAir
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Bamboo Airways
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Jetstar Pacific
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Vé máy bay giá rẻ
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Vé máy bay quốc tế
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Vé máy bay nội địa
-                </p>
-              </div>
-            </div>
-            <div className="mt-8">
-              <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-                Điểm đến được yêu thích
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-3">
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Hà Nội
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Đà Nẵng
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  TP. Hồ Chí Minh
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Phú Quốc
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Nha Trang
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Đà Lạt
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Bangkok
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Singapore
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Tokyo
-                </p>
-                <p
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                >
-                  Seoul
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
+        <FooterMenu page="flight" />
       </main>
     </SeoSchema>
   );

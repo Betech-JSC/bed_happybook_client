@@ -7,7 +7,7 @@ import LoadingButton from "@/components/LoadingButton";
 export default function CustomerRating() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const criteria = [
-    { id: 1, name: "Đánh giá chung" },
+    // { id: 1, name: "Đánh giá chung" },
     { id: 2, name: "Hướng dẫn viên" },
     { id: 3, name: "Lộ trình" },
     { id: 4, name: "Phương tiện đưa đón" },
@@ -33,6 +33,11 @@ export default function CustomerRating() {
     const newHover = [...hover];
     newHover[index] = value;
     setHover(newHover);
+  };
+
+  const calculateAverageRating = () => {
+    const totalRating = ratings.reduce((sum, rating) => sum + rating, 0);
+    return Math.round(totalRating / criteria.length);
   };
 
   return (
@@ -155,46 +160,6 @@ export default function CustomerRating() {
               hơi nóng. Nhưng chúng tôi vẫn thích chuyến đi của mình với Danny.
             </p>
           </div>
-          {/* <div className="mt-3">
-            <Swiper
-              spaceBetween={10}
-              slidesPerView={2}
-              breakpoints={{
-                1024: {
-                  slidesPerView: 6,
-                  spaceBetween: 10,
-                  loop: true,
-                },
-                768: {
-                  slidesPerView: 5,
-                  spaceBetween: 10,
-                  loop: true,
-                },
-                640: {
-                  slidesPerView: 3,
-                  spaceBetween: 20,
-                  loop: true,
-                },
-              }}
-              className="main-swiper rounded-lg"
-            >
-              {Array.from({ length: 6 }, (item, index) => (
-                <SwiperSlide
-                  key={index}
-                  className="overflow-hidden rounded-lg "
-                >
-                  <Image
-                    className="hover:scale-110 ease-in duration-300 w-full h-full object-cover"
-                    src={`/tour/detail/review/${index + 1}.png`}
-                    alt="Image"
-                    width={200}
-                    height={200}
-                    quality={80}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div> */}
         </div>
       ))}
       {/* Popup */}
@@ -225,13 +190,10 @@ export default function CustomerRating() {
           </p>
 
           <RatingCriteria
-            index={0}
-            criterion={criteria[0].name}
-            rating={ratings[0]}
-            hover={hover[0]}
+            index={20}
+            criterion={"Đánh giá chung"}
+            rating={calculateAverageRating()}
             labelsRating={labelsRating}
-            onRate={handleRating}
-            onHover={handleHover}
           />
           <div className="mt-4 rounded-xl">
             <form className="mt-3 rounded-xl ">
@@ -308,13 +270,13 @@ export default function CustomerRating() {
           </div>
           <div className="mt-4">
             <p className="mb-4">Về các tiêu chí sau:</p>
-            {criteria.slice(1).map((criterion, index) => (
+            {criteria.map((criterion, index) => (
               <RatingCriteria
                 key={criterion.id}
-                index={index + 2}
+                index={index}
                 criterion={criterion.name}
                 labelsRating={labelsRating}
-                rating={ratings[index + 2]}
+                rating={ratings[index]}
                 hover={hover[index + 2]}
                 onRate={handleRating}
                 onHover={handleHover}

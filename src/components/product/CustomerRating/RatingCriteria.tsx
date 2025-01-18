@@ -9,14 +9,16 @@ export default function RatingCriteria({
   hover,
   onRate,
   onHover,
+  disabled = false,
 }: {
   index: number;
   criterion: string;
   rating: number;
-  hover: number;
+  hover?: number;
   labelsRating: string[];
-  onRate: (index: number, value: number) => void;
-  onHover: (index: number, value: number) => void;
+  disabled?: boolean;
+  onRate?: (index: number, value: number) => void;
+  onHover?: (index: number, value: number) => void;
 }) {
   return (
     <div className="font-bold mb-4 flex flex-col md:flex-row space-y-3 md:space-y-0  md:space-x-5 items-center">
@@ -30,13 +32,15 @@ export default function RatingCriteria({
 
             return (
               <label key={starIndex} className="cursor-pointer">
-                <input
-                  type="radio"
-                  name={`rating-${index}`}
-                  value={starValue}
-                  className="hidden"
-                  onClick={() => onRate(index, starValue)}
-                />
+                {!disabled && onRate && (
+                  <input
+                    type="radio"
+                    name={`rating-${index}`}
+                    value={starValue}
+                    className="hidden"
+                    onClick={() => onRate(index, starValue)}
+                  />
+                )}
 
                 <Image
                   key={index}

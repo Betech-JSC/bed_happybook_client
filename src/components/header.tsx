@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import clsx from "clsx";
+import { GeneralInforPaths } from "@/constants/paths";
 
 export default function Header() {
   let headerClass = "";
@@ -350,29 +351,21 @@ export default function Header() {
                 >
                   Tư vấn visa
                 </Link>
-                <Link
-                  href="/huong-dan-thanh-toan"
-                  className={styles.text_hover_default}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  Hướng dẫn thanh toán
-                </Link>
-                <a href="#" className={styles.text_hover_default}>
-                  Hướng dẫn đặt vé
-                </a>
-                <a href="#" className={styles.text_hover_default}>
-                  Thông tin chuyển khoản
-                </a>
-                <a href="#" className={styles.text_hover_default}>
-                  Điều khoản sử dụng
-                </a>
-                <Link
-                  href="/chinh-sach-bao-mat"
-                  className={styles.text_hover_default}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  Chính sách bảo mật
-                </Link>
+                {GeneralInforPaths.map(
+                  (
+                    item: { title: string; slug: string; url: string },
+                    index: number
+                  ) => (
+                    <Link
+                      key={index}
+                      href={item.url}
+                      className={styles.text_hover_default}
+                      onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
+                      {item.title}
+                    </Link>
+                  )
+                )}
               </nav>
             </div>
           </nav>
