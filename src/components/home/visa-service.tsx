@@ -111,7 +111,7 @@ export default function VisaService({ data }: any) {
             <div>
               {data.map((category: any, index: number) =>
                 category.products.length > 0 ? (
-                  <>
+                  <div key={index}>
                     {activeTab === index && (
                       <Carousel
                         opts={{
@@ -120,9 +120,9 @@ export default function VisaService({ data }: any) {
                         }}
                       >
                         <CarouselContent>
-                          {category.products.map((visa: any, index: number) => (
+                          {category.products.map((visa: any) => (
                             <CarouselItem
-                              key={index}
+                              key={visa.id}
                               className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                             >
                               <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
@@ -155,7 +155,7 @@ export default function VisaService({ data }: any) {
                         <CarouselNext className="hidden lg:inline-flex" />
                       </Carousel>
                     )}
-                  </>
+                  </div>
                 ) : (
                   activeTab === index && (
                     <div className="min-h-[100px] content-center text-center">

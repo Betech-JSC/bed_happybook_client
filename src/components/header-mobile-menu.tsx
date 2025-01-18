@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, Fragment } from "react";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GeneralInforPaths } from "@/constants/paths";
 export default function HeaderMobileMenu() {
   const pathname = usePathname();
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
@@ -94,7 +95,7 @@ export default function HeaderMobileMenu() {
               Khách sạn
             </Link>
             <Link
-              href="/compo"
+              href="/combo"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
               Combo
@@ -121,24 +122,22 @@ export default function HeaderMobileMenu() {
             <p>
               <strong>Khác</strong>
             </p>
-            <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link href="/tu-van-nhan-visa">Tư vấn visa</Link>
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/huong-dan-thanh-toan">Hướng dẫn thanh toán</Link>
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Hướng dẫn đặt vé
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Thông tin chuyển khoản
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Điều khoản sử dụng
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/chinh-sach-bao-mat">Chính sách bảo mật</Link>
-            </p>
+            <div className="mt-4 hover:text-[#F27145] cursor-pointer">
+              <Link href="/tu-van-nhan-visa">Tư vấn Visa</Link>
+            </div>
+            {GeneralInforPaths.map(
+              (
+                item: { title: string; slug: string; url: string },
+                index: number
+              ) => (
+                <div
+                  key={index}
+                  className="mt-4 hover:text-[#F27145] cursor-pointer"
+                >
+                  <Link href={item.url}>{item.title}</Link>
+                </div>
+              )
+            )}
           </div>
         </div>
       </div>

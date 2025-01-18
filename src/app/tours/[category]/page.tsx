@@ -16,6 +16,8 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import ListTour from "../components/ListTour";
 import { Suspense } from "react";
+import { PageApi } from "@/api/Page";
+import ContentByPage from "@/components/ContentByPage";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.getCategory("tour")) as any;
@@ -55,8 +57,7 @@ export default async function CategoryPosts({
       typeTour = undefined;
       titlePage = "Tìm kiếm";
   }
-  // const res = (await TourApi.getToursByType(typeTour)) as any;
-  // const category = res?.payload?.data;
+  const contentPage = (await PageApi.getContent("tours"))?.payload?.data as any;
   const category: any = [];
   const optionsFilter = (await TourApi.getOptionsFilter())?.payload
     ?.data as any;
@@ -117,47 +118,11 @@ export default async function CategoryPosts({
       </div>
       <div className="px-3 lg:px-[80px] max__screen">
         {/* Blog */}
-        <div className="mt-8 rounded-2xl bg-gray-50 p-8">
-          <h3 className="text-2xl font-bold">
-            Tour Trong Nước - Khám Phá Vẻ Đẹp Việt Nam
-          </h3>
-          <p className="mt-6 line-clamp-3	">
-            Việt Nam, với thiên nhiên hùng vĩ và văn hóa đa dạng, là điểm đến lý
-            tưởng cho những chuyến tour trong nước. Từ núi rừng Tây Bắc hùng vĩ,
-            đồng bằng sông Cửu Long mênh mông, đến bãi biển miền Trung tuyệt
-            đẹp, mỗi vùng đất đều mang đến trải nghiệm đáng nhớ.
-            <span className="block mt-4">
-              Khi lựa chọn tour du lịch trong nước cùng HappyBook, bạn sẽ được
-              khám phá các địa điểm nổi tiếng như Hà Nội cổ kính, Đà Nẵng năng
-              động, Nha Trang biển xanh, hay Phú Quốc thiên đường nhiệt đới.
-              Ngoài ra, các dịch vụ hỗ trợ chuyên nghiệp của chúng tôi sẽ đảm
-              bảo hành trình của bạn luôn trọn vẹn và thú vị.
-            </span>
-          </p>
-          <Link
-            href="#"
-            className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center"
-          >
-            <span className="font-medium group-hover:text-primary duration-300">
-              Xem thêm
-            </span>
-            <svg
-              className="group-hover:stroke-primary stroke-blue-700 duration-300"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M5 7.5L10 12.5L15 7.5"
-                strokeWidth="1.66667"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
-        </div>
+        {contentPage && (
+          <div className="mt-8 rounded-2xl bg-gray-50 p-8">
+            <ContentByPage data={contentPage} />
+          </div>
+        )}
         {/* Faq */}
         <div className="my-8">
           <FAQ />

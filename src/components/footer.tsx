@@ -1,6 +1,7 @@
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
+import { GeneralInforPaths } from "@/constants/paths";
 
 export default function Footer() {
   return (
@@ -124,12 +125,15 @@ export default function Footer() {
               >
                 Tour du thuyền
               </Link>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
-                Vé máy bay nội địa
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
+              <Link
+                href="/ve-may-bay"
+                className={`block mt-3 ${styles.text_hover_default}`}
+              >
+                Vé máy bay
+              </Link>
+              {/* <p className={`mt-3 ${styles.text_hover_default}`}>
                 Vé máy bay quốc tế
-              </p>
+              </p> */}
               <Link
                 href="/visa"
                 className={`block mt-3 ${styles.text_hover_default}`}
@@ -144,7 +148,7 @@ export default function Footer() {
               </Link>
               <p className={`mt-3 ${styles.text_hover_default}`}>Khách sạn</p>
               <Link
-                href="/compo"
+                href="/combo"
                 className={`block mt-3 ${styles.text_hover_default}`}
               >
                 Combo
@@ -157,18 +161,20 @@ export default function Footer() {
               <p className={`mt-4 ${styles.text_hover_default} `}>
                 <Link href="/tu-van-nhan-visa">Tư vấn visa</Link>
               </p>
-              <p className={`mt-3 ${styles.text_hover_default} `}>
-                <Link href="/huong-dan-thanh-toan">Hướng dẫn thanh toán</Link>
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default} `}>
-                Hướng dẫn đặt vé
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default} `}>
-                Thông tin chuyển khoản
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default} `}>
-                Điều khoản sử dụng
-              </p>
+              {GeneralInforPaths.map(
+                (
+                  item: { title: string; slug: string; url: string },
+                  index: number
+                ) => (
+                  <div
+                    key={index}
+                    className={`mt-3 ${styles.text_hover_default} `}
+                  >
+                    <Link href={item.url}>{item.title}</Link>
+                  </div>
+                )
+              )}
+
               <p className="mt-8">
                 <strong>Hình thức thanh toán</strong>
               </p>
