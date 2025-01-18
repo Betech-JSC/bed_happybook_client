@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import PostStyle from "@/styles/posts.module.scss";
-import DynamicTag from "@/components/DynamicTag";
+import DynamicTag from "@/components/base/DynamicTag";
 
 export default function PostsItem({
   title = "",

@@ -1,7 +1,7 @@
 "use client";
 import { FlightApi } from "@/api/Flight";
 import { differenceInSeconds, format } from "date-fns";
-import LoadingButton from "@/components/LoadingButton";
+import LoadingButton from "@/components/base/LoadingButton";
 import {
   formatNumberToHoursAndMinutesFlight,
   formatTime,
@@ -22,7 +22,7 @@ import "@/styles/flightBooking.scss";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import FlightDetailPopup from "./FlightDetailPopup";
-import DisplayImage from "@/components/DisplayImage";
+import DisplayImage from "@/components/base/DisplayImage";
 
 export default function FlightBookForm({ airportsData }: any) {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);

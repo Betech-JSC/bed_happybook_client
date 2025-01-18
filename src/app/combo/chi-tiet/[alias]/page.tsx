@@ -19,7 +19,7 @@ import { Fragment } from "react";
 import ImageGallery from "../../components/ImageGallery";
 import Tabs from "../../components/Tabs";
 import Hotel from "../../components/Hotel";
-import CompoItem from "@/components/CompoItem";
+import CompoItem from "@/components/product/components/CompoItem";
 import { ComboApi } from "@/api/Combo";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";

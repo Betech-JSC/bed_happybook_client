@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import FAQ from "@/components/FAQ";
 import { Suspense } from "react";
 import Search from "./components/Search";
 import HotelTabs from "./components/HotelTabs";
@@ -8,9 +7,10 @@ import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import { HotelApi } from "@/api/Hotel";
-import FooterMenu from "@/components/footer-menu";
-import ContentByPage from "@/components/ContentByPage";
+import FooterMenu from "@/components/content-page/footer-menu";
+import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
+import FAQ from "@/components/content-page/FAQ";
 
 export const metadata: Metadata = formatMetadata({
   title: "Khách Sạn | Happy Book ????️ Đại Lý Đặt Vé Máy Bay Giá Rẻ #1",

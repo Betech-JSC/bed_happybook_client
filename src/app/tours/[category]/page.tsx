@@ -8,7 +8,6 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import FAQ from "@/components/FAQ";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
@@ -17,7 +16,8 @@ import { formatMetadata } from "@/lib/formatters";
 import ListTour from "../components/ListTour";
 import { Suspense } from "react";
 import { PageApi } from "@/api/Page";
-import ContentByPage from "@/components/ContentByPage";
+import ContentByPage from "@/components/content-page/ContentByPage";
+import FAQ from "@/components/content-page/FAQ";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.getCategory("tour")) as any;

@@ -1,4 +1,4 @@
-import TourItem from "@/components/tour-item";
+import TourItem from "@/components/product/components/tour-item";
 import Image from "next/image";
 import {
   Carousel,

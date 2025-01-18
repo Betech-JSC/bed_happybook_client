@@ -9,9 +9,9 @@ import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { VisaApi } from "@/api/Visa";
 import SearchForm from "./components/SeachForm";
-import NewsByPage from "@/components/NewsByPage";
+import NewsByPage from "@/components/content-page/NewsByPage";
 import { newsApi } from "@/api/news";
-import FooterMenu from "@/components/footer-menu";
+import FooterMenu from "@/components/content-page/footer-menu";
 
 export const metadata: Metadata = formatMetadata({
   title: "Dịch Vụ Làm Visa Trọn Gói Giá Rẻ Tại TPHCM | Tỷ Lệ Đậu 90%",

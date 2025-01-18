@@ -10,7 +10,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Pagination from "@/components/pagination";
+import Pagination from "@/components/base/pagination";
 import { fetchCategoryDetails } from "@/api/news";
 import { notFound } from "next/navigation";
 import { CategoryPostsType, PostType, SearchParamsProps } from "@/types/post";

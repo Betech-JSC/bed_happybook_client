@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
-import FormCheckOut from "../../components/FormCheckOut";
 import { VisaApi } from "@/api/Visa";
+import FormCheckOut from "@/app/visa/components/FormCheckOut";
 
 export default async function VisaCheckOut({
   params,

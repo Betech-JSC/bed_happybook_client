@@ -8,13 +8,13 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import FAQ from "@/components/FAQ";
 import SeoSchema from "@/components/schema";
 import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import ListVisa from "../components/ListVisa";
+import FAQ from "@/components/content-page/FAQ";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await VisaApi.getCategory(params.alias)) as any;

@@ -1,4 +1,4 @@
-import Search from "@/components/search";
+import Search from "@/components/home/search";
 import http from "@/lib/http";
 
 const path = "/products/visa";

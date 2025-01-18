@@ -7,7 +7,7 @@ import {
   formatTime,
 } from "@/lib/formatters";
 import { FlightDetailPopupProps } from "@/types/flight";
-import DisplayImage from "@/components/DisplayImage";
+import DisplayImage from "@/components/base/DisplayImage";
 
 export default function FlightDetailPopup({
   isOpen,

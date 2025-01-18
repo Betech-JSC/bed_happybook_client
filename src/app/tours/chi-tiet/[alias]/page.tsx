@@ -15,17 +15,17 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
 import ImageGallery from "../../components/ImageGallery";
 import Tabs from "../../components/Tabs";
-import QuestionAndAnswer from "@/components/QuestionAndAnswer";
-import TourItem from "@/components/tour-item";
+import QuestionAndAnswer from "@/components/product/QuestionAndAnswer";
+import TourItem from "@/components/product/components/tour-item";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { pageUrl, ProductTypes, productUrl } from "@/utils/Urls";
 import { formatMetadata, formatMoney } from "@/lib/formatters";
+import FAQ from "@/components/content-page/FAQ";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.detail(params.alias)) as any;

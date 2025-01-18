@@ -12,7 +12,7 @@ import {
   formatTime,
 } from "@/lib/formatters";
 import { FlightDetailDomesticProps } from "@/types/flight";
-import DisplayImage from "@/components/DisplayImage";
+import DisplayImage from "@/components/base/DisplayImage";
 
 const FlightDomesticDetail = ({
   FareData,
