@@ -7,7 +7,7 @@ import {
 } from "@/schemaValidations/authLogin.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
-import LoadingButton from "@/components/LoadingButton";
+import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
 import { useRouter } from "next/navigation";
 import Link from "next/link";

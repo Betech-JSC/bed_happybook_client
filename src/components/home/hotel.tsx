@@ -12,7 +12,7 @@ import styles from "@/styles/styles.module.scss";
 import { formatCurrency, formatMoney } from "@/lib/formatters";
 import { calculatorDiscountPercent } from "@/utils/Helper";
 import Link from "next/link";
-import HotelItem from "../HotelItem";
+import HotelItem from "../product/components/HotelItem";
 
 export default function Hotel({ data }: any) {
   const [activeTab, setActiveTab] = useState<number>(0);

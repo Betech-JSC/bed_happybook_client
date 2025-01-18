@@ -8,8 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Link from "next/link";
-import TourItem from "@/components/tour-item";
-import FAQ from "@/components/FAQ";
+import TourItem from "@/components/product/components/tour-item";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
@@ -17,8 +16,9 @@ import { TourApi } from "@/api/Tour";
 import SearchTour from "./components/Search";
 import { BannerApi } from "@/api/Banner";
 import TouristSuggest from "@/components/home/tourist-suggest";
-import ContentByPage from "@/components/ContentByPage";
+import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
+import FAQ from "@/components/content-page/FAQ";
 
 export const metadata: Metadata = formatMetadata({
   title: "Đặt Tour Du Lịch Gia Đình, Bạn Bè | Tour Giá Rẻ 2024",

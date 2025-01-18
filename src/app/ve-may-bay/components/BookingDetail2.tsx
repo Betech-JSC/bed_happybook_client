@@ -8,7 +8,7 @@ import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
 import { notFound, useRouter } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
-import LoadingButton from "@/components/LoadingButton";
+import LoadingButton from "@/components/base/LoadingButton";
 import { FlightApi } from "@/api/Flight";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +17,7 @@ import {
   CheckOutBodyType,
 } from "@/schemaValidations/checkOut.schema";
 import CountDownCheckOut from "./CountDownCheckOut";
-import DisplayImage from "@/components/DisplayImage";
+import DisplayImage from "@/components/base/DisplayImage";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const router = useRouter();

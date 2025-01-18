@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Link from "next/link";
-import TourItem from "@/components/tour-item";
+import TourItem from "@/components/product/components/tour-item";
 
 export default function TourQuocTe({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);

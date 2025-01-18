@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import HotelItem from "@/components/HotelItem";
+import HotelItem from "@/components/product/components/HotelItem";
 import { useState } from "react";
 
 export default function HotelTabs({ data }: any) {

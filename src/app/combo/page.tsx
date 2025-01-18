@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
-import FAQ from "@/components/FAQ";
 import {
   Carousel,
   CarouselContent,
@@ -9,13 +8,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import CompoItem from "@/components/CompoItem";
+import CompoItem from "@/components/product/components/CompoItem";
 import Search from "./components/Search";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import { ComboApi } from "@/api/Combo";
 import { ProductLocation } from "@/api/ProductLocation";
+import FAQ from "@/components/content-page/FAQ";
 
 export const metadata: Metadata = formatMetadata({
   title:

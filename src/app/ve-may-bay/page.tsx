@@ -6,10 +6,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import FlightItem from "@/components/flight-item";
-import styles from "@/styles/styles.module.scss";
+import FlightItem from "@/components/product/components/flight-item";
 import Image from "next/image";
-import FAQ from "@/components/FAQ";
 import Link from "next/link";
 import Search from "./components/Search";
 import { Suspense } from "react";
@@ -18,10 +16,11 @@ import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { cloneItemsCarousel } from "@/utils/Helper";
-import { format, parse, isValid } from "date-fns";
-import ContentByPage from "@/components/ContentByPage";
+import { format, isValid } from "date-fns";
+import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
-import FooterMenu from "@/components/footer-menu";
+import FooterMenu from "@/components/content-page/footer-menu";
+import FAQ from "@/components/content-page/FAQ";
 
 export const metadata: Metadata = formatMetadata({
   title:

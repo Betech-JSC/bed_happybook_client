@@ -8,10 +8,10 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import FAQ from "@/components/FAQ";
 import { Fragment } from "react";
 import Tabs from "../components/Tabs";
 import FormContact from "../../components/FormContact";
+import FAQ from "@/components/content-page/FAQ";
 
 export const metadata: Metadata = {
   title: "Định Cư Mỹ Diện Trí Thức EB2 Advanced Degree/EB3 Professionals",

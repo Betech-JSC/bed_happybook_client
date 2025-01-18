@@ -1,5 +1,5 @@
 import { Fragment, Suspense } from "react";
-import Banner from "@/components/banner";
+import Banner from "@/components/home/banner";
 import TourNoiDia from "@/components/home/tour-noi-dia";
 import TourHot from "@/components/home/tour-hot";
 import TourQuocTe from "@/components/home/tour-quoc-te";
@@ -11,12 +11,12 @@ import Partner from "@/components/home/partner";
 import OurTeam from "@/components/home/our-team";
 import TouristSuggest from "@/components/home/tourist-suggest";
 import Flight from "@/components/home/flight";
-import AosAnimate from "@/components/aos-animate";
-import FooterMenu from "@/components/footer-menu";
-import Search from "@/components/search";
+import AosAnimate from "@/components/layout/aos-animate";
+import FooterMenu from "@/components/content-page/footer-menu";
+import Search from "@/components/home/search";
 import type { Metadata } from "next";
 import Image from "next/image";
-import SearchMobile from "@/components/search-mobile";
+import SearchMobile from "@/components/home/search-mobile";
 import { FlightApi } from "@/api/Flight";
 import { HomeApi } from "@/api/Home";
 import { siteUrl } from "@/constants";
@@ -24,7 +24,7 @@ import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 import { formatMetadata } from "@/lib/formatters";
 import { BannerApi } from "@/api/Banner";
 import { cloneItemsCarousel } from "@/utils/Helper";
-import NewsByPage from "@/components/NewsByPage";
+import NewsByPage from "@/components/content-page/NewsByPage";
 import { newsApi } from "@/api/news";
 
 export const metadata: Metadata = formatMetadata({

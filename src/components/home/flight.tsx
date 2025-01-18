@@ -7,7 +7,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
-import FlightItem from "@/components/flight-item";
+import FlightItem from "@/components/product/components/flight-item";
 
 export default function Flight({ data }: any) {
   if (!data) return;

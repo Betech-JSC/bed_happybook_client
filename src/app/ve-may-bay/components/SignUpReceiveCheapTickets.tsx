@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
-import LoadingButton from "@/components/LoadingButton";
+import LoadingButton from "@/components/base/LoadingButton";
 import Image from "next/image";
 import {
   SignUpReceiveCheapTicketsBody,

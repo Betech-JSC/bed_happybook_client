@@ -8,11 +8,11 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import FAQ from "@/components/FAQ";
 import { Fragment, Suspense } from "react";
 import Search from "../components/Search";
 import { HotelApi } from "@/api/Hotel";
 import ListHotel from "../components/ListHotel";
+import FAQ from "@/components/content-page/FAQ";
 
 export const metadata: Metadata = {
   title: "Khách sạn",

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import FAQSchema from "./schema/FAQSchema";
 import { FaqApi } from "@/api/Faq";
+import FAQSchema from "../schema/FAQSchema";
 
 export default function FAQ() {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);

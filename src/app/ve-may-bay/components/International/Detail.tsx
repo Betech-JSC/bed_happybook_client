@@ -7,7 +7,7 @@ import {
 } from "@/lib/formatters";
 import _ from "lodash";
 import { FlightDetailInternationalProps } from "@/types/flight";
-import DisplayImage from "@/components/DisplayImage";
+import DisplayImage from "@/components/base/DisplayImage";
 
 const FlightInternationalDetail = ({
   FareData,

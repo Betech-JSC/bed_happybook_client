@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
-import HeaderMobile from "@/components/header-mobile";
-import BackToTopButton from "@/components/back-top-btn";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
+import HeaderMobile from "@/components/layout/header-mobile";
+import BackToTopButton from "@/components/layout/back-top-btn";
 import { Toaster } from "react-hot-toast";
 import { toastOptions } from "@/lib/toastConfig";
 

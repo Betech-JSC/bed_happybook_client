@@ -146,7 +146,12 @@ export default function Footer() {
               >
                 Định cư
               </Link>
-              <p className={`mt-3 ${styles.text_hover_default}`}>Khách sạn</p>
+              <Link
+                href="/khach-san"
+                className={`block mt-3 ${styles.text_hover_default}`}
+              >
+                Khách sạn
+              </Link>
               <Link
                 href="/combo"
                 className={`block mt-3 ${styles.text_hover_default}`}

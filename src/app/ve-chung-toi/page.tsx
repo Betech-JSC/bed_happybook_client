@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Members from "./components/members";
 import Service from "./components/service";
-import AosAnimate from "@/components/aos-animate";
 import type { Metadata } from "next";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";

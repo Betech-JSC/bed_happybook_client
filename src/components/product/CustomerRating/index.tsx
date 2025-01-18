@@ -2,12 +2,19 @@
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import RatingCriteria from "./RatingCriteria";
-import LoadingButton from "@/components/LoadingButton";
+import LoadingButton from "@/components/base/LoadingButton";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-hot-toast";
+import {
+  CustomerRatingBody,
+  CustomerRatingType,
+} from "@/schemaValidations/customerRating.schema";
 
 export default function CustomerRating() {
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const criteria = [
-    // { id: 1, name: "Đánh giá chung" },
     { id: 2, name: "Hướng dẫn viên" },
     { id: 3, name: "Lộ trình" },
     { id: 4, name: "Phương tiện đưa đón" },
@@ -40,6 +47,48 @@ export default function CustomerRating() {
     return Math.round(totalRating / criteria.length);
   };
 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CustomerRatingType>({
+    resolver: zodResolver(CustomerRatingBody),
+  });
+
+  const onSubmit = async (data: CustomerRatingType) => {
+    try {
+      setLoading(true);
+      // const response = await contactApi.send(data);
+      // if (response?.status === 200) {
+      //   reset();
+      //   toast.dismiss();
+      //   toast.success("Gửi thành công!");
+      // }
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const dataRating = [
+    {
+      id: 1,
+      full_name: "Natasia",
+      created_at: "19/04/2024",
+      content:
+        "Danny, hướng dẫn viên du lịch của chúng tôi, rất vui tính. Anh ấy chụp ảnh cho chúng tôi ở mọi địa điểm đẹp trong chuyến đi. Chuyến đi của chúng tôi rất vui khi có anh ấy. Chiếc xe tải của chúng tôi hơi nóng. Nhưng chúng tôi vẫn thích chuyến đi của mình với Dann",
+      rating: 4,
+    },
+    {
+      id: 2,
+      full_name: "Natasia 2",
+      created_at: "25/04/2024",
+      content:
+        "Danny, hướng dẫn viên du lịch của chúng tôi, rất vui tính. Anh ấy chụp ảnh cho chúng tôi ở mọi địa điểm đẹp trong chuyến đi. Chuyến đi của chúng tôi rất vui khi có anh ấy. Chiếc xe tải của chúng tôi hơi nóng. Nhưng chúng tôi vẫn thích chuyến đi của mình với Dann",
+      rating: 5,
+    },
+  ];
   return (
     <Fragment>
       <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
@@ -127,41 +176,46 @@ export default function CustomerRating() {
           </div>
         </div>
       </div>
-      {Array.from({ length: 2 }, (item, index) => (
-        <div className="mt-5" key={index}>
+      {dataRating.map((item: any) => (
+        <div className="mt-5" key={item.id}>
           <div className="flex space-x-4">
             <div className="w-11 h-11 rounded-full bg-gray-50 place-content-center text-center">
               <p className="">OR</p>
             </div>
             <div>
               <div className="flex space-x-4 items-center">
-                <p className="text-sm md:text-18 font-semibold">Natasia</p>
+                <p className="text-sm md:text-18 font-semibold">
+                  {item?.full_name}
+                </p>
                 <p className="w-4 h-1 bg-gray-300"></p>
                 <div className="text-sm md:text-base flex space-x-1 md:space-x-2 bg-gray-100 rounded-sm p-2 items-center">
                   <p className="text-sm md:text-base text-blue-900 font-semibold">
-                    9.8{" "}
+                    {`${Math.round(item?.rating ?? 0) * 2} `}
                     <span className="font-semibold opacity-50 text-black">
                       /10
                     </span>
                   </p>
                   <p className="text-sm text-blue-900 font-semibold">
-                    Xuất sắc
+                    {item?.rating > 0
+                      ? labelsRating[item.rating - 1]
+                      : labelsRating[item.rating]}
                   </p>
                 </div>
               </div>
-              <p className="text-sm">19/04/2024</p>
+              <p className="text-sm">{item?.created_at ?? ""}</p>
             </div>
           </div>
-          <div className="text-sm md:text-base mt-3">
-            <p>
-              Danny, hướng dẫn viên du lịch của chúng tôi, rất vui tính. Anh ấy
-              chụp ảnh cho chúng tôi ở mọi địa điểm đẹp trong chuyến đi. Chuyến
-              đi của chúng tôi rất vui khi có anh ấy. Chiếc xe tải của chúng tôi
-              hơi nóng. Nhưng chúng tôi vẫn thích chuyến đi của mình với Danny.
-            </p>
-          </div>
+          <div
+            className="text-sm md:text-base mt-3"
+            dangerouslySetInnerHTML={{
+              __html: item?.content,
+            }}
+          ></div>
         </div>
       ))}
+      <div className="max-w-40 mx-auto mt-6">
+        <LoadingButton isLoading={loading} text="Xem thêm" />
+      </div>
       {/* Popup */}
       <div
         className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
@@ -171,7 +225,10 @@ export default function CustomerRating() {
           opacity: openModal ? "100" : "0",
         }}
       >
-        <div className="bg-white h-max p-6 max-w-[680px] max-h-[500px] md:max-h-[680px] overflow-y-auto rounded-2xl text-base">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="bg-white h-max p-6 max-w-[680px] max-h-[500px] md:max-h-[680px] overflow-y-auto rounded-2xl text-base"
+        >
           <div className="flex justify-between items-center mb-4">
             <p className="text-22 font-bold">Đánh giá</p>
             <button className="text-xl" onClick={() => setOpenModal(false)}>
@@ -196,7 +253,7 @@ export default function CustomerRating() {
             labelsRating={labelsRating}
           />
           <div className="mt-4 rounded-xl">
-            <form className="mt-3 rounded-xl ">
+            <div className="mt-3 rounded-xl">
               <div className="relative">
                 <label
                   htmlFor="fullName"
@@ -209,12 +266,12 @@ export default function CustomerRating() {
                   type="text"
                   placeholder="Nhập họ và tên"
                   title="Nhập họ và tên"
-                  //   {...register("full_name")}
+                  {...register("full_name")}
                   className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                 />
-                {/* {errors.full_name && (
-                          <p className="text-red-600">{errors.full_name.message}</p>
-                        )} */}
+                {errors.full_name && (
+                  <p className="text-red-600">{errors.full_name.message}</p>
+                )}
               </div>
               <div className="mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -228,14 +285,14 @@ export default function CustomerRating() {
                     <input
                       id="phone"
                       type="text"
-                      //   {...register("phone")}
+                      {...register("phone")}
                       title="Nhập số điện thoại"
                       placeholder="Nhập số điện thoại"
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                     />
-                    {/* {errors.phone && (
-                              <p className="text-red-600">{errors.phone.message}</p>
-                            )} */}
+                    {errors.phone && (
+                      <p className="text-red-600">{errors.phone.message}</p>
+                    )}
                   </div>
                   <div className="relative">
                     <label
@@ -247,26 +304,27 @@ export default function CustomerRating() {
                     <input
                       id="email"
                       type="text"
-                      //   {...register("email")}
+                      {...register("email")}
                       title="Nhập email"
                       placeholder="Nhập email"
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                     />
-                    {/* {errors.email && (
-                              <p className="text-red-600">{errors.email.message}</p>
-                            )} */}
+                    {errors.email && (
+                      <p className="text-red-600">{errors.email.message}</p>
+                    )}
                   </div>
                 </div>
               </div>
               <div className="relative mt-4">
                 <textarea
                   id="email"
-                  rows={2}
+                  rows={1}
+                  {...register("note")}
                   placeholder="Hãy chia sẻ đánh giá của bạn"
                   className="text-sm w-full border border-gray-300 rounded-md p-3 placeholder-gray-400 outline-none focus:border-primary"
                 />
               </div>
-            </form>
+            </div>
           </div>
           <div className="mt-4">
             <p className="mb-4">Về các tiêu chí sau:</p>
@@ -286,7 +344,7 @@ export default function CustomerRating() {
           <div className="flex flex-wrap space-y-2">
             <LoadingButton isLoading={false} text={"Gửi"} />
           </div>
-        </div>
+        </form>
       </div>
     </Fragment>
   );

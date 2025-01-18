@@ -8,7 +8,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { contactApi } from "@/api/contact";
-import LoadingButton from "@/components/LoadingButton";
+import LoadingButton from "@/components/base/LoadingButton";
 import Image from "next/image";
 
 type FormData = ContactBodyType;

@@ -15,16 +15,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import FAQ from "@/components/FAQ";
-import QuestionAndAnswer from "@/components/QuestionAndAnswer";
-import ImageGallery from "../components/ImageGallery";
-import Tabs from "../components/Tabs";
+import QuestionAndAnswer from "@/components/product/QuestionAndAnswer";
+import Tabs from "../../components/Tabs";
 import VisaSteps from "@/components/home/visa-steps";
 import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
 import { formatCurrency, formatMetadata } from "@/lib/formatters";
+import FAQ from "@/components/content-page/FAQ";
+import ImageGallery from "../../components/ImageGallery";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = await VisaApi.detail(params.alias);

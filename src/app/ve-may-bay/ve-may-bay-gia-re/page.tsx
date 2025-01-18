@@ -8,7 +8,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Image from "next/image";
-import FAQ from "@/components/FAQ";
 import Link from "next/link";
 import Search from "../components/Search";
 import FlightCalendar from "../components/FlightCalendar";
@@ -22,6 +21,7 @@ import { FlightApi } from "@/api/Flight";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
+import FAQ from "@/components/content-page/FAQ";
 
 export const metadata: Metadata = formatMetadata({
   title: "Vé máy bay giá rẻ",

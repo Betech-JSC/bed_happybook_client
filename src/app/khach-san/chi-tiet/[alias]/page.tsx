@@ -8,7 +8,6 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import FAQ from "@/components/FAQ";
 import HotelDetailTabs from "../../components/HotalDetaiTabs";
 import SeoSchema from "@/components/schema";
 import { notFound } from "next/navigation";
@@ -21,6 +20,7 @@ import {
   productUrl,
 } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
+import FAQ from "@/components/content-page/FAQ";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await HotelApi.detail("tesst1")) as any;
