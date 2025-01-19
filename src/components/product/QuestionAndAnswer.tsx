@@ -7,10 +7,20 @@ import {
   QuestionAndAnswerBody,
   QuestionAndAnswerType,
 } from "@/schemaValidations/questionAndAnswer.schema";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { ProductFaqs } from "@/api/ProductFaqs";
+import { buildSearch } from "@/utils/Helper";
+import { format, isValid } from "date-fns";
+import { HttpError } from "@/lib/error";
 
-export default function QuestionAndAnswer() {
+export default function QuestionAndAnswer({
+  productId,
+}: {
+  productId: number | string;
+}) {
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [lastSendTime, setLastSendTime] = useState<number | null>(null);
   const {
     register,
     handleSubmit,
@@ -21,45 +31,67 @@ export default function QuestionAndAnswer() {
   });
 
   const onSubmit = async (data: QuestionAndAnswerType) => {
+    const now = Date.now();
+
+    if (lastSendTime && now - lastSendTime < 120000) {
+      setError("Bạn đã thao tác quá nhanh. Hãy thử lại sau vài giây!");
+      return;
+    }
+    setError("");
+
     try {
       setLoading(true);
-      // const response = await contactApi.send(data);
-      // if (response?.status === 200) {
-      //   reset();
-      //   toast.dismiss();
-      //   toast.success("Gửi thành công!");
-      // }
+      const enrichedData = {
+        ...data,
+        product_id: productId,
+      };
+      const response = await ProductFaqs.send(enrichedData);
+      if (response?.status === 200) {
+        reset();
+        toast.dismiss();
+        toast.success("Gửi thành công!");
+        setLastSendTime(now);
+      }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      if (error instanceof HttpError) {
+        if (error.status === 429) {
+          setError(error.payload.message);
+        }
+      } else {
+        toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      }
     } finally {
       setLoading(false);
     }
   };
-  const data = [
-    {
-      id: 1,
-      full_name: "Natasia",
-      created_at: "19/04/2024",
-      question: "Khoảng giữa T11/2024 có tour này ko a ?",
-      answer:
-        "Dạ chào anh Tháng 10 đang là mùa lá đỏ bên Hàn Quốc rồi ạ. HappyBook sẽ liên hệ với anh qua sđt cung cấp để tư vấn tour chi tiết ạ. Cảm ơn anh.",
-    },
-    {
-      id: 2,
-      full_name: "Natasia 2",
-      created_at: "19/04/2024",
-      question: "Khoảng giữa T11/2024 có tour này ko a ?",
-      answer:
-        "Dạ chào anh Tháng 10 đang là mùa lá đỏ bên Hàn Quốc rồi ạ. HappyBook sẽ liên hệ với anh qua sđt cung cấp để tư vấn tour chi tiết ạ. Cảm ơn anh.",
-    },
-    {
-      id: 3,
-      full_name: "Natasia 3",
-      created_at: "19/04/2024",
-      question: "Khoảng giữa T11/2024 có tour này ko a ?",
-      answer: "",
-    },
-  ];
+
+  const [query, setQuery] = useState<{ page: number }>({
+    page: 1,
+  });
+  const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
+  const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  const [data, setData] = useState<any>([]);
+  const loadData = useCallback(async () => {
+    try {
+      setLoadingLoadMore(true);
+      const search = buildSearch(query);
+      const res = await ProductFaqs.list(`/product/faqs/list/14${search}`);
+      const result = res?.payload?.data;
+      setData((prevData: any) => [...prevData, ...result.items]);
+      if (result?.last_page === query.page) {
+        setIsLastPage(true);
+      }
+    } catch (error) {
+      console.log("Error search: " + error);
+    } finally {
+      setLoadingLoadMore(false);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    loadData();
+  }, [query, loadData]);
+
   return (
     <div className="rounded-2xl bg-white p-6">
       <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
@@ -73,11 +105,13 @@ export default function QuestionAndAnswer() {
           <textarea
             className="w-full outline-none"
             rows={4}
-            {...register("question")}
+            {...register("question_content")}
             placeholder="Mời bạn nhập thắc mắc hoặc ý kiến của bạn"
           ></textarea>{" "}
-          {errors.question && (
-            <p className="text-red-600 my-2">{errors.question.message}</p>
+          {errors.question_content && (
+            <p className="text-red-600 my-2">
+              {errors.question_content.message}
+            </p>
           )}
         </div>
         <div className="bg-gray-50 rounded-2xl flex flex-wrap items-start lg:flex-nowrap space-y-4 lg:space-y-0 lg:space-x-3 p-5 lg:p-3">
@@ -133,15 +167,20 @@ export default function QuestionAndAnswer() {
           </div>
           <div className="w-full lg:w-[20%] bg-blue-600 max-h-11 text__default_hover p-[10px] text-white rounded-lg inline-flex items-center">
             <button className="mx-auto text-base font-medium">
-              Gửi câu hỏi
+              {loading ? (
+                <span className="loader_spiner"></span>
+              ) : (
+                "Gửi câu hỏi"
+              )}
             </button>
           </div>
         </div>
+        <p className="text-red-600 my-2 text-center">{error}</p>
       </form>
       {/* Q & A */}
       <div className="mt-8">
-        {data.map((item: any) => (
-          <div key={item.id} className="mt-5">
+        {data.map((item: any, index: number) => (
+          <div key={index} className="mt-5">
             <div className="flex space-x-4">
               <div className="w-2/12 md:w-1/12 flex space-x-2">
                 <div className="h-8 w-8 md:w-11 md:h-11 rounded-full bg-[#4E6EB3] text-white place-content-center text-center">
@@ -159,9 +198,19 @@ export default function QuestionAndAnswer() {
                     {item.full_name}
                   </a>
                   <p className="w-4 h-[2px] bg-gray-300"></p>
-                  <p className="text-sm">{item.created_at}</p>
+                  <p className="text-sm">
+                    {" "}
+                    {isValid(new Date(item.created_at))
+                      ? format(item.created_at, "dd/MM/yyyy")
+                      : ""}
+                  </p>
                 </div>
-                <div className="text-sm md:text-base mt-1">{item.question}</div>
+                <div
+                  className="text-sm md:text-base mt-1"
+                  dangerouslySetInnerHTML={{
+                    __html: item?.question_content ?? "",
+                  }}
+                ></div>
               </div>
               {/* <div className="w-3/12">
               <button className="flex w-full justify-end space-x-2 items-center opacity-70">
@@ -188,12 +237,12 @@ export default function QuestionAndAnswer() {
                   </div>
                   <div className="w-8/12">
                     <p className="text-sm md:text-18 font-semibold">
-                      HappyBook Travel
+                      {item?.answer?.full_name ?? "HappyBook Travel"}
                     </p>
                     <div
                       className="text-sm md:text-base leading-6 mt-1"
                       dangerouslySetInnerHTML={{
-                        __html: item?.answer,
+                        __html: item?.answer?.question_content,
                       }}
                     ></div>
                   </div>
@@ -214,9 +263,43 @@ export default function QuestionAndAnswer() {
           </div>
         ))}
       </div>
-      <div className="max-w-40 mx-auto mt-6">
-        <LoadingButton isLoading={loading} text="Xem thêm" />
-      </div>
+      {data?.length > 0 && !isLastPage && (
+        <div className="max-w-40 mx-auto mt-6">
+          <button
+            onClick={() => {
+              setQuery({
+                ...query,
+                page: query.page + 1,
+              });
+            }}
+            className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
+            justify-center items-center hover:border-primary"
+          >
+            {loadingLoadMore ? (
+              <span className="loader_spiner"></span>
+            ) : (
+              <>
+                Xem thêm
+                <svg
+                  className="group-hover:stroke-primary stroke-gray-700 duration-300"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    strokeWidth="1.66667"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

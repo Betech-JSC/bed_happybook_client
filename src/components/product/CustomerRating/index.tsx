@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import RatingCriteria from "./RatingCriteria";
 import LoadingButton from "@/components/base/LoadingButton";
 import { useForm } from "react-hook-form";
@@ -10,8 +10,28 @@ import {
   CustomerRatingBody,
   CustomerRatingType,
 } from "@/schemaValidations/customerRating.schema";
+import { labelsRating } from "@/constants/product";
+import { ProductRating } from "@/api/ProductRating";
+import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
+import { format, isValid } from "date-fns";
 
-export default function CustomerRating() {
+export default function CustomerRating({
+  product_id,
+  total_rating,
+  average_rating,
+  average_tour_guide_rating,
+  average_route_rating,
+  average_transportation_rating,
+  average_price_rating,
+}: {
+  product_id: number;
+  total_rating: number;
+  average_rating: number;
+  average_tour_guide_rating: number;
+  average_route_rating: number;
+  average_transportation_rating: number;
+  average_price_rating: number;
+}) {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const criteria = [
@@ -20,13 +40,7 @@ export default function CustomerRating() {
     { id: 4, name: "Phương tiện đưa đón" },
     { id: 5, name: "Giá cả" },
   ];
-  const labelsRating = [
-    "Tệ",
-    "Không hài lòng",
-    "Bình thường",
-    "Hài lòng",
-    "Xuất sắc",
-  ];
+
   const [ratings, setRatings] = useState(Array(criteria.length).fill(5));
   const [hover, setHover] = useState(Array(criteria.length).fill(0));
 
@@ -59,36 +73,54 @@ export default function CustomerRating() {
   const onSubmit = async (data: CustomerRatingType) => {
     try {
       setLoading(true);
-      // const response = await contactApi.send(data);
-      // if (response?.status === 200) {
-      //   reset();
-      //   toast.dismiss();
-      //   toast.success("Gửi thành công!");
-      // }
+      const enrichedData = {
+        ...data,
+        product_id: product_id,
+        ratings: ratings,
+      };
+      const response = await ProductRating.send(enrichedData);
+      if (response?.status === 200) {
+        reset();
+        toast.dismiss();
+        toast.success("Gửi thành công!");
+      }
     } catch (error: any) {
       toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
     } finally {
+      setOpenModal(false);
       setLoading(false);
     }
   };
-  const dataRating = [
-    {
-      id: 1,
-      full_name: "Natasia",
-      created_at: "19/04/2024",
-      content:
-        "Danny, hướng dẫn viên du lịch của chúng tôi, rất vui tính. Anh ấy chụp ảnh cho chúng tôi ở mọi địa điểm đẹp trong chuyến đi. Chuyến đi của chúng tôi rất vui khi có anh ấy. Chiếc xe tải của chúng tôi hơi nóng. Nhưng chúng tôi vẫn thích chuyến đi của mình với Dann",
-      rating: 4,
-    },
-    {
-      id: 2,
-      full_name: "Natasia 2",
-      created_at: "25/04/2024",
-      content:
-        "Danny, hướng dẫn viên du lịch của chúng tôi, rất vui tính. Anh ấy chụp ảnh cho chúng tôi ở mọi địa điểm đẹp trong chuyến đi. Chuyến đi của chúng tôi rất vui khi có anh ấy. Chiếc xe tải của chúng tôi hơi nóng. Nhưng chúng tôi vẫn thích chuyến đi của mình với Dann",
-      rating: 5,
-    },
-  ];
+
+  const [query, setQuery] = useState<{ page: number }>({
+    page: 1,
+  });
+  const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
+  const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  const [dataRating, setDataRating] = useState<any>([]);
+  const loadData = useCallback(async () => {
+    try {
+      setLoadingLoadMore(true);
+      const search = buildSearch(query);
+      const res = await ProductRating.list(
+        `/product/rating/list/${product_id}${search}`
+      );
+      const result = res?.payload?.data;
+      setDataRating((prevData: any) => [...prevData, ...result.items]);
+      if (result?.last_page === query.page) {
+        setIsLastPage(true);
+      }
+    } catch (error) {
+      console.log("Error search: " + error);
+    } finally {
+      setLoadingLoadMore(false);
+    }
+  }, [query, product_id]);
+
+  useEffect(() => {
+    loadData();
+  }, [query, loadData]);
+
   return (
     <Fragment>
       <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
@@ -96,12 +128,14 @@ export default function CustomerRating() {
       </h2>
       <div className="mt-4 flex flex-col md:flex-row md:space-x-6 bg-gray-50 p-6 rounded-xl items-center">
         <div className="w-full md:w-[30%] text-center px-9 flex flex-col mb-5 md:mb-0">
-          <p className="text-primary font-semibold mt-1">Xuất sắc</p>
+          <p className="text-primary font-semibold mt-1">
+            {getLabelRatingProduct(average_rating)}
+          </p>
           <div className="w-[106px] mt-1 h-9 mx-auto rounded-2xl rounded-tr bg-primary text-white font-semibold flex items-center justify-center">
-            <p className="text-[26px] leading-[39px]">9.8</p>
+            <p className="text-[26px] leading-[39px]">{average_rating}</p>
             <p className="text-xl opacity-50">/10</p>
           </div>
-          <p className="text-gray-500 mt-1">234 đánh giá</p>
+          <p className="text-gray-500 mt-1">{total_rating} đánh giá</p>
           <div
             onClick={() => setOpenModal(true)}
             className="mt-3 bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
@@ -115,62 +149,78 @@ export default function CustomerRating() {
           <div className="grid grid-grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p>Hướng dẫn viên</p>
-              <div className="flex space-x-2 items-center">
+              <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
-                    className="w-11/12 h-3 rounded-3xl"
+                    className="h-3 rounded-3xl"
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                      width: `${average_tour_guide_rating * 10}px`,
                     }}
                   ></p>
                 </div>
-                <p>9.8</p>
+                <p className="w-6">
+                  {average_tour_guide_rating > 0
+                    ? average_tour_guide_rating
+                    : ""}
+                </p>
               </div>
             </div>
             <div>
               <p>Lộ trình</p>
-              <div className="flex space-x-2 items-center">
+              <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
-                    className="w-11/12 h-3 rounded-3xl"
+                    className="h-3 rounded-3xl"
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                      width: `${average_route_rating * 10}px`,
                     }}
                   ></p>
                 </div>
-                <p>9.8</p>
+                <p className="w-6">
+                  {average_route_rating > 0 ? average_route_rating : ""}
+                </p>
               </div>
             </div>
             <div>
               <p>Phương tiện đưa đón</p>
-              <div className="flex space-x-2 items-center">
+              <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
-                    className="w-11/12 h-3 rounded-3xl"
+                    className="h-3 rounded-3xl"
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                      width: `${average_transportation_rating * 10}px`,
                     }}
                   ></p>
                 </div>
-                <p>9.8</p>
+                <p className="w-6">
+                  {average_transportation_rating > 0
+                    ? average_transportation_rating
+                    : ""}
+                </p>
               </div>
             </div>
             <div>
               <p>Giá cả</p>
-              <div className="flex space-x-2 items-center">
+              <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
-                    className="w-11/12 h-3 rounded-3xl"
+                    className="h-3 rounded-3xl"
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                      width: `${average_price_rating * 10}px`,
                     }}
                   ></p>
                 </div>
-                <p>9.8</p>
+                <p className="w-6">
+                  {average_price_rating > 0 ? average_price_rating : ""}
+                </p>
               </div>
             </div>
           </div>
@@ -190,32 +240,68 @@ export default function CustomerRating() {
                 <p className="w-4 h-1 bg-gray-300"></p>
                 <div className="text-sm md:text-base flex space-x-1 md:space-x-2 bg-gray-100 rounded-sm p-2 items-center">
                   <p className="text-sm md:text-base text-blue-900 font-semibold">
-                    {`${Math.round(item?.rating ?? 0) * 2} `}
+                    {item.average_rating}
                     <span className="font-semibold opacity-50 text-black">
                       /10
                     </span>
                   </p>
                   <p className="text-sm text-blue-900 font-semibold">
-                    {item?.rating > 0
-                      ? labelsRating[item.rating - 1]
-                      : labelsRating[item.rating]}
+                    {getLabelRatingProduct(item.average_rating)}
                   </p>
                 </div>
               </div>
-              <p className="text-sm">{item?.created_at ?? ""}</p>
+              <p className="text-sm">
+                {isValid(new Date(item.created_at))
+                  ? format(item.created_at, "dd/MM/yyyy")
+                  : ""}
+              </p>
             </div>
           </div>
           <div
             className="text-sm md:text-base mt-3"
             dangerouslySetInnerHTML={{
-              __html: item?.content,
+              __html: item?.message,
             }}
           ></div>
         </div>
       ))}
-      <div className="max-w-40 mx-auto mt-6">
-        <LoadingButton isLoading={loading} text="Xem thêm" />
-      </div>
+      {dataRating?.length > 0 && !isLastPage && (
+        <div className="max-w-40 mx-auto mt-6">
+          <button
+            onClick={() => {
+              setQuery({
+                ...query,
+                page: query.page + 1,
+              });
+            }}
+            className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
+            justify-center items-center hover:border-primary"
+          >
+            {loadingLoadMore ? (
+              <span className="loader_spiner"></span>
+            ) : (
+              <>
+                Xem thêm
+                <svg
+                  className="group-hover:stroke-primary stroke-gray-700 duration-300"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    strokeWidth="1.66667"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </>
+            )}
+          </button>
+        </div>
+      )}
       {/* Popup */}
       <div
         className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
@@ -231,7 +317,11 @@ export default function CustomerRating() {
         >
           <div className="flex justify-between items-center mb-4">
             <p className="text-22 font-bold">Đánh giá</p>
-            <button className="text-xl" onClick={() => setOpenModal(false)}>
+            <button
+              className="text-xl"
+              onClick={() => setOpenModal(false)}
+              type="button"
+            >
               <Image
                 src="/icon/close.svg"
                 alt="Icon"
@@ -317,12 +407,15 @@ export default function CustomerRating() {
               </div>
               <div className="relative mt-4">
                 <textarea
-                  id="email"
+                  id="message"
                   rows={1}
-                  {...register("note")}
+                  {...register("message")}
                   placeholder="Hãy chia sẻ đánh giá của bạn"
                   className="text-sm w-full border border-gray-300 rounded-md p-3 placeholder-gray-400 outline-none focus:border-primary"
                 />
+                {errors.message && (
+                  <p className="text-red-600">{errors.message.message}</p>
+                )}
               </div>
             </div>
           </div>
@@ -342,7 +435,7 @@ export default function CustomerRating() {
             ))}
           </div>
           <div className="flex flex-wrap space-y-2">
-            <LoadingButton isLoading={false} text={"Gửi"} />
+            <LoadingButton isLoading={loading} text={"Gửi"} />
           </div>
         </form>
       </div>

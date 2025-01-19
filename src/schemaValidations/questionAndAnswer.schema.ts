@@ -10,14 +10,14 @@ export const QuestionAndAnswerBody = z.object({
     .max(256, {
       message: "Vui lòng điền thông tin này!",
     }),
-  question: z
+  question_content: z
     .string()
     .trim()
     .min(3, {
       message: "Vui lòng điền ý kiến của bạn!",
     })
-    .max(1000, {
-      message: "Thông tin không hợp lệ!",
+    .max(2000, {
+      message: "Nội dung câu hỏi không hợp lệ!",
     }),
   website: z
     .string()
@@ -31,7 +31,6 @@ export const QuestionAndAnswerBody = z.object({
   email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
     message: "Email không đúng định dạng",
   }),
-  note: z.string(),
 });
 
 export type QuestionAndAnswerType = z.infer<typeof QuestionAndAnswerBody>;

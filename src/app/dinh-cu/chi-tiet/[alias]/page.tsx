@@ -12,17 +12,25 @@ import { Fragment } from "react";
 import Tabs from "../components/Tabs";
 import FormContact from "../../components/FormContact";
 import FAQ from "@/components/content-page/FAQ";
+import { DinhCuApi } from "@/api/DinhCu";
+import { notFound } from "next/navigation";
+import { formatCurrency } from "@/lib/formatters";
 
 export const metadata: Metadata = {
   title: "Định Cư Mỹ Diện Trí Thức EB2 Advanced Degree/EB3 Professionals",
   description: "Happy Book",
 };
 
-export default function SettleDetail({
+export default async function SettleDetail({
   params,
 }: {
   params: { alias: string };
 }) {
+  const res = (await DinhCuApi.detail(params.alias)) as any;
+  const detail = res?.payload?.data;
+  if (!detail) {
+    notFound();
+  }
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -47,8 +55,11 @@ export default function SettleDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/dinh-cu/dinh-cu-my" className="text-blue-700">
-                    Định cư Mỹ
+                  <Link
+                    href={`/dinh-cu/${detail?.category?.alias}`}
+                    className="text-blue-700"
+                  >
+                    {detail?.category?.name}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -56,8 +67,7 @@ export default function SettleDetail({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="#" className="text-gray-700">
-                    Định Cư Mỹ Diện Trí Thức EB2 Advanced Degree/EB3
-                    Professionals
+                    {detail.name}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -76,58 +86,64 @@ export default function SettleDetail({
                 />
               </div>
               <div className="mt-4">
-                <Tabs />
+                <Tabs data={detail?.product_dinhcu} />
               </div>
             </div>
             <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
                   <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    Định Cư Mỹ Diện Trí Thức EB2 Advanced Degree/EB3
-                    Professionals
+                    {detail.name}
                   </h1>
                   <div className="mt-6">
                     <div>
                       <span className="font-semibold">Mã visa:</span>{" "}
-                      <span>VS001</span>
+                      <span>{detail?.product_dinhcu?.ma_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Loại Visa:</span>{" "}
-                      <span>Du lịch</span>
+                      <span>{detail?.product_dinhcu?.loai_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Điểm Đến:</span>{" "}
-                      <span>Visa Nhật Bản</span>
+                      <span>{detail?.product_dinhcu?.diem_den}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Thời gian làm Visa:</span>{" "}
-                      <span>10 ngày</span>
+                      <span>{detail?.product_dinhcu?.thoi_gian_lam_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Thời gian lưu trú:</span>{" "}
-                      <span>14 ngày</span>
+                      <span>{detail?.product_dinhcu?.thoi_gian_luu_tru}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Số lần nhập cảnh:</span>{" "}
-                      <span>3 tháng 1 lần</span>
+                      <span>{detail?.product_dinhcu?.so_lan_nhap_canh}</span>
                     </div>
                   </div>
                 </div>
-                <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                  <p className="text-gray-500 line-through">8.004.927 vnđ</p>
-                  <div className="mt-3">
-                    <span className="mr-3">Giá từ</span>
-                    <span className="text-2xl text-primary font-bold mt-3">
-                      7.004.927 vnđ
-                    </span>
+                {detail.price > 0 && (
+                  <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
+                    <p className="text-gray-500 line-through text-sm md:text-base">
+                      {formatCurrency(detail.price)}
+                    </p>
+                    <div className="flex justify-between mt-3 items-end">
+                      <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
+                      <p className="text-base md:text-xl text-primary font-semibold">
+                        {formatCurrency(detail.price - detail.discount_price)}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="mt-6">
-                  <div className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center">
+                  <Link
+                    href={`/dinh-cu/chi-tiet/${detail.slug}/checkout`}
+                    className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
+                  >
                     <button className="mx-auto text-base font-medium">
                       Liên hệ ngay
                     </button>
-                  </div>
+                  </Link>
                 </div>
               </div>
             </div>

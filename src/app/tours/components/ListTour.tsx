@@ -4,7 +4,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import TourStyle from "@/styles/tour.module.scss";
 import Image from "next/image";
 import Link from "next/link";
-import { buildSearch } from "@/utils/Helper";
+import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
 import { TourApi } from "@/api/Tour";
 import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
@@ -210,19 +210,19 @@ export default function ListTour({
                       <h2>{tour.product_name}</h2>
                     </Link>
                     <div className="flex space-x-2 mt-2">
-                      {tour.rating && (
+                      {tour.average_rating > 0 && (
                         <Fragment>
                           <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
-                            {tour.rating}
+                            {tour.average_rating}
                           </span>
 
                           <span className="text-primary font-semibold">
-                            Xuất sắc
+                            {getLabelRatingProduct(tour.average_rating)}
                           </span>
                         </Fragment>
                       )}
                       <span className="text-gray-500">
-                        {tour.totalReview ?? 0} đánh giá
+                        {tour.total_rating ?? 0} đánh giá
                       </span>
                     </div>
                     <div className="flex space-x-2 mt-2 items-center">

@@ -21,7 +21,15 @@ export const CustomerRatingBody = z.object({
   email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
     message: "Email không đúng định dạng",
   }),
-  note: z.string(),
+  message: z
+    .string()
+    .trim()
+    .min(3, {
+      message: "Vui lòng điền thông tin này!",
+    })
+    .max(2000, {
+      message: "Nội dung đánh giá không hợp lệ!",
+    }),
 });
 
 export type CustomerRatingType = z.infer<typeof CustomerRatingBody>;

@@ -18,7 +18,7 @@ export default function Search({ locations }: { locations: LocationType[] }) {
         <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-[850px]">
           <h1 className="text-18 font-semibold">Tìm Combo du lịch</h1>
           <div className="mt-4 md:mt-6 h-fit lg:h-20 flex flex-col lg:flex-row lg:space-x-2 space-y-3 items-end justify-between">
-            <div className="relative w-full lg:w-1/4">
+            <div className="relative w-full lg:w-[40%]">
               <div className="absolute left-4 top-1/2 translate-y-1/4">
                 <Image
                   src="/icon/place.svg"
@@ -45,7 +45,7 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                 ))}
               </select>
             </div>
-            <div className="w-full lg:w-1/4 relative">
+            <div className="w-full lg:w-[40%] relative">
               <div className="absolute left-4 top-1/2 translate-y-1/4">
                 <Image
                   src="/icon/place.svg"
@@ -71,7 +71,7 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                 ))}
               </select>
             </div>
-            <div className="w-full lg:w-[30%] relative">
+            {/* <div className="w-full lg:w-[30%] relative">
               <div className="absolute left-4 top-1/2 translate-y-1/4 z-10">
                 <Image
                   src="/icon/calendar.svg"
@@ -95,7 +95,7 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                   className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
                 />
               </div>
-            </div>
+            </div> */}
             <div className="w-full lg:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
               <button
                 className="ml-2 inline-flex items-center space-x-2 h-12 text-white"
