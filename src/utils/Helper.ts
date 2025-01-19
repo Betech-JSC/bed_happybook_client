@@ -1,3 +1,5 @@
+import { labelsRating } from "@/constants/product";
+
 const handleSessionStorage = (
   action: string,
   key: string | string[],
@@ -136,6 +138,16 @@ const calculatorDiscountPercent = (
   if (!discountPrice && !totalPrice) return "0%";
   return Math.round((discountPrice / totalPrice) * 100) + "%";
 };
+
+const getLabelRatingProduct = (rating: number) => {
+  if (!rating) return;
+  if (rating <= 2) return labelsRating[0];
+  if (rating > 2 && rating <= 4) return labelsRating[1];
+  if (rating > 4 && rating <= 6) return labelsRating[2];
+  if (rating > 6 && rating <= 8) return labelsRating[3];
+  if (rating > 8 && rating <= 10) return labelsRating[4];
+  return "";
+};
 export {
   buildSearch,
   cloneItemsCarousel,
@@ -145,4 +157,5 @@ export {
   getDaysInMonth,
   getDayLabel,
   calculatorDiscountPercent,
+  getLabelRatingProduct,
 };

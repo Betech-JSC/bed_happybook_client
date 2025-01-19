@@ -8,7 +8,6 @@ export default function RatingCriteria({
   labelsRating,
   hover,
   onRate,
-  onHover,
   disabled = false,
 }: {
   index: number;

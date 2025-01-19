@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import "swiper/css";
-import { formatMoney } from "@/lib/formatters";
+import { formatCurrency, formatMoney } from "@/lib/formatters";
 import CustomerRating from "@/components/product/CustomerRating";
 
 export default function Tabs({ detail }: any) {
@@ -155,40 +155,44 @@ export default function Tabs({ detail }: any) {
           <div className="mt-4">
             {detail.prices.length > 0 ? (
               <table className="w-full text-left align-middle">
-                <tr className="bg-[#FEF8F5] text-primary">
-                  <th className="py-4 px-2 border border-gray-200">
-                    Ngày khởi hành
-                  </th>
-                  <th className="py-4 px-2  border border-gray-200">Mã Tour</th>
-                  <th className="py-4 px-2  border border-gray-200">
-                    Giá người lớn
-                  </th>
-                  <th className="py-4 px-2  border border-gray-200">
-                    Giá trẻ em
-                  </th>
-                  <th className="py-4 px-2  border border-gray-200">
-                    Giá em bé
-                  </th>
-                </tr>
-                {detail.prices.map((item: any, index: number) => (
-                  <tr key={index}>
-                    <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                      {item.date ?? ""}
-                    </td>
-                    <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                      {item.code ?? ""}
-                    </td>
-                    <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                      {formatMoney(item.price_tour)}đ
-                    </td>
-                    <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                      {formatMoney(item.price_child)}đ
-                    </td>
-                    <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                      {formatMoney(item.price_baby)}đ
-                    </td>
+                <tbody>
+                  <tr className="bg-[#FEF8F5] text-primary">
+                    <th className="py-4 px-2 border border-gray-200">
+                      Ngày khởi hành
+                    </th>
+                    <th className="py-4 px-2  border border-gray-200">
+                      Mã Tour
+                    </th>
+                    <th className="py-4 px-2  border border-gray-200">
+                      Giá người lớn
+                    </th>
+                    <th className="py-4 px-2  border border-gray-200">
+                      Giá trẻ em
+                    </th>
+                    <th className="py-4 px-2  border border-gray-200">
+                      Giá em bé
+                    </th>
                   </tr>
-                ))}
+                  {detail.prices.map((item: any, index: number) => (
+                    <tr key={index}>
+                      <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
+                        {item.date ?? ""}
+                      </td>
+                      <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
+                        {item.code ?? ""}
+                      </td>
+                      <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
+                        {formatCurrency(item.price_tour)}
+                      </td>
+                      <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
+                        {formatCurrency(item.price_child)}
+                      </td>
+                      <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
+                        {formatCurrency(item.price_baby)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             ) : (
               <p className="text-base font-semibold">
@@ -217,7 +221,15 @@ export default function Tabs({ detail }: any) {
             activeTab === 4 ? "block" : "hidden"
           }`}
         >
-          <CustomerRating />
+          <CustomerRating
+            product_id={detail.id}
+            total_rating={detail.total_rating}
+            average_rating={detail.average_rating}
+            average_tour_guide_rating={detail.average_tour_guide_rating}
+            average_route_rating={detail.average_route_rating}
+            average_transportation_rating={detail.average_transportation_rating}
+            average_price_rating={detail.average_price_rating}
+          />
         </div>
       </div>
     </div>

@@ -124,7 +124,7 @@ export default async function CategoryPosts({
                 <Tabs detail={detail} />
               </div>
               <div className="mt-4 mb-8">
-                <QuestionAndAnswer />
+                <QuestionAndAnswer productId={detail.id} />
               </div>
             </div>
             <div className="w-full lg:w-4/12 p-4 md:p-6 bg-white rounded-3xl">

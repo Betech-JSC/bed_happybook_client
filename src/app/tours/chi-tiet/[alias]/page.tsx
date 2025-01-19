@@ -26,6 +26,7 @@ import SeoSchema from "@/components/schema";
 import { pageUrl, ProductTypes, productUrl } from "@/utils/Urls";
 import { formatMetadata, formatMoney } from "@/lib/formatters";
 import FAQ from "@/components/content-page/FAQ";
+import { getLabelRatingProduct } from "@/utils/Helper";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.detail(params.alias)) as any;
@@ -136,7 +137,7 @@ export default async function TourDetail({
                 <Tabs detail={detail} />
               </div>
               <div className="mt-4 mb-8">
-                <QuestionAndAnswer />
+                <QuestionAndAnswer productId={detail.id} />
               </div>
             </div>
             <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
@@ -146,18 +147,18 @@ export default async function TourDetail({
                     {detail.name ?? ""}
                   </h1>
                   <div className="flex space-x-2 mt-2">
-                    {detail.rating && (
+                    {detail.average_rating > 0 && (
                       <Fragment>
                         <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
-                          9.8
+                          {detail.average_rating}
                         </span>
                         <span className="text-primary font-semibold">
-                          Xuất sắc
+                          {getLabelRatingProduct(detail.average_rating)}
                         </span>
                       </Fragment>
                     )}
                     <span className="text-gray-500">
-                      {detail.review ?? 0} đánh giá
+                      {detail.total_rating ?? 0} đánh giá
                     </span>
                   </div>
                   <div className="flex space-x-2 mt-6 items-center">
