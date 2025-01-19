@@ -164,7 +164,7 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
         ),
       first_name: z
         .string()
-        .min(3, { message: "Vui lòng điền thông tin này" })
+        .min(1, { message: "Vui lòng điền thông tin này" })
         .max(30, {
           message: "Họ không hợp lệ!",
         }),

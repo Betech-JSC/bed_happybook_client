@@ -16,6 +16,7 @@ import { formatMetadata } from "@/lib/formatters";
 import { ComboApi } from "@/api/Combo";
 import { ProductLocation } from "@/api/ProductLocation";
 import FAQ from "@/components/content-page/FAQ";
+import { BannerApi } from "@/api/Banner";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -55,6 +56,9 @@ export default async function CompoTour() {
   const locationsData =
     ((await ProductLocation.list())?.payload?.data as any) ?? [];
   const comboData = ((await ComboApi.getAll())?.payload?.data as any) ?? [];
+  const hotDestination =
+    ((await BannerApi.getBannerPage("combo-diemdenhot"))?.payload
+      ?.data as any) ?? [];
   return (
     <SeoSchema
       metadata={metadata}
@@ -103,25 +107,24 @@ export default async function CompoTour() {
                     }}
                   >
                     <CarouselContent>
-                      {hotDestination.map((item: any, index: number) => (
+                      {hotDestination.map((item: any) => (
                         <CarouselItem
-                          key={index}
+                          key={item.id}
                           className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
                         >
                           <div className="overflow-hidden rounded-lg relative">
-                            <Link href="#">
+                            <Link href={item.url ?? "#"}>
                               <Image
-                                // src={`${combo.image_url}/${combo.image_location}`}
-                                src={`/compo/hot/${index + 1}.png`}
+                                src={`${item.image_url}/${item.image_location}`}
                                 width={365}
                                 height={245}
                                 className=" h-56 rounded-lg hover:scale-110 ease-in duration-300"
                                 sizes="100vw"
-                                alt="Image"
+                                alt={item.name}
                               />
                             </Link>
                             <div className="absolute bottom-3 left-2 text-white px-3 py-1">
-                              <Link href="#">
+                              <Link href={item.url ?? "#"}>
                                 <h3 className="line-clamp-2">{item.name}</h3>
                               </Link>
                             </div>

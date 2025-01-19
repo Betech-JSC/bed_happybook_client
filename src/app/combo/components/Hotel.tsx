@@ -2,27 +2,7 @@ import { formatCurrency } from "@/lib/formatters";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment } from "react";
-const rooms = [
-  {
-    id: 1,
-    title: "Phòng Cao cấp, 1 giường cỡ queen (Heritage Wing)",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-  {
-    id: 2,
-    title:
-      "Phòng 2 giường đơn Grand, 2 giường đơn, quyền sử dụng Business Lounge (Opera Wing)",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-  {
-    id: 3,
-    title: "Grand Luxury King Room, Club Metropole Access, Heritage Wing",
-    price: "40.217.611 ₫",
-    originalPrice: "11.693.130 ₫",
-  },
-];
+
 export default function Hotel({ data }: any) {
   return (
     <Fragment>
@@ -123,11 +103,14 @@ export default function Hotel({ data }: any) {
                     </p>
                   </div>
                   <div className="mt-4">
-                    <div className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center">
+                    <Link
+                      href={`/khach-san/dat-phong/${data?.hotelOfCompo?.slug}/${item.id}`}
+                      className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center"
+                    >
                       <button className="mx-auto text-base font-medium">
-                        Yêu cầu đặt
+                        Đặt phòng
                       </button>
-                    </div>
+                    </Link>
                   </div>
                 </div>
               </div>
