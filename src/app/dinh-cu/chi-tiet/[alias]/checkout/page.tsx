@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
-import FormCheckOut from "@/app/visa/components/FormCheckOut";
 import { DinhCuApi } from "@/api/DinhCu";
+import FormCheckOut from "../../components/FormCheckOut";
 
 export default async function DinhCuCheckOut({
   params,
@@ -32,7 +32,7 @@ export default async function DinhCuCheckOut({
             </div>
 
             <div className="mt-4">
-              <FormCheckOut />
+              <FormCheckOut productId={detail.id} />
             </div>
           </div>
           <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl">

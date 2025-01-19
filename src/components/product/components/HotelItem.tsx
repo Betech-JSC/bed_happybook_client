@@ -38,25 +38,29 @@ export default function HotelItem({ hotel }: any) {
         </div>
         <div className="mt-2 px-4">
           <div className="flex">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index}>
-                <Image
-                  src="/icon/start-icon.svg"
-                  alt="start icon"
-                  width={16}
-                  height={16}
-                />
-              </div>
-            ))}
-            <div>
-              <Image
-                src="/icon/start.svg"
-                alt="start icon"
-                width={16}
-                height={16}
-                style={{ width: "16px", height: "16px" }}
-              />
-            </div>
+            <>
+              {Array.from({ length: 5 }, (_, index) =>
+                hotel.hotel.star && index < hotel.hotel.star ? (
+                  <Image
+                    key={index}
+                    className="w-4 h-4"
+                    src="/icon/starFull.svg"
+                    alt="Icon"
+                    width={10}
+                    height={10}
+                  />
+                ) : (
+                  <Image
+                    key={index}
+                    className="w-4 h-4"
+                    src="/icon/star.svg"
+                    alt="Icon"
+                    width={10}
+                    height={10}
+                  />
+                )
+              )}
+            </>
           </div>
           <div className={`text-right ${hotel.price > 0 ? "" : "pb-4"}`}>
             {hotel.discount_price > 0 && (

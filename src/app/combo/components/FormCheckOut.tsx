@@ -12,8 +12,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { BookingProductApi } from "@/api/BookingProduct";
+import { format } from "date-fns";
 
-export default function FormCheckOut() {
+export default function FormCheckOut({
+  productId,
+}: {
+  productId: number | string;
+}) {
+  const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [schemaForm, setSchemaForm] = useState(() =>
@@ -36,13 +44,42 @@ export default function FormCheckOut() {
       checkBoxGenerateInvoice: false,
     },
   });
-  const onSubmit = (data: CheckOutTourType) => {
-    reset();
-    setLoading(true);
-    setTimeout(() => {
+  const onSubmit = async (data: CheckOutTourType) => {
+    try {
+      setLoading(true);
+      const formatData = {
+        is_invoice: generateInvoice,
+        product_id: productId,
+        booking: {
+          departure_date: format(data.depart_date, "dd/MM/yyyy"),
+          number_adult: data.atd,
+          number_child: data.chd,
+          number_baby: data.inf,
+        },
+        contact: {
+          email: data.email,
+          full_name: data.full_name,
+          gender: data.gender,
+          phone: data.phone,
+          note: data.note ? data.note : "",
+        },
+        invoice: data.invoice,
+      };
+      const respon = await BookingProductApi.Combo(formatData);
+      if (respon?.status === 200) {
+        reset();
+        toast.success("Gửi yêu cầu thành công!");
+        setTimeout(() => {
+          router.push("/combo");
+        }, 1500);
+      } else {
+        toast.error("Gửi yêu cầu thất bại!");
+      }
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+    } finally {
       setLoading(false);
-      toast.success("Gửi yêu cầu thành công");
-    }, 1500);
+    }
   };
   return (
     <form className="rounded-xl" onSubmit={handleSubmit(onSubmit)}>
@@ -113,7 +150,7 @@ export default function FormCheckOut() {
                 <input
                   id="service"
                   type="input"
-                  placeholder="Hồ Chí Minh"
+                  placeholder="Nhập điểm khởi hành"
                   {...register("depart_point")}
                   className="text-sm w-full rounded-lg pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary "
                 />
@@ -274,6 +311,7 @@ export default function FormCheckOut() {
           <div className="mt-4">
             <textarea
               placeholder="Yêu cầu đặc biệt"
+              {...register("note")}
               className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
             ></textarea>
           </div>

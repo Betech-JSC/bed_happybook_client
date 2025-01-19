@@ -11,6 +11,8 @@ import FooterMenu from "@/components/content-page/footer-menu";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
 import FAQ from "@/components/content-page/FAQ";
+import { BannerApi } from "@/api/Banner";
+import Link from "next/link";
 
 export const metadata: Metadata = formatMetadata({
   title: "Khách Sạn | Happy Book ????️ Đại Lý Đặt Vé Máy Bay Giá Rẻ #1",
@@ -20,18 +22,15 @@ export const metadata: Metadata = formatMetadata({
     canonical: pageUrl(BlogTypes.HOTEL, true),
   },
 });
-const province = [
-  { id: 1, title: "TP Hồ Chí Minh" },
-  { id: 2, title: "Hà Nội" },
-  { id: 3, title: "Đà Nẵng" },
-  { id: 4, title: "Nha Trang" },
-  { id: 5, title: "Phú Quốc" },
-];
+
 export default async function Hotel() {
   // const locations = (await HotelApi.getLocations())?.payload?.data as any;
   const hotelData = (await HotelApi.getAll())?.payload?.data as any;
   const contentPage = (await PageApi.getContent("khach-san"))?.payload
     ?.data as any;
+  const provincePopular =
+    ((await BannerApi.getBannerPage("hotel-tpphobien"))?.payload
+      ?.data as any) ?? [];
   return (
     <SeoSchema
       metadata={metadata}
@@ -140,23 +139,29 @@ export default async function Hotel() {
               Thành Phố Phổ Biến tại Việt Nam
             </h2>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {province.map((item, index) => (
+              {provincePopular.map((item: any) => (
                 <div
                   key={item.id}
                   className="rounded-2xl border border-gray-200"
                 >
                   <div className="overflow-hidden rounded-t-2xl">
-                    <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer w-full h-[236px]"
-                      src={`/hotel/province/${item.id}.png`}
-                      alt="Image"
-                      width={250}
-                      height={260}
-                    />
+                    <Link href={item.url ?? "#"}>
+                      <Image
+                        className="hover:scale-110 ease-in duration-300 cursor-pointer w-full h-[236px]"
+                        src={`${item.image_url}/${item.image_location}`}
+                        alt="Image"
+                        width={250}
+                        height={260}
+                        style={{ height: 245 }}
+                      />
+                    </Link>
                   </div>
-                  <div className="py-3 px-4 text-18 font-semibold text__default_hover">
-                    <h3>{item.title}</h3>
-                  </div>
+                  <Link
+                    href={item.url ?? ""}
+                    className="py-3 px-4 text-18 font-semibold text__default_hover"
+                  >
+                    <h3>{item.name}</h3>
+                  </Link>
                 </div>
               ))}
             </div>

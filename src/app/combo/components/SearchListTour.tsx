@@ -1,15 +1,14 @@
 "use client";
-import { HotelApi } from "@/api/Hotel";
-import { formatCurrency } from "@/lib/formatters";
 import TourStyle from "@/styles/tour.module.scss";
-import { buildSearch, calculatorDiscountPercent } from "@/utils/Helper";
-import { Span } from "next/dist/trace";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
+import { ComboApi } from "@/api/Combo";
+import { formatCurrency } from "@/lib/formatters";
 
-export default function ListHotel({
+export default function SearchListTour({
   optionsFilter,
 }: {
   optionsFilter: {
@@ -39,7 +38,7 @@ export default function ListHotel({
       setLoadingLoadMore(true);
       setIsDisabled(true);
       const search = buildSearch(query);
-      const res = await HotelApi.search(`/product/hotel/search${search}`);
+      const res = await ComboApi.search(`/product/combo/search${search}`);
       const result = res?.payload?.data;
       setData((prevData: any) =>
         result.items.length > 0 && !query.isFilters
@@ -99,25 +98,9 @@ export default function ListHotel({
       </div>
     );
   }
-
-  if (!data) return;
   return (
     <div className="flex mt-6 md:space-x-4 items-start pb-8">
       <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
-        <div className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none">
-          <p className="font-semibold">Sắp xếp</p>
-          <select
-            onChange={(e) => {
-              handleSortData(e.target.value);
-            }}
-            defaultValue={"id|desc"}
-            className="py-3 px-4 border border-gray-300 w-full rounded-lg mt-3 outline-none font-semibold"
-          >
-            <option value="">Đề xuất</option>
-            <option value="id|desc">Mới nhất</option>
-            <option value="id|asc">Cũ nhất</option>
-          </select>
-        </div>
         {optionsFilter.map((item, index) => (
           <div
             key={index}
@@ -194,23 +177,41 @@ export default function ListHotel({
         ))}
       </div>
       <div className="md:w-8/12 lg:w-9/12">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <h1 className="text-32 font-bold">Tìm kiếm</h1>
+          <div className="flex my-4 md:my-0 space-x-3 items-center">
+            <span>Sắp xếp</span>
+            <div className="w-40 bg-white border border-gray-200 rounded-lg">
+              <select
+                className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
+                onChange={(e) => {
+                  handleSortData(e.target.value);
+                }}
+                defaultValue={"id|desc"}
+              >
+                <option value="id|desc">Mới nhất</option>
+                <option value="id|asc">Cũ nhất</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div className="mb-4">
-          {data.length > 0 ? (
+          {data?.length > 0 ? (
             data.map((item: any, index: number) => (
               <div
                 key={index}
-                className="flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mb-4"
+                className="flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mt-4"
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
-                  <Link href={`/khach-san/chi-tiet/${item.slug}`}>
+                  <Link href={`/combo/chi-tiet/${item.slug}`}>
                     <Image
                       className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl"
                       src={`${item.image_url}/${item.image_location}`}
                       alt="Image"
-                      width={450}
-                      height={350}
+                      width={360}
+                      height={270}
                       sizes="100vw"
-                      style={{ height: 275, width: "100%" }}
+                      style={{ height: 270 }}
                     />
                   </Link>
                 </div>
@@ -218,22 +219,23 @@ export default function ListHotel({
                   <div className="my-4 mr-6">
                     <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                       <Link
-                        href={`/khach-san/chi-tiet/${item.slug}`}
+                        href={`/combo/chi-tiet/${item.slug}`}
                         className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                       >
-                        {item.name}
+                        <h2>{item.name}</h2>
                       </Link>
                       <div className="flex w-[20%] space-x-1">
                         <>
                           {Array.from({ length: 5 }, (_, index) =>
-                            item?.hotel?.star && index < item.hotel.star ? (
+                            item?.combo?.hotel?.star &&
+                            index < item?.combo?.hotel.star ? (
                               <Image
                                 key={index}
                                 className="w-4 h-4"
                                 src="/icon/starFull.svg"
                                 alt="Icon"
-                                width={10}
-                                height={10}
+                                width={16}
+                                height={16}
                               />
                             ) : (
                               <Image
@@ -241,8 +243,8 @@ export default function ListHotel({
                                 className="w-4 h-4"
                                 src="/icon/star.svg"
                                 alt="Icon"
-                                width={10}
-                                height={10}
+                                width={16}
+                                height={16}
                               />
                             )
                           )}
@@ -257,77 +259,44 @@ export default function ListHotel({
                         width={20}
                         height={20}
                       />
-                      <span className="text-sm">{item.hotel.address}</span>
+                      <span className="text-sm">
+                        {item?.combo?.address ?? ""}
+                      </span>
                     </div>
-                    {item?.hotel?.amenity_service.length > 0 && (
-                      <div className="w-full">
-                        <ul className="mt-2 list-[circle] grid grid-cols-2 items-start pl-4 w-10/12 gap-2">
-                          {item.hotel.amenity_service.map(
-                            (service: any, index: number) => (
-                              <li key={index}>
-                                {service.hotel_amenity_service.name}
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                    {item.discount_price > 0 &&
-                      item.price - item.discount_price <= 0 && (
-                        <div className="mt-3 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
-                          Hoàn tiền toàn bộ
-                        </div>
-                      )}
+                    <div className="flex flex-wrap">
+                      {item?.combo?.hotel?.amenities?.length > 0 &&
+                        item?.combo?.hotel?.amenities.map((item: any) => (
+                          <span
+                            className="mr-2 mt-2 py-[2px] px-[6px] border border-gray-300 rounded-sm"
+                            key={item.id}
+                          >
+                            {item?.hotel_amenity?.name ?? ""}
+                          </span>
+                        ))}
+                    </div>
                   </div>
-                  <div className="flex space-x-2 p-2 lg:mr-6 mt-3 mb-4 items-end justify-between bg-gray-50 rounded-lg">
+                  <div className="flex space-x-2 p-2 lg:mr-6 mt-8 mb-4 items-center justify-between bg-gray-50 rounded-lg">
                     <div className="flex space-x-1">
-                      {item.rating && (
-                        <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-                          {item.rating ?? 0}
-                        </span>
-                      )}
+                      <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
+                        {item.average_rating}
+                      </span>
                       <div className="flex flex-col space-y-1">
                         <span className="text-primary text-sm font-semibold">
-                          {item.rating_text ?? ""}
+                          {getLabelRatingProduct(item.average_rating)}
                         </span>
-
                         <span className="text-gray-500 text-xs">
-                          {item.totalReview ?? 0} đánh giá
+                          {item.total_rating} đánh giá
                         </span>
                       </div>
                     </div>
-                    <div className="flex flex-col space-y-2">
-                      <div>
-                        {item.discount_price > 0 && (
-                          <div className="text-sm mr-2 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
-                            <span>
-                              Giảm{" "}
-                              {calculatorDiscountPercent(
-                                item.discount_price,
-                                item.price
-                              )}
-                            </span>
-                          </div>
-                        )}
-                        {item.discount_price > 0 && (
-                          <span className="text-gray-500 line-through ">
-                            {formatCurrency(item.price)}
-                          </span>
-                        )}
-                      </div>
+                    {item.price && (
                       <div className="text-base md:text-xl text-primary font-semibold text-end">
-                        {item.price > 0 && (
-                          <>
-                            <span className="text-gray-500 text-sm md:text-base mr-2">
-                              chỉ từ
-                            </span>
-                            {item.discount_price
-                              ? formatCurrency(item.price - item.discount_price)
-                              : formatCurrency(item.price)}
-                          </>
-                        )}
+                        <span className="text-gray-500 text-sm md:text-base mr-2">
+                          chỉ từ
+                        </span>
+                        {formatCurrency(item.price)}
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>

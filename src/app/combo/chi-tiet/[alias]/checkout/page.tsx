@@ -34,7 +34,7 @@ export default async function ComboCheckout({
             </div>
 
             <div className="mt-4">
-              <FormCheckOut />
+              <FormCheckOut productId={detail.id} />
             </div>
           </div>
           <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl">

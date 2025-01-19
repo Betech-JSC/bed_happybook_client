@@ -20,8 +20,8 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
           return isNaN(num) ? 0 : num;
         })
         .refine((val) => val >= 1, { message: "Số phải lớn hơn hoặc bằng 1" })
-        .refine((val) => val <= 1000, {
-          message: "Số lượng tối là 1000",
+        .refine((val) => val <= 30, {
+          message: "Số lượng tối là 30",
         }),
 
       chd: z
@@ -31,8 +31,8 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
           return isNaN(num) ? 0 : num;
         })
         .refine((val) => val >= 0, { message: "Số phải lớn hơn hoặc bằng 0" })
-        .refine((val) => val <= 1000, {
-          message: "Số lượng tối là 1000",
+        .refine((val) => val <= 30, {
+          message: "Số lượng tối là 30",
         }),
       inf: z
         .string()
@@ -41,8 +41,8 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
           return isNaN(num) ? 0 : num;
         })
         .refine((val) => val >= 0, { message: "Số phải lớn hơn hoặc bằng 0" })
-        .refine((val) => val <= 1000, {
-          message: "Số lượng tối là 1000",
+        .refine((val) => val <= 30, {
+          message: "Số lượng tối là 30",
         }),
       phone: z
         .string()
@@ -66,6 +66,8 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
           message: "Vui lòng điền thông tin này",
         })
         .max(255, { message: "Họ và Tên không hợp lệ" }),
+
+      note: z.string(),
 
       invoice: checkBoxGenerateInvoice
         ? z.object({

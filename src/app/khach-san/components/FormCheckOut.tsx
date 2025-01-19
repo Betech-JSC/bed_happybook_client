@@ -11,15 +11,20 @@ import {
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import { vi } from "date-fns/locale";
+import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+import Link from "next/link";
+import { BookingProductApi } from "@/api/BookingProduct";
+import { useRouter } from "next/navigation";
 
-export default function FormCheckOut({ data }: any) {
+export default function FormCheckOut({ data, room }: any) {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [disabledForm, setDisabledForm] = useState<boolean>(true);
   const [schemaForm, setSchemaForm] = useState(() =>
     CheckOutHotelBody(generateInvoice)
   );
+  const router = useRouter();
 
   useEffect(() => {
     setSchemaForm(CheckOutHotelBody(generateInvoice));
@@ -40,13 +45,45 @@ export default function FormCheckOut({ data }: any) {
     },
   });
 
-  const onSubmit = (data: CheckOutHotelType) => {
-    reset();
-    setLoading(true);
-    setTimeout(() => {
+  const onSubmit = async (dataForm: CheckOutHotelType) => {
+    try {
+      setLoading(true);
+
+      const formatData = {
+        is_invoice: generateInvoice,
+        product_id: data.id,
+        booking: {
+          checkin_date: format(dataForm.check_in_date, "dd/MM/yyyy"),
+          checkout_date: format(dataForm.check_out_date, "dd/MM/yyyy"),
+          number_adult: dataForm.atd,
+          number_child: dataForm.chd,
+          number_baby: dataForm.inf,
+          room_id: room.id,
+        },
+        contact: {
+          email: dataForm.email,
+          full_name: dataForm.full_name,
+          gender: "male",
+          phone: dataForm.phone,
+          note: dataForm.note ? dataForm.note : "",
+        },
+        invoice: dataForm.invoice,
+      };
+      const respon = await BookingProductApi.Hotel(formatData);
+      if (respon?.status === 200) {
+        reset();
+        toast.success("Gửi yêu cầu thành công!");
+        setTimeout(() => {
+          router.push("/khach-san");
+        }, 1500);
+      } else {
+        toast.error("Gửi yêu cầu thất bại!");
+      }
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+    } finally {
       setLoading(false);
-      toast.success("Gửi yêu cầu thành công");
-    }, 1500);
+    }
   };
 
   const checkInDate = watch("check_in_date");
@@ -193,7 +230,7 @@ export default function FormCheckOut({ data }: any) {
           </div>
           <div className="relative">
             <label
-              htmlFor="service"
+              htmlFor="inf"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
               Em bé {"(< 2 tuổi)"}
@@ -281,6 +318,7 @@ export default function FormCheckOut({ data }: any) {
           <div className="mt-4">
             <textarea
               placeholder="Yêu cầu đặc biệt"
+              {...register("note")}
               className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
             ></textarea>
           </div>
@@ -477,22 +515,35 @@ export default function FormCheckOut({ data }: any) {
             </div>
           )}
           <div className="flex space-x-2 mt-3 items-center">
-            <input type="checkbox" id="checkbox1" className="w-4 h-4" />
+            <input
+              type="checkbox"
+              id="checkbox1"
+              className="w-4 h-4"
+              onClick={() => {
+                setDisabledForm(!disabledForm);
+              }}
+            />
             <div>
               <label htmlFor="checkbox1" className="text-sm">
                 Tôi xác nhận đã đọc và chấp nhận.{" "}
               </label>
-              <button className="text-blue-700 font-bold">
+              <Link
+                href="/thong-tin-chung/dieu-khoan-su-dung"
+                target="_blank"
+                className="text-blue-700 font-bold"
+              >
                 Điều khoản sử dụng
-              </button>
+              </Link>
             </div>
           </div>
         </div>
         <LoadingButton
-          style="mt-6"
+          style={`mt-6 ${
+            disabledForm ? "bg-gray-400 !cursor-not-allowed" : ""
+          }`}
           isLoading={loading}
           text="Gửi yêu cầu"
-          disabled={loading}
+          disabled={disabledForm}
         />
       </div>
     </form>

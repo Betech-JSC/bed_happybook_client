@@ -31,6 +31,8 @@ export const CheckOutDinhCuBody = (checkBoxGenerateInvoice: boolean) => {
       })
       .max(255, { message: "Họ và Tên không hợp lệ" }),
 
+    note: z.string(),
+
     invoice: checkBoxGenerateInvoice
       ? z.object({
           company_name: z

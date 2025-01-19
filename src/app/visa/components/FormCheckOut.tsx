@@ -8,8 +8,15 @@ import {
   CheckOutVisaBody,
   CheckOutVisaType,
 } from "@/schemaValidations/checkOutVisa.schema";
+import { useRouter } from "next/navigation";
+import { BookingProductApi } from "@/api/BookingProduct";
 
-export default function FormCheckOut() {
+export default function FormCheckOut({
+  productId,
+}: {
+  productId: number | string;
+}) {
+  const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [schemaForm, setSchemaForm] = useState(() =>
@@ -31,13 +38,36 @@ export default function FormCheckOut() {
       checkBoxGenerateInvoice: false,
     },
   });
-  const onSubmit = (data: CheckOutVisaType) => {
-    reset();
+  const onSubmit = async (data: CheckOutVisaType) => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const formatData = {
+        is_invoice: generateInvoice,
+        product_id: productId,
+        contact: {
+          email: data.email,
+          full_name: data.full_name,
+          gender: data.gender,
+          phone: data.phone,
+          note: data.note ? data.note : "",
+        },
+        invoice: data.invoice,
+      };
+      const respon = await BookingProductApi.Visa(formatData);
+      if (respon?.status === 200) {
+        reset();
+        toast.success("Gửi yêu cầu thành công!");
+        setTimeout(() => {
+          router.push("/visa");
+        }, 1500);
+      } else {
+        toast.error("Gửi yêu cầu thất bại!");
+      }
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+    } finally {
       setLoading(false);
-      toast.success("Gửi yêu cầu thành công");
-    }, 1500);
+    }
   };
   return (
     <form className="rounded-xl" onSubmit={handleSubmit(onSubmit)}>
@@ -131,6 +161,7 @@ export default function FormCheckOut() {
           <div className="mt-4">
             <textarea
               placeholder="Yêu cầu đặc biệt"
+              {...register("note")}
               className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
             ></textarea>
           </div>

@@ -127,7 +127,7 @@ export default function HotelDetailTabs({ data }: any) {
                         className="bg-gray-50 text__default_hover py-3 border border-gray-300 rounded-lg inline-flex w-full items-center"
                       >
                         <button className="mx-auto text-base font-medium">
-                          Yêu cầu đặt
+                          Đặt phòng
                         </button>
                       </Link>
                     </div>
