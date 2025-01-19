@@ -16,11 +16,7 @@ export const metadata: Metadata = {
   description: "Happy Book",
 };
 
-export default async function SearchCompo({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default async function SearchCombo() {
   const optionsFilter = (await ComboApi.getOptionsFilter())?.payload
     ?.data as any;
   return (
