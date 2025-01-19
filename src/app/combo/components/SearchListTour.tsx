@@ -20,13 +20,11 @@ export default function SearchListTour({
     }[];
   }[];
 }) {
-  const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
     page: number;
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
-    text: searchParams.get("text"),
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
@@ -41,9 +39,9 @@ export default function SearchListTour({
       const res = await ComboApi.search(`/product/combo/search${search}`);
       const result = res?.payload?.data;
       setData((prevData: any) =>
-        result.items.length > 0 && !query.isFilters
+        result?.items?.length > 0 && !query.isFilters
           ? [...prevData, ...result.items]
-          : result.items
+          : result?.items
       );
       if (result?.last_page === query.page) {
         setIsLastPage(true);
@@ -98,10 +96,11 @@ export default function SearchListTour({
       </div>
     );
   }
+  if (!data) return;
   return (
     <div className="flex mt-6 md:space-x-4 items-start pb-8">
       <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
-        {optionsFilter.map((item, index) => (
+        {optionsFilter?.map((item, index) => (
           <div
             key={index}
             className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
@@ -319,7 +318,7 @@ export default function SearchListTour({
             </div>
           )}
         </div>
-        {data.length > 0 && !isLastPage && (
+        {data?.length > 0 && !isLastPage && (
           <div className="mt-4">
             <button
               className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
