@@ -107,7 +107,7 @@ export default function ListItem({ categories, categoryDetail }: Props) {
           ))}
         </div>
       )}
-      {data.length > 0 ? (
+      {data?.length > 0 ? (
         <div>
           <div className="mt-8 grid md:grid-cols-3 lg:grid-cols-3 gap-6 w-full">
             {data.map((item: any) => (

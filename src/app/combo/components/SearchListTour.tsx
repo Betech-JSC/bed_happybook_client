@@ -3,7 +3,6 @@ import TourStyle from "@/styles/tour.module.scss";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
 import { ComboApi } from "@/api/Combo";
 import { formatCurrency } from "@/lib/formatters";
