@@ -45,7 +45,7 @@ export default async function Home() {
     ?.data as any;
   let popularFlights = (await FlightApi.getPopularFlights())?.payload
     ?.data as any;
-  if (popularFlights.length > 0 && popularFlights.length < 5) {
+  if (popularFlights?.length > 0 && popularFlights?.length < 5) {
     popularFlights = cloneItemsCarousel(popularFlights, 8);
   }
   const membersData = (await BannerApi.getBannerPage("home-doingu"))?.payload

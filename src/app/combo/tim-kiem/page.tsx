@@ -55,9 +55,7 @@ export default async function SearchCompo({
             </BreadcrumbList>
           </Breadcrumb>
           {/* Section Tour */}
-          <Suspense>
-            <SearchListTour optionsFilter={optionsFilter} />
-          </Suspense>
+          <SearchListTour optionsFilter={optionsFilter} />
         </div>
       </div>
     </Fragment>

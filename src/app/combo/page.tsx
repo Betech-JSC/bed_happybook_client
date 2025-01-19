@@ -96,7 +96,7 @@ export default async function CompoTour() {
         <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
             {/* Tours */}
-            {hotDestination.length > 0 && (
+            {hotDestination?.length > 0 && (
               <div className="w-full">
                 <h2 className="text-32 font-bold">Khám phá các điểm đến HOT</h2>
                 <div className="mt-8 overflow-hidden">
@@ -138,7 +138,7 @@ export default async function CompoTour() {
                 </div>
               </div>
             )}
-            {comboData?.comboDomestic.length > 0 && (
+            {comboData?.comboDomestic?.length > 0 && (
               <>
                 <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
                   <h2 className="text-32 font-bold">
