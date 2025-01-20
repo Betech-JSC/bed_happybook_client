@@ -10,6 +10,7 @@ import {
   SignUpReceiveCheapTicketsBody,
   SignUpReceiveCheapTicketsBodyType,
 } from "@/schemaValidations/signUpReceiveCheapTickets.schema";
+import { contactApi } from "@/api/contact";
 
 type FormData = SignUpReceiveCheapTicketsBodyType;
 
@@ -26,12 +27,25 @@ export default function SignUpReceiveCheapTickets() {
   });
 
   const onSubmit = async (data: FormData) => {
-    setLoading(true);
-    setTimeout(() => {
-      toast.success("Gửi thành công");
+    try {
+      setLoading(true);
+
+      const enrichedData = {
+        ...data,
+        service: "Đăng ký nhận vé giá rẻ",
+      };
+
+      const response = await contactApi.send(enrichedData);
+      if (response?.status === 200) {
+        reset();
+        toast.dismiss();
+        toast.success("Gửi thành công!");
+      }
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+    } finally {
       setLoading(false);
-      reset();
-    }, 1500);
+    }
   };
   return (
     <div className="flex flex-col md:flex-row mt-8 space-y-4 md:space-x-6 md:space-y-0 p-4 md:p-8 bg-white rounded-3xl">

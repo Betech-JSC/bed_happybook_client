@@ -19,7 +19,6 @@ export default function Tabs({ detail }: any) {
       setCurrentTabWidth(tabRefs.current[activeTab].offsetWidth);
     }
   }, [activeTab]);
-
   return (
     <div className="w-full mt-6">
       <div
@@ -63,11 +62,12 @@ export default function Tabs({ detail }: any) {
           <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Tổng quan
           </h2>
-          <div className="mt-4">
-            <p className="text-base font-semibold">
-              Nội dung đang cập nhật....
-            </p>
-          </div>
+          <div
+            className="mt-4 text-base"
+            dangerouslySetInnerHTML={{
+              __html: detail?.overview ?? "Nội dung đang cập nhật...",
+            }}
+          ></div>
         </div>
 
         <div
@@ -152,9 +152,9 @@ export default function Tabs({ detail }: any) {
           <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Bảng giá
           </h2>
-          <div className="mt-4">
+          <div className="mt-4 overflow-auto">
             {detail.prices.length > 0 ? (
-              <table className="w-full text-left align-middle">
+              <table className="w-max min-w-[700px] lg:min-w-[100%] text-left align-middle ">
                 <tbody>
                   <tr className="bg-[#FEF8F5] text-primary">
                     <th className="py-4 px-2 border border-gray-200">
@@ -195,9 +195,7 @@ export default function Tabs({ detail }: any) {
                 </tbody>
               </table>
             ) : (
-              <p className="text-base font-semibold">
-                Nội dung đang cập nhật....
-              </p>
+              <p className="text-base">Nội dung đang cập nhật....</p>
             )}
           </div>
         </div>
@@ -210,11 +208,12 @@ export default function Tabs({ detail }: any) {
           <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
             Quy định dịch vụ
           </h2>
-          <div className="mt-4">
-            <p className="text-base font-semibold">
-              Nội dung đang cập nhật....
-            </p>
-          </div>
+          <div
+            className="mt-4 text-base"
+            dangerouslySetInnerHTML={{
+              __html: detail?.overview ?? "Nội dung đang cập nhật...",
+            }}
+          ></div>
         </div>
         <div
           className={`bg-white rounded-2xl p-6  ${

@@ -24,7 +24,7 @@ import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { pageUrl, ProductTypes, productUrl } from "@/utils/Urls";
-import { formatMetadata, formatMoney } from "@/lib/formatters";
+import { formatCurrency, formatMetadata, formatMoney } from "@/lib/formatters";
 import FAQ from "@/components/content-page/FAQ";
 import { getLabelRatingProduct } from "@/utils/Helper";
 
@@ -200,15 +200,15 @@ export default async function TourDetail({
                   <p className="text-gray-500 line-through">
                     {detail.discount_price > 0 &&
                     detail.discount_price < detail.price
-                      ? `${formatMoney(detail.price)} vnđ`
+                      ? `${formatCurrency(detail.price)}`
                       : ""}
                   </p>
                   <p className="text-2xl text-primary font-bold mt-3">
                     {detail.discount_price < detail.price
-                      ? `${formatMoney(
+                      ? `${formatCurrency(
                           detail.price - detail.discount_price
-                        )} vnđ`
-                      : formatMoney(detail.price)}
+                        )}`
+                      : formatCurrency(detail.price)}
                   </p>
                 </div>
                 <div className="mt-6">

@@ -289,11 +289,23 @@ export default function FilghtDomesticList({
     isRoundTrip,
   ]);
 
+  const CalculateTotalPriceWithoutTax = (flight: any) => {
+    if (!flight) return 0;
+    const priceAtdWithoutTax = flight.TaxAdt * flight.Adt;
+    const priceChdWithoutTax = flight.TaxChd * flight.Chd;
+    const priceInfWithoutTax = flight.TaxInf * flight.Inf;
+    const totalPriceWithOutTax =
+      flight.TotalPrice -
+      (priceAtdWithoutTax + priceChdWithoutTax + priceInfWithoutTax);
+    return totalPriceWithOutTax;
+  };
+
   // Select Depart and Return Flight
   const handleSelectDepartFlight = (flight: any) => {
     if (selectedDepartFlight?.FareDataId === flight.FareDataId) {
       setSelectedDepartFlight(null);
     } else {
+      flight.TotalPriceWithOutTax = CalculateTotalPriceWithoutTax(flight);
       setSelectedDepartFlight(flight);
       if (isRoundTrip && !selectedReturnFlight) {
         setTimeout(() => {
@@ -307,6 +319,7 @@ export default function FilghtDomesticList({
     if (selectedReturnFlight?.FareDataId === flight.FareDataId) {
       setSelectedReturnFlight(null);
     } else {
+      flight.TotalPriceWithOutTax = CalculateTotalPriceWithoutTax(flight);
       setSelectedReturnFlight(flight);
       if (isRoundTrip && !selectedDepartFlight) {
         setTimeout(() => {

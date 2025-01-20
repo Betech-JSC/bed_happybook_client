@@ -17,6 +17,7 @@ import { ComboApi } from "@/api/Combo";
 import { ProductLocation } from "@/api/ProductLocation";
 import FAQ from "@/components/content-page/FAQ";
 import { BannerApi } from "@/api/Banner";
+import { Suspense } from "react";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -27,30 +28,6 @@ export const metadata: Metadata = formatMetadata({
     canonical: pageUrl(BlogTypes.COMPO, true),
   },
 });
-
-const hotDestination = [
-  {
-    name: "Côn đảo",
-  },
-  {
-    name: "Phan Thiết",
-  },
-  {
-    name: "Nha Trang",
-  },
-  {
-    name: "Quy Nhơn",
-  },
-  {
-    name: "Côn đảo",
-  },
-  {
-    name: "Phan Thiết",
-  },
-  {
-    name: "Nha Trang",
-  },
-];
 
 export default async function CompoTour() {
   const locationsData =
@@ -90,7 +67,9 @@ export default async function CompoTour() {
           ></div>
           {/* Search */}
           <div className="py-5">
-            <Search locations={locationsData} />
+            <Suspense>
+              <Search locations={locationsData} />
+            </Suspense>
           </div>
         </div>
         <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">

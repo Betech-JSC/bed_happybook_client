@@ -4,7 +4,7 @@ export const CustomerRatingBody = z.object({
   full_name: z
     .string()
     .trim()
-    .min(3, {
+    .min(1, {
       message: "Vui lòng điền thông tin này!",
     })
     .max(256, {
@@ -24,7 +24,7 @@ export const CustomerRatingBody = z.object({
   message: z
     .string()
     .trim()
-    .min(3, {
+    .min(1, {
       message: "Vui lòng điền thông tin này!",
     })
     .max(2000, {

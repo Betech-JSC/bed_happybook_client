@@ -8,7 +8,7 @@ export default function Tabs({ data }: any) {
         <div
           className="mt-4 leading-6"
           dangerouslySetInnerHTML={{
-            __html: data?.compo?.description ?? "Nội dung đang cập nhật...",
+            __html: data?.combo?.description ?? "Nội dung đang cập nhật...",
           }}
         ></div>
       </div>
@@ -19,7 +19,7 @@ export default function Tabs({ data }: any) {
         <div
           className="mt-4 leading-6"
           dangerouslySetInnerHTML={{
-            __html: data?.compo?.requirements ?? "Nội dung đang cập nhật...",
+            __html: data?.combo?.requirements ?? "Nội dung đang cập nhật...",
           }}
         ></div>
       </div>
