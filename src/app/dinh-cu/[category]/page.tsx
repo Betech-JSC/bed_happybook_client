@@ -26,7 +26,6 @@ export default async function DinhCuByCategory({
 }) {
   const category = (await ProductCategoryApi.detail("dinhcu", params.category))
     ?.payload?.data as any;
-  console.log(category);
   if (!category) notFound();
   return (
     <main>

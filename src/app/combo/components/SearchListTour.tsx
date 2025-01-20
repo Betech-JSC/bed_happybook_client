@@ -6,6 +6,7 @@ import Link from "next/link";
 import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
 import { ComboApi } from "@/api/Combo";
 import { formatCurrency } from "@/lib/formatters";
+import { useSearchParams } from "next/navigation";
 
 export default function SearchListTour({
   optionsFilter,
@@ -19,11 +20,14 @@ export default function SearchListTour({
     }[];
   }[];
 }) {
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
     page: number;
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
+    from: searchParams.get("from"),
+    to: searchParams.get("to"),
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);

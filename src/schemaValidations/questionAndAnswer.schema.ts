@@ -4,7 +4,7 @@ export const QuestionAndAnswerBody = z.object({
   full_name: z
     .string()
     .trim()
-    .min(3, {
+    .min(1, {
       message: "Vui lòng điền thông tin này!",
     })
     .max(256, {
@@ -13,7 +13,7 @@ export const QuestionAndAnswerBody = z.object({
   question_content: z
     .string()
     .trim()
-    .min(3, {
+    .min(1, {
       message: "Vui lòng điền ý kiến của bạn!",
     })
     .max(2000, {
@@ -22,7 +22,7 @@ export const QuestionAndAnswerBody = z.object({
   website: z
     .string()
     .trim()
-    .min(5, {
+    .min(1, {
       message: "Vui lòng điền thông tin này!",
     })
     .max(256, {

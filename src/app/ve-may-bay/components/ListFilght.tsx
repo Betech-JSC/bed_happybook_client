@@ -201,7 +201,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
             listFareData.forEach((flight: any) => {
               const priceAtdWithoutTax = flight.TaxAdt * flight.Adt;
               const priceChdWithoutTax = flight.TaxChd * flight.Chd;
-              const priceInfWithoutTax = flight.TaxInf - flight.Inf;
+              const priceInfWithoutTax = flight.TaxInf * flight.Inf;
               flight.TotalPriceWithOutTax =
                 flight.TotalPrice -
                 (priceAtdWithoutTax + priceChdWithoutTax + priceInfWithoutTax);

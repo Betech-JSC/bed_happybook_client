@@ -7,9 +7,9 @@ export default function Hotel({ data }: any) {
   return (
     <Fragment>
       <div className="bg-white p-6 rounded-2xl">
-        <div className="flex flex-col md:flex-row justify-between">
-          <div>
-            <h3 className="font-bold text-2xl">{data.name}</h3>
+        <div className="flex flex-col md:flex-row space-x-0 md:space-x-2 justify-between">
+          <div className="md:w-10/12">
+            <h3 className="font-bold text-2xl">{data?.hotelOfCompo?.name}</h3>
             <div className="flex space-x-2 items-center mt-3">
               <Image
                 className="w-4 h-4"
@@ -19,13 +19,13 @@ export default function Hotel({ data }: any) {
                 height={18}
               />
               <span className="text-sm">
-                {data.hotelOfCompo?.hotel?.address}
+                {data?.hotelOfCompo?.hotel?.address}
               </span>
             </div>
           </div>
-          <div className="flex mt-3 md:mt-0 space-x-1">
+          <div className="flex mt-3 md:mt-0 space-x-1 md:w-2/12 md:justify-end">
             <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-              {data.hotelOfCompo?.hotel?.rating ?? 0}
+              {data.hotelOfCompo?.hotel?.star ?? 0}
             </span>
             <div className="flex flex-col space-y-1">
               <span className="text-primary text-sm font-semibold">
@@ -123,13 +123,12 @@ export default function Hotel({ data }: any) {
             Thông tin về nơi lưu trú này
           </h2>
           <h3 className="mt-4 text-22 font-semibold">
-            Sofitel Legend Metropole Hà Nội
+            {data?.hotelOfCompo?.name ?? ""}
           </h3>
-          <p className="mt-2">Gần Tràng Tiền Plaza</p>
           <div
             className="mt-3 leading-6"
             dangerouslySetInnerHTML={{
-              __html: data.hotelOfCompo.hotel.reside_information,
+              __html: data?.hotelOfCompo?.hotel?.reside_information,
             }}
           ></div>
 
@@ -181,7 +180,7 @@ export default function Hotel({ data }: any) {
             className="mt-4 leading-6"
             dangerouslySetInnerHTML={{
               __html:
-                data.hotelOfCompo.hotel.policy ?? "Nội dung đang cập nhật",
+                data?.hotelOfCompo?.hotel?.policy ?? "Nội dung đang cập nhật",
             }}
           ></div>
         </div>
@@ -195,7 +194,8 @@ export default function Hotel({ data }: any) {
             className="mt-4 leading-6"
             dangerouslySetInnerHTML={{
               __html:
-                data.hotelOfCompo.hotel.information ?? "Nội dung đang cập nhật",
+                data?.hotelOfCompo?.hotel?.information ??
+                "Nội dung đang cập nhật",
             }}
           ></div>
         </div>

@@ -3,14 +3,21 @@ import { Fragment, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { LocationType } from "@/types/location";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { vi } from "date-fns/locale";
+import { buildSearch } from "@/utils/Helper";
 
 export default function Search({ locations }: { locations: LocationType[] }) {
   const router = useRouter();
+  const [query, setQuery] = useState<{
+    from: string;
+    to: string;
+  }>({
+    from: "",
+    to: "",
+  });
   const handleSearch = () => {
-    router.push(`/combo/tim-kiem`);
+    const querySearch = buildSearch(query);
+    router.push(`/combo/tim-kiem${querySearch}`);
   };
   return (
     <Fragment>
@@ -35,11 +42,21 @@ export default function Search({ locations }: { locations: LocationType[] }) {
               <select
                 id="from"
                 defaultValue={""}
+                onChange={(e) => {
+                  setQuery({
+                    ...query,
+                    from: e.target.value,
+                  });
+                }}
                 className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
               >
                 <option value="">Chọn điểm đi</option>
                 {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
+                  <option
+                    key={location.id}
+                    value={location.name}
+                    disabled={query.to === location.name}
+                  >
                     {location.name}
                   </option>
                 ))}
@@ -61,11 +78,21 @@ export default function Search({ locations }: { locations: LocationType[] }) {
               </label>
               <select
                 id="to"
+                onChange={(e) => {
+                  setQuery({
+                    ...query,
+                    to: e.target.value,
+                  });
+                }}
                 className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
               >
                 <option value="">Chọn điểm đến</option>
                 {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
+                  <option
+                    key={location.id}
+                    value={location.name}
+                    disabled={query.from === location.name}
+                  >
                     {location.name}
                   </option>
                 ))}
@@ -98,6 +125,7 @@ export default function Search({ locations }: { locations: LocationType[] }) {
             </div> */}
             <div className="w-full lg:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
               <button
+                type="button"
                 className="ml-2 inline-flex items-center space-x-2 h-12 text-white"
                 onClick={handleSearch}
               >

@@ -14,6 +14,7 @@ import { labelsRating } from "@/constants/product";
 import { ProductRating } from "@/api/ProductRating";
 import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
 import { format, isValid } from "date-fns";
+import { HttpError } from "@/lib/error";
 
 export default function CustomerRating({
   product_id,
@@ -34,6 +35,8 @@ export default function CustomerRating({
 }) {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [tooManyRequestsErr, setTooManyRequestsErr] = useState<string>("");
+
   const criteria = [
     { id: 2, name: "Hướng dẫn viên" },
     { id: 3, name: "Lộ trình" },
@@ -65,6 +68,7 @@ export default function CustomerRating({
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<CustomerRatingType>({
     resolver: zodResolver(CustomerRatingBody),
@@ -73,6 +77,7 @@ export default function CustomerRating({
   const onSubmit = async (data: CustomerRatingType) => {
     try {
       setLoading(true);
+      setTooManyRequestsErr("");
       const enrichedData = {
         ...data,
         product_id: product_id,
@@ -83,11 +88,24 @@ export default function CustomerRating({
         reset();
         toast.dismiss();
         toast.success("Gửi thành công!");
+        setOpenModal(false);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      if (error instanceof HttpError) {
+        if (error.status === 429) {
+          setTooManyRequestsErr(error.payload.message);
+        } else if (error?.payload?.errors) {
+          Object.keys(error?.payload?.errors).forEach((field: any) => {
+            setError(field, {
+              type: "server",
+              message: error?.payload?.errors[field][0],
+            });
+          });
+        }
+      } else {
+        toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      }
     } finally {
-      setOpenModal(false);
       setLoading(false);
     }
   };
@@ -437,6 +455,7 @@ export default function CustomerRating({
           <div className="flex flex-wrap space-y-2">
             <LoadingButton isLoading={loading} text={"Gửi"} />
           </div>
+          <p className="text-red-600 my-2 text-center">{tooManyRequestsErr}</p>
         </form>
       </div>
     </Fragment>

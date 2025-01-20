@@ -131,6 +131,18 @@ export default function FlightInternationalList({
           a.Airline.localeCompare(b.Airline)
         );
       }
+
+      if (filters.priceWithoutTax === "1") {
+        filtered = [...filtered].map((item: any) => {
+          const priceAtdWithoutTax = item.TaxAdt * item.Adt;
+          const priceChdWithoutTax = item.TaxChd * item.Chd;
+          const priceInfWithoutTax = item.TaxInf * item.Inf;
+          item.TotalPriceWithOutTax =
+            item.TotalPrice -
+            (priceAtdWithoutTax + priceChdWithoutTax + priceInfWithoutTax);
+          return item;
+        });
+      }
     }
     setFilteredData(filtered);
   }, [filters, flights]);

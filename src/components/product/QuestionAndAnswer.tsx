@@ -19,28 +19,21 @@ export default function QuestionAndAnswer({
   productId: number | string;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [lastSendTime, setLastSendTime] = useState<number | null>(null);
+  const [tooManyRequestsErr, setTooManyRequestsErr] = useState<string>("");
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<QuestionAndAnswerType>({
     resolver: zodResolver(QuestionAndAnswerBody),
   });
 
   const onSubmit = async (data: QuestionAndAnswerType) => {
-    const now = Date.now();
-
-    if (lastSendTime && now - lastSendTime < 120000) {
-      setError("Bạn đã thao tác quá nhanh. Hãy thử lại sau vài giây!");
-      return;
-    }
-    setError("");
-
     try {
       setLoading(true);
+      setTooManyRequestsErr("");
       const enrichedData = {
         ...data,
         product_id: productId,
@@ -50,12 +43,18 @@ export default function QuestionAndAnswer({
         reset();
         toast.dismiss();
         toast.success("Gửi thành công!");
-        setLastSendTime(now);
       }
     } catch (error: any) {
       if (error instanceof HttpError) {
         if (error.status === 429) {
-          setError(error.payload.message);
+          setTooManyRequestsErr(error.payload.message);
+        } else if (error?.payload?.errors) {
+          Object.keys(error?.payload?.errors).forEach((field: any) => {
+            setError(field, {
+              type: "server",
+              message: error?.payload?.errors[field][0],
+            });
+          });
         }
       } else {
         toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
@@ -175,7 +174,7 @@ export default function QuestionAndAnswer({
             </button>
           </div>
         </div>
-        <p className="text-red-600 my-2 text-center">{error}</p>
+        <p className="text-red-600 my-2 text-center">{tooManyRequestsErr}</p>
       </form>
       {/* Q & A */}
       <div className="mt-8">
