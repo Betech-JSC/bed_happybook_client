@@ -1,4 +1,5 @@
 import { formatCurrency } from "@/lib/formatters";
+import { getLabelRatingProduct } from "@/utils/Helper";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment } from "react";
@@ -25,14 +26,16 @@ export default function Hotel({ data }: any) {
           </div>
           <div className="flex mt-3 md:mt-0 space-x-1 md:w-2/12 md:justify-end">
             <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-              {data.hotelOfCompo?.hotel?.star ?? 0}
+              {data.hotelOfCompo?.hotel?.average_rating ?? 0}
             </span>
             <div className="flex flex-col space-y-1">
               <span className="text-primary text-sm font-semibold">
-                {data.hotelOfCompo?.hotel?.rating_text ?? ""}
+                {getLabelRatingProduct(
+                  data.hotelOfCompo?.hotel?.average_rating
+                )}
               </span>
               <span className="text-gray-500 text-xs">
-                {data.hotelOfCompo?.hotel?.review ?? 0} đánh giá
+                {data.hotelOfCompo?.hotel?.total_rating ?? 0} đánh giá
               </span>
             </div>
           </div>

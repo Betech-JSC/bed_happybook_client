@@ -77,7 +77,7 @@ export default async function Tours() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               <div className="flex items-center space-x-3 h-20">
                 <Image
-                  src="/tour/globe-gradient.png"
+                  src="/tour/globe-gradient.svg"
                   alt="Icon"
                   className="h-11 w-11"
                   width={44}
@@ -92,7 +92,7 @@ export default async function Tours() {
               </div>
               <div className="flex items-center space-x-3 h-20">
                 <Image
-                  src="/tour/Travel-gradient-icon.png"
+                  src="/tour/Travel-gradient-icon.svg"
                   alt="Icon"
                   className="h-11 w-11"
                   width={44}
@@ -107,7 +107,7 @@ export default async function Tours() {
               </div>
               <div className="flex items-center space-x-3 h-20">
                 <Image
-                  src="/tour/sun-icon.png"
+                  src="/tour/sun-icon.svg"
                   alt="Icon"
                   className="h-11 w-11"
                   width={44}
