@@ -12,11 +12,10 @@ import Link from "next/link";
 import Search from "./components/Search";
 import { Suspense } from "react";
 import { FlightApi } from "@/api/Flight";
-import { formatCurrency, formatMetadata } from "@/lib/formatters";
+import { formatCurrency, formatDate, formatMetadata } from "@/lib/formatters";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { cloneItemsCarousel } from "@/utils/Helper";
-import { format, isValid } from "date-fns";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
 import FooterMenu from "@/components/content-page/footer-menu";
@@ -202,12 +201,7 @@ export default async function AirlineTicket() {
                               <h3>{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
                             </Link>
                             <div className="mt-2 text-sm font-normal h-6">
-                              {isValid(item.flight.ngay_khoi_hanh)
-                                ? format(
-                                    item.flight.ngay_khoi_hanh,
-                                    "dd-MM-yyyy"
-                                  )
-                                : ""}
+                              {formatDate(item.flight.ngay_khoi_hanh)}
                             </div>
                             <div className="mt-3 text-right text-xl font-semibold text-primary">
                               {formatCurrency(item.price)}

@@ -170,9 +170,9 @@ export default async function TourDetail({
                       height={18}
                     />
                     <span>
-                      {`${detail.day ? detail.day : ""} ngày ${
-                        detail.night ? detail.night : ""
-                      } đêm`}
+                      <span>{`${detail.day ? `${detail.day} ngày` : ""} ${
+                        detail.night ? `${detail.night} đêm` : ""
+                      }`}</span>
                     </span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
@@ -183,7 +183,11 @@ export default async function TourDetail({
                       width={18}
                       height={18}
                     />
-                    <span>{detail.depart_point ?? ""}</span>
+                    <span>
+                      {detail.depart_point
+                        ? `Khởi hành từ ${detail.depart_point}`
+                        : ""}
+                    </span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
                     <Image
@@ -204,11 +208,11 @@ export default async function TourDetail({
                       : ""}
                   </p>
                   <p className="text-2xl text-primary font-bold mt-3">
-                    {detail.discount_price < detail.price
+                    {detail.price > 0
                       ? `${formatCurrency(
                           detail.price - detail.discount_price
                         )}`
-                      : formatCurrency(detail.price)}
+                      : "Liên hệ"}
                   </p>
                 </div>
                 <div className="mt-6">

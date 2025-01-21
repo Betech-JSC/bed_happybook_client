@@ -1,8 +1,9 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import "swiper/css";
-import { formatCurrency, formatMoney } from "@/lib/formatters";
+import { formatCurrency } from "@/lib/formatters";
 import CustomerRating from "@/components/product/CustomerRating";
+import { formatDate } from "@/lib/formatters";
 
 export default function Tabs({ detail }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -176,19 +177,25 @@ export default function Tabs({ detail }: any) {
                   {detail.prices.map((item: any, index: number) => (
                     <tr key={index}>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {item.date ?? ""}
+                        {formatDate(item.date)}
                       </td>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
                         {item.code ?? ""}
                       </td>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {formatCurrency(item.price_tour)}
+                        {item.price_tour > 0
+                          ? formatCurrency(item.price_tour)
+                          : "Liên hệ"}
                       </td>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {formatCurrency(item.price_child)}
+                        {item.price_child > 0
+                          ? formatCurrency(item.price_child)
+                          : "Liên hệ"}
                       </td>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {formatCurrency(item.price_baby)}
+                        {item.price_baby > 0
+                          ? formatCurrency(item.price_baby)
+                          : "Liên hệ"}
                       </td>
                     </tr>
                   ))}

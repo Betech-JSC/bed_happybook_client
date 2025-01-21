@@ -97,18 +97,14 @@ export default async function VisaCheckOut({
                   <p className="mt-2">05/09/2024</p>
                 </div>
               </div> */}
-              {room.price > 0 && (
-                <div className="flex justify-between border-t border-solid border-gray-200 text-end pt-4 rounded-lg mt-5">
-                  <span className="text-sm text-gray-500">Tổng cộng</span>
-                  <span className="text-xl lg:text-2xl text-primary font-bold">
-                    {formatCurrency(
-                      room.discount_price
-                        ? room.price - room.discount_price
-                        : room.price
-                    )}
-                  </span>
-                </div>
-              )}
+              <div className="flex justify-between border-t border-solid border-gray-200 text-end pt-4 rounded-lg mt-5">
+                <span className="text-sm text-gray-500">Tổng cộng</span>
+                <span className="text-xl lg:text-2xl text-primary font-bold">
+                  {room.price > 0
+                    ? formatCurrency(room.price - room.discount_price)
+                    : "Liên hệ"}
+                </span>
+              </div>
             </div>
           </div>
         </div>

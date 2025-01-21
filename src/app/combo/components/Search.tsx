@@ -39,28 +39,30 @@ export default function Search({ locations }: { locations: LocationType[] }) {
               <label htmlFor="from" className="font-medium block">
                 Khởi hành từ
               </label>
-              <select
-                id="from"
-                defaultValue={""}
-                onChange={(e) => {
-                  setQuery({
-                    ...query,
-                    from: e.target.value,
-                  });
-                }}
-                className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
-              >
-                <option value="">Chọn điểm đi</option>
-                {locations.map((location) => (
-                  <option
-                    key={location.id}
-                    value={location.name}
-                    disabled={query.to === location.name}
-                  >
-                    {location.name}
-                  </option>
-                ))}
-              </select>
+              <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
+                <select
+                  id="from"
+                  defaultValue={""}
+                  onChange={(e) => {
+                    setQuery({
+                      ...query,
+                      from: e.target.value,
+                    });
+                  }}
+                  className={`w-[95%]  indent-10 outline-none`}
+                >
+                  <option value="">Chọn điểm đi</option>
+                  {locations.map((location) => (
+                    <option
+                      key={location.id}
+                      value={location.name}
+                      disabled={query.to === location.name}
+                    >
+                      {location.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="w-full lg:w-[40%] relative">
               <div className="absolute left-4 top-1/2 translate-y-1/4">
@@ -76,27 +78,29 @@ export default function Search({ locations }: { locations: LocationType[] }) {
               <label htmlFor="to" className="font-medium block">
                 Điểm đến
               </label>
-              <select
-                id="to"
-                onChange={(e) => {
-                  setQuery({
-                    ...query,
-                    to: e.target.value,
-                  });
-                }}
-                className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
-              >
-                <option value="">Chọn điểm đến</option>
-                {locations.map((location) => (
-                  <option
-                    key={location.id}
-                    value={location.name}
-                    disabled={query.from === location.name}
-                  >
-                    {location.name}
-                  </option>
-                ))}
-              </select>
+              <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
+                <select
+                  id="to"
+                  onChange={(e) => {
+                    setQuery({
+                      ...query,
+                      to: e.target.value,
+                    });
+                  }}
+                  className={`w-[95%] indent-10 outline-none`}
+                >
+                  <option value="">Chọn điểm đến</option>
+                  {locations.map((location) => (
+                    <option
+                      key={location.id}
+                      value={location.name}
+                      disabled={query.from === location.name}
+                    >
+                      {location.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             {/* <div className="w-full lg:w-[30%] relative">
               <div className="absolute left-4 top-1/2 translate-y-1/4 z-10">

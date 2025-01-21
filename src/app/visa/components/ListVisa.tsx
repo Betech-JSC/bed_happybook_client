@@ -114,33 +114,35 @@ export default function ListVisa({
             >
               <p className="font-semibold">{item.label}</p>
               {item.option.map((value: string, index: number) => {
-                return (
-                  index < 20 && (
-                    <div
-                      key={index}
-                      className="mt-3 flex space-x-2 items-center"
-                    >
-                      <input
-                        type="checkbox"
-                        id={item.name + index}
-                        value={value}
-                        disabled={isDisabled}
-                        defaultChecked={
-                          searchParams && searchParams["loai_visa[]"]
-                            ? searchParams["loai_visa[]"] === value
-                            : undefined
-                        }
-                        className={TourStyle.custom_checkbox}
-                        onChange={(e) =>
-                          handleFilterChange(`${item.name}[]`, e.target.value)
-                        }
-                      />
-                      <label htmlFor={item.name + index}>{value}</label>
-                    </div>
-                  )
-                );
+                if (value) {
+                  return (
+                    index < 30 && (
+                      <div
+                        key={index}
+                        className="mt-3 flex space-x-2 items-center"
+                      >
+                        <input
+                          type="checkbox"
+                          id={item.name + index}
+                          value={value}
+                          disabled={isDisabled}
+                          defaultChecked={
+                            searchParams && searchParams["loai_visa[]"]
+                              ? searchParams["loai_visa[]"] === value
+                              : undefined
+                          }
+                          className={TourStyle.custom_checkbox}
+                          onChange={(e) =>
+                            handleFilterChange(`${item.name}[]`, e.target.value)
+                          }
+                        />
+                        <label htmlFor={item.name + index}>{value}</label>
+                      </div>
+                    )
+                  );
+                }
               })}
-              {item.option.length > 5 && (
+              {item.option.length > 30 && (
                 <button className="mt-3 flex items-center rounded-lg space-x-3 ">
                   <span className="text-[#175CD3] font-medium">Xem thêm</span>
                   <Image

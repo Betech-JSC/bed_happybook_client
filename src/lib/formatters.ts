@@ -1,17 +1,15 @@
 import { parseISO, format, min, parse, isValid } from "date-fns";
+import { isNil } from "lodash";
 import { Metadata } from "next";
 import {
   AlternateLinkDescriptor,
   Languages,
 } from "next/dist/lib/metadata/types/alternative-urls-types";
 
-const formatDate = (isoDate: string, format: string = "d/m/y") => {
+const formatDate = (isoDate: string, dateFormat: string = "dd/MM/yyyy") => {
+  if (isNil(isoDate)) return "";
   const date = new Date(isoDate);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear());
-
-  return format.replace("d", day).replace("m", month).replace("y", year);
+  return isValid(date) ? format(date, dateFormat) : "";
 };
 const pareseDateFromString = (
   input: string,

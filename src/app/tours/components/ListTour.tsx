@@ -234,9 +234,9 @@ export default function ListTour({
                         height={18}
                       />
                       <span>
-                        {`${tour.day ? tour.day : ""} ngày ${
-                          tour.night ? tour.night : ""
-                        } đêm`}
+                        <span>{`${tour.day ? `${tour.day} ngày` : ""} ${
+                          tour.night ? `${tour.night} đêm` : ""
+                        }`}</span>
                       </span>
                     </div>
                     {tour.depart_point && (
@@ -248,7 +248,7 @@ export default function ListTour({
                           width={18}
                           height={18}
                         />
-                        <span>{tour.depart_point}</span>
+                        <span>Khởi hành từ {tour.depart_point}</span>
                       </div>
                     )}
                     {tour.destination_point && (
@@ -265,7 +265,9 @@ export default function ListTour({
                     )}
                   </div>
                   <div className="text-2xl text-primary font-bold text-end mt-3">
-                    {formatCurrency(tour.price - tour.discount_price)}
+                    {tour.price > 0
+                      ? formatCurrency(tour.price - tour.discount_price)
+                      : "Liên hệ"}
                   </div>
                 </div>
               </div>

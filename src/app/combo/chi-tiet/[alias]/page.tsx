@@ -152,10 +152,12 @@ export default async function CompoDetail({
                 </div>
                 <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
                   <span className="text-2xl text-primary font-bold">
-                    {formatCurrency(detail?.price)}
-                  </span>{" "}
-                  <span>/ khách</span>
-                  <p className="text-blue-700 mt-3">+ 40 điểm</p>
+                    {detail?.price > 0
+                      ? formatCurrency(detail?.price - detail?.discount_price)
+                      : "Liên hệ"}
+                  </span>
+                  {/* <span>/ khách</span> */}
+                  {/* <p className="text-blue-700 mt-3">+ 40 điểm</p> */}
                 </div>
                 <div className="mt-6">
                   <Link

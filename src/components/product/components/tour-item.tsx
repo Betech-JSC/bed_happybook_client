@@ -52,9 +52,9 @@ export default function TourItem({ tour }: any) {
             width={20}
             height={20}
           />
-          <span>{`${tour.day ? tour.day : ""} ngày ${
-            tour.night ? tour.night : ""
-          } đêm`}</span>
+          <span>{`${tour.day ? `${tour.day} ngày` : ""} ${
+            tour.night ? `${tour.night} đêm` : ""
+          }`}</span>
         </p>
         <div className="flex justify-between mt-[14px]">
           <div className="flex space-x-2">
@@ -70,10 +70,10 @@ export default function TourItem({ tour }: any) {
               ))}
           </div>
           <div>
-            <span>chỉ từ</span>
             <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-              {" "}
-              {tour.price > 0 ? formatCurrency(tour.price) : "Liên hệ"}
+              {tour.price > 0
+                ? `chỉ từ ${formatCurrency(tour.price)}`
+                : "Liên hệ"}
             </span>
           </div>
         </div>

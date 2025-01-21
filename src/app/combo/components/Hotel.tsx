@@ -26,23 +26,23 @@ export default function Hotel({ data }: any) {
           </div>
           <div className="flex mt-3 md:mt-0 space-x-1 md:w-2/12 md:justify-end">
             <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-              {data.hotelOfCompo?.hotel?.average_rating ?? 0}
+              {data?.hotelOfCompo?.hotel?.average_rating ?? 0}
             </span>
             <div className="flex flex-col space-y-1">
               <span className="text-primary text-sm font-semibold">
                 {getLabelRatingProduct(
-                  data.hotelOfCompo?.hotel?.average_rating
+                  data?.hotelOfCompo?.hotel?.average_rating
                 )}
               </span>
               <span className="text-gray-500 text-xs">
-                {data.hotelOfCompo?.hotel?.total_rating ?? 0} đánh giá
+                {data?.hotelOfCompo?.hotel?.total_rating ?? 0} đánh giá
               </span>
             </div>
           </div>
         </div>
         <div className="mt-4">
           <p className="text-18 font-semibold">Tiện nghi dịch vụ</p>
-          {data.hotelOfCompo?.hotel?.amenity_service.length > 0 ? (
+          {data?.hotelOfCompo?.hotel?.amenity_service.length > 0 ? (
             <ul className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4 leading-6">
               {data.hotelOfCompo.hotel.amenity_service.map((item: any) => (
                 <li key={item.id}>{item.hotel_amenity_service.name}</li>
@@ -54,13 +54,13 @@ export default function Hotel({ data }: any) {
         </div>
       </div>
       <div className="rounded-2xl mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {data.hotelOfCompo?.hotel?.rooms.length > 0 &&
+        {data?.hotelOfCompo?.hotel?.rooms.length > 0 &&
           data.hotelOfCompo?.hotel?.rooms.map((item: any) => (
             <div key={item.id} className="bg-white rounded-xl">
               <div className="p-3 flex flex-col justify-between h-full">
                 <div className="flex-grow">
                   <Link
-                    href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
+                    href={`/khach-san/chi-tiet/${data?.hotelOfCompo?.slug}`}
                     className="block overflow-hidden rounded-xl"
                   >
                     <Image
@@ -72,7 +72,7 @@ export default function Hotel({ data }: any) {
                     />
                   </Link>
                   <Link
-                    href="/khach-san/chi-tiet/sofitel-legend-metropole-ha-noi"
+                    href={`/khach-san/chi-tiet/${data?.hotelOfCompo?.slug}`}
                     className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
                   >
                     <h3> {item.name}</h3>
