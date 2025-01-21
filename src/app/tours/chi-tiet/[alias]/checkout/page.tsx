@@ -91,14 +91,12 @@ export default async function TourCheckout({
               </div>
               <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
                 <span className="text-xl lg:text-2xl text-primary font-bold">
-                  {formatCurrency(
-                    detail.discount_price
-                      ? detail.price - detail.discount_price
-                      : detail.price
-                  )}
+                  {detail.price > 0
+                    ? formatCurrency(detail.price - detail.discount_price)
+                    : "Liên hệ"}
                 </span>
                 {/* <span>/ khách</span> */}
-                <p className="text-blue-700 mt-3">+ 40 điểm</p>
+                {/* <p className="text-blue-700 mt-3">+ 40 điểm</p> */}
               </div>
             </div>
           </div>

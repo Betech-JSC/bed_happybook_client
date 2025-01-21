@@ -150,7 +150,7 @@ export default function CustomerRating({
             {getLabelRatingProduct(average_rating)}
           </p>
           <div className="w-[106px] mt-1 h-9 mx-auto rounded-2xl rounded-tr bg-primary text-white font-semibold flex items-center justify-center">
-            <p className="text-[26px] leading-[39px]">{average_rating}</p>
+            <p className="text-[26px] leading-[39px] mr-1">{average_rating}</p>
             <p className="text-xl opacity-50">/10</p>
           </div>
           <p className="text-gray-500 mt-1">{total_rating} đánh giá</p>
@@ -174,7 +174,7 @@ export default function CustomerRating({
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
-                      width: `${average_tour_guide_rating * 10}px`,
+                      width: `${average_tour_guide_rating * 10}%`,
                     }}
                   ></p>
                 </div>
@@ -194,7 +194,7 @@ export default function CustomerRating({
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
-                      width: `${average_route_rating * 10}px`,
+                      width: `${average_route_rating * 10}%`,
                     }}
                   ></p>
                 </div>
@@ -212,7 +212,7 @@ export default function CustomerRating({
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
-                      width: `${average_transportation_rating * 10}px`,
+                      width: `${average_transportation_rating * 10}%`,
                     }}
                   ></p>
                 </div>
@@ -232,7 +232,7 @@ export default function CustomerRating({
                     style={{
                       background:
                         "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
-                      width: `${average_price_rating * 10}px`,
+                      width: `${average_price_rating * 10}%`,
                     }}
                   ></p>
                 </div>
@@ -258,7 +258,7 @@ export default function CustomerRating({
                 <p className="w-4 h-1 bg-gray-300"></p>
                 <div className="text-sm md:text-base flex space-x-1 md:space-x-2 bg-gray-100 rounded-sm p-2 items-center">
                   <p className="text-sm md:text-base text-blue-900 font-semibold">
-                    {item.average_rating}
+                    {item.average_rating}{" "}
                     <span className="font-semibold opacity-50 text-black">
                       /10
                     </span>

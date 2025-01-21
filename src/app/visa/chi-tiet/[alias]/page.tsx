@@ -140,45 +140,47 @@ export default async function CategoryPosts({
                   <div className="mt-6">
                     <div>
                       <span className="font-semibold">Mã visa:</span>{" "}
-                      <span>{detail.product_visa.ma_visa}</span>
+                      <span>{detail?.product_visa?.ma_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Loại Visa:</span>{" "}
-                      <span>{detail.product_visa.loai_visa}</span>
+                      <span>{detail?.product_visa?.loai_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Điểm Đến:</span>{" "}
-                      <span>{detail.product_visa.diem_den}</span>
+                      <span>{detail?.product_visa?.diem_den}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Thời gian làm Visa:</span>{" "}
-                      <span>{detail.product_visa.thoi_gian_lam_visa} ngày</span>
+                      <span>{detail?.product_visa?.thoi_gian_lam_visa}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Thời gian lưu trú:</span>{" "}
-                      <span>{detail.product_visa.thoi_gian_luu_tru} ngày</span>
+                      <span>{detail?.product_visa?.thoi_gian_luu_tru}</span>
                     </div>
                     <div className="mt-1">
                       <span className="font-semibold">Số lần nhập cảnh:</span>{" "}
-                      <span>
-                        {detail.product_visa.so_lan_nhap_canh} tháng 1 lần
-                      </span>
+                      <span>{detail?.product_visa?.so_lan_nhap_canh}</span>
                     </div>
                   </div>
                 </div>
-                {detail.price > 0 && (
-                  <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                    <p className="text-gray-500 line-through text-sm md:text-base">
-                      {formatCurrency(detail.price)}
+                {/* {detail.price > 0 && ( */}
+                <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
+                  <p className="text-gray-500 line-through text-sm md:text-base">
+                    {detail.discount_price > 0
+                      ? formatCurrency(detail.price)
+                      : ""}
+                  </p>
+                  <div className="flex justify-between mt-3 items-end">
+                    <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
+                    <p className="text-base md:text-xl text-primary font-semibold">
+                      {detail.price > 0
+                        ? formatCurrency(detail.price - detail.discount_price)
+                        : "Liên hệ"}
                     </p>
-                    <div className="flex justify-between mt-3 items-end">
-                      <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
-                      <p className="text-base md:text-xl text-primary font-semibold">
-                        {formatCurrency(detail.price - detail.discount_price)}
-                      </p>
-                    </div>
                   </div>
-                )}
+                </div>
+                {/* // )} */}
                 <div className="mt-6">
                   <Link
                     href={`/visa/chi-tiet/${detail.slug}/checkout`}

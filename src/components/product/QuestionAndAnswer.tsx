@@ -74,7 +74,9 @@ export default function QuestionAndAnswer({
     try {
       setLoadingLoadMore(true);
       const search = buildSearch(query);
-      const res = await ProductFaqs.list(`/product/faqs/list/14${search}`);
+      const res = await ProductFaqs.list(
+        `/product/faqs/list/${productId}${search}`
+      );
       const result = res?.payload?.data;
       setData((prevData: any) => [...prevData, ...result.items]);
       if (result?.last_page === query.page) {
@@ -85,7 +87,7 @@ export default function QuestionAndAnswer({
     } finally {
       setLoadingLoadMore(false);
     }
-  }, [query]);
+  }, [query, productId]);
 
   useEffect(() => {
     loadData();
@@ -226,7 +228,7 @@ export default function QuestionAndAnswer({
               </button>
             </div> */}
             </div>
-            {item.answer && (
+            {item.answer_content && (
               <div className="px-3 mt-4 border-l border-gray-300">
                 <div className="flex space-x-4">
                   <div className="w-2/12 md:w-1/12 flex space-x-2">
@@ -236,12 +238,12 @@ export default function QuestionAndAnswer({
                   </div>
                   <div className="w-8/12">
                     <p className="text-sm md:text-18 font-semibold">
-                      {item?.answer?.full_name ?? "HappyBook Travel"}
+                      {"HappyBook Travel"}
                     </p>
                     <div
                       className="text-sm md:text-base leading-6 mt-1"
                       dangerouslySetInnerHTML={{
-                        __html: item?.answer?.question_content,
+                        __html: item?.answer_content,
                       }}
                     ></div>
                   </div>
