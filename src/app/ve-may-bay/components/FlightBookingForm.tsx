@@ -42,6 +42,7 @@ export default function FlightBookForm({ airportsData }: any) {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
+  const [bookingSystem, setBookingSystem] = useState<string>("");
 
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -164,7 +165,10 @@ export default function FlightBookForm({ airportsData }: any) {
     const bookFlight = async () => {
       try {
         setLoading(true);
-        const respon = await FlightApi.bookFlight("book-flight", finalData);
+        const respon = await FlightApi.bookFlight(
+          `book-flight${bookingSystem === "1G" ? "-1G" : ""}`,
+          finalData
+        );
         if (respon?.status === 200) {
           reset();
           toast.success("Gửi yêu cầu thành công!");
@@ -201,6 +205,7 @@ export default function FlightBookForm({ airportsData }: any) {
     if (departFlight) {
       flightData.push(departFlight);
       flightDetailData.push(departFlight.ListFlight[0]);
+      setBookingSystem(departFlight?.System);
     }
     if (returnFlight) {
       flightData.push(returnFlight);
