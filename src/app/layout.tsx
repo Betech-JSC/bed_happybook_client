@@ -7,6 +7,7 @@ import HeaderMobile from "@/components/layout/header-mobile";
 import BackToTopButton from "@/components/layout/back-top-btn";
 import { Toaster } from "react-hot-toast";
 import { toastOptions } from "@/lib/toastConfig";
+import AppLoader from "@/components/layout/AppLoader";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         <div id="datepicker-portal"></div>
         <BackToTopButton></BackToTopButton>
         <Footer></Footer>
+        <AppLoader />
       </body>
     </html>
   );

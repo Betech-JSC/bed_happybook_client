@@ -59,7 +59,11 @@ export default function FlightItem({ data }: any) {
           <h3>{`${data.flight.data_diem_di.ten_dia_diem} - ${data.flight.data_diem_den.ten_dia_diem}`}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
-          <span>{data.flight.data_diem_di.ngay_khoi_hanh}</span>
+          <span>
+            {data.flight.ngay_khoi_hanh
+              ? format(data.flight.ngay_khoi_hanh, "dd-MM-yyyy")
+              : ""}
+          </span>
         </p>
         <div className="text-right mt-2">
           <span className="text-[#F27145] font-semibold text-base lg:text-xl">
