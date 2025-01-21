@@ -1,19 +1,33 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Vivus from "vivus";
 import "@/styles/AppLoader.scss";
 
 const AppLoader: React.FC = () => {
   const pathName = usePathname();
+  const router = useRouter();
   const svgContainerRef = useRef<HTMLDivElement>(null);
   const [loadingCompleted, setLoadingCompleted] = useState<boolean>(false);
   const timeoutLoaderRef = useRef<NodeJS.Timeout | null>(null);
+  const isLoaderRunning = useRef<boolean>(false);
   const isFirstLoad = useRef<boolean>(true);
+
+  const stopLoader = useCallback(() => {
+    setLoadingCompleted(true);
+    const prevSvg = svgContainerRef?.current?.querySelector("svg");
+    if (prevSvg) {
+      prevSvg.remove();
+    }
+    isFirstLoad.current = false;
+    isLoaderRunning.current = false;
+  }, []);
 
   const startLoader = useCallback(() => {
     if (!svgContainerRef.current) return;
+    if (isLoaderRunning.current) return;
     setLoadingCompleted(false);
+    isLoaderRunning.current = true;
     const vivusInstance = new Vivus(
       svgContainerRef.current?.id || "",
       {
@@ -35,15 +49,9 @@ const AppLoader: React.FC = () => {
         paths.forEach((path) => {
           path.classList.add("animated-fill");
         });
-
         if (isFirstLoad.current) {
           timeoutLoaderRef.current = setTimeout(() => {
-            setLoadingCompleted(true);
-            const prevSvg = svgContainerRef?.current?.querySelector("svg");
-            if (prevSvg) {
-              prevSvg.remove();
-            }
-            isFirstLoad.current = false;
+            stopLoader();
           }, 700);
         }
       }
@@ -54,11 +62,15 @@ const AppLoader: React.FC = () => {
         clearTimeout(timeoutLoaderRef.current);
       }
     };
-  }, []);
+  }, [stopLoader]);
 
   useEffect(() => {
     const handleLinkClick = (event: MouseEvent) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey) {
+        return;
+      }
       const target = event.target as HTMLElement;
+
       if (target.tagName === "A" || target.closest("a")) {
         const linkElement =
           target.tagName === "A" ? target : target.closest("a");
@@ -83,18 +95,12 @@ const AppLoader: React.FC = () => {
   }, [startLoader]);
 
   useEffect(() => {
-    startLoader();
-  }, [startLoader]);
-
-  useEffect(() => {
+    if (!isLoaderRunning.current) {
+      startLoader();
+    }
     if (!isFirstLoad.current) {
       timeoutLoaderRef.current = setTimeout(() => {
-        setLoadingCompleted(true);
-        const prevSvg = svgContainerRef?.current?.querySelector("svg");
-        if (prevSvg) {
-          prevSvg.remove();
-        }
-        isFirstLoad.current = false;
+        stopLoader();
       }, 700);
     }
     return () => {
@@ -102,7 +108,7 @@ const AppLoader: React.FC = () => {
         clearTimeout(timeoutLoaderRef.current);
       }
     };
-  }, [pathName]);
+  }, [pathName, startLoader, stopLoader]);
 
   return (
     <div
