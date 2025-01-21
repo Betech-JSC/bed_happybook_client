@@ -37,7 +37,7 @@ export default function RootLayout({
         <div id="datepicker-portal"></div>
         <BackToTopButton></BackToTopButton>
         <Footer></Footer>
-        <AppLoader />
+        {/* <AppLoader /> */}
       </body>
     </html>
   );

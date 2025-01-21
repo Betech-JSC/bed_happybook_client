@@ -72,7 +72,7 @@ export default async function Hotel() {
           <div className="py-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             <div className="flex items-center space-x-3 h-20">
               <Image
-                src="/tour/globe-gradient.png"
+                src="/tour/globe-gradient.svg"
                 alt="Icon"
                 className="h-11 w-11"
                 width={44}
@@ -87,7 +87,7 @@ export default async function Hotel() {
             </div>
             <div className="flex items-center space-x-3 h-20">
               <Image
-                src="/tour/Travel-gradient-icon.png"
+                src="/tour/Travel-gradient-icon.svg"
                 alt="Icon"
                 className="h-11 w-11"
                 width={44}
@@ -102,7 +102,7 @@ export default async function Hotel() {
             </div>
             <div className="flex items-center space-x-3 h-20">
               <Image
-                src="/tour/sun-icon.png"
+                src="/tour/sun-icon.svg"
                 alt="Icon"
                 className="h-11 w-11"
                 width={44}
@@ -147,7 +147,7 @@ export default async function Hotel() {
                   <div className="overflow-hidden rounded-t-2xl">
                     <Link href={item.url ?? "#"}>
                       <Image
-                        className="hover:scale-110 ease-in duration-300 cursor-pointer w-full h-[236px]"
+                        className="hover:scale-110 ease-in duration-300 cursor-pointer w-full rounded-t-2xl"
                         src={`${item.image_url}/${item.image_location}`}
                         alt="Image"
                         width={250}
@@ -156,11 +156,10 @@ export default async function Hotel() {
                       />
                     </Link>
                   </div>
-                  <Link
-                    href={item.url ?? ""}
-                    className="py-3 px-4 text-18 font-semibold text__default_hover"
-                  >
-                    <h3>{item.name}</h3>
+                  <Link href={item.url ?? "#"}>
+                    <h3 className="py-3 px-4 text-18 font-semibold text__default_hover">
+                      {item.name}
+                    </h3>
                   </Link>
                 </div>
               ))}
