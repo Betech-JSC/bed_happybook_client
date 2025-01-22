@@ -6,12 +6,12 @@ import "@/styles/AppLoader.scss";
 
 const AppLoader: React.FC = () => {
   const pathName = usePathname();
-  const router = useRouter();
   const svgContainerRef = useRef<HTMLDivElement>(null);
   const [loadingCompleted, setLoadingCompleted] = useState<boolean>(false);
   const timeoutLoaderRef = useRef<NodeJS.Timeout | null>(null);
   const isLoaderRunning = useRef<boolean>(false);
   const isFirstLoad = useRef<boolean>(true);
+  const vivusInstanceRef = useRef<Vivus | null>(null);
 
   const stopLoader = useCallback(() => {
     setLoadingCompleted(true);
@@ -24,15 +24,24 @@ const AppLoader: React.FC = () => {
   }, []);
 
   const startLoader = useCallback(() => {
-    if (!svgContainerRef.current) return;
-    if (isLoaderRunning.current) return;
+    if (!svgContainerRef.current || isLoaderRunning.current) return;
+
+    if (vivusInstanceRef.current) {
+      vivusInstanceRef.current.destroy();
+      vivusInstanceRef.current = null;
+    }
+
+    if (timeoutLoaderRef.current) {
+      clearTimeout(timeoutLoaderRef.current);
+    }
     setLoadingCompleted(false);
     isLoaderRunning.current = true;
-    const vivusInstance = new Vivus(
+
+    vivusInstanceRef.current = new Vivus(
       svgContainerRef.current?.id || "",
       {
         file: "/logo-happybook.svg",
-        duration: isFirstLoad.current ? 120 : 60,
+        duration: isFirstLoad.current ? 100 : 60,
         type: "oneByOne",
         onReady: (myVivus) => {
           const paths = myVivus.el.querySelectorAll("path, polygon");
@@ -56,12 +65,6 @@ const AppLoader: React.FC = () => {
         }
       }
     );
-    return () => {
-      vivusInstance.destroy();
-      if (timeoutLoaderRef.current) {
-        clearTimeout(timeoutLoaderRef.current);
-      }
-    };
   }, [stopLoader]);
 
   useEffect(() => {
@@ -106,6 +109,7 @@ const AppLoader: React.FC = () => {
     return () => {
       if (timeoutLoaderRef.current) {
         clearTimeout(timeoutLoaderRef.current);
+        timeoutLoaderRef.current = null;
       }
     };
   }, [pathName, startLoader, stopLoader]);
