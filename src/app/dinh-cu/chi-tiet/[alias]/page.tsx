@@ -78,7 +78,7 @@ export default async function SettleDetail({
               <div className="overflow-hidden rounded-lg">
                 <Image
                   className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
-                  src={`/settle-service/detail.png`}
+                  src={`${detail.image_url}/${detail.image_location}`}
                   alt="Image"
                   width={1000}
                   height={600}
