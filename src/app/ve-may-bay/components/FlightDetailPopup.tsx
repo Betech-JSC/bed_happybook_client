@@ -44,9 +44,9 @@ export default function FlightDetailPopup({
         flights.length > 0 &&
         Array.isArray(tabs) &&
         tabs.length > 0 && (
-          <div className="bg-white max-h-[90vh] min-h-[60vh] overflow-y-auto py-6 px-4 md:px-8 pb-8 md:max-w-[680px] md:min-w-[680px] rounded-lg">
+          <div className="bg-white max-h-[90vh] min-h-[60vh] overflow-y-auto custom-scrollbar  py-6 px-4 md:px-8 pb-8 md:max-w-[680px] md:min-w-[680px] rounded-lg">
             {tabs.length > 1 && (
-              <div className="flex justify-between items-end">
+              <div className="flex justify-between items-end sticky top-[-25px] bg-white z-[999]">
                 <p className="text-22 font-bold">Chi tiết</p>
                 <button
                   type="button"
@@ -67,7 +67,7 @@ export default function FlightDetailPopup({
             )}
             {/* Tabs */}
             <div
-              className={`flex ${
+              className={`flex sticky top-[-25px] bg-white z-[999]  ${
                 tabs.length > 1 ? "mt-3" : "justify-between"
               } `}
             >

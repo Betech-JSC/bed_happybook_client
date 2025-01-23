@@ -85,6 +85,11 @@ export default function FilghtDomesticList({
       acc[leg].push(flight);
       return acc;
     }, {} as { [key: string]: any[] });
+
+    if (isRoundTrip && !listFlights[1]) {
+      listFlights[1] = [];
+    }
+
     totalFlightLeg.map((_: number, index: number) => {
       if (!listFlights[index]) {
         listFlights[index] = [];
