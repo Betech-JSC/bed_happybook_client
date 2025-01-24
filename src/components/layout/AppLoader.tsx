@@ -83,7 +83,8 @@ const AppLoader: React.FC = () => {
           href &&
           !href.startsWith("#") &&
           !href.startsWith("mailto:") &&
-          !href.startsWith("tel:")
+          !href.startsWith("tel:") &&
+          href !== window.location.pathname
         ) {
           startLoader();
         }
