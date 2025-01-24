@@ -1,5 +1,4 @@
 "use client";
-import DisplayImage from "@/components/base/DisplayImage";
 import { formatCurrency } from "@/lib/formatters";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,12 +83,17 @@ export default function HotelDetailTabs({ data }: any) {
                 <div className="p-3 flex flex-col justify-between h-full">
                   <div className="flex-grow">
                     <div className="block overflow-hidden rounded-xl">
-                      <DisplayImage
-                        classStyle="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300 h-[275px] w-full"
-                        imagePath={`${item.image_location}`}
+                      <Image
+                        className="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300"
+                        src={
+                          item.image_location
+                            ? `${data.image_url}/${item.image_location}`
+                            : "/default-image.png"
+                        }
                         alt="Image"
                         width={416}
                         height={256}
+                        style={{ height: 275, width: "100%" }}
                       />
                     </div>
                     <Link
