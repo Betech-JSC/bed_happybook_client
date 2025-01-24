@@ -3,6 +3,7 @@ import { FlightApi } from "@/api/Flight";
 import { differenceInSeconds, format } from "date-fns";
 import LoadingButton from "@/components/base/LoadingButton";
 import {
+  formatCurrency,
   formatNumberToHoursAndMinutesFlight,
   formatTime,
 } from "@/lib/formatters";
@@ -255,18 +256,21 @@ export default function FlightBookForm({ airportsData }: any) {
     totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
     totalChd = item.Chd > totalChd ? item.Chd : totalChd;
     totalInf = item.Inf > totalInf ? item.Inf : totalInf;
-    totalPriceAdt += item.FareAdt + item.TaxAdt + item.ServiceFeeAdt;
-    totalPriceChd += item.FareChd + item.TaxChd + item.ServiceFeeChd;
-    totalPriceInf += item.FareInf + item.TaxInf + item.ServiceFeeInf;
+    totalPriceAdt +=
+      item.FareAdt + item.TaxAdt + item.FeeAdt + item.ServiceFeeAdt;
+    totalPriceChd +=
+      item.FareChd + item.TaxChd + item.FeeChd + item.ServiceFeeChd;
+    totalPriceInf +=
+      item.FareInf + item.TaxInf + item.FeeInf + item.ServiceFeeInf;
     FareAdt[index] = item.FareAdt + item.TaxAdt;
     FareChd[index] = item.FareChd + item.TaxChd;
     FareInf[index] = item.FareInf + item.TaxInf;
-    totalPriceTicketAdt += item.FareAdt;
-    totalPriceTicketChd += item.FareChd;
-    totalPriceTicketInf += item.FareInf;
-    totalTaxAdt += item.TaxAdt;
-    totalTaxChd += item.TaxChd;
-    totalTaxInf += item.TaxInf;
+    totalPriceTicketAdt += item.FareAdt + item.ServiceFeeAdt;
+    totalPriceTicketChd += item.FareChd + item.ServiceFeeChd;
+    totalPriceTicketInf += item.FareInf + item.ServiceFeeInf;
+    totalTaxAdt += item.TaxAdt + item.FeeAdt;
+    totalTaxChd += item.TaxChd + item.FeeChd;
+    totalTaxInf += item.TaxInf + item.FeeInf;
     if (flightType === "international") shouldStopMapFlights = true;
   });
   if (totalAdt) {
@@ -1535,8 +1539,7 @@ export default function FlightBookForm({ airportsData }: any) {
                     </div>
 
                     <div className="text-gray-900 font-bold w-4/12 text-right">
-                      {item.totalPrice.toLocaleString("vi-VN")}đ x{" "}
-                      {item.quantity}
+                      {formatCurrency(item.totalPrice)} x {item.quantity}
                     </div>
                   </button>
                   <div
@@ -1549,15 +1552,14 @@ export default function FlightBookForm({ airportsData }: any) {
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
                       <span>Vé</span>
                       <span>
-                        {item.totalPriceTicket.toLocaleString("vi-VN")}đ x{" "}
+                        {formatCurrency(item.totalPriceTicket)} x{" "}
                         {item.quantity}
                       </span>
                     </div>
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
                       <span>Thuế và phí</span>
                       <span>
-                        {item.totalTax.toLocaleString("vi-VN")}đ x{" "}
-                        {item.quantity}
+                        {formatCurrency(item.totalTax)} x {item.quantity}
                       </span>
                     </div>
                   </div>
@@ -1568,7 +1570,7 @@ export default function FlightBookForm({ airportsData }: any) {
                 <span className="text-sm text-gray-500 ">Hành lý bổ sung</span>
                 <p className="font-semibold">
                   {totalBaggages.price && totalBaggages.quantity
-                    ? `${totalBaggages.price.toLocaleString("vi-VN")}đ x ${
+                    ? `${formatCurrency(totalBaggages.price)} x ${
                         totalBaggages.quantity
                       }`
                     : "0đ"}
@@ -1577,7 +1579,7 @@ export default function FlightBookForm({ airportsData }: any) {
               <div className="flex pt-4 justify-between border-t border-t-gray-200">
                 <span className=" text-gray-700 font-bold">Tổng cộng</span>
                 <p className="font-bold text-primary">
-                  {finalPrice.toLocaleString("vi-VN")} vnđ
+                  {formatCurrency(finalPrice)}
                 </p>
               </div>
             </div>
