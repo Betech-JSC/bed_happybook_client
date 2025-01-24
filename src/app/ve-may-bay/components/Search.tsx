@@ -194,7 +194,6 @@ export default function Search({ airportsData }: SearchFilghtProps) {
       toast.error("Vui lòng chọn đầy đủ thông tin");
     }
   };
-
   return (
     <Suspense>
       <div>
@@ -303,7 +302,18 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                       locale={vi}
                       popperPlacement="bottom-start"
                       portalId="datepicker-search-flight"
-                      minDate={today}
+                      minDate={
+                        formData.departureDate &&
+                        isValid(formData.departureDate)
+                          ? formData.departureDate
+                          : today
+                      }
+                      openToDate={
+                        formData.departureDate &&
+                        isValid(formData.departureDate)
+                          ? formData.departureDate
+                          : today
+                      }
                       onFocus={(e) => e.target.blur()}
                       onKeyDown={(e) => {
                         e.preventDefault();

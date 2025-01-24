@@ -22,6 +22,8 @@ import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 import FAQ from "@/components/content-page/FAQ";
+import { PageApi } from "@/api/Page";
+import ContentByPage from "@/components/content-page/ContentByPage";
 
 export const metadata: Metadata = formatMetadata({
   title: "Vé máy bay giá rẻ",
@@ -53,6 +55,8 @@ export default async function SearchTicketCheap({
     code: endPoint,
     type: "",
   };
+  const contentPage = (await PageApi.getContent("ve-may-bay"))?.payload
+    ?.data as any;
 
   return (
     <SeoSchema
@@ -116,11 +120,10 @@ export default async function SearchTicketCheap({
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/ve-may-bay-gia-re" className="text-gray-700">
-                      Vé máy bay từ {fromOption?.city ?? "Hồ Chí Minh"}{" "}
-                      {" tới "}
-                      {toOption?.city ?? "Hà Nội"}
-                    </Link>
+                    <p className="text-gray-700">
+                      Vé máy bay từ {fromOption?.city ?? " "} {" tới "}
+                      {toOption?.city ?? " "}
+                    </p>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -157,46 +160,11 @@ export default async function SearchTicketCheap({
         <div>
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
             {/* Blog */}
-            <div className="mb-8 rounded-2xl bg-gray-50 p-8">
-              <h3 className="text-2xl font-bold">
-                Vé Máy Bay từ TP.HCM tới Hà Nội
-              </h3>
-              <p className="mt-6 line-clamp-3	">
-                Việt Nam, với thiên nhiên hùng vĩ và văn hóa đa dạng, là điểm
-                đến lý tưởng cho những chuyến tour trong nước. Từ núi rừng Tây
-                Bắc hùng vĩ, đồng bằng sông Cửu Long mênh mông, đến bãi biển
-                miền Trung tuyệt đẹp, mỗi vùng đất đều mang đến trải nghiệm đáng
-                nhớ.
-                <span className="block mt-4">
-                  Khi lựa chọn tour du lịch trong nước cùng HappyBook, bạn sẽ
-                  được khám phá các địa điểm nổi tiếng như Hà Nội cổ kính, Đà
-                  Nẵng năng động, Nha Trang biển xanh, hay Phú Quốc thiên đường
-                  nhiệt đới. Ngoài ra, các dịch vụ hỗ trợ chuyên nghiệp của
-                  chúng tôi sẽ đảm bảo hành trình của bạn luôn trọn vẹn và thú
-                  vị.
-                </span>
-              </p>
-              <button className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center">
-                <span className="font-medium group-hover:text-primary duration-300">
-                  Xem thêm
-                </span>
-                <svg
-                  className="group-hover:stroke-primary stroke-blue-700 duration-300"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 7.5L10 12.5L15 7.5"
-                    strokeWidth="1.66667"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
+            {contentPage?.content && (
+              <div className="mt-8 rounded-2xl bg-gray-50 p-8">
+                <ContentByPage data={contentPage} />
+              </div>
+            )}
             {/* Faq */}
             <div className="my-8">
               <FAQ />
