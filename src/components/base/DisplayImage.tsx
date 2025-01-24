@@ -1,32 +1,45 @@
+"use client";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function DisplayImage({
+  imageUrl = "",
   imagePath,
   width,
   height,
   alt,
   classStyle = "",
 }: {
+  imageUrl?: string;
   imagePath: string;
   width: number;
   height: number;
   alt: string;
   classStyle: string;
 }) {
-  const cmsDomain =
-    process.env.NEXT_PUBLIC_CMS_URL || "http://cms.happybooktravel.com";
+  if (!imageUrl) {
+    imageUrl =
+      process.env.NEXT_PUBLIC_CMS_URL || "http://cms.happybooktravel.com";
+  }
   const fullImageUrl = imagePath.startsWith("/")
-    ? `${cmsDomain}${imagePath}`
-    : `${cmsDomain}/${imagePath}`;
+    ? `${imageUrl}${imagePath}`
+    : `${imageUrl}/${imagePath}`;
 
+  const [imgSrc, setImgSrc] = useState(fullImageUrl);
+  const defaultImage = "/default-image.png";
   return (
     <Image
-      src={fullImageUrl}
+      src={imgSrc}
       alt={alt}
       width={width}
       height={height}
       priority
       className={classStyle}
+      onError={() => {
+        if (imgSrc !== defaultImage) {
+          setImgSrc(defaultImage);
+        }
+      }}
     />
   );
 }

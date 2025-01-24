@@ -8,6 +8,9 @@ import "swiper/css/thumbs";
 
 export default function ImageGallery({ gallery }: any) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+  if (!gallery?.length) {
+    gallery[0] = { image_url: "", image: "default-image.png" };
+  }
   return (
     <div className="image-gallery">
       <Swiper

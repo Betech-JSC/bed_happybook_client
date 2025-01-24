@@ -1,5 +1,5 @@
 "use client";
-import { formatTime } from "@/lib/formatters";
+import { formatCurrency, formatTime } from "@/lib/formatters";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { differenceInSeconds, format, parse } from "date-fns";
@@ -103,17 +103,17 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       totalChd = item.Chd > totalChd ? item.Chd : totalChd;
       totalInf = item.Inf > totalInf ? item.Inf : totalInf;
       totalPriceAdt +=
-        (item.FareAdt + item.TaxAdt + item.ServiceFeeAdt) * item.Adt;
+        item.FareAdt + item.TaxAdt + item.FeeAdt + item.ServiceFeeAdt;
       totalPriceChd +=
-        (item.FareChd + item.TaxChd + item.ServiceFeeChd) * item.Chd;
+        item.FareChd + item.TaxChd + item.FeeChd + item.ServiceFeeChd;
       totalPriceInf +=
-        (item.FareInf + item.TaxInf + item.ServiceFeeInf) * item.Inf;
-      totalPriceTicketAdt += item.FareAdt * item.Adt;
-      totalPriceTicketChd += item.FareChd * item.Chd;
-      totalPriceTicketInf += item.FareInf * item.Inf;
-      totalTaxAdt += item.TaxAdt * item.Adt;
-      totalTaxChd += item.TaxChd * item.Chd;
-      totalTaxInf += item.TaxInf * item.Inf;
+        item.FareInf + item.TaxInf + item.FeeInf + item.ServiceFeeInf;
+      totalPriceTicketAdt += item.FareAdt + item.ServiceFeeAdt;
+      totalPriceTicketChd += item.FareChd + item.ServiceFeeChd;
+      totalPriceTicketInf += item.FareInf + item.ServiceFeeInf;
+      totalTaxAdt += item.TaxAdt + item.FeeAdt;
+      totalTaxChd += item.TaxChd + item.FeeChd;
+      totalTaxInf += item.TaxInf + item.FeeInf;
     });
   }
 
@@ -809,7 +809,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 </div>
 
                 <div className="text-gray-900 font-bold w-4/12 text-right">
-                  {item.totalPrice.toLocaleString("vi-VN")}đ x {item.quantity}
+                  {formatCurrency(item.totalPrice)} x {item.quantity}
                 </div>
               </button>
               <div
@@ -822,14 +822,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 <div className="text-sm text-gray-500 flex justify-between mt-1">
                   <span>Vé</span>
                   <span>
-                    {item.totalPriceTicket.toLocaleString("vi-VN")}đ x{" "}
-                    {item.quantity}
+                    {formatCurrency(item.totalPriceTicket)} x {item.quantity}
                   </span>
                 </div>
                 <div className="text-sm text-gray-500 flex justify-between mt-1">
                   <span>Thuế và phí</span>
                   <span>
-                    {item.totalTax.toLocaleString("vi-VN")}đ x {item.quantity}
+                    {formatCurrency(item.totalTax)} x {item.quantity}
                   </span>
                 </div>
               </div>
@@ -840,7 +839,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             <span className="text-sm text-gray-500 ">Hành lý bổ sung</span>
             <p className="font-semibold">
               {totalBaggages.price && totalBaggages.quantity
-                ? `${totalBaggages.price.toLocaleString("vi-VN")}đ x ${
+                ? `${formatCurrency(totalBaggages.price)} x ${
                     totalBaggages.quantity
                   }`
                 : "0đ"}
@@ -849,7 +848,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           <div className="flex mt-4 pt-4 md:pb-6 justify-between border-t border-t-gray-200">
             <span className="text-gray-700 font-bold">Tổng cộng</span>
             <p className="font-bold text-primary">
-              {totalPrice.toLocaleString("vi-VN")}đ
+              {formatCurrency(totalPrice + totalBaggages.price)}
             </p>
           </div>
         </div>

@@ -204,9 +204,9 @@ const FlightDomesticDetail = ({
                   {ticketClasses.map((ticket: any, index: number) => {
                     const ticketFlight = ticket.ListFlight[0];
                     const priceTicket =
-                      ticket.FareAdt * ticket.Adt +
-                      ticket.FareChd * ticket.Chd +
-                      ticket.FareInf * ticket.Inf;
+                      (ticket.FareAdt + ticket.ServiceFeeAdt) * ticket.Adt +
+                      (ticket.FareChd + ticket.ServiceFeeChd) * ticket.Chd +
+                      (ticket.FareInf + +ticket.ServiceFeeInf) * ticket.Inf;
                     return (
                       <div
                         key={index}

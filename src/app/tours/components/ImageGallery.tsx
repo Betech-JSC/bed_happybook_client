@@ -8,7 +8,9 @@ import "swiper/css/thumbs";
 
 export default function ImageGallery({ gallery }: any) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
-
+  if (!gallery?.length) {
+    gallery[0] = { image_url: "", image: "default-image.png" };
+  }
   return (
     <div className="image-gallery">
       <Swiper
@@ -21,7 +23,7 @@ export default function ImageGallery({ gallery }: any) {
           <SwiperSlide key={index}>
             <Image
               className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
-              src={`${item.image_url}${item.image}`}
+              src={`${item.image_url}/${item.image}`}
               alt="Image"
               width={845}
               height={450}
@@ -60,7 +62,7 @@ export default function ImageGallery({ gallery }: any) {
             <SwiperSlide key={index} className="overflow-hidden rounded-lg">
               <Image
                 className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
-                src={`${item.image_url}${item.image}`}
+                src={`${item.image_url}/${item.image}`}
                 alt="Image"
                 width={135}
                 height={120}
