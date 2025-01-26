@@ -59,7 +59,7 @@ export default async function CategoryPosts({
   }
   const contentPage = (await PageApi.getContent("tours"))?.payload?.data as any;
   const category: any = [];
-  const optionsFilter = (await TourApi.getOptionsFilter())?.payload
+  const optionsFilter = (await TourApi.getOptionsFilter(typeTour))?.payload
     ?.data as any;
   return (
     <SeoSchema
