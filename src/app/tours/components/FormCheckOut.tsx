@@ -101,7 +101,7 @@ export default function CheckOutTourForm({
                   htmlFor="depart_date"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  Ngày khởi hành<span className="text-red-500">*</span>
+                  Ngày khởi hành <span className="text-red-500">*</span>
                 </label>
                 <div className="flex justify-between items-end pt-6 pb-2 pr-2 w-full rounded-md">
                   <Controller
@@ -145,7 +145,7 @@ export default function CheckOutTourForm({
                   htmlFor="service"
                   className="absolute top-0 left-0 h-4 translate-y-1 font-medium text-xs "
                 >
-                  Điểm khởi hành
+                  Điểm khởi hành <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="service"

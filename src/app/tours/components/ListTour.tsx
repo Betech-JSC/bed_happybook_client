@@ -117,29 +117,37 @@ export default function ListTour({
               className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none"
             >
               <p className="font-semibold">{item.label}</p>
-              {item.option.map((option, index) => {
-                return (
-                  index < 10 && (
-                    <div
-                      key={option.value}
-                      className="mt-3 flex space-x-2 items-center"
-                    >
-                      <input
-                        id={item.name + index}
-                        type="checkbox"
-                        value={option.value}
-                        disabled={isDisabled}
-                        className={TourStyle.custom_checkbox}
-                        onChange={(e) =>
-                          handleFilterChange(`${item.name}[]`, e.target.value)
-                        }
-                      />
-                      <label htmlFor={item.name + index}>{option.label}</label>
-                    </div>
-                  )
-                );
-              })}
-              {item.option.length > 10 && (
+              {item?.option?.length > 0 ? (
+                item.option.map((option, index) => {
+                  return (
+                    index < 20 && (
+                      <div
+                        key={option.value}
+                        className="mt-3 flex space-x-2 items-center"
+                      >
+                        <input
+                          id={item.name + index}
+                          type="checkbox"
+                          value={option.value}
+                          disabled={isDisabled}
+                          className={TourStyle.custom_checkbox}
+                          onChange={(e) =>
+                            handleFilterChange(`${item.name}[]`, e.target.value)
+                          }
+                        />
+                        <label htmlFor={item.name + index}>
+                          {option.label}
+                        </label>
+                      </div>
+                    )
+                  );
+                })
+              ) : (
+                <p className="mt-1 text-base text-gray-700">
+                  Dữ liệu đang cập nhật...
+                </p>
+              )}
+              {item.option.length > 20 && (
                 <button className="mt-3 flex items-center rounded-lg space-x-3 ">
                   <span className="text-[#175CD3] font-medium">Xem thêm</span>
                   <Image
