@@ -350,7 +350,12 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                       height={18}
                       style={{ width: 18, height: 18 }}
                     ></Image>
-                    <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
+                    <button
+                      className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
+                      onClick={() => {
+                        router.push("/ve-vui-choi");
+                      }}
+                    >
                       Tìm kiếm
                     </button>
                   </div>
