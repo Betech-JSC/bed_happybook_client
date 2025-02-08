@@ -18,6 +18,8 @@ import {
 } from "@/schemaValidations/checkOut.schema";
 import CountDownCheckOut from "./CountDownCheckOut";
 import DisplayImage from "@/components/base/DisplayImage";
+import { generateQrCode, generateToken } from "@/lib/payment";
+import QRCodeDisplay from "@/components/Payment/QRCodeDisplay";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const router = useRouter();
@@ -243,6 +245,23 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const [vietQrToken, setVietQrToken] = useState<string>("");
+  const [vietQrData, setVietQrData] = useState<any>({});
+  useEffect(() => {
+    generateToken().then((result) => {
+      setVietQrToken(result.access_token);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (vietQrToken) {
+      generateQrCode(vietQrToken).then((result) => {
+        setVietQrData(result);
+      });
+    }
+  }, [vietQrToken]);
+
   if (loading) {
     return (
       <div
@@ -742,6 +761,36 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               {errors.payment_method && (
                 <p className="text-red-600">{errors.payment_method.message}</p>
               )}
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5 justify-between bg-white p-4 mt-6 rounded-lg">
+            <div className="w-[150px] mx-auto md:w-1/4">
+              <QRCodeDisplay value={vietQrData.qrCode} />
+            </div>
+            <div className="md:w-3/4">
+              <p className="text-xl font-semibold">Thông tin chuyển khoản</p>
+              <div className="mt-2">
+                <span>Tài Khoản Nhận: </span>
+                <span className="font-bold">{`${vietQrData.bankCode} - ${vietQrData.bankAccount}`}</span>
+              </div>
+              <div className="mt-2">
+                <span>Chủ tài khoản: </span>
+                <span className="font-bold">{vietQrData.userBankName}</span>
+              </div>
+              <div className="mt-2">
+                <span>Mã đơn hàng: </span>
+                <span className="font-bold">{vietQrData.orderId}</span>
+              </div>
+              <div className="mt-2">
+                <span>Nội Dung Thanh Toán: </span>
+                <span className="font-bold">{vietQrData.content}</span>
+              </div>
+              <div className="mt-2">
+                <span>Số Tiền Thanh Toán: </span>
+                <span className="font-bold text-primary">
+                  {formatCurrency(vietQrData.amount)}
+                </span>
+              </div>
             </div>
           </div>
           <div className="mt-6">
