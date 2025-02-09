@@ -1,14 +1,14 @@
-import React from "react";
 import QRCode from "qrcode";
+import { useCallback, useEffect, useState } from "react";
 
 interface QRCodeDisplayProps {
   value: string;
 }
 
-const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ value }) => {
-  const [qrSVG, setQrSVG] = React.useState<string>("");
+export default function QRCodeDisplay({ value }: QRCodeDisplayProps) {
+  const [qrSVG, setQrSVG] = useState<string>("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const generateQR = async () => {
       try {
         const svg = await QRCode.toString(value, { type: "svg", margin: 0 });
@@ -21,6 +21,4 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ value }) => {
   }, [value]);
 
   return <div dangerouslySetInnerHTML={{ __html: qrSVG }} />;
-};
-
-export default QRCodeDisplay;
+}
