@@ -262,7 +262,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku).then(
         (result: any) => {
           setQrCodeGenerated(true);
-          setVietQrData(result?.payload?.data);
+          setVietQrData(result?.data);
         }
       );
     }
@@ -769,7 +769,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               {!isEmpty(vietQrData) && selectedPaymentMethod === "vietqr" && (
                 <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5 justify-between bg-white p-4 mt-6 rounded-lg">
                   <div className="w-[150px] mx-auto md:w-1/4">
-                    <QRCodeDisplay value={vietQrData.qrCode} />
+                    <QRCodeDisplay
+                      value={vietQrData.qrCode}
+                      orderCode={data?.orderInfo?.sku}
+                    />
                   </div>
                   <div className="md:w-3/4">
                     <p className="text-xl font-semibold">
@@ -813,10 +816,16 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                   : "Xác nhận thanh toán"
               }
               disabled={
-                ticketPaymentTimeout || !selectedPaymentMethod ? true : false
+                ticketPaymentTimeout ||
+                !selectedPaymentMethod ||
+                selectedPaymentMethod === "vietqr"
+                  ? true
+                  : false
               }
               style={
-                ticketPaymentTimeout || !selectedPaymentMethod
+                ticketPaymentTimeout ||
+                !selectedPaymentMethod ||
+                selectedPaymentMethod === "vietqr"
                   ? "bg-gray-300 disabled:cursor-not-allowed"
                   : ""
               }
