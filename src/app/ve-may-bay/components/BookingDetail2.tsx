@@ -47,6 +47,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [showTransferInfor, setShowTransferInfor] = useState<boolean>(false);
   const [vietQrData, setVietQrData] = useState<any>({});
   const [transferInformation, setTransferInformation] = useState<any>(null);
+  const [isPaid, setIsPaid] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -216,6 +217,16 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       setIsLoadingRules(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (data?.orderInfo?.sku) {
+      PaymentApi.checkPaymentStatus(data?.orderInfo?.sku).then((response) => {
+        if (response?.payload?.data?.paid === true) {
+          setIsPaid(true);
+        }
+      });
+    }
+  }, [data?.orderInfo?.sku]);
 
   const toggleShowRuleTicket = useCallback(
     async (FareData: any, indexFlight: number) => {
@@ -631,6 +642,76 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                     </label>
                   </div>
                   <div className="flex space-x-3 items-start mt-4">
+                    <div className="w-5 h-5">
+                      <input
+                        type="radio"
+                        value="bank_transfer"
+                        {...register("payment_method")}
+                        id="bank_transfer"
+                        className="w-5 h-5 mt-[2px]"
+                        onChange={(e) => {
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <label htmlFor="bank_transfer" className="flex space-x-1">
+                      <div className="font-normal">
+                        <Image
+                          src="/payment-method/transfer.svg"
+                          alt="Icon"
+                          width={24}
+                          height={24}
+                          className="w-6 h-6"
+                        />
+                      </div>
+                      <div className="max-width-[85%] w-fit">
+                        <span className="block text-base font-medium">
+                          Chuyển khoản nhanh ngân hàng
+                        </span>
+                        {/* <button
+                          type="button"
+                          className="text-blue-700 underline flex items-end"
+                          onClick={() => {
+                            setShowTransferInfor(!showTransferInfor);
+                          }}
+                        >
+                          Thông tin chuyển khoản{" "}
+                          <span className="ml-1">
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d={
+                                  showTransferInfor
+                                    ? "M15 12.5L10 7.5L5 12.5"
+                                    : "M5 7.5L10 12.5L15 7.5"
+                                }
+                                stroke="#175CD3"
+                                strokeWidth="1.66667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        </button>
+                        {showTransferInfor && (
+                          <div
+                            className={`mt-4 pb-3 bg-white rounded-2xl leading-6`}
+                            dangerouslySetInnerHTML={{
+                              __html:
+                                transferInformation?.content ??
+                                "Nội dung đang cập nhật...",
+                            }}
+                          />
+                        )} */}
+                      </div>
+                    </label>
+                  </div>
+                  <div className="flex space-x-3 items-start mt-4">
                     <input
                       type="radio"
                       value="vietqr"
@@ -684,78 +765,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                       <div className="max-width-[85%]">
                         <span className="block text-base font-medium">
-                          Thẻ quốc tế (Visa, Master, JCB)
+                          Thẻ quốc tế (Visa, Master, JCB) (coming soon)
                         </span>
-                      </div>
-                    </label>
-                  </div>
-                  <div className="flex space-x-3 items-start mt-4">
-                    <div className="w-5 h-5">
-                      <input
-                        type="radio"
-                        value="bank_transfer"
-                        {...register("payment_method")}
-                        id="bank_transfer"
-                        className="w-5 h-5 mt-[2px]"
-                        onChange={(e) => {
-                          setSelectedPaymentMethod(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <label htmlFor="bank_transfer" className="flex space-x-1">
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/transfer.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div className="max-width-[85%] w-fit">
-                        <span className="block text-base font-medium">
-                          Chuyển khoản
-                        </span>
-                        <button
-                          type="button"
-                          className="text-blue-700 underline flex items-end"
-                          onClick={() => {
-                            setShowTransferInfor(!showTransferInfor);
-                          }}
-                        >
-                          Thông tin chuyển khoản{" "}
-                          <span className="ml-1">
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d={
-                                  showTransferInfor
-                                    ? "M15 12.5L10 7.5L5 12.5"
-                                    : "M5 7.5L10 12.5L15 7.5"
-                                }
-                                stroke="#175CD3"
-                                strokeWidth="1.66667"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </span>
-                        </button>
-                        {showTransferInfor && (
-                          <div
-                            className={`mt-4 pb-3 bg-white rounded-2xl leading-6`}
-                            dangerouslySetInnerHTML={{
-                              __html:
-                                transferInformation?.content ??
-                                "Nội dung đang cập nhật...",
-                            }}
-                          />
-                        )}
                       </div>
                     </label>
                   </div>
@@ -767,65 +778,36 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 </div>
               </div>
               {!isEmpty(vietQrData) && selectedPaymentMethod === "vietqr" && (
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5 justify-between bg-white p-4 mt-6 rounded-lg">
-                  <div className="w-[150px] mx-auto md:w-1/4">
-                    <QRCodeDisplay
-                      value={vietQrData.qrCode}
-                      orderCode={data?.orderInfo?.sku}
-                    />
-                  </div>
-                  <div className="md:w-3/4">
-                    <p className="text-xl font-semibold">
-                      Thông tin chuyển khoản
-                    </p>
-                    <div className="mt-2">
-                      <span>Tài Khoản Nhận: </span>
-                      <span className="font-bold">{`${vietQrData.bankCode} - ${vietQrData.bankAccount}`}</span>
-                    </div>
-                    <div className="mt-2">
-                      <span>Chủ tài khoản: </span>
-                      <span className="font-bold">
-                        {vietQrData.userBankName}
-                      </span>
-                    </div>
-                    <div className="mt-2">
-                      <span>Mã đơn hàng: </span>
-                      <span className="font-bold">{vietQrData.orderId}</span>
-                    </div>
-                    <div className="mt-2">
-                      <span>Nội Dung Thanh Toán: </span>
-                      <span className="font-bold">{vietQrData.content}</span>
-                    </div>
-                    <div className="mt-2">
-                      <span>Số Tiền Thanh Toán: </span>
-                      <span className="font-bold text-primary">
-                        {formatCurrency(vietQrData.amount)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <QRCodeDisplay
+                  vietQrData={vietQrData}
+                  order={data?.orderInfo}
+                  isPaid={isPaid}
+                  setIsPaid={(paid) => setIsPaid(paid)}
+                />
               )}
             </>
           )}
-          <div className="mt-6">
+          <div className="mt-4">
             <LoadingButton
               isLoading={loadingSubmitForm}
               text={
                 ticketPaymentTimeout
                   ? "Đã hết thời gian thanh toán"
+                  : isPaid
+                  ? "Hoàn tất thanh toán"
                   : "Xác nhận thanh toán"
               }
               disabled={
                 ticketPaymentTimeout ||
                 !selectedPaymentMethod ||
-                selectedPaymentMethod === "vietqr"
+                (selectedPaymentMethod === "vietqr" && !isPaid)
                   ? true
                   : false
               }
               style={
                 ticketPaymentTimeout ||
                 !selectedPaymentMethod ||
-                selectedPaymentMethod === "vietqr"
+                (selectedPaymentMethod === "vietqr" && !isPaid)
                   ? "bg-gray-300 disabled:cursor-not-allowed"
                   : ""
               }
