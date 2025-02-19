@@ -74,7 +74,7 @@ export default function FlightDetailPopup({
               {tabs.map((tab: any, index: number) => (
                 <div key={index} onClick={() => setActiveTab(tab.id)}>
                   <button
-                    className={`py-2 font-bold duration-150 transition-colors pb-2 outline-none 
+                    className={`pt-2 font-bold duration-150 transition-colors outline-none 
                     ${activeTab === tab.id ? "text-primary " : ""} 
                     ${
                       tabs.length > 1 && activeTab === tab.id
@@ -260,18 +260,13 @@ export default function FlightDetailPopup({
                 ))}
               {activeTab === 2 && (
                 <div>
-                  {flights[0].ListRulesTicket ? (
+                  {flights[0]?.ListRuleTicket && (
                     <div
-                      className="text-sm text-gray-600 mt-1 list-disc list-inside"
+                      className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0"
                       dangerouslySetInnerHTML={{
-                        __html: flights[0].ListRulesTicket,
+                        __html: flights[0].ListRuleTicket,
                       }}
                     ></div>
-                  ) : (
-                    <p>
-                      Xin vui lòng liên hệ với Happy Book để nhận thông tin chi
-                      tiết.
-                    </p>
                   )}
                 </div>
               )}
