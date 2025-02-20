@@ -187,19 +187,17 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       setIsLoadingRules(true);
       const flight = FareData.ListFlight[0];
       const params = {
-        FlightRequest: {
-          ListFareData: [
-            {
-              Session: FareData.Session,
-              FareDataId: FareData.FareDataId,
-              ListFlight: [
-                {
-                  FlightValue: flight.FlightValue,
-                },
-              ],
-            },
-          ],
-        },
+        ListFareData: [
+          {
+            Session: FareData.Session,
+            FareDataId: FareData.FareDataId,
+            ListFlight: [
+              {
+                FlightValue: flight.FlightValue,
+              },
+            ],
+          },
+        ],
       };
 
       const response = await FlightApi.getFareRules(
