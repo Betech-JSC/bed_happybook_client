@@ -148,19 +148,17 @@ export default function FilghtDomesticList({
       try {
         setIsLoadingRules(true);
         const params = {
-          FlightRequest: {
-            ListFareData: [
-              {
-                Session: flightSession,
-                FareDataId: FareData.FareDataId,
-                ListFlight: [
-                  {
-                    FlightValue: flight.FlightValue,
-                  },
-                ],
-              },
-            ],
-          },
+          ListFareData: [
+            {
+              Session: flightSession,
+              FareDataId: FareData.FareDataId,
+              ListFlight: [
+                {
+                  FlightValue: flight.FlightValue,
+                },
+              ],
+            },
+          ],
         };
 
         const response = await FlightApi.getFareRules(

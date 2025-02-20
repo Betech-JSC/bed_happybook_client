@@ -182,19 +182,17 @@ export default function FlightInternationalList({
     async (FareData: any, flight: any) => {
       try {
         const params = {
-          FlightRequest: {
-            ListFareData: [
-              {
-                Session: flightSession,
-                FareDataId: FareData.FareDataId,
-                ListFlight: [
-                  {
-                    FlightValue: flight.FlightValue,
-                  },
-                ],
-              },
-            ],
-          },
+          ListFareData: [
+            {
+              Session: flightSession,
+              FareDataId: FareData.FareDataId,
+              ListFlight: [
+                {
+                  FlightValue: flight.FlightValue,
+                },
+              ],
+            },
+          ],
         };
 
         const response = await FlightApi.getFareRules(
