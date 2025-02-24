@@ -95,11 +95,11 @@ export default function Tabs({ detail }: any) {
                             : "border-[#4E6EB3]"
                         }`}
                       ></span>
-                      <div
+                      <h3
                         className={`ml-5 font-18 font-semibold text-gray-900`}
                       >
                         {schedule.title}
-                      </div>
+                      </h3>
                     </div>
                     <button
                       className={`duration-300 ${
