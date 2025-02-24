@@ -253,6 +253,31 @@ export default function FlightDetailPopup({
                               </div>
                             </div>
                           </div>
+                          {segment.StopTime > 0 && (
+                            <div className="col-span-12 h-full w-full">
+                              <div className="flex h-full items-start gap-0 md:gap-2">
+                                <div className="w-0 md:w-2/12 flex h-full justify-between flex-col items-end"></div>
+                                <div className="w-0 md:w-1/12 h-full py-5 flex flex-col items-center"></div>
+                                <div className="w-full md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
+                                  <div className="bg-gray-50 rounded-lg p-4 flex space-x-4 lg:space-x-8 items-center text-sm">
+                                    <p>
+                                      Transfer in{" "}
+                                      {airPortEndPoint
+                                        ? `${airPortEndPoint?.city ?? ""} (${
+                                            segment.EndPoint
+                                          })`
+                                        : `${segment.EndPoint}`}{" "}
+                                    </p>
+                                    <p>
+                                      {formatNumberToHoursAndMinutesFlight(
+                                        segment.StopTime
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
