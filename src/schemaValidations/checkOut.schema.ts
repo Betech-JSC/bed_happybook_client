@@ -10,7 +10,7 @@ export const CheckOutBody = z.object({
     .refine(
       (value) =>
         value &&
-        ["cash", "vnpay", "international_card", "bank_transfer"].includes(
+        ["cash", "vietqr", "international_card", "bank_transfer"].includes(
           value
         ),
       {
