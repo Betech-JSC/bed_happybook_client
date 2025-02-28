@@ -34,6 +34,7 @@ export default function FlightBookForm({ airportsData }: any) {
   const [flightsDetail, setFlightsDetail] = useState<any[]>([]);
   const [flightType, setFlightType] = useState<string>("");
   const [listBaggage, setListBaggage] = useState<any[]>([]);
+  const [listBaggageGrouped, setListBaggageGrouped] = useState<any[]>([]);
   const [listBaggagePassenger, setListBaggagePassenger] = useState<any>([]);
   const [totalBaggages, setTotalBaggages] = useState<{
     price: number;
@@ -408,7 +409,16 @@ export default function FlightBookForm({ airportsData }: any) {
             "flights/getbaggage",
             params
           );
-          setListBaggage(response?.payload.ListBaggage ?? []);
+          const data = response?.payload.ListBaggage ?? [];
+          const defaultGroupedObj =
+            flights.length > 1 ? { 0: [], 1: [] } : { 0: [] };
+
+          const groupedByLeg = data.reduce((acc: any, item: any) => {
+            acc[item.Leg].push(item);
+            return acc;
+          }, defaultGroupedObj as { [key: number]: typeof data });
+          setListBaggage(data);
+          setListBaggageGrouped(groupedByLeg);
         }
       } catch (error: any) {
         setListBaggage([]);
@@ -843,6 +853,17 @@ export default function FlightBookForm({ airportsData }: any) {
                                 onChange={(date: Date | null) =>
                                   field.onChange(date)
                                 }
+                                onChangeRaw={(event) => {
+                                  if (event) {
+                                    const target =
+                                      event.target as HTMLInputElement;
+                                    if (target.value) {
+                                      target.value = target.value
+                                        .trim()
+                                        .replace(/\//g, "-");
+                                    }
+                                  }
+                                }}
                                 placeholderText="Nhập ngày sinh"
                                 dateFormat="dd-MM-yyyy"
                                 showMonthDropdown
@@ -912,6 +933,17 @@ export default function FlightBookForm({ airportsData }: any) {
                                 onChange={(date: Date | null) =>
                                   field.onChange(date)
                                 }
+                                onChangeRaw={(event) => {
+                                  if (event) {
+                                    const target =
+                                      event.target as HTMLInputElement;
+                                    if (target.value) {
+                                      target.value = target.value
+                                        .trim()
+                                        .replace(/\//g, "-");
+                                    }
+                                  }
+                                }}
                                 placeholderText="Nhập ngày hết hạn"
                                 dateFormat="dd-MM-yyyy"
                                 showMonthDropdown
@@ -943,82 +975,60 @@ export default function FlightBookForm({ airportsData }: any) {
                           </p>
                         )}
                       </div>
-                      {listBaggage.length > 0 && (
-                        <div className="relative">
-                          <label
-                            htmlFor="service"
-                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                          >
-                            Hành lý chiều đi
-                          </label>
-                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                            <select
-                              onChange={(event) => {
-                                handleChooseBaggage(
-                                  0,
-                                  event.target.value,
-                                  "atd",
-                                  index
-                                );
-                              }}
-                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            >
-                              <option value="">Chọn gói hành lý</option>
-                              {listBaggage.map((baggage, key) => {
-                                if (baggage.Leg === 0) {
-                                  return (
-                                    <option key={key} value={baggage.Code}>
-                                      {baggage.Name} {" / "}
-                                      {baggage.Price.toLocaleString(
-                                        "vi-VN"
-                                      )}{" "}
-                                      {baggage.Currency}
+
+                      {Object.keys(listBaggageGrouped).length > 0 &&
+                        Object.entries(listBaggageGrouped).map(
+                          ([flightLeg, items]) => {
+                            const leg = parseInt(flightLeg);
+                            const hasBaggage = items.length > 0 ? true : false;
+                            return (
+                              <div
+                                className={`relative ${
+                                  !hasBaggage ? "cursor-not-allowed" : ""
+                                }`}
+                                key={leg}
+                              >
+                                <label className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs">
+                                  Hành lý chiều {leg === 0 ? "đi" : "về"}
+                                </label>
+                                <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                                  <select
+                                    onChange={(event) => {
+                                      handleChooseBaggage(
+                                        leg,
+                                        event.target.value,
+                                        "atd",
+                                        index
+                                      );
+                                    }}
+                                    disabled={!hasBaggage}
+                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${
+                                      !hasBaggage
+                                        ? "cursor-not-allowed appearance-none"
+                                        : ""
+                                    }`}
+                                  >
+                                    <option value="">
+                                      {hasBaggage
+                                        ? "Chọn gói hành lý"
+                                        : "Chuyến bay không hỗ trợ mua thêm hành lý"}
                                     </option>
-                                  );
-                                }
-                              })}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                      {isRoundTrip && listBaggage.length > 0 && (
-                        <div className="relative">
-                          <label
-                            htmlFor="service"
-                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                          >
-                            Hành lý chiều về
-                          </label>
-                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                            <select
-                              onChange={(event) => {
-                                handleChooseBaggage(
-                                  1,
-                                  event.target.value,
-                                  "atd",
-                                  index
-                                );
-                              }}
-                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            >
-                              <option value="">Chọn gói hành lý</option>
-                              {listBaggage.map((baggage, key) => {
-                                if (baggage.Leg === 1) {
-                                  return (
-                                    <option key={key} value={baggage.Code}>
-                                      {baggage.Name} {" / "}
-                                      {baggage.Price.toLocaleString(
-                                        "vi-VN"
-                                      )}{" "}
-                                      {baggage.Currency}
-                                    </option>
-                                  );
-                                }
-                              })}
-                            </select>
-                          </div>
-                        </div>
-                      )}
+                                    {hasBaggage &&
+                                      items.map((baggage: any, key: any) => (
+                                        <option key={key} value={baggage.Code}>
+                                          {baggage.Name} {" / "}
+                                          {baggage.Price.toLocaleString(
+                                            "vi-VN"
+                                          )}{" "}
+                                          {baggage.Currency}
+                                        </option>
+                                      ))}
+                                  </select>
+                                </div>
+                              </div>
+                            );
+                          }
+                        )}
                     </div>
                   </div>
                 ))}
@@ -1126,6 +1136,17 @@ export default function FlightBookForm({ airportsData }: any) {
                                 onChange={(date: Date | null) =>
                                   field.onChange(date)
                                 }
+                                onChangeRaw={(event) => {
+                                  if (event) {
+                                    const target =
+                                      event.target as HTMLInputElement;
+                                    if (target.value) {
+                                      target.value = target.value
+                                        .trim()
+                                        .replace(/\//g, "-");
+                                    }
+                                  }
+                                }}
                                 placeholderText="Nhập ngày sinh"
                                 dateFormat="dd-MM-yyyy"
                                 showMonthDropdown
@@ -1149,82 +1170,59 @@ export default function FlightBookForm({ airportsData }: any) {
                           </p>
                         )}
                       </div>
-                      {listBaggage.length > 0 && (
-                        <div className="relative">
-                          <label
-                            htmlFor="service"
-                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                          >
-                            Hành lý chiều đi
-                          </label>
-                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                            <select
-                              onChange={(event) => {
-                                handleChooseBaggage(
-                                  0,
-                                  event.target.value,
-                                  "chd",
-                                  index
-                                );
-                              }}
-                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            >
-                              <option value="">Chọn gói hành lý</option>
-                              {listBaggage.map((baggage, key) => {
-                                if (baggage.Leg === 0) {
-                                  return (
-                                    <option key={key} value={baggage.Code}>
-                                      {baggage.Name} {" / "}
-                                      {baggage.Price.toLocaleString(
-                                        "vi-VN"
-                                      )}{" "}
-                                      {baggage.Currency}
+                      {Object.keys(listBaggageGrouped).length > 0 &&
+                        Object.entries(listBaggageGrouped).map(
+                          ([flightLeg, items]) => {
+                            const leg = parseInt(flightLeg);
+                            const hasBaggage = items.length > 0 ? true : false;
+                            return (
+                              <div
+                                className={`relative ${
+                                  !hasBaggage ? "cursor-not-allowed" : ""
+                                }`}
+                                key={leg}
+                              >
+                                <label className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs">
+                                  Hành lý chiều {leg === 0 ? "đi" : "về"}
+                                </label>
+                                <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                                  <select
+                                    onChange={(event) => {
+                                      handleChooseBaggage(
+                                        leg,
+                                        event.target.value,
+                                        "chd",
+                                        index
+                                      );
+                                    }}
+                                    disabled={!hasBaggage}
+                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${
+                                      !hasBaggage
+                                        ? "cursor-not-allowed appearance-none"
+                                        : ""
+                                    }`}
+                                  >
+                                    <option value="">
+                                      {hasBaggage
+                                        ? "Chọn gói hành lý"
+                                        : "Chuyến bay không hỗ trợ mua thêm hành lý"}
                                     </option>
-                                  );
-                                }
-                              })}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                      {isRoundTrip && listBaggage.length > 0 && (
-                        <div className="relative">
-                          <label
-                            htmlFor="service"
-                            className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                          >
-                            Hành lý chiều về
-                          </label>
-                          <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                            <select
-                              onChange={(event) => {
-                                handleChooseBaggage(
-                                  1,
-                                  event.target.value,
-                                  "chd",
-                                  index
-                                );
-                              }}
-                              className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            >
-                              <option value="">Chọn gói hành lý</option>
-                              {listBaggage.map((baggage, key) => {
-                                if (baggage.Leg === 1) {
-                                  return (
-                                    <option key={key} value={baggage.Code}>
-                                      {baggage.Name} {" / "}
-                                      {baggage.Price.toLocaleString(
-                                        "vi-VN"
-                                      )}{" "}
-                                      {baggage.Currency}
-                                    </option>
-                                  );
-                                }
-                              })}
-                            </select>
-                          </div>
-                        </div>
-                      )}
+                                    {hasBaggage &&
+                                      items.map((baggage: any, key: any) => (
+                                        <option key={key} value={baggage.Code}>
+                                          {baggage.Name} {" / "}
+                                          {baggage.Price.toLocaleString(
+                                            "vi-VN"
+                                          )}{" "}
+                                          {baggage.Currency}
+                                        </option>
+                                      ))}
+                                  </select>
+                                </div>
+                              </div>
+                            );
+                          }
+                        )}
                     </div>
                   </div>
                 ))}
@@ -1333,6 +1331,17 @@ export default function FlightBookForm({ airportsData }: any) {
                                 onChange={(date: Date | null) =>
                                   field.onChange(date)
                                 }
+                                onChangeRaw={(event) => {
+                                  if (event) {
+                                    const target =
+                                      event.target as HTMLInputElement;
+                                    if (target.value) {
+                                      target.value = target.value
+                                        .trim()
+                                        .replace(/\//g, "-");
+                                    }
+                                  }
+                                }}
                                 placeholderText="Nhập ngày sinh"
                                 dateFormat="dd-MM-yyyy"
                                 showMonthDropdown

@@ -229,9 +229,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const toggleShowRuleTicket = useCallback(
     async (FareData: any, indexFlight: number) => {
       setShowRuleTicket(
-        showRuleTicket === FareData.ListFlight[indexFlight].FlightId
+        showRuleTicket === FareData.FareDataId + indexFlight
           ? null
-          : FareData.ListFlight[indexFlight].FlightId
+          : FareData.FareDataId + indexFlight
       );
 
       if (!FareData.ListFlight[indexFlight].ListRulesTicket) {
@@ -494,10 +494,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                     </button>
 
                     <div>
-                      {showRuleTicket === flight.FlightId && isLoadingRules && (
-                        <span className="loader_spiner mt-2"></span>
-                      )}
-                      {showRuleTicket === flight.FlightId &&
+                      {showRuleTicket === item.FareDataId + indexFlight &&
+                        isLoadingRules && (
+                          <span className="loader_spiner mt-2"></span>
+                        )}
+                      {showRuleTicket === item.FareDataId + indexFlight &&
                         !isLoadingRules && (
                           <div
                             className="mt -2text-sm text-gray-600 mt-1 list-disc list-inside"
@@ -630,7 +631,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                       <div className="max-w-[85%]">
                         <span className="font-medium text-base">
-                          Thanh toán tiền mặt
+                          Thanh toán tại quầy
                         </span>
                         <p className="text-gray-500">
                           Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
@@ -639,7 +640,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                     </label>
                   </div>
-                  <div className="flex space-x-3 items-start mt-4">
+                  {/* <div className="flex space-x-3 items-start mt-4">
                     <div className="w-5 h-5">
                       <input
                         type="radio"
@@ -666,7 +667,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         <span className="block text-base font-medium">
                           Chuyển khoản nhanh ngân hàng
                         </span>
-                        {/* <button
+                         <button
                           type="button"
                           className="text-blue-700 underline flex items-end"
                           onClick={() => {
@@ -705,10 +706,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                 "Nội dung đang cập nhật...",
                             }}
                           />
-                        )} */}
+                        )}
                       </div>
                     </label>
-                  </div>
+                  </div> */}
                   <div className="flex space-x-3 items-start mt-4">
                     <input
                       type="radio"
@@ -723,7 +724,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                     <label htmlFor="payment_vietqr" className=" flex space-x-1">
                       <div className="font-normal">
                         <Image
-                          src="/payment-method/vietqr.jpeg"
+                          src="/payment-method/transfer.svg"
                           alt="Icon"
                           width={24}
                           height={24}
@@ -732,7 +733,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                       <div>
                         <span className="font-medium text-base max-width-[85%]">
-                          Thanh toán bằng VietQR
+                          Thanh toán chuyển khoản ngân hàng
                         </span>
                       </div>
                     </label>
@@ -763,7 +764,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                       <div className="max-width-[85%]">
                         <span className="block text-base font-medium">
-                          Thẻ quốc tế (Visa, Master, JCB) (coming soon)
+                          Thanh Toán Visa
                         </span>
                       </div>
                     </label>

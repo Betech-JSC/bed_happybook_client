@@ -179,7 +179,7 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
         .min(1, {
           message: "Vui lòng điền thông tin này",
         })
-        .regex(/^\d{10,11}$/, {
+        .regex(/^0\d{9,10}$/, {
           message: "Số điện thoại không đúng định dạng",
         }),
       email: z

@@ -99,7 +99,7 @@ export default function QRCodeDisplay({
           </div>
           <div className="flex mt-3 space-x-2">
             <span className="w-1/3">Nội dung chuyển khoản</span>
-            <span className="w-2/3 font-medium">{`Thanh toan ${order?.sku}`}</span>
+            <span className="w-2/3 font-medium">{vietQrData.content}</span>
           </div>
         </div>
       </div>
