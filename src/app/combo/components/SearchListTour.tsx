@@ -3,13 +3,21 @@ import TourStyle from "@/styles/tour.module.scss";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
+import {
+  buildSearch,
+  getLabelRatingProduct,
+  renderTextContent,
+} from "@/utils/Helper";
 import { ComboApi } from "@/api/Combo";
 import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
+import { useTranslation } from "@/app/hooks/useTranslation";
+import { translatePage } from "@/utils/translateDom";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function SearchListTour({
   optionsFilter,
+  translatedStaticText,
 }: {
   optionsFilter: {
     label: string;
@@ -19,6 +27,7 @@ export default function SearchListTour({
       label?: string;
     }[];
   }[];
+  translatedStaticText: {};
 }) {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
@@ -31,13 +40,19 @@ export default function SearchListTour({
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
+  const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
+  const { language } = useLanguage();
+  const { t } = useTranslation(translatedStaticText);
+
   const loadData = useCallback(async () => {
     try {
+      setTranslatedText(false);
       setLoadingLoadMore(true);
       setIsDisabled(true);
+      query.locale = language;
       const search = buildSearch(query);
       const res = await ComboApi.search(`/product/combo/search${search}`);
       const result = res?.payload?.data;
@@ -49,6 +64,9 @@ export default function SearchListTour({
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
+      translatePage("#wrapper-search-combo", 10).then(() =>
+        setTranslatedText(true)
+      );
     } catch (error) {
       console.log("Error search: " + error);
     } finally {
@@ -56,7 +74,7 @@ export default function SearchListTour({
       setIsDisabled(false);
       setLoadingLoadMore(false);
     }
-  }, [query]);
+  }, [query, language]);
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
@@ -95,94 +113,89 @@ export default function SearchListTour({
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Đang tải dữ liệu...</span>
+        <span className="text-18">{t("dang_tai_du_lieu")}...</span>
       </div>
     );
   }
-  if (!data) return;
   return (
-    <div className="flex mt-6 md:space-x-4 items-start pb-8">
-      <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
+    <div
+      id="wrapper-search-combo"
+      className="flex mt-6 md:space-x-4 items-start pb-8"
+    >
+      <div
+        className={`hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl transition-opacity duration-300 ${
+          firstLoad ? "opacity-0" : "opacity-100"
+        }`}
+      >
         {optionsFilter?.map((item, index) => (
           <div
             key={index}
             className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
           >
-            <p className="font-semibold">{item.label}</p>
+            <p className="font-semibold" data-translate={true}>
+              {item.label}
+            </p>
             {item.option.map((option, index) => {
               return (
-                index < 20 && (
-                  <div
-                    key={option.value}
-                    className="mt-3 flex space-x-2 items-center"
+                <div
+                  key={option.value}
+                  className="mt-3 flex space-x-2 items-center"
+                >
+                  <input
+                    type="checkbox"
+                    disabled={isDisabled}
+                    id={item.name + index}
+                    value={option.value}
+                    className={TourStyle.custom_checkbox}
+                    onChange={(e) =>
+                      handleFilterChange(`${item.name}[]`, e.target.value)
+                    }
+                  />
+                  {item.name === "star" && (
+                    <div className="flex space-x-1">
+                      {Array.from({ length: 5 }, (_, index) =>
+                        option.value && index < option.value ? (
+                          <Image
+                            key={index}
+                            className="w-auto"
+                            src="/icon/starFull.svg"
+                            alt="Icon"
+                            width={10}
+                            height={10}
+                          />
+                        ) : (
+                          <Image
+                            key={index}
+                            className="w-auto"
+                            src="/icon/star.svg"
+                            alt="Icon"
+                            width={10}
+                            height={10}
+                          />
+                        )
+                      )}
+                    </div>
+                  )}
+                  <label
+                    className={`${
+                      item.name === "star"
+                    } ? "text-[#667085]" : ""`}
+                    htmlFor={item.name + index}
+                    data-translate={true}
                   >
-                    <input
-                      type="checkbox"
-                      disabled={isDisabled}
-                      id={item.name + index}
-                      value={option.value}
-                      className={TourStyle.custom_checkbox}
-                      onChange={(e) =>
-                        handleFilterChange(`${item.name}[]`, e.target.value)
-                      }
-                    />
-                    {item.name === "star" && (
-                      <div className="flex space-x-1">
-                        {Array.from({ length: 5 }, (_, index) =>
-                          option.value && index < option.value ? (
-                            <Image
-                              key={index}
-                              className="w-auto"
-                              src="/icon/starFull.svg"
-                              alt="Icon"
-                              width={10}
-                              height={10}
-                            />
-                          ) : (
-                            <Image
-                              key={index}
-                              className="w-auto"
-                              src="/icon/star.svg"
-                              alt="Icon"
-                              width={10}
-                              height={10}
-                            />
-                          )
-                        )}
-                      </div>
-                    )}
-                    <label
-                      className={`${
-                        item.name === "star"
-                      } ? "text-[#667085]" : ""`}
-                      htmlFor={item.name + index}
-                    >
-                      {option.label}
-                    </label>
-                  </div>
-                )
+                    {option.label}
+                  </label>
+                </div>
               );
             })}
-            {item.option.length > 20 && (
-              <button className="mt-3 flex items-center rounded-lg space-x-3 ">
-                <span className="text-[#175CD3] font-medium">Xem thêm</span>
-                <Image
-                  className="hover:scale-110 ease-in duration-300 rotate-90"
-                  src="/icon/chevron-right.svg"
-                  alt="Icon"
-                  width={20}
-                  height={20}
-                />
-              </button>
-            )}
           </div>
         ))}
       </div>
       <div className="md:w-8/12 lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold">Tìm kiếm</h1>
+          <h1 className="text-32 font-bold">{t("tim_kiem")}</h1>
           <div className="flex my-4 md:my-0 space-x-3 items-center">
-            <span>Sắp xếp</span>
+            <span>{t("sap_xep")}</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
@@ -191,8 +204,8 @@ export default function SearchListTour({
                 }}
                 defaultValue={"id|desc"}
               >
-                <option value="id|desc">Mới nhất</option>
-                <option value="id|asc">Cũ nhất</option>
+                <option value="id|desc">{t("moi_nhat")}</option>
+                <option value="id|asc">{t("cu_nhat")}</option>
               </select>
             </div>
           </div>
@@ -202,7 +215,9 @@ export default function SearchListTour({
             data.map((item: any, index: number) => (
               <div
                 key={index}
-                className="flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mt-4"
+                className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mt-4 transition-opacity duration-700 ${
+                  translatedText ? "opacity-100" : "opacity-0"
+                }`}
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
                   <Link href={`/combo/chi-tiet/${item.slug}`}>
@@ -224,7 +239,9 @@ export default function SearchListTour({
                         href={`/combo/chi-tiet/${item.slug}`}
                         className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                       >
-                        <h2>{item.name}</h2>
+                        <h2 data-translate={true}>
+                          {renderTextContent(item.name)}
+                        </h2>
                       </Link>
                       <div className="flex w-[20%] space-x-1">
                         <>
@@ -261,8 +278,8 @@ export default function SearchListTour({
                         width={20}
                         height={20}
                       />
-                      <span className="text-sm">
-                        {item?.combo?.address ?? ""}
+                      <span className="text-sm" data-translate={true}>
+                        {renderTextContent(item?.combo?.address)}
                       </span>
                     </div>
                     <div className="flex flex-wrap">
@@ -271,8 +288,9 @@ export default function SearchListTour({
                           <span
                             className="mr-2 mt-2 py-[2px] px-[6px] border border-gray-300 rounded-sm"
                             key={item.id}
+                            data-translate={true}
                           >
-                            {item?.hotel_amenity?.name ?? ""}
+                            {renderTextContent(item?.hotel_amenity?.name)}
                           </span>
                         ))}
                     </div>
@@ -286,17 +304,23 @@ export default function SearchListTour({
                         <span className="text-primary text-sm font-semibold">
                           {getLabelRatingProduct(item.average_rating)}
                         </span>
-                        <span className="text-gray-500 text-xs">
+                        <span
+                          className="text-gray-500 text-xs"
+                          data-translate={true}
+                        >
                           {item.total_rating} đánh giá
                         </span>
                       </div>
                     </div>
                     {item.price && (
                       <div className="text-base md:text-xl text-primary font-semibold text-end">
-                        <span className="text-gray-500 text-sm md:text-base mr-2">
+                        <span
+                          className="text-gray-500 text-sm md:text-base mr-2"
+                          data-translate={true}
+                        >
                           chỉ từ
                         </span>
-                        {formatCurrency(item.price)}
+                        {formatCurrency(item.price, language)}
                       </div>
                     )}
                   </div>
@@ -311,11 +335,11 @@ export default function SearchListTour({
               {loadingLoadMore ? (
                 <>
                   <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-                  <span className="text-18"> Đang tải dữ liệu...</span>
+                  <span className="text-18">{t("dang_tai_du_lieu")}..</span>
                 </>
               ) : (
                 <span className="text-18">
-                  Không tìm thấy dữ liệu phù hợp...
+                  {t("khong_tim_thay_du_lieu_phu_hop")}...
                 </span>
               )}
             </div>

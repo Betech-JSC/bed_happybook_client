@@ -23,7 +23,7 @@ import CompoItem from "@/components/product/components/CompoItem";
 import { ComboApi } from "@/api/Combo";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
-import { getLabelRatingProduct } from "@/utils/Helper";
+import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
 
 export const metadata: Metadata = {
   title: "Combo 3N2Đ Vinpearl Resort Nha Trang 5 sao + Vé máy bay",
@@ -47,7 +47,11 @@ export default async function CompoDetail({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link
+                    href="/"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -63,8 +67,12 @@ export default async function CompoDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
-                    {detail.name}
+                  <Link
+                    href="#"
+                    className="text-gray-700"
+                    data-translate={true}
+                  >
+                    {renderTextContent(detail.name)}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -80,8 +88,11 @@ export default async function CompoDetail({
             <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    {detail?.name ?? ""}
+                  <h1
+                    className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                    data-translate={true}
+                  >
+                    {renderTextContent(detail.name)}
                   </h1>
                   <div className="flex space-x-2 mt-2">
                     <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
@@ -90,7 +101,7 @@ export default async function CompoDetail({
                     <span className="text-primary font-semibold">
                       {getLabelRatingProduct(detail?.total_rating)}
                     </span>
-                    <span className="text-gray-500">
+                    <span className="text-gray-500" data-translate={true}>
                       {detail?.total_rating ?? 0} đánh giá
                     </span>
                   </div>
@@ -102,7 +113,7 @@ export default async function CompoDetail({
                       width={18}
                       height={18}
                     />
-                    <span>
+                    <span data-translate={true}>
                       {`${detail?.combo?.day ? detail.combo.day : ""} ngày ${
                         detail?.combo?.night ? detail.combo.night : ""
                       } đêm`}
@@ -117,7 +128,9 @@ export default async function CompoDetail({
                       width={18}
                       height={18}
                     />
-                    <span>{detail?.combo?.address}</span>
+                    <span data-translate={true}>
+                      {renderTextContent(detail?.combo?.address)}
+                    </span>
                   </div>
                   {/* <div className="mt-4 p-2 border border-gray-100 rounded-xl">
                     <div className="border-b border-b-gray-100 pb-3">
@@ -152,9 +165,11 @@ export default async function CompoDetail({
                 </div>
                 <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
                   <span className="text-2xl text-primary font-bold">
-                    {detail?.price > 0
-                      ? formatCurrency(detail?.price - detail?.discount_price)
-                      : "Liên hệ"}
+                    {detail?.price > 0 ? (
+                      formatCurrency(detail?.price - detail?.discount_price)
+                    ) : (
+                      <span data-translate={true}>Liên hệ</span>
+                    )}
                   </span>
                   {/* <span>/ khách</span> */}
                   {/* <p className="text-blue-700 mt-3">+ 40 điểm</p> */}
@@ -164,7 +179,10 @@ export default async function CompoDetail({
                     href={`/combo/chi-tiet/${detail?.slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
-                    <span className="block mx-auto text-base font-medium">
+                    <span
+                      className="block mx-auto text-base font-medium"
+                      data-translate={true}
+                    >
                       Yêu cầu đặt
                     </span>
                   </Link>

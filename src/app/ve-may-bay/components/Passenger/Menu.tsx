@@ -43,18 +43,21 @@ const SelectMenu = ({
         onClick={toggleMenu}
         className="p-3 rounded-md flex items-center gap-2 cursor-pointer"
       >
-        <span>{totalGuests} hành khách</span>
+        <span>{totalGuests} </span>
+        <span data-translate> hành khách</span>
       </div>
 
-      {isOpen && (
-        <div className="absolute top-14 left-[-10%] md:left-0 z-10 w-64 md:w-80 p-4 rounded-lg shadow-md bg-white">
-          <CounterGroup
-            formData={formData}
-            totalGuests={totalGuests}
-            onGuestsChange={onGuestsChange}
-          />
-        </div>
-      )}
+      <div
+        className={`absolute top-14 left-[-10%] md:left-0 z-10 w-64 md:w-80 p-4 rounded-lg shadow-md bg-white ${
+          isOpen ? "visible" : "invisible"
+        }`}
+      >
+        <CounterGroup
+          formData={formData}
+          totalGuests={totalGuests}
+          onGuestsChange={onGuestsChange}
+        />
+      </div>
     </div>
   );
 };

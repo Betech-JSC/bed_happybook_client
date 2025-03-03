@@ -1,4 +1,6 @@
+import { arrLanguages } from "@/constants/language";
 import { labelsRating } from "@/constants/product";
+import _ from "lodash";
 
 const handleSessionStorage = (
   action: string,
@@ -139,8 +141,15 @@ const calculatorDiscountPercent = (
   return Math.round((discountPrice / totalPrice) * 100) + "%";
 };
 
-const getLabelRatingProduct = (rating: number) => {
+const getLabelRatingProduct = (rating: number, lang?: string) => {
   if (!rating) return;
+  if (lang && lang !== "vi") {
+    if (rating <= 2) return "Bad";
+    if (rating > 2 && rating <= 4) return "Not satisfied";
+    if (rating > 4 && rating <= 6) return "Normal";
+    if (rating > 6 && rating <= 8) return "Satisfied";
+    if (rating > 8 && rating <= 10) return "Excellent";
+  }
   if (rating <= 2) return labelsRating[0];
   if (rating > 2 && rating <= 4) return labelsRating[1];
   if (rating > 4 && rating <= 6) return labelsRating[2];
@@ -148,6 +157,30 @@ const getLabelRatingProduct = (rating: number) => {
   if (rating > 8 && rating <= 10) return labelsRating[4];
   return "";
 };
+
+const getCurrentLanguage = () => {
+  const locale =
+    typeof window !== "undefined"
+      ? localStorage.getItem("language") ?? "vi"
+      : "vi";
+  return arrLanguages.includes(locale) ? locale : "vi";
+};
+
+const renderTextContent = (content: any) => {
+  return !_.isEmpty(content) ? content : "Nội dung đang cập nhật...!";
+};
+
+const toSnakeCase = (str: string) =>
+  _.snakeCase(
+    str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .replace(/[^a-zA-Z0-9\s]/g, "")
+      .trim()
+  );
+
 export {
   buildSearch,
   cloneItemsCarousel,
@@ -158,4 +191,7 @@ export {
   getDayLabel,
   calculatorDiscountPercent,
   getLabelRatingProduct,
+  getCurrentLanguage,
+  renderTextContent,
+  toSnakeCase,
 };

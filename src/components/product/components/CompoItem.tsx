@@ -27,11 +27,11 @@ export default function CompoItem({ data }: any) {
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
-          <span>Du lịch nội địa</span>
+          <span data-translate>Du lịch nội địa</span>
         </div>
         {data.is_hot && (
           <div className="absolute top-3 left-3 text-white px-3 py-1 bg-[#F27145] rounded-md">
-            <span>Hot tour</span>
+            <span data-translate>Hot tour</span>
           </div>
         )}
       </div>
@@ -40,7 +40,7 @@ export default function CompoItem({ data }: any) {
           href={`/combo/chi-tiet/${data.slug}`}
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
-          <h3>{data.name}</h3>
+          <h3 data-translate>{data.name}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <Image
@@ -49,7 +49,7 @@ export default function CompoItem({ data }: any) {
             width={20}
             height={20}
           />
-          <span>
+          <span data-translate>
             {`${data.day ? data.day : ""} ngày ${
               data.night ? data.night : ""
             } đêm`}
@@ -69,8 +69,9 @@ export default function CompoItem({ data }: any) {
               ))}
           </div>
           <div>
-            <span>chỉ từ </span>
+            <span data-translate>chỉ từ</span>
             <span className="text-[#F27145] font-semibold text-base lg:text-xl">
+              {" "}
               {formatCurrency(data.price - data.discount_price)}
             </span>
           </div>

@@ -13,6 +13,7 @@ import { PageApi } from "@/api/Page";
 import FAQ from "@/components/content-page/FAQ";
 import { BannerApi } from "@/api/Banner";
 import Link from "next/link";
+import { getServerLang } from "@/lib/session";
 
 export const metadata: Metadata = formatMetadata({
   title: "Khách Sạn | Happy Book ????️ Đại Lý Đặt Vé Máy Bay Giá Rẻ #1",
@@ -25,8 +26,9 @@ export const metadata: Metadata = formatMetadata({
 
 export default async function Hotel() {
   // const locations = (await HotelApi.getLocations())?.payload?.data as any;
+  const language = await getServerLang();
   const hotelData = (await HotelApi.getAll())?.payload?.data as any;
-  const contentPage = (await PageApi.getContent("khach-san"))?.payload
+  const contentPage = (await PageApi.getContent("khach-san", language))?.payload
     ?.data as any;
   const provincePopular =
     ((await BannerApi.getBannerPage("hotel-tpphobien"))?.payload
@@ -79,10 +81,13 @@ export default async function Hotel() {
                 height={44}
               ></Image>
               <div>
-                <p className="text-18 text-gray-700 font-semibold mb-1">
+                <p
+                  className="text-18 text-gray-700 font-semibold mb-1"
+                  data-translate={true}
+                >
                   Lựa Chọn Không Giới Hạn
                 </p>
-                <p>Vô vàn hành trình, triệu cảm hứng</p>
+                <p data-translate={true}>Vô vàn hành trình, triệu cảm hứng</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -94,10 +99,15 @@ export default async function Hotel() {
                 height={44}
               ></Image>
               <div>
-                <p className="text-18 text-gray-700 font-semibold mb-1">
+                <p
+                  className="text-18 text-gray-700 font-semibold mb-1"
+                  data-translate={true}
+                >
                   Dịch Vụ Cá Nhân Hóa
                 </p>
-                <p>Chăm sóc đặc biệt, trải nghiệm độc đáo</p>
+                <p data-translate={true}>
+                  Chăm sóc đặc biệt, trải nghiệm độc đáo
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -109,10 +119,15 @@ export default async function Hotel() {
                 height={44}
               ></Image>
               <div>
-                <p className="text-18 text-gray-700 font-semibold mb-1">
+                <p
+                  className="text-18 text-gray-700 font-semibold mb-1"
+                  data-translate={true}
+                >
                   Giá Trị Vượt Trội
                 </p>
-                <p>Chất lượng đỉnh, đảm bảo giá tốt nhất</p>
+                <p data-translate={true}>
+                  Chất lượng đỉnh, đảm bảo giá tốt nhất
+                </p>
               </div>
             </div>
           </div>
@@ -122,7 +137,10 @@ export default async function Hotel() {
               <div>
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-[24px] lg:text-32 font-bold">
+                    <h2
+                      className="text-[24px] lg:text-32 font-bold"
+                      data-translate={true}
+                    >
                       Khách Sạn Phổ Biến tại Việt Nam
                     </h2>
                   </div>
@@ -135,7 +153,10 @@ export default async function Hotel() {
           )}
           {/* Province */}
           <div className="mt-6 ">
-            <h2 className="text-[24px] lg:text-32 font-bold">
+            <h2
+              className="text-[24px] lg:text-32 font-bold"
+              data-translate={true}
+            >
               Thành Phố Phổ Biến tại Việt Nam
             </h2>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
@@ -157,7 +178,10 @@ export default async function Hotel() {
                     </Link>
                   </div>
                   <Link href={item.url ?? "#"}>
-                    <h3 className="py-3 px-4 text-18 font-semibold text__default_hover">
+                    <h3
+                      className="py-3 px-4 text-18 font-semibold text__default_hover"
+                      data-translate={true}
+                    >
                       {item.name}
                     </h3>
                   </Link>

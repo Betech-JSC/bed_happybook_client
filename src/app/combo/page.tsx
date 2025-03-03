@@ -18,6 +18,7 @@ import { ProductLocation } from "@/api/ProductLocation";
 import FAQ from "@/components/content-page/FAQ";
 import { BannerApi } from "@/api/Banner";
 import { Suspense } from "react";
+import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -77,7 +78,9 @@ export default async function CompoTour() {
             {/* Tours */}
             {hotDestination?.length > 0 && (
               <div className="w-full">
-                <h2 className="text-32 font-bold">Khám phá các điểm đến HOT</h2>
+                <h2 className="text-32 font-bold" data-translate={true}>
+                  Khám phá các điểm đến HOT
+                </h2>
                 <div className="mt-8 overflow-hidden">
                   <Carousel
                     opts={{
@@ -104,7 +107,12 @@ export default async function CompoTour() {
                             </Link>
                             <div className="absolute bottom-3 left-2 text-white px-3 py-1">
                               <Link href={item.url ?? "#"}>
-                                <h3 className="line-clamp-2">{item.name}</h3>
+                                <h3
+                                  className="line-clamp-2"
+                                  data-translate={true}
+                                >
+                                  {item.name}
+                                </h3>
                               </Link>
                             </div>
                           </div>
@@ -120,7 +128,7 @@ export default async function CompoTour() {
             {comboData?.comboDomestic?.length > 0 && (
               <>
                 <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
-                  <h2 className="text-32 font-bold">
+                  <h2 className="text-32 font-bold" data-translate={true}>
                     Các combo du lịch ưu đãi
                   </h2>
                   {/* <div className="flex my-4 md:my-0 space-x-3 items-center">
@@ -151,64 +159,7 @@ export default async function CompoTour() {
               <FAQ />
             </div>
             <div className="my-8 p-8 rounded-2xl bg-gray-50 ">
-              <h3 className="text-32 font-bold text-center">
-                Vì sao nên chọn HappyBook
-              </h3>
-              <div className="mt-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/adviser.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Đội ngũ Happybook tư vấn
-                      </p>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        hỗ trợ nhiệt tình 24/7
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/developers.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Đơn vị hơn 8 năm kinh nghiệm.
-                      </p>
-                      <p className="text-18 font-semibold text-gray-900">
-                        Lấy chữ tín làm đầu
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/product-icon.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Sản phẩm đa dạng,
-                      </p>
-                      <p className="text-18 font-semibold text-gray-900">
-                        giá cả tốt nhất
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <WhyChooseHappyBook />
             </div>
           </div>
         </div>

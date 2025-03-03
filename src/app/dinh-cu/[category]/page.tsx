@@ -13,6 +13,7 @@ import FormContact from "../components/FormContact";
 import ListItem from "../components/ListItem";
 import { ProductCategoryApi } from "@/api/ProductCategory";
 import { notFound } from "next/navigation";
+import { getServerLang } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Dịch vụ định cư Mỹ",
@@ -24,8 +25,10 @@ export default async function DinhCuByCategory({
 }: {
   params: { category: string };
 }) {
-  const category = (await ProductCategoryApi.detail("dinhcu", params.category))
-    ?.payload?.data as any;
+  const language = await getServerLang();
+  const category = (
+    await ProductCategoryApi.detail("dinhcu", params.category, language)
+  )?.payload?.data as any;
   if (!category) notFound();
   return (
     <main>
@@ -34,7 +37,7 @@ export default async function DinhCuByCategory({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/" className="text-blue-700">
+                <Link href="/" className="text-blue-700" data-translate>
                   Trang chủ
                 </Link>
               </BreadcrumbLink>
@@ -42,7 +45,7 @@ export default async function DinhCuByCategory({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/dinh-cu" className="text-blue-700">
+                <Link href="/dinh-cu" className="text-blue-700" data-translate>
                   Định cư
                 </Link>
               </BreadcrumbLink>
@@ -64,11 +67,13 @@ export default async function DinhCuByCategory({
           <ListItem categoryDetail={category} />
         </div>
       </div>
-      <div className=" border-y border-y-gray-300 mt-8 ">
+      <div className="border-y border-y-gray-300 mt-8 ">
         <div className="lg:px-[50px] xl:px-[80px] py-12 px-3 max__screen">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <h3 className="text-32 font-bold">Tại sao nên chọn Happy Book ?</h3>
-            <div>
+            <h3 className="text-32 font-bold" data-translate={true}>
+              Tại sao nên chọn Happy Book ?
+            </h3>
+            <div data-translate={true}>
               HappyBook cung cấp dịch vụ tư vấn định cư chuyên nghiệp, hỗ trợ
               bạn từ giai đoạn chuẩn bị hồ sơ đến khi hoàn thành mọi thủ tục
               pháp lý để đạt được giấc mơ định cư tại các quốc gia phát triển
@@ -86,10 +91,13 @@ export default async function DinhCuByCategory({
                   height={44}
                 ></Image>
                 <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
+                  <p
+                    className="text-18 font-semibold mb-1 text-gray-900"
+                    data-translate={true}
+                  >
                     Chuyên Nghiệp & Tận Tâm
                   </p>
-                  <p>
+                  <p data-translate={true}>
                     Đội ngũ chuyên gia giàu kinh nghiệm, hỗ trợ tận tình từ A-Z.
                   </p>
                 </div>
@@ -103,10 +111,13 @@ export default async function DinhCuByCategory({
                   height={44}
                 ></Image>
                 <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
+                  <p
+                    className="text-18 font-semibold mb-1 text-gray-900"
+                    data-translate={true}
+                  >
                     Quy Trình Minh Bạch
                   </p>
-                  <p>
+                  <p data-translate={true}>
                     Thông tin rõ ràng, quy trình minh bạch, giúp bạn an tâm.
                   </p>
                 </div>
@@ -120,10 +131,15 @@ export default async function DinhCuByCategory({
                   height={44}
                 ></Image>
                 <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
+                  <p
+                    className="text-18 font-semibold mb-1 text-gray-900"
+                    data-translate={true}
+                  >
                     Giải Pháp Tối Ưu
                   </p>
-                  <p>Tư vấn chương trình định cư phù hợp với từng cá nhân.</p>
+                  <p data-translate={true}>
+                    Tư vấn chương trình định cư phù hợp với từng cá nhân.
+                  </p>
                 </div>
               </div>
             </div>

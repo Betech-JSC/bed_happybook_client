@@ -32,11 +32,11 @@ const CounterGroup: React.FC<CounterGroupProps> = ({
     {
       label: "Người lớn",
       key: "Adt",
-      ageRange: "> 12 tuổi",
+      ageRange: "> 12",
       value: formData.Adt,
     },
-    { label: "Trẻ em", key: "Chd", ageRange: "2-12 tuổi", value: formData.Chd },
-    { label: "Em bé", key: "Inf", ageRange: "< 2 tuổi", value: formData.Inf },
+    { label: "Trẻ em", key: "Chd", ageRange: "2-12", value: formData.Chd },
+    { label: "Em bé", key: "Inf", ageRange: "< 2", value: formData.Inf },
   ];
 
   const handleIncrement = (key: string, value: number) => {
@@ -56,8 +56,13 @@ const CounterGroup: React.FC<CounterGroupProps> = ({
       {counters.map((counter, index) => (
         <div key={index} className="flex items-center justify-between mb-3">
           <div>
-            <div className="font-medium">{counter.label}</div>
-            <div className="text-sm text-gray-500">{counter.ageRange}</div>
+            <div className="font-medium" data-translate>
+              {counter.label}
+            </div>
+            <div className="text-sm text-gray-500">
+              <span>{counter.ageRange} </span>
+              <span data-translate>tuổi</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button

@@ -17,7 +17,9 @@ export default function TouristSuggest({ data }: any) {
     <div className="py-8 bg-[#FCFCFD] hidden lg:block">
       <div className="flex justify-between">
         <div>
-          <h2 className="text-[32px] font-bold">Bạn muốn đi đâu chơi?</h2>
+          <h2 className="text-[32px] font-bold" data-translate>
+            Bạn muốn đi đâu chơi?
+          </h2>
         </div>
       </div>
       <div className="mt-4 w-full">

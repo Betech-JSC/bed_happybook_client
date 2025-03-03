@@ -56,7 +56,9 @@ export default function Partner({ data }: any) {
     <div className="mt-12 py-8 bg-[#FCFCFD] hidden lg:block">
       <div className="flex justify-between px-3 lg:px-[80px] max__screen">
         <div>
-          <h2 className="text-[32px] font-bold">Đối tác</h2>
+          <h2 className="text-[32px] font-bold" data-translate>
+            Đối tác
+          </h2>
         </div>
       </div>
       <div className="mt-8 w-full">

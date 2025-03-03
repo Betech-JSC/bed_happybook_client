@@ -6,10 +6,10 @@ export default function Service() {
       <div className="py-8 px-3 lg:px-[50px] xl:px-[80px] max__screen">
         <div className="flex justify-between">
           <div>
-            <h2 className="text-[32px] font-bold">
+            <h2 className="text-[32px] font-bold" data-translate>
               Dịch Vụ “Nổi Bật” Của Chúng Tôi
             </h2>
-            <p className="font-medium">
+            <p className="font-medium" data-translate>
               HappyBook cam kết mang đến cho quý khách hàng những dịch vụ tốt
               nhất với chi phí hợp lý, bao gồm:
             </p>
@@ -26,15 +26,18 @@ export default function Service() {
               />
             </div>
             <div className="mt-2">
-              <p className="font-semibold text-[22px] text-color-primary">
+              <p
+                className="font-semibold text-[22px] text-color-primary"
+                data-translate
+              >
                 Đại lý vé máy bay
               </p>
-              <p className="mt-2 leading-6 text-justify">
+              <p className="mt-2 leading-6 text-justify" data-translate>
                 HappyBook là đơn vị chuyên xử lý vé đoàn, vé quốc tế đặc biệt
                 các chặng bay Úc/ Châu Âu/Mỹ/Canada với giá cực kì tốt giảm sâu
                 tới 50%
               </p>
-              <p className="mt-3 leading-6 text-justify">
+              <p className="mt-3 leading-6 text-justify" data-translate>
                 Hệ thống đặt vé happy book.com.vn cung cấp vé máy bay của tất cả
                 các hãng hàng không nội địa và quốc tế với thao tác đơn giản, hỗ
                 trợ 24/7
@@ -51,14 +54,17 @@ export default function Service() {
               />
             </div>
             <div className="mt-2">
-              <p className="font-semibold text-[22px] text-color-primary">
+              <p
+                className="font-semibold text-[22px] text-color-primary"
+                data-translate
+              >
                 Hồ sơ visa
               </p>
-              <p className="mt-2 leading-6 text-justify">
+              <p className="mt-2 leading-6 text-justify" data-translate>
                 Hỗ trợ tư vấn hồ sơ visa các nước: Ấn Độ - Dubai - Trung Quốc -
                 Nhật - Hàn - Đài - Úc - Châu Âu - Mỹ - Canada,...
               </p>
-              <p className="mt-3 leading-6 text-justify">
+              <p className="mt-3 leading-6 text-justify" data-translate>
                 Chúng tôi tự hào là đơn vị xử lý hồ sơ Visa khách hàng một cách
                 logic, giúp tỉ lệ đậu cao nhất với chi phí xử lý cực kỳ cạnh
                 tranh
@@ -75,10 +81,13 @@ export default function Service() {
               />
             </div>
             <div className="mt-2">
-              <p className="font-semibold text-[22px] text-color-primary">
+              <p
+                className="font-semibold text-[22px] text-color-primary"
+                data-translate
+              >
                 Khách sạn
               </p>
-              <p className="mt-2 leading-6 text-justify">
+              <p className="mt-2 leading-6 text-justify" data-translate>
                 HappyBook hợp tác ký hợp đồng đại lý với hơn 1000 khách sạn trên
                 toàn quốc, tập trung chủ yếu khách sạn 4 sao 5 sao, khu resort
                 nghỉ dưỡng, Combo Vé máy bay và khách sạn của Happy Book tập
@@ -97,10 +106,13 @@ export default function Service() {
               />
             </div>
             <div className="mt-2">
-              <p className="font-semibold text-[22px] text-color-primary">
+              <p
+                className="font-semibold text-[22px] text-color-primary"
+                data-translate
+              >
                 Tour du lịch
               </p>
-              <p className="mt-2 leading-6 text-justify">
+              <p className="mt-2 leading-6 text-justify" data-translate>
                 HappBook cung cấp các tour du lịch quốc tế chất lượng, giá cả
                 cạnh tranh nhất. Các Tour nổi bật: Thái Lan, Trung Quốc, Hàn
                 Quốc, Nhật Bản, Châu Âu, Mỹ,...

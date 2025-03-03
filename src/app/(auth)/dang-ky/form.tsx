@@ -2,48 +2,50 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import {
-  AuthRegisterBody,
-  AuthRegisterBodyType,
+  AuthRegisterSchemaType,
+  getAuthRegisterSchema,
 } from "@/schemaValidations/authRegister.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
 import { useRouter } from "next/navigation";
-
-type FormData = AuthRegisterBodyType;
+import { toastMessages, validationMessages } from "@/lib/messages";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function FormRegister() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { language } = useLanguage();
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
 
+  const messages = validationMessages[language as "vi" | "en"];
+  const schema = getAuthRegisterSchema(messages);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(AuthRegisterBody),
+  } = useForm<AuthRegisterSchemaType>({
+    resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: AuthRegisterSchemaType) => {
     try {
       setLoading(true);
       const response = await http.post<any>(`auth/register`, data);
       if (response?.status === 200) {
         reset();
         toast.dismiss();
-        toast.success("Đăng ký thành công!");
+        toast.success(toaStrMsg.successRegister);
         setTimeout(() => {
           router.push("/dang-nhap");
         }, 2000);
       } else if (response?.status === 201) {
-        toast.error(
-          response?.payload.message ?? "Có lỗi xảy ra. Vui lòng tải lại trang!"
-        );
+        toast.error(toaStrMsg.error);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      toast.error(toaStrMsg.error);
     } finally {
       setLoading(false);
     }
@@ -52,7 +54,7 @@ export default function FormRegister() {
     <form onSubmit={handleSubmit(onSubmit)} className="mt-3 rounded-xl ">
       <div className="mt-6 pb-6 border-b-[1px] border-gray-300">
         <div className="mt-3">
-          <p>Email</p>
+          <p data-translate>Email</p>
           <input
             type="text"
             {...register("email")}
@@ -64,7 +66,7 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-3">
-          <p>Mật khẩu</p>
+          <p data-translate>Mật khẩu</p>
           <input
             type="password"
             placeholder="Nhập mật khẩu"
@@ -76,7 +78,7 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-3">
-          <p>Nhập lại mật khẩu</p>
+          <p data-translate>Nhập lại mật khẩu</p>
           <input
             type="password"
             placeholder="Nhập lại mật khẩu"

@@ -15,6 +15,8 @@ import FAQ from "@/components/content-page/FAQ";
 import { DinhCuApi } from "@/api/DinhCu";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
+import { renderTextContent } from "@/utils/Helper";
+import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 
 export const metadata: Metadata = {
   title: "Định Cư Mỹ Diện Trí Thức EB2 Advanced Degree/EB3 Professionals",
@@ -39,7 +41,7 @@ export default async function SettleDetail({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link href="/" className="text-blue-700" data-translate>
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -47,7 +49,11 @@ export default async function SettleDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/dinh-cu" className="text-blue-700">
+                  <Link
+                    href="/dinh-cu"
+                    className="text-blue-700"
+                    data-translate
+                  >
                     Định cư
                   </Link>
                 </BreadcrumbLink>
@@ -58,15 +64,16 @@ export default async function SettleDetail({
                   <Link
                     href={`/dinh-cu/${detail?.category?.alias}`}
                     className="text-blue-700"
+                    data-translate
                   >
-                    {detail?.category?.name}
+                    {renderTextContent(detail?.category?.name)}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
+                  <Link href="#" className="text-gray-700" data-translate>
                     {detail.name}
                   </Link>
                 </BreadcrumbLink>
@@ -92,33 +99,66 @@ export default async function SettleDetail({
             <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    {detail.name}
+                  <h1
+                    className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                    data-translate
+                  >
+                    {renderTextContent(detail.name)}
                   </h1>
                   <div className="mt-6">
                     <div>
-                      <span className="font-semibold">Mã visa:</span>{" "}
-                      <span>{detail?.product_dinhcu?.ma_visa}</span>
+                      <span className="font-semibold" data-translate>
+                        Mã visa:
+                      </span>
+                      <span data-translate>
+                        {renderTextContent(detail?.product_dinhcu?.ma_visa)}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Loại Visa:</span>{" "}
-                      <span>{detail?.product_dinhcu?.loai_visa}</span>
+                      <span className="font-semibold" data-translate>
+                        Loại Visa:
+                      </span>{" "}
+                      <span data-translate>
+                        {renderTextContent(detail?.product_dinhcu?.loai_visa)}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Điểm Đến:</span>{" "}
-                      <span>{detail?.product_dinhcu?.diem_den}</span>
+                      <span className="font-semibold" data-translate>
+                        Điểm Đến:
+                      </span>{" "}
+                      <span data-translate>
+                        {renderTextContent(detail?.product_dinhcu?.diem_den)}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Thời gian làm Visa:</span>{" "}
-                      <span>{detail?.product_dinhcu?.thoi_gian_lam_visa}</span>
+                      <span className="font-semibold" data-translate>
+                        Thời gian làm Visa:
+                      </span>{" "}
+                      <span data-translate>
+                        {renderTextContent(
+                          detail?.product_dinhcu?.thoi_gian_lam_visa
+                        )}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Thời gian lưu trú:</span>{" "}
-                      <span>{detail?.product_dinhcu?.thoi_gian_luu_tru}</span>
+                      <span className="font-semibold" data-translate>
+                        Thời gian lưu trú:
+                      </span>{" "}
+                      <span data-translate>
+                        {renderTextContent(
+                          detail?.product_dinhcu?.thoi_gian_luu_tru
+                        )}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Số lần nhập cảnh:</span>{" "}
-                      <span>{detail?.product_dinhcu?.so_lan_nhap_canh}</span>
+                      <span className="font-semibold" data-translate>
+                        Số lần nhập cảnh:
+                      </span>{" "}
+                      <span data-translate>
+                        {renderTextContent(
+                          detail?.product_dinhcu?.so_lan_nhap_canh
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -128,7 +168,9 @@ export default async function SettleDetail({
                       {formatCurrency(detail.price)}
                     </p>
                     <div className="flex justify-between mt-3 items-end">
-                      <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
+                      <p className="font-semibold" data-translate>
+                        Giá dịch vụ hỗ trợ từ:
+                      </p>
                       <p className="text-base md:text-xl text-primary font-semibold">
                         {formatCurrency(detail.price - detail.discount_price)}
                       </p>
@@ -140,7 +182,10 @@ export default async function SettleDetail({
                     href={`/dinh-cu/chi-tiet/${detail.slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
-                    <button className="mx-auto text-base font-medium">
+                    <button
+                      className="mx-auto text-base font-medium"
+                      data-translate
+                    >
                       Liên hệ ngay
                     </button>
                   </Link>
@@ -158,64 +203,7 @@ export default async function SettleDetail({
               <FAQ />
             </div>
             <div className="my-8 p-8 rounded-2xl bg-gray-50 ">
-              <h3 className="text-32 font-bold text-center">
-                Vì sao nên chọn HappyBook
-              </h3>
-              <div className="mt-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/adviser.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Đội ngũ Happybook tư vấn
-                      </p>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        hỗ trợ nhiệt tình 24/7
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/developers.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Đơn vị hơn 8 năm kinh nghiệm.
-                      </p>
-                      <p className="text-18 font-semibold text-gray-900">
-                        Lấy chữ tín làm đầu
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/product-icon.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Sản phẩm đa dạng,
-                      </p>
-                      <p className="text-18 font-semibold text-gray-900">
-                        giá cả tốt nhất
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <WhyChooseHappyBook />
             </div>
             <div>
               <FormContact />

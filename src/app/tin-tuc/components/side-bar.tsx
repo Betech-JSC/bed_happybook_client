@@ -8,7 +8,9 @@ export default function SideBar({ categories, news }: SidebarProps) {
   return (
     <div className="basis-full md:basis-[35%]">
       <div className="hidden md:block p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
-        <p className="text-2xl font-bold">Chủ đề khác</p>
+        <p className="text-2xl font-bold" data-translate>
+          Chủ đề khác
+        </p>
         <div>
           {categories.length > 0 ? (
             categories.map((item) => (
@@ -21,16 +23,20 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 }
                 className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
               >
-                <h2>{item.name}</h2>
+                <h2 data-translate>{item.name}</h2>
               </Link>
             ))
           ) : (
-            <p className="mt-3 text-xl">Chủ đề đang cập nhật...</p>
+            <p className="mt-3 text-xl" data-translate>
+              Chủ đề đang cập nhật...
+            </p>
           )}
         </div>
       </div>
       <div className="mt-4">
-        <p className="text-2xl font-bold">Bài viết phổ biến</p>
+        <p className="text-2xl font-bold" data-translate>
+          Bài viết phổ biến
+        </p>
         <div>
           {news.length > 0 ? (
             news.map((item, index) => (
@@ -55,6 +61,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 <div className="basis-[65%]">
                   <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
                     <h3
+                      data-translate
                       className={`text-base ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                     >
                       {item.title}
@@ -65,7 +72,9 @@ export default function SideBar({ categories, news }: SidebarProps) {
               </div>
             ))
           ) : (
-            <p className="my-4 text-xl">Tin tức đang cập nhật....</p>
+            <p className="my-4 text-xl" data-translate>
+              Tin tức đang cập nhật....
+            </p>
           )}
         </div>
       </div>

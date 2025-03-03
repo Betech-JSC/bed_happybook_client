@@ -69,10 +69,10 @@ export default function Search() {
       <form onSubmit={handleSubmit}>
         <div className="w-full flex flex-wrap md:flex-nowrap lg:space-x-2 relative">
           <div className="w-full md:w-9/12">
-            <label className="block text-gray-700 mb-1">
+            <label className="block text-gray-700 mb-1" data-translate>
               Thành phố, địa điểm hoặc tên khách sạn:
             </label>
-            <div className="flex h-12 items-center border rounded-lg px-2">
+            <div className="mt-3 flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/place.svg"
                 alt="Icon"
@@ -150,8 +150,8 @@ export default function Search() {
             </div>
           </div> */}
 
-          <div className="w-full md:w-3/12">
-            <label className="block text-gray-700 mb-1 h-6"></label>
+          <div className="mt-3 w-full md:w-3/12">
+            <label className="block text-gray-700  h-6"></label>
             <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
               <Image
                 src="/icon/search.svg"
@@ -161,7 +161,10 @@ export default function Search() {
                 height={18}
                 style={{ width: 18, height: 18 }}
               />
-              <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
+              <button
+                className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
+                data-translate
+              >
                 Tìm kiếm
               </button>
             </div>

@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import {
-  ContactBody,
+  ContactSchema,
   ContactBodyType,
 } from "@/schemaValidations/contact.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,32 +10,34 @@ import { toast } from "react-hot-toast";
 import { Fragment } from "react";
 import LoadingButton from "@/components/base/LoadingButton";
 import { contactApi } from "@/api/contact";
-
-type FormData = ContactBodyType;
+import { toastMessages, validationMessages } from "@/lib/messages";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export default function FormContact() {
   const [loading, setLoading] = useState(false);
-
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(ContactBody),
+  } = useForm<ContactBodyType>({
+    resolver: zodResolver(ContactSchema(messages)),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: ContactBodyType) => {
     try {
       setLoading(true);
       const response = await contactApi.send(data);
       if (response?.status === 200) {
         reset();
         toast.dismiss();
-        toast.success("Gửi thành công!");
+        toast.success(toaStrMsg.sendSuccess);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      toast.error(toaStrMsg.sendFailed);
     } finally {
       setLoading(false);
     }
@@ -48,7 +50,8 @@ export default function FormContact() {
             htmlFor="service"
             className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
           >
-            Tên dịch vụ <span className="text-red-500">*</span>
+            <span data-translate>Tên dịch vụ</span>
+            <span className="text-red-500">*</span>
           </label>
           <input
             id="service"
@@ -67,7 +70,8 @@ export default function FormContact() {
             htmlFor="fullName"
             className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
           >
-            Họ và tên <span className="text-red-500">*</span>
+            <span data-translate>Họ và tên</span>
+            <span className="text-red-500">*</span>
           </label>
           <input
             id="fullName"
@@ -88,7 +92,8 @@ export default function FormContact() {
                 htmlFor="phone"
                 className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
               >
-                Số điện thoại <span className="text-red-500">*</span>
+                <span data-translate>Số điện thoại</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 id="phone"

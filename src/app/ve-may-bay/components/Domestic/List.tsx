@@ -3,13 +3,19 @@ import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { format, isSameDay } from "date-fns";
 import Image from "next/image";
 import { pareseDateFromString } from "@/lib/formatters";
-import { handleScrollSmooth, handleSessionStorage } from "@/utils/Helper";
+import {
+  getCurrentLanguage,
+  handleScrollSmooth,
+  handleSessionStorage,
+} from "@/utils/Helper";
 import FlightDomesticDetail from "./Detail";
 import { filtersFlightDomestic, ListFlight } from "@/types/flight";
 import { useRouter } from "next/navigation";
 import SignUpReceiveCheapTickets from "../SignUpReceiveCheapTickets";
 import FlightDetailPopup from "../FlightDetailPopup";
 import { FlightApi } from "@/api/Flight";
+import { useTranslation } from "@/app/hooks/useTranslation";
+import { translateText } from "@/utils/translateApi";
 
 const defaultFilers: filtersFlightDomestic = {
   priceWithoutTax: "0",
@@ -39,8 +45,10 @@ export default function FilghtDomesticList({
   totalPassengers,
   flightType,
   flightStopNum,
+  translatedStaticText,
 }: ListFlight) {
   const router = useRouter();
+  const { t } = useTranslation(translatedStaticText);
   const departFlightRef = useRef<HTMLDivElement>(null);
   const returnFlightRef = useRef<HTMLDivElement>(null);
   const [filteredData, setFilteredData] = useState<any[]>([]);
@@ -66,7 +74,6 @@ export default function FilghtDomesticList({
       handleScrollSmooth(ref.current);
     }
   };
-
   const resetFilters = () => {
     setFilters(defaultFilers);
   };
@@ -165,13 +172,18 @@ export default function FilghtDomesticList({
           "flights/getfarerules",
           params
         );
-        const fareRules =
+
+        const fareRules = await translateText([
           response?.payload.data.ListFareRules[0].ListRulesGroup[0]
             .ListRulesText[0] ??
-          `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
-        return fareRules;
+            `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
+        ]);
+        return fareRules?.[0];
       } catch (error: any) {
-        return `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
+        const fareRules = await translateText([
+          "Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.",
+        ]);
+        return fareRules?.[0];
       } finally {
         setIsLoadingRules(false);
       }
@@ -376,23 +388,24 @@ export default function FilghtDomesticList({
   if (selectedReturnFlight) {
     flightsGroup[1] = [selectedReturnFlight]; // Return flight
   }
+
   return (
     <Fragment>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
         <aside className="lg:col-span-3 bg-white p-4 rounded-2xl">
           <div className="pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Sắp xếp</h2>
+            <h2 className="font-semibold">{t("chi_tiet")}</h2>
             <select
               name=""
               id=""
               className="w-full p-3 mt-3 border border-gray-300 rounded-lg"
             >
-              <option value="">Đề xuất</option>
+              <option value="">{t("de_xuat")}</option>
             </select>
           </div>
           {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
             <div className="mt-3 pb-3 border-b border-gray-200">
-              <h2 className="font-semibold">Số điểm dừng</h2>
+              <h2 className="font-semibold">{t("so_diem_dung")}</h2>
               {flightStopNum.map((stopNum: number, index: number) => (
                 <div key={index} className="flex space-x-2 mt-3">
                   <input
@@ -404,14 +417,16 @@ export default function FilghtDomesticList({
                     checked={filters.stopNum.includes(`${stopNum}`)}
                   />
                   <label htmlFor={`${`stopNum_${index}`}`}>
-                    {stopNum < 1 ? "Chuyến bay thẳng" : `${stopNum} điểm dừng`}
+                    {stopNum < 1
+                      ? t("chuyen_bay_thang")
+                      : `${stopNum} ${t("diem_dung")}`}
                   </label>
                 </div>
               ))}
             </div>
           )}
           <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Hiển thị giá</h2>
+            <h2 className="font-semibold">{t("hien_thi_gia")}</h2>
             {/* <div className="flex space-x-2 mt-3">
               <input type="checkbox" name="price" id="price_1" />
               <label htmlFor="price_1">Giá bao gồm thuế phí</label>
@@ -425,11 +440,13 @@ export default function FilghtDomesticList({
                 onChange={handleCheckboxChange}
                 checked={filters.priceWithoutTax === "1"}
               />
-              <label htmlFor="priceWithoutTax">Giá chưa bao gồm thuế phí</label>
+              <label htmlFor="priceWithoutTax">
+                {t("gia_chua_bao_gom_thue_phi")}
+              </label>
             </div>
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Sắp xếp</h2>
+            <h2 className="font-semibold">{t("sap_xep")}</h2>
             {/* <div className="flex space-x-2 mt-3">
               <input
                 type="checkbox"
@@ -450,7 +467,7 @@ export default function FilghtDomesticList({
                 onChange={handleCheckboxChange}
                 checked={filters.timeDepart === "asc"}
               />
-              <label htmlFor="sortTimeDepart">Thời gian khởi hành</label>
+              <label htmlFor="sortTimeDepart">{t("thoi_gian_khoi_hanh")}</label>
             </div>
             <div className="flex space-x-2 mt-3">
               <input
@@ -461,11 +478,11 @@ export default function FilghtDomesticList({
                 onChange={handleCheckboxChange}
                 checked={filters.sortAirLine === "asc"}
               />
-              <label htmlFor="sortAirLine">Hãng hàng không</label>
+              <label htmlFor="sortAirLine">{t("hang_hang_khong")}</label>
             </div>
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Hãng hàng không</h2>
+            <h2 className="font-semibold">{t("hang_hang_khong")}</h2>
             <div className="flex space-x-2 mt-3">
               <input
                 type="checkbox"
@@ -515,7 +532,7 @@ export default function FilghtDomesticList({
             className="w-full mt-3 py-3 bg-blue-600 text-white rounded-lg font-medium"
             onClick={resetFilters}
           >
-            Xóa bộ lọc
+            {t("xoa_bo_loc")}
           </button>
         </aside>
         <div className="lg:col-span-9">
@@ -566,7 +583,10 @@ export default function FilghtDomesticList({
                           : "text-black"
                       }`}
                     >
-                      <div className="text-sm md:text-base font-semibold">
+                      <div
+                        className="text-sm md:text-base font-semibold"
+                        data-translate
+                      >
                         {day.label}
                       </div>
                       <div className="text-xs md:text-sm mt-2">
@@ -586,16 +606,18 @@ export default function FilghtDomesticList({
                           setFlightDetail={handleShowPopupFlightDetail}
                           filters={filters}
                           totalPassengers={totalPassengers}
+                          translatedStaticText={translatedStaticText}
                         />
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="w-full my-12 text-center text-2xl font-semibold">
-                    <p>Không có chuyến bay nào trong ngày hôm nay.</p>
+                    <p>{t("khong_co_chuyen_bay_nao_trong_ngay_hom_nay")}</p>
                     <p className="mt-1">
-                      Quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin
-                      cám ơn!
+                      {t(
+                        "quy_khach_vui_long_chuyen_sang_ngay_khac_de_dat_ve_xin_cam_on"
+                      )}
                     </p>
                   </div>
                 )}
@@ -621,7 +643,7 @@ export default function FilghtDomesticList({
                     <div>
                       <h3 className="font-semibold">{`${to} - ${from} `}</h3>
                       <p className="text-sm">
-                        {totalPassengers} Khách -{" "}
+                        {totalPassengers} {t("khach")} -{" "}
                         {returnDate
                           ? pareseDateFromString(
                               returnDate,
@@ -672,16 +694,18 @@ export default function FilghtDomesticList({
                             setFlightDetail={handleShowPopupFlightDetail}
                             filters={filters}
                             totalPassengers={totalPassengers}
+                            translatedStaticText={translatedStaticText}
                           />
                         </div>
                       ))}
                     </div>
                   ) : (
                     <div className="w-full mt-12 text-center text-2xl font-semibold">
-                      <p>Không có chuyến bay nào trong ngày hôm nay.</p>
+                      <p>{t("khong_co_chuyen_bay_nao_trong_ngay_hom_nay")}</p>
                       <p className="mt-1">
-                        Quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin
-                        cám ơn!
+                        {t(
+                          "quy_khach_vui_long_chuyen_sang_ngay_khac_de_dat_ve_xin_cam_on"
+                        )}
                       </p>
                     </div>
                   )}
@@ -697,6 +721,7 @@ export default function FilghtDomesticList({
           flights={flightDetail}
           isOpen={showDetail}
           onClose={handleClosePopupFlightDetail}
+          translatedStaticText={translatedStaticText}
         />
       </div>
     </Fragment>

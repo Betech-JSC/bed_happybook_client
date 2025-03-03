@@ -29,7 +29,10 @@ export default async function FooterMenu({ page }: { page: string }) {
     <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
       {data?.flight?.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+          <h2
+            className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]"
+            data-translate
+          >
             Vé máy bay phổ biến
           </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
@@ -37,6 +40,7 @@ export default async function FooterMenu({ page }: { page: string }) {
               <Link key={item.id} href={buildSearchFlight(item)}>
                 <h3
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                  data-translate
                 >
                   {`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}
                 </h3>
@@ -48,13 +52,17 @@ export default async function FooterMenu({ page }: { page: string }) {
 
       {data?.locations_favorite?.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+          <h2
+            className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]"
+            data-translate
+          >
             Điểm đến được yêu thích
           </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
             {data.locations_favorite.map((item: any) => (
               <Link href={`/tours/tim-kiem?text=${item.name}`} key={item.id}>
                 <h3
+                  data-translate
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}
                 >
                   {item.name}
@@ -67,13 +75,17 @@ export default async function FooterMenu({ page }: { page: string }) {
 
       {data?.hotel?.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+          <h2
+            className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]"
+            data-translate
+          >
             Khách sạn nổi bật
           </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
             {data.hotel.map((hotel: any) => (
               <Link href={`/khach-san/chi-tiet/${hotel.slug}`} key={hotel.id}>
                 <h3
+                  data-translate
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}
                 >
                   {hotel.name}
@@ -86,13 +98,17 @@ export default async function FooterMenu({ page }: { page: string }) {
 
       {data?.visa?.length > 0 && (
         <div className="mb-0">
-          <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+          <h2
+            className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]"
+            data-translate
+          >
             Dịch vụ visa nổi bật
           </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
             {data.visa.map((visa: any) => (
               <Link href={`/visa/chi-tiet/${visa.slug}`} key={visa.id}>
                 <h3
+                  data-translate
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}
                 >
                   {visa.name}

@@ -27,6 +27,8 @@ import FAQ from "@/components/content-page/FAQ";
 import ImageGallery from "../../components/ImageGallery";
 import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
+import { renderTextContent } from "@/utils/Helper";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = await VisaApi.detail(params.alias);
@@ -61,12 +63,12 @@ export default async function CategoryPosts({
 }) {
   const response = await VisaApi.detail(params.alias);
   const detail = response?.payload.data;
-
   if (!detail) {
     notFound();
   }
-  const contentPage = (await PageApi.getContent("visa"))?.payload?.data as any;
-
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("visa", language))?.payload
+    ?.data as any;
   return (
     <SeoSchema
       blog={detail}
@@ -87,7 +89,11 @@ export default async function CategoryPosts({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link
+                    href="/"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -95,24 +101,36 @@ export default async function CategoryPosts({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/visa" className="text-blue-700">
+                  <Link
+                    href="/visa"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Dịch vụ Visa
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator />
+              {/* <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/visa/visa-nhat-ban" className="text-blue-700">
+                  <Link
+                    href="/visa/visa-nhat-ban"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Visa Nhật Bản
                   </Link>
                 </BreadcrumbLink>
-              </BreadcrumbItem>
+              </BreadcrumbItem> */}
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
-                    Dịch Vụ Hỗ Trợ Làm Thủ Tục Visa Nhật Bản
+                  <Link
+                    href="#"
+                    className="text-gray-700"
+                    data-translate={true}
+                  >
+                    {renderTextContent(detail?.name)}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -134,33 +152,66 @@ export default async function CategoryPosts({
             <div className="w-full lg:w-4/12 p-4 md:p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    {detail.name}
+                  <h1
+                    className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                    data-translate={true}
+                  >
+                    {renderTextContent(detail?.name)}
                   </h1>
                   <div className="mt-6">
                     <div>
-                      <span className="font-semibold">Mã visa:</span>{" "}
-                      <span>{detail?.product_visa?.ma_visa}</span>
+                      <span className="font-semibold" data-translate={true}>
+                        Mã visa:
+                      </span>{" "}
+                      <span data-translate={true}>
+                        {renderTextContent(detail?.product_visa?.ma_visa)}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Loại Visa:</span>{" "}
-                      <span>{detail?.product_visa?.loai_visa}</span>
+                      <span className="font-semibold" data-translate={true}>
+                        Loại Visa:
+                      </span>{" "}
+                      <span data-translate={true}>
+                        {renderTextContent(detail?.product_visa?.loai_visa)}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Điểm Đến:</span>{" "}
-                      <span>{detail?.product_visa?.diem_den}</span>
+                      <span className="font-semibold" data-translate={true}>
+                        Điểm Đến:
+                      </span>{" "}
+                      <span data-translate={true}>
+                        {renderTextContent(detail?.product_visa?.diem_den)}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Thời gian làm Visa:</span>{" "}
-                      <span>{detail?.product_visa?.thoi_gian_lam_visa}</span>
+                      <span className="font-semibold" data-translate={true}>
+                        Thời gian làm Visa:
+                      </span>{" "}
+                      <span data-translate={true}>
+                        {renderTextContent(
+                          detail?.product_visa?.thoi_gian_lam_visa
+                        )}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Thời gian lưu trú:</span>{" "}
-                      <span>{detail?.product_visa?.thoi_gian_luu_tru}</span>
+                      <span className="font-semibold" data-translate={true}>
+                        Thời gian lưu trú:
+                      </span>{" "}
+                      <span data-translate={true}>
+                        {renderTextContent(
+                          detail?.product_visa?.thoi_gian_luu_tru
+                        )}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold">Số lần nhập cảnh:</span>{" "}
-                      <span>{detail?.product_visa?.so_lan_nhap_canh}</span>
+                      <span className="font-semibold" data-translate={true}>
+                        Số lần nhập cảnh:
+                      </span>{" "}
+                      <span data-translate={true}>
+                        {renderTextContent(
+                          detail?.product_visa?.so_lan_nhap_canh
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -172,11 +223,15 @@ export default async function CategoryPosts({
                       : ""}
                   </p>
                   <div className="flex justify-between mt-3 items-end">
-                    <p className="font-semibold">Giá dịch vụ hỗ trợ từ:</p>
+                    <p className="font-semibold" data-translate={true}>
+                      Giá dịch vụ hỗ trợ từ:
+                    </p>
                     <p className="text-base md:text-xl text-primary font-semibold">
-                      {detail.price > 0
-                        ? formatCurrency(detail.price - detail.discount_price)
-                        : "Liên hệ"}
+                      {detail.price > 0 ? (
+                        formatCurrency(detail.price - detail.discount_price)
+                      ) : (
+                        <span data-translate={true}>Liên hệ</span>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -186,7 +241,10 @@ export default async function CategoryPosts({
                     href={`/visa/chi-tiet/${detail.slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
-                    <button className="mx-auto text-base font-medium">
+                    <button
+                      className="mx-auto text-base font-medium"
+                      data-translate={true}
+                    >
                       Gửi yêu cầu
                     </button>
                   </Link>

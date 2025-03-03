@@ -3,11 +3,15 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { buildSearch } from "@/utils/Helper";
-import { TourApi } from "@/api/Tour";
+import { buildSearch, renderTextContent } from "@/utils/Helper";
 import DynamicTag from "@/components/base/DynamicTag";
 import PostStyle from "@/styles/posts.module.scss";
 import { DinhCuApi } from "@/api/DinhCu";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { translateText } from "@/utils/translateApi";
+import { dinhCuStaticText } from "@/constants/staticText";
+import { formatTranslationMap } from "@/utils/translateDom";
+import { useTranslation } from "@/app/hooks/useTranslation";
 
 type Props = {
   categories?: {
@@ -29,12 +33,26 @@ export default function ListItem({ categories, categoryDetail }: Props) {
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
+  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
+  const { language } = useLanguage();
+  const { t } = useTranslation(translatedStaticText);
+
+  useEffect(() => {
+    translateText(dinhCuStaticText, language).then((data) => {
+      const translationMap = formatTranslationMap(dinhCuStaticText, data);
+      setTranslatedStaticText(translationMap);
+    });
+  }, [language]);
+
   const loadData = useCallback(async () => {
     try {
       setLoadingLoadMore(true);
-      const search = buildSearch(query);
-      const res = await DinhCuApi.search(`/product/dinhcu/search${search}`);
+      query.locale = language;
+      const res = await DinhCuApi.search(
+        `/product/dinhcu/search${buildSearch(query)}`
+      );
       const result = res?.payload?.data;
+
       setData((prevData: any) =>
         result.items.length > 0 ? [...prevData, ...result.items] : result.items
       );
@@ -47,7 +65,7 @@ export default function ListItem({ categories, categoryDetail }: Props) {
       setFirstLoad(false);
       setLoadingLoadMore(false);
     }
-  }, [query]);
+  }, [query, language]);
 
   const handleSortData = (value: string) => {
     setData([]);
@@ -66,7 +84,7 @@ export default function ListItem({ categories, categoryDetail }: Props) {
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Đang tải dữ liệu...</span>
+        <span className="text-18">Loading...</span>
       </div>
     );
   }
@@ -75,10 +93,10 @@ export default function ListItem({ categories, categoryDetail }: Props) {
     <Fragment>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <h2 className="text-32 font-bold">{`${
-          categoryDetail ? categoryDetail.name : "Dịch vụ định cư"
+          categoryDetail ? categoryDetail.name : t("dich_vu_dinh_cu")
         }`}</h2>
         <div className="flex my-4 md:my-0 space-x-3 items-center">
-          <span>Sắp xếp</span>
+          <span data-translate>{t("sap_xep")}</span>
           <div className="w-40 bg-white border border-gray-200 rounded-lg">
             <select
               className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
@@ -87,8 +105,12 @@ export default function ListItem({ categories, categoryDetail }: Props) {
               }}
               defaultValue={"id|desc"}
             >
-              <option value="id|desc">Mới nhất</option>
-              <option value="id|asc">Cũ nhất</option>
+              <option value="id|desc" data-translate>
+                {t("moi_nhat")}
+              </option>
+              <option value="id|asc" data-translate>
+                {t("cu_nhat")}
+              </option>
             </select>
           </div>
         </div>
@@ -98,10 +120,12 @@ export default function ListItem({ categories, categoryDetail }: Props) {
           {categories.map((item: any) => (
             <Link href={`/dinh-cu/${item.alias}`} key={item.id}>
               <div
-                className="mx-auto group w-40 py-3 rounded-lg px-4 bg-white border duration-300 text__default_hover
+                className="mx-auto w-max group py-3 rounded-lg px-4 bg-white border duration-300 text__default_hover
                           justify-center items-center text-center"
               >
-                <span className="font-medium">{item.name}</span>
+                <span className="font-medium " data-translate>
+                  {item.name}
+                </span>
               </div>
             </Link>
           ))}
@@ -136,8 +160,7 @@ export default function ListItem({ categories, categoryDetail }: Props) {
                 <div
                   className="text-base mt-2 line-clamp-2"
                   dangerouslySetInnerHTML={{
-                    __html:
-                      item.content_tim_hieu_visa ?? "Nội dung đang cập nhật",
+                    __html: renderTextContent(item?.content_tim_hieu_visa),
                   }}
                 ></div>
               </div>
@@ -152,10 +175,12 @@ export default function ListItem({ categories, categoryDetail }: Props) {
           {loadingLoadMore ? (
             <>
               <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-              <span className="text-18"> Đang tải dữ liệu...</span>
+              <span className="text-18">{t("dang_tai_du_lieu")}...</span>
             </>
           ) : (
-            <span className="text-18">Không tìm thấy dữ liệu phù hợp...</span>
+            <span className="text-18">
+              {t("khong_tim_thay_du_lieu_phu_hop")}..
+            </span>
           )}
         </div>
       )}
@@ -177,7 +202,7 @@ export default function ListItem({ categories, categoryDetail }: Props) {
               <span className="loader_spiner"></span>
             ) : (
               <>
-                Xem thêm
+                <span>{t("xem_them")}</span>
                 <svg
                   className="group-hover:stroke-primary stroke-gray-700 duration-300"
                   width="20"

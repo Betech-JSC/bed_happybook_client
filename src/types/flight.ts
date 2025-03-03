@@ -130,6 +130,7 @@ export interface ListFlight {
   handleClickDate: (date: Date, TypeIndex: number) => void;
   flightType?: string;
   flightStopNum?: number[];
+  translatedStaticText: any;
 }
 export interface FlightDetailPopupProps {
   isOpen: boolean;
@@ -140,6 +141,7 @@ export interface FlightDetailPopupProps {
   airports: AirportsCountry[];
   flights: any;
   onClose: () => void;
+  translatedStaticText: any;
 }
 
 export interface FlightDetailInternationalProps {
@@ -154,6 +156,7 @@ export interface FlightDetailInternationalProps {
   onSelectFlight: (flight: any) => void;
   setFlightDetail: (FareData: any, indexFlight: number) => void;
   leg: number;
+  translatedStaticText: any;
 }
 
 export interface FlightDetailDomesticProps {
@@ -176,4 +179,5 @@ export interface FlightDetailDomesticProps {
     }[],
     showRuleTicket?: boolean
   ) => void;
+  translatedStaticText: any;
 }

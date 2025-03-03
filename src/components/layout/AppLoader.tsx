@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Vivus from "vivus";
 import "@/styles/AppLoader.scss";
+import { translatePage } from "@/utils/translateDom";
 
 const AppLoader: React.FC = () => {
   const pathName = usePathname();
@@ -41,7 +42,7 @@ const AppLoader: React.FC = () => {
       svgContainerRef.current?.id || "",
       {
         file: "/logo-happybook.svg",
-        duration: isFirstLoad.current ? 100 : 60,
+        duration: isFirstLoad.current ? 105 : 70,
         type: "oneByOne",
         onReady: (myVivus) => {
           const paths = myVivus.el.querySelectorAll("path, polygon");
@@ -99,14 +100,18 @@ const AppLoader: React.FC = () => {
   }, [startLoader]);
 
   useEffect(() => {
+    translatePage();
+
     if (!isLoaderRunning.current) {
       startLoader();
     }
+
     if (!isFirstLoad.current) {
       timeoutLoaderRef.current = setTimeout(() => {
         stopLoader();
       }, 700);
     }
+
     return () => {
       if (timeoutLoaderRef.current) {
         clearTimeout(timeoutLoaderRef.current);

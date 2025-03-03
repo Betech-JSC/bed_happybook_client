@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import {
-  QuestionAndAnswerBody,
+  QuestionAndAnswerSchema,
   QuestionAndAnswerType,
 } from "@/schemaValidations/questionAndAnswer.schema";
 import { useCallback, useEffect, useState } from "react";
@@ -12,6 +12,8 @@ import { ProductFaqs } from "@/api/ProductFaqs";
 import { buildSearch } from "@/utils/Helper";
 import { format, isValid } from "date-fns";
 import { HttpError } from "@/lib/error";
+import { toastMessages, validationMessages } from "@/lib/messages";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function QuestionAndAnswer({
   productId,
@@ -20,6 +22,10 @@ export default function QuestionAndAnswer({
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [tooManyRequestsErr, setTooManyRequestsErr] = useState<string>("");
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
+
   const {
     register,
     handleSubmit,
@@ -27,7 +33,7 @@ export default function QuestionAndAnswer({
     setError,
     formState: { errors },
   } = useForm<QuestionAndAnswerType>({
-    resolver: zodResolver(QuestionAndAnswerBody),
+    resolver: zodResolver(QuestionAndAnswerSchema(messages)),
   });
 
   const onSubmit = async (data: QuestionAndAnswerType) => {
@@ -42,12 +48,12 @@ export default function QuestionAndAnswer({
       if (response?.status === 200) {
         reset();
         toast.dismiss();
-        toast.success("Gửi thành công!");
+        toast.success(toaStrMsg.sendSuccess);
       }
     } catch (error: any) {
       if (error instanceof HttpError) {
         if (error.status === 429) {
-          setTooManyRequestsErr(error.payload.message);
+          setTooManyRequestsErr(toaStrMsg.tooManyRequests);
         } else if (error?.payload?.errors) {
           Object.keys(error?.payload?.errors).forEach((field: any) => {
             setError(field, {
@@ -57,15 +63,16 @@ export default function QuestionAndAnswer({
           });
         }
       } else {
-        toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+        toast.error(toaStrMsg.error);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const [query, setQuery] = useState<{ page: number }>({
+  const [query, setQuery] = useState<{ page: number; locale: string }>({
     page: 1,
+    locale: language,
   });
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
@@ -95,7 +102,10 @@ export default function QuestionAndAnswer({
 
   return (
     <div className="rounded-2xl bg-white p-6">
-      <h3 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+      <h3
+        className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+        data-translate
+      >
         Hỏi đáp
       </h3>
       <form
@@ -168,11 +178,16 @@ export default function QuestionAndAnswer({
           </div>
           <div className="w-full lg:w-[20%] bg-blue-600 max-h-11 text__default_hover p-[10px] text-white rounded-lg inline-flex items-center">
             <button className="mx-auto text-base font-medium">
-              {loading ? (
-                <span className="loader_spiner"></span>
-              ) : (
-                "Gửi câu hỏi"
-              )}
+              <span
+                className={`${loading ? "loader_spiner h-auto" : "h-0"}`}
+              ></span>
+
+              <span
+                data-translate
+                className={`${loading ? "hidden" : "inline-block w-max"}`}
+              >
+                Gửi câu hỏi
+              </span>
             </button>
           </div>
         </div>
@@ -195,6 +210,7 @@ export default function QuestionAndAnswer({
                     href="#"
                     className="text-sm md:text-18 font-semibold"
                     rel="ugc external nofollow"
+                    data-translate
                   >
                     {item.full_name}
                   </a>
@@ -207,6 +223,7 @@ export default function QuestionAndAnswer({
                   </p>
                 </div>
                 <div
+                  data-translate
                   className="text-sm md:text-base mt-1"
                   dangerouslySetInnerHTML={{
                     __html: item?.question_content ?? "",
@@ -228,26 +245,28 @@ export default function QuestionAndAnswer({
               </button>
             </div> */}
             </div>
-            {item.answer_content && (
-              <div className="px-3 mt-4 border-l border-gray-300">
-                <div className="flex space-x-4">
-                  <div className="w-2/12 md:w-1/12 flex space-x-2">
-                    <div className="w-8 h-8 md:w-11 md:h-11 rounded-full bg-[#F27145] text-white place-content-center text-center">
-                      <p className="text-base md:text-2xl font-medium">A</p>
+            {item.answer_content &&
+              item.answer_content !== "Content is updating!" && (
+                <div className="px-3 mt-4 border-l border-gray-300">
+                  <div className="flex space-x-4">
+                    <div className="w-2/12 md:w-1/12 flex space-x-2">
+                      <div className="w-8 h-8 md:w-11 md:h-11 rounded-full bg-[#F27145] text-white place-content-center text-center">
+                        <p className="text-base md:text-2xl font-medium">A</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="w-8/12">
-                    <p className="text-sm md:text-18 font-semibold">
-                      {"HappyBook Travel"}
-                    </p>
-                    <div
-                      className="text-sm md:text-base leading-6 mt-1"
-                      dangerouslySetInnerHTML={{
-                        __html: item?.answer_content,
-                      }}
-                    ></div>
-                  </div>
-                  {/* <div className="w-2/12 md:w-3/12">
+                    <div className="w-8/12">
+                      <p className="text-sm md:text-18 font-semibold">
+                        {"HappyBook Travel"}
+                      </p>
+                      <div
+                        data-translate
+                        className="text-sm md:text-base leading-6 mt-1"
+                        dangerouslySetInnerHTML={{
+                          __html: item?.answer_content,
+                        }}
+                      ></div>
+                    </div>
+                    {/* <div className="w-2/12 md:w-3/12">
                 <button className="flex w-full justify-end space-x-2 items-center opacity-70">
                   <Image
                     className=" cursor-pointer h-4 w-4"
@@ -258,9 +277,9 @@ export default function QuestionAndAnswer({
                   />
                 </button>
               </div> */}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         ))}
       </div>
@@ -280,7 +299,7 @@ export default function QuestionAndAnswer({
               <span className="loader_spiner"></span>
             ) : (
               <>
-                Xem thêm
+                <span data-translate>Xem thêm</span>
                 <svg
                   className="group-hover:stroke-primary stroke-gray-700 duration-300"
                   width="20"

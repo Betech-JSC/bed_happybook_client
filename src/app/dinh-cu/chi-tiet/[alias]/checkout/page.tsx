@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { DinhCuApi } from "@/api/DinhCu";
 import FormCheckOut from "../../components/FormCheckOut";
+import { renderTextContent } from "@/utils/Helper";
 
 export default async function DinhCuCheckOut({
   params,
@@ -26,7 +27,10 @@ export default async function DinhCuCheckOut({
                   "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
               }}
             >
-              <h3 className="text-22 py-4 px-8 font-semibold text-white">
+              <h3
+                className="text-22 py-4 px-8 font-semibold text-white"
+                data-translate
+              >
                 Thông tin đơn hàng
               </h3>
             </div>
@@ -50,33 +54,60 @@ export default async function DinhCuCheckOut({
               <Link
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                data-translate={true}
               >
-                {detail.name}
+                {renderTextContent(detail.name)}
               </Link>
               <div className="mt-6 mb-2">
                 <div>
-                  <span className="font-semibold">Mã visa:</span>{" "}
-                  <span>{detail?.product_dinhcu?.ma_visa}</span>
+                  <span className="font-semibold" data-translate={true}>
+                    Mã visa:
+                  </span>{" "}
+                  <span data-translate={true}>
+                    {renderTextContent(detail.product_dinhcu.ma_visa)}
+                  </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold">Loại Visa:</span>{" "}
-                  <span>{detail?.product_dinhcu?.loai_visa}</span>
+                  <span className="font-semibold" data-translate={true}>
+                    Loại Visa:
+                  </span>{" "}
+                  <span data-translate={true}>
+                    {renderTextContent(detail.product_dinhcu.loai_visa)}
+                  </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold">Điểm Đến:</span>{" "}
-                  <span>{detail?.product_dinhcu?.diem_den}</span>
+                  <span className="font-semibold" data-translate={true}>
+                    Điểm Đến:
+                  </span>{" "}
+                  <span data-translate={true}>
+                    {renderTextContent(detail.product_dinhcu.diem_den)}
+                  </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold">Thời gian làm Visa:</span>{" "}
-                  <span>{detail?.product_dinhcu?.thoi_gian_lam_visa}</span>
+                  <span className="font-semibold" data-translate={true}>
+                    Thời gian làm Visa:
+                  </span>{" "}
+                  <span data-translate={true}>
+                    {renderTextContent(
+                      detail.product_dinhcu.thoi_gian_lam_visa
+                    )}
+                  </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold">Thời gian lưu trú:</span>{" "}
-                  <span>{detail?.product_dinhcu?.thoi_gian_luu_tru}</span>
+                  <span className="font-semibold" data-translate={true}>
+                    Thời gian lưu trú:
+                  </span>{" "}
+                  <span data-translate={true}>
+                    {renderTextContent(detail.product_dinhcu.thoi_gian_luu_tru)}
+                  </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold">Số lần nhập cảnh:</span>{" "}
-                  <span>{detail?.product_dinhcu?.so_lan_nhap_canh}</span>
+                  <span className="font-semibold" data-translate={true}>
+                    Số lần nhập cảnh:
+                  </span>{" "}
+                  <span data-translate={true}>
+                    {renderTextContent(detail.product_dinhcu.so_lan_nhap_canh)}
+                  </span>
                 </div>
               </div>
               {detail?.price > 0 && (

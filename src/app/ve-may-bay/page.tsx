@@ -20,6 +20,7 @@ import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
 import FooterMenu from "@/components/content-page/footer-menu";
 import FAQ from "@/components/content-page/FAQ";
+import { getServerLang } from "@/lib/session";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -39,9 +40,9 @@ export default async function AirlineTicket() {
   if (popularFlights.length > 0 && popularFlights.length < 5) {
     popularFlights = cloneItemsCarousel(popularFlights, 8);
   }
-
-  const contentPage = (await PageApi.getContent("ve-may-bay"))?.payload
-    ?.data as any;
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("ve-may-bay", language))
+    ?.payload?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -90,10 +91,13 @@ export default async function AirlineTicket() {
                 height={44}
               ></Image>
               <div>
-                <p className="text-18 text-gray-700 font-semibold mb-1">
+                <p
+                  className="text-18 text-gray-700 font-semibold mb-1"
+                  data-translate
+                >
                   Lựa Chọn Không Giới Hạn
                 </p>
-                <p>Vô vàn hành trình, triệu cảm hứng</p>
+                <p data-translate>Vô vàn hành trình, triệu cảm hứng</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -105,10 +109,13 @@ export default async function AirlineTicket() {
                 height={44}
               ></Image>
               <div>
-                <p className="text-18 text-gray-700 font-semibold mb-1">
+                <p
+                  className="text-18 text-gray-700 font-semibold mb-1"
+                  data-translate
+                >
                   Dịch Vụ Cá Nhân Hóa
                 </p>
-                <p>Chăm sóc đặc biệt, trải nghiệm độc đáo</p>
+                <p data-translate>Chăm sóc đặc biệt, trải nghiệm độc đáo</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -120,10 +127,13 @@ export default async function AirlineTicket() {
                 height={44}
               ></Image>
               <div>
-                <p className="text-18 text-gray-700 font-semibold mb-1">
+                <p
+                  className="text-18 text-gray-700 font-semibold mb-1"
+                  data-translate
+                >
                   Giá Trị Vượt Trội
                 </p>
-                <p>Chất lượng đỉnh, đảm bảo giá tốt nhất</p>
+                <p data-translate>Chất lượng đỉnh, đảm bảo giá tốt nhất</p>
               </div>
             </div>
           </div>
@@ -133,7 +143,10 @@ export default async function AirlineTicket() {
               <div>
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-[24px] lg:text-32 font-bold">
+                    <h2
+                      className="text-[24px] lg:text-32 font-bold"
+                      data-translate
+                    >
                       Những chuyến bay phổ biến
                     </h2>
                   </div>
@@ -167,7 +180,10 @@ export default async function AirlineTicket() {
               <div>
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-[24px] lg:text-32 font-bold">
+                    <h2
+                      className="text-[24px] lg:text-32 font-bold"
+                      data-translate
+                    >
                       Vé Máy Bay Một Chiều Dành Cho Bạn
                     </h2>
                   </div>
@@ -198,7 +214,9 @@ export default async function AirlineTicket() {
                               </p>
                             </div>
                             <Link href="#" className="mt-2 font-semibold block">
-                              <h3>{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
+                              <h3
+                                data-translate
+                              >{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
                             </Link>
                             <div className="mt-2 text-sm font-normal h-6">
                               {formatDate(item.flight.ngay_khoi_hanh)}

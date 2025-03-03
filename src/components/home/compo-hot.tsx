@@ -24,10 +24,13 @@ export default function CompoHot({ data }: any) {
         <div className="mt-0 lg:mt-4 lg:flex">
           <div className="flex lg:w-1/4 flex-col justify-between lg:items-center">
             <div>
-              <h2 className="text-2xl lg:text-[32px] leading-9 font-bold text-white">
+              <h2
+                className="text-2xl lg:text-[32px] leading-9 font-bold text-white"
+                data-translate
+              >
                 Combo siêu hot hôm nay
               </h2>
-              <p className="text-16 font-medium text-white mt-3">
+              <p className="text-16 font-medium text-white mt-3" data-translate>
                 Đặt ngay hôm nay, kẻo lỡ cơ hội!
               </p>
             </div>

@@ -18,14 +18,19 @@ export default function NewsByPage({
     <div className={wrapperStyle}>
       <div className="flex justify-between">
         <div>
-          <h2 className="text-[32px] font-bold">{title}</h2>
+          <h2 className="text-[32px] font-bold" data-translate>
+            {title}
+          </h2>
         </div>
         <Link
           href="/tin-tuc"
           className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
           style={{ transition: "0.3s" }}
         >
-          <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
+          <button className="text-[#175CD3] font-medium" data-translate>
+            {" "}
+            Xem tất cả
+          </button>
           <Image
             className="ease-in duration-300"
             src="/icon/chevron-right.svg"
@@ -39,7 +44,10 @@ export default function NewsByPage({
         href="/tin-tuc"
         className="lg:hidden inline-flex bg-[#EFF8FF] mt-2 py-3 px-4 rounded-lg space-x-3"
       >
-        <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
+        <button className="text-[#175CD3] font-medium" data-translate>
+          {" "}
+          Xem tất cả
+        </button>
         <Image
           className="ease-in duration-300"
           src="/icon/chevron-right.svg"
@@ -70,7 +78,10 @@ export default function NewsByPage({
                   "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
               }}
             >
-              <h3 className="absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+              <h3
+                data-translate
+                className="absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
+              >
                 {firstItem.title}
               </h3>
             </div>
@@ -100,7 +111,10 @@ export default function NewsByPage({
                       "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                   }}
                 >
-                  <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                  <h3
+                    data-translate
+                    className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
+                  >
                     {item.title}
                   </h3>
                 </div>
@@ -139,7 +153,10 @@ export default function NewsByPage({
                             "linear-gradient(to bottom, rgba(23, 92, 211, 0) 63.83%, #175CD3 83.7%)",
                         }}
                       >
-                        <h3 className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]">
+                        <h3
+                          data-translate
+                          className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
+                        >
                           {item.title}
                         </h3>
                       </div>

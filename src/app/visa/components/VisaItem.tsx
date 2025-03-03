@@ -33,6 +33,7 @@ export default function VisaItem({ data }: any) {
                          : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
                      }`}
                   onClick={() => setActiveTab(index)}
+                  data-translate
                 >
                   {tab.name}
                 </button>
@@ -42,63 +43,67 @@ export default function VisaItem({ data }: any) {
         </Carousel>
       </div>
       <div>
-        {data.map((category: any, index: number) =>
-          category.products.length > 0 ? (
-            <>
-              {activeTab === index && (
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {category.products.map((visa: any, index: number) => (
-                      <CarouselItem
-                        key={index}
-                        className="basis-10/12 md:basis-5/12 lg:basis-1/4"
-                      >
-                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="overflow-hidden rounded-t-2xl	">
-                            <Link href={`/visa/chi-tiet/${visa.slug}`}>
-                              <Image
-                                className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
-                                src={`${visa.image_url}/${visa.image_location}`}
-                                alt="Visa Image"
-                                width={320}
-                                height={320}
-                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                style={{ height: 220, width: "100%" }}
-                              />
-                            </Link>
-                          </div>
-                          <div className="py-3 px-4 lg:h-[72px] ">
-                            <Link
-                              href={`/visa/chi-tiet/${visa.slug}`}
-                              className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
-                            >
-                              <h3> {visa.name}</h3>
-                            </Link>
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden lg:inline-flex" />
-                  <CarouselNext className="hidden lg:inline-flex" />
-                </Carousel>
-              )}
-            </>
-          ) : (
-            activeTab === index && (
-              <div className="min-h-[100px] content-center text-center">
-                <p className="font-bold text-xl">
-                  Thông tin đang được cập nhật.....
-                </p>
-              </div>
-            )
-          )
-        )}
+        {data.map((category: any, index: number) => (
+          <>
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className={`${
+                category.products.length > 0 && activeTab === index
+                  ? "block visible"
+                  : "hidden invisible"
+              }`}
+            >
+              <CarouselContent>
+                {category.products.map((visa: any, index: number) => (
+                  <CarouselItem
+                    key={index}
+                    className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+                  >
+                    <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                      <div className="overflow-hidden rounded-t-2xl	">
+                        <Link href={`/visa/chi-tiet/${visa.slug}`}>
+                          <Image
+                            className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
+                            src={`${visa.image_url}/${visa.image_location}`}
+                            alt="Visa Image"
+                            width={320}
+                            height={320}
+                            sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                            style={{ height: 220, width: "100%" }}
+                          />
+                        </Link>
+                      </div>
+                      <div className="py-3 px-4 lg:h-[72px] ">
+                        <Link
+                          href={`/visa/chi-tiet/${visa.slug}`}
+                          className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
+                        >
+                          <h3 data-translate> {visa.name}</h3>
+                        </Link>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden lg:inline-flex" />
+              <CarouselNext className="hidden lg:inline-flex" />
+            </Carousel>
+            <div
+              className={`min-h-[100px] content-center text-center ${
+                category.products.length <= 0 && activeTab === index
+                  ? "block visible"
+                  : "hidden invisible"
+              }`}
+            >
+              <p className="font-bold text-xl" data-translate>
+                Thông tin đang được cập nhật.....
+              </p>
+            </div>
+          </>
+        ))}
       </div>
     </div>
   );

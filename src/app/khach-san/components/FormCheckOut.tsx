@@ -5,30 +5,54 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import {
-  CheckOutHotelBody,
+  CheckOutHotelSchema,
   CheckOutHotelType,
 } from "@/schemaValidations/CheckOutHotel.schema";
 import Image from "next/image";
-import DatePicker from "react-datepicker";
-import { vi } from "date-fns/locale";
+import DatePicker, { registerLocale } from "react-datepicker";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import Link from "next/link";
 import { BookingProductApi } from "@/api/BookingProduct";
 import { useRouter } from "next/navigation";
+import { renderTextContent } from "@/utils/Helper";
+import { translateText } from "@/utils/translateApi";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { datePickerLocale } from "@/constants/language";
+import { toastMessages, validationMessages } from "@/lib/messages";
 
 export default function FormCheckOut({ data, room }: any) {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
-  const [schemaForm, setSchemaForm] = useState(() =>
-    CheckOutHotelBody(generateInvoice)
-  );
   const router = useRouter();
+  const [translatedContent, setTranslatedContent] = useState<any>([]);
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const [schemaForm, setSchemaForm] = useState(() =>
+    CheckOutHotelSchema(messages, generateInvoice)
+  );
 
   useEffect(() => {
-    setSchemaForm(CheckOutHotelBody(generateInvoice));
-  }, [generateInvoice]);
+    if (datePickerLocale[language]) {
+      registerLocale(language, datePickerLocale[language]);
+    }
+  }, [language]);
+
+  useEffect(() => {
+    translateText(
+      [
+        renderTextContent(data?.hotel?.policy),
+        renderTextContent(data?.hotel?.information),
+      ],
+      language
+    ).then((data) => setTranslatedContent(data));
+  }, [data, language]);
+
+  useEffect(() => {
+    setSchemaForm(CheckOutHotelSchema(messages, generateInvoice));
+  }, [generateInvoice, messages]);
 
   const {
     register,
@@ -72,15 +96,15 @@ export default function FormCheckOut({ data, room }: any) {
       const respon = await BookingProductApi.Hotel(formatData);
       if (respon?.status === 200) {
         reset();
-        toast.success("Gửi yêu cầu thành công!");
+        toast.success(toaStrMsg.sendSuccess);
         setTimeout(() => {
           router.push("/khach-san");
         }, 1500);
       } else {
-        toast.error("Gửi yêu cầu thất bại!");
+        toast.error(toaStrMsg.sendFailed);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+      toast.error(toaStrMsg.error);
     } finally {
       setLoading(false);
     }
@@ -108,7 +132,8 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="check_in_date"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  Ngày nhận phòng<span className="text-red-500">*</span>
+                  <span data-translate={true}>Ngày nhận phòng</span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <div className="pt-6 pb-2 pr-2 w-full">
                   <Controller
@@ -122,13 +147,13 @@ export default function FormCheckOut({ data, room }: any) {
                         placeholderText="Chọn ngày nhận phòng"
                         dateFormat="dd-MM-yyyy"
                         dropdownMode="select"
-                        locale={vi}
                         minDate={new Date()}
                         maxDate={
                           checkOutDate
                             ? new Date(checkOutDate.getTime() - 86400000)
                             : undefined
                         }
+                        locale={language}
                         wrapperClass="w-full"
                         className="text-sm pl-4 w-full placeholder-gray-400 focus:outline-none border-none focus:border-primary"
                       />
@@ -158,7 +183,8 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="check_out_date"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  Ngày trả phòng<span className="text-red-500">*</span>
+                  <span data-translate={true}>Ngày trả phòng</span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <div className="flex justify-between items-end pt-6 pb-2 pr-2 w-full rounded-md">
                   <Controller
@@ -176,7 +202,7 @@ export default function FormCheckOut({ data, room }: any) {
                             ? new Date(checkInDate.getTime() + 86400000)
                             : new Date()
                         }
-                        locale={vi}
+                        locale={language}
                         className="text-sm pl-4 w-full placeholder-gray-400 focus:outline-none border-none  focus:border-primary"
                       />
                     )}
@@ -194,6 +220,7 @@ export default function FormCheckOut({ data, room }: any) {
             <label
               htmlFor="atd"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+              data-translate={true}
             >
               Người lớn
             </label>
@@ -213,6 +240,7 @@ export default function FormCheckOut({ data, room }: any) {
             <label
               htmlFor="chd"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+              data-translate={true}
             >
               Trẻ em (2-12 tuổi)
             </label>
@@ -232,6 +260,7 @@ export default function FormCheckOut({ data, room }: any) {
             <label
               htmlFor="inf"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+              data-translate={true}
             >
               Em bé {"(< 2 tuổi)"}
             </label>
@@ -250,7 +279,9 @@ export default function FormCheckOut({ data, room }: any) {
         </div>
       </div>
       <div className="mt-6">
-        <p className="text-18 font-bold">Thông tin liên hệ</p>
+        <p className="text-18 font-bold" data-translate={true}>
+          Thông tin liên hệ
+        </p>
         <div className="mt-4 bg-white py-4 px-6 rounded-xl">
           <div className="mt-4 w-full">
             <div className="relative">
@@ -258,7 +289,8 @@ export default function FormCheckOut({ data, room }: any) {
                 htmlFor="fullName"
                 className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
               >
-                Họ và tên <span className="text-red-500">*</span>
+                <span data-translate={true}>Họ và tên</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 id="fullName"
@@ -280,7 +312,8 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="phone"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  Số điện thoại <span className="text-red-500">*</span>
+                  <span data-translate={true}>Số điện thoại</span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="phone"
@@ -338,182 +371,199 @@ export default function FormCheckOut({ data, room }: any) {
               onClick={() => {
                 setGenerateInvoice(!generateInvoice);
               }}
+              data-translate={true}
             >
               Tôi muốn xuất hóa đơn
             </span>
           </div>
           {/* generateInvoice */}
-          {generateInvoice && (
-            <div className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="relative">
-                  <label
-                    htmlFor="GenerateInvoice_company_name"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Tên công ty <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="GenerateInvoice_company_name"
-                    type="text"
-                    {...register(`invoice.company_name`)}
-                    placeholder="Nhập tên công ty"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                  />
-                  {errors.invoice?.company_name && (
-                    <p className="text-red-600">
-                      {errors.invoice?.company_name?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="GenerateInvoice_company_address"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Địa chỉ <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="GenerateInvoice_company_address"
-                    type="text"
-                    placeholder="Nhập địa chỉ công ty"
-                    {...register(`invoice.address`)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                  {errors.invoice?.address && (
-                    <p className="text-red-600">
-                      {errors.invoice?.address?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="GenerateInvoice_city"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Thành phố <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="GenerateInvoice_city"
-                    type="text"
-                    placeholder="Nhập thành phố"
-                    {...register(`invoice.city`)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                  {errors.invoice?.city && (
-                    <p className="text-red-600">
-                      {errors.invoice?.city?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="GenerateInvoice_tax_code"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Mã số thuế <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="GenerateInvoice_tax_code"
-                    type="text"
-                    placeholder="Nhập mã số thuế"
-                    {...register(`invoice.mst`)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                  {errors.invoice?.mst && (
-                    <p className="text-red-600">
-                      {errors.invoice?.mst?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="GenerateInvoice_recipient_name"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Người nhận hóa đơn
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="GenerateInvoice_recipient_name"
-                    type="text"
-                    placeholder="Nhập họ và tên người nhận"
-                    {...register(`invoice.contact_name`)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                  {errors.invoice?.contact_name && (
-                    <p className="text-red-600">
-                      {errors.invoice?.contact_name?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="GenerateInvoice_phone"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Số điện thoại <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="GenerateInvoice_phone"
-                    type="text"
-                    placeholder="Nhập số điện thoại người nhận"
-                    {...register(`invoice.phone`)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                  {errors.invoice?.phone && (
-                    <p className="text-red-600">
-                      {errors.invoice?.phone?.message}
-                    </p>
-                  )}
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="GenerateInvoice_email"
-                    className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                  >
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="GenerateInvoice_email"
-                    type="text"
-                    placeholder="Nhập Email"
-                    {...register(`invoice.email`)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                  {errors.invoice?.email && (
-                    <p className="text-red-600">
-                      {errors.invoice?.email?.message}
-                    </p>
-                  )}
-                </div>
+          <div
+            className={`mt-4   ${
+              generateInvoice ? "visible" : "invisible hidden"
+            }`}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="relative">
+                <label
+                  htmlFor="GenerateInvoice_company_name"
+                  className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                >
+                  <span data-translate={true}>Tên công ty </span>
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="GenerateInvoice_company_name"
+                  type="text"
+                  {...register(`invoice.company_name`)}
+                  placeholder="Nhập tên công ty"
+                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                />
+                {errors.invoice?.company_name && (
+                  <p className="text-red-600">
+                    {errors.invoice?.company_name?.message}
+                  </p>
+                )}
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="GenerateInvoice_company_address"
+                  className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                >
+                  <span data-translate={true}>Địa chỉ </span>
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="GenerateInvoice_company_address"
+                  type="text"
+                  placeholder="Nhập địa chỉ công ty"
+                  {...register(`invoice.address`)}
+                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                />
+                {errors.invoice?.address && (
+                  <p className="text-red-600">
+                    {errors.invoice?.address?.message}
+                  </p>
+                )}
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="GenerateInvoice_city"
+                  className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                >
+                  <span data-translate={true}>Thành phố </span>
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="GenerateInvoice_city"
+                  type="text"
+                  placeholder="Nhập thành phố"
+                  {...register(`invoice.city`)}
+                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                />
+                {errors.invoice?.city && (
+                  <p className="text-red-600">
+                    {errors.invoice?.city?.message}
+                  </p>
+                )}
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="GenerateInvoice_tax_code"
+                  className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                >
+                  <span data-translate={true}>Mã số thuế </span>
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="GenerateInvoice_tax_code"
+                  type="text"
+                  placeholder="Nhập mã số thuế"
+                  {...register(`invoice.mst`)}
+                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                />
+                {errors.invoice?.mst && (
+                  <p className="text-red-600">{errors.invoice?.mst?.message}</p>
+                )}
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="GenerateInvoice_recipient_name"
+                  className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                >
+                  <span data-translate={true}>Người nhận hóa đơn </span>
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="GenerateInvoice_recipient_name"
+                  type="text"
+                  placeholder="Nhập họ và tên người nhận"
+                  {...register(`invoice.contact_name`)}
+                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                />
+                {errors.invoice?.contact_name && (
+                  <p className="text-red-600">
+                    {errors.invoice?.contact_name?.message}
+                  </p>
+                )}
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="GenerateInvoice_phone"
+                  className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                >
+                  <span data-translate={true}>Số điện thoại </span>
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="GenerateInvoice_phone"
+                  type="text"
+                  placeholder="Nhập số điện thoại người nhận"
+                  {...register(`invoice.phone`)}
+                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                />
+                {errors.invoice?.phone && (
+                  <p className="text-red-600">
+                    {errors.invoice?.phone?.message}
+                  </p>
+                )}
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="GenerateInvoice_email"
+                  className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                >
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="GenerateInvoice_email"
+                  type="text"
+                  placeholder="Nhập Email"
+                  {...register(`invoice.email`)}
+                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                />
+                {errors.invoice?.email && (
+                  <p className="text-red-600">
+                    {errors.invoice?.email?.message}
+                  </p>
+                )}
               </div>
             </div>
-          )}
-          {data.hotel.policy && (
+          </div>
+          {translatedContent?.[0] && (
             <div className="mt-6 py-4 px-6 bg-gray-100 rounded-lg">
-              <p className="text-18 text-blue-700 font-bold">Chính sách</p>
+              <p
+                className="text-18 text-blue-700 font-bold"
+                data-translate={true}
+              >
+                Chính sách
+              </p>
               <div
                 className="mt-2"
+                data-translate={true}
                 dangerouslySetInnerHTML={{
-                  __html: data.hotel.policy ?? "Nội dung đang cập nhật...",
+                  __html: renderTextContent(translatedContent[0]),
                 }}
               ></div>
             </div>
           )}
-          {data.hotel.information && (
+          {translatedContent?.[1] && (
             <div className="mt-6 py-4 px-6 bg-gray-100 rounded-lg">
-              <p className="text-18 text-blue-700 font-bold">
+              <p
+                className="text-18 text-blue-700 font-bold"
+                data-translate={true}
+              >
                 Thông tin quan trọng
               </p>
               <div
                 className="mt-2"
+                data-translate={true}
                 dangerouslySetInnerHTML={{
-                  __html: data.hotel.information ?? "Nội dung đang cập nhật...",
+                  __html: renderTextContent(translatedContent[1]),
                 }}
               ></div>
             </div>
           )}
+
           <div className="flex space-x-2 mt-3 items-center">
             <input
               type="checkbox"
@@ -524,13 +574,18 @@ export default function FormCheckOut({ data, room }: any) {
               }}
             />
             <div>
-              <label htmlFor="checkbox1" className="text-sm">
+              <label
+                htmlFor="checkbox1"
+                className="text-sm"
+                data-translate={true}
+              >
                 Tôi xác nhận đã đọc và chấp nhận.{" "}
               </label>
               <Link
                 href="/thong-tin-chung/dieu-khoan-su-dung"
                 target="_blank"
                 className="text-blue-700 font-bold"
+                data-translate={true}
               >
                 Điều khoản sử dụng
               </Link>

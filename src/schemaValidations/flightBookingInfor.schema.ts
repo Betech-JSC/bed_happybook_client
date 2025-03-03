@@ -1,51 +1,54 @@
+import { ValidationMessages } from "@/lib/messages";
 import z from "zod";
 
-export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
-  return z.object({
+export const FlightBookingInforBody = (
+  messages: ValidationMessages,
+  checkBoxGenerateInvoice: boolean
+) =>
+  z.object({
     atd: z.array(
       z.object({
         firstName: z
           .string()
-          .min(1, { message: "Vui lòng điền thông tin này" })
+          .min(1, { message: messages.required })
           .regex(/^[a-zA-Z\s]+$/, {
-            message: "Vui lòng nhập Họ không dấu và không có các chữ số",
+            message: messages.inValidLastName,
           })
           .max(30, {
-            message: "Họ không hợp lệ!",
+            message: messages.inValid,
           }),
         lastName: z
           .string()
-          .min(1, { message: "Vui lòng điền thông tin này" })
+          .min(1, { message: messages.required })
           .regex(/^[a-zA-Z\s]+$/, {
-            message:
-              "Vui lòng nhập Tên đệm & Tên không dấu và không có các chữ số",
+            message: messages.inValidLastName,
           })
           .max(100, {
-            message: "Tên & tên đệm không hợp lệ!",
+            message: messages.inValid,
           }),
         gender: z
           .string()
           .min(1, {
-            message: "Vui lòng điền thông tin này",
+            message: messages.required,
           })
           .refine((value) => ["male", "female"].includes(value), {
-            message: "Vui lòng điền thông tin này",
+            message: messages.required,
           }),
         birthday: z.date({
-          required_error: "Vui lòng điền thông tin này",
-          invalid_type_error: "Ngày sinh không đúng định dạng",
+          required_error: messages.required,
+          invalid_type_error: messages.inValidBirthDay,
         }),
         cccd: z
           .string()
           .min(1, {
-            message: "Vui lòng điền thông tin này",
+            message: messages.required,
           })
           .regex(/^\d{12}$/, {
-            message: "CCCD không đúng định dạng",
+            message: messages.inValid,
           }),
         cccd_date: z.date({
-          required_error: "Vui lòng điền thông tin này",
-          invalid_type_error: "Thông tin không đúng định dạng",
+          required_error: messages.required,
+          invalid_type_error: messages.inValid,
         }),
         baggages: z
           .array(
@@ -63,34 +66,33 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
         z.object({
           firstName: z
             .string()
-            .min(1, { message: "Vui lòng điền thông tin này" })
+            .min(1, { message: messages.required })
             .regex(/^[a-zA-Z\s]+$/, {
-              message: "Vui lòng nhập Họ không dấu và không có các chữ số",
+              message: messages.inValidLastName,
             })
             .max(30, {
-              message: "Họ không hợp lệ!",
+              message: messages.inValid,
             }),
           lastName: z
             .string()
-            .min(1, { message: "Vui lòng điền thông tin này" })
+            .min(1, { message: messages.required })
             .regex(/^[a-zA-Z\s]+$/, {
-              message:
-                "Vui lòng nhập Tên đệm & Tên không dấu và không có các chữ số",
+              message: messages.inValidLastName,
             })
             .max(100, {
-              message: "Tên & tên đệm không hợp lệ!",
+              message: messages.inValid,
             }),
           gender: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .refine((value) => ["male", "female"].includes(value), {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             }),
           birthday: z.date({
-            required_error: "Vui lòng điền thông tin này",
-            invalid_type_error: "Ngày sinh không đúng định dạng",
+            required_error: messages.required,
+            invalid_type_error: messages.inValidBirthDay,
           }),
           baggages: z
             .array(
@@ -109,34 +111,33 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
         z.object({
           firstName: z
             .string()
-            .min(1, { message: "Vui lòng điền thông tin này" })
+            .min(1, { message: messages.required })
             .regex(/^[a-zA-Z\s]+$/, {
-              message: "Vui lòng nhập Họ không dấu và không có các chữ số",
+              message: messages.inValidLastName,
             })
             .max(30, {
-              message: "Họ không hợp lệ!",
+              message: messages.inValid,
             }),
           lastName: z
             .string()
-            .min(1, { message: "Vui lòng điền thông tin này" })
+            .min(1, { message: messages.required })
             .regex(/^[a-zA-Z\s]+$/, {
-              message:
-                "Vui lòng nhập Tên đệm & Tên không dấu và không có các chữ số",
+              message: messages.inValidLastName,
             })
             .max(100, {
-              message: "Tên & tên đệm không hợp lệ!",
+              message: messages.inValid,
             }),
           gender: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .refine((value) => ["male", "female"].includes(value), {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             }),
           birthday: z.date({
-            required_error: "Vui lòng điền thông tin này",
-            invalid_type_error: "Ngày sinh không đúng định dạng",
+            required_error: messages.required,
+            invalid_type_error: messages.inValidBirthDay,
           }),
           baggages: z
             .array(
@@ -160,34 +161,25 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
             val === true ||
             val === false ||
             ["male", "female"].includes(val as string),
-          { message: "Vui lòng điền thông tin này" }
+          { message: messages.required }
         ),
-      first_name: z
-        .string()
-        .min(1, { message: "Vui lòng điền thông tin này" })
-        .max(30, {
-          message: "Họ không hợp lệ!",
-        }),
-      last_name: z
-        .string()
-        .min(1, { message: "Vui lòng điền thông tin này" })
-        .max(100, {
-          message: "Tên không hợp lệ!",
-        }),
+      first_name: z.string().min(1, { message: messages.required }).max(30, {
+        message: messages.inValid,
+      }),
+      last_name: z.string().min(1, { message: messages.required }).max(100, {
+        message: messages.inValid,
+      }),
       phone: z
         .string()
         .min(1, {
-          message: "Vui lòng điền thông tin này",
+          message: messages.required,
         })
         .regex(/^0\d{9,10}$/, {
-          message: "Số điện thoại không đúng định dạng",
+          message: messages.inValid,
         }),
-      email: z
-        .string()
-        .min(1, { message: "Vui lòng điền thông tin này" })
-        .email({
-          message: "Email không đúng định dạng",
-        }),
+      email: z.string().min(1, { message: messages.required }).email({
+        message: messages.email,
+      }),
       address: z.string().optional(),
     }),
     Note: z.string(),
@@ -195,45 +187,38 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
     //   .string()
     //   .min(1, { message: "Vui lòng chọn phương thức thanh toán" })
     //   .refine((value) => ["cash", "vnpay", "bank_transfer"].includes(value), {
-    //     message: "Vui lòng điền thông tin này",
+    //     message: messages.required,
     //   }),
     invoice: checkBoxGenerateInvoice
       ? z.object({
           company_name: z
             .string()
-            .min(3, { message: "Vui lòng điền thông tin này" })
+            .min(3, { message: messages.required })
             .max(256, {
-              message: "Tên công ty không hợp lệ",
+              message: messages.inValid,
             }),
-          address: z
-            .string()
-            .min(3, { message: "Vui lòng điền thông tin này" }),
-          city: z.string().min(3, { message: "Vui lòng điền thông tin này" }),
+          address: z.string().min(3, { message: messages.required }),
+          city: z.string().min(3, { message: messages.required }),
           mst: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .regex(/^\d{10,13}$/, {
-              message: "Thông tin không hợp lệ",
+              message: messages.inValid,
             }),
-          contact_name: z
-            .string()
-            .min(3, { message: "Vui lòng điền thông tin này" }),
+          contact_name: z.string().min(3, { message: messages.required }),
           phone: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .regex(/^0\d{9}$/, {
-              message: "Số điện thoại không đúng định dạng",
+              message: messages.inValid,
             }),
-          email: z
-            .string()
-            .min(1, { message: "Vui lòng điền thông tin này" })
-            .email({
-              message: "Email không đúng định dạng",
-            }),
+          email: z.string().min(1, { message: messages.required }).email({
+            message: messages.email,
+          }),
         })
       : z
           .object({
@@ -249,7 +234,6 @@ export const FlightBookingInforBody = (checkBoxGenerateInvoice: boolean) => {
 
     checkBoxGenerateInvoice: z.boolean(),
   });
-};
 
 export type FlightBookingInforType = z.infer<
   ReturnType<typeof FlightBookingInforBody>

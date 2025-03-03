@@ -2,8 +2,8 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import {
-  AuthLoginBody,
-  AuthLoginBodyType,
+  AuthLoginSchema,
+  getAuthLoginSchema,
 } from "@/schemaValidations/authLogin.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
@@ -11,23 +11,25 @@ import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-type FormData = AuthLoginBodyType;
+import { validationMessages } from "@/lib/messages";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function FormLogin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const schema = getAuthLoginSchema(messages);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(AuthLoginBody),
+  } = useForm<AuthLoginSchema>({
+    resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: AuthLoginSchema) => {
     try {
       setLoading(true);
       reset();
@@ -45,7 +47,7 @@ export default function FormLogin() {
     <form onSubmit={handleSubmit(onSubmit)} className="mt-3 rounded-xl ">
       <div className="mt-6 pb-6 border-b-[1px] border-gray-300">
         <div>
-          <p>Tên tài khoản hoặc địa chỉ email</p>
+          <p data-translate>Tên tài khoản hoặc địa chỉ email</p>
           <input
             type="text"
             placeholder="Tên tài khoản hoặc địa chỉ email"
@@ -57,7 +59,7 @@ export default function FormLogin() {
           )}
         </div>
         <div className="mt-3">
-          <p>Mật khẩu</p>
+          <p data-translate>Mật khẩu</p>
           <input
             type="password"
             placeholder="Mật khẩu"
@@ -76,7 +78,9 @@ export default function FormLogin() {
           />
         </div>
         <div className="mt-3 text-right text-base text-blue-700 font-medium">
-          <Link href="#">Quên mật khẩu ?</Link>
+          <Link href="#" data-translate>
+            Quên mật khẩu ?
+          </Link>
         </div>
       </div>
     </form>

@@ -23,10 +23,12 @@ import { formatMetadata } from "@/lib/formatters";
 import FAQ from "@/components/content-page/FAQ";
 import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
+import { renderTextContent } from "@/utils/Helper";
+import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await HotelApi.detail("tesst1")) as any;
-
   const data = res?.payload.data;
   return formatMetadata({
     title: data?.meta_title ?? data?.title,
@@ -59,7 +61,8 @@ export default async function HotelDetail({
   if (!detail) {
     notFound();
   }
-  const contentPage = (await PageApi.getContent("khach-san"))?.payload
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("khach-san", language))?.payload
     ?.data as any;
 
   return (
@@ -83,7 +86,11 @@ export default async function HotelDetail({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link
+                    href="/"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -91,7 +98,11 @@ export default async function HotelDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/khach-san" className="text-blue-700">
+                  <Link
+                    href="/khach-san"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Khách sạn
                   </Link>
                 </BreadcrumbLink>
@@ -99,8 +110,12 @@ export default async function HotelDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
-                    {detail.name ?? ""}
+                  <Link
+                    href="#"
+                    className="text-gray-700"
+                    data-translate={true}
+                  >
+                    {renderTextContent(detail.name)}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -161,64 +176,7 @@ export default async function HotelDetail({
               <FAQ />
             </div>
             <div className="my-8 p-8 rounded-2xl bg-gray-50 ">
-              <h3 className="text-32 font-bold text-center">
-                Vì sao nên chọn HappyBook
-              </h3>
-              <div className="mt-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/adviser.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Đội ngũ Happybook tư vấn
-                      </p>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        hỗ trợ nhiệt tình 24/7
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/developers.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Đơn vị hơn 8 năm kinh nghiệm.
-                      </p>
-                      <p className="text-18 font-semibold text-gray-900">
-                        Lấy chữ tín làm đầu
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 h-20">
-                    <Image
-                      src="/tour/product-icon.svg"
-                      alt="Icon"
-                      className="h-11 w-11"
-                      width={44}
-                      height={44}
-                    ></Image>
-                    <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
-                        Sản phẩm đa dạng,
-                      </p>
-                      <p className="text-18 font-semibold text-gray-900">
-                        giá cả tốt nhất
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <WhyChooseHappyBook />
             </div>
           </div>
         </div>

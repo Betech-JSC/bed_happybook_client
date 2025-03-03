@@ -17,6 +17,7 @@ import SideBar from "../../components/side-bar";
 import { Suspense } from "react";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
+import { isEmpty } from "lodash";
 
 type Props = {
   params: { subCategory: string };
@@ -71,7 +72,7 @@ export default async function SubCategoryPosts({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/" className="text-blue-700">
+                <Link href="/" className="text-blue-700" data-translate>
                   Trang chủ
                 </Link>
               </BreadcrumbLink>
@@ -79,7 +80,7 @@ export default async function SubCategoryPosts({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/tin-tuc" className="text-blue-700">
+                <Link href="/tin-tuc" className="text-blue-700" data-translate>
                   Tin tức
                 </Link>
               </BreadcrumbLink>
@@ -87,7 +88,7 @@ export default async function SubCategoryPosts({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="#" className="text-gray-900">
+                <Link href="#" className="text-gray-900" data-translate>
                   {category.name}
                 </Link>
               </BreadcrumbLink>
@@ -101,7 +102,7 @@ export default async function SubCategoryPosts({
               <div className="mt-6"></div>
             </h3>
             <div className="mt-8">
-              <Suspense fallback={<div>Đang tải tin tức...</div>}>
+              <Suspense fallback={<div>Loading...</div>}>
                 {posts.length > 0 ? (
                   posts.map((item, index) => (
                     <div
@@ -124,15 +125,19 @@ export default async function SubCategoryPosts({
                       </div>
                       <div className="basis-[63%]">
                         <Link
+                          data-translate
                           href={`/tin-tuc/chi-tiet/${item.alias}`}
                           className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${PostStyle.post__item_title}`}
                         >
                           {item.title}
                         </Link>
                         <div
+                          data-translate
                           className="text-sm text-gray-700 line-clamp-3 mt-2"
                           dangerouslySetInnerHTML={{
-                            __html: item.description,
+                            __html: !isEmpty(item.description)
+                              ? item.description
+                              : "Nội dung đang cập nhật...",
                           }}
                         ></div>
                         <p className="text-sm mt-2">
@@ -142,7 +147,9 @@ export default async function SubCategoryPosts({
                     </div>
                   ))
                 ) : (
-                  <p className="text-xl">Tin tức đang được cập nhật....</p>
+                  <p className="text-xl" data-translate>
+                    Tin tức đang được cập nhật....
+                  </p>
                 )}
               </Suspense>
             </div>

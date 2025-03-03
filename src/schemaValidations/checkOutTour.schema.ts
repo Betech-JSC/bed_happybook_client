@@ -1,14 +1,18 @@
+import { ValidationMessages } from "@/lib/messages";
 import z from "zod";
 
-export const CheckOutTourBody = (checkBoxGenerateInvoice: boolean) => {
+export const CheckOutTourSchema = (
+  messages: ValidationMessages,
+  checkBoxGenerateInvoice: boolean
+) => {
   return z.object({
     depart_date: z.date({
-      required_error: "Vui lòng điền thông tin này",
-      invalid_type_error: "Ngày khởi hành không đúng định dạng",
+      required_error: messages.required,
+      invalid_type_error: messages.inValid,
     }),
 
     depart_point: z.string().min(1, {
-      message: "Vui lòng điền thông tin này",
+      message: messages.required,
     }),
 
     atd: z
@@ -17,9 +21,9 @@ export const CheckOutTourBody = (checkBoxGenerateInvoice: boolean) => {
         const num = Number(val);
         return isNaN(num) ? 0 : num;
       })
-      .refine((val) => val >= 1, { message: "Số phải lớn hơn hoặc bằng 1" })
+      .refine((val) => val >= 1, { message: messages.inValid })
       .refine((val) => val <= 1000, {
-        message: "Số lượng tối là 1000",
+        message: messages.inValid,
       }),
 
     chd: z
@@ -28,9 +32,9 @@ export const CheckOutTourBody = (checkBoxGenerateInvoice: boolean) => {
         const num = Number(val);
         return isNaN(num) ? 0 : num;
       })
-      .refine((val) => val >= 0, { message: "Số phải lớn hơn hoặc bằng 0" })
+      .refine((val) => val >= 0, { message: messages.inValid })
       .refine((val) => val <= 1000, {
-        message: "Số lượng tối là 1000",
+        message: messages.inValid,
       }),
     inf: z
       .string()
@@ -38,39 +42,39 @@ export const CheckOutTourBody = (checkBoxGenerateInvoice: boolean) => {
         const num = Number(val);
         return isNaN(num) ? 0 : num;
       })
-      .refine((val) => val >= 0, { message: "Số phải lớn hơn hoặc bằng 0" })
+      .refine((val) => val >= 0, { message: messages.inValid })
       .refine((val) => val <= 1000, {
-        message: "Số lượng tối là 1000",
+        message: messages.inValid,
       }),
 
     phone: z
       .string()
       .min(1, {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       })
       .regex(/^\d{10,11}$/, {
-        message: "Số điện thoại không đúng định dạng",
+        message: messages.inValid,
       }),
 
     gender: z
       .string()
       .min(1, {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       })
       .refine((value) => ["male", "female", "other"].includes(value), {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       }),
 
-    email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
-      message: "Email không đúng định dạng",
+    email: z.string().min(1, { message: messages.required }).email({
+      message: messages.email,
     }),
 
     full_name: z
       .string()
       .min(3, {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       })
-      .max(255, { message: "Họ và Tên không hợp lệ" }),
+      .max(255, { message: messages.inValid }),
 
     note: z.string(),
 
@@ -78,39 +82,32 @@ export const CheckOutTourBody = (checkBoxGenerateInvoice: boolean) => {
       ? z.object({
           company_name: z
             .string()
-            .min(3, { message: "Vui lòng điền thông tin này" })
+            .min(3, { message: messages.required })
             .max(255, {
-              message: "Tên công ty không hợp lệ",
+              message: messages.inValid,
             }),
-          address: z
-            .string()
-            .min(3, { message: "Vui lòng điền thông tin này" }),
-          city: z.string().min(3, { message: "Vui lòng điền thông tin này" }),
+          address: z.string().min(3, { message: messages.required }),
+          city: z.string().min(3, { message: messages.required }),
           mst: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .regex(/^\d{10,13}$/, {
-              message: "Thông tin không hợp lệ",
+              message: messages.inValid,
             }),
-          contact_name: z
-            .string()
-            .min(3, { message: "Vui lòng điền thông tin này" }),
+          contact_name: z.string().min(3, { message: messages.required }),
           phone: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .regex(/^0\d{9}$/, {
-              message: "Số điện thoại không đúng định dạng",
+              message: messages.inValid,
             }),
-          email: z
-            .string()
-            .min(1, { message: "Vui lòng điền thông tin này" })
-            .email({
-              message: "Email không đúng định dạng",
-            }),
+          email: z.string().min(1, { message: messages.required }).email({
+            message: messages.email,
+          }),
         })
       : z
           .object({
@@ -128,4 +125,4 @@ export const CheckOutTourBody = (checkBoxGenerateInvoice: boolean) => {
   });
 };
 
-export type CheckOutTourType = z.infer<ReturnType<typeof CheckOutTourBody>>;
+export type CheckOutTourType = z.infer<ReturnType<typeof CheckOutTourSchema>>;

@@ -13,7 +13,10 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
 
   return (
     <Fragment>
-      <h3 className="pt-8 text-xl lg:text-2xl font-bold text-center text-white">
+      <h3
+        className="pt-8 text-xl lg:text-2xl font-bold text-center text-white"
+        data-translate={true}
+      >
         Bắt đầu hành trình với HappyBook
       </h3>
       {/* Search Bar */}
@@ -64,7 +67,12 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
                 style={{ width: 20, height: 20 }}
               ></Image>
             </div>
-            <span className="px-1 mt-2 text-sm font-medium">Vé máy bay</span>
+            <span
+              className="px-1 mt-2 text-sm font-medium"
+              data-translate={true}
+            >
+              Vé máy bay
+            </span>
           </div>
           <div
             onClick={() => setActiveTabMb(1)}
@@ -84,7 +92,12 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
                 style={{ width: 20, height: 20 }}
               ></Image>
             </div>
-            <span className="px-1 mt-2 text-sm font-medium">Khách sạn</span>
+            <span
+              className="px-1 mt-2 text-sm font-medium"
+              data-translate={true}
+            >
+              Khách sạn
+            </span>
           </div>
           <div
             onClick={() => setActiveTabMb(2)}
@@ -103,7 +116,9 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
                 className="rounded-full mx-auto"
               ></Image>
             </div>
-            <span className="text-sm mt-2 font-medium">Bảo hiểm</span>
+            <span className="text-sm mt-2 font-medium" data-translate={true}>
+              Bảo hiểm
+            </span>
           </div>
           <div
             onClick={() => setActiveTabMb(3)}
@@ -122,270 +137,242 @@ export default function SearchMobile({ airportsData }: SearchFilghtProps) {
                 className="rounded-full mx-auto"
               ></Image>
             </div>
-            <span className="px-1 mt-2 text-sm font-medium">Vé vui chơi</span>
+            <span
+              className="px-1 mt-2 text-sm font-medium"
+              data-translate={true}
+            >
+              Vé vui chơi
+            </span>
           </div>
         </div>
         {/* Tabs Fly */}
         <div className="mx-3 h-fit pt-6 pb-4 bg-white rounded-2xl shadow-lg relative">
           {/* Tab Fly */}
-          {activeTabMb === 0 && (
-            <div className="px-3">
-              <Suspense>
-                <SearchFlight airportsData={airportsData} />
-              </Suspense>
-            </div>
-          )}
+          <div className={`px-3 ${activeTabMb === 0 ? "block" : "hidden"}`}>
+            <Suspense>
+              <SearchFlight airportsData={airportsData} />
+            </Suspense>
+          </div>
+
           {/* Tabs Hotel */}
-          {activeTabMb === 1 && (
-            <div className="px-3">
-              {/* <div className="grid grid-cols-1">
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">
-                    Thành phố, địa điểm hoặc tên khách sạn:
-                  </label>
-                  <div className="flex h-12 items-center border rounded-lg px-2">
-                    <Image
-                      src="/icon/place.svg"
-                      alt="Phone icon"
-                      className="h-10"
-                      width={18}
-                      height={18}
-                    ></Image>
-                    <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                      <option>TP.Hồ Chí Minh</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">
-                    Từ ngày - đến ngày
-                  </label>
-                  <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
-                    <div className="flex justify-between items-center	">
-                      <Image
-                        src="/icon/calendar.svg"
-                        alt="Phone icon"
-                        className="h-10"
-                        width={18}
-                        height={18}
-                      ></Image>
-                      <span>14/08/2024</span>
-                    </div>
-                    <div>
-                      <span> 22/08/2024</span>
-                    </div>
-                  </div>
-                </div>
+          <div className={`px-3 ${activeTabMb === 1 ? "block" : "hidden"}`}>
+            <SearchHotel />
+          </div>
 
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">
-                    Số lượng khách
-                  </label>
-                  <div className="flex items-center border rounded-lg px-2 h-12">
-                    <Image
-                      src="/icon/user-circle.svg"
-                      alt="Phone icon"
-                      className="h-10"
-                      width={18}
-                      height={18}
-                    ></Image>
-                    <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                      <option>2 người 1 phòng</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="w-full px-3">
-                <label className="block text-gray-700 mb-1 h-6"></label>
-                <button className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] ">
-                  <Image
-                    src="/icon/search.svg"
-                    alt="Phone icon"
-                    className="h-10 inline-block"
-                    width={18}
-                    height={18}
-                    style={{ width: 20, height: 20 }}
-                  ></Image>
-                  <span className="ml-2 h-12 text-white rounded-lg  focus:outline-none">
-                    Tìm kiếm
-                  </span>
-                </button>
-              </div> */}
-              <SearchHotel />
-            </div>
-          )}
           {/* Tab */}
-          {activeTabMb === 2 && (
-            <div className="px-3">
-              <div className="grid grid-cols-2 gap-3">
-                <label className="flex items-center space-x-2">
-                  <input type="radio" name="trip" className="form-radio" />
-                  <span className="text-black">Du lịch nội địa</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="radio" name="trip" className="form-radio" />
-                  <span className="text-black">Du lịch quốc tế</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="radio" name="trip" className="form-radio" />
-                  <span className="text-black">Nhập cảnh</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="radio" name="trip" className="form-radio" />
-                  <span className="text-black">Trễ chuyến bay</span>
-                </label>
-              </div>
+          <div className={`px-3 ${activeTabMb === 2 ? "block" : "hidden"}`}>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex items-center space-x-2">
+                <input type="radio" name="trip" className="form-radio" />
+                <span className="text-black" data-translate={true}>
+                  Du lịch nội địa
+                </span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input type="radio" name="trip" className="form-radio" />
+                <span className="text-black" data-translate={true}>
+                  Du lịch quốc tế
+                </span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input type="radio" name="trip" className="form-radio" />
+                <span className="text-black" data-translate={true}>
+                  Nhập cảnh
+                </span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input type="radio" name="trip" className="form-radio" />
+                <span className="text-black" data-translate={true}>
+                  Trễ chuyến bay
+                </span>
+              </label>
+            </div>
 
-              <div className="grid grid-cols-1 mt-6">
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">Từ</label>
-                  <div className="flex h-12 items-center border rounded-lg px-2">
-                    <Image
-                      src="/icon/place.svg"
-                      alt="Phone icon"
-                      className="h-10"
-                      width={18}
-                      height={18}
-                    ></Image>
-                    <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                      <option>TP.Hồ Chí Minh</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">Đến</label>
-                  <div className="flex h-12 items-center border rounded-lg px-2">
-                    <Image
-                      src="/icon/place.svg"
-                      alt="Phone icon"
-                      className="h-10"
-                      width={18}
-                      height={18}
-                    />
-                    <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                      <option>Hà Nội</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">Ngày đi</label>
-                  <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
-                    <div className="flex justify-between items-center	">
-                      <Image
-                        src="/icon/calendar.svg"
-                        alt="Phone icon"
-                        className="h-10"
-                        width={18}
-                        height={18}
-                      ></Image>
-                      <span>14/08/2024</span>
-                    </div>
-                    <div>
-                      <span> 22/08/2024</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">
-                    Số lượng khách
-                  </label>
-                  <div className="flex items-center border rounded-lg px-2 h-12">
-                    <Image
-                      src="/icon/user-circle.svg"
-                      alt="Phone icon"
-                      className="h-10"
-                      width={18}
-                      height={18}
-                    ></Image>
-                    <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                      <option>1 khách</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="w-full px-3">
-                <label className="block text-gray-700 mb-1 h-6"></label>
-                <button className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] ">
+            <div className="grid grid-cols-1 mt-6">
+              <div className="mb-2">
+                <label
+                  className="block text-gray-700 mb-1"
+                  data-translate={true}
+                >
+                  Từ
+                </label>
+                <div className="flex h-12 items-center border rounded-lg px-2">
                   <Image
-                    src="/icon/search.svg"
+                    src="/icon/place.svg"
                     alt="Phone icon"
-                    className="h-10 inline-block"
+                    className="h-10"
                     width={18}
                     height={18}
-                    style={{ width: 20, height: 20 }}
                   ></Image>
-                  <span className="ml-2 h-12 text-white rounded-lg  focus:outline-none">
-                    Tìm kiếm
-                  </span>
-                </button>
+                  <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
+                    <option data-translate={true}>TP.Hồ Chí Minh</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <label
+                  className="block text-gray-700 mb-1"
+                  data-translate={true}
+                >
+                  Đến
+                </label>
+                <div className="flex h-12 items-center border rounded-lg px-2">
+                  <Image
+                    src="/icon/place.svg"
+                    alt="Phone icon"
+                    className="h-10"
+                    width={18}
+                    height={18}
+                  />
+                  <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
+                    <option data-translate={true}>Hà Nội</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <label
+                  className="block text-gray-700 mb-1"
+                  data-translate={true}
+                >
+                  Ngày đi
+                </label>
+                <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
+                  <div className="flex justify-between items-center	">
+                    <Image
+                      src="/icon/calendar.svg"
+                      alt="Phone icon"
+                      className="h-10"
+                      width={18}
+                      height={18}
+                    ></Image>
+                    <span>14/08/2024</span>
+                  </div>
+                  <div>
+                    <span> 22/08/2024</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <label
+                  className="block text-gray-700 mb-1"
+                  data-translate={true}
+                >
+                  Số lượng khách
+                </label>
+                <div className="flex items-center border rounded-lg px-2 h-12">
+                  <Image
+                    src="/icon/user-circle.svg"
+                    alt="Phone icon"
+                    className="h-10"
+                    width={18}
+                    height={18}
+                  ></Image>
+                  <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
+                    <option data-translate={true}> 1 khách</option>
+                  </select>
+                </div>
               </div>
             </div>
-          )}
+            <div className="w-full px-3">
+              <label className="block text-gray-700 mb-1 h-6"></label>
+              <button className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] ">
+                <Image
+                  src="/icon/search.svg"
+                  alt="Phone icon"
+                  className="h-10 inline-block"
+                  width={18}
+                  height={18}
+                  style={{ width: 20, height: 20 }}
+                ></Image>
+                <span
+                  className="ml-2 h-12 text-white rounded-lg  focus:outline-none"
+                  data-translate={true}
+                >
+                  Tìm kiếm
+                </span>
+              </button>
+            </div>
+          </div>
+
           {/* Tab Ticket */}
-          {activeTabMb === 3 && (
-            <div className="px-3">
-              <div className="flex space-x-12 mb-4">
-                <label className="flex items-center space-x-2">
-                  <span className="text-[18px] font-semibold text-black">
-                    Tìm vé vui chơi
-                  </span>
+          <div className={`px-3 ${activeTabMb === 3 ? "block" : "hidden"}`}>
+            <div className="flex space-x-12 mb-4">
+              <label className="flex items-center space-x-2">
+                <span
+                  className="text-[18px] font-semibold text-black"
+                  data-translate={true}
+                >
+                  Tìm vé vui chơi
+                </span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1">
+              <div className="mb-2">
+                <label
+                  className="block text-gray-700 mb-1"
+                  data-translate={true}
+                >
+                  Nơi đi
                 </label>
+                <div className="flex h-12 items-center border rounded-lg px-2">
+                  <Image
+                    src="/icon/place.svg"
+                    alt="Phone icon"
+                    className="h-10"
+                    width={18}
+                    height={18}
+                  ></Image>
+                  <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
+                    <option data-translate={true}>TP.Hồ Chí Minh</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1">
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">Nơi đi</label>
-                  <div className="flex h-12 items-center border rounded-lg px-2">
+              <div className="mb-2">
+                <label
+                  className="block text-gray-700 mb-1"
+                  data-translate={true}
+                >
+                  Ngày đi
+                </label>
+                <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
+                  <div className="flex justify-between items-center	">
                     <Image
-                      src="/icon/place.svg"
+                      src="/icon/calendar.svg"
                       alt="Phone icon"
                       className="h-10"
                       width={18}
                       height={18}
                     ></Image>
-                    <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                      <option>TP.Hồ Chí Minh</option>
-                    </select>
+                    <span>14/08/2024</span>
                   </div>
                 </div>
-
-                <div className="mb-2">
-                  <label className="block text-gray-700 mb-1">Ngày đi</label>
-                  <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
-                    <div className="flex justify-between items-center	">
-                      <Image
-                        src="/icon/calendar.svg"
-                        alt="Phone icon"
-                        className="h-10"
-                        width={18}
-                        height={18}
-                      ></Image>
-                      <span>14/08/2024</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="w-full px-3">
-                <label className="block text-gray-700 mb-1 h-6"></label>
-                <button className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] ">
-                  <Image
-                    src="/icon/search.svg"
-                    alt="Phone icon"
-                    className="h-10 inline-block"
-                    width={18}
-                    height={18}
-                    style={{ width: 20, height: 20 }}
-                  ></Image>
-                  <span className="ml-2 h-12 text-white rounded-lg  focus:outline-none">
-                    Tìm kiếm
-                  </span>
-                </button>
               </div>
             </div>
-          )}
+            <div className="w-full px-3">
+              <label className="block text-gray-700 mb-1 h-6"></label>
+              <button className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] ">
+                <Image
+                  src="/icon/search.svg"
+                  alt="Phone icon"
+                  className="h-10 inline-block"
+                  width={18}
+                  height={18}
+                  style={{ width: 20, height: 20 }}
+                ></Image>
+                <span
+                  className="ml-2 h-12 text-white rounded-lg  focus:outline-none"
+                  data-translate={true}
+                >
+                  Tìm kiếm
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </Fragment>

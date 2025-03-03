@@ -46,10 +46,16 @@ export default async function AboutUs() {
         {/* <AosAnimate> */}
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           <div className="mt-8">
-            <h1 className="text-black text-center font-bold text-2xl">
+            <h1
+              className="text-black text-center font-bold text-2xl"
+              data-translate
+            >
               HappyBook tự hào là đối tác tin cậy
             </h1>
-            <p className="font-medium text-black-700 text-center w-[836px] mx-auto mt-3  max-w-full">
+            <p
+              className="font-medium text-black-700 text-center w-[836px] mx-auto mt-3  max-w-full"
+              data-translate
+            >
               HappyBook luôn đặt chữ TÍN lên hàng đầu. Với sự phát triển không
               ngừng, chúng tôi đã xây dựng một đội ngũ chuyên viên năng động,
               giàu kinh nghiệm và luôn tận tâm phục vụ quý khách. Sự hài lòng
@@ -69,10 +75,10 @@ export default async function AboutUs() {
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-16 items-center ">
             <div>
-              <h2 className="text-black font-bold text-2xl">
+              <h2 className="text-black font-bold text-2xl" data-translate>
                 10 năm hình thành và phát triển
               </h2>
-              <p className="font-medium">
+              <p className="font-medium" data-translate>
                 HappyBook đã khẳng định vị thế của mình là đại lý cấp 1 chuyên
                 cung cấp vé máy bay trong nước và quốc tế. Chúng tôi hiện là đối
                 tác uy tín của nhiều hãng hàng không lớn tại Việt Nam và trên
@@ -99,7 +105,10 @@ export default async function AboutUs() {
 
         <div className="bg-[#F9FAFB]">
           <div className="py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <p className="text-[32px] leading-[38.4px] font-bold text-center">
+            <p
+              className="text-[32px] leading-[38.4px] font-bold text-center"
+              data-translate
+            >
               Cam Kết Của Chúng Tôi
             </p>
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
@@ -113,7 +122,10 @@ export default async function AboutUs() {
                     className="mx-auto"
                   />
                 </div>
-                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                <p
+                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
+                  data-translate
+                >
                   Tư vấn chuyên nghiệp về các thủ tục và dịch vụ.
                 </p>
               </div>
@@ -128,7 +140,10 @@ export default async function AboutUs() {
                     style={{ height: "48px", width: "48px" }}
                   />
                 </div>
-                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                <p
+                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
+                  data-translate
+                >
                   Giao vé theo yêu cầu, đảm bảo đúng hạn.
                 </p>
               </div>
@@ -142,7 +157,10 @@ export default async function AboutUs() {
                     className="mx-auto"
                   />
                 </div>
-                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                <p
+                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
+                  data-translate
+                >
                   Phương thức thanh toán đơn giản, nhanh chóng và tiện lợi.
                 </p>
               </div>
@@ -156,7 +174,10 @@ export default async function AboutUs() {
                     className="mx-auto"
                   />
                 </div>
-                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                <p
+                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
+                  data-translate
+                >
                   Mang đến sự hài lòng tối đa cho khách hàng.
                 </p>
               </div>

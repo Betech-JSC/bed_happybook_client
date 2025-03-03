@@ -1,16 +1,20 @@
+import { ValidationMessages } from "@/lib/messages";
 import z from "zod";
 
-export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
+export const CheckOutHotelSchema = (
+  messages: ValidationMessages,
+  checkBoxGenerateInvoice: boolean
+) => {
   return z
     .object({
       check_in_date: z.date({
-        required_error: "Vui lòng điền thông tin này",
-        invalid_type_error: "Ngày nhận phòng không đúng định dạng",
+        required_error: messages.required,
+        invalid_type_error: messages.required,
       }),
 
       check_out_date: z.date({
-        required_error: "Vui lòng điền thông tin này",
-        invalid_type_error: "Ngày trả phòng không đúng định dạng",
+        required_error: messages.required,
+        invalid_type_error: messages.required,
       }),
 
       atd: z
@@ -19,9 +23,9 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
           const num = Number(val);
           return isNaN(num) ? 0 : num;
         })
-        .refine((val) => val >= 1, { message: "Số phải lớn hơn hoặc bằng 1" })
+        .refine((val) => val >= 1, { message: messages.inValid })
         .refine((val) => val <= 30, {
-          message: "Số lượng tối là 30",
+          message: messages.inValid,
         }),
 
       chd: z
@@ -30,9 +34,9 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
           const num = Number(val);
           return isNaN(num) ? 0 : num;
         })
-        .refine((val) => val >= 0, { message: "Số phải lớn hơn hoặc bằng 0" })
+        .refine((val) => val >= 0, { message: messages.inValid })
         .refine((val) => val <= 30, {
-          message: "Số lượng tối là 30",
+          message: messages.inValid,
         }),
       inf: z
         .string()
@@ -40,32 +44,29 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
           const num = Number(val);
           return isNaN(num) ? 0 : num;
         })
-        .refine((val) => val >= 0, { message: "Số phải lớn hơn hoặc bằng 0" })
+        .refine((val) => val >= 0, { message: messages.inValid })
         .refine((val) => val <= 30, {
-          message: "Số lượng tối là 30",
+          message: messages.inValid,
         }),
       phone: z
         .string()
         .min(1, {
-          message: "Vui lòng điền thông tin này",
+          message: messages.required,
         })
         .regex(/^\d{10,11}$/, {
-          message: "Số điện thoại không đúng định dạng",
+          message: messages.inValid,
         }),
 
-      email: z
-        .string()
-        .min(1, { message: "Vui lòng điền thông tin này" })
-        .email({
-          message: "Email không đúng định dạng",
-        }),
+      email: z.string().min(1, { message: messages.required }).email({
+        message: messages.email,
+      }),
 
       full_name: z
         .string()
         .min(3, {
-          message: "Vui lòng điền thông tin này",
+          message: messages.required,
         })
-        .max(255, { message: "Họ và Tên không hợp lệ" }),
+        .max(255, { message: messages.inValid }),
 
       note: z.string(),
 
@@ -73,39 +74,32 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
         ? z.object({
             company_name: z
               .string()
-              .min(3, { message: "Vui lòng điền thông tin này" })
+              .min(3, { message: messages.required })
               .max(255, {
-                message: "Tên công ty không hợp lệ",
+                message: messages.inValid,
               }),
-            address: z
-              .string()
-              .min(3, { message: "Vui lòng điền thông tin này" }),
-            city: z.string().min(3, { message: "Vui lòng điền thông tin này" }),
+            address: z.string().min(3, { message: messages.required }),
+            city: z.string().min(3, { message: messages.required }),
             mst: z
               .string()
               .min(1, {
-                message: "Vui lòng điền thông tin này",
+                message: messages.required,
               })
               .regex(/^\d{10,13}$/, {
-                message: "Thông tin không hợp lệ",
+                message: messages.inValid,
               }),
-            contact_name: z
-              .string()
-              .min(3, { message: "Vui lòng điền thông tin này" }),
+            contact_name: z.string().min(3, { message: messages.required }),
             phone: z
               .string()
               .min(1, {
-                message: "Vui lòng điền thông tin này",
+                message: messages.required,
               })
               .regex(/^0\d{9}$/, {
-                message: "Số điện thoại không đúng định dạng",
+                message: messages.inValid,
               }),
-            email: z
-              .string()
-              .min(1, { message: "Vui lòng điền thông tin này" })
-              .email({
-                message: "Email không đúng định dạng",
-              }),
+            email: z.string().min(1, { message: messages.required }).email({
+              message: messages.inValid,
+            }),
           })
         : z
             .object({
@@ -123,8 +117,8 @@ export const CheckOutHotelBody = (checkBoxGenerateInvoice: boolean) => {
     })
     .refine((data) => data.check_in_date < data.check_out_date, {
       path: ["check_out_date"],
-      message: "Ngày trả phòng không được nhỏ hơn ngày nhận phòng",
+      message: messages.inValidCheckOutDate,
     });
 };
 
-export type CheckOutHotelType = z.infer<ReturnType<typeof CheckOutHotelBody>>;
+export type CheckOutHotelType = z.infer<ReturnType<typeof CheckOutHotelSchema>>;

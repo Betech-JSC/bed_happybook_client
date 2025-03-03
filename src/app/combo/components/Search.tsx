@@ -23,7 +23,9 @@ export default function Search({ locations }: { locations: LocationType[] }) {
     <Fragment>
       <div className="base__content h-full relative place-content-center my-12 lg:my-16">
         <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-[850px]">
-          <h1 className="text-18 font-semibold">Tìm Combo du lịch</h1>
+          <h1 className="text-18 font-semibold" data-translate={true}>
+            Tìm Combo du lịch
+          </h1>
           <div className="mt-4 md:mt-6 h-fit lg:h-20 flex flex-col lg:flex-row lg:space-x-2 space-y-3 items-end justify-between">
             <div className="relative w-full lg:w-[40%]">
               <div className="absolute left-4 top-1/2 translate-y-1/4">
@@ -36,7 +38,11 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                   style={{ width: 20, height: 20 }}
                 ></Image>
               </div>
-              <label htmlFor="from" className="font-medium block">
+              <label
+                htmlFor="from"
+                className="font-medium block"
+                data-translate={true}
+              >
                 Khởi hành từ
               </label>
               <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
@@ -51,12 +57,15 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                   }}
                   className={`w-[95%]  indent-10 outline-none`}
                 >
-                  <option value="">Chọn điểm đi</option>
+                  <option value="" data-translate={true}>
+                    Chọn điểm đi
+                  </option>
                   {locations.map((location) => (
                     <option
                       key={location.id}
                       value={location.name}
                       disabled={query.to === location.name}
+                      data-translate={true}
                     >
                       {location.name}
                     </option>
@@ -75,7 +84,11 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                   style={{ width: 20, height: 20 }}
                 ></Image>
               </div>
-              <label htmlFor="to" className="font-medium block">
+              <label
+                htmlFor="to"
+                className="font-medium block"
+                data-translate={true}
+              >
                 Điểm đến
               </label>
               <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
@@ -89,12 +102,15 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                   }}
                   className={`w-[95%] indent-10 outline-none`}
                 >
-                  <option value="">Chọn điểm đến</option>
+                  <option value="" data-translate={true}>
+                    Chọn điểm đến
+                  </option>
                   {locations.map((location) => (
                     <option
                       key={location.id}
                       value={location.name}
                       disabled={query.from === location.name}
+                      data-translate={true}
                     >
                       {location.name}
                     </option>

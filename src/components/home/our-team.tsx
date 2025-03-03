@@ -37,7 +37,9 @@ export default function OurTeam({ data }: any) {
     <div className="mt-12 py-8 lg:px-[80px] hidden lg:block max__screen">
       <div className="flex justify-between">
         <div>
-          <h3 className="text-[32px] font-bold">Đội ngũ của chúng tôi</h3>
+          <h3 className="text-[32px] font-bold" data-translate>
+            Đội ngũ của chúng tôi
+          </h3>
         </div>
       </div>
       <div
@@ -75,8 +77,10 @@ export default function OurTeam({ data }: any) {
                 />
                 <div className={styles.member__info}>
                   <div className={`m-3 text-white`}>
-                    <p className="font-semibold">{member.name}</p>
-                    <p className="font-medium text-sm mt-[6px]">
+                    <p className="font-semibold" data-translate>
+                      {member.name}
+                    </p>
+                    <p className="font-medium text-sm mt-[6px]" data-translate>
                       {member.sub_title}
                     </p>
                   </div>

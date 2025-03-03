@@ -50,13 +50,17 @@ export default function FlightItem({ data }: any) {
             width={60}
             height={24}
           />
-          <p className="ml-2">{data.flight.data_hang_bay.name}</p>
+          <p className="ml-2" data-translate>
+            {data.flight.data_hang_bay.name}
+          </p>
         </div>
         <Link
           href={querySerach}
           className={`text-base min-h-6 font-semibold line-clamp-1 mt-2 ${styles.text_hover_default}`}
         >
-          <h3>{`${data.flight.data_diem_di.ten_dia_diem} - ${data.flight.data_diem_den.ten_dia_diem}`}</h3>
+          <h3
+            data-translate
+          >{`${data.flight.data_diem_di.ten_dia_diem} - ${data.flight.data_diem_den.ten_dia_diem}`}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <span>{formatDate(data.flight.ngay_khoi_hanh)}</span>

@@ -17,13 +17,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/flightBooking.scss";
 import { vi } from "date-fns/locale";
-import { handleSessionStorage } from "@/utils/Helper";
+import { getCurrentLanguage, handleSessionStorage } from "@/utils/Helper";
 import FlightDetailPopup from "./FlightDetailPopup";
 import DisplayImage from "@/components/base/DisplayImage";
+import { translateText } from "@/utils/translateApi";
+import { flightStaticText } from "@/constants/staticText";
+import { formatTranslationMap, translatePage } from "@/utils/translateDom";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { datePickerLocale } from "@/constants/language";
+import { toastMessages, validationMessages } from "@/lib/messages";
 
 export default function FlightBookForm({ airportsData }: any) {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
@@ -45,19 +51,30 @@ export default function FlightBookForm({ airportsData }: any) {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
   const [bookingSystem, setBookingSystem] = useState<string>("");
+  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
+  const { language } = useLanguage();
+  const router = useRouter();
+
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
 
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
   const [schemaForm, setSchemaForm] = useState(() =>
-    FlightBookingInforBody(generateInvoice)
+    FlightBookingInforBody(messages, generateInvoice)
   );
-  const router = useRouter();
 
   useEffect(() => {
-    setSchemaForm(FlightBookingInforBody(generateInvoice));
-  }, [generateInvoice]);
+    if (datePickerLocale[language]) {
+      registerLocale(language, datePickerLocale[language]);
+    }
+  }, [language]);
+
+  useEffect(() => {
+    setSchemaForm(FlightBookingInforBody(messages, generateInvoice));
+  }, [generateInvoice, messages]);
 
   const {
     register,
@@ -157,6 +174,9 @@ export default function FlightBookForm({ airportsData }: any) {
 
     formatData.contact.gender =
       formatData.contact.gender === "male" ? true : false;
+    if (!generateInvoice) {
+      delete formatData.invoice;
+    }
     let finalData = {
       ...formatData,
       passengers,
@@ -173,7 +193,7 @@ export default function FlightBookForm({ airportsData }: any) {
         );
         if (respon?.status === 200) {
           reset();
-          toast.success("Gửi yêu cầu thành công!");
+          toast.success(toaStrMsg.sendSuccess);
           handleSessionStorage("save", "bookingFlight", respon?.payload);
           handleSessionStorage("remove", [
             "flightSession",
@@ -185,10 +205,10 @@ export default function FlightBookForm({ airportsData }: any) {
             router.push("/ve-may-bay/thong-tin-dat-cho");
           }, 1000);
         } else {
-          toast.error("Gửi yêu cầu thất bại!");
+          toast.error(toaStrMsg.sendFailed);
         }
       } catch (error: any) {
-        toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+        toast.error(toaStrMsg.error);
       } finally {
         setLoading(false);
       }
@@ -405,6 +425,7 @@ export default function FlightBookForm({ airportsData }: any) {
               ],
             });
           });
+
           const response = await FlightApi.getBaggage(
             "flights/getbaggage",
             params
@@ -419,6 +440,7 @@ export default function FlightBookForm({ airportsData }: any) {
           }, defaultGroupedObj as { [key: number]: typeof data });
           setListBaggage(data);
           setListBaggageGrouped(groupedByLeg);
+          translatePage("#wrapper-flight-booking-form", 100);
         }
       } catch (error: any) {
         setListBaggage([]);
@@ -433,18 +455,29 @@ export default function FlightBookForm({ airportsData }: any) {
     setShowFlightDetail(false);
   };
 
+  useEffect(() => {
+    translateText(flightStaticText, language).then((data) => {
+      const translationMap = formatTranslationMap(flightStaticText, data);
+      setTranslatedStaticText(translationMap);
+    });
+  }, [language]);
+
   if (!documentReady) {
     return (
       <div
         className={`flex my-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Đang tải...</span>
+        <span className="text-18">Loading...</span>
       </div>
     );
   }
   return (
-    <form className="mt-0 md:mt-4 rounded-xl" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      id="wrapper-flight-booking-form"
+      className="mt-0 md:mt-4 rounded-xl"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
         <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
           <div
@@ -454,12 +487,17 @@ export default function FlightBookForm({ airportsData }: any) {
                 "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
             }}
           >
-            <h3 className="text-22 py-4 px-8 font-semibold text-white">
+            <h3
+              className="text-22 py-4 px-8 font-semibold text-white"
+              data-translate={true}
+            >
               Thông tin đặt hàng
             </h3>
           </div>
           <div className="mt-6">
-            <p className="font-bold text-18">Thông tin liên hệ</p>
+            <p className="font-bold text-18" data-translate={true}>
+              Thông tin liên hệ
+            </p>
             <div className="bg-white rounded-xl py-4 px-6 mt-3">
               <div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -468,7 +506,8 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="FirstName"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Họ <span className="text-red-500">*</span>
+                      <span data-translate={true}>Họ</span>
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="FirstName"
@@ -488,7 +527,8 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="LastName"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Tên đệm & Tên <span className="text-red-500">*</span>
+                      <span data-translate={true}>Tên đệm & Tên</span>
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="LastName"
@@ -508,7 +548,8 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="gender_person_contact"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Giới tính <span className="text-red-500">*</span>
+                      <span data-translate={true}>Giới tính</span>
+                      <span className="text-red-500">*</span>
                     </label>
 
                     <select
@@ -516,11 +557,19 @@ export default function FlightBookForm({ airportsData }: any) {
                       {...register("contact.gender")}
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                     >
-                      <option value="" className="text-gray-300">
+                      <option
+                        value=""
+                        className="text-gray-300"
+                        data-translate={true}
+                      >
                         Vui lòng chọn giới tính
                       </option>
-                      <option value="male">Quý ông</option>
-                      <option value="female">Quý bà</option>
+                      <option value="male" data-translate={true}>
+                        Quý ông
+                      </option>
+                      <option value="female" data-translate={true}>
+                        Quý bà
+                      </option>
                     </select>
                     {errors.contact?.gender && (
                       <p className="text-red-600">
@@ -533,7 +582,8 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="phone"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Số điện thoại <span className="text-red-500">*</span>
+                      <span data-translate={true}>Số điện thoại</span>
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="phone"
@@ -553,7 +603,8 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="email"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Email <span className="text-red-500">*</span>
+                      <span data-translate={true}>Email</span>
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="email_person_contact"
@@ -592,163 +643,174 @@ export default function FlightBookForm({ airportsData }: any) {
                     onClick={() => {
                       setGenerateInvoice(!generateInvoice);
                     }}
+                    data-translate={true}
                   >
                     Tôi muốn xuất hóa đơn
                   </span>
                 </div>
                 {/* generateInvoice */}
-                {generateInvoice && (
-                  <div className="mt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_company_name"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Tên công ty <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_company_name"
-                          type="text"
-                          {...register(`invoice.company_name`)}
-                          placeholder="Nhập tên công ty"
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.company_name && (
-                          <p className="text-red-600">
-                            {errors.invoice?.company_name?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_company_address"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Địa chỉ <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_company_address"
-                          type="text"
-                          placeholder="Nhập địa chỉ công ty"
-                          {...register(`invoice.address`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.address && (
-                          <p className="text-red-600">
-                            {errors.invoice?.address?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_city"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Thành phố <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_city"
-                          type="text"
-                          placeholder="Nhập thành phố"
-                          {...register(`invoice.city`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.city && (
-                          <p className="text-red-600">
-                            {errors.invoice?.city?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_tax_code"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Mã số thuế <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_tax_code"
-                          type="text"
-                          placeholder="Nhập mã số thuế"
-                          {...register(`invoice.mst`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.mst && (
-                          <p className="text-red-600">
-                            {errors.invoice?.mst?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_recipient_name"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Người nhận hóa đơn
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_recipient_name"
-                          type="text"
-                          placeholder="Nhập họ và tên người nhận"
-                          {...register(`invoice.contact_name`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.contact_name && (
-                          <p className="text-red-600">
-                            {errors.invoice?.contact_name?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_phone"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Số điện thoại <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_phone"
-                          type="text"
-                          placeholder="Nhập số điện thoại người nhận"
-                          {...register(`invoice.phone`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.phone && (
-                          <p className="text-red-600">
-                            {errors.invoice?.phone?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_email"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Email <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_email"
-                          type="text"
-                          placeholder="Nhập Email"
-                          {...register(`invoice.email`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.email && (
-                          <p className="text-red-600">
-                            {errors.invoice?.email?.message}
-                          </p>
-                        )}
-                      </div>
+                <div
+                  className={`mt-4   ${
+                    generateInvoice ? "visible" : "invisible hidden"
+                  }`}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="relative">
+                      <label
+                        htmlFor="GenerateInvoice_company_name"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate={true}>Tên công ty</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="GenerateInvoice_company_name"
+                        type="text"
+                        {...register(`invoice.company_name`)}
+                        placeholder="Nhập tên công ty"
+                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                      />
+                      {errors.invoice?.company_name && (
+                        <p className="text-red-600">
+                          {errors.invoice?.company_name?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="GenerateInvoice_company_address"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate={true}>Địa chỉ</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="GenerateInvoice_company_address"
+                        type="text"
+                        placeholder="Nhập địa chỉ công ty"
+                        {...register(`invoice.address`)}
+                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                      />
+                      {errors.invoice?.address && (
+                        <p className="text-red-600">
+                          {errors.invoice?.address?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="GenerateInvoice_city"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate={true}>Thành phố</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="GenerateInvoice_city"
+                        type="text"
+                        placeholder="Nhập thành phố"
+                        {...register(`invoice.city`)}
+                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                      />
+                      {errors.invoice?.city && (
+                        <p className="text-red-600">
+                          {errors.invoice?.city?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="GenerateInvoice_tax_code"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate={true}>Mã số thuế</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="GenerateInvoice_tax_code"
+                        type="text"
+                        placeholder="Nhập mã số thuế"
+                        {...register(`invoice.mst`)}
+                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                      />
+                      {errors.invoice?.mst && (
+                        <p className="text-red-600">
+                          {errors.invoice?.mst?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="GenerateInvoice_recipient_name"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate={true}>Người nhận hóa đơn</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="GenerateInvoice_recipient_name"
+                        type="text"
+                        placeholder="Nhập họ và tên người nhận"
+                        {...register(`invoice.contact_name`)}
+                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                      />
+                      {errors.invoice?.contact_name && (
+                        <p className="text-red-600">
+                          {errors.invoice?.contact_name?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="GenerateInvoice_phone"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate={true}>Số điện thoại</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="GenerateInvoice_phone"
+                        type="text"
+                        placeholder="Nhập số điện thoại người nhận"
+                        {...register(`invoice.phone`)}
+                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                      />
+                      {errors.invoice?.phone && (
+                        <p className="text-red-600">
+                          {errors.invoice?.phone?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="GenerateInvoice_email"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate={true}>Email</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="GenerateInvoice_email"
+                        type="text"
+                        placeholder="Nhập Email"
+                        {...register(`invoice.email`)}
+                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                      />
+                      {errors.invoice?.email && (
+                        <p className="text-red-600">
+                          {errors.invoice?.email?.message}
+                        </p>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
           <div className="mt-6">
-            <p className="font-bold text-18">Thông tin hành khách</p>
+            <p className="font-bold text-18" data-translate={true}>
+              Thông tin hành khách
+            </p>
             <div>
               {totalAdt > 0 &&
                 Array.from({ length: totalAdt }, (_, index) => (
@@ -757,10 +819,12 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="bg-white rounded-xl py-4 px-6 mt-3"
                   >
                     <div className="py-1 px-2 bg-gray-100 rounded-lg">
-                      <span className="text-18 font-bold">
+                      <span className="text-18 font-bold" data-translate={true}>
                         Hành khách {keyLoopPassenger}
                       </span>
-                      <span className="text-base ml-4">(vé người lớn)</span>
+                      <span className="text-base ml-4" data-translate={true}>
+                        (vé người lớn)
+                      </span>
                     </div>
 
                     <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -769,7 +833,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Họ <span className="text-red-500">*</span>
+                          <span data-translate={true}>Họ</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="fullName"
@@ -778,7 +843,10 @@ export default function FlightBookForm({ airportsData }: any) {
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
-                        <span className="text-xs text-gray-500">
+                        <span
+                          className="text-xs text-gray-500"
+                          data-translate={true}
+                        >
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
                         </span>
@@ -793,7 +861,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Tên đệm & Tên <span className="text-red-500">*</span>
+                          <span data-translate={true}>Tên đệm & Tên</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="fullName"
@@ -802,7 +871,10 @@ export default function FlightBookForm({ airportsData }: any) {
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
-                        <span className="text-xs text-gray-500">
+                        <span
+                          className="text-xs text-gray-500"
+                          data-translate={true}
+                        >
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
                         </span>
@@ -817,16 +889,23 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="service"
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Giới tính <span className="text-red-500">*</span>
+                          <span data-translate={true}>Giới tính</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <select
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                             {...register(`atd.${index}.gender`)}
                           >
-                            <option value="">Vui lòng chọn giới tính</option>
-                            <option value="male">Quý ông</option>
-                            <option value="female">Quý bà</option>
+                            <option value="" data-translate={true}>
+                              Vui lòng chọn giới tính
+                            </option>
+                            <option value="male" data-translate={true}>
+                              Quý ông
+                            </option>
+                            <option value="female" data-translate={true}>
+                              Quý bà
+                            </option>
                           </select>
                         </div>
                         {errors.atd?.[index]?.gender && (
@@ -840,7 +919,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`atd.${index}.birthday`}
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Ngày sinh <span className="text-red-500">*</span>
+                          <span data-translate={true}>Ngày sinh</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <Controller
@@ -869,7 +949,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                 showMonthDropdown
                                 showYearDropdown
                                 dropdownMode="select"
-                                locale={vi}
+                                locale={language}
                                 maxDate={
                                   new Date(
                                     new Date().getFullYear() - 12,
@@ -900,7 +980,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`atd.${index}.cccd`}
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          CCCD <span className="text-red-500">*</span>
+                          <span data-translate={true}>CCCD</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           id={`atd.${index}.cccd`}
@@ -920,7 +1001,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`atd.${index}.cccd_date`}
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Ngày hết hạn <span className="text-red-500">*</span>
+                          <span data-translate={true}>Ngày hết hạn</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <Controller
@@ -949,7 +1031,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                 showMonthDropdown
                                 showYearDropdown
                                 dropdownMode="select"
-                                locale={vi}
+                                locale={language}
                                 maxDate={
                                   new Date(
                                     new Date().getFullYear() + 50,
@@ -983,12 +1065,16 @@ export default function FlightBookForm({ airportsData }: any) {
                             const hasBaggage = items.length > 0 ? true : false;
                             return (
                               <div
+                                id={`wrapper-baggage-atd-leg-${leg}`}
                                 className={`relative ${
                                   !hasBaggage ? "cursor-not-allowed" : ""
                                 }`}
                                 key={leg}
                               >
-                                <label className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs">
+                                <label
+                                  data-translate={true}
+                                  className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                                >
                                   Hành lý chiều {leg === 0 ? "đi" : "về"}
                                 </label>
                                 <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1008,14 +1094,18 @@ export default function FlightBookForm({ airportsData }: any) {
                                         : ""
                                     }`}
                                   >
-                                    <option value="">
+                                    <option value="" data-translate={true}>
                                       {hasBaggage
                                         ? "Chọn gói hành lý"
                                         : "Chuyến bay không hỗ trợ mua thêm hành lý"}
                                     </option>
                                     {hasBaggage &&
                                       items.map((baggage: any, key: any) => (
-                                        <option key={key} value={baggage.Code}>
+                                        <option
+                                          key={key}
+                                          value={baggage.Code}
+                                          data-translate={true}
+                                        >
                                           {baggage.Name} {" / "}
                                           {baggage.Price.toLocaleString(
                                             "vi-VN"
@@ -1041,10 +1131,12 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="bg-white rounded-xl py-4 px-6 mt-3"
                   >
                     <div className="py-1 px-2 bg-gray-100 rounded-lg">
-                      <span className="text-18 font-bold">
+                      <span className="text-18 font-bold" data-translate={true}>
                         Hành khách {keyLoopPassenger}
                       </span>
-                      <span className="text-base ml-4">( vé trẻ em)</span>
+                      <span className="text-base ml-4" data-translate={true}>
+                        ( vé trẻ em)
+                      </span>
                     </div>
                     <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="relative">
@@ -1052,7 +1144,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Họ <span className="text-red-500">*</span>
+                          <span data-translate={true}>Họ</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="fullName"
@@ -1061,7 +1154,10 @@ export default function FlightBookForm({ airportsData }: any) {
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
-                        <span className="text-xs text-gray-500">
+                        <span
+                          className="text-xs text-gray-500"
+                          data-translate={true}
+                        >
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
                         </span>
@@ -1076,7 +1172,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Tên đệm & Tên <span className="text-red-500">*</span>
+                          <span data-translate={true}>Tên đệm & Tên</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="fullName"
@@ -1085,7 +1182,10 @@ export default function FlightBookForm({ airportsData }: any) {
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
-                        <span className="text-xs text-gray-500">
+                        <span
+                          className="text-xs text-gray-500"
+                          data-translate={true}
+                        >
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
                         </span>
@@ -1100,16 +1200,23 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="service"
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Giới tính <span className="text-red-500">*</span>
+                          <span data-translate={true}>Giới tính</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <select
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                             {...register(`chd.${index}.gender`)}
                           >
-                            <option value="">Vui lòng chọn giới tính</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
+                            <option value="" data-translate={true}>
+                              Vui lòng chọn giới tính
+                            </option>
+                            <option value="male" data-translate={true}>
+                              Nam
+                            </option>
+                            <option value="female" data-translate={true}>
+                              Nữ
+                            </option>
                           </select>
                         </div>
                         {errors.chd?.[index]?.gender && (
@@ -1123,7 +1230,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`chd.${index}.birthday`}
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Ngày sinh <span className="text-red-500">*</span>
+                          <span data-translate={true}>Ngày sinh</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <Controller
@@ -1152,7 +1260,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                 showMonthDropdown
                                 showYearDropdown
                                 dropdownMode="select"
-                                locale={vi}
+                                locale={language}
                                 maxDate={
                                   new Date(new Date().getFullYear() - 2, 11, 31)
                                 }
@@ -1182,7 +1290,10 @@ export default function FlightBookForm({ airportsData }: any) {
                                 }`}
                                 key={leg}
                               >
-                                <label className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs">
+                                <label
+                                  data-translate={true}
+                                  className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                                >
                                   Hành lý chiều {leg === 0 ? "đi" : "về"}
                                 </label>
                                 <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1202,14 +1313,18 @@ export default function FlightBookForm({ airportsData }: any) {
                                         : ""
                                     }`}
                                   >
-                                    <option value="">
+                                    <option value="" data-translate={true}>
                                       {hasBaggage
                                         ? "Chọn gói hành lý"
                                         : "Chuyến bay không hỗ trợ mua thêm hành lý"}
                                     </option>
                                     {hasBaggage &&
                                       items.map((baggage: any, key: any) => (
-                                        <option key={key} value={baggage.Code}>
+                                        <option
+                                          key={key}
+                                          value={baggage.Code}
+                                          data-translate={true}
+                                        >
                                           {baggage.Name} {" / "}
                                           {baggage.Price.toLocaleString(
                                             "vi-VN"
@@ -1235,10 +1350,12 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="bg-white rounded-xl py-4 px-6 mt-3"
                   >
                     <div className="py-1 px-2 bg-gray-100 rounded-lg">
-                      <span className="text-18 font-bold">
+                      <span className="text-18 font-bold" data-translate={true}>
                         Hành khách {keyLoopPassenger}
                       </span>
-                      <span className="text-base ml-4">( vé em bé)</span>
+                      <span className="text-base ml-4" data-translate={true}>
+                        ( vé em bé)
+                      </span>
                     </div>
 
                     <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1247,7 +1364,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Họ <span className="text-red-500">*</span>
+                          <span data-translate={true}>Họ</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="fullName"
@@ -1256,7 +1374,10 @@ export default function FlightBookForm({ airportsData }: any) {
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
-                        <span className="text-xs text-gray-500">
+                        <span
+                          className="text-xs text-gray-500"
+                          data-translate={true}
+                        >
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
                         </span>
@@ -1271,7 +1392,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Tên đệm & Tên <span className="text-red-500">*</span>
+                          <span data-translate={true}>Tên đệm & Tên</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="fullName"
@@ -1280,7 +1402,10 @@ export default function FlightBookForm({ airportsData }: any) {
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
-                        <span className="text-xs text-gray-500">
+                        <span
+                          className="text-xs text-gray-500"
+                          data-translate={true}
+                        >
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
                         </span>
@@ -1295,16 +1420,23 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="service"
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Giới tính <span className="text-red-500">*</span>
+                          <span data-translate={true}>Giới tính</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <select
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                             {...register(`inf.${index}.gender`)}
                           >
-                            <option value="">Vui lòng chọn giới tính</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
+                            <option value="" data-translate={true}>
+                              Vui lòng chọn giới tính
+                            </option>
+                            <option value="male" data-translate={true}>
+                              Nam
+                            </option>
+                            <option value="female" data-translate={true}>
+                              Nữ
+                            </option>
                           </select>
                         </div>
                         {errors.inf?.[index]?.gender && (
@@ -1318,7 +1450,8 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`inf.${index}.birthday`}
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          Ngày sinh <span className="text-red-500">*</span>
+                          <span data-translate={true}>Ngày sinh</span>
+                          <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                           <Controller
@@ -1347,7 +1480,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                 showMonthDropdown
                                 showYearDropdown
                                 dropdownMode="select"
-                                locale={vi}
+                                locale={language}
                                 maxDate={
                                   new Date(new Date().getFullYear(), 11, 31)
                                 }
@@ -1381,7 +1514,9 @@ export default function FlightBookForm({ airportsData }: any) {
         <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 ">
           <div className="pb-0 py-4 px-3 lg:px-6">
             <div className="flex justify-between">
-              <span className="text-22 font-semibold">Thông tin đặt chỗ</span>
+              <span className="text-22 font-semibold" data-translate={true}>
+                Thông tin đặt chỗ
+              </span>
               <button
                 type="button"
                 className="underline underline-offset-8	 text-blue-700 pb-1 cursor-pointer"
@@ -1389,6 +1524,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   e.preventDefault();
                   setShowFlightDetail(true);
                 }}
+                data-translate={true}
               >
                 Xem chi tiết
               </button>
@@ -1416,10 +1552,12 @@ export default function FlightBookForm({ airportsData }: any) {
                   key={index}
                 >
                   <div className="flex justify-between">
-                    <p className="font-bold">
+                    <p className="font-bold" data-translate={true}>
                       {item.Leg ? "Chiều về" : "Chiều đi"}
                     </p>
-                    <p className="text-sm text-gray-500">{startDateLocale}</p>
+                    <p className="text-sm text-gray-500" data-translate={true}>
+                      {startDateLocale}
+                    </p>
                   </div>
                   <div className="flex my-3 item-start items-center text-left space-x-3">
                     <DisplayImage
@@ -1467,7 +1605,10 @@ export default function FlightBookForm({ airportsData }: any) {
                             <div className="flex-grow h-px bg-gray-700"></div>
                             <div className="flex-shrink-0 w-4 h-4 bg-white border-2 border-gray-400 rounded-full absolute left-1/2 -translate-x-1/2"></div>
                           </div>
-                          <span className="text-sm text-gray-700 mt-2">
+                          <span
+                            className="text-sm text-gray-700 mt-2"
+                            data-translate={true}
+                          >
                             {flight.StopNum
                               ? `${flight.StopNum} điểm dừng`
                               : "Bay thẳng"}
@@ -1505,7 +1646,9 @@ export default function FlightBookForm({ airportsData }: any) {
               <div className="w-8 h-8 bg-gray-100 rounded-full -mr-3"></div>
             </div>
             <div className="py-4 px-3 lg:px-6">
-              <p className="text-22 font-bold mb-2">Giá chi tiết</p>
+              <p className="text-22 font-bold mb-2" data-translate={true}>
+                Giá chi tiết
+              </p>
               {dropdown.map((item: any, index: number) => (
                 <div key={index} className="mb-4">
                   <button
@@ -1514,7 +1657,7 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="flex justify-between text-sm items-start space-x-3 w-full text-left outline-none"
                   >
                     <div className="flex w-8/12">
-                      <span>
+                      <span data-translate={true}>
                         {item.title} (
                         {Array.from({ length: item.quantity }, (_, key) => (
                           <span key={keyLoopDropdown++}>
@@ -1559,14 +1702,14 @@ export default function FlightBookForm({ airportsData }: any) {
                     } `}
                   >
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
-                      <span>Vé</span>
+                      <span data-translate={true}>Vé</span>
                       <span>
                         {formatCurrency(item.totalPriceTicket)} x{" "}
                         {item.quantity}
                       </span>
                     </div>
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
-                      <span>Thuế và phí</span>
+                      <span data-translate={true}>Thuế và phí</span>
                       <span>
                         {formatCurrency(item.totalTax)} x {item.quantity}
                       </span>
@@ -1576,7 +1719,9 @@ export default function FlightBookForm({ airportsData }: any) {
               ))}
 
               <div className="flex justify-between pb-4">
-                <span className="text-sm text-gray-500 ">Hành lý bổ sung</span>
+                <span className="text-sm text-gray-500" data-translate={true}>
+                  Hành lý bổ sung
+                </span>
                 <p className="font-semibold">
                   {totalBaggages.price && totalBaggages.quantity
                     ? `${formatCurrency(totalBaggages.price)} x ${
@@ -1586,7 +1731,12 @@ export default function FlightBookForm({ airportsData }: any) {
                 </p>
               </div>
               <div className="flex pt-4 justify-between border-t border-t-gray-200">
-                <span className=" text-gray-700 font-bold">Tổng cộng</span>
+                <span
+                  className=" text-gray-700 font-bold"
+                  data-translate={true}
+                >
+                  Tổng cộng
+                </span>
                 <p className="font-bold text-primary">
                   {formatCurrency(finalPrice)}
                 </p>
@@ -1609,6 +1759,7 @@ export default function FlightBookForm({ airportsData }: any) {
           flights={flightsDetail}
           isOpen={showFlightDetail}
           onClose={handleClosePopupFlightDetail}
+          translatedStaticText={translatedStaticText}
         />
       )}
     </form>

@@ -1,35 +1,39 @@
+import { ValidationMessages } from "@/lib/messages";
 import z from "zod";
 
-export const CheckOutDinhCuBody = (checkBoxGenerateInvoice: boolean) => {
+export const CheckOutDinhCuSchema = (
+  messages: ValidationMessages,
+  checkBoxGenerateInvoice: boolean
+) => {
   return z.object({
     phone: z
       .string()
       .min(1, {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       })
       .regex(/^\d{10,11}$/, {
-        message: "Số điện thoại không đúng định dạng",
+        message: messages.inValid,
       }),
 
     gender: z
       .string()
       .min(1, {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       })
       .refine((value) => ["male", "female", "other"].includes(value), {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       }),
 
-    email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
-      message: "Email không đúng định dạng",
+    email: z.string().min(1, { message: messages.required }).email({
+      message: messages.email,
     }),
 
     full_name: z
       .string()
       .min(3, {
-        message: "Vui lòng điền thông tin này",
+        message: messages.required,
       })
-      .max(255, { message: "Họ và Tên không hợp lệ" }),
+      .max(255, { message: messages.inValid }),
 
     note: z.string(),
 
@@ -37,39 +41,32 @@ export const CheckOutDinhCuBody = (checkBoxGenerateInvoice: boolean) => {
       ? z.object({
           company_name: z
             .string()
-            .min(3, { message: "Vui lòng điền thông tin này" })
+            .min(3, { message: messages.required })
             .max(255, {
-              message: "Tên công ty không hợp lệ",
+              message: messages.inValid,
             }),
-          address: z
-            .string()
-            .min(3, { message: "Vui lòng điền thông tin này" }),
-          city: z.string().min(3, { message: "Vui lòng điền thông tin này" }),
+          address: z.string().min(3, { message: messages.required }),
+          city: z.string().min(3, { message: messages.required }),
           mst: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .regex(/^\d{10,13}$/, {
-              message: "Thông tin không hợp lệ",
+              message: messages.inValid,
             }),
-          contact_name: z
-            .string()
-            .min(3, { message: "Vui lòng điền thông tin này" }),
+          contact_name: z.string().min(3, { message: messages.required }),
           phone: z
             .string()
             .min(1, {
-              message: "Vui lòng điền thông tin này",
+              message: messages.required,
             })
             .regex(/^0\d{9}$/, {
-              message: "Số điện thoại không đúng định dạng",
+              message: messages.inValid,
             }),
-          email: z
-            .string()
-            .min(1, { message: "Vui lòng điền thông tin này" })
-            .email({
-              message: "Email không đúng định dạng",
-            }),
+          email: z.string().min(1, { message: messages.required }).email({
+            message: messages.inValid,
+          }),
         })
       : z
           .object({
@@ -87,4 +84,6 @@ export const CheckOutDinhCuBody = (checkBoxGenerateInvoice: boolean) => {
   });
 };
 
-export type CheckOutDinhCuType = z.infer<ReturnType<typeof CheckOutDinhCuBody>>;
+export type CheckOutDinhCuType = z.infer<
+  ReturnType<typeof CheckOutDinhCuSchema>
+>;

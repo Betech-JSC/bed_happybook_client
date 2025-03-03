@@ -1,14 +1,18 @@
 "use client";
-import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import CustomerRating from "@/components/product/CustomerRating";
+import { renderTextContent } from "@/utils/Helper";
+import { translateText } from "@/utils/translateApi";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function Tabs({ detail }: any) {
+  const { language } = useLanguage();
+  const [detailVisa, setDetailVisa] = useState<any>(detail);
   const [activeTab, setActiveTab] = useState(0);
   const [currentTabWidth, setCurrentTabWidth] = useState(0);
   const tabContainerRef = useRef<HTMLDivElement>(null);
+  const [translatedContent, setTranslatedContent] = useState<string[]>([]);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [openDropdown, setOpenDropdown] = useState(1);
   const toggleDropdown = (id: number) => {
@@ -20,6 +24,17 @@ export default function Tabs({ detail }: any) {
     }
   }, [activeTab]);
 
+  useEffect(() => {
+    translateText(
+      [
+        renderTextContent(detail.product_visa.content_tim_hieu_visa),
+        renderTextContent(detail.product_visa.content_gia_dich_vu),
+      ],
+      language
+    ).then((dataTranslate) => {
+      setTranslatedContent(dataTranslate);
+    });
+  }, [detail, language]);
   return (
     <div className="w-full mt-6">
       <div
@@ -36,6 +51,7 @@ export default function Tabs({ detail }: any) {
               activeTab === index ? "text-primary" : ""
             }`}
             onClick={() => setActiveTab(index)}
+            data-translate={true}
           >
             {tab}
           </button>
@@ -54,15 +70,16 @@ export default function Tabs({ detail }: any) {
             activeTab === 0 ? "block" : "hidden"
           }`}
         >
-          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2
+            className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+            data-translate={true}
+          >
             Tìm hiểu Visa
           </h2>
           <div
             className="mt-4 leading-6"
             dangerouslySetInnerHTML={{
-              __html:
-                detail.product_visa.content_tim_hieu_visa ??
-                "Nội dung đang cập nhật",
+              __html: translatedContent[0],
             }}
           ></div>
         </div>
@@ -72,15 +89,16 @@ export default function Tabs({ detail }: any) {
             activeTab === 1 ? "block" : "hidden"
           }`}
         >
-          <h2 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
+          <h2
+            className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
+            data-translate={true}
+          >
             Giá dịch vụ, phí nộp ĐSQ, chuẩn bị hồ sơ
           </h2>
           <div
             className="mt-4 leading-6"
             dangerouslySetInnerHTML={{
-              __html:
-                detail.product_visa.content_gia_dich_vu ??
-                "Nội dung đang cập nhật",
+              __html: translatedContent[1],
             }}
           ></div>
         </div>
@@ -91,13 +109,15 @@ export default function Tabs({ detail }: any) {
           }`}
         >
           <CustomerRating
-            product_id={detail.id}
-            total_rating={detail.total_rating}
-            average_rating={detail.average_rating}
-            average_tour_guide_rating={detail.average_tour_guide_rating}
-            average_route_rating={detail.average_route_rating}
-            average_transportation_rating={detail.average_transportation_rating}
-            average_price_rating={detail.average_price_rating}
+            product_id={detailVisa.id}
+            total_rating={detailVisa.total_rating}
+            average_rating={detailVisa.average_rating}
+            average_tour_guide_rating={detailVisa.average_tour_guide_rating}
+            average_route_rating={detailVisa.average_route_rating}
+            average_transportation_rating={
+              detailVisa.average_transportation_rating
+            }
+            average_price_rating={detailVisa.average_price_rating}
           />
         </div>
       </div>

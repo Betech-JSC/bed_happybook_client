@@ -13,6 +13,7 @@ import FlightSearchPopup from "./FlightSearchPopup";
 import { getDay, isValid, parse, format } from "date-fns";
 import { AirportOption, FlightCalendarProps } from "@/types/flight";
 import { HttpError } from "@/lib/error";
+import { translatePage } from "@/utils/translateDom";
 
 const airLines = [
   {
@@ -171,6 +172,10 @@ export default function FlightCalendar({
     fetchData();
   }, [searchParams, fromOption, toOption, month, year]);
 
+  useEffect(() => {
+    translatePage("#wrapper-find-cheap-tickets-flight", 10);
+  }, [dataFlightDepart]);
+
   if (!month) return null;
   // Loading
   if (loading) {
@@ -180,7 +185,9 @@ export default function FlightCalendar({
         className={`flex my-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Đang tải dữ liệu chuyến bay...</span>
+        <span className="text-18" data-translate>
+          Loading...
+        </span>
       </div>
     );
   }
@@ -192,7 +199,9 @@ export default function FlightCalendar({
         ref={flightType === "depart" ? resultsRef : null}
         className="px-4 w-full mx-auto my-20 text-center"
       >
-        <p className="text-18 font-semibold">{error}</p>
+        <p className="text-18 font-semibold" data-translate>
+          {error}
+        </p>
       </div>
     );
   }
@@ -215,7 +224,7 @@ export default function FlightCalendar({
 
   return (
     <Fragment>
-      <h2 className="text-32 font-bold mt-6 px-3 md:px-0">
+      <h2 className="text-32 font-bold mt-6 px-3 md:px-0" data-translate>
         Vé Máy Bay từ {from?.city ?? "Hồ Chí Minh"} tới {to?.city ?? "Hà Nội"}
       </h2>
       <div
@@ -224,7 +233,9 @@ export default function FlightCalendar({
       >
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           <div className="w-full">
-            <label className="block text-gray-700 mb-1">Từ</label>
+            <label className="block text-gray-700 mb-1" data-translate>
+              Từ
+            </label>
             <div className="flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/AirplaneTakeoff.svg"
@@ -244,39 +255,13 @@ export default function FlightCalendar({
                   readOnly
                   className="outline-none w-full pl-3"
                 />
-                {/* <Select
-                options={airports}
-                value={from}
-                onChange={setFrom}
-                placeholder={"Chọn điểm đi"}
-                isClearable
-                styles={{
-                  control: (provided) => ({
-                    ...provided,
-                    border: "none",
-                    boxShadow: "none",
-                    cursor: "pointer",
-                  }),
-                  menu: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                    width: "260px",
-                  }),
-                  indicatorSeparator: () => ({
-                    display: "none",
-                  }),
-                  dropdownIndicator: () => ({
-                    display: "none",
-                  }),
-                }}
-                components={{ Option: CustomOptionSelect, NoOptionsMessage }}
-                menuPlacement="auto"
-              /> */}
               </div>
             </div>
           </div>
           <div className="w-full">
-            <label className="block text-gray-700 mb-1">Đến</label>
+            <label className="block text-gray-700 mb-1" data-translate>
+              Đến
+            </label>
             <div className="flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/AirplaneLanding.svg"
@@ -328,7 +313,9 @@ export default function FlightCalendar({
             </div>
           </div>
           <div className="w-full">
-            <label className="block text-gray-700 mb-1">Tháng</label>
+            <label className="block text-gray-700 mb-1" data-translate>
+              Tháng
+            </label>
             <div className="flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/calendar.svg"
@@ -350,7 +337,11 @@ export default function FlightCalendar({
                   }}
                 >
                   {listNextMonth.map(({ month, year }) => (
-                    <option key={`${month}-${year}`} value={`${month}-${year}`}>
+                    <option
+                      key={`${month}-${year}`}
+                      value={`${month}-${year}`}
+                      data-translate
+                    >
                       Tháng {month}/{year}
                     </option>
                   ))}
@@ -359,14 +350,18 @@ export default function FlightCalendar({
             </div>
           </div>
           <div className="w-full">
-            <label className="block text-gray-700 mb-1">Hãng</label>
+            <label className="block text-gray-700 mb-1" data-translate>
+              Hãng
+            </label>
             <div className="flex h-12 items-center border rounded-lg px-2">
               <div className="w-full cursor-pointer">
                 <select
                   className="border p-2 rounded-lg outline-none w-full border-none"
                   onChange={(e) => setAirlineFilter(e.target.value || null)}
                 >
-                  <option value="">Chọn hãng</option>
+                  <option value="" data-translate>
+                    Chọn hãng
+                  </option>
                   {airLines.map((item: any, index: any) => (
                     <option key={index} value={item.value}>
                       {item.label}
@@ -446,6 +441,7 @@ export default function FlightCalendar({
               <div
                 key={index}
                 className="text-sm font-semibold mb-3 block lg:hidden"
+                data-translate
               >
                 {dayName.label}
               </div>

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import {
-  CustomerRatingBody,
+  CustomerRatingSchema,
   CustomerRatingType,
 } from "@/schemaValidations/customerRating.schema";
 import { labelsRating } from "@/constants/product";
@@ -15,6 +15,11 @@ import { ProductRating } from "@/api/ProductRating";
 import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
 import { format, isValid } from "date-fns";
 import { HttpError } from "@/lib/error";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { translateText } from "@/utils/translateApi";
+import { labelRatingStaticText } from "@/constants/staticText";
+import { formatTranslationMap } from "@/utils/translateDom";
+import { toastMessages, validationMessages } from "@/lib/messages";
 
 export default function CustomerRating({
   product_id,
@@ -36,6 +41,10 @@ export default function CustomerRating({
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [tooManyRequestsErr, setTooManyRequestsErr] = useState<string>("");
+  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
 
   const criteria = [
     { id: 2, name: "Hướng dẫn viên" },
@@ -43,6 +52,16 @@ export default function CustomerRating({
     { id: 4, name: "Phương tiện đưa đón" },
     { id: 5, name: "Giá cả" },
   ];
+
+  useEffect(() => {
+    translateText(labelRatingStaticText, language).then((translated) => {
+      const translationMap = formatTranslationMap(
+        labelRatingStaticText,
+        translated
+      );
+      setTranslatedStaticText(translationMap);
+    });
+  }, [language]);
 
   const [ratings, setRatings] = useState(Array(criteria.length).fill(5));
   const [hover, setHover] = useState(Array(criteria.length).fill(0));
@@ -71,7 +90,7 @@ export default function CustomerRating({
     setError,
     formState: { errors },
   } = useForm<CustomerRatingType>({
-    resolver: zodResolver(CustomerRatingBody),
+    resolver: zodResolver(CustomerRatingSchema(messages)),
   });
 
   const onSubmit = async (data: CustomerRatingType) => {
@@ -87,13 +106,13 @@ export default function CustomerRating({
       if (response?.status === 200) {
         reset();
         toast.dismiss();
-        toast.success("Gửi thành công!");
+        toast.success(toaStrMsg.sendSuccess);
         setOpenModal(false);
       }
     } catch (error: any) {
       if (error instanceof HttpError) {
         if (error.status === 429) {
-          setTooManyRequestsErr(error.payload.message);
+          setTooManyRequestsErr(toaStrMsg.tooManyRequests);
         } else if (error?.payload?.errors) {
           Object.keys(error?.payload?.errors).forEach((field: any) => {
             setError(field, {
@@ -103,15 +122,16 @@ export default function CustomerRating({
           });
         }
       } else {
-        toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+        toast.error(toaStrMsg.error);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const [query, setQuery] = useState<{ page: number }>({
+  const [query, setQuery] = useState<{ page: number; locale: string }>({
     page: 1,
+    locale: language,
   });
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
@@ -141,24 +161,30 @@ export default function CustomerRating({
 
   return (
     <Fragment>
-      <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+      <h2
+        className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+        data-translate
+      >
         Đánh giá
       </h2>
       <div className="mt-4 flex flex-col md:flex-row md:space-x-6 bg-gray-50 p-6 rounded-xl items-center">
         <div className="w-full md:w-[30%] text-center px-9 flex flex-col mb-5 md:mb-0">
           <p className="text-primary font-semibold mt-1">
-            {getLabelRatingProduct(average_rating)}
+            {getLabelRatingProduct(average_rating, language)}
           </p>
           <div className="w-[106px] mt-1 h-9 mx-auto rounded-2xl rounded-tr bg-primary text-white font-semibold flex items-center justify-center">
             <p className="text-[26px] leading-[39px] mr-1">{average_rating}</p>
             <p className="text-xl opacity-50">/10</p>
           </div>
-          <p className="text-gray-500 mt-1">{total_rating} đánh giá</p>
+          <div className="text-gray-500 mt-1">
+            <span>{total_rating} </span>
+            <span data-translate>đánh giá</span>
+          </div>
           <div
             onClick={() => setOpenModal(true)}
             className="mt-3 bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
           >
-            <button className="mx-auto text-sm font-medium">
+            <button className="mx-auto text-sm font-medium" data-translate>
               Gửi đánh giá
             </button>
           </div>
@@ -166,7 +192,7 @@ export default function CustomerRating({
         <div className="w-full md:w-[70%]">
           <div className="grid grid-grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p>Hướng dẫn viên</p>
+              <p data-translate>Hướng dẫn viên</p>
               <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
@@ -186,7 +212,7 @@ export default function CustomerRating({
               </div>
             </div>
             <div>
-              <p>Lộ trình</p>
+              <p data-translate>Lộ trình</p>
               <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
@@ -204,7 +230,7 @@ export default function CustomerRating({
               </div>
             </div>
             <div>
-              <p>Phương tiện đưa đón</p>
+              <p data-translate>Phương tiện đưa đón</p>
               <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
@@ -224,7 +250,7 @@ export default function CustomerRating({
               </div>
             </div>
             <div>
-              <p>Giá cả</p>
+              <p data-translate>Giá cả</p>
               <div className="flex space-x-2 items-center h-6">
                 <div className="w-full bg-gray-200 rounded-3xl">
                   <p
@@ -252,7 +278,7 @@ export default function CustomerRating({
             </div>
             <div>
               <div className="flex space-x-4 items-center">
-                <p className="text-sm md:text-18 font-semibold">
+                <p className="text-sm md:text-18 font-semibold" data-translate>
                   {item?.full_name}
                 </p>
                 <p className="w-4 h-1 bg-gray-300"></p>
@@ -264,7 +290,7 @@ export default function CustomerRating({
                     </span>
                   </p>
                   <p className="text-sm text-blue-900 font-semibold">
-                    {getLabelRatingProduct(item.average_rating)}
+                    {getLabelRatingProduct(item.average_rating, language)}
                   </p>
                 </div>
               </div>
@@ -276,9 +302,10 @@ export default function CustomerRating({
             </div>
           </div>
           <div
+            data-translate
             className="text-sm md:text-base mt-3"
             dangerouslySetInnerHTML={{
-              __html: item?.message,
+              __html: item?.message ? item?.message : "",
             }}
           ></div>
         </div>
@@ -299,7 +326,7 @@ export default function CustomerRating({
               <span className="loader_spiner"></span>
             ) : (
               <>
-                Xem thêm
+                <span data-translate>Xem thêm</span>
                 <svg
                   className="group-hover:stroke-primary stroke-gray-700 duration-300"
                   width="20"
@@ -334,7 +361,9 @@ export default function CustomerRating({
           className="bg-white h-max p-6 max-w-[680px] max-h-[500px] md:max-h-[680px] overflow-y-auto rounded-2xl text-base"
         >
           <div className="flex justify-between items-center mb-4">
-            <p className="text-22 font-bold">Đánh giá</p>
+            <p className="text-22 font-bold" data-translate>
+              Đánh giá
+            </p>
             <button
               className="text-xl"
               onClick={() => setOpenModal(false)}
@@ -349,7 +378,7 @@ export default function CustomerRating({
               />
             </button>
           </div>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 mb-4" data-translate>
             Chúng tôi rất mong nhận được ý kiến của bạn để nâng cao chất lượng
             dịch vụ.
           </p>
@@ -359,6 +388,7 @@ export default function CustomerRating({
             criterion={"Đánh giá chung"}
             rating={calculateAverageRating()}
             labelsRating={labelsRating}
+            translatedStaticText={translatedStaticText}
           />
           <div className="mt-4 rounded-xl">
             <div className="mt-3 rounded-xl">
@@ -366,6 +396,7 @@ export default function CustomerRating({
                 <label
                   htmlFor="fullName"
                   className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+                  data-translate
                 >
                   Họ và tên <span className="text-red-500">*</span>
                 </label>
@@ -387,6 +418,7 @@ export default function CustomerRating({
                     <label
                       htmlFor="phone"
                       className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+                      data-translate
                     >
                       Số điện thoại <span className="text-red-500">*</span>
                     </label>
@@ -406,6 +438,7 @@ export default function CustomerRating({
                     <label
                       htmlFor="email"
                       className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
+                      data-translate
                     >
                       Email <span className="text-red-500">*</span>
                     </label>
@@ -438,7 +471,9 @@ export default function CustomerRating({
             </div>
           </div>
           <div className="mt-4">
-            <p className="mb-4">Về các tiêu chí sau:</p>
+            <p className="mb-4" data-translate>
+              Về các tiêu chí sau:
+            </p>
             {criteria.map((criterion, index) => (
               <RatingCriteria
                 key={criterion.id}
@@ -449,11 +484,12 @@ export default function CustomerRating({
                 hover={hover[index + 2]}
                 onRate={handleRating}
                 onHover={handleHover}
+                translatedStaticText={translatedStaticText}
               />
             ))}
           </div>
           <div className="flex flex-wrap space-y-2">
-            <LoadingButton isLoading={loading} text={"Gửi"} />
+            <LoadingButton isLoading={loading} text={"Gửi"} data-translate />
           </div>
           <p className="text-red-600 my-2 text-center">{tooManyRequestsErr}</p>
         </form>

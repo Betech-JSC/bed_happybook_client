@@ -18,6 +18,8 @@ import { Suspense } from "react";
 import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import FAQ from "@/components/content-page/FAQ";
+import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.getCategory("tour")) as any;
@@ -57,7 +59,9 @@ export default async function CategoryPosts({
       typeTour = undefined;
       titlePage = "Tìm kiếm";
   }
-  const contentPage = (await PageApi.getContent("tours"))?.payload?.data as any;
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("tours", language))?.payload
+    ?.data as any;
   const category: any = [];
   const optionsFilter = (await TourApi.getOptionsFilter(typeTour))?.payload
     ?.data as any;
@@ -79,7 +83,7 @@ export default async function CategoryPosts({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link href="/" className="text-blue-700" data-translate>
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -95,7 +99,7 @@ export default async function CategoryPosts({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
+                  <Link href="#" className="text-gray-700" data-translate>
                     {titlePage}
                   </Link>
                 </BreadcrumbLink>
@@ -128,64 +132,7 @@ export default async function CategoryPosts({
           <FAQ />
         </div>
         <div className="my-8 p-8 rounded-2xl bg-gray-50 ">
-          <h3 className="text-32 font-bold text-center">
-            Vì sao nên chọn HappyBook
-          </h3>
-          <div className="mt-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              <div className="flex items-center space-x-3 h-20">
-                <Image
-                  src="/tour/adviser.svg"
-                  alt="Icon"
-                  className="h-11 w-11"
-                  width={44}
-                  height={44}
-                ></Image>
-                <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    Đội ngũ Happybook tư vấn
-                  </p>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    hỗ trợ nhiệt tình 24/7
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 h-20">
-                <Image
-                  src="/tour/developers.svg"
-                  alt="Icon"
-                  className="h-11 w-11"
-                  width={44}
-                  height={44}
-                ></Image>
-                <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    Đơn vị hơn 8 năm kinh nghiệm.
-                  </p>
-                  <p className="text-18 font-semibold text-gray-900">
-                    Lấy chữ tín làm đầu
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 h-20">
-                <Image
-                  src="/tour/product-icon.svg"
-                  alt="Icon"
-                  className="h-11 w-11"
-                  width={44}
-                  height={44}
-                ></Image>
-                <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    Sản phẩm đa dạng,
-                  </p>
-                  <p className="text-18 font-semibold text-gray-900">
-                    giá cả tốt nhất
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <WhyChooseHappyBook />
         </div>
       </div>
     </SeoSchema>

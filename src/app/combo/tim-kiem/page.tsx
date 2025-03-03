@@ -10,6 +10,10 @@ import {
 import { Fragment, Suspense } from "react";
 import SearchListTour from "../components/SearchListTour";
 import { ComboApi } from "@/api/Combo";
+import { translateText } from "@/utils/translateApi";
+import { comboStaticText } from "@/constants/staticText";
+import { getServerLang } from "@/lib/session";
+import { formatTranslationMap } from "@/utils/translateDom";
 
 export const metadata: Metadata = {
   title: "Compo Nha Trang",
@@ -19,6 +23,12 @@ export const metadata: Metadata = {
 export default async function SearchCombo() {
   const optionsFilter = (await ComboApi.getOptionsFilter())?.payload
     ?.data as any;
+  const language = await getServerLang();
+  const translatedStaticText = await translateText(comboStaticText, language);
+  const translationMap = formatTranslationMap(
+    comboStaticText,
+    translatedStaticText
+  );
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -27,7 +37,7 @@ export default async function SearchCombo() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link href="/" className="text-blue-700" data-translate>
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -43,7 +53,7 @@ export default async function SearchCombo() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
+                  <Link href="#" className="text-gray-700" data-translate>
                     Tìm kiếm
                   </Link>
                 </BreadcrumbLink>
@@ -52,7 +62,10 @@ export default async function SearchCombo() {
           </Breadcrumb>
           {/* Section Tour */}
           <Suspense>
-            <SearchListTour optionsFilter={optionsFilter} />
+            <SearchListTour
+              optionsFilter={optionsFilter}
+              translatedStaticText={translationMap}
+            />
           </Suspense>
         </div>
       </div>

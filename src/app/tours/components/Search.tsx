@@ -17,7 +17,7 @@ export default function SearchTour() {
       className="base__content h-full relative place-content-center"
       onSubmit={handleSubmit}
     >
-      <h1 className="text-32 font-bold text-white mb-6 block">
+      <h1 className="text-32 font-bold text-white mb-6 block" data-translate>
         Tour & Trải nghiệm
       </h1>
       <div className="flex items-center w-full lg:w-1/2 relative">

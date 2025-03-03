@@ -40,7 +40,10 @@ export default function Flight({ data }: any) {
           <div>
             <div className="flex justify-between">
               <div>
-                <h2 className="text-[24px] lg:text-[32px] font-bold">
+                <h2
+                  className="text-[24px] lg:text-[32px] font-bold"
+                  data-translate
+                >
                   Những chuyến bay phổ biến
                 </h2>
               </div>
@@ -61,7 +64,7 @@ export default function Flight({ data }: any) {
                 />
               </div> */}
             </div>
-            <p className="text-16 font-medium mt-3">
+            <p className="text-16 font-medium mt-3" data-translate>
               Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
             </p>
             {/* <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">

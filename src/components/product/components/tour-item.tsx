@@ -28,7 +28,7 @@ export default function TourItem({ tour }: any) {
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
-          <span>{tour.category_name ?? ""}</span>
+          <span data-translate>{tour.category_name ?? ""}</span>
         </div>
         {tour.is_hot ? (
           <div className="absolute top-3 left-3 text-white px-3 py-1 bg-[#F27145] rounded-md">
@@ -43,7 +43,7 @@ export default function TourItem({ tour }: any) {
           href={`/tours/chi-tiet/${tour.slug}`}
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
-          <h3>{tour.product_name ?? ""}</h3>
+          <h3 data-translate>{tour.product_name ?? ""}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <Image
@@ -52,7 +52,7 @@ export default function TourItem({ tour }: any) {
             width={20}
             height={20}
           />
-          <span>{`${tour.day ? `${tour.day} ngày` : ""} ${
+          <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""} ${
             tour.night ? `${tour.night} đêm` : ""
           }`}</span>
         </p>
@@ -70,11 +70,22 @@ export default function TourItem({ tour }: any) {
               ))}
           </div>
           <div>
-            <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-              {tour.price > 0
-                ? `chỉ từ ${formatCurrency(tour.price)}`
-                : "Liên hệ"}
-            </span>
+            {tour.price > 0 ? (
+              <>
+                <span data-translate>chỉ từ</span>
+                <span className="text-[#F27145] font-semibold text-base lg:text-xl">
+                  {" "}
+                  {formatCurrency(tour.price)}
+                </span>
+              </>
+            ) : (
+              <span
+                className="text-[#F27145] font-semibold text-base lg:text-xl"
+                data-translate
+              >
+                Liên hệ
+              </span>
+            )}
           </div>
         </div>
       </div>

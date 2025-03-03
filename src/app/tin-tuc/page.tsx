@@ -55,10 +55,14 @@ export default async function Posts() {
                   </Link>
                 </div>
                 <div className="my-3">
-                  <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-[#175CD3] font-medium hover:bg-blue-200 duration-300">
+                  <p
+                    data-translate
+                    className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-[#175CD3] font-medium hover:bg-blue-200 duration-300"
+                  >
                     {lastestPosts[0].category.name ?? ""}
                   </p>
                   <h3
+                    data-translate
                     className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
                   >
                     <Link href={`/tin-tuc/chi-tiet/${lastestPosts[0].alias}`}>
@@ -66,10 +70,12 @@ export default async function Posts() {
                     </Link>
                   </h3>
                   <div
+                    data-translate
                     className="text-base mt-2 line-clamp-2"
                     dangerouslySetInnerHTML={{
-                      __html:
-                        lastestPosts[0].description ?? "Nội dung đang cập nhật",
+                      __html: lastestPosts[0].description
+                        ? lastestPosts[0].description
+                        : "Nội dung đang cập nhật",
                     }}
                   ></div>
                 </div>
@@ -94,14 +100,17 @@ export default async function Posts() {
                         </Link>
                       </div>
                       <div className="mt-3">
-                        <p className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300">
+                        <p
+                          data-translate
+                          className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300"
+                        >
                           {item.category.name ?? ""}
                         </p>
                         <Link
                           href={`/tin-tuc/chi-tiet/${item.alias}`}
                           className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
                         >
-                          <h3> {item.title ?? ""}</h3>
+                          <h3 data-translate>{item.title ?? ""}</h3>
                         </Link>
                       </div>
                     </div>
@@ -117,7 +126,10 @@ export default async function Posts() {
               <div key={index} className="w-full mb-9">
                 <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row justify-between">
                   <div className="lg:basis-10/12">
-                    <h2 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
+                    <h2
+                      className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold"
+                      data-translate
+                    >
                       {item.name}
                     </h2>
                   </div>
@@ -125,7 +137,7 @@ export default async function Posts() {
                     href={`/tin-tuc/${item.alias}`}
                     className="lg:basis-2/12 h-10  text-[#175CD3] font-medium max-w-fit flex items-center cursor-pointer bg-[#EFF8FF] py-1 px-4 rounded-lg hover:bg-blue-200 duration-300"
                   >
-                    <span>Xem tất cả</span>
+                    <span data-translate>Xem tất cả</span>
                     <Image
                       className="ease-in duration-300"
                       src="/icon/chevron-right.svg"
@@ -153,6 +165,7 @@ export default async function Posts() {
                         </div>
                         <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
                           <h3
+                            data-translate
                             className={`ease-in duration-300 text-base font-semibold mt-3 line-clamp-3 ${Post.post__item_title}`}
                           >
                             {item.title}
@@ -165,7 +178,9 @@ export default async function Posts() {
                     ))}
                   </div>
                 ) : (
-                  <p className="mt-3 text-xl">Tin tức đang cập nhật...</p>
+                  <p className="mt-3 text-xl" data-translate>
+                    Tin tức đang cập nhật...
+                  </p>
                 )}
               </div>
             ))}

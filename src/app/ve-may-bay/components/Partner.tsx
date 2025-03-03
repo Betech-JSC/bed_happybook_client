@@ -60,8 +60,10 @@ export default function Partner() {
     <div className="py-12 bg-white hidden lg:block">
       <div className="flex justify-between px-3 lg:px-[80px] max__screen">
         <div>
-          <h3 className="text-32 font-bold">Đối Tác Hàng Không</h3>
-          <p className="mt-3">
+          <h3 className="text-32 font-bold" data-translate>
+            Đối Tác Hàng Không
+          </h3>
+          <p className="mt-3" data-translate>
             Chúng tôi tự hào là đại lý cấp 1 của các hãng hàng không uy tín tại
             Việt Nam như:
           </p>

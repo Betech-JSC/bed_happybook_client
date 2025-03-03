@@ -6,10 +6,13 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import clsx from "clsx";
 import { GeneralInforPaths } from "@/constants/paths";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { totalLanguages } from "@/constants/language";
 
 export default function Header() {
   let headerClass = "";
   const pathname: string = usePathname();
+  const { language, setLanguage } = useLanguage();
   const router = useRouter();
   const [querySeach, setQuerySeach] = useState<string>();
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
@@ -145,6 +148,7 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname == "/ve-chung-toi",
               })}
+              data-translate={true}
             >
               Về chúng tôi
             </Link>
@@ -155,6 +159,7 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname == "/lien-he",
               })}
+              data-translate={true}
             >
               Liên hệ
             </Link>
@@ -165,15 +170,20 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/tin-tuc"),
               })}
+              data-translate={true}
             >
               Tin tức
             </Link>
           </div>
 
-          <div className="relative">
-            <button className="flex items-center space-x-1">
+          <div
+            className={clsx(`relative !h-auto`, styles.header__menu_item, {
+              [styles.active]: pathname.startsWith("/tours"),
+            })}
+          >
+            <button className="flex items-center space-x-1" type="button">
               <Image
-                src="/icon/VN flag.svg"
+                src={`/language/${language}.svg`}
                 alt="Phone icon"
                 className="h-10 rounded-full"
                 width={22}
@@ -198,6 +208,32 @@ export default function Header() {
                 </svg>
               </div>
             </button>
+            <div
+              className={`!block !max-h-24 ${styles.header__sub_menu_item}`}
+              style={{ display: "block", top: 32 }}
+            >
+              {totalLanguages.map(
+                (item: any, index: number) =>
+                  item.lang !== language && (
+                    <div key={index}>
+                      <button
+                        className="flex space-x-1 items-center"
+                        onClick={() => setLanguage(item.lang)}
+                      >
+                        <Image
+                          src={`/language/${item.lang}.svg`}
+                          alt="Phone icon"
+                          className="h-10 rounded-full"
+                          width={20}
+                          height={20}
+                          style={{ width: 20, height: 20 }}
+                        ></Image>
+                        <span data-translate={true}>{item.label}</span>
+                      </button>
+                    </div>
+                  )
+              )}
+            </div>
           </div>
 
           <a
@@ -223,9 +259,9 @@ export default function Header() {
           </a>
           <Link
             href="/dang-nhap"
-            className={`bg-blue-600 font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
+            className={`bg-blue-600 min-w-[100px] justify-center font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
           >
-            <span>Đăng nhập</span>
+            <span data-translate={true}>Đăng nhập</span>
           </Link>
           {/* Menu Button */}
           {/* <div
@@ -249,9 +285,15 @@ export default function Header() {
                 Tours
               </Link>
               <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/tours/tour-noi-dia">Tour Nội Địa</Link>
-                <Link href="/tours/tour-quoc-te">Tour Quốc Tế</Link>
-                <Link href="/tours/tour-du-thuyen">Tour Du Thuyền</Link>
+                <Link href="/tours/tour-noi-dia" data-translate={true}>
+                  Tour Nội Địa
+                </Link>
+                <Link href="/tours/tour-quoc-te" data-translate={true}>
+                  Tour Quốc Tế
+                </Link>
+                <Link href="/tours/tour-du-thuyen" data-translate={true}>
+                  Tour Du Thuyền
+                </Link>
               </div>
             </div>
 
@@ -260,6 +302,7 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/ve-may-bay"),
               })}
+              data-translate={true}
             >
               Vé máy bay
             </Link>
@@ -276,6 +319,7 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/dinh-cu"),
               })}
+              data-translate={true}
             >
               Định cư
             </Link>
@@ -284,6 +328,7 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/khach-san"),
               })}
+              data-translate={true}
             >
               Khách sạn
             </Link>
@@ -303,7 +348,7 @@ export default function Header() {
               }}
               className={`relative flex cursor-pointer ${styles.header__menu_item}`}
             >
-              <span>Khác</span>
+              <span data-translate={true}>Khác</span>
               <div className="h-5 self-center">
                 <svg
                   width="16"
@@ -341,6 +386,7 @@ export default function Header() {
                   href="/dang-ky-ctv"
                   className={styles.text_hover_default}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  data-translate={true}
                 >
                   Đăng ký CTV
                 </Link>
@@ -348,6 +394,7 @@ export default function Header() {
                   href="/tu-van-nhan-visa"
                   className={styles.text_hover_default}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  data-translate={true}
                 >
                   Tư vấn visa
                 </Link>
@@ -361,6 +408,7 @@ export default function Header() {
                       href={item.url}
                       className={styles.text_hover_default}
                       onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      data-translate={true}
                     >
                       {item.title}
                     </Link>

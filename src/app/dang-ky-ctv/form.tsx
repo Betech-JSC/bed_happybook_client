@@ -1,10 +1,7 @@
 "use client";
 import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
-import {
-  FormCtvBody,
-  FormCtvBodyType,
-} from "@/schemaValidations/formCtv.shema";
+import { FormCtvSchema, FormCtvType } from "@/schemaValidations/formCtv.shema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { Fragment } from "react";
@@ -12,11 +9,14 @@ import LoadingButton from "@/components/base/LoadingButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import http from "@/lib/http";
-
-type FormData = FormCtvBodyType;
+import { useLanguage } from "../contexts/LanguageContext";
+import { toastMessages, validationMessages } from "@/lib/messages";
 
 export default function FormCtv() {
   const [loading, setLoading] = useState(false);
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
 
   const {
     register,
@@ -24,21 +24,21 @@ export default function FormCtv() {
     reset,
     control,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(FormCtvBody),
+  } = useForm<FormCtvType>({
+    resolver: zodResolver(FormCtvSchema(messages)),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormCtvType) => {
     try {
       setLoading(true);
       const response = await http.post<any>(`register-collaborator`, data);
       if (response?.status === 200) {
         reset();
         toast.dismiss();
-        toast.success("Gửi thành công!");
+        toast.success(toaStrMsg.sendSuccess);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      toast.error(toaStrMsg.error);
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,8 @@ export default function FormCtv() {
               htmlFor="full_name"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Tên người đại diện <span className="text-red-500">*</span>
+              <span data-translate>Tên người đại diện </span>
+              <span className="text-red-500">*</span>
             </label>
             <input
               id="full_name"
@@ -72,7 +73,8 @@ export default function FormCtv() {
                 htmlFor="phone"
                 className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
               >
-                Số điện thoại liên hệ <span className="text-red-500">*</span>
+                <span data-translate>Số điện thoại liên hệ </span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 id="phone"
@@ -109,7 +111,8 @@ export default function FormCtv() {
               htmlFor="address"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Địa chỉ liên hệ <span className="text-red-500">*</span>
+              <span data-translate>Địa chỉ liên hệ </span>
+              <span className="text-red-500">*</span>
             </label>
             <input
               id="address"
@@ -129,7 +132,8 @@ export default function FormCtv() {
               htmlFor="ID"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Số chứng minh thư <span className="text-red-500">*</span>
+              <span data-translate>Số chứng minh thư </span>
+              <span className="text-red-500">*</span>
             </label>
             <input
               id="ID"
@@ -147,7 +151,8 @@ export default function FormCtv() {
               htmlFor="citizen_id_date"
               className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs z-10"
             >
-              Ngày cấp <span className="text-red-500">*</span>
+              <span data-translate>Ngày cấp </span>
+              <span className="text-red-500">*</span>
             </label>
             <div className="w-full [&>div]:w-full">
               <Controller
@@ -174,7 +179,8 @@ export default function FormCtv() {
               htmlFor="issue_place"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
             >
-              Nơi cấp <span className="text-red-500">*</span>
+              <span data-translate>Nơi cấp </span>
+              <span className="text-red-500">*</span>
             </label>
             <input
               id="issue_place"

@@ -4,6 +4,8 @@ import "swiper/css";
 import { formatCurrency } from "@/lib/formatters";
 import CustomerRating from "@/components/product/CustomerRating";
 import { formatDate } from "@/lib/formatters";
+import { isEmpty } from "lodash";
+import { renderTextContent } from "@/utils/Helper";
 
 export default function Tabs({ detail }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -42,6 +44,7 @@ export default function Tabs({ detail }: any) {
               activeTab === index ? "text-primary" : ""
             }`}
             onClick={() => setActiveTab(index)}
+            data-translate={true}
           >
             {tab}
           </button>
@@ -60,13 +63,16 @@ export default function Tabs({ detail }: any) {
             activeTab === 0 ? "block" : "hidden"
           }`}
         >
-          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2
+            className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+            data-translate={true}
+          >
             Tổng quan
           </h2>
           <div
             className="mt-4 text-base"
             dangerouslySetInnerHTML={{
-              __html: detail?.overview ?? "Nội dung đang cập nhật...",
+              __html: renderTextContent(detail?.over_view),
             }}
           ></div>
         </div>
@@ -76,7 +82,10 @@ export default function Tabs({ detail }: any) {
             activeTab === 1 ? "block" : "hidden"
           } `}
         >
-          <h2 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
+          <h2
+            className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
+            data-translate
+          >
             Lịch trình
           </h2>
           {detail.schedule.length > 0 ? (
@@ -97,6 +106,7 @@ export default function Tabs({ detail }: any) {
                       ></span>
                       <h3
                         className={`ml-5 font-18 font-semibold text-gray-900`}
+                        data-translate
                       >
                         {schedule.title}
                       </h3>
@@ -131,14 +141,14 @@ export default function Tabs({ detail }: any) {
                         openDropdown === key ? "max-h-[5000px] pb-4" : "max-h-0"
                       }`}
                   dangerouslySetInnerHTML={{
-                    __html: schedule.content,
+                    __html: renderTextContent(schedule?.content),
                   }}
                 ></div>
               </div>
             ))
           ) : (
             <div className="mt-4">
-              <p className="text-base font-semibold">
+              <p className="text-base font-semibold" data-translate>
                 Nội dung đang cập nhật....
               </p>
             </div>
@@ -150,7 +160,10 @@ export default function Tabs({ detail }: any) {
             activeTab === 2 ? "block" : "hidden"
           }`}
         >
-          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2
+            className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+            data-translate
+          >
             Bảng giá
           </h2>
           <div className="mt-4 overflow-auto">
@@ -158,19 +171,34 @@ export default function Tabs({ detail }: any) {
               <table className="w-max min-w-[700px] lg:min-w-[100%] text-left align-middle ">
                 <tbody>
                   <tr className="bg-[#FEF8F5] text-primary">
-                    <th className="py-4 px-2 border border-gray-200">
+                    <th
+                      className="py-4 px-2 border border-gray-200"
+                      data-translate
+                    >
                       Ngày khởi hành
                     </th>
-                    <th className="py-4 px-2  border border-gray-200">
+                    <th
+                      className="py-4 px-2  border border-gray-200"
+                      data-translate
+                    >
                       Mã Tour
                     </th>
-                    <th className="py-4 px-2  border border-gray-200">
+                    <th
+                      className="py-4 px-2  border border-gray-200"
+                      data-translate
+                    >
                       Giá người lớn
                     </th>
-                    <th className="py-4 px-2  border border-gray-200">
+                    <th
+                      className="py-4 px-2  border border-gray-200"
+                      data-translate
+                    >
                       Giá trẻ em
                     </th>
-                    <th className="py-4 px-2  border border-gray-200">
+                    <th
+                      className="py-4 px-2  border border-gray-200"
+                      data-translate
+                    >
                       Giá em bé
                     </th>
                   </tr>
@@ -202,7 +230,9 @@ export default function Tabs({ detail }: any) {
                 </tbody>
               </table>
             ) : (
-              <p className="text-base">Nội dung đang cập nhật....</p>
+              <p className="text-base" data-translate>
+                Nội dung đang cập nhật....
+              </p>
             )}
           </div>
         </div>
@@ -212,13 +242,16 @@ export default function Tabs({ detail }: any) {
             activeTab === 3 ? "block" : "hidden"
           }`}
         >
-          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2
+            className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+            data-translate
+          >
             Quy định dịch vụ
           </h2>
           <div
             className="mt-4 text-base"
             dangerouslySetInnerHTML={{
-              __html: detail?.overview ?? "Nội dung đang cập nhật...",
+              __html: renderTextContent(detail?.service_regulation),
             }}
           ></div>
         </div>

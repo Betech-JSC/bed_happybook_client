@@ -11,11 +11,20 @@ import {
 import { addDays, parse, format, isValid, isBefore, isSameDay } from "date-fns";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { getDayLabel, handleScrollSmooth } from "@/utils/Helper";
+import {
+  getCurrentLanguage,
+  getDayLabel,
+  handleScrollSmooth,
+} from "@/utils/Helper";
 import { HttpError } from "@/lib/error";
 import { ListFilghtProps, TabDays } from "@/types/flight";
 import FilghtDomesticList from "./Domestic/List";
 import FlightInternationalList from "./International/List";
+import { formatTranslationMap, translatePage } from "@/utils/translateDom";
+import { flightStaticText } from "@/constants/staticText";
+import { translateText } from "@/utils/translateApi";
+import { toastMessages } from "@/lib/messages";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function ListFilght({ airportsData }: ListFilghtProps) {
   const router = useRouter();
@@ -40,6 +49,8 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const passengerChd = parseInt(searchParams.get("Chd") ?? "0");
   const passengerInf = parseInt(searchParams.get("Inf") ?? "0");
   const totalPassengers = passengerAdt + passengerChd + passengerInf;
+  const { language } = useLanguage();
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
   const params = useMemo(() => {
     let ListFlightSearch = [
       {
@@ -67,6 +78,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
       Inf: passengerInf,
       ViewMode: "",
       ListFlight: ListFlightSearch,
+      Language: "vi",
     };
   }, [
     StartPoint,
@@ -89,13 +101,19 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   ]);
   const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
   const [flightType, setFlightType] = useState<string>("");
-
+  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
   const scrollToRef = (ref: any) => {
     if (ref.current) {
       handleScrollSmooth(ref.current);
     }
   };
 
+  useEffect(() => {
+    translateText(flightStaticText, getCurrentLanguage()).then((data) => {
+      const translationMap = formatTranslationMap(flightStaticText, data);
+      setTranslatedStaticText(translationMap);
+    });
+  }, []);
   // Handle Tabs Days
   const today = useMemo(() => {
     const departDate = searchParams.get("DepartDate");
@@ -192,6 +210,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
             ? true
             : false;
         if (StartPoint && EndPoint && DepartDate && checkTripType) {
+          params.Language = getCurrentLanguage();
           const response = await FlightApi.search("flights/search", params);
           const dataRespon = response?.payload.data;
           const listFareData = dataRespon.ListFareData ?? [];
@@ -213,6 +232,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
               }
             });
             setApiFlightSession(response?.payload.data.Session);
+            translatePage("#wrapper_search_flight", 10);
           }
           setFlightType(dataRespon.FlightType);
           setStopNumFilters(
@@ -226,19 +246,15 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
           router.push("/ve-may-bay");
           setData([]);
           toast.dismiss();
-          toast.error("Vui lòng chọn đầy đủ thông tin");
+          toast.error(toaStrMsg.missingInfoSearchFlight);
         }
       } catch (error: any) {
         if (error instanceof HttpError) {
           if (error.payload.code === 400) {
-            setError(
-              "Không có chuyến bay nào trong ngày hôm nay, quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin cám ơn!"
-            );
+            setError(toaStrMsg.notFoundFlight);
           }
         } else {
-          setError(
-            `Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn`
-          );
+          setError(toaStrMsg.errorConnectApiFlight);
         }
       } finally {
         setLoading(false);
@@ -255,6 +271,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
     tripType,
     isRoundTrip,
     router,
+    toaStrMsg,
   ]);
 
   // useEffect(() => {
@@ -277,7 +294,9 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Đang tải dữ liệu chuyến bay...</span>
+        <span className="text-18" data-translate>
+          Đang tải dữ liệu chuyến bay...
+        </span>
       </div>
     );
   }
@@ -312,6 +331,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
             totalPassengers={totalPassengers}
             flightType={flightType}
             flightStopNum={stopNumFilters}
+            translatedStaticText={translatedStaticText}
           />
         ) : (
           <FlightInternationalList
@@ -332,6 +352,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
             totalFlightLeg={totalFlightLeg}
             totalPassengers={totalPassengers}
             flightType={flightType}
+            translatedStaticText={translatedStaticText}
           />
         )}
       </div>

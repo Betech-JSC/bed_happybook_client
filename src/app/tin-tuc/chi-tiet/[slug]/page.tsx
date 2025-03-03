@@ -85,7 +85,7 @@ export default async function Posts({
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/" className="text-blue-700">
+                    <Link href="/" className="text-blue-700" data-translate>
                       Trang chủ
                     </Link>
                   </BreadcrumbLink>
@@ -93,7 +93,11 @@ export default async function Posts({
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/tin-tuc" className="text-blue-700">
+                    <Link
+                      href="/tin-tuc"
+                      className="text-blue-700"
+                      data-translate
+                    >
                       Tin tức
                     </Link>
                   </BreadcrumbLink>
@@ -104,6 +108,7 @@ export default async function Posts({
                     <Link
                       href={`/tin-tuc/${detail.category.alias}`}
                       className="text-gray-700"
+                      data-translate
                     >
                       {detail.category.name}
                     </Link>
@@ -112,12 +117,15 @@ export default async function Posts({
               </BreadcrumbList>
             </Breadcrumb>
             <div className="h-6 cursor-pointer mt-8 rounded">
-              <p className="inline-block rounded text-blue-700 py-1 px-2 text-sm font-medium hover:bg-blue-200 duration-300 bg-[#EFF8FF]">
+              <p
+                data-translate
+                className="inline-block rounded text-blue-700 py-1 px-2 text-sm font-medium hover:bg-blue-200 duration-300 bg-[#EFF8FF]"
+              >
                 {detail.category.name}
               </p>
             </div>
             <div className="post__detail mt-4">
-              <h1 className="text-gray-900 text-32 font-bold">
+              <h1 className="text-gray-900 text-32 font-bold" data-translate>
                 {detail.title}
               </h1>
               <div className="my-6">
@@ -130,16 +138,22 @@ export default async function Posts({
                 />
               </div>
               <div
+                data-translate
                 className="mb-8 pb-8 border-b-2 border-gray-200"
                 dangerouslySetInnerHTML={{
-                  __html: detail.description,
+                  __html: detail.description
+                    ? detail.description
+                    : "Nội dung đang cập nhật...",
                 }}
               ></div>
               <TableOfContents toc={detail.toc} />
               <div
+                data-translate
                 className="post__detail_content md:max-w-[460px] lg:max-w-[820px]"
                 dangerouslySetInnerHTML={{
-                  __html: detail.content,
+                  __html: detail.content
+                    ? detail.content
+                    : "Nội dung đang cập nhật...",
                 }}
               ></div>
             </div>
@@ -150,7 +164,10 @@ export default async function Posts({
         {/* Releted Posts */}
         {detail.new_relation?.length > 0 && (
           <div className="mt-8">
-            <h3 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
+            <h3
+              className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold"
+              data-translate
+            >
               Các bài viết liên quan
             </h3>
             <div className="my-8">
@@ -182,6 +199,7 @@ export default async function Posts({
                           </div>
                           <Link href={`/tin-tuc/chi-tiet/${post.alias}`}>
                             <p
+                              data-translate
                               className={`min-h-12 ease-in duration-300 text-base font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                             >
                               {post.title}

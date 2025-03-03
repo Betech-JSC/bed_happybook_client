@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import {
-  ContactBody,
+  ContactSchema,
   ContactBodyType,
 } from "@/schemaValidations/contact.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,22 +10,23 @@ import { toast } from "react-hot-toast";
 import { contactApi } from "@/api/contact";
 import LoadingButton from "@/components/base/LoadingButton";
 import Image from "next/image";
-
-type FormData = ContactBodyType;
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { validationMessages } from "@/lib/messages";
 
 export default function FormContact() {
   const [loading, setLoading] = useState(false);
-
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(ContactBody),
+  } = useForm<ContactBodyType>({
+    resolver: zodResolver(ContactSchema(messages)),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: ContactBodyType) => {
     setLoading(true);
     const respon = await contactApi.send(data);
     setLoading(false);
@@ -39,8 +40,10 @@ export default function FormContact() {
     <div className="flex flex-col md:flex-row space-y-4 md:space-x-8 md:space-y-0">
       <div className="w-full md:w-[40%]">
         <div className="bg-white rounded-xl px-4 py-3">
-          <h3 className="text-28 font-bold">Liên hệ tư vấn</h3>
-          <p className="mt-3">
+          <h3 className="text-28 font-bold" data-translate>
+            Liên hệ tư vấn
+          </h3>
+          <p className="mt-3" data-translate>
             Nếu bạn có bất kỳ câu hỏi nào hoặc cần thêm thông tin về các chương
             trình định cư, hãy liên hệ ngay với chúng tôi để được tư vấn miễn
             phí và chi tiết nhất.
@@ -58,7 +61,9 @@ export default function FormContact() {
               />
             </div>
             <div className="w-3/4">
-              <p className="text-sm font-semibold">Hotline Visa - hộ chiếu</p>
+              <p className="text-sm font-semibold" data-translate>
+                Hotline Visa - hộ chiếu
+              </p>
               <p className="text-base mt-2">0708.628.791 - 0904.221.293</p>
             </div>
           </div>
@@ -73,7 +78,9 @@ export default function FormContact() {
               />
             </div>
             <div className="w-3/4">
-              <p className="text-sm font-semibold">Email visa - hộ chiếu</p>
+              <p className="text-sm font-semibold" data-translate>
+                Email visa - hộ chiếu
+              </p>
               <p className="text-base mt-2 break-all">
                 visaonline@happybook.com.vn
               </p>
@@ -83,7 +90,7 @@ export default function FormContact() {
       </div>
       <div className="w-full md:w-[60%]">
         <div className="bg-white rounded-2xl p-6">
-          <p className="text-sm">
+          <p className="text-sm" data-translate>
             Hãy để lại thông tin của bạn bên dưới, chúng tôi sẽ liên hệ với bạn
             trong thời gian sớm nhất.
           </p>
@@ -97,7 +104,8 @@ export default function FormContact() {
                   htmlFor="fullName"
                   className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  Họ và tên <span className="text-red-500">*</span>
+                  <span data-translate>Họ và tên </span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="fullName"
@@ -118,7 +126,8 @@ export default function FormContact() {
                       htmlFor="phone"
                       className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Số điện thoại <span className="text-red-500">*</span>
+                      <span data-translate>Số điện thoại </span>
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="phone"
@@ -158,7 +167,8 @@ export default function FormContact() {
                   htmlFor="service"
                   className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  Diện VISA <span className="text-red-500">*</span>
+                  <span data-translate>Diện VISA </span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="service"

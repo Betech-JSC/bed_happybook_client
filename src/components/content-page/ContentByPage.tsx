@@ -20,7 +20,9 @@ export default function ContentByPage({ data }: any) {
   }, [isExpanded]);
   return (
     <Fragment>
-      <h3 className="text-2xl font-bold">{data.title ?? ""}</h3>
+      <h3 className="text-2xl font-bold" data-translate>
+        {data.title ?? ""}
+      </h3>
       <div
         ref={contentRef}
         className={`text-base mt-6 transition-[max-height] ease-in-out duration-500 overflow-hidden  `}
@@ -30,12 +32,16 @@ export default function ContentByPage({ data }: any) {
         dangerouslySetInnerHTML={{
           __html: data.content ?? "Nội dung đang cập nhật",
         }}
+        data-translate
       ></div>
       <div
         className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center cursor-pointer"
         onClick={toggleExpand}
       >
-        <span className="font-medium group-hover:text-primary duration-300">
+        <span
+          className="font-medium group-hover:text-primary duration-300"
+          data-translate
+        >
           {isExpanded ? "Ẩn bớt" : "Xem thêm"}
         </span>
         <button

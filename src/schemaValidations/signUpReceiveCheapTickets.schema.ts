@@ -1,29 +1,34 @@
+import { ValidationMessages } from "@/lib/messages";
 import z from "zod";
 
-export const SignUpReceiveCheapTicketsBody = z.object({
-  full_name: z
-    .string()
-    .trim()
-    .min(3, {
-      message: "Vui lòng điền thông tin này!",
-    })
-    .max(256, {
-      message: "Vui lòng điền thông tin này!",
-    }),
-  phone: z
-    .string()
-    .min(1, {
-      message: "Vui lòng điền thông tin này",
-    })
-    .regex(/^\d{10,11}$/, {
-      message: "Số điện thoại không đúng định dạng",
-    }),
+export const SignUpReceiveCheapTicketSchema = (
+  messages: ValidationMessages
+) => {
+  return z.object({
+    full_name: z
+      .string()
+      .trim()
+      .min(3, {
+        message: messages.required,
+      })
+      .max(256, {
+        message: messages.required,
+      }),
+    phone: z
+      .string()
+      .min(1, {
+        message: messages.required,
+      })
+      .regex(/^\d{10,11}$/, {
+        message: messages.inValid,
+      }),
 
-  email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
-    message: "Email không đúng định dạng",
-  }),
-});
+    email: z.string().min(1, { message: messages.required }).email({
+      message: messages.email,
+    }),
+  });
+};
 
-export type SignUpReceiveCheapTicketsBodyType = z.infer<
-  typeof SignUpReceiveCheapTicketsBody
+export type SignUpReceiveCheapTicketType = z.infer<
+  ReturnType<typeof SignUpReceiveCheapTicketSchema>
 >;

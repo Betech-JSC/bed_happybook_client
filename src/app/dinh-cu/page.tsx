@@ -1,12 +1,5 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import PostsItem from "./components/PostsItem";
 import FormContact from "./components/FormContact";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
@@ -15,6 +8,7 @@ import { newsApi } from "@/api/news";
 import NewsByPage from "@/components/content-page/NewsByPage";
 import ListItem from "./components/ListItem";
 import { ProductCategoryApi } from "@/api/ProductCategory";
+import { getServerLang } from "@/lib/session";
 
 export const metadata: Metadata = formatMetadata({
   title: "Định Cư Lao Động, Di Trú Nước Ngoài | HappyBook Travel",
@@ -28,8 +22,9 @@ export const metadata: Metadata = formatMetadata({
 export default async function DinhCu() {
   const newsByPage = (await newsApi.getLastedNewsByPage())?.payload
     ?.data as any;
-  const categories = (await ProductCategoryApi.listByType("dinhcu"))?.payload
-    ?.data as any;
+  const language = await getServerLang();
+  const categories = (await ProductCategoryApi.listByType("dinhcu", language))
+    ?.payload?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -64,13 +59,13 @@ export default async function DinhCu() {
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
             <ListItem categories={categories} />
           </div>
-          <div className=" border-y border-y-gray-300 mt-8 ">
+          <div className="border-y border-y-gray-300 mt-8 ">
             <div className="lg:px-[50px] xl:px-[80px] py-12 px-3 max__screen">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <h3 className="text-32 font-bold">
+                <h3 className="text-32 font-bold" data-translate={true}>
                   Tại sao nên chọn Happy Book ?
                 </h3>
-                <div>
+                <div data-translate={true}>
                   HappyBook cung cấp dịch vụ tư vấn định cư chuyên nghiệp, hỗ
                   trợ bạn từ giai đoạn chuẩn bị hồ sơ đến khi hoàn thành mọi thủ
                   tục pháp lý để đạt được giấc mơ định cư tại các quốc gia phát
@@ -88,10 +83,13 @@ export default async function DinhCu() {
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate={true}
+                      >
                         Chuyên Nghiệp & Tận Tâm
                       </p>
-                      <p>
+                      <p data-translate={true}>
                         Đội ngũ chuyên gia giàu kinh nghiệm, hỗ trợ tận tình từ
                         A-Z.
                       </p>
@@ -106,10 +104,13 @@ export default async function DinhCu() {
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate={true}
+                      >
                         Quy Trình Minh Bạch
                       </p>
-                      <p>
+                      <p data-translate={true}>
                         Thông tin rõ ràng, quy trình minh bạch, giúp bạn an tâm.
                       </p>
                     </div>
@@ -123,10 +124,13 @@ export default async function DinhCu() {
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate={true}
+                      >
                         Giải Pháp Tối Ưu
                       </p>
-                      <p>
+                      <p data-translate={true}>
                         Tư vấn chương trình định cư phù hợp với từng cá nhân.
                       </p>
                     </div>

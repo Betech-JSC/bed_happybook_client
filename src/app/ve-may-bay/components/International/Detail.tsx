@@ -8,15 +8,17 @@ import {
 import _ from "lodash";
 import { FlightDetailInternationalProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
+import { useTranslation } from "@/app/hooks/useTranslation";
 
 const FlightInternationalDetail = ({
   FareData,
   onSelectFlight,
   setFlightDetail,
   leg,
+  translatedStaticText,
 }: FlightDetailInternationalProps) => {
   const flights = FareData.ListFlight ?? [];
-
+  const { t } = useTranslation(translatedStaticText);
   const handleSelectFlight = (indexFlight: number) => {
     let FareDataSelect = _.cloneDeep(FareData);
     const flightSelected = FareDataSelect.ListFlight[indexFlight];
@@ -58,8 +60,9 @@ const FlightInternationalDetail = ({
                     <button
                       className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
                       onClick={() => setFlightDetail(FareData, key)}
+                      data-translate
                     >
-                      Xem chi tiết
+                      {t("xem_chi_tiet")}
                     </button>
                   </div>
 
@@ -96,10 +99,13 @@ const FlightInternationalDetail = ({
                             <div className="flex-grow h-px bg-gray-700"></div>
                             <div className="flex-shrink-0 w-4 h-4 bg-white border-2 border-gray-400 rounded-full absolute left-1/2 -translate-x-1/2"></div>
                           </div>
-                          <span className="text-sm text-gray-700 mt-2">
+                          <span
+                            className="text-sm text-gray-700 mt-2"
+                            data-translate
+                          >
                             {flight.StopNum
-                              ? `${flight.StopNum} điểm dừng`
-                              : "Bay thẳng"}
+                              ? `${flight.StopNum} ${t("diem_dung")}`
+                              : t("bay_thang")}
                           </span>
                         </div>
                         <Image

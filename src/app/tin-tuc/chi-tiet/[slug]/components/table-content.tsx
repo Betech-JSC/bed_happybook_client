@@ -1,6 +1,6 @@
 "use client";
+import { isEmpty } from "lodash";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -25,7 +25,9 @@ const TableOfContents = ({ toc }: Props) => {
         ${isOpen ? "max-h-[3000px]" : "max-h-12"}`}
     >
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold">Mục lục</h3>
+        <h3 className="text-xl font-semibold" data-translate>
+          Mục lục
+        </h3>
         <div className="relative w-5 h-5">
           <Image
             onClick={toggleMenu}
@@ -61,11 +63,14 @@ const TableOfContents = ({ toc }: Props) => {
           </div>
         </div>
       </div>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: toc,
-        }}
-      ></div>
+      {!isEmpty(toc) && (
+        <div
+          // data-translate
+          dangerouslySetInnerHTML={{
+            __html: toc,
+          }}
+        ></div>
+      )}
     </div>
   );
 };

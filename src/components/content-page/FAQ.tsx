@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaqApi } from "@/api/Faq";
 import FAQSchema from "../schema/FAQSchema";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function FAQ() {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
@@ -9,20 +10,24 @@ export default function FAQ() {
     setOpenDropdown(openDropdown === id ? null : id);
   };
   const [data, setData] = useState<any[]>([]);
-  const loadData = async () => {
-    const faqData = (await FaqApi.list())?.payload?.data as any;
+  const { language } = useLanguage();
+
+  const loadData = useCallback(async () => {
+    const faqData = (await FaqApi.list(2, language))?.payload?.data as any;
     setData(faqData);
-  };
+  }, [language]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
-  if (!data?.length) return;
+  // if (!data?.length) return;
   return (
     <FAQSchema data={data}>
       <div className="rounded-2xl bg-gray-50 p-8">
-        <h2 className="text-32 font-bold mb-10">Câu Hỏi Thường Gặp</h2>
+        <h2 className="text-32 font-bold mb-10" data-translate>
+          Câu Hỏi Thường Gặp
+        </h2>
         {data.map((item) => (
           <div
             key={item.id}
@@ -30,7 +35,10 @@ export default function FAQ() {
             onClick={() => toggleDropdown(item.id)}
           >
             <div className="flex justify-between items-start">
-              <h3 className="font-18 font-semibold text-gray-900 max-w-[90%]">
+              <h3
+                className="font-18 font-semibold text-gray-900 max-w-[90%]"
+                data-translate
+              >
                 {item.question}
               </h3>
               <button
@@ -56,6 +64,7 @@ export default function FAQ() {
               </button>
             </div>
             <div
+              data-translate
               className={`mt-3 transition-[max-height] ease-in-out duration-500 overflow-hidden 
                 ${openDropdown === item.id ? "max-h-screen" : "max-h-0"}`}
               dangerouslySetInnerHTML={{

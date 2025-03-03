@@ -22,8 +22,9 @@ export default function HotelItem({ hotel }: any) {
             </Link>
             {hotel.discount_price > 0 && (
               <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#F27145] rounded-tr-3xl">
+                <span data-translate>Tiết kiệm </span>
                 <span>
-                  Tiết kiệm{" "}
+                  {" "}
                   {calculatorDiscountPercent(hotel.discount_price, hotel.price)}
                 </span>
               </div>
@@ -33,7 +34,7 @@ export default function HotelItem({ hotel }: any) {
             href={`/khach-san/chi-tiet/${hotel.slug}`}
             className="block text-base font-semibold line-clamp-2 text__default_hover mt-3 px-4"
           >
-            <h3> {hotel.name}</h3>
+            <h3 data-translate>{hotel.name}</h3>
           </Link>
         </div>
         <div className="mt-2 px-4">

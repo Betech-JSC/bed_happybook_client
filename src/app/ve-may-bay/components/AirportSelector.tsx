@@ -4,19 +4,11 @@ import {
   AirportOption,
   AirportPopupSelectorProps,
   AirportsCountry,
+  SearchFilghtProps,
 } from "@/types/flight";
-import {
-  convertToUnaccentedLetters,
-  highlightTextSearchAirport,
-} from "@/utils/jsxUtils";
+import { highlightTextSearchAirport } from "@/utils/jsxUtils";
 import Image from "next/image";
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  Fragment,
-  useCallback,
-} from "react";
+import React, { useState, useRef, useEffect, Fragment } from "react";
 import debounce from "lodash.debounce";
 
 export default function AirportPopupSelector({
@@ -41,9 +33,11 @@ export default function AirportPopupSelector({
   const [selectedDestination, setSelectedDestination] = useState<string | null>(
     initialTo
   );
+
   const [selectedTab, setSelectedTab] = useState(
     airportsData && airportsData[0] ? airportsData[0].id : 0
   );
+
   const [searchQuery, setSearchQuery] = useState("");
   const [activeInput, setActiveInput] = useState<
     "departure" | "destination" | null
@@ -180,9 +174,9 @@ export default function AirportPopupSelector({
 
         return (
           // filterByType &&
-          (activeInput === "departure"
+          activeInput === "departure"
             ? airport.code !== selectedDestination
-            : airport.code !== selectedDeparture)
+            : airport.code !== selectedDeparture
         );
       }) || [];
 
@@ -206,7 +200,7 @@ export default function AirportPopupSelector({
       <div className="w-full md:w-1/2 mr-1">
         <label htmlFor="departure-input" className="block text-gray-700 mb-1">
           <i className="fas fa-plane-departure"></i>
-          <span>Từ</span>
+          <span data-translate={true}>Từ</span>
         </label>
         <div className="flex h-12 items-center border rounded-lg px-2">
           <Image
@@ -246,7 +240,7 @@ export default function AirportPopupSelector({
       </div>
       <div className="w-full md:w-1/2">
         <label htmlFor="destination-input" className="block text-gray-700 mb-1">
-          <span>Đến</span>
+          <span data-translate={true}>Đến</span>
         </label>
         <div className="flex h-12 items-center border rounded-lg px-2  md:pl-6">
           <Image
@@ -271,100 +265,104 @@ export default function AirportPopupSelector({
         </div>
       </div>
 
-      {isPopupVisible && (
-        <div
-          ref={popupRef}
-          className="fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-full overflow-y-auto md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] lg:w-[750px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-[9999]"
-        >
-          <div className="flex items-center justify-between px-4 py-2 border-b">
-            <h2 className="text-lg font-semibold text-orange-500">
-              Chọn {activeInput === "departure" ? "điểm đi" : "điểm đến"}
-            </h2>
-            <button
-              onClick={() => setIsPopupVisible(false)}
-              className="text-xl font-bold text-gray-500"
-            >
-              <Image
-                src="/icon/close.svg"
-                alt="Icon"
-                className="h-4 w-4 block"
-                width={20}
-                height={20}
-              ></Image>
-            </button>
-          </div>
-          <div className="px-4 py-2 mt-2">
-            <input
-              type="text"
-              placeholder="Nhập Tên thành phố, Mã sân bay..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onBlur={() => setSearchQuery((prev) => prev.trim())}
-              ref={inputSearchRef}
-              className="w-full px-4 py-2 border rounded-sm border-gray-300 focus:outline-none"
-            />
-          </div>
-          {searchQuery && (
-            <div>
-              {airPortSeach.length > 0 && (
-                <div className="px-4 py-2 absolute left-4 bg-white border border-gray-300 rounded-lg w-11/12 max-h-[320px] z-30 h-auto overflow-y-auto">
-                  <div>
-                    {airPortSeach.map((item: any, index: number) => (
-                      <div
-                        key={index}
-                        className="font-normal py-2 text-left rounded-lg text__default_hover cursor-pointer"
-                        onClick={() => handleAirportSelect(null, item)}
-                      >
-                        <b>{item.code}</b> - <span>{item.name_vi}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="flex flex-wrap md:flex-nowrap md:space-x-2 px-4 py-2">
-            {airportsData &&
-              airportsData.map(
-                (country, index) =>
-                  country.airports.length > 0 && (
-                    <button
-                      key={index}
-                      className={`px-3 py-1 mb-2 mr-2 md:mb-0 md:mr-0 rounded-md border ${
-                        selectedTab === country.id
-                          ? "bg-orange-500 text-white"
-                          : "text-gray-600 border-gray-300"
-                      }`}
-                      onClick={() => setSelectedTab(country.id)}
-                    >
-                      {country.country}
-                    </button>
-                  )
-              )}
-          </div>
-          {filteredAirports && filteredAirports.length > 0 ? (
-            <div className="text-sm md:text-base grid grid-cols-2 mx-4 mt-2 mb-24 md:mb-4 md:grid-cols-3 gap-2 border border-gray-300 rounded-lg py-2 h-auto pb-3 ">
-              {filteredAirports.map((airport) => (
-                <div
-                  key={airport.code}
-                  className="font-normal px-3 py-2 text-left rounded-lg text__default_hover cursor-pointer"
-                  onClick={() => handleAirportSelect(airport)}
-                >
-                  {highlightTextSearchAirport(
-                    `${airport.city} (${airport.code})`,
-                    searchQuery
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center my-4 text-gray-500">
-              Không tìm thấy{" "}
-              {activeInput === "departure" ? "điểm đi" : "điểm đến"} phù hợp
-            </div>
-          )}
+      <div
+        ref={popupRef}
+        className={`fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-full overflow-y-auto md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] lg:w-[750px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-[9999]
+            ${isPopupVisible ? "visible z-[9999]" : "invisible z-[-1]"}`}
+      >
+        <div className="flex items-center justify-between px-4 py-2 border-b">
+          <h2
+            className="text-lg font-semibold text-orange-500"
+            data-translate={true}
+          >
+            Chọn {activeInput === "departure" ? "điểm đi" : "điểm đến"}
+          </h2>
+          <button
+            onClick={() => setIsPopupVisible(false)}
+            className="text-xl font-bold text-gray-500"
+          >
+            <Image
+              src="/icon/close.svg"
+              alt="Icon"
+              className="h-4 w-4 block"
+              width={20}
+              height={20}
+            ></Image>
+          </button>
         </div>
-      )}
+        <div className="px-4 py-2 mt-2">
+          <input
+            type="text"
+            placeholder="Nhập Tên thành phố, Mã sân bay..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onBlur={() => setSearchQuery((prev) => prev.trim())}
+            ref={inputSearchRef}
+            className="w-full px-4 py-2 border rounded-sm border-gray-300 focus:outline-none"
+          />
+        </div>
+        {searchQuery && (
+          <div>
+            {airPortSeach.length > 0 && (
+              <div className="px-4 py-2 absolute left-4 bg-white border border-gray-300 rounded-lg w-11/12 max-h-[320px] z-30 h-auto overflow-y-auto">
+                <div>
+                  {airPortSeach.map((item: any, index: number) => (
+                    <div
+                      key={index}
+                      className="font-normal py-2 text-left rounded-lg text__default_hover cursor-pointer"
+                      onClick={() => handleAirportSelect(null, item)}
+                    >
+                      <b>{item.code}</b> - <span>{item.name_vi}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="flex flex-wrap md:flex-nowrap md:space-x-2 px-4 py-2">
+          {airportsData &&
+            airportsData.map(
+              (country, index) =>
+                country.airports.length > 0 && (
+                  <button
+                    key={index}
+                    className={`px-3 py-1 mb-2 mr-2 md:mb-0 md:mr-0 rounded-md border ${
+                      selectedTab === country.id
+                        ? "bg-orange-500 text-white"
+                        : "text-gray-600 border-gray-300"
+                    }`}
+                    onClick={() => setSelectedTab(country.id)}
+                    date-translate
+                  >
+                    {country.country}
+                  </button>
+                )
+            )}
+        </div>
+        {filteredAirports && filteredAirports.length > 0 ? (
+          <div className="text-sm md:text-base grid grid-cols-2 mx-4 mt-2 mb-24 md:mb-4 md:grid-cols-3 gap-2 border border-gray-300 rounded-lg py-2 h-auto pb-3 ">
+            {filteredAirports.map((airport) => (
+              <div
+                key={airport.code}
+                className="font-normal px-3 py-2 text-left rounded-lg text__default_hover cursor-pointer"
+                onClick={() => handleAirportSelect(airport)}
+                date-translate
+              >
+                {highlightTextSearchAirport(
+                  `${airport.city} (${airport.code})`,
+                  searchQuery
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center my-4 text-gray-500" data-translate={true}>
+            Không tìm thấy{" "}
+            {activeInput === "departure" ? "điểm đi" : "điểm đến"} phù hợp
+          </div>
+        )}
+      </div>
     </Fragment>
   );
 }

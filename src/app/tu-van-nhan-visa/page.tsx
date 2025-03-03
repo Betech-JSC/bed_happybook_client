@@ -38,7 +38,9 @@ export default function VisaConsulting() {
         ></div>
         <div className="base__content h-80 md:h-[405px] lg:pr-[200px]">
           <div className="flex justify-between items-center h-full">
-            <h4 className="text-32 text-white font-bold">Tư vấn nhận Visa</h4>
+            <h4 className="text-32 text-white font-bold" data-translate>
+              Tư vấn nhận Visa
+            </h4>
             <div>
               <Image
                 priority

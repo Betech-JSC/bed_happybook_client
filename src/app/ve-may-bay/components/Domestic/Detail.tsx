@@ -8,11 +8,13 @@ import React, {
   useState,
 } from "react";
 import {
+  formatCurrency,
   formatNumberToHoursAndMinutesFlight,
   formatTime,
 } from "@/lib/formatters";
 import { FlightDetailDomesticProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
+import { useTranslation } from "@/app/hooks/useTranslation";
 
 const FlightDomesticDetail = ({
   FareData,
@@ -21,7 +23,9 @@ const FlightDomesticDetail = ({
   filters,
   setFlightDetail,
   totalPassengers,
+  translatedStaticText,
 }: FlightDetailDomesticProps) => {
+  const { t } = useTranslation(translatedStaticText);
   const [showDetails, setShowDetails] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | string>(0);
@@ -51,7 +55,6 @@ const FlightDomesticDetail = ({
     setHeight(showDetails ? 0 : contentRef.current.scrollHeight + 60);
     setHasHeight(true);
   }, [showDetails]);
-
   return (
     <Fragment>
       {flight && (
@@ -84,7 +87,7 @@ const FlightDomesticDetail = ({
                   ])
                 }
               >
-                Xem chi tiết
+                {t("xem_chi_tiet")}
               </button>
             </div>
 
@@ -121,8 +124,8 @@ const FlightDomesticDetail = ({
                     </div>
                     <span className="text-sm text-gray-700 mt-2">
                       {flight.StopNum
-                        ? `${flight.StopNum} điểm dừng`
-                        : "Bay thẳng"}
+                        ? `${flight.StopNum} ${t("diem_dung")}`
+                        : t("bay_thang")}
                     </span>
                   </div>
                   <Image
@@ -162,7 +165,7 @@ const FlightDomesticDetail = ({
                     ])
                   }
                 >
-                  Xem chi tiết
+                  {t("xem_chi_tiet")}
                 </button>
                 <p className="text-primary text-18 font-bold text-right">
                   {filters.priceWithoutTax === "1"
@@ -177,8 +180,8 @@ const FlightDomesticDetail = ({
                 className="block text-center mt-5 md:mt-3 w-full bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300"
               >
                 {selectedFlight && selectedFlight.FareDataId
-                  ? "Thay đổi"
-                  : "Chọn"}
+                  ? t("thay_doi")
+                  : t("chon")}
               </button>
             </div>
           </div>
@@ -217,14 +220,16 @@ const FlightDomesticDetail = ({
                         </p>
                         <div className="my-4 pb-4 border-b border-gray-200">
                           <div className="flex justify-between items-end lg:w-11/12">
-                            <p className="text-sm text-gray-700">Hạng vé</p>
+                            <p className="text-sm text-gray-700">
+                              {t("hang_ve")}
+                            </p>
                             <p className="font-medium text-sm">
                               {ticketFlight.FareClass}
                             </p>
                           </div>
                           <div className="flex justify-between items-end lg:w-11/12 mt-3">
                             <p className="text-sm text-gray-700">
-                              Hành lý xách tay
+                              {t("hanh_ly_xach_tay")}
                             </p>
                             <p className="font-medium text-sm">
                               {ticketFlight.ListSegment[0].HandBaggage}
@@ -232,12 +237,12 @@ const FlightDomesticDetail = ({
                           </div>
                           <div className="flex justify-between items-end lg:w-11/12 mt-3">
                             <p className="text-sm text-gray-700">
-                              Hành lý ký gửi
+                              {t("hanh_ly_ky_gui")}
                             </p>
                             <p className="font-medium text-sm">
                               {ticketFlight.ListSegment[0].AllowanceBaggage
                                 ? ticketFlight.ListSegment[0].AllowanceBaggage
-                                : "Chưa bao gồm"}
+                                : t("chua_bao_gom")}
                             </p>
                           </div>
                           <button
@@ -250,7 +255,7 @@ const FlightDomesticDetail = ({
                               )
                             }
                           >
-                            Chi tiết
+                            <span>{t("chi_tiet")}</span>
                           </button>
                         </div>
                         <div>
@@ -261,12 +266,10 @@ const FlightDomesticDetail = ({
                                   ticket.Currency
                                 }`}
                               </p>
-                              <p className="text-sm text-gray-700">
-                                Tổng :{" "}
-                                {`${ticket.TotalPrice.toLocaleString(
-                                  "vi-VN"
-                                )} ${ticket.Currency}`}
-                              </p>
+                              <div className="text-sm text-gray-700">
+                                <span>{t("tong")} : </span>
+                                {formatCurrency(ticket.TotalPrice)}
+                              </div>
                             </div>
                           ) : (
                             <p className="text-primary text-22 font-bold">
@@ -281,7 +284,7 @@ const FlightDomesticDetail = ({
                             onClick={() => onSelectFlight(ticket)}
                             className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
                           >
-                            Đặt vé
+                            {t("dat_ve")}
                           </button>
                         </div>
                       </div>

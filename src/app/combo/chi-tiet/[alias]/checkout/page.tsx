@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { ComboApi } from "@/api/Combo";
 import FormCheckOut from "@/app/combo/components/FormCheckOut";
+import { renderTextContent } from "@/utils/Helper";
 
 export default async function ComboCheckout({
   params,
@@ -28,7 +29,10 @@ export default async function ComboCheckout({
                   "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
               }}
             >
-              <h3 className="text-22 py-4 px-8 font-semibold text-white">
+              <h3
+                className="text-22 py-4 px-8 font-semibold text-white"
+                data-translate={true}
+              >
                 Thông tin đơn hàng
               </h3>
             </div>
@@ -53,8 +57,9 @@ export default async function ComboCheckout({
               <Link
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                data-translate={true}
               >
-                {detail.name}
+                {renderTextContent(detail.name)}
               </Link>
               <div className="flex space-x-2 mt-6 items-center">
                 <Image
@@ -64,7 +69,7 @@ export default async function ComboCheckout({
                   width={18}
                   height={18}
                 />
-                <span>
+                <span data-translate={true}>
                   {`${detail.combo.day ? detail.combo.day : ""} ngày ${
                     detail.combo.night ? detail.combo.night : ""
                   } đêm`}
@@ -78,13 +83,17 @@ export default async function ComboCheckout({
                   width={18}
                   height={18}
                 />
-                <span>{detail.combo.address}</span>
+                <span data-translate={true}>
+                  {renderTextContent(detail.combo.address)}
+                </span>
               </div>
               <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
                 <span className="text-2xl text-primary font-bold">
-                  {detail.price > 0
-                    ? formatCurrency(detail.price - detail.discount_price)
-                    : "Liên hệ"}
+                  {detail.price > 0 ? (
+                    formatCurrency(detail.price - detail.discount_price)
+                  ) : (
+                    <span data-translate={true}>Liên hệ</span>
+                  )}
                 </span>{" "}
                 {/* <span>/ khách</span> */}
                 {/* <p className="text-blue-700 mt-3">+ 40 điểm</p> */}

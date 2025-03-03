@@ -13,6 +13,7 @@ import Search from "../components/Search";
 import { HotelApi } from "@/api/Hotel";
 import ListHotel from "../components/ListHotel";
 import FAQ from "@/components/content-page/FAQ";
+import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 
 export const metadata: Metadata = {
   title: "Khách sạn",
@@ -57,7 +58,11 @@ export default async function SearchHotel() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link
+                    href="/"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -65,7 +70,11 @@ export default async function SearchHotel() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/khach-san" className="text-gray-700">
+                  <Link
+                    href="/khach-san"
+                    className="text-gray-700"
+                    data-translate={true}
+                  >
                     Khách sạn
                   </Link>
                 </BreadcrumbLink>
@@ -80,7 +89,7 @@ export default async function SearchHotel() {
       </div>
       <div className="px-3 lg:px-[80px] max__screen">
         {/* Blog */}
-        <div className="mt-8 rounded-2xl bg-gray-50 p-8">
+        {/* <div className="mt-8 rounded-2xl bg-gray-50 p-8">
           <h3 className="text-2xl font-bold">
             Tour Trong Nước - Khám Phá Vẻ Đẹp Việt Nam
           </h3>
@@ -120,70 +129,13 @@ export default async function SearchHotel() {
               />
             </svg>
           </Link>
-        </div>
+        </div> */}
         {/* Faq */}
         <div className="my-8">
           <FAQ />
         </div>
         <div className="my-8 p-8 rounded-2xl bg-gray-50 ">
-          <h3 className="text-32 font-bold text-center">
-            Vì sao nên chọn HappyBook
-          </h3>
-          <div className="mt-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              <div className="flex items-center space-x-3 h-20">
-                <Image
-                  src="/tour/adviser.svg"
-                  alt="Icon"
-                  className="h-11 w-11"
-                  width={44}
-                  height={44}
-                ></Image>
-                <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    Đội ngũ Happybook tư vấn
-                  </p>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    hỗ trợ nhiệt tình 24/7
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 h-20">
-                <Image
-                  src="/tour/developers.svg"
-                  alt="Icon"
-                  className="h-11 w-11"
-                  width={44}
-                  height={44}
-                ></Image>
-                <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    Đơn vị hơn 8 năm kinh nghiệm.
-                  </p>
-                  <p className="text-18 font-semibold text-gray-900">
-                    Lấy chữ tín làm đầu
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 h-20">
-                <Image
-                  src="/tour/product-icon.svg"
-                  alt="Icon"
-                  className="h-11 w-11"
-                  width={44}
-                  height={44}
-                ></Image>
-                <div>
-                  <p className="text-18 font-semibold mb-1 text-gray-900">
-                    Sản phẩm đa dạng,
-                  </p>
-                  <p className="text-18 font-semibold text-gray-900">
-                    giá cả tốt nhất
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <WhyChooseHappyBook />
         </div>
       </div>
     </Fragment>

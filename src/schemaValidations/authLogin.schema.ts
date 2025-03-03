@@ -1,17 +1,17 @@
-import z from "zod";
+import { ValidationMessages } from "@/lib/messages";
+import * as z from "zod";
 
-export const AuthLoginBody = z.object({
-  email: z.string().min(1, { message: "Vui lòng điền thông tin này" }).email({
-    message: "Email không đúng định dạng",
-  }),
-  password: z
-    .string()
-    .min(6, {
-      message: "Mật khẩu không hợp lệ!",
-    })
-    .max(100, {
-      message: "Mật khẩu không hợp lệ",
-    }),
-});
+export const getAuthLoginSchema = (messages: ValidationMessages) => {
+  return z.object({
+    email: z
+      .string()
+      .min(1, (messages.minLength as (length: number) => string)(1))
+      .email(messages.email as string),
 
-export type AuthLoginBodyType = z.infer<typeof AuthLoginBody>;
+    password: z
+      .string()
+      .min(6, (messages.minLength as (length: number) => string)(6)),
+  });
+};
+
+export type AuthLoginSchema = z.infer<ReturnType<typeof getAuthLoginSchema>>;

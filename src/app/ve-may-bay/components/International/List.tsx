@@ -18,6 +18,9 @@ import { useRouter } from "next/navigation";
 import SignUpReceiveCheapTickets from "../SignUpReceiveCheapTickets";
 import FlightDetailPopup from "../FlightDetailPopup";
 import _ from "lodash";
+import { translatePage } from "@/utils/translateDom";
+import { useTranslation } from "@/app/hooks/useTranslation";
+import { translateText } from "@/utils/translateApi";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -44,7 +47,9 @@ export default function FlightInternationalList({
   isRoundTrip,
   totalPassengers,
   flightType,
+  translatedStaticText,
 }: ListFlight) {
+  const { t } = useTranslation(translatedStaticText);
   const [filteredData, setFilteredData] = useState<any[]>(flights);
   const router = useRouter();
   const [showDetail, setShowDetail] = useState<boolean>(false);
@@ -143,6 +148,7 @@ export default function FlightInternationalList({
           return item;
         });
       }
+      translatePage("#wrapper_search_flight", 10);
     }
     setFilteredData(filtered);
   }, [filters, flights]);
@@ -199,13 +205,17 @@ export default function FlightInternationalList({
           "flights/getfarerules",
           params
         );
-        const fareRules =
+        const fareRules = await translateText([
           response?.payload.data.ListFareRules[0].ListRulesGroup[0]
             .ListRulesText[0] ??
-          `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
-        return fareRules;
+            `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
+        ]);
+        return fareRules?.[0];
       } catch (error: any) {
-        return `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
+        const fareRules = await translateText([
+          "Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.",
+        ]);
+        return fareRules?.[0];
       }
     },
     [flightSession]
@@ -239,17 +249,17 @@ export default function FlightInternationalList({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
         <aside className="lg:col-span-3 bg-white p-4 rounded-2xl">
           <div className="pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Sắp xếp</h2>
+            <h2 className="font-semibold">{t("sap_xep")}</h2>
             <select
               name=""
               id=""
               className="w-full p-3 mt-3 border border-gray-300 rounded-lg"
             >
-              <option value="">Đề xuất</option>
+              <option value="">{t("de_xuat")}</option>
             </select>
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Hiển thị giá</h2>
+            <h2 className="font-semibold">{t("hien_thi_gia")}</h2>
             <div className="flex space-x-2 mt-3">
               <input
                 type="checkbox"
@@ -259,11 +269,13 @@ export default function FlightInternationalList({
                 onChange={handleCheckboxChange}
                 checked={filters.priceWithoutTax === "1"}
               />
-              <label htmlFor="priceWithoutTax">Giá chưa bao gồm thuế phí</label>
+              <label htmlFor="priceWithoutTax">
+                {t("gia_chua_bao_gom_thue_phi")}
+              </label>
             </div>
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Sắp xếp</h2>
+            <h2 className="font-semibold">{t("sap_xep")}</h2>
 
             <div className="flex space-x-2 mt-3">
               <input
@@ -274,7 +286,7 @@ export default function FlightInternationalList({
                 onChange={handleCheckboxChange}
                 checked={filters.timeDepart === "asc"}
               />
-              <label htmlFor="sortTimeDepart">Thời gian khởi hành</label>
+              <label htmlFor="sortTimeDepart">{t("thoi_gian_khoi_hanh")}</label>
             </div>
             <div className="flex space-x-2 mt-3">
               <input
@@ -285,11 +297,11 @@ export default function FlightInternationalList({
                 onChange={handleCheckboxChange}
                 checked={filters.sortAirLine === "asc"}
               />
-              <label htmlFor="sortAirLine">Hãng hàng không</label>
+              <label htmlFor="sortAirLine">{t("hang_hang_khong")}</label>
             </div>
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Hãng hàng không</h2>
+            <h2 className="font-semibold">{t("hang_hang_khong")}</h2>
             <div className="flex space-x-2 mt-3">
               <input
                 type="checkbox"
@@ -339,7 +351,7 @@ export default function FlightInternationalList({
             className="w-full mt-3 py-3 bg-blue-600 text-white rounded-lg font-medium"
             onClick={resetFilters}
           >
-            Xóa bộ lọc
+            {t("xoa_bo_loc")}
           </button>
         </aside>
         <div className="lg:col-span-9">
@@ -364,12 +376,12 @@ export default function FlightInternationalList({
                   </div>
                   <div>
                     <h3 className="font-semibold">{`${from} - ${to} `}</h3>
-                    <p className="text-sm">
-                      {totalPassengers} Khách -{" "}
+                    <div className="text-sm">
+                      <span>{totalPassengers} Khách - </span>
                       {departDate
                         ? pareseDateFromString(departDate, "ddMMyyyy", "dd/MM")
                         : ""}
-                    </p>
+                    </div>
                   </div>
                 </div>
                 {/* Tabs day */}
@@ -390,7 +402,10 @@ export default function FlightInternationalList({
                           : "text-black"
                       }`}
                     >
-                      <div className="text-sm md:text-base font-semibold">
+                      <div
+                        className="text-sm md:text-base font-semibold"
+                        data-translate
+                      >
                         {day.label}
                       </div>
                       <div className="text-xs md:text-sm mt-2">
@@ -424,8 +439,10 @@ export default function FlightInternationalList({
                                       : `${to}- ${from}`}
                                   </h3>
 
-                                  <p className="text-sm">
-                                    {totalPassengers} Khách -{" "}
+                                  <div className="text-sm">
+                                    <span>
+                                      {totalPassengers} {t("khach")} -{" "}
+                                    </span>
                                     {leg
                                       ? returnDate
                                         ? pareseDateFromString(
@@ -441,7 +458,7 @@ export default function FlightInternationalList({
                                           "dd/MM"
                                         )
                                       : ""}
-                                  </p>
+                                  </div>
                                 </div>
                               </div>
                               <FlightInternationalDetail
@@ -450,6 +467,7 @@ export default function FlightInternationalList({
                                 setFlightDetail={handleShowPopupFlightDetail}
                                 leg={leg}
                                 filters={filters}
+                                translatedStaticText={translatedStaticText}
                               />
                             </div>
                           </Fragment>
@@ -457,8 +475,8 @@ export default function FlightInternationalList({
                         <div className="flex justify-between px-4 py-6 items-center">
                           <div>
                             <span className="font-medium">
-                              Tổng tiền thanh toán:{" "}
-                            </span>
+                              {t("tong_tien_thanh_toan")}:
+                            </span>{" "}
                             <span className="text-2xl font-bold text-primary">
                               {filters.priceWithoutTax === "1"
                                 ? data.TotalPriceWithOutTax.toLocaleString(
@@ -485,7 +503,7 @@ export default function FlightInternationalList({
                                 : true
                             }
                           >
-                            Chọn
+                            <span>{t("chon")}</span>
                           </button>
                         </div>
                       </div>
@@ -493,10 +511,11 @@ export default function FlightInternationalList({
                   </div>
                 ) : (
                   <div className="w-full my-12 text-center text-2xl font-semibold">
-                    <p>Không có chuyến bay nào trong ngày hôm nay.</p>
+                    <p>{t("khong_co_chuyen_bay_nao_trong_ngay_hom_nay")}</p>
                     <p className="mt-1">
-                      Quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin
-                      cám ơn!
+                      {t(
+                        "quy_khach_vui_long_chuyen_sang_ngay_khac_de_dat_ve_xin_cam_on"
+                      )}
                     </p>
                   </div>
                 )}
@@ -511,6 +530,7 @@ export default function FlightInternationalList({
         flights={flightDetail}
         isOpen={showDetail}
         onClose={handleClosePopupFlightDetail}
+        translatedStaticText={translatedStaticText}
       />
     </Fragment>
   );

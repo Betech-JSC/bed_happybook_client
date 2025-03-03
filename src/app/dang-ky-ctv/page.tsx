@@ -37,7 +37,7 @@ export default function SignUpCollaborator() {
         ></div>
         <div className="base__content h-80 md:h-[405px] lg:pr-[200px]">
           <div className="flex justify-between items-center h-full">
-            <h4 className="text-32 text-white font-bold">
+            <h4 className="text-32 text-white font-bold" data-translate>
               Đăng ký làm CTV bán vé máy bay.
             </h4>
             <div>
@@ -56,13 +56,13 @@ export default function SignUpCollaborator() {
           <div className="px-3 pt-10 lg:px-[80px] lg:pt-16">
             <div className="mx-auto p-8 lg:w-[980px] h-auto bg-white rounded-2xl  ">
               <div>
-                <h3 className="text-2xl font-semibold">
+                <h3 className="text-2xl font-semibold" data-translate>
                   Form đăng ký làm CTV bán vé máy bay.
                 </h3>
-                <p className="mt-4">
+                <p className="mt-4" data-translate>
                   Quý khách vui lòng điền đầy đủ thông tin bên dưới.
                 </p>
-                <p className="mt-4">
+                <p className="mt-4" data-translate>
                   Nhân viên của chúng tôi sẽ liên hệ lại ngay sau khi nhận được
                   thông tin
                 </p>

@@ -1,6 +1,6 @@
 "use client";
 import {
-  CheckOutTourBody,
+  CheckOutTourSchema,
   CheckOutTourType,
 } from "@/schemaValidations/checkOutTour.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +16,8 @@ import { BookingProductApi } from "@/api/BookingProduct";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { toastMessages, validationMessages } from "@/lib/messages";
 interface Ticket {
   id: number;
   title: string;
@@ -41,13 +43,16 @@ export default function CheckOutForm({
   const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [schemaForm, setSchemaForm] = useState(() =>
-    CheckOutTourBody(generateInvoice)
+    CheckOutTourSchema(messages, generateInvoice)
   );
 
   useEffect(() => {
-    setSchemaForm(CheckOutTourBody(generateInvoice));
-  }, [generateInvoice]);
+    setSchemaForm(CheckOutTourSchema(messages, generateInvoice));
+  }, [generateInvoice, messages]);
 
   const {
     register,
@@ -85,15 +90,15 @@ export default function CheckOutForm({
       const respon = await BookingProductApi.Tour(formatData);
       if (respon?.status === 200) {
         reset();
-        toast.success("Gửi yêu cầu thành công!");
+        toast.success(toaStrMsg.sendSuccess);
         setTimeout(() => {
           router.push("/tours");
         }, 1500);
       } else {
-        toast.error("Gửi yêu cầu thất bại!");
+        toast.error(toaStrMsg.sendFailed);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau");
+      toast.error(toaStrMsg.error);
     } finally {
       setLoading(false);
     }

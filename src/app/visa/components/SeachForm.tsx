@@ -36,7 +36,11 @@ export default function SearchForm({ optionsFilter }: any) {
             style={{ width: 20, height: 20 }}
           ></Image>
         </div>
-        <label htmlFor="searchInput" className="font-medium block">
+        <label
+          htmlFor="searchInput"
+          className="font-medium block"
+          data-translate
+        >
           Theo địa danh, điểm đến
         </label>
         <input
@@ -50,7 +54,7 @@ export default function SearchForm({ optionsFilter }: any) {
         />
       </div>
       <div className="w-full md:w-[30%]">
-        <label htmlFor="typeVisa" className="font-medium block">
+        <label htmlFor="typeVisa" className="font-medium block" data-translate>
           Theo địa danh, điểm đến
         </label>
         <div
@@ -65,14 +69,14 @@ export default function SearchForm({ optionsFilter }: any) {
             name="loai_visa[]"
             onChange={handleChange}
           >
-            <option value="" disabled selected hidden>
+            <option value="" disabled selected hidden data-translate>
               Loại Visa
             </option>
             {optionsFilter[0]?.option?.length > 0 &&
               optionsFilter[0]?.option?.map((value: any, index: number) => {
                 if (value) {
                   return (
-                    <option key={index} value={value}>
+                    <option key={index} value={value} data-translate>
                       {value}
                     </option>
                   );
@@ -82,16 +86,16 @@ export default function SearchForm({ optionsFilter }: any) {
         </div>
       </div>
       <div className="w-full md:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
-        <button className="ml-2 inline-flex items-center space-x-2 h-12 text-white">
+        <button className="ml-1 inline-flex items-center space-x-2 h-12 text-white">
           <Image
             src="/icon/search.svg"
             alt="Search icon"
-            className="h-10 mr-2"
+            className="h-10 mr-1"
             width={20}
             height={20}
             style={{ width: 20, height: 20 }}
           ></Image>
-          Tìm kiếm
+          <span data-translate>Tìm kiếm</span>
         </button>
       </div>
     </form>

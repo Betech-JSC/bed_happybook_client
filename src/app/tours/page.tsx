@@ -19,6 +19,7 @@ import TouristSuggest from "@/components/home/tourist-suggest";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
 import FAQ from "@/components/content-page/FAQ";
+import { getServerLang } from "@/lib/session";
 
 export const metadata: Metadata = formatMetadata({
   title: "Đặt Tour Du Lịch Gia Đình, Bạn Bè | Tour Giá Rẻ 2024",
@@ -39,7 +40,9 @@ export default async function Tours() {
   const data = res?.payload?.data;
   const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
     ?.data as any;
-  const contentPage = (await PageApi.getContent("tours"))?.payload?.data as any;
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("tours", language))?.payload
+    ?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -84,10 +87,13 @@ export default async function Tours() {
                   height={44}
                 ></Image>
                 <div>
-                  <p className="text-18 text-gray-700 font-semibold mb-1">
+                  <p
+                    className="text-18 text-gray-700 font-semibold mb-1"
+                    data-translate
+                  >
                     Lựa Chọn Không Giới Hạn
                   </p>
-                  <p>Vô vàn hành trình, triệu cảm hứng</p>
+                  <p data-translate>Vô vàn hành trình, triệu cảm hứng</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3 h-20">
@@ -99,10 +105,13 @@ export default async function Tours() {
                   height={44}
                 ></Image>
                 <div>
-                  <p className="text-18 text-gray-700 font-semibold mb-1">
+                  <p
+                    className="text-18 text-gray-700 font-semibold mb-1"
+                    data-translate
+                  >
                     Dịch Vụ Cá Nhân Hóa
                   </p>
-                  <p>Chăm sóc đặc biệt, trải nghiệm độc đáo</p>
+                  <p data-translate>Chăm sóc đặc biệt, trải nghiệm độc đáo</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3 h-20">
@@ -114,10 +123,13 @@ export default async function Tours() {
                   height={44}
                 ></Image>
                 <div>
-                  <p className="text-18 text-gray-700 font-semibold mb-1">
+                  <p
+                    className="text-18 text-gray-700 font-semibold mb-1"
+                    data-translate
+                  >
                     Giá Trị Vượt Trội
                   </p>
-                  <p>Chất lượng đỉnh, đảm bảo giá tốt nhất</p>
+                  <p data-translate>Chất lượng đỉnh, đảm bảo giá tốt nhất</p>
                 </div>
               </div>
             </div>
@@ -126,7 +138,10 @@ export default async function Tours() {
               <div className="mt-6">
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-[24px] lg:text-[32px] font-bold">
+                    <h2
+                      className="text-[24px] lg:text-[32px] font-bold"
+                      data-translate
+                    >
                       Tour trong nước
                     </h2>
                   </div>
@@ -134,7 +149,7 @@ export default async function Tours() {
                     href="/tours/noi-dia"
                     className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
                   >
-                    <span className="text-[#175CD3] font-medium">
+                    <span className="text-[#175CD3] font-medium" data-translate>
                       Xem tất cả
                     </span>
                     <Image
@@ -146,14 +161,16 @@ export default async function Tours() {
                     />
                   </Link>
                 </div>
-                <p className="text-16 font-medium mt-3">
+                <p className="text-16 font-medium mt-3" data-translate>
                   Chơi Hè Thả Ga, Không Lo Về Giá
                 </p>
                 <Link
                   href="/tours/noi-dia"
                   className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
                 >
-                  <span className="text-[#175CD3] font-medium">Xem tất cả</span>
+                  <span className="text-[#175CD3] font-medium" data-translate>
+                    Xem tất cả
+                  </span>
                   <Image
                     className=" hover:scale-110 ease-in duration-300"
                     src="/icon/chevron-right.svg"
@@ -190,7 +207,10 @@ export default async function Tours() {
               <div className="mt-12">
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-[24px] lg:text-[32px] font-bold">
+                    <h2
+                      className="text-[24px] lg:text-[32px] font-bold"
+                      data-translate
+                    >
                       Tour Du Lịch Nước Ngoài Cao Cấp
                     </h2>
                   </div>
@@ -198,7 +218,7 @@ export default async function Tours() {
                     href="#"
                     className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
                   >
-                    <span className="text-[#175CD3] font-medium">
+                    <span className="text-[#175CD3] font-medium" data-translate>
                       Xem tất cả
                     </span>
                     <Image
@@ -210,14 +230,16 @@ export default async function Tours() {
                     />
                   </Link>
                 </div>
-                <p className="text-16 font-medium mt-3">
+                <p className="text-16 font-medium mt-3" data-translate>
                   Trải Nghiệm Thế Giới, Khám Phá Bản Thân
                 </p>
                 <Link
                   href="/tours/tour-quoc-te"
                   className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
                 >
-                  <span className="text-[#175CD3] font-medium">Xem tất cả</span>
+                  <span className="text-[#175CD3] font-medium" data-translate>
+                    Xem tất cả
+                  </span>
                   <Image
                     className=" hover:scale-110 ease-in duration-300"
                     src="/icon/chevron-right.svg"
@@ -262,7 +284,10 @@ export default async function Tours() {
               <div className="mt-12">
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-[24px] lg:text-[32px] font-bold">
+                    <h2
+                      className="text-[24px] lg:text-[32px] font-bold"
+                      data-translate
+                    >
                       Tour Du Thuyền
                     </h2>
                   </div>
@@ -270,7 +295,7 @@ export default async function Tours() {
                     href="/tours/tour-du-thuyen"
                     className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
                   >
-                    <span className="text-[#175CD3] font-medium">
+                    <span className="text-[#175CD3] font-medium" data-translate>
                       Xem tất cả
                     </span>
                     <Image
@@ -282,14 +307,16 @@ export default async function Tours() {
                     />
                   </Link>
                 </div>
-                <p className="text-16 font-medium mt-3">
+                <p className="text-16 font-medium mt-3" data-translate>
                   Trải nghiệm xu hướng du lịch mới và đẳng cấp
                 </p>
                 <Link
                   href="/tours/tour-du-thuyen"
                   className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
                 >
-                  <span className="text-[#175CD3] font-medium">Xem tất cả</span>
+                  <span className="text-[#175CD3] font-medium" data-translate>
+                    Xem tất cả
+                  </span>
                   <Image
                     className=" hover:scale-110 ease-in duration-300"
                     src="/icon/chevron-right.svg"
@@ -332,7 +359,7 @@ export default async function Tours() {
               <FAQ />
             </div>
             <div className="my-8 p-8 rounded-2xl bg-gray-50 ">
-              <h3 className="text-32 font-bold text-center">
+              <h3 className="text-32 font-bold text-center" data-translate>
                 Vì sao nên chọn HappyBook
               </h3>
               <div className="mt-12">
@@ -346,10 +373,16 @@ export default async function Tours() {
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         Đội ngũ Happybook tư vấn
                       </p>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         hỗ trợ nhiệt tình 24/7
                       </p>
                     </div>
@@ -363,10 +396,16 @@ export default async function Tours() {
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         Đơn vị hơn 8 năm kinh nghiệm.
                       </p>
-                      <p className="text-18 font-semibold text-gray-900">
+                      <p
+                        className="text-18 font-semibold text-gray-900"
+                        data-translate
+                      >
                         Lấy chữ tín làm đầu
                       </p>
                     </div>
@@ -380,10 +419,16 @@ export default async function Tours() {
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         Sản phẩm đa dạng,
                       </p>
-                      <p className="text-18 font-semibold text-gray-900">
+                      <p
+                        className="text-18 font-semibold text-gray-900"
+                        data-translate
+                      >
                         giá cả tốt nhất
                       </p>
                     </div>

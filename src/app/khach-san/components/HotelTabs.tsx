@@ -32,6 +32,7 @@ export default function HotelTabs({ data }: any) {
                     ? "bg-[#1570EF] hover:bg-blue-700 text-white"
                     : "text-gray-500  hover:bg-gray-100"
                 }`}
+                data-translate={true}
               >
                 {tab.name}
               </button>

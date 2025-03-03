@@ -41,14 +41,16 @@ export default function TourNoiDia({ data }: any) {
         <div className="relative z-10">
           <div className="flex justify-between">
             <div>
-              <h2 className="text-[32px] font-bold">Tour Nội địa</h2>
+              <h2 className="text-[32px] font-bold" data-translate>
+                Tour Nội địa
+              </h2>
             </div>
             <Link
               href="/tours/tour-noi-dia"
               className="flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
-              <button className="text-[#175CD3] font-medium">
+              <button className="text-[#175CD3] font-medium" data-translate>
                 {" "}
                 Xem tất cả
               </button>
@@ -61,7 +63,7 @@ export default function TourNoiDia({ data }: any) {
               />
             </Link>
           </div>
-          <p className="text-16 font-medium mt-3">
+          <p className="text-16 font-medium mt-3" data-translate>
             Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
           </p>
           {/* Tabs */}
@@ -86,6 +88,7 @@ export default function TourNoiDia({ data }: any) {
                           : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
                       }`}
                       onClick={() => setActiveTab(index)}
+                      data-translate
                     >
                       {category.name}
                     </button>
@@ -103,24 +106,27 @@ export default function TourNoiDia({ data }: any) {
                   tabIndex: number
                 ) => (
                   <div className="" key={tabIndex}>
-                    {activeTab === tabIndex && (
-                      <Carousel
-                        opts={{
-                          align: "start",
-                          loop: true,
-                        }}
-                      >
-                        <CarouselContent>
-                          {category.tours.map((tour, index) => (
-                            <CarouselItem key={index} className="basis-1/4">
-                              <TourItem key={index} tour={tour} />
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
-                      </Carousel>
-                    )}
+                    {/* {activeTab === tabIndex && ( */}
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                      }}
+                      className={`${
+                        activeTab === tabIndex ? "block" : "hidden"
+                      }`}
+                    >
+                      <CarouselContent>
+                        {category.tours.map((tour, index) => (
+                          <CarouselItem key={index} className="basis-1/4">
+                            <TourItem key={index} tour={tour} />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                    {/* )} */}
                   </div>
                 )
               )}

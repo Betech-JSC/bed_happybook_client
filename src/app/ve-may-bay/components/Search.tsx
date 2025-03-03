@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -12,12 +12,18 @@ import { toast } from "react-hot-toast";
 import { Suspense } from "react";
 import { FormData, SearchFilghtProps } from "@/types/flight";
 import AirportSelector from "./AirportSelector";
+import { translatePage } from "@/utils/translateDom";
+import { getCurrentLanguage } from "@/utils/Helper";
+import { translateText } from "@/utils/translateApi";
 
 export default function Search({ airportsData }: SearchFilghtProps) {
   const today = new Date();
+  const pathname: string = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [totalGuests, setTotalGuests] = useState<number>(1);
+  const [translatedAirportsData, setTranslatedAirportsData] =
+    useState(airportsData);
   const [formData, setFormData] = useState<FormData>({
     from: null,
     fromPlace: null,
@@ -31,6 +37,47 @@ export default function Search({ airportsData }: SearchFilghtProps) {
     tripType: "oneway",
     cheapest: 0,
   });
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      translatePage("#wrapper-search-ticket-flight", 50);
+    }
+  }, [searchParams, pathname]);
+
+  useEffect(() => {
+    if (airportsData.length > 0 && getCurrentLanguage() !== "vi") {
+      const uniqueCountries = Array.from(
+        airportsData.map((item) => item.country)
+      );
+      const uniqueCities = Array.from(
+        airportsData.flatMap((item) =>
+          item.airports.map((airport) => airport.city)
+        )
+      );
+
+      const allTextsToTranslate = [...uniqueCountries, ...uniqueCities];
+
+      translateText(allTextsToTranslate).then((translatedTexts) => {
+        if (translatedTexts?.[0]?.length > 0) {
+          const translatedMap = Object.fromEntries(
+            allTextsToTranslate.map((text, index) => [
+              text,
+              translatedTexts[index],
+            ])
+          );
+          const airportsUpadted = airportsData.map((item) => ({
+            ...item,
+            country: translatedMap[item.country],
+            airports: item.airports.map((airport) => ({
+              ...airport,
+              city: translatedMap[airport.city],
+            })),
+          }));
+          setTranslatedAirportsData(airportsUpadted);
+        }
+      });
+    }
+  }, [airportsData]);
 
   useEffect(() => {
     const from = searchParams.get("StartPoint");
@@ -196,7 +243,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
   };
   return (
     <Suspense>
-      <div>
+      <div id="wrapper-search-ticket-flight">
         <div className="grid grid-cols-2 gap-4 lg:flex lg:space-x-12 mb-4">
           <label className="flex items-center space-x-2">
             <input
@@ -207,7 +254,9 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               checked={tripType === "oneWay"}
               onChange={() => handleTripChange("oneWay")}
             />
-            <span className="text-black">Một chiều</span>
+            <span className="text-black" data-translate={true}>
+              Một chiều
+            </span>
           </label>
           <label className="flex items-center space-x-2">
             <input
@@ -217,7 +266,9 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               checked={tripType === "roundTrip"}
               onChange={() => handleTripChange("roundTrip")}
             />
-            <span className="text-black">Khứ hồi</span>
+            <span className="text-black" data-translate={true}>
+              Khứ hồi
+            </span>
           </label>
           <label className="flex items-center space-x-2">
             <input
@@ -226,7 +277,9 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               checked={cheapest === "1"}
               onChange={handleCheckboxCheapest}
             />
-            <span className="text-black">Tìm vé rẻ</span>
+            <span className="text-black" data-translate={true}>
+              Tìm vé rẻ
+            </span>
           </label>
         </div>
 
@@ -239,7 +292,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               initialTo={formData.to}
               initialFromPlace={formData.fromPlace}
               initialToPlace={formData.toPlace}
-              airportsData={airportsData}
+              airportsData={translatedAirportsData}
             />
           </div>
           <div
@@ -247,7 +300,9 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               tripType === "roundTrip" ? "lg:w-[13.75%]" : "lg:w-[22.5%]"
             }`}
           >
-            <label className="block text-gray-700 mb-1">Ngày đi</label>
+            <label className="block text-gray-700 mb-1" data-translate={true}>
+              Ngày đi
+            </label>
             <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
               <div className="flex items-center	w-full">
                 <Image
@@ -279,58 +334,65 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               </div>
             </div>
           </div>
-          {tripType === "roundTrip" && (
-            <div className="w-full lg:w-[13.75%]">
-              <label className="block text-gray-700 mb-1">Ngày về</label>
-              <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
-                <div className="flex items-center	w-full">
-                  <Image
-                    src="/icon/calendar.svg"
-                    alt="Icon"
-                    className="h-10"
-                    width={18}
-                    height={18}
-                  ></Image>
-                  <div className="w-full [&>div]:w-full border-none">
-                    <DatePicker
-                      ref={returnDateRef}
-                      id="return_date"
-                      selected={formData.returnDate}
-                      onChange={handleReturnDateChange}
-                      dateFormat="dd/MM/yyyy"
-                      placeholderText="Chọn ngày"
-                      locale={vi}
-                      popperPlacement="bottom-start"
-                      portalId="datepicker-search-flight"
-                      minDate={
-                        formData.departureDate &&
-                        isValid(formData.departureDate)
-                          ? formData.departureDate
-                          : today
-                      }
-                      openToDate={
-                        formData.departureDate &&
-                        isValid(formData.departureDate)
-                          ? formData.departureDate
-                          : today
-                      }
-                      onFocus={(e) => e.target.blur()}
-                      onKeyDown={(e) => {
-                        e.preventDefault();
-                      }}
-                      className="z-20 text-sm pl-4 w-full pt-6 pb-2 outline-none"
-                    />
-                  </div>
+          <div
+            className={`${
+              tripType === "roundTrip"
+                ? "visible w-full lg:w-[13.75%]"
+                : "invisible hidden"
+            } `}
+          >
+            <label className="block text-gray-700 mb-1" data-translate={true}>
+              Ngày về
+            </label>
+            <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
+              <div className="flex items-center	w-full">
+                <Image
+                  src="/icon/calendar.svg"
+                  alt="Icon"
+                  className="h-10"
+                  width={18}
+                  height={18}
+                ></Image>
+                <div className="w-full [&>div]:w-full border-none">
+                  <DatePicker
+                    ref={returnDateRef}
+                    id="return_date"
+                    selected={formData.returnDate}
+                    onChange={handleReturnDateChange}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Chọn ngày"
+                    locale={vi}
+                    popperPlacement="bottom-start"
+                    portalId="datepicker-search-flight"
+                    minDate={
+                      formData.departureDate && isValid(formData.departureDate)
+                        ? formData.departureDate
+                        : today
+                    }
+                    openToDate={
+                      formData.departureDate && isValid(formData.departureDate)
+                        ? formData.departureDate
+                        : today
+                    }
+                    onFocus={(e) => e.target.blur()}
+                    onKeyDown={(e) => {
+                      e.preventDefault();
+                    }}
+                    className="z-20 text-sm pl-4 w-full pt-6 pb-2 outline-none"
+                  />
                 </div>
               </div>
             </div>
-          )}
+          </div>
+
           <div
             className={`w-full ${
               tripType === "roundTrip" ? "lg:w-[15%]" : "lg:w-[20%]"
             }`}
           >
-            <label className="block text-gray-700 mb-1">Số lượng khách</label>
+            <label className="block text-gray-700 mb-1" data-translate={true}>
+              Số lượng khách
+            </label>
             <div className="flex items-center border rounded-lg px-2 h-12">
               <Image
                 src="/icon/user-circle.svg"
@@ -358,7 +420,10 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                 height={18}
                 style={{ width: 18, height: 18 }}
               />
-              <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
+              <button
+                data-translate={true}
+                className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
+              >
                 Tìm kiếm
               </button>
             </div>

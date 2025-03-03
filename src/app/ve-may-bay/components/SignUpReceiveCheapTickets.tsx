@@ -7,26 +7,29 @@ import { toast } from "react-hot-toast";
 import LoadingButton from "@/components/base/LoadingButton";
 import Image from "next/image";
 import {
-  SignUpReceiveCheapTicketsBody,
-  SignUpReceiveCheapTicketsBodyType,
+  SignUpReceiveCheapTicketSchema,
+  SignUpReceiveCheapTicketType,
 } from "@/schemaValidations/signUpReceiveCheapTickets.schema";
 import { contactApi } from "@/api/contact";
-
-type FormData = SignUpReceiveCheapTicketsBodyType;
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { toastMessages, validationMessages } from "@/lib/messages";
 
 export default function SignUpReceiveCheapTickets() {
   const [loading, setLoading] = useState(false);
-
+  const { language } = useLanguage();
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const messages = validationMessages[language as "vi" | "en"];
+  const schema = SignUpReceiveCheapTicketSchema(messages);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(SignUpReceiveCheapTicketsBody),
+  } = useForm<SignUpReceiveCheapTicketType>({
+    resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: SignUpReceiveCheapTicketType) => {
     try {
       setLoading(true);
 
@@ -39,10 +42,10 @@ export default function SignUpReceiveCheapTickets() {
       if (response?.status === 200) {
         reset();
         toast.dismiss();
-        toast.success("Gửi thành công!");
+        toast.success(toaStrMsg.sendSuccess);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      toast.error(toaStrMsg.sendFailed);
     } finally {
       setLoading(false);
     }
@@ -51,7 +54,10 @@ export default function SignUpReceiveCheapTickets() {
     <div className="flex flex-col md:flex-row mt-8 space-y-4 md:space-x-6 md:space-y-0 p-4 md:p-8 bg-white rounded-3xl">
       <div className="w-full md:w-[60%] pr-0 md:pr-8">
         <div className="bg-white">
-          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+          <h2
+            className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+            data-translate
+          >
             Đăng ký nhận vé giá rẻ
           </h2>
           <div className="mt-4 rounded-xl">
@@ -64,7 +70,8 @@ export default function SignUpReceiveCheapTickets() {
                   htmlFor="fullName"
                   className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  Họ và tên <span className="text-red-500">*</span>
+                  <span data-translate>Họ và tên </span>
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="fullName"
@@ -85,7 +92,8 @@ export default function SignUpReceiveCheapTickets() {
                       htmlFor="phone"
                       className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Số điện thoại <span className="text-red-500">*</span>
+                      <span data-translate>Số điện thoại </span>
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="phone"
@@ -133,7 +141,9 @@ export default function SignUpReceiveCheapTickets() {
       </div>
       <div className="w-full md:w-[40%] pl-0 md:pl-12 border-l-none md:border-l border-l-gray-300">
         <div className="bg-white rounded-xl">
-          <h3 className="text-18 font-semibold">Đặt vé nhanh tại Happy Book</h3>
+          <h3 className="text-18 font-semibold" data-translate>
+            Đặt vé nhanh tại Happy Book
+          </h3>
         </div>
         <div className="mt-4">
           <div className="flex space-x-4">
@@ -147,15 +157,22 @@ export default function SignUpReceiveCheapTickets() {
               />
             </div>
             <div className="w-3/4">
-              <p className="text-sm font-semibold">Hotline vé máy bay</p>
-              <p className="text-base mt-2 text-primary">
-                0983.488.937 (Nội địa) - 0367.008.027 (Quốc tế)
+              <p className="text-sm font-semibold" data-translate>
+                Hotline vé máy bay
               </p>
+              <div className="text-base mt-2 text-primary">
+                <span>0983.488.937 </span>
+                <span data-translate>(Nội địa )</span>
+                <span>- 0367.008.027 </span>
+                <span data-translate>(Quốc tế)</span>
+              </div>
             </div>
           </div>
           <div className="mt-6">
             <div className="w-3/4">
-              <p className="text-sm font-semibold">Chat với chúng tôi qua</p>
+              <p className="text-sm font-semibold" data-translate>
+                Chat với chúng tôi qua
+              </p>
               <div className="flex space-x-4 mt-4">
                 <Image
                   src="/social/fb.svg"

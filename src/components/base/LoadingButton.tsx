@@ -19,7 +19,15 @@ export default function LoadingButton({
       onClick={onClick}
       disabled={disabled || isLoading}
     >
-      {isLoading ? <span className="loader_spiner"></span> : text}
+      <span
+        className={`${isLoading ? "loader_spiner block" : "hidden invisible"}`}
+      ></span>
+      <span
+        data-translate
+        className={`${isLoading ? "hidden invisible" : "block"}`}
+      >
+        {text}
+      </span>
     </button>
   );
 }

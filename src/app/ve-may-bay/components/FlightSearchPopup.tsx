@@ -15,6 +15,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/datePicker.scss";
 import { vi } from "date-fns/locale";
 import Select, { SingleValue } from "react-select";
+import { toastMessages } from "@/lib/messages";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function FlightSearchPopup({
   isOpen,
@@ -50,7 +52,8 @@ export default function FlightSearchPopup({
   const [toPlace, setToPlace] = useState<string | null>("");
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
-
+  const { language } = useLanguage();
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
   const handleGuestChange = (key: string, value: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -137,7 +140,7 @@ export default function FlightSearchPopup({
       );
     } else {
       toast.dismiss();
-      toast.error("Vui lòng chọn đầy đủ thông tin");
+      toast.error(toaStrMsg.missingInfoSearchFlight);
     }
   };
   return (
@@ -151,7 +154,9 @@ export default function FlightSearchPopup({
     >
       <div className="bg-white h-max p-6 md:w-[526px] rounded-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Tìm Vé Máy Bay</h2>
+          <h2 className="text-2xl font-bold" data-translate>
+            Tìm Vé Máy Bay
+          </h2>
           <button className="text-xl" onClick={onClose}>
             <Image
               src="/icon/close.svg"
@@ -165,7 +170,9 @@ export default function FlightSearchPopup({
         <div className="flex flex-wrap space-y-2">
           <div className="w-full flex flex-wrap space-y-2 relative">
             <div className="w-full relative">
-              <label className="block text-gray-700 mb-1">Từ</label>
+              <label className="block text-gray-700 mb-1" data-translate>
+                Từ
+              </label>
               <div className="flex h-12 items-center border rounded-lg px-2">
                 <Image
                   src="/icon/AirplaneTakeoff.svg"
@@ -197,7 +204,9 @@ export default function FlightSearchPopup({
               </button>
             </div>
             <div className="w-full">
-              <label className="block text-gray-700 mb-1">Đến</label>
+              <label className="block text-gray-700 mb-1" data-translate>
+                Đến
+              </label>
               <div className="flex h-12 items-center border rounded-lg px-2">
                 <Image
                   src="/icon/AirplaneLanding.svg"
@@ -218,7 +227,9 @@ export default function FlightSearchPopup({
             </div>
           </div>
           <div className="w-full">
-            <label className="block text-gray-700 mb-1">Ngày đi</label>
+            <label className="block text-gray-700 mb-1" data-translate>
+              Ngày đi
+            </label>
             <div className="flex justify-between mt-2 h-12 space-x-2 items-center border rounded-lg px-2 text-black">
               <div className="flex items-center	w-full">
                 <Image
@@ -252,7 +263,9 @@ export default function FlightSearchPopup({
           </div>
 
           <div className={`w-full`}>
-            <label className="block text-gray-700 mb-1">Số lượng khách</label>
+            <label className="block text-gray-700 mb-1" data-translate>
+              Số lượng khách
+            </label>
             <div className="flex items-center border rounded-lg px-2 h-12">
               <Image
                 src="/icon/user-circle.svg"
@@ -280,7 +293,10 @@ export default function FlightSearchPopup({
                 height={18}
                 style={{ width: 18, height: 18 }}
               />
-              <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
+              <button
+                className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
+                data-translate
+              >
                 Tìm kiếm
               </button>
             </div>

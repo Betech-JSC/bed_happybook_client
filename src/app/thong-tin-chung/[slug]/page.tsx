@@ -46,7 +46,7 @@ export default async function GeneralInfor({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link href="/" className="text-blue-700" data-translate>
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -55,7 +55,7 @@ export default async function GeneralInfor({
               {contentPage?.page_name && (
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="#" className="text-gray-700">
+                    <Link href="#" className="text-gray-700" data-translate>
                       {contentPage.page_name}
                     </Link>
                   </BreadcrumbLink>
@@ -65,19 +65,26 @@ export default async function GeneralInfor({
           </Breadcrumb>
           <div className="flex flex-col-reverse md:flex-row md:space-x-8 mt-4 pb-8">
             <div className="mt-4 md:mt-0 md:w-3/5 lg:w-[76%] p-6 bg-white rounded-2xl">
-              <h3 className="pl-2 border-l-4 border-[#F27145] text-2xl md:text-3xl font-bold">
-                {contentPage?.title ?? ""}
+              <h3
+                className="pl-2 border-l-4 border-[#F27145] text-2xl md:text-3xl font-bold"
+                data-translate
+              >
+                {contentPage?.title ? contentPage?.title : ""}
               </h3>
               <div className="mt-4 text-base">
                 {contentPage?.content ? (
                   <div
+                    data-translate
                     dangerouslySetInnerHTML={{
                       __html:
                         contentPage?.content ?? "Nội dung đang cập nhật...",
                     }}
                   ></div>
                 ) : (
-                  <p className="text-2xl font-semibold text-center">
+                  <p
+                    className="text-2xl font-semibold text-center"
+                    data-translate
+                  >
                     Nội dung đang cập nhật...
                   </p>
                 )}
@@ -112,7 +119,11 @@ export default async function GeneralInfor({
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <Link href={`${item.url}`} className="py-[10px]">
+                    <Link
+                      href={`${item.url}`}
+                      className="py-[10px]"
+                      data-translate
+                    >
                       {item.title}
                     </Link>
                   </div>

@@ -38,14 +38,19 @@ export default function TourHot({ data }: any) {
         <div className="relative z-10">
           <div className="flex justify-between">
             <div>
-              <h2 className="text-[24px] lg:text-[32px] font-bold">Tour Hot</h2>
+              <h2
+                className="text-[24px] lg:text-[32px] font-bold"
+                data-translate
+              >
+                Tour Hot
+              </h2>
             </div>
             <Link
               href="/tours"
               className="hidden lg:flex bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3"
               style={{ transition: "0.3s" }}
             >
-              <button className="text-[#175CD3] font-medium">
+              <button className="text-[#175CD3] font-medium" data-translate>
                 {" "}
                 Xem tất cả
               </button>
@@ -58,14 +63,17 @@ export default function TourHot({ data }: any) {
               />
             </Link>
           </div>
-          <p className="text-16 font-medium mt-3">
+          <p className="text-16 font-medium mt-3" data-translate>
             Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
           </p>
           <Link
             href="/tours"
             className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
           >
-            <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
+            <button className="text-[#175CD3] font-medium" data-translate>
+              {" "}
+              Xem tất cả
+            </button>
             <Image
               className=" hover:scale-110 ease-in duration-300"
               src="/icon/chevron-right.svg"

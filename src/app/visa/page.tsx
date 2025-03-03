@@ -2,7 +2,6 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import VisaItem from "./components/VisaItem";
-import TravelGuide from "./components/TravelGuide";
 import VisaSteps from "@/components/home/visa-steps";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
@@ -61,7 +60,7 @@ export default async function Visa() {
           {/* Search */}
           <div className="base__content h-full relative place-content-center">
             <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-3/5">
-              <h1 className="text-18 font-semibold">
+              <h1 className="text-18 font-semibold" data-translate>
                 Tìm Visa theo địa danh, điểm đến
               </h1>
               <SearchForm optionsFilter={optionsFilter} />
@@ -74,7 +73,10 @@ export default async function Visa() {
               <div className="">
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-[24px] lg:text-[32px] font-bold">
+                    <h2
+                      className="text-[24px] lg:text-[32px] font-bold"
+                      data-translate
+                    >
                       Dịch vụ Visa nổi bật
                     </h2>
                   </div>
@@ -95,7 +97,10 @@ export default async function Visa() {
                   />
                 </Link> */}
                 </div>
-                <p className="text-sm lg:text-16 font-medium mt-3">
+                <p
+                  className="text-sm lg:text-16 font-medium mt-3"
+                  data-translate
+                >
                   Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu
                   cao!
                 </p>
@@ -128,7 +133,10 @@ export default async function Visa() {
                 <div className="mt-6" key={index}>
                   <div className="flex justify-between">
                     <div>
-                      <h2 className="text-[24px] lg:text-[32px] font-bold">
+                      <h2
+                        className="text-[24px] lg:text-[32px] font-bold"
+                        data-translate
+                      >
                         {parentCategory.name}
                       </h2>
                     </div>
@@ -137,7 +145,10 @@ export default async function Visa() {
                       className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
                       style={{ transition: "0.3s" }}
                     >
-                      <button className="text-[#175CD3] font-medium">
+                      <button
+                        className="text-[#175CD3] font-medium"
+                        data-translate
+                      >
                         Xem tất cả
                       </button>
                       <Image
@@ -153,7 +164,10 @@ export default async function Visa() {
                     href={`/visa/${parentCategory.alias}`}
                     className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
                   >
-                    <button className="text-[#175CD3] font-medium">
+                    <button
+                      className="text-[#175CD3] font-medium"
+                      data-translate
+                    >
                       Xem tất cả
                     </button>
                     <Image

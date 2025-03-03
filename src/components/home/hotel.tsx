@@ -9,8 +9,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
-import { formatCurrency, formatMoney } from "@/lib/formatters";
-import { calculatorDiscountPercent } from "@/utils/Helper";
 import Link from "next/link";
 import HotelItem from "../product/components/HotelItem";
 
@@ -44,7 +42,10 @@ export default function Hotel({ data }: any) {
         <div className={`relative z-10 ${styles.hide__background_mb}`}>
           <div className="flex justify-between">
             <div>
-              <h2 className="text-[24px] lg:text-[32px] font-bold">
+              <h2
+                className="text-[24px] lg:text-[32px] font-bold"
+                data-translate
+              >
                 Đa dạng lựa chọn khách sạn
               </h2>
             </div>
@@ -53,7 +54,9 @@ export default function Hotel({ data }: any) {
               className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
-              <button className="text-[#175CD3] font-medium">Xem tất cả</button>
+              <button className="text-[#175CD3] font-medium" data-translate>
+                Xem tất cả
+              </button>
               <Image
                 className=" hover:scale-110 ease-in duration-300"
                 src="/icon/chevron-right.svg"
@@ -63,14 +66,17 @@ export default function Hotel({ data }: any) {
               />
             </Link>
           </div>
-          <p className="text-sm lg:text-base font-medium mt-3">
+          <p className="text-sm lg:text-base font-medium mt-3" data-translate>
             Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
           </p>
           <Link
             href="/khach-san"
             className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
           >
-            <button className="text-[#175CD3] font-medium"> Xem tất cả</button>
+            <button className="text-[#175CD3] font-medium" data-translate>
+              {" "}
+              Xem tất cả
+            </button>
             <Image
               className=" hover:scale-110 ease-in duration-300"
               src="/icon/chevron-right.svg"
@@ -100,6 +106,7 @@ export default function Hotel({ data }: any) {
                               : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
                           }`}
                           onClick={() => setActiveTab(index)}
+                          data-translate
                         >
                           {tab.name}
                         </button>
@@ -112,32 +119,35 @@ export default function Hotel({ data }: any) {
                 {data.map((category: any, index: number) =>
                   category.products.length > 0 ? (
                     <div key={index}>
-                      {activeTab === index && (
-                        <Carousel
-                          opts={{
-                            align: "start",
-                            loop: true,
-                          }}
-                        >
-                          <CarouselContent>
-                            {category.products.map((hotel: any) => (
-                              <CarouselItem
-                                key={hotel.id}
-                                className="basis-10/12 md:basis-5/12 lg:basis-1/4"
-                              >
-                                <HotelItem hotel={hotel} />
-                              </CarouselItem>
-                            ))}
-                          </CarouselContent>
-                          <CarouselPrevious className="hidden lg:inline-flex" />
-                          <CarouselNext className="hidden lg:inline-flex" />
-                        </Carousel>
-                      )}
+                      {/* {activeTab === index && ( */}
+                      <Carousel
+                        opts={{
+                          align: "start",
+                          loop: true,
+                        }}
+                        className={`${
+                          activeTab === index ? "block" : "hidden"
+                        }`}
+                      >
+                        <CarouselContent>
+                          {category.products.map((hotel: any) => (
+                            <CarouselItem
+                              key={hotel.id}
+                              className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+                            >
+                              <HotelItem hotel={hotel} />
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="hidden lg:inline-flex" />
+                        <CarouselNext className="hidden lg:inline-flex" />
+                      </Carousel>
+                      {/* )} */}
                     </div>
                   ) : (
                     activeTab === index && (
                       <div className="min-h-[100px] content-center text-center">
-                        <p className="font-bold text-xl">
+                        <p className="font-bold text-xl" data-translate>
                           Thông tin đang được cập nhật.....
                         </p>
                       </div>

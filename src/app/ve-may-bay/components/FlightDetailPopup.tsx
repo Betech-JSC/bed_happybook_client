@@ -8,6 +8,8 @@ import {
 } from "@/lib/formatters";
 import { FlightDetailPopupProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
+import { useTranslation } from "@/app/hooks/useTranslation";
+import { toSnakeCase } from "@/utils/Helper";
 
 export default function FlightDetailPopup({
   isOpen,
@@ -18,7 +20,9 @@ export default function FlightDetailPopup({
   airports,
   flights,
   onClose,
+  translatedStaticText,
 }: FlightDetailPopupProps) {
+  const { t } = useTranslation(translatedStaticText);
   const [activeTab, setActiveTab] = useState<number>(0);
   useEffect(() => {
     if (tabs.length) {
@@ -33,6 +37,7 @@ export default function FlightDetailPopup({
   }, [tabs, activeTab]);
   return (
     <div
+      id="flight-detail-popup-wrapper"
       className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-70 flex justify-center items-center ${
         isOpen ? "visible z-[9999]" : "invisible z-[-1]"
       }`}
@@ -47,7 +52,9 @@ export default function FlightDetailPopup({
           <div className="bg-white max-h-[90vh] min-h-[60vh] overflow-y-auto custom-scrollbar  py-6 px-4 md:px-8 pb-8 md:max-w-[680px] md:min-w-[680px] rounded-lg">
             {tabs.length > 1 && (
               <div className="flex justify-between items-end sticky top-[-25px] bg-white z-[999]">
-                <p className="text-22 font-bold">Chi tiết</p>
+                <p className="text-22 font-bold" data-translate={true}>
+                  {t("chi_tiet")}
+                </p>
                 <button
                   type="button"
                   className="text-xl"
@@ -74,6 +81,7 @@ export default function FlightDetailPopup({
               {tabs.map((tab: any, index: number) => (
                 <div key={index} onClick={() => setActiveTab(tab.id)}>
                   <button
+                    type="button"
                     className={`pt-2 font-bold duration-150 transition-colors outline-none 
                     ${activeTab === tab.id ? "text-primary " : ""} 
                     ${
@@ -86,8 +94,9 @@ export default function FlightDetailPopup({
                         ? "text-22 px-0"
                         : "px-4"
                     }`}
+                    // data-translate={true}
                   >
-                    {tab.name}
+                    {t(`${toSnakeCase(tab.name)}`)}
                   </button>
                 </div>
               ))}
@@ -124,8 +133,9 @@ export default function FlightDetailPopup({
                         background:
                           "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
                       }}
+                      data-translate={true}
                     >
-                      {flight.Leg ? "Chiều về" : " Chiều đi"}
+                      {flight.Leg ? t("chieu_ve") : t("chieu_di")}
                     </h2>
                     {flight.ListSegment.map((segment: any, index: number) => {
                       const durationFlight =
@@ -200,7 +210,10 @@ export default function FlightDetailPopup({
                               </div>
                               <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                                 <div>
-                                  <div className="text-22 font-bold">
+                                  <div
+                                    className="text-22 font-bold"
+                                    data-translate={true}
+                                  >
                                     {airPortStartPoint
                                       ? `${airPortStartPoint?.city ?? ""} (${
                                           segment.StartPoint
@@ -226,23 +239,39 @@ export default function FlightDetailPopup({
                                   </div>
                                   <div className="mt-3 flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0 text-sm font-medium">
                                     <p>{segment.FlightNumber}</p>
-                                    <p className="hidden md:block">-</p>
-                                    <p>Hạng: {flight.GroupClass ?? ""}</p>
+                                    <p
+                                      className="hidden md:block"
+                                      data-translate={true}
+                                    >
+                                      -
+                                    </p>
+                                    <p>
+                                      {t("hang")}: {flight.GroupClass ?? ""}
+                                    </p>
                                   </div>
                                   <div className="mt-3 flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0 text-sm font-medium">
-                                    <p>{`Hành lý xách tay: ${
+                                    <p data-translate={true}>{`${t(
+                                      "hanh_ly_xach_tay"
+                                    )}: ${
                                       segment.HandBaggage
                                         ? segment.HandBaggage
                                         : ""
                                     }`}</p>
                                     {segment.AllowanceBaggage && (
-                                      <p>{`Hành lý ký gửi: ${segment.AllowanceBaggage}`}</p>
+                                      <p data-translate={true}>
+                                        {`${t("hanh_ly_ky_gui")}: ${
+                                          segment.AllowanceBaggage
+                                        }`}
+                                      </p>
                                     )}
                                   </div>
                                 </div>
                                 <div>
                                   <p className="text-gray-500 mt-1 h-6"></p>
-                                  <p className="text-22 font-bold">
+                                  <p
+                                    className="text-22 font-bold"
+                                    data-translate={true}
+                                  >
                                     {airPortEndPoint
                                       ? `${airPortEndPoint?.city ?? ""} (${
                                           segment.EndPoint
@@ -260,7 +289,7 @@ export default function FlightDetailPopup({
                                 <div className="w-0 md:w-1/12 h-full py-5 flex flex-col items-center"></div>
                                 <div className="w-full md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                                   <div className="bg-gray-50 rounded-lg p-4 flex space-x-4 lg:space-x-8 items-center text-sm">
-                                    <p>
+                                    <p data-translate={true}>
                                       Transfer in{" "}
                                       {airPortEndPoint
                                         ? `${airPortEndPoint?.city ?? ""} (${

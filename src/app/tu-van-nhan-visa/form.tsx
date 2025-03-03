@@ -2,20 +2,24 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import {
-  VisaApplicationBody,
-  VisaApplicationBodyType,
+  VisaApplicationSchema,
+  VisaApplicationType,
 } from "@/schemaValidations/visaApplication.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { Fragment } from "react";
 import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
+import { useLanguage } from "../contexts/LanguageContext";
+import { toastMessages, validationMessages } from "@/lib/messages";
 
-type FormData = VisaApplicationBodyType;
+type FormData = VisaApplicationType;
 
 export default function VisaApplicationForm() {
   const [loading, setLoading] = useState(false);
-
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
   const {
     register,
     handleSubmit,
@@ -23,7 +27,7 @@ export default function VisaApplicationForm() {
     setError,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(VisaApplicationBody),
+    resolver: zodResolver(VisaApplicationSchema(messages)),
     defaultValues: {
       is_relatives_abroad_not_legal: "",
       education: "",
@@ -43,10 +47,10 @@ export default function VisaApplicationForm() {
       if (response?.status === 200) {
         reset();
         toast.dismiss();
-        toast.success("Gửi thành công!");
+        toast.success(toaStrMsg.sendSuccess);
       }
     } catch (error: any) {
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
+      toast.error(toaStrMsg.error);
     } finally {
       setLoading(false);
     }
@@ -58,7 +62,7 @@ export default function VisaApplicationForm() {
           <div className="px-3 pt-10 lg:px-[80px] lg:pt-16">
             <div className="mx-auto p-8 lg:w-[980px] h-auto bg-white rounded-2xl  ">
               <div>
-                <h3 className="text-2xl font-semibold">
+                <h3 className="text-2xl font-semibold" data-translate>
                   PHIẾU TIẾP NHẬN THÔNG TIN XIN THỊ THỰC (VISA)
                 </h3>
               </div>
@@ -68,7 +72,7 @@ export default function VisaApplicationForm() {
                     htmlFor="country"
                     className="absolute h-4 top-0 left-0 translate-y-1 translate-x-4 font-medium text-xs"
                   >
-                    QUỐC GIA MUỐN XIN THỊ THỰC{" "}
+                    <span data-translate>QUỐC GIA MUỐN XIN THỊ THỰC</span>{" "}
                     <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -84,7 +88,9 @@ export default function VisaApplicationForm() {
                 </div>
                 <div className="mt-6">
                   <p className="text-base text-gray-700">
-                    ĐÃ TỪNG TRƯỢT VISA TẠI NƯỚC MUỐN XIN VISA BAO GIỜ CHƯA?{" "}
+                    <span data-translate>
+                      ĐÃ TỪNG TRƯỢT VISA TẠI NƯỚC MUỐN XIN VISA BAO GIỜ CHƯA?
+                    </span>{" "}
                     <span className="text-red-500">*</span>
                   </p>
                   <div className="mt-2">
@@ -96,7 +102,9 @@ export default function VisaApplicationForm() {
                           id="is_visa_rejected_1"
                           {...register("is_visa_rejected")}
                         />
-                        <label htmlFor="is_visa_rejected_1">Đã từng</label>
+                        <label htmlFor="is_visa_rejected_1" data-translate>
+                          Đã từng
+                        </label>
                       </div>
                       <div className="flex space-x-3">
                         <input
@@ -105,7 +113,9 @@ export default function VisaApplicationForm() {
                           id="is_visa_rejected_2"
                           {...register("is_visa_rejected")}
                         />
-                        <label htmlFor="is_visa_rejected_2">Chưa từng</label>
+                        <label htmlFor="is_visa_rejected_2" data-translate>
+                          Chưa từng
+                        </label>
                       </div>
                     </div>
                     {errors.is_visa_rejected && (
@@ -121,7 +131,7 @@ export default function VisaApplicationForm() {
                       htmlFor="fullName"
                       className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
                     >
-                      HỌ VÀ TÊN NGƯỜI XIN VISA{" "}
+                      <span data-translate>HỌ VÀ TÊN NGƯỜI XIN VISA </span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -140,7 +150,7 @@ export default function VisaApplicationForm() {
                       htmlFor="birth_year"
                       className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
                     >
-                      NĂM SINH NGƯỜI XIN VISA{" "}
+                      <span data-translate>NĂM SINH NGƯỜI XIN VISA </span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -163,7 +173,7 @@ export default function VisaApplicationForm() {
                   htmlFor="phone"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
                 >
-                  SỐ ĐIỆN THOẠI NGƯỜI XIN VISA{" "}
+                  <span data-translate>SỐ ĐIỆN THOẠI NGƯỜI XIN VISA</span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -182,7 +192,7 @@ export default function VisaApplicationForm() {
                   htmlFor="address"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
                 >
-                  ĐỊA CHỈ THƯỜNG TRÚ NGƯỜI XIN VISA{" "}
+                  <span data-translate>ĐỊA CHỈ THƯỜNG TRÚ NGƯỜI XIN VISA </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -195,16 +205,19 @@ export default function VisaApplicationForm() {
                 {errors.address && (
                   <p className="text-red-600">{errors.address.message}</p>
                 )}
-                <p className="mt-1 text-xs text-gray-700">
-                  Yêu cầu ghi đầy đủ: XÃ/ PHƯỜNG - QUẬN/ HUYỆN - TỈNH/ THÀNH PHỐ
-                </p>
+                <div className="mt-1 text-xs text-gray-700">
+                  <span data-translate>
+                    Yêu cầu ghi đầy đủ: XÃ/ PHƯỜNG - QUẬN/ HUYỆN - TỈNH/ THÀNH
+                    PHỐ
+                  </span>
+                </div>
               </div>
               <div className="relative mt-6">
                 <label
                   htmlFor="temporary_address"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
                 >
-                  ĐỊA CHỈ TẠM TRÚ NGƯỜI XIN VISA{" "}
+                  <span data-translate>ĐỊA CHỈ TẠM TRÚ NGƯỜI XIN VISA </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -219,16 +232,19 @@ export default function VisaApplicationForm() {
                     {errors.temporary_address.message}
                   </p>
                 )}
-                <p className="mt-1 text-xs text-gray-700">
+                <p className="mt-1 text-xs text-gray-700" data-translate>
                   1. Nếu không có địa chỉ tạm chú, ghi &quot;KHÔNG&quot;
                 </p>
-                <p className="mt-1 text-xs text-gray-700">
+                <p className="mt-1 text-xs text-gray-700" data-translate>
                   2. Nếu có địa chỉ tạm trú, yêu cầu ghi đầy đủ: XÃ/ PHƯỜNG -
                   QUẬN/ HUYỆN - TỈNH/ THÀNH PHỐ
                 </p>
               </div>
               <div className="mt-6">
-                <p className="text-base text-gray-900 font-semibold">
+                <p
+                  className="text-base text-gray-900 font-semibold"
+                  data-translate
+                >
                   CÓ NGƯỜI THÂN ĐANG HỌC TẬP, LÀM VIỆC BẤT HỢP PHÁP TẠI NƯỚC
                   MUỐN XIN VISA KHÔNG? <span className="text-red-500">*</span>
                 </p>
@@ -241,7 +257,10 @@ export default function VisaApplicationForm() {
                         value={1}
                         {...register("is_relatives_abroad_not_legal")}
                       />
-                      <label htmlFor="is_relatives_abroad_not_legal_option_yes">
+                      <label
+                        htmlFor="is_relatives_abroad_not_legal_option_yes"
+                        data-translate
+                      >
                         Có
                       </label>
                     </div>
@@ -252,7 +271,10 @@ export default function VisaApplicationForm() {
                         value={0}
                         {...register("is_relatives_abroad_not_legal")}
                       />
-                      <label htmlFor="is_relatives_abroad_not_legal_option_no">
+                      <label
+                        htmlFor="is_relatives_abroad_not_legal_option_no"
+                        data-translate
+                      >
                         Không
                       </label>
                     </div>
@@ -266,7 +288,7 @@ export default function VisaApplicationForm() {
               </div>
               <div className="mt-6">
                 <p className="text-base text-gray-900 font-semibold">
-                  TRÌNH ĐỘ HỌC VẤN CAO NHẤT{" "}
+                  <span data-translate>TRÌNH ĐỘ HỌC VẤN CAO NHẤT </span>
                   <span className="text-red-500">*</span>
                 </p>
                 <div className="mt-2">
@@ -277,7 +299,11 @@ export default function VisaApplicationForm() {
                       value={1}
                       {...register("education")}
                     />
-                    <label htmlFor="education_1" className="ml-3">
+                    <label
+                      htmlFor="education_1"
+                      className="ml-3"
+                      data-translate
+                    >
                       TIỂU HỌC (CẤP 1)
                     </label>
                   </div>
@@ -288,7 +314,11 @@ export default function VisaApplicationForm() {
                       value={2}
                       {...register("education")}
                     />
-                    <label htmlFor="education_2" className="ml-3">
+                    <label
+                      htmlFor="education_2"
+                      className="ml-3"
+                      data-translate
+                    >
                       TRUNG HỌC CƠ SỞ (CẤP 2)
                     </label>
                   </div>
@@ -299,7 +329,11 @@ export default function VisaApplicationForm() {
                       value={3}
                       {...register("education")}
                     />
-                    <label htmlFor="education_3" className="ml-3">
+                    <label
+                      htmlFor="education_3"
+                      className="ml-3"
+                      data-translate
+                    >
                       TRUNG HỌC PHỔ THÔNG (CẤP 3)
                     </label>
                   </div>
@@ -311,7 +345,11 @@ export default function VisaApplicationForm() {
                         id="education_4"
                         {...register("education")}
                       />
-                      <label htmlFor="education_4" className="ml-3">
+                      <label
+                        htmlFor="education_4"
+                        className="ml-3"
+                        data-translate
+                      >
                         TRUNG CẤP
                       </label>
                     </div>
@@ -322,7 +360,11 @@ export default function VisaApplicationForm() {
                         id="education_5"
                         {...register("education")}
                       />
-                      <label htmlFor="education_5" className="ml-3">
+                      <label
+                        htmlFor="education_5"
+                        className="ml-3"
+                        data-translate
+                      >
                         CAO ĐẲNG
                       </label>
                     </div>
@@ -333,7 +375,11 @@ export default function VisaApplicationForm() {
                         id="education_6"
                         {...register("education")}
                       />
-                      <label htmlFor="education_6" className="ml-3">
+                      <label
+                        htmlFor="education_6"
+                        className="ml-3"
+                        data-translate
+                      >
                         ĐẠI HỌC
                       </label>
                     </div>
@@ -344,7 +390,11 @@ export default function VisaApplicationForm() {
                         id="education_7"
                         {...register("education")}
                       />
-                      <label htmlFor="education_7" className="ml-3">
+                      <label
+                        htmlFor="education_7"
+                        className="ml-3"
+                        data-translate
+                      >
                         CAO HỌC
                       </label>
                     </div>
@@ -355,7 +405,11 @@ export default function VisaApplicationForm() {
                         id="education_8"
                         {...register("education")}
                       />
-                      <label htmlFor="education_8" className="ml-3">
+                      <label
+                        htmlFor="education_8"
+                        className="ml-3"
+                        data-translate
+                      >
                         TRÌNH ĐỘ KHÁC
                       </label>
                     </div>
@@ -366,15 +420,17 @@ export default function VisaApplicationForm() {
                 )}
               </div>
               <div className="mt-6">
-                <p className="text-base text-gray-900 font-semibold">
-                  MỤC ĐÍCH XIN VISA <span className="text-red-500">*</span>
-                </p>
+                <div className="text-base text-gray-900 font-semibold">
+                  <span data-translate>MỤC ĐÍCH XIN VISA</span>{" "}
+                  <span className="text-red-500">*</span>
+                </div>
                 <div className="mt-2">
                   <div className="inline-block mr-6">
                     <div className="flex items-center space-x-3">
                       <label
                         htmlFor="purpose_visa_application_1"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         Du lịch
                       </label>
@@ -392,6 +448,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="purpose_visa_application_2"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         THĂM THÂN
                       </label>
@@ -409,6 +466,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="purpose_visa_application_3"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         CÔNG TÁC
                       </label>
@@ -426,6 +484,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="purpose_visa_application_4"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         DU HỌC
                       </label>
@@ -443,6 +502,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="purpose_visa_application_5"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         LAO ĐỘNG
                       </label>
@@ -460,6 +520,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="purpose_visa_application_6"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         MỤC ĐÍCH KHÁC
                       </label>
@@ -481,12 +542,13 @@ export default function VisaApplicationForm() {
               </div>
               <div className="mt-6">
                 <p className="text-base text-gray-900 font-semibold">
-                  LỊCH SỬ ĐI LẠI <span className="text-red-500">*</span>
+                  <span data-translate>LỊCH SỬ ĐI LẠI</span>{" "}
+                  <span className="text-red-500">*</span>
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   1. Nếu không có địa chỉ tạm chú, ghi &quot;KHÔNG&quot;
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   2. Nếu có địa chỉ tạm trú, yêu cầu ghi đầy đủ: XÃ/ PHƯỜNG -
                   QUẬN/ HUYỆN - TỈNH/ THÀNH PHỐ
                 </p>
@@ -503,9 +565,10 @@ export default function VisaApplicationForm() {
                 )}
               </div>
               <div className="mt-6">
-                <p className="text-base text-gray-900 font-semibold">
-                  CÔNG VIỆC HIỆN TẠI <span className="text-red-500">*</span>
-                </p>
+                <div className="text-base text-gray-900 font-semibold">
+                  <span data-translate>CÔNG VIỆC HIỆN TẠI</span>{" "}
+                  <span className="text-red-500">*</span>
+                </div>
                 <div className="mt-2">
                   <div className="inline-block mr-6">
                     <div className="flex items-center space-x-3">
@@ -519,6 +582,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="job_1"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         NGƯỜI LAO ĐỘNG
                       </label>
@@ -536,6 +600,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="job_2"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         CHỦ DOANH NGHIỆP
                       </label>
@@ -553,6 +618,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="job_3"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         HỌC SINH/ SINH VIÊN
                       </label>
@@ -570,6 +636,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="job_4"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         HƯU TRÍ
                       </label>
@@ -587,6 +654,7 @@ export default function VisaApplicationForm() {
                       <label
                         htmlFor="job_5"
                         className="text-base text-gray-700  font-medium"
+                        data-translate
                       >
                         CÔNG VIỆC TỰ DO
                       </label>
@@ -599,27 +667,27 @@ export default function VisaApplicationForm() {
               </div>
               <div className="mt-6">
                 <p className="text-base text-gray-900 font-semibold">
-                  MÔ TẢ CHI TIẾT CÔNG VIỆC HIỆN TẠI{" "}
+                  <span data-translate>MÔ TẢ CHI TIẾT CÔNG VIỆC HIỆN TẠI </span>
                   <span className="text-red-500">*</span>
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   1. NGƯỜI LAO ĐỘNG: Làm việc tại cơ quan từ thời gian nào -
                   Lương trung bình hàng tháng bao nhiêu, chuyển khoản hay tiền
                   mặt - Có tham gia bảo hiểm xã hội không?
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   2. CHỦ DOANH NGHIỆP: Giấy phép đăng ký là Hộ kinh doanh hay
                   Công ty, thành lập từ thời gian nào - Có đóng thuế đầy đủ
                   không - Có tham gia bảo hiểm xã hội không?
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   3. HỌC SINH/ SINH VIÊN: Nêu rõ tên trường đang theo học?
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   4. HƯU TRÍ: Có quyết định hưu trí từ thời gian nào - Lương hưu
                   chuyển khoản hay tiền mặt?
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   5. CÔNG VIỆC TỰ DO: Mô tả chi tiết công việc tự do?
                 </p>
                 <input
@@ -636,7 +704,7 @@ export default function VisaApplicationForm() {
               </div>
               <div className="mt-6">
                 <p className="text-base text-gray-900 font-semibold">
-                  SỔ TIẾT KIỆM TỐI ĐA CÓ THỂ MỞ{" "}
+                  <span data-translate>SỔ TIẾT KIỆM TỐI ĐA CÓ THỂ MỞ </span>
                   <span className="text-red-500">*</span>
                 </p>
                 <div className="mt-2">
@@ -647,7 +715,11 @@ export default function VisaApplicationForm() {
                       id="max_savings_book_1"
                       {...register("max_savings_book")}
                     />
-                    <label htmlFor="max_savings_book_1" className="ml-3">
+                    <label
+                      htmlFor="max_savings_book_1"
+                      className="ml-3"
+                      data-translate
+                    >
                       100 TRIỆU
                     </label>
                   </div>
@@ -658,7 +730,11 @@ export default function VisaApplicationForm() {
                       id="max_savings_book_2"
                       {...register("max_savings_book")}
                     />
-                    <label htmlFor="max_savings_book_2" className="ml-3">
+                    <label
+                      htmlFor="max_savings_book_2"
+                      className="ml-3"
+                      data-translate
+                    >
                       150 TRIỆU
                     </label>
                   </div>
@@ -669,7 +745,11 @@ export default function VisaApplicationForm() {
                       id="max_savings_book_3"
                       {...register("max_savings_book")}
                     />
-                    <label htmlFor="max_savings_book_3" className="ml-3">
+                    <label
+                      htmlFor="max_savings_book_3"
+                      className="ml-3"
+                      data-translate
+                    >
                       200 TRIỆU
                     </label>
                   </div>
@@ -680,7 +760,11 @@ export default function VisaApplicationForm() {
                       id="max_savings_book_4"
                       {...register("max_savings_book")}
                     />
-                    <label htmlFor="max_savings_book_4" className="ml-3">
+                    <label
+                      htmlFor="max_savings_book_4"
+                      className="ml-3"
+                      data-translate
+                    >
                       250 TRIỆU
                     </label>
                   </div>
@@ -691,7 +775,11 @@ export default function VisaApplicationForm() {
                       id="max_savings_book_5"
                       {...register("max_savings_book")}
                     />
-                    <label htmlFor="max_savings_book_5" className="ml-3">
+                    <label
+                      htmlFor="max_savings_book_5"
+                      className="ml-3"
+                      data-translate
+                    >
                       TRÊN 250 TRIỆU
                     </label>
                   </div>
@@ -703,10 +791,10 @@ export default function VisaApplicationForm() {
                 )}
               </div>
               <div className="mt-6">
-                <p className="text-base text-gray-900 font-semibold">
-                  SỔ ĐỎ/ SỔ HỒNG CHÍNH CHỦ{" "}
+                <div className="text-base text-gray-900 font-semibold">
+                  <span data-translate>SỔ ĐỎ/ SỔ HỒNG CHÍNH CHỦ </span>
                   <span className="text-red-500">*</span>
-                </p>
+                </div>
                 <div className="mt-2">
                   <div className="flex space-x-6">
                     <div className="flex space-x-3">
@@ -716,7 +804,9 @@ export default function VisaApplicationForm() {
                         id="assets_home_1"
                         {...register("assets_home")}
                       />
-                      <label htmlFor="assets_home_1">Có</label>
+                      <label htmlFor="assets_home_1" data-translate>
+                        Có
+                      </label>
                     </div>
                     <div className="flex space-x-3">
                       <input
@@ -725,7 +815,9 @@ export default function VisaApplicationForm() {
                         id="assets_home_2"
                         {...register("assets_home")}
                       />
-                      <label htmlFor="assets_home_2">Không</label>
+                      <label htmlFor="assets_home_2" data-translate>
+                        Không
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -735,7 +827,7 @@ export default function VisaApplicationForm() {
               </div>
               <div className="mt-6">
                 <p className="text-base text-gray-900 font-semibold">
-                  ĐĂNG KÝ XE Ô TÔ CHÍNH CHỦ{" "}
+                  <span data-translate>ĐĂNG KÝ XE Ô TÔ CHÍNH CHỦ </span>
                   <span className="text-red-500">*</span>
                 </p>
                 <div className="mt-2">
@@ -747,7 +839,9 @@ export default function VisaApplicationForm() {
                         id="assets_car_1"
                         {...register("assets_car")}
                       />
-                      <label htmlFor="assets_car_1">Có</label>
+                      <label htmlFor="assets_car_1" data-translate>
+                        Có
+                      </label>
                     </div>
                     <div className="flex space-x-3">
                       <input
@@ -756,7 +850,9 @@ export default function VisaApplicationForm() {
                         id="assets_car_2"
                         {...register("assets_car")}
                       />
-                      <label htmlFor="assets_car_2">Không</label>
+                      <label htmlFor="assets_car_2" data-translate>
+                        Không
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -765,13 +861,14 @@ export default function VisaApplicationForm() {
                 )}
               </div>
               <div className="mt-6">
-                <p className="text-base text-gray-900 font-semibold">
-                  CÁC TÀI SẢN KHÁC <span className="text-red-500">*</span>
-                </p>
-                <p className="mt-2 text-base text-gray-700">
+                <div className="text-base text-gray-900 font-semibold">
+                  <span data-translate>CÁC TÀI SẢN KHÁC</span>
+                  <span className="text-red-500">*</span>
+                </div>
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   1. Nếu không có bất kỳ tài sản nào khác, ghi &quot;KHÔNG&quot;
                 </p>
-                <p className="mt-2 text-base text-gray-700">
+                <p className="mt-2 text-base text-gray-700" data-translate>
                   2. Nếu có tài sản khác như: cổ phiếu, trái phiếu, góp vốn,...
                   yêu cầu ghi đầy đủ
                 </p>

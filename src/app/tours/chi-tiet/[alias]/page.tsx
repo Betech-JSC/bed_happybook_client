@@ -25,8 +25,8 @@ import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { pageUrl, ProductTypes, productUrl } from "@/utils/Urls";
 import { formatCurrency, formatMetadata, formatMoney } from "@/lib/formatters";
-import FAQ from "@/components/content-page/FAQ";
-import { getLabelRatingProduct } from "@/utils/Helper";
+import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await TourApi.detail(params.alias)) as any;
@@ -58,7 +58,8 @@ export default async function TourDetail({
 }: {
   params: { alias: string };
 }) {
-  const res = (await TourApi.detail(params.alias)) as any;
+  const language = await getServerLang();
+  const res = (await TourApi.detail(params.alias, language)) as any;
   const detail = res?.payload?.data;
   if (!detail) {
     notFound();
@@ -115,6 +116,7 @@ export default async function TourDetail({
                   <Link
                     href={`/tours/${categorySlug}`}
                     className="text-blue-700"
+                    data-translate
                   >
                     {typeTourText}
                   </Link>
@@ -123,8 +125,8 @@ export default async function TourDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="#" className="text-gray-700">
-                    {detail.name ?? ""}
+                  <Link href="#" className="text-gray-700" data-translate>
+                    {renderTextContent(detail.name)}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -143,23 +145,33 @@ export default async function TourDetail({
             <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
+                  <h1
+                    className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                    data-translate
+                  >
                     {detail.name ?? ""}
                   </h1>
                   <div className="flex space-x-2 mt-2">
-                    {detail.average_rating > 0 && (
+                    {detail.average_rating >= 2 && (
                       <Fragment>
                         <span className="w-9 h-6 rounded-xl rounded-tr bg-primary text-white font-semibold text-center">
                           {detail.average_rating}
                         </span>
-                        <span className="text-primary font-semibold">
-                          {getLabelRatingProduct(detail.average_rating)}
+                        <span
+                          className="text-primary font-semibold"
+                          data-translate
+                        >
+                          {getLabelRatingProduct(
+                            detail.average_rating,
+                            language
+                          )}
                         </span>
                       </Fragment>
                     )}
                     <span className="text-gray-500">
-                      {detail.total_rating ?? 0} đánh giá
+                      {detail.total_rating ?? 0}
                     </span>
+                    <span data-translate> đánh giá</span>
                   </div>
                   <div className="flex space-x-2 mt-6 items-center">
                     <Image
@@ -170,9 +182,9 @@ export default async function TourDetail({
                       height={18}
                     />
                     <span>
-                      <span>{`${detail.day ? `${detail.day} ngày` : ""} ${
-                        detail.night ? `${detail.night} đêm` : ""
-                      }`}</span>
+                      <span data-translate>{`${
+                        detail.day ? `${detail.day} ngày` : ""
+                      } ${detail.night ? `${detail.night} đêm` : ""}`}</span>
                     </span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
@@ -183,7 +195,7 @@ export default async function TourDetail({
                       width={18}
                       height={18}
                     />
-                    <span>
+                    <span data-translate>
                       {detail.depart_point
                         ? `Khởi hành từ ${detail.depart_point}`
                         : ""}
@@ -197,7 +209,7 @@ export default async function TourDetail({
                       width={18}
                       height={18}
                     />
-                    <span>{detail.destination_point ?? ""}</span>
+                    <span data-translate>{detail.destination_point ?? ""}</span>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
@@ -208,11 +220,13 @@ export default async function TourDetail({
                       : ""}
                   </p>
                   <p className="text-2xl text-primary font-bold mt-3">
-                    {detail.price > 0
-                      ? `${formatCurrency(
-                          detail.price - detail.discount_price
-                        )}`
-                      : "Liên hệ"}
+                    {detail.price > 0 ? (
+                      <span>
+                        {formatCurrency(detail.price - detail.discount_price)}
+                      </span>
+                    ) : (
+                      <span data-translate>Liên hệ</span>
+                    )}
                   </p>
                 </div>
                 <div className="mt-6">
@@ -220,7 +234,10 @@ export default async function TourDetail({
                     href={`/tours/chi-tiet/${detail.slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
-                    <span className="mx-auto text-base font-medium">
+                    <span
+                      className="mx-auto text-base font-medium"
+                      data-translate
+                    >
                       Gửi yêu cầu
                     </span>
                   </Link>
@@ -240,7 +257,9 @@ export default async function TourDetail({
           <div className="px-3 lg:px-[80px] max__screen">
             {detail.similar_tours.length > 0 && (
               <div className="w-full">
-                <p className="text-32 font-bold my-6">Tour du lịch tương tự</p>
+                <p className="text-32 font-bold my-6" data-translate>
+                  Tour du lịch tương tự
+                </p>
                 <Carousel
                   opts={{
                     align: "start",
@@ -263,11 +282,11 @@ export default async function TourDetail({
               </div>
             )}
             {/* Faq */}
-            <div className="my-8">
+            {/* <div className="my-8">
               <FAQ />
-            </div>
+            </div> */}
             <div className="my-8 p-8 rounded-2xl bg-gray-50 ">
-              <h3 className="text-32 font-bold text-center">
+              <h3 className="text-32 font-bold text-center" data-translate>
                 Vì sao nên chọn HappyBook
               </h3>
               <div className="mt-12">
@@ -281,10 +300,16 @@ export default async function TourDetail({
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         Đội ngũ Happybook tư vấn
                       </p>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         hỗ trợ nhiệt tình 24/7
                       </p>
                     </div>
@@ -298,10 +323,16 @@ export default async function TourDetail({
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         Đơn vị hơn 8 năm kinh nghiệm.
                       </p>
-                      <p className="text-18 font-semibold text-gray-900">
+                      <p
+                        className="text-18 font-semibold text-gray-900"
+                        data-translate
+                      >
                         Lấy chữ tín làm đầu
                       </p>
                     </div>
@@ -315,10 +346,16 @@ export default async function TourDetail({
                       height={44}
                     ></Image>
                     <div>
-                      <p className="text-18 font-semibold mb-1 text-gray-900">
+                      <p
+                        className="text-18 font-semibold mb-1 text-gray-900"
+                        data-translate
+                      >
                         Sản phẩm đa dạng,
                       </p>
-                      <p className="text-18 font-semibold text-gray-900">
+                      <p
+                        className="text-18 font-semibold text-gray-900"
+                        data-translate
+                      >
                         giá cả tốt nhất
                       </p>
                     </div>
