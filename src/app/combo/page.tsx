@@ -19,6 +19,7 @@ import FAQ from "@/components/content-page/FAQ";
 import { BannerApi } from "@/api/Banner";
 import { Suspense } from "react";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
+import { getServerLang } from "@/lib/session";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -31,8 +32,16 @@ export const metadata: Metadata = formatMetadata({
 });
 
 export default async function CompoTour() {
+  const language = await getServerLang();
   const locationsData =
-    ((await ProductLocation.list())?.payload?.data as any) ?? [];
+    ((await ProductLocation.list(language))?.payload?.data as any) ?? [];
+  const formatLocationsData =
+    locationsData?.length > 0
+      ? locationsData.map((opt: any) => ({
+          value: opt.id,
+          label: opt.name,
+        }))
+      : [];
   const comboData = ((await ComboApi.getAll())?.payload?.data as any) ?? [];
   const hotDestination =
     ((await BannerApi.getBannerPage("combo-diemdenhot"))?.payload
@@ -69,7 +78,7 @@ export default async function CompoTour() {
           {/* Search */}
           <div className="py-5">
             <Suspense>
-              <Search locations={locationsData} />
+              <Search locations={formatLocationsData} />
             </Suspense>
           </div>
         </div>

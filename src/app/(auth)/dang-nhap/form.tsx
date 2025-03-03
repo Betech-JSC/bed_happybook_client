@@ -52,7 +52,7 @@ export default function FormLogin() {
             type="text"
             placeholder="Tên tài khoản hoặc địa chỉ email"
             {...register("email")}
-            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5"
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.email && (
             <p className="text-red-600">{errors.email.message}</p>
@@ -64,7 +64,7 @@ export default function FormLogin() {
             type="password"
             placeholder="Mật khẩu"
             {...register("password")}
-            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5"
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.password && (
             <p className="text-red-600">{errors.password.message}</p>
@@ -77,11 +77,11 @@ export default function FormLogin() {
             disabled={false}
           />
         </div>
-        <div className="mt-3 text-right text-base text-blue-700 font-medium">
+        {/* <div className="mt-3 text-right text-base text-blue-700 font-medium">
           <Link href="#" data-translate>
             Quên mật khẩu ?
           </Link>
-        </div>
+        </div> */}
       </div>
     </form>
   );

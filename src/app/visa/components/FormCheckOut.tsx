@@ -58,6 +58,9 @@ export default function FormCheckOut({
         },
         invoice: data.invoice,
       };
+      if (!generateInvoice) {
+        delete formatData.invoice;
+      }
       const respon = await BookingProductApi.Visa(formatData);
       if (respon?.status === 200) {
         reset();

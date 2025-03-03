@@ -4,6 +4,7 @@ import CheckOutTourForm from "../../../components/FormCheckOut";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import { formatCurrency, formatMoney } from "@/lib/formatters";
+import { Span } from "next/dist/trace";
 
 export default async function TourCheckout({
   params,
@@ -27,7 +28,10 @@ export default async function TourCheckout({
                   "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
               }}
             >
-              <h3 className="text-22 py-4 px-8 font-semibold text-white">
+              <h3
+                className="text-22 py-4 px-8 font-semibold text-white"
+                data-translate={true}
+              >
                 Thông tin đơn hàng
               </h3>
             </div>
@@ -51,6 +55,7 @@ export default async function TourCheckout({
               <Link
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                data-translate={true}
               >
                 {detail.name}
               </Link>
@@ -62,7 +67,7 @@ export default async function TourCheckout({
                   width={18}
                   height={18}
                 />
-                <span>
+                <span data-translate={true}>
                   {`${detail.day ? `${detail.day} ngày ` : ""}  ${
                     detail.night ? `${detail.night} đêm ` : ""
                   }
@@ -87,13 +92,15 @@ export default async function TourCheckout({
                   width={18}
                   height={18}
                 />
-                <span>{detail.address ?? ""}</span>
+                <span data-translate={true}>{detail.address ?? ""}</span>
               </div>
               <div className=" bg-gray-50 text-end p-2 rounded-lg mt-6">
                 <span className="text-xl lg:text-2xl text-primary font-bold">
-                  {detail.price > 0
-                    ? formatCurrency(detail.price - detail.discount_price)
-                    : "Liên hệ"}
+                  {detail.price > 0 ? (
+                    formatCurrency(detail.price - detail.discount_price)
+                  ) : (
+                    <span data-translate={true}>Liên hệ</span>
+                  )}
                 </span>
                 {/* <span>/ khách</span> */}
                 {/* <p className="text-blue-700 mt-3">+ 40 điểm</p> */}

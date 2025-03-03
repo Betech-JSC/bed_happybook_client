@@ -93,6 +93,9 @@ export default function FormCheckOut({ data, room }: any) {
         },
         invoice: dataForm.invoice,
       };
+      if (!generateInvoice) {
+        delete formatData.invoice;
+      }
       const respon = await BookingProductApi.Hotel(formatData);
       if (respon?.status === 200) {
         reset();

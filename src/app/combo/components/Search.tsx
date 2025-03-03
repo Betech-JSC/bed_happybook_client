@@ -5,8 +5,10 @@ import Image from "next/image";
 import { LocationType } from "@/types/location";
 import "react-datepicker/dist/react-datepicker.css";
 import { buildSearch } from "@/utils/Helper";
+import Select from "react-select";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
-export default function Search({ locations }: { locations: LocationType[] }) {
+export default function Search({ locations }: { locations: any }) {
   const router = useRouter();
   const [query, setQuery] = useState<{
     from: string;
@@ -15,10 +17,14 @@ export default function Search({ locations }: { locations: LocationType[] }) {
     from: "",
     to: "",
   });
+  const { language } = useLanguage();
   const handleSearch = () => {
     const querySearch = buildSearch(query);
     router.push(`/combo/tim-kiem${querySearch}`);
   };
+  const fromOptions = locations.filter((opt: any) => opt.label !== query?.to);
+  const toOptions = locations.filter((opt: any) => opt.label !== query?.from);
+
   return (
     <Fragment>
       <div className="base__content h-full relative place-content-center my-12 lg:my-16">
@@ -46,31 +52,35 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                 Khởi hành từ
               </label>
               <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
-                <select
+                <Select
                   id="from"
-                  defaultValue={""}
-                  onChange={(e) => {
+                  options={fromOptions}
+                  data-translate={true}
+                  placeholder={`${
+                    language === "en"
+                      ? "Select departure point"
+                      : "Chọn điểm đi"
+                  }`}
+                  className="w-full pl-[10%]"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      border: "none",
+                      boxShadow: "none",
+                      cursor: "pointer",
+                    }),
+                    indicatorsContainer: (provided) => ({
+                      ...provided,
+                      display: "none",
+                    }),
+                  }}
+                  onChange={(selectedOption: any) => {
                     setQuery({
                       ...query,
-                      from: e.target.value,
+                      from: selectedOption?.label ?? "",
                     });
                   }}
-                  className={`w-[95%]  indent-10 outline-none`}
-                >
-                  <option value="" data-translate={true}>
-                    Chọn điểm đi
-                  </option>
-                  {locations.map((location) => (
-                    <option
-                      key={location.id}
-                      value={location.name}
-                      disabled={query.to === location.name}
-                      data-translate={true}
-                    >
-                      {location.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
             <div className="w-full lg:w-[40%] relative">
@@ -92,57 +102,35 @@ export default function Search({ locations }: { locations: LocationType[] }) {
                 Điểm đến
               </label>
               <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
-                <select
+                <Select
                   id="to"
-                  onChange={(e) => {
+                  options={toOptions}
+                  placeholder={`${
+                    language === "en" ? "Select destination" : "Chọn điểm đến"
+                  }`}
+                  className="w-full pl-[10%]"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      border: "none",
+                      boxShadow: "none",
+                      cursor: "pointer",
+                    }),
+                    indicatorsContainer: (provided) => ({
+                      ...provided,
+                      display: "none",
+                    }),
+                  }}
+                  onChange={(selectedOption: any) => {
                     setQuery({
                       ...query,
-                      to: e.target.value,
+                      to: selectedOption?.label ?? "",
                     });
                   }}
-                  className={`w-[95%] indent-10 outline-none`}
-                >
-                  <option value="" data-translate={true}>
-                    Chọn điểm đến
-                  </option>
-                  {locations.map((location) => (
-                    <option
-                      key={location.id}
-                      value={location.name}
-                      disabled={query.from === location.name}
-                      data-translate={true}
-                    >
-                      {location.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            {/* <div className="w-full lg:w-[30%] relative">
-              <div className="absolute left-4 top-1/2 translate-y-1/4 z-10">
-                <Image
-                  src="/icon/calendar.svg"
-                  alt="Icon"
-                  className="h-10"
-                  width={20}
-                  height={20}
-                  style={{ width: 20, height: 20 }}
-                ></Image>
-              </div>
-              <label htmlFor="typeVisa" className="font-medium block">
-                Ngày khởi hành
-              </label>
-              <div className="w-full  [&>div]:w-full border-none">
-                <DatePicker
-                  selectsRange
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Chọn ngày khởi hành"
-                  minDate={new Date()}
-                  locale={vi}
-                  className={`mt-2 w-full rounded-lg p-2 border border-gray-300 h-12 indent-10 outline-none`}
                 />
               </div>
-            </div> */}
+            </div>
+
             <div className="w-full lg:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
               <button
                 type="button"

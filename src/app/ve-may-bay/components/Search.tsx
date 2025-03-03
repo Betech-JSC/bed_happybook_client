@@ -254,7 +254,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               checked={tripType === "oneWay"}
               onChange={() => handleTripChange("oneWay")}
             />
-            <span className="text-black" data-translate={true}>
+            <span className="text-black" data-translate="true">
               Một chiều
             </span>
           </label>
@@ -266,7 +266,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               checked={tripType === "roundTrip"}
               onChange={() => handleTripChange("roundTrip")}
             />
-            <span className="text-black" data-translate={true}>
+            <span className="text-black" data-translate="true">
               Khứ hồi
             </span>
           </label>
@@ -277,7 +277,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               checked={cheapest === "1"}
               onChange={handleCheckboxCheapest}
             />
-            <span className="text-black" data-translate={true}>
+            <span className="text-black" data-translate="true">
               Tìm vé rẻ
             </span>
           </label>
@@ -300,7 +300,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               tripType === "roundTrip" ? "lg:w-[13.75%]" : "lg:w-[22.5%]"
             }`}
           >
-            <label className="block text-gray-700 mb-1" data-translate={true}>
+            <label className="block text-gray-700 mb-1" data-translate="true">
               Ngày đi
             </label>
             <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
@@ -341,7 +341,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                 : "invisible hidden"
             } `}
           >
-            <label className="block text-gray-700 mb-1" data-translate={true}>
+            <label className="block text-gray-700 mb-1" data-translate="true">
               Ngày về
             </label>
             <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black">
@@ -390,7 +390,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
               tripType === "roundTrip" ? "lg:w-[15%]" : "lg:w-[20%]"
             }`}
           >
-            <label className="block text-gray-700 mb-1" data-translate={true}>
+            <label className="block text-gray-700 mb-1" data-translate="true">
               Số lượng khách
             </label>
             <div className="flex items-center border rounded-lg px-2 h-12">
@@ -421,7 +421,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                 style={{ width: 18, height: 18 }}
               />
               <button
-                data-translate={true}
+                data-translate="true"
                 className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
               >
                 Tìm kiếm

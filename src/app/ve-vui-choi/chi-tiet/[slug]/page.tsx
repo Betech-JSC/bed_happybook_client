@@ -1,5 +1,4 @@
 import Image from "next/image";
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Breadcrumb,
@@ -13,38 +12,22 @@ import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import ImageGallery from "../../components/ImageGallery";
+import { ProductTicket } from "@/api/ProductTicket";
+import { getServerLang } from "@/lib/session";
+import { renderTextContent } from "@/utils/Helper";
+import FAQ from "@/components/content-page/FAQ";
+import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 
 export default async function EntertainmentTicketDetail({
   params,
 }: {
   params: { slug: string };
 }) {
-  const gallery = [
-    {
-      image_url: "",
-      image: "ve-vui-choi/gallery/1.png",
-    },
-    {
-      image_url: "",
-      image: "ve-vui-choi/gallery/2.png",
-    },
-    {
-      image_url: "",
-      image: "ve-vui-choi/gallery/3.png",
-    },
-    {
-      image_url: "",
-      image: "ve-vui-choi/gallery/4.png",
-    },
-    {
-      image_url: "",
-      image: "ve-vui-choi/gallery/5.png",
-    },
-    {
-      image_url: "",
-      image: "ve-vui-choi/gallery/6.png",
-    },
-  ];
+  // const language = await getServerLang();
+  const res = (await ProductTicket.detail(params.slug)) as any;
+  const detail = res?.payload?.data;
+  if (!detail) notFound();
+
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -53,7 +36,11 @@ export default async function EntertainmentTicketDetail({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link
+                    href="/"
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -61,7 +48,11 @@ export default async function EntertainmentTicketDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={`/ve-vui-choi`} className="text-blue-700">
+                  <Link
+                    href={`/ve-vui-choi`}
+                    className="text-blue-700"
+                    data-translate={true}
+                  >
                     Vé vui chơi
                   </Link>
                 </BreadcrumbLink>
@@ -69,57 +60,42 @@ export default async function EntertainmentTicketDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-gray-700">VinWonders Hà Nội</p>
+                  <p className="text-gray-700" data-translate={true}>
+                    {renderTextContent(detail?.name)}
+                  </p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery gallery={gallery} />
+              <ImageGallery gallery={detail?.gallery} />
               <div className="mt-4">
                 <div className={`bg-white rounded-2xl p-6`}>
-                  <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+                  <h2
+                    className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+                    data-translate={true}
+                  >
                     Chi tiết địa điểm
                   </h2>
-                  <div className="mt-4 text-base leading-6">
-                    <p>
-                      Đưa vô số trò chơi và giải trí đa dạng vào một trong những
-                      công viên giải trí lớn nhất Việt Nam, và bạn sẽ có ngay
-                      một điểm hẹn: VinWonders Phú Quốc.
-                    </p>
-                    <ul className="list list-disc list-inside">
-                      <li>
-                        Trải nghiệm 12 nền văn minh nhân loại từ xa xưa đến nay
-                        và 6 khu với hơn 100 hoạt động vui chơi giải trí trong
-                        công viên giải trí lớn nhất Việt Nam
-                      </li>
-                      <li>
-                        Du hành ngược thời gian đến những vùng đất huyền thoại
-                        thông qua các trò chơi nổi tiếng thế giới, lên một chiếc
-                        bè khổng lồ cao 30 mét so với mực nước biển hoặc lênh
-                        đênh trên dòng sông ly kỳ để khám phá những bí mật ẩn
-                        giấu của các bộ tộc cổ xưa
-                      </li>
-                      <li>
-                        Vào Hang Thỏ và bước vào một thế giới thần tiên của
-                        Alice và gặp lại những nhân vật yêu thích từ tuổi thơ
-                      </li>
-                      <li>
-                        Lạc vào khu rừng thần thoại và cùng Thạch Sách tham gia
-                        trận chiến khốc liệt chống lại con mãng xà độc ác và
-                        chim khổng lồ
-                      </li>
-                    </ul>
-                  </div>
+                  <div
+                    className="mt-4 text-base leading-6"
+                    data-translate={true}
+                    dangerouslySetInnerHTML={{
+                      __html: renderTextContent(detail?.ticket?.description),
+                    }}
+                  ></div>
                 </div>
               </div>
             </div>
             <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
               <div className="mt-4 lg:mt-0 flex flex-col justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold hover:text-primary duration-300 transition-colors">
-                    Vé VinWonders Phú Quốc
+                  <h1
+                    className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
+                    data-translate={true}
+                  >
+                    {renderTextContent(detail?.name)}
                   </h1>
 
                   <div className="flex space-x-2 mt-6 items-center">
@@ -130,7 +106,9 @@ export default async function EntertainmentTicketDetail({
                       width={18}
                       height={18}
                     />
-                    <span>Mở | Thứ, 10:00-19:30</span>
+                    <span data-translate={true}>
+                      {renderTextContent(detail?.ticket?.time)}
+                    </span>
                   </div>
 
                   <div className="flex space-x-2 mt-3 items-center">
@@ -141,29 +119,44 @@ export default async function EntertainmentTicketDetail({
                       width={18}
                       height={18}
                     />
-                    <span>
-                      Khu Bãi Dài, Phú Quốc, Kiên Giang 92512, Vietnam
+                    <span data-translate={true}>
+                      {renderTextContent(detail?.ticket?.address)}
                     </span>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                  <span className="mr-3">Giá từ</span>
+                  <span className="mr-3" data-translate={true}>
+                    Giá từ
+                  </span>
                   <span className="text-2xl text-primary font-bold mt-3">
-                    {formatCurrency(710000)}
+                    {formatCurrency(detail?.price)}
                   </span>
                 </div>
                 <div className="mt-6">
                   <Link
-                    href={`/ve-vui-choi/chi-tiet/vinwonders-ha-noi/checkout`}
+                    href={`/ve-vui-choi/chi-tiet/${detail?.slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
-                    <span className="mx-auto text-base font-medium">
+                    <span
+                      className="mx-auto text-base font-medium"
+                      data-translate={true}
+                    >
                       Đặt ngay
                     </span>
                   </Link>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="bg-white">
+        <div className="lg:px-[80px] max__screen">
+          <div className="my-8 bg-gray-50 rounded-3xl">
+            <FAQ />
+          </div>
+          <div className="my-8 p-8 bg-gray-50 rounded-3xl">
+            <WhyChooseHappyBook />
           </div>
         </div>
       </div>

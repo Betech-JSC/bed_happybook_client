@@ -59,7 +59,7 @@ export default function FormRegister() {
             type="text"
             {...register("email")}
             placeholder="Nhập địa chỉ email"
-            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5"
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.email && (
             <p className="text-red-600">{errors.email.message}</p>
@@ -71,7 +71,7 @@ export default function FormRegister() {
             type="password"
             placeholder="Nhập mật khẩu"
             {...register("password")}
-            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5"
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.password && (
             <p className="text-red-600">{errors.password.message}</p>
@@ -83,7 +83,7 @@ export default function FormRegister() {
             type="password"
             placeholder="Nhập lại mật khẩu"
             {...register("password_confirmation")}
-            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5"
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.password_confirmation && (
             <p className="text-red-600">
