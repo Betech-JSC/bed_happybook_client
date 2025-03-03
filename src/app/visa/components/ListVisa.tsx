@@ -136,7 +136,7 @@ export default function ListVisa({
               key={index}
               className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none"
             >
-              <p className="font-semibold" data-translate={true}>
+              <p className="font-semibold" data-translate="true">
                 {item.label}
               </p>
               {item.option.map((value: string, index: number) => {
@@ -161,7 +161,7 @@ export default function ListVisa({
                           handleFilterChange(`${item.name}[]`, e.target.value)
                         }
                       />
-                      <label htmlFor={item.name + index} data-translate={true}>
+                      <label htmlFor={item.name + index} data-translate="true">
                         {value}
                       </label>
                     </div>

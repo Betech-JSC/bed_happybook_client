@@ -489,13 +489,13 @@ export default function FlightBookForm({ airportsData }: any) {
           >
             <h3
               className="text-22 py-4 px-8 font-semibold text-white"
-              data-translate={true}
+              data-translate="true"
             >
               Thông tin đặt hàng
             </h3>
           </div>
           <div className="mt-6">
-            <p className="font-bold text-18" data-translate={true}>
+            <p className="font-bold text-18" data-translate="true">
               Thông tin liên hệ
             </p>
             <div className="bg-white rounded-xl py-4 px-6 mt-3">
@@ -506,7 +506,7 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="FirstName"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      <span data-translate={true}>Họ</span>
+                      <span data-translate="true">Họ</span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -527,7 +527,7 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="LastName"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      <span data-translate={true}>Tên đệm & Tên</span>
+                      <span data-translate="true">Tên đệm & Tên</span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -548,7 +548,7 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="gender_person_contact"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      <span data-translate={true}>Giới tính</span>
+                      <span data-translate="true">Giới tính</span>
                       <span className="text-red-500">*</span>
                     </label>
 
@@ -560,14 +560,14 @@ export default function FlightBookForm({ airportsData }: any) {
                       <option
                         value=""
                         className="text-gray-300"
-                        data-translate={true}
+                        data-translate="true"
                       >
                         Vui lòng chọn giới tính
                       </option>
-                      <option value="male" data-translate={true}>
+                      <option value="male" data-translate="true">
                         Quý ông
                       </option>
-                      <option value="female" data-translate={true}>
+                      <option value="female" data-translate="true">
                         Quý bà
                       </option>
                     </select>
@@ -582,7 +582,7 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="phone"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      <span data-translate={true}>Số điện thoại</span>
+                      <span data-translate="true">Số điện thoại</span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -603,7 +603,7 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="email"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      <span data-translate={true}>Email</span>
+                      <span data-translate="true">Email</span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -643,7 +643,7 @@ export default function FlightBookForm({ airportsData }: any) {
                     onClick={() => {
                       setGenerateInvoice(!generateInvoice);
                     }}
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Tôi muốn xuất hóa đơn
                   </span>
@@ -660,7 +660,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         htmlFor="GenerateInvoice_company_name"
                         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <span data-translate={true}>Tên công ty</span>
+                        <span data-translate="true">Tên công ty</span>
                         <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -681,7 +681,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         htmlFor="GenerateInvoice_company_address"
                         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <span data-translate={true}>Địa chỉ</span>
+                        <span data-translate="true">Địa chỉ</span>
                         <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -702,7 +702,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         htmlFor="GenerateInvoice_city"
                         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <span data-translate={true}>Thành phố</span>
+                        <span data-translate="true">Thành phố</span>
                         <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -723,7 +723,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         htmlFor="GenerateInvoice_tax_code"
                         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <span data-translate={true}>Mã số thuế</span>
+                        <span data-translate="true">Mã số thuế</span>
                         <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -744,7 +744,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         htmlFor="GenerateInvoice_recipient_name"
                         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <span data-translate={true}>Người nhận hóa đơn</span>
+                        <span data-translate="true">Người nhận hóa đơn</span>
                         <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -765,7 +765,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         htmlFor="GenerateInvoice_phone"
                         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <span data-translate={true}>Số điện thoại</span>
+                        <span data-translate="true">Số điện thoại</span>
                         <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -786,7 +786,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         htmlFor="GenerateInvoice_email"
                         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <span data-translate={true}>Email</span>
+                        <span data-translate="true">Email</span>
                         <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -808,7 +808,7 @@ export default function FlightBookForm({ airportsData }: any) {
             </div>
           </div>
           <div className="mt-6">
-            <p className="font-bold text-18" data-translate={true}>
+            <p className="font-bold text-18" data-translate="true">
               Thông tin hành khách
             </p>
             <div>
@@ -819,10 +819,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="bg-white rounded-xl py-4 px-6 mt-3"
                   >
                     <div className="py-1 px-2 bg-gray-100 rounded-lg">
-                      <span className="text-18 font-bold" data-translate={true}>
+                      <span className="text-18 font-bold" data-translate="true">
                         Hành khách {keyLoopPassenger}
                       </span>
-                      <span className="text-base ml-4" data-translate={true}>
+                      <span className="text-base ml-4" data-translate="true">
                         (vé người lớn)
                       </span>
                     </div>
@@ -833,7 +833,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Họ</span>
+                          <span data-translate="true">Họ</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -845,7 +845,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         />
                         <span
                           className="text-xs text-gray-500"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
@@ -861,7 +861,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Tên đệm & Tên</span>
+                          <span data-translate="true">Tên đệm & Tên</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -873,7 +873,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         />
                         <span
                           className="text-xs text-gray-500"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
@@ -889,7 +889,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="service"
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Giới tính</span>
+                          <span data-translate="true">Giới tính</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -897,13 +897,13 @@ export default function FlightBookForm({ airportsData }: any) {
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                             {...register(`atd.${index}.gender`)}
                           >
-                            <option value="" data-translate={true}>
+                            <option value="" data-translate="true">
                               Vui lòng chọn giới tính
                             </option>
-                            <option value="male" data-translate={true}>
+                            <option value="male" data-translate="true">
                               Quý ông
                             </option>
-                            <option value="female" data-translate={true}>
+                            <option value="female" data-translate="true">
                               Quý bà
                             </option>
                           </select>
@@ -919,7 +919,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`atd.${index}.birthday`}
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Ngày sinh</span>
+                          <span data-translate="true">Ngày sinh</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -980,7 +980,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`atd.${index}.cccd`}
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>CCCD</span>
+                          <span data-translate="true">CCCD</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1001,7 +1001,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`atd.${index}.cccd_date`}
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Ngày hết hạn</span>
+                          <span data-translate="true">Ngày hết hạn</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1072,7 +1072,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                 key={leg}
                               >
                                 <label
-                                  data-translate={true}
+                                  data-translate="true"
                                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                                 >
                                   Hành lý chiều {leg === 0 ? "đi" : "về"}
@@ -1094,7 +1094,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                         : ""
                                     }`}
                                   >
-                                    <option value="" data-translate={true}>
+                                    <option value="" data-translate="true">
                                       {hasBaggage
                                         ? "Chọn gói hành lý"
                                         : "Chuyến bay không hỗ trợ mua thêm hành lý"}
@@ -1104,7 +1104,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                         <option
                                           key={key}
                                           value={baggage.Code}
-                                          data-translate={true}
+                                          data-translate="true"
                                         >
                                           {baggage.Name} {" / "}
                                           {baggage.Price.toLocaleString(
@@ -1131,10 +1131,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="bg-white rounded-xl py-4 px-6 mt-3"
                   >
                     <div className="py-1 px-2 bg-gray-100 rounded-lg">
-                      <span className="text-18 font-bold" data-translate={true}>
+                      <span className="text-18 font-bold" data-translate="true">
                         Hành khách {keyLoopPassenger}
                       </span>
-                      <span className="text-base ml-4" data-translate={true}>
+                      <span className="text-base ml-4" data-translate="true">
                         ( vé trẻ em)
                       </span>
                     </div>
@@ -1144,7 +1144,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Họ</span>
+                          <span data-translate="true">Họ</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1156,7 +1156,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         />
                         <span
                           className="text-xs text-gray-500"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
@@ -1172,7 +1172,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Tên đệm & Tên</span>
+                          <span data-translate="true">Tên đệm & Tên</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1184,7 +1184,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         />
                         <span
                           className="text-xs text-gray-500"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
@@ -1200,7 +1200,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="service"
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Giới tính</span>
+                          <span data-translate="true">Giới tính</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1208,13 +1208,13 @@ export default function FlightBookForm({ airportsData }: any) {
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                             {...register(`chd.${index}.gender`)}
                           >
-                            <option value="" data-translate={true}>
+                            <option value="" data-translate="true">
                               Vui lòng chọn giới tính
                             </option>
-                            <option value="male" data-translate={true}>
+                            <option value="male" data-translate="true">
                               Nam
                             </option>
-                            <option value="female" data-translate={true}>
+                            <option value="female" data-translate="true">
                               Nữ
                             </option>
                           </select>
@@ -1230,7 +1230,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`chd.${index}.birthday`}
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Ngày sinh</span>
+                          <span data-translate="true">Ngày sinh</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1291,7 +1291,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                 key={leg}
                               >
                                 <label
-                                  data-translate={true}
+                                  data-translate="true"
                                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                                 >
                                   Hành lý chiều {leg === 0 ? "đi" : "về"}
@@ -1313,7 +1313,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                         : ""
                                     }`}
                                   >
-                                    <option value="" data-translate={true}>
+                                    <option value="" data-translate="true">
                                       {hasBaggage
                                         ? "Chọn gói hành lý"
                                         : "Chuyến bay không hỗ trợ mua thêm hành lý"}
@@ -1323,7 +1323,7 @@ export default function FlightBookForm({ airportsData }: any) {
                                         <option
                                           key={key}
                                           value={baggage.Code}
-                                          data-translate={true}
+                                          data-translate="true"
                                         >
                                           {baggage.Name} {" / "}
                                           {baggage.Price.toLocaleString(
@@ -1350,10 +1350,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="bg-white rounded-xl py-4 px-6 mt-3"
                   >
                     <div className="py-1 px-2 bg-gray-100 rounded-lg">
-                      <span className="text-18 font-bold" data-translate={true}>
+                      <span className="text-18 font-bold" data-translate="true">
                         Hành khách {keyLoopPassenger}
                       </span>
-                      <span className="text-base ml-4" data-translate={true}>
+                      <span className="text-base ml-4" data-translate="true">
                         ( vé em bé)
                       </span>
                     </div>
@@ -1364,7 +1364,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Họ</span>
+                          <span data-translate="true">Họ</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1376,7 +1376,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         />
                         <span
                           className="text-xs text-gray-500"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
@@ -1392,7 +1392,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="fullName"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Tên đệm & Tên</span>
+                          <span data-translate="true">Tên đệm & Tên</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1404,7 +1404,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         />
                         <span
                           className="text-xs text-gray-500"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
@@ -1420,7 +1420,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           htmlFor="service"
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Giới tính</span>
+                          <span data-translate="true">Giới tính</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1428,13 +1428,13 @@ export default function FlightBookForm({ airportsData }: any) {
                             className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
                             {...register(`inf.${index}.gender`)}
                           >
-                            <option value="" data-translate={true}>
+                            <option value="" data-translate="true">
                               Vui lòng chọn giới tính
                             </option>
-                            <option value="male" data-translate={true}>
+                            <option value="male" data-translate="true">
                               Nam
                             </option>
-                            <option value="female" data-translate={true}>
+                            <option value="female" data-translate="true">
                               Nữ
                             </option>
                           </select>
@@ -1450,7 +1450,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           id={`inf.${index}.birthday`}
                           className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate={true}>Ngày sinh</span>
+                          <span data-translate="true">Ngày sinh</span>
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1514,7 +1514,7 @@ export default function FlightBookForm({ airportsData }: any) {
         <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 ">
           <div className="pb-0 py-4 px-3 lg:px-6">
             <div className="flex justify-between">
-              <span className="text-22 font-semibold" data-translate={true}>
+              <span className="text-22 font-semibold" data-translate="true">
                 Thông tin đặt chỗ
               </span>
               <button
@@ -1524,7 +1524,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   e.preventDefault();
                   setShowFlightDetail(true);
                 }}
-                data-translate={true}
+                data-translate="true"
               >
                 Xem chi tiết
               </button>
@@ -1552,10 +1552,10 @@ export default function FlightBookForm({ airportsData }: any) {
                   key={index}
                 >
                   <div className="flex justify-between">
-                    <p className="font-bold" data-translate={true}>
+                    <p className="font-bold" data-translate="true">
                       {item.Leg ? "Chiều về" : "Chiều đi"}
                     </p>
-                    <p className="text-sm text-gray-500" data-translate={true}>
+                    <p className="text-sm text-gray-500" data-translate="true">
                       {startDateLocale}
                     </p>
                   </div>
@@ -1607,7 +1607,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           </div>
                           <span
                             className="text-sm text-gray-700 mt-2"
-                            data-translate={true}
+                            data-translate="true"
                           >
                             {flight.StopNum
                               ? `${flight.StopNum} điểm dừng`
@@ -1646,7 +1646,7 @@ export default function FlightBookForm({ airportsData }: any) {
               <div className="w-8 h-8 bg-gray-100 rounded-full -mr-3"></div>
             </div>
             <div className="py-4 px-3 lg:px-6">
-              <p className="text-22 font-bold mb-2" data-translate={true}>
+              <p className="text-22 font-bold mb-2" data-translate="true">
                 Giá chi tiết
               </p>
               {dropdown.map((item: any, index: number) => (
@@ -1657,7 +1657,7 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="flex justify-between text-sm items-start space-x-3 w-full text-left outline-none"
                   >
                     <div className="flex w-8/12">
-                      <span data-translate={true}>
+                      <span data-translate="true">
                         {item.title} (
                         {Array.from({ length: item.quantity }, (_, key) => (
                           <span key={keyLoopDropdown++}>
@@ -1702,14 +1702,14 @@ export default function FlightBookForm({ airportsData }: any) {
                     } `}
                   >
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
-                      <span data-translate={true}>Vé</span>
+                      <span data-translate="true">Vé</span>
                       <span>
                         {formatCurrency(item.totalPriceTicket)} x{" "}
                         {item.quantity}
                       </span>
                     </div>
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
-                      <span data-translate={true}>Thuế và phí</span>
+                      <span data-translate="true">Thuế và phí</span>
                       <span>
                         {formatCurrency(item.totalTax)} x {item.quantity}
                       </span>
@@ -1719,7 +1719,7 @@ export default function FlightBookForm({ airportsData }: any) {
               ))}
 
               <div className="flex justify-between pb-4">
-                <span className="text-sm text-gray-500" data-translate={true}>
+                <span className="text-sm text-gray-500" data-translate="true">
                   Hành lý bổ sung
                 </span>
                 <p className="font-semibold">
@@ -1733,7 +1733,7 @@ export default function FlightBookForm({ airportsData }: any) {
               <div className="flex pt-4 justify-between border-t border-t-gray-200">
                 <span
                   className=" text-gray-700 font-bold"
-                  data-translate={true}
+                  data-translate="true"
                 >
                   Tổng cộng
                 </span>

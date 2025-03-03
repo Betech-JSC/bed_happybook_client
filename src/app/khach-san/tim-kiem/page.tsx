@@ -61,7 +61,7 @@ export default async function SearchHotel() {
                   <Link
                     href="/"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Trang chủ
                   </Link>
@@ -73,7 +73,7 @@ export default async function SearchHotel() {
                   <Link
                     href="/khach-san"
                     className="text-gray-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Khách sạn
                   </Link>

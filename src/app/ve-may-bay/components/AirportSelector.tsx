@@ -200,7 +200,7 @@ export default function AirportPopupSelector({
       <div className="w-full md:w-1/2 mr-1">
         <label htmlFor="departure-input" className="block text-gray-700 mb-1">
           <i className="fas fa-plane-departure"></i>
-          <span data-translate={true}>Từ</span>
+          <span data-translate="true">Từ</span>
         </label>
         <div className="flex h-12 items-center border rounded-lg px-2">
           <Image
@@ -240,7 +240,7 @@ export default function AirportPopupSelector({
       </div>
       <div className="w-full md:w-1/2">
         <label htmlFor="destination-input" className="block text-gray-700 mb-1">
-          <span data-translate={true}>Đến</span>
+          <span data-translate="true">Đến</span>
         </label>
         <div className="flex h-12 items-center border rounded-lg px-2  md:pl-6">
           <Image
@@ -273,7 +273,7 @@ export default function AirportPopupSelector({
         <div className="flex items-center justify-between px-4 py-2 border-b">
           <h2
             className="text-lg font-semibold text-orange-500"
-            data-translate={true}
+            data-translate="true"
           >
             Chọn {activeInput === "departure" ? "điểm đi" : "điểm đến"}
           </h2>
@@ -333,7 +333,7 @@ export default function AirportPopupSelector({
                         : "text-gray-600 border-gray-300"
                     }`}
                     onClick={() => setSelectedTab(country.id)}
-                    date-translate
+                    data-translate="true"
                   >
                     {country.country}
                   </button>
@@ -347,7 +347,7 @@ export default function AirportPopupSelector({
                 key={airport.code}
                 className="font-normal px-3 py-2 text-left rounded-lg text__default_hover cursor-pointer"
                 onClick={() => handleAirportSelect(airport)}
-                date-translate
+                data-translate="true"
               >
                 {highlightTextSearchAirport(
                   `${airport.city} (${airport.code})`,
@@ -357,7 +357,7 @@ export default function AirportPopupSelector({
             ))}
           </div>
         ) : (
-          <div className="text-center my-4 text-gray-500" data-translate={true}>
+          <div className="text-center my-4 text-gray-500" data-translate="true">
             Không tìm thấy{" "}
             {activeInput === "departure" ? "điểm đi" : "điểm đến"} phù hợp
           </div>

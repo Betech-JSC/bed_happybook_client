@@ -52,7 +52,7 @@ export default function FlightDetailPopup({
           <div className="bg-white max-h-[90vh] min-h-[60vh] overflow-y-auto custom-scrollbar  py-6 px-4 md:px-8 pb-8 md:max-w-[680px] md:min-w-[680px] rounded-lg">
             {tabs.length > 1 && (
               <div className="flex justify-between items-end sticky top-[-25px] bg-white z-[999]">
-                <p className="text-22 font-bold" data-translate={true}>
+                <p className="text-22 font-bold" data-translate="true">
                   {t("chi_tiet")}
                 </p>
                 <button
@@ -94,7 +94,7 @@ export default function FlightDetailPopup({
                         ? "text-22 px-0"
                         : "px-4"
                     }`}
-                    // data-translate={true}
+                    // data-translate="true"
                   >
                     {t(`${toSnakeCase(tab.name)}`)}
                   </button>
@@ -133,7 +133,7 @@ export default function FlightDetailPopup({
                         background:
                           "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
                       }}
-                      data-translate={true}
+                      data-translate="true"
                     >
                       {flight.Leg ? t("chieu_ve") : t("chieu_di")}
                     </h2>
@@ -212,7 +212,7 @@ export default function FlightDetailPopup({
                                 <div>
                                   <div
                                     className="text-22 font-bold"
-                                    data-translate={true}
+                                    data-translate="true"
                                   >
                                     {airPortStartPoint
                                       ? `${airPortStartPoint?.city ?? ""} (${
@@ -241,7 +241,7 @@ export default function FlightDetailPopup({
                                     <p>{segment.FlightNumber}</p>
                                     <p
                                       className="hidden md:block"
-                                      data-translate={true}
+                                      data-translate="true"
                                     >
                                       -
                                     </p>
@@ -250,7 +250,7 @@ export default function FlightDetailPopup({
                                     </p>
                                   </div>
                                   <div className="mt-3 flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0 text-sm font-medium">
-                                    <p data-translate={true}>{`${t(
+                                    <p data-translate="true">{`${t(
                                       "hanh_ly_xach_tay"
                                     )}: ${
                                       segment.HandBaggage
@@ -258,7 +258,7 @@ export default function FlightDetailPopup({
                                         : ""
                                     }`}</p>
                                     {segment.AllowanceBaggage && (
-                                      <p data-translate={true}>
+                                      <p data-translate="true">
                                         {`${t("hanh_ly_ky_gui")}: ${
                                           segment.AllowanceBaggage
                                         }`}
@@ -270,7 +270,7 @@ export default function FlightDetailPopup({
                                   <p className="text-gray-500 mt-1 h-6"></p>
                                   <p
                                     className="text-22 font-bold"
-                                    data-translate={true}
+                                    data-translate="true"
                                   >
                                     {airPortEndPoint
                                       ? `${airPortEndPoint?.city ?? ""} (${
@@ -289,7 +289,7 @@ export default function FlightDetailPopup({
                                 <div className="w-0 md:w-1/12 h-full py-5 flex flex-col items-center"></div>
                                 <div className="w-full md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                                   <div className="bg-gray-50 rounded-lg p-4 flex space-x-4 lg:space-x-8 items-center text-sm">
-                                    <p data-translate={true}>
+                                    <p data-translate="true">
                                       Transfer in{" "}
                                       {airPortEndPoint
                                         ? `${airPortEndPoint?.city ?? ""} (${

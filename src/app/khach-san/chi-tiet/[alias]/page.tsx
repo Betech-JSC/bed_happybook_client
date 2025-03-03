@@ -89,7 +89,7 @@ export default async function HotelDetail({
                   <Link
                     href="/"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Trang chủ
                   </Link>
@@ -101,7 +101,7 @@ export default async function HotelDetail({
                   <Link
                     href="/khach-san"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Khách sạn
                   </Link>
@@ -113,7 +113,7 @@ export default async function HotelDetail({
                   <Link
                     href="#"
                     className="text-gray-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     {renderTextContent(detail.name)}
                   </Link>

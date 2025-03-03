@@ -80,7 +80,7 @@ export default function FormCheckOut({
   return (
     <form className="rounded-xl" onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-6">
-        <p className="text-18 font-bold" data-translate={true}>
+        <p className="text-18 font-bold" data-translate="true">
           Thông tin liên hệ
         </p>
         <div className="mt-4 bg-white py-4 px-6 rounded-xl">
@@ -90,7 +90,7 @@ export default function FormCheckOut({
                 htmlFor="fullName"
                 className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
               >
-                <span data-translate={true}>Họ và tên </span>
+                <span data-translate="true">Họ và tên </span>
                 <span className="text-red-500">*</span>
               </label>
               <input
@@ -110,7 +110,7 @@ export default function FormCheckOut({
                 htmlFor="gender"
                 className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
               >
-                <span data-translate={true}>Giới tính </span>
+                <span data-translate="true">Giới tính </span>
                 <span className="text-red-500">*</span>
               </label>
               <select
@@ -118,16 +118,16 @@ export default function FormCheckOut({
                 {...register("gender")}
                 className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
               >
-                <option value="" data-translate={true}>
+                <option value="" data-translate="true">
                   Vui lòng chọn giới tính
                 </option>
-                <option value="male" data-translate={true}>
+                <option value="male" data-translate="true">
                   Nam
                 </option>
-                <option value="female" data-translate={true}>
+                <option value="female" data-translate="true">
                   Nữ
                 </option>
-                <option value="other" data-translate={true}>
+                <option value="other" data-translate="true">
                   Khác
                 </option>
               </select>
@@ -143,7 +143,7 @@ export default function FormCheckOut({
                   htmlFor="phone"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Số điện thoại </span>
+                  <span data-translate="true">Số điện thoại </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -219,7 +219,7 @@ export default function FormCheckOut({
                   htmlFor="GenerateInvoice_company_name"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Tên công ty </span>
+                  <span data-translate="true">Tên công ty </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -240,7 +240,7 @@ export default function FormCheckOut({
                   htmlFor="GenerateInvoice_company_address"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Địa chỉ </span>
+                  <span data-translate="true">Địa chỉ </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -261,7 +261,7 @@ export default function FormCheckOut({
                   htmlFor="GenerateInvoice_city"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Thành phố </span>
+                  <span data-translate="true">Thành phố </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -282,7 +282,7 @@ export default function FormCheckOut({
                   htmlFor="GenerateInvoice_tax_code"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Mã số thuế </span>
+                  <span data-translate="true">Mã số thuế </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -301,7 +301,7 @@ export default function FormCheckOut({
                   htmlFor="GenerateInvoice_recipient_name"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Người nhận hóa đơn </span>
+                  <span data-translate="true">Người nhận hóa đơn </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -322,7 +322,7 @@ export default function FormCheckOut({
                   htmlFor="GenerateInvoice_phone"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Số điện thoại </span>
+                  <span data-translate="true">Số điện thoại </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input

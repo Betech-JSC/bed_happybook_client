@@ -51,7 +51,7 @@ export default function Tabs({ detail }: any) {
               activeTab === index ? "text-primary" : ""
             }`}
             onClick={() => setActiveTab(index)}
-            data-translate={true}
+            data-translate="true"
           >
             {tab}
           </button>
@@ -72,7 +72,7 @@ export default function Tabs({ detail }: any) {
         >
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate={true}
+            data-translate="true"
           >
             Tìm hiểu Visa
           </h2>
@@ -91,7 +91,7 @@ export default function Tabs({ detail }: any) {
         >
           <h2
             className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
-            data-translate={true}
+            data-translate="true"
           >
             Giá dịch vụ, phí nộp ĐSQ, chuẩn bị hồ sơ
           </h2>

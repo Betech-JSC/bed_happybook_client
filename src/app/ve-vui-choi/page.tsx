@@ -26,7 +26,7 @@ export default async function EntertainmentTickets() {
                   <Link
                     href="/"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Trang chủ
                   </Link>
@@ -35,7 +35,7 @@ export default async function EntertainmentTickets() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-blue-700" data-translate={true}>
+                  <p className="text-blue-700" data-translate="true">
                     Vé vui chơi
                   </p>
                 </BreadcrumbLink>

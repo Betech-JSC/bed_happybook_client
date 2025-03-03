@@ -135,7 +135,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="check_in_date"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Ngày nhận phòng</span>
+                  <span data-translate="true">Ngày nhận phòng</span>
                   <span className="text-red-500">*</span>
                 </label>
                 <div className="pt-6 pb-2 pr-2 w-full">
@@ -186,7 +186,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="check_out_date"
                   className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Ngày trả phòng</span>
+                  <span data-translate="true">Ngày trả phòng</span>
                   <span className="text-red-500">*</span>
                 </label>
                 <div className="flex justify-between items-end pt-6 pb-2 pr-2 w-full rounded-md">
@@ -223,7 +223,7 @@ export default function FormCheckOut({ data, room }: any) {
             <label
               htmlFor="atd"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-              data-translate={true}
+              data-translate="true"
             >
               Người lớn
             </label>
@@ -243,7 +243,7 @@ export default function FormCheckOut({ data, room }: any) {
             <label
               htmlFor="chd"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-              data-translate={true}
+              data-translate="true"
             >
               Trẻ em (2-12 tuổi)
             </label>
@@ -263,7 +263,7 @@ export default function FormCheckOut({ data, room }: any) {
             <label
               htmlFor="inf"
               className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-              data-translate={true}
+              data-translate="true"
             >
               Em bé {"(< 2 tuổi)"}
             </label>
@@ -282,7 +282,7 @@ export default function FormCheckOut({ data, room }: any) {
         </div>
       </div>
       <div className="mt-6">
-        <p className="text-18 font-bold" data-translate={true}>
+        <p className="text-18 font-bold" data-translate="true">
           Thông tin liên hệ
         </p>
         <div className="mt-4 bg-white py-4 px-6 rounded-xl">
@@ -292,7 +292,7 @@ export default function FormCheckOut({ data, room }: any) {
                 htmlFor="fullName"
                 className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
               >
-                <span data-translate={true}>Họ và tên</span>
+                <span data-translate="true">Họ và tên</span>
                 <span className="text-red-500">*</span>
               </label>
               <input
@@ -315,7 +315,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="phone"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Số điện thoại</span>
+                  <span data-translate="true">Số điện thoại</span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -374,7 +374,7 @@ export default function FormCheckOut({ data, room }: any) {
               onClick={() => {
                 setGenerateInvoice(!generateInvoice);
               }}
-              data-translate={true}
+              data-translate="true"
             >
               Tôi muốn xuất hóa đơn
             </span>
@@ -391,7 +391,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="GenerateInvoice_company_name"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Tên công ty </span>
+                  <span data-translate="true">Tên công ty </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -412,7 +412,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="GenerateInvoice_company_address"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Địa chỉ </span>
+                  <span data-translate="true">Địa chỉ </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -433,7 +433,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="GenerateInvoice_city"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Thành phố </span>
+                  <span data-translate="true">Thành phố </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -454,7 +454,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="GenerateInvoice_tax_code"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Mã số thuế </span>
+                  <span data-translate="true">Mã số thuế </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -473,7 +473,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="GenerateInvoice_recipient_name"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Người nhận hóa đơn </span>
+                  <span data-translate="true">Người nhận hóa đơn </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -494,7 +494,7 @@ export default function FormCheckOut({ data, room }: any) {
                   htmlFor="GenerateInvoice_phone"
                   className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate={true}>Số điện thoại </span>
+                  <span data-translate="true">Số điện thoại </span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -536,13 +536,13 @@ export default function FormCheckOut({ data, room }: any) {
             <div className="mt-6 py-4 px-6 bg-gray-100 rounded-lg">
               <p
                 className="text-18 text-blue-700 font-bold"
-                data-translate={true}
+                data-translate="true"
               >
                 Chính sách
               </p>
               <div
                 className="mt-2"
-                data-translate={true}
+                data-translate="true"
                 dangerouslySetInnerHTML={{
                   __html: renderTextContent(translatedContent[0]),
                 }}
@@ -553,13 +553,13 @@ export default function FormCheckOut({ data, room }: any) {
             <div className="mt-6 py-4 px-6 bg-gray-100 rounded-lg">
               <p
                 className="text-18 text-blue-700 font-bold"
-                data-translate={true}
+                data-translate="true"
               >
                 Thông tin quan trọng
               </p>
               <div
                 className="mt-2"
-                data-translate={true}
+                data-translate="true"
                 dangerouslySetInnerHTML={{
                   __html: renderTextContent(translatedContent[1]),
                 }}
@@ -580,7 +580,7 @@ export default function FormCheckOut({ data, room }: any) {
               <label
                 htmlFor="checkbox1"
                 className="text-sm"
-                data-translate={true}
+                data-translate="true"
               >
                 Tôi xác nhận đã đọc và chấp nhận.{" "}
               </label>
@@ -588,7 +588,7 @@ export default function FormCheckOut({ data, room }: any) {
                 href="/thong-tin-chung/dieu-khoan-su-dung"
                 target="_blank"
                 className="text-blue-700 font-bold"
-                data-translate={true}
+                data-translate="true"
               >
                 Điều khoản sử dụng
               </Link>

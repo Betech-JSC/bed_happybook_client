@@ -50,7 +50,7 @@ export default async function CompoDetail({
                   <Link
                     href="/"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Trang chủ
                   </Link>
@@ -70,7 +70,7 @@ export default async function CompoDetail({
                   <Link
                     href="#"
                     className="text-gray-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     {renderTextContent(detail.name)}
                   </Link>
@@ -90,7 +90,7 @@ export default async function CompoDetail({
                 <div>
                   <h1
                     className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     {renderTextContent(detail.name)}
                   </h1>
@@ -101,7 +101,7 @@ export default async function CompoDetail({
                     <span className="text-primary font-semibold">
                       {getLabelRatingProduct(detail?.total_rating)}
                     </span>
-                    <span className="text-gray-500" data-translate={true}>
+                    <span className="text-gray-500" data-translate="true">
                       {detail?.total_rating ?? 0} đánh giá
                     </span>
                   </div>
@@ -113,7 +113,7 @@ export default async function CompoDetail({
                       width={18}
                       height={18}
                     />
-                    <span data-translate={true}>
+                    <span data-translate="true">
                       {`${detail?.combo?.day ? detail.combo.day : ""} ngày ${
                         detail?.combo?.night ? detail.combo.night : ""
                       } đêm`}
@@ -128,7 +128,7 @@ export default async function CompoDetail({
                       width={18}
                       height={18}
                     />
-                    <span data-translate={true}>
+                    <span data-translate="true">
                       {renderTextContent(detail?.combo?.address)}
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export default async function CompoDetail({
                     {detail?.price > 0 ? (
                       formatCurrency(detail?.price - detail?.discount_price)
                     ) : (
-                      <span data-translate={true}>Liên hệ</span>
+                      <span data-translate="true">Liên hệ</span>
                     )}
                   </span>
                   {/* <span>/ khách</span> */}
@@ -181,7 +181,7 @@ export default async function CompoDetail({
                   >
                     <span
                       className="block mx-auto text-base font-medium"
-                      data-translate={true}
+                      data-translate="true"
                     >
                       Yêu cầu đặt
                     </span>

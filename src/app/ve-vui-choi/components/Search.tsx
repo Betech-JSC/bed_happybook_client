@@ -107,7 +107,7 @@ export default function Search({
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18" data-translate={true}>
+        <span className="text-18" data-translate="true">
           Loading...
         </span>
       </div>
@@ -122,7 +122,7 @@ export default function Search({
               key={index}
               className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none"
             >
-              <p className="font-semibold" data-translate={true}>
+              <p className="font-semibold" data-translate="true">
                 {item.label}
               </p>
               {item?.option?.length > 0 ? (
@@ -142,7 +142,7 @@ export default function Search({
                           handleFilterChange(`${item.name}[]`, e.target.value)
                         }
                       />
-                      <label htmlFor={item.name + index} data-translate={true}>
+                      <label htmlFor={item.name + index} data-translate="true">
                         {option.label}
                       </label>
                     </div>
@@ -151,7 +151,7 @@ export default function Search({
               ) : (
                 <p
                   className="mt-1 text-base text-gray-700"
-                  // data-translate={true}
+                  // data-translate="true"
                 >
                   Loading...
                 </p>
@@ -161,11 +161,11 @@ export default function Search({
       </div>
       <div className="md:w-8/12 lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold" data-translate={true}>
+          <h1 className="text-32 font-bold" data-translate="true">
             Vé vui chơi
           </h1>
           <div className="flex my-4 md:my-0 space-x-3 items-center">
-            <span data-translate={true}>Sắp xếp</span>
+            <span data-translate="true">Sắp xếp</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
@@ -174,10 +174,10 @@ export default function Search({
                 }}
                 defaultValue={"id|desc"}
               >
-                <option value="id|desc" data-translate={true}>
+                <option value="id|desc" data-translate="true">
                   Mới nhất
                 </option>
-                <option value="id|asc" data-translate={true}>
+                <option value="id|asc" data-translate="true">
                   Cũ nhất
                 </option>
               </select>
@@ -210,7 +210,7 @@ export default function Search({
                     <Link
                       href={`/ve-vui-choi/chi-tiet/${item.slug}`}
                       className="text-base font-bold line-clamp-2 h-12"
-                      data-translate={true}
+                      data-translate="true"
                     >
                       {renderTextContent(item.name)}
                     </Link>
@@ -232,7 +232,7 @@ export default function Search({
                   <span className="text-18">Loading...</span>
                 </>
               ) : (
-                <span className="text-18" data-translate={true}>
+                <span className="text-18" data-translate="true">
                   Không tìm thấy dữ liệu phù hợp...
                 </span>
               )}

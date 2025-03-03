@@ -54,58 +54,58 @@ export default async function DinhCuCheckOut({
               <Link
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
-                data-translate={true}
+                data-translate="true"
               >
                 {renderTextContent(detail.name)}
               </Link>
               <div className="mt-6 mb-2">
                 <div>
-                  <span className="font-semibold" data-translate={true}>
+                  <span className="font-semibold" data-translate="true">
                     Mã visa:
                   </span>{" "}
-                  <span data-translate={true}>
+                  <span data-translate="true">
                     {renderTextContent(detail.product_dinhcu.ma_visa)}
                   </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold" data-translate={true}>
+                  <span className="font-semibold" data-translate="true">
                     Loại Visa:
                   </span>{" "}
-                  <span data-translate={true}>
+                  <span data-translate="true">
                     {renderTextContent(detail.product_dinhcu.loai_visa)}
                   </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold" data-translate={true}>
+                  <span className="font-semibold" data-translate="true">
                     Điểm Đến:
                   </span>{" "}
-                  <span data-translate={true}>
+                  <span data-translate="true">
                     {renderTextContent(detail.product_dinhcu.diem_den)}
                   </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold" data-translate={true}>
+                  <span className="font-semibold" data-translate="true">
                     Thời gian làm Visa:
                   </span>{" "}
-                  <span data-translate={true}>
+                  <span data-translate="true">
                     {renderTextContent(
                       detail.product_dinhcu.thoi_gian_lam_visa
                     )}
                   </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold" data-translate={true}>
+                  <span className="font-semibold" data-translate="true">
                     Thời gian lưu trú:
                   </span>{" "}
-                  <span data-translate={true}>
+                  <span data-translate="true">
                     {renderTextContent(detail.product_dinhcu.thoi_gian_luu_tru)}
                   </span>
                 </div>
                 <div className="mt-1">
-                  <span className="font-semibold" data-translate={true}>
+                  <span className="font-semibold" data-translate="true">
                     Số lần nhập cảnh:
                   </span>{" "}
-                  <span data-translate={true}>
+                  <span data-translate="true">
                     {renderTextContent(detail.product_dinhcu.so_lan_nhap_canh)}
                   </span>
                 </div>

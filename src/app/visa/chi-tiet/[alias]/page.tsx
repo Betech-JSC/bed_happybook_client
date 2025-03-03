@@ -92,7 +92,7 @@ export default async function CategoryPosts({
                   <Link
                     href="/"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Trang chủ
                   </Link>
@@ -104,7 +104,7 @@ export default async function CategoryPosts({
                   <Link
                     href="/visa"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Dịch vụ Visa
                   </Link>
@@ -116,7 +116,7 @@ export default async function CategoryPosts({
                   <Link
                     href="/visa/visa-nhat-ban"
                     className="text-blue-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Visa Nhật Bản
                   </Link>
@@ -128,7 +128,7 @@ export default async function CategoryPosts({
                   <Link
                     href="#"
                     className="text-gray-700"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     {renderTextContent(detail?.name)}
                   </Link>
@@ -154,60 +154,60 @@ export default async function CategoryPosts({
                 <div>
                   <h1
                     className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     {renderTextContent(detail?.name)}
                   </h1>
                   <div className="mt-6">
                     <div>
-                      <span className="font-semibold" data-translate={true}>
+                      <span className="font-semibold" data-translate="true">
                         Mã visa:
                       </span>{" "}
-                      <span data-translate={true}>
+                      <span data-translate="true">
                         {renderTextContent(detail?.product_visa?.ma_visa)}
                       </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold" data-translate={true}>
+                      <span className="font-semibold" data-translate="true">
                         Loại Visa:
                       </span>{" "}
-                      <span data-translate={true}>
+                      <span data-translate="true">
                         {renderTextContent(detail?.product_visa?.loai_visa)}
                       </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold" data-translate={true}>
+                      <span className="font-semibold" data-translate="true">
                         Điểm Đến:
                       </span>{" "}
-                      <span data-translate={true}>
+                      <span data-translate="true">
                         {renderTextContent(detail?.product_visa?.diem_den)}
                       </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold" data-translate={true}>
+                      <span className="font-semibold" data-translate="true">
                         Thời gian làm Visa:
                       </span>{" "}
-                      <span data-translate={true}>
+                      <span data-translate="true">
                         {renderTextContent(
                           detail?.product_visa?.thoi_gian_lam_visa
                         )}
                       </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold" data-translate={true}>
+                      <span className="font-semibold" data-translate="true">
                         Thời gian lưu trú:
                       </span>{" "}
-                      <span data-translate={true}>
+                      <span data-translate="true">
                         {renderTextContent(
                           detail?.product_visa?.thoi_gian_luu_tru
                         )}
                       </span>
                     </div>
                     <div className="mt-1">
-                      <span className="font-semibold" data-translate={true}>
+                      <span className="font-semibold" data-translate="true">
                         Số lần nhập cảnh:
                       </span>{" "}
-                      <span data-translate={true}>
+                      <span data-translate="true">
                         {renderTextContent(
                           detail?.product_visa?.so_lan_nhap_canh
                         )}
@@ -223,14 +223,14 @@ export default async function CategoryPosts({
                       : ""}
                   </p>
                   <div className="flex justify-between mt-3 items-end">
-                    <p className="font-semibold" data-translate={true}>
+                    <p className="font-semibold" data-translate="true">
                       Giá dịch vụ hỗ trợ từ:
                     </p>
                     <p className="text-base md:text-xl text-primary font-semibold">
                       {detail.price > 0 ? (
                         formatCurrency(detail.price - detail.discount_price)
                       ) : (
-                        <span data-translate={true}>Liên hệ</span>
+                        <span data-translate="true">Liên hệ</span>
                       )}
                     </p>
                   </div>
@@ -243,7 +243,7 @@ export default async function CategoryPosts({
                   >
                     <button
                       className="mx-auto text-base font-medium"
-                      data-translate={true}
+                      data-translate="true"
                     >
                       Gửi yêu cầu
                     </button>

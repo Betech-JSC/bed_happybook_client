@@ -315,7 +315,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           }}
         >
           <div className="flex flex-col lg:flex-row lg:space-x-4 justify-center px-4 lg:px-0 py-4">
-            <p className="text-22 font-bold text-white" data-translate={true}>
+            <p className="text-22 font-bold text-white" data-translate="true">
               Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất{" "}
             </p>
             {!ticketPaymentTimeout && data.orderInfo.booking_deadline ? (
@@ -338,7 +338,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           </div>
         </div>
         <div className="mt-6">
-          <p className="font-bold text-18" data-translate={true}>
+          <p className="font-bold text-18" data-translate="true">
             Tóm tắt chuyến bay
           </p>
           {fareData.map((item: any, key: number) =>
@@ -357,19 +357,17 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                   <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
                     <p
                       className="lg:w-2/12 text-sm text-gray-700"
-                      data-translate={true}
+                      data-translate="true"
                     >
                       Chuyến bay
                     </p>
                     <div className="lg:w-10/12 font-bold">
                       {fromOption && toOption ? (
-                        <p data-translate={true}>
+                        <p data-translate="true">
                           {`${fromOption?.city} (${flight.StartPoint}) - ${toOption?.city} (${flight.EndPoint}) `}
                         </p>
                       ) : (
-                        <p
-                          data-translate={true}
-                        >{`${flight.StartPoint} - ${flight.EndPoint}`}</p>
+                        <p data-translate="true">{`${flight.StartPoint} - ${flight.EndPoint}`}</p>
                       )}
                     </div>
                   </div>
@@ -410,7 +408,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                   {segment.FlightNumber}
                                 </h3>
                                 <div className="text-sm text-gray-500">
-                                  <span data-translate={true}> Hạng:</span>
+                                  <span data-translate="true"> Hạng:</span>
                                   <span>{flight.FareClass}</span>
                                 </div>
                               </div>
@@ -421,7 +419,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                               <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
                                 <span
                                   className="text-sm w-full"
-                                  data-translate={true}
+                                  data-translate="true"
                                 >
                                   {format(
                                     new Date(flight.StartDate),
@@ -434,7 +432,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                 </span>
                                 <span className="mt-2 text-sm text-gray-500 w-full">
                                   {fromSegmenOption ? (
-                                    <p data-translate={true}>
+                                    <p data-translate="true">
                                       {`${fromSegmenOption?.city} (${segment.StartPoint})`}
                                     </p>
                                   ) : (
@@ -461,7 +459,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                   </div>
                                   <span
                                     className="text-sm text-gray-700"
-                                    data-translate={true}
+                                    data-translate="true"
                                   >
                                     {durationFlight
                                       ? `${Math.floor(
@@ -474,7 +472,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                   {flight.ListSegment.length <= 1 && (
                                     <span
                                       className="text-sm text-gray-500"
-                                      data-translate={true}
+                                      data-translate="true"
                                     >
                                       Bay thẳng
                                     </span>
@@ -485,7 +483,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                               <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
                                 <span
                                   className="text-sm w-full"
-                                  data-translate={true}
+                                  data-translate="true"
                                 >
                                   {format(
                                     new Date(flight.EndDate),
@@ -498,9 +496,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                 </span>
                                 <span className="mt-2 text-sm text-gray-500 w-full">
                                   {toSegmentOption ? (
-                                    <p
-                                      data-translate={true}
-                                    >{`${toSegmentOption?.city} (${segment.EndPoint})`}</p>
+                                    <p data-translate="true">{`${toSegmentOption?.city} (${segment.EndPoint})`}</p>
                                   ) : (
                                     <p>{segment.EndPoint}</p>
                                   )}
@@ -517,7 +513,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       className=" text-blue-700 border-b border-blue-700 font-medium"
                       onClick={() => toggleShowRuleTicket(item, indexFlight)}
                       disabled={isLoadingRules}
-                      data-translate={true}
+                      data-translate="true"
                     >
                       Điều kiện vé
                     </button>
@@ -544,32 +540,32 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           )}
         </div>
         <div className="mt-6">
-          <p className="font-bold text-18" data-translate={true}>
+          <p className="font-bold text-18" data-translate="true">
             Thông tin liên hệ
           </p>
           <div className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words">
             <div className="flex space-x-2 pb-3 border-b border-gray-300">
-              <p className="w-1/4 text-gray-700" data-translate={true}>
+              <p className="w-1/4 text-gray-700" data-translate="true">
                 Mã đơn hàng
               </p>
               <p className="w-3/4 font-medium">{data.orderInfo.sku}</p>
             </div>
             <div className="flex space-x-2 mt-3">
-              <div className="w-1/4 text-gray-700" data-translate={true}>
+              <div className="w-1/4 text-gray-700" data-translate="true">
                 Họ và tên
               </div>
               <div className="w-3/4 ">
-                <p className="font-bold" data-translate={true}>
+                <p className="font-bold" data-translate="true">
                   {data.contact.first_name} {data.contact.last_name}
                 </p>
                 {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
               </div>
             </div>
             <div className="flex space-x-2 mt-3">
-              <p className="w-1/4 text-gray-700" data-translate={true}>
+              <p className="w-1/4 text-gray-700" data-translate="true">
                 Giới tính
               </p>
-              <p className="w-3/4 font-medium" data-translate={true}>
+              <p className="w-3/4 font-medium" data-translate="true">
                 {data.contact.gender ? "Nam" : "Nữ"}
               </p>
             </div>
@@ -578,17 +574,17 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               <p className="w-3/4 font-medium">08/09/1995</p>
             </div> */}
             <div className="flex space-x-2 mt-3">
-              <p className="w-1/4 text-gray-700" data-translate={true}>
+              <p className="w-1/4 text-gray-700" data-translate="true">
                 Email
               </p>
-              <p className="w-3/4 font-medium" data-translate={true}>
+              <p className="w-3/4 font-medium" data-translate="true">
                 {data.contact.email}
               </p>
             </div>
           </div>
         </div>
         <div className="mt-6">
-          <p className="font-bold text-18" data-translate={true}>
+          <p className="font-bold text-18" data-translate="true">
             Thông tin hành khách
           </p>
           {data.passengers.map((passenger: any, index: number) => (
@@ -597,11 +593,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words"
             >
               <div className="flex space-x-2 mt-3">
-                <div className="w-1/4 text-gray-700" data-translate={true}>
+                <div className="w-1/4 text-gray-700" data-translate="true">
                   Họ và tên
                 </div>
                 <div className="w-3/4 ">
-                  <p className="font-bold" data-translate={true}>
+                  <p className="font-bold" data-translate="true">
                     {passenger.first_name.toUpperCase()}{" "}
                     {passenger.last_name.toUpperCase()}
                   </p>
@@ -609,15 +605,15 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 </div>
               </div>
               <div className="flex space-x-2 mt-3">
-                <p className="w-1/4 text-gray-700" data-translate={true}>
+                <p className="w-1/4 text-gray-700" data-translate="true">
                   Giới tính
                 </p>
-                <p className="w-3/4 font-medium" data-translate={true}>
+                <p className="w-3/4 font-medium" data-translate="true">
                   {passenger.gender ? "Nam" : "Nữ"}
                 </p>
               </div>
               <div className="flex space-x-2 mt-3">
-                <p className="w-1/4 text-gray-700" data-translate={true}>
+                <p className="w-1/4 text-gray-700" data-translate="true">
                   Năm sinh
                 </p>
                 <p className="w-3/4 font-medium">
@@ -629,17 +625,17 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               </div>
               {passenger?.baggages?.length > 0 && (
                 <div className="flex space-x-2 mt-3">
-                  <p className="w-1/4 text-gray-700" data-translate={true}>
+                  <p className="w-1/4 text-gray-700" data-translate="true">
                     Dịch vụ mua thêm
                   </p>
                   <div className="w-3/4 font-semibold">
                     {passenger.baggages.map((baggage: any, index: number) => (
                       <div key={index} className="mb-2">
-                        <span data-translate={true}>
+                        <span data-translate="true">
                           {baggage.leg ? "Chiều về" : "Chiều đi"}
                         </span>
                         <span>{" - "}</span>
-                        <span data-translate={true}>{baggage.name} </span>
+                        <span data-translate="true">{baggage.name} </span>
                         <span>
                           ({baggage.price.toLocaleString("vi-VN")}{" "}
                           {baggage.currency})
@@ -656,7 +652,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           {!ticketPaymentTimeout && (
             <>
               <div className="mt-6">
-                <p className="font-bold text-18" data-translate={true}>
+                <p className="font-bold text-18" data-translate="true">
                   Hình thức thanh toán
                 </p>
                 <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
@@ -687,11 +683,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       <div className="max-w-[85%]">
                         <span
                           className="font-medium text-base"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Thanh toán tại quầy
                         </span>
-                        <p className="text-gray-500" data-translate={true}>
+                        <p className="text-gray-500" data-translate="true">
                           Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
                           hệ xác nhận
                         </p>
@@ -792,7 +788,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       <div>
                         <span
                           className="font-medium text-base max-width-[85%]"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Thanh toán chuyển khoản ngân hàng
                         </span>
@@ -826,7 +822,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       <div className="max-width-[85%]">
                         <span
                           className="block text-base font-medium"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Thanh Toán Visa
                         </span>
@@ -886,7 +882,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         }`}
       >
         <div className="p-3 lg:py-4 lg:px-4">
-          <p className="text-22 font-bold mb-2" data-translate={true}>
+          <p className="text-22 font-bold mb-2" data-translate="true">
             Giá chi tiết
           </p>
           {dropdown.map((item: any, index: number) => (
@@ -897,7 +893,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 className="flex justify-between text-sm items-start space-x-3 w-full text-left outline-none"
               >
                 <div className="flex w-8/12">
-                  <span data-translate={true}>
+                  <span data-translate="true">
                     {item.title} (
                     {Array.from({ length: item.quantity }, (_, key) => (
                       <span key={keyLoopDropdown++}>
@@ -942,13 +938,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 } `}
               >
                 <div className="text-sm text-gray-500 flex justify-between mt-1">
-                  <span data-translate={true}>Vé</span>
+                  <span data-translate="true">Vé</span>
                   <span>
                     {formatCurrency(item.totalPriceTicket)} x {item.quantity}
                   </span>
                 </div>
                 <div className="text-sm text-gray-500 flex justify-between mt-1">
-                  <span data-translate={true}>Thuế và phí</span>
+                  <span data-translate="true">Thuế và phí</span>
                   <span>
                     {formatCurrency(item.totalTax)} x {item.quantity}
                   </span>
@@ -958,7 +954,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           ))}
 
           <div className="flex justify-between">
-            <span className="text-sm text-gray-500" data-translate={true}>
+            <span className="text-sm text-gray-500" data-translate="true">
               Hành lý bổ sung
             </span>
             <p className="font-semibold">
@@ -970,7 +966,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </p>
           </div>
           <div className="flex mt-4 pt-4 md:pb-6 justify-between border-t border-t-gray-200">
-            <span className="text-gray-700 font-bold" data-translate={true}>
+            <span className="text-gray-700 font-bold" data-translate="true">
               Tổng cộng
             </span>
             <p className="font-bold text-primary">

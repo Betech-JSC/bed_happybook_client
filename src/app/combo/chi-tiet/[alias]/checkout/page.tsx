@@ -31,7 +31,7 @@ export default async function ComboCheckout({
             >
               <h3
                 className="text-22 py-4 px-8 font-semibold text-white"
-                data-translate={true}
+                data-translate="true"
               >
                 Thông tin đơn hàng
               </h3>
@@ -57,7 +57,7 @@ export default async function ComboCheckout({
               <Link
                 href="#"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors"
-                data-translate={true}
+                data-translate="true"
               >
                 {renderTextContent(detail.name)}
               </Link>
@@ -69,7 +69,7 @@ export default async function ComboCheckout({
                   width={18}
                   height={18}
                 />
-                <span data-translate={true}>
+                <span data-translate="true">
                   {`${detail.combo.day ? detail.combo.day : ""} ngày ${
                     detail.combo.night ? detail.combo.night : ""
                   } đêm`}
@@ -83,7 +83,7 @@ export default async function ComboCheckout({
                   width={18}
                   height={18}
                 />
-                <span data-translate={true}>
+                <span data-translate="true">
                   {renderTextContent(detail.combo.address)}
                 </span>
               </div>
@@ -92,7 +92,7 @@ export default async function ComboCheckout({
                   {detail.price > 0 ? (
                     formatCurrency(detail.price - detail.discount_price)
                   ) : (
-                    <span data-translate={true}>Liên hệ</span>
+                    <span data-translate="true">Liên hệ</span>
                   )}
                 </span>{" "}
                 {/* <span>/ khách</span> */}

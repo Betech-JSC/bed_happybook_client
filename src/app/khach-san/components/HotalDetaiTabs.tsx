@@ -62,7 +62,7 @@ export default function HotelDetailTabs({ data }: any) {
               activeTab === index ? "text-primary" : ""
             }`}
             onClick={() => setActiveTab(index)}
-            data-translate={true}
+            data-translate="true"
           >
             {tab}
           </button>
@@ -84,15 +84,15 @@ export default function HotelDetailTabs({ data }: any) {
         <div className="bg-white rounded-2xl p-6">
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate={true}
+            data-translate="true"
           >
             Tổng quan
           </h2>
-          <h3 className="mt-4 text-22 font-semibold" data-translate={true}>
+          <h3 className="mt-4 text-22 font-semibold" data-translate="true">
             {renderTextContent(data.name)}
           </h3>
           <div
-            // data-translate={true}
+            // data-translate="true"
             className="mt-3 leading-6"
             dangerouslySetInnerHTML={{
               __html: translatedContent[0],
@@ -114,7 +114,7 @@ export default function HotelDetailTabs({ data }: any) {
         <div>
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate={true}
+            data-translate="true"
           >
             Phòng
           </h2>
@@ -143,13 +143,13 @@ export default function HotelDetailTabs({ data }: any) {
                       href="#"
                       className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
                     >
-                      <h3 data-translate={true}>
+                      <h3 data-translate="true">
                         {renderTextContent(item.name)}
                       </h3>
                     </Link>
                     <div
                       className="mt-3 p-2 rounded-lg bg-gray-100"
-                      data-translate={true}
+                      data-translate="true"
                     >
                       {renderTextContent(item.description)}
                     </div>
@@ -162,7 +162,7 @@ export default function HotelDetailTabs({ data }: any) {
                           : ""}
                       </p>
                       <p>
-                        <span className="text-gray-500" data-translate={true}>
+                        <span className="text-gray-500" data-translate="true">
                           Tổng:
                         </span>{" "}
                         <span className="mt-2 text-22 font-semibold text-primary">
@@ -171,7 +171,7 @@ export default function HotelDetailTabs({ data }: any) {
                       </p>
                       <p
                         className="mt-2 text-sm text-gray-500"
-                        data-translate={true}
+                        data-translate="true"
                       >
                         bao gồm thuế phí
                       </p>
@@ -183,7 +183,7 @@ export default function HotelDetailTabs({ data }: any) {
                       >
                         <button
                           className="mx-auto text-base font-medium"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           Đặt phòng
                         </button>
@@ -194,7 +194,7 @@ export default function HotelDetailTabs({ data }: any) {
               </div>
             ))
           ) : (
-            <div className="text-18 font-medium" data-translate={true}>
+            <div className="text-18 font-medium" data-translate="true">
               Nội dung đang cập nhật...
             </div>
           )}
@@ -208,13 +208,13 @@ export default function HotelDetailTabs({ data }: any) {
         <div className="bg-white p-6 rounded-2xl">
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate={true}
+            data-translate="true"
           >
             Địa điểm
           </h2>
           <div className="mt-4 flex flex-col md:flex-row justify-between">
             <div>
-              <h3 className="font-bold text-2xl" data-translate={true}>
+              <h3 className="font-bold text-2xl" data-translate="true">
                 {renderTextContent(data?.name)}
               </h3>
               <div className="flex space-x-2 items-center mt-3">
@@ -225,7 +225,7 @@ export default function HotelDetailTabs({ data }: any) {
                   width={18}
                   height={18}
                 />
-                <span className="text-sm" data-translate={true}>
+                <span className="text-sm" data-translate="true">
                   {renderTextContent(data?.hotel?.address)}
                 </span>
               </div>
@@ -238,19 +238,19 @@ export default function HotelDetailTabs({ data }: any) {
               <div className="flex flex-col space-y-1">
                 {/* <span
                   className="text-primary text-sm font-semibold"
-                  data-translate={true}
+                  data-translate="true"
                 >
                   {data.hotel.rating_text ?? ""}
                 </span> */}
 
-                <span className="text-gray-500 text-xs" data-translate={true}>
+                <span className="text-gray-500 text-xs" data-translate="true">
                   {data.hotel.review ?? 0} đánh giá
                 </span>
               </div>
             </div>
           </div>
           <div className="mt-4">
-            <p className="text-18 font-semibold" data-translate={true}>
+            <p className="text-18 font-semibold" data-translate="true">
               Tiện nghi dịch vụ
             </p>
             <ul
@@ -261,13 +261,13 @@ export default function HotelDetailTabs({ data }: any) {
                 data.hotel.amenities.map((item: any) => {
                   if (!isEmpty(item?.hotel_amenity?.name))
                     return (
-                      <li key={item.hotel_amenity.id} data-translate={true}>
+                      <li key={item.hotel_amenity.id} data-translate="true">
                         {item.hotel_amenity.name}
                       </li>
                     );
                 })
               ) : (
-                <div className="text-18" data-translate={true}>
+                <div className="text-18" data-translate="true">
                   Nội dung đang cập nhật...
                 </div>
               )}
@@ -279,7 +279,7 @@ export default function HotelDetailTabs({ data }: any) {
             <div className="bg-white rounded-2xl p-6">
               <h2
                 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-                data-translate={true}
+                data-translate="true"
               >
                 Thông tin về nơi lưu trú này
               </h2>
@@ -301,7 +301,7 @@ export default function HotelDetailTabs({ data }: any) {
         <div className="bg-white rounded-2xl p-6">
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate={true}
+            data-translate="true"
           >
             Tiện nghi, dịch vụ
           </h2>
@@ -310,14 +310,14 @@ export default function HotelDetailTabs({ data }: any) {
               {data.hotel.amenity_service.map((item: any) => {
                 if (!isEmpty(item?.hotel_amenity_service?.name))
                   return (
-                    <li key={item.id} data-translate={true}>
+                    <li key={item.id} data-translate="true">
                       {item.hotel_amenity_service.name}
                     </li>
                   );
               })}
             </ul>
           ) : (
-            <div className="text-18" data-translate={true}>
+            <div className="text-18" data-translate="true">
               Nội dung đang cập nhật...
             </div>
           )}
@@ -332,7 +332,7 @@ export default function HotelDetailTabs({ data }: any) {
           <div className="bg-white rounded-2xl p-6">
             <h2
               className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-              data-translate={true}
+              data-translate="true"
             >
               Chính sách
             </h2>
@@ -349,7 +349,7 @@ export default function HotelDetailTabs({ data }: any) {
             <div className="bg-white rounded-2xl p-6">
               <h2
                 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-                data-translate={true}
+                data-translate="true"
               >
                 Thông tin quan trọng
               </h2>

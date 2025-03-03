@@ -87,7 +87,7 @@ export default async function CompoTour() {
             {/* Tours */}
             {hotDestination?.length > 0 && (
               <div className="w-full">
-                <h2 className="text-32 font-bold" data-translate={true}>
+                <h2 className="text-32 font-bold" data-translate="true">
                   Khám phá các điểm đến HOT
                 </h2>
                 <div className="mt-8 overflow-hidden">
@@ -118,7 +118,7 @@ export default async function CompoTour() {
                               <Link href={item.url ?? "#"}>
                                 <h3
                                   className="line-clamp-2"
-                                  data-translate={true}
+                                  data-translate="true"
                                 >
                                   {item.name}
                                 </h3>
@@ -137,7 +137,7 @@ export default async function CompoTour() {
             {comboData?.comboDomestic?.length > 0 && (
               <>
                 <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
-                  <h2 className="text-32 font-bold" data-translate={true}>
+                  <h2 className="text-32 font-bold" data-translate="true">
                     Các combo du lịch ưu đãi
                   </h2>
                   {/* <div className="flex my-4 md:my-0 space-x-3 items-center">

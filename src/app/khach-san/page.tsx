@@ -83,11 +83,11 @@ export default async function Hotel() {
               <div>
                 <p
                   className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate={true}
+                  data-translate="true"
                 >
                   Lựa Chọn Không Giới Hạn
                 </p>
-                <p data-translate={true}>Vô vàn hành trình, triệu cảm hứng</p>
+                <p data-translate="true">Vô vàn hành trình, triệu cảm hứng</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -101,11 +101,11 @@ export default async function Hotel() {
               <div>
                 <p
                   className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate={true}
+                  data-translate="true"
                 >
                   Dịch Vụ Cá Nhân Hóa
                 </p>
-                <p data-translate={true}>
+                <p data-translate="true">
                   Chăm sóc đặc biệt, trải nghiệm độc đáo
                 </p>
               </div>
@@ -121,11 +121,11 @@ export default async function Hotel() {
               <div>
                 <p
                   className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate={true}
+                  data-translate="true"
                 >
                   Giá Trị Vượt Trội
                 </p>
-                <p data-translate={true}>
+                <p data-translate="true">
                   Chất lượng đỉnh, đảm bảo giá tốt nhất
                 </p>
               </div>
@@ -139,7 +139,7 @@ export default async function Hotel() {
                   <div>
                     <h2
                       className="text-[24px] lg:text-32 font-bold"
-                      data-translate={true}
+                      data-translate="true"
                     >
                       Khách Sạn Phổ Biến tại Việt Nam
                     </h2>
@@ -155,7 +155,7 @@ export default async function Hotel() {
           <div className="mt-6 ">
             <h2
               className="text-[24px] lg:text-32 font-bold"
-              data-translate={true}
+              data-translate="true"
             >
               Thành Phố Phổ Biến tại Việt Nam
             </h2>
@@ -180,7 +180,7 @@ export default async function Hotel() {
                   <Link href={item.url ?? "#"}>
                     <h3
                       className="py-3 px-4 text-18 font-semibold text__default_hover"
-                      data-translate={true}
+                      data-translate="true"
                     >
                       {item.name}
                     </h3>

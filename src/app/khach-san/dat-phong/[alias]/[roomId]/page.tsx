@@ -33,7 +33,7 @@ export default async function VisaCheckOut({
             >
               <h3
                 className="text-22 py-4 px-8 font-semibold text-white"
-                data-translate={true}
+                data-translate="true"
               >
                 Thông tin đơn hàng
               </h3>
@@ -57,7 +57,7 @@ export default async function VisaCheckOut({
 
             <div className="py-4 px-3 lg:px-6">
               <p
-                data-translate={true}
+                data-translate="true"
                 className="text-xl lg:text-2xl font-bold hover:text-primary duration-300 transition-colors text-blue-700 "
               >
                 {renderTextContent(detail.name)}
@@ -87,14 +87,14 @@ export default async function VisaCheckOut({
               </div>
               <p
                 className="mt-4 text-18 font-bold leading-6"
-                data-translate={true}
+                data-translate="true"
               >
                 {renderTextContent(room.name)}
               </p>
               {detail.hotel.amenity_service.length > 0 && (
                 <ul className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 list-disc pl-4 leading-6">
                   {detail.hotel.amenity_service.map((item: any) => (
-                    <li key={item.id} data-translate={true}>
+                    <li key={item.id} data-translate="true">
                       {renderTextContent(item.hotel_amenity_service.name)}
                     </li>
                   ))}
@@ -102,7 +102,7 @@ export default async function VisaCheckOut({
               )}
               <div></div>
               <div className="flex justify-between border-t border-solid border-gray-200 text-end pt-4 rounded-lg mt-5">
-                <span className="text-sm text-gray-500" data-translate={true}>
+                <span className="text-sm text-gray-500" data-translate="true">
                   Tổng cộng
                 </span>
                 <span className="text-xl lg:text-2xl text-primary font-bold">

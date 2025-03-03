@@ -44,7 +44,7 @@ export default function Tabs({ detail }: any) {
               activeTab === index ? "text-primary" : ""
             }`}
             onClick={() => setActiveTab(index)}
-            data-translate={true}
+            data-translate="true"
           >
             {tab}
           </button>
@@ -65,7 +65,7 @@ export default function Tabs({ detail }: any) {
         >
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate={true}
+            data-translate="true"
           >
             Tổng quan
           </h2>

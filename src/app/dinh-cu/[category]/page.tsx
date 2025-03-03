@@ -70,10 +70,10 @@ export default async function DinhCuByCategory({
       <div className="border-y border-y-gray-300 mt-8 ">
         <div className="lg:px-[50px] xl:px-[80px] py-12 px-3 max__screen">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <h3 className="text-32 font-bold" data-translate={true}>
+            <h3 className="text-32 font-bold" data-translate="true">
               Tại sao nên chọn Happy Book ?
             </h3>
-            <div data-translate={true}>
+            <div data-translate="true">
               HappyBook cung cấp dịch vụ tư vấn định cư chuyên nghiệp, hỗ trợ
               bạn từ giai đoạn chuẩn bị hồ sơ đến khi hoàn thành mọi thủ tục
               pháp lý để đạt được giấc mơ định cư tại các quốc gia phát triển
@@ -93,11 +93,11 @@ export default async function DinhCuByCategory({
                 <div>
                   <p
                     className="text-18 font-semibold mb-1 text-gray-900"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Chuyên Nghiệp & Tận Tâm
                   </p>
-                  <p data-translate={true}>
+                  <p data-translate="true">
                     Đội ngũ chuyên gia giàu kinh nghiệm, hỗ trợ tận tình từ A-Z.
                   </p>
                 </div>
@@ -113,11 +113,11 @@ export default async function DinhCuByCategory({
                 <div>
                   <p
                     className="text-18 font-semibold mb-1 text-gray-900"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Quy Trình Minh Bạch
                   </p>
-                  <p data-translate={true}>
+                  <p data-translate="true">
                     Thông tin rõ ràng, quy trình minh bạch, giúp bạn an tâm.
                   </p>
                 </div>
@@ -133,11 +133,11 @@ export default async function DinhCuByCategory({
                 <div>
                   <p
                     className="text-18 font-semibold mb-1 text-gray-900"
-                    data-translate={true}
+                    data-translate="true"
                   >
                     Giải Pháp Tối Ưu
                   </p>
-                  <p data-translate={true}>
+                  <p data-translate="true">
                     Tư vấn chương trình định cư phù hợp với từng cá nhân.
                   </p>
                 </div>

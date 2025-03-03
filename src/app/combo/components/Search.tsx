@@ -29,7 +29,7 @@ export default function Search({ locations }: { locations: any }) {
     <Fragment>
       <div className="base__content h-full relative place-content-center my-12 lg:my-16">
         <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-[850px]">
-          <h1 className="text-18 font-semibold" data-translate={true}>
+          <h1 className="text-18 font-semibold" data-translate="true">
             Tìm Combo du lịch
           </h1>
           <div className="mt-4 md:mt-6 h-fit lg:h-20 flex flex-col lg:flex-row lg:space-x-2 space-y-3 items-end justify-between">
@@ -47,7 +47,7 @@ export default function Search({ locations }: { locations: any }) {
               <label
                 htmlFor="from"
                 className="font-medium block"
-                data-translate={true}
+                data-translate="true"
               >
                 Khởi hành từ
               </label>
@@ -55,7 +55,7 @@ export default function Search({ locations }: { locations: any }) {
                 <Select
                   id="from"
                   options={fromOptions}
-                  data-translate={true}
+                  data-translate="true"
                   placeholder={`${
                     language === "en"
                       ? "Select departure point"
@@ -97,7 +97,7 @@ export default function Search({ locations }: { locations: any }) {
               <label
                 htmlFor="to"
                 className="font-medium block"
-                data-translate={true}
+                data-translate="true"
               >
                 Điểm đến
               </label>

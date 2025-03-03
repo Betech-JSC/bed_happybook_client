@@ -132,7 +132,7 @@ export default function SearchListTour({
             key={index}
             className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
           >
-            <p className="font-semibold" data-translate={true}>
+            <p className="font-semibold" data-translate="true">
               {item.label}
             </p>
             {item.option.map((option, index) => {
@@ -181,7 +181,7 @@ export default function SearchListTour({
                       item.name === "star"
                     } ? "text-[#667085]" : ""`}
                     htmlFor={item.name + index}
-                    data-translate={true}
+                    data-translate="true"
                   >
                     {option.label}
                   </label>
@@ -239,7 +239,7 @@ export default function SearchListTour({
                         href={`/combo/chi-tiet/${item.slug}`}
                         className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                       >
-                        <h2 data-translate={true}>
+                        <h2 data-translate="true">
                           {renderTextContent(item.name)}
                         </h2>
                       </Link>
@@ -278,7 +278,7 @@ export default function SearchListTour({
                         width={20}
                         height={20}
                       />
-                      <span className="text-sm" data-translate={true}>
+                      <span className="text-sm" data-translate="true">
                         {renderTextContent(item?.combo?.address)}
                       </span>
                     </div>
@@ -288,7 +288,7 @@ export default function SearchListTour({
                           <span
                             className="mr-2 mt-2 py-[2px] px-[6px] border border-gray-300 rounded-sm"
                             key={item.id}
-                            data-translate={true}
+                            data-translate="true"
                           >
                             {renderTextContent(item?.hotel_amenity?.name)}
                           </span>
@@ -306,7 +306,7 @@ export default function SearchListTour({
                         </span>
                         <span
                           className="text-gray-500 text-xs"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           {item.total_rating} đánh giá
                         </span>
@@ -316,7 +316,7 @@ export default function SearchListTour({
                       <div className="text-base md:text-xl text-primary font-semibold text-end">
                         <span
                           className="text-gray-500 text-sm md:text-base mr-2"
-                          data-translate={true}
+                          data-translate="true"
                         >
                           chỉ từ
                         </span>
