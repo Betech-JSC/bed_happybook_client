@@ -1,15 +1,13 @@
 import { IronSession, SessionOptions, getIronSession } from "iron-session";
 import { NextRequest, NextResponse } from "next/server";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
+import { UserInfoType } from "@/types/UserInfo";
 
 export interface SessionData {
   language: string;
   isLoggedIn: boolean;
   access_token?: string;
-  userInfo?: {
-    name: string;
-    email: string;
-  };
+  userInfo?: UserInfoType;
 }
 
 export const defaultSession: SessionData = {

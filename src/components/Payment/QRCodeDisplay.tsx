@@ -1,4 +1,6 @@
 import { PaymentApi } from "@/api/Payment";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { toastMessages } from "@/lib/messages";
 import { translatePage } from "@/utils/translateDom";
 import Image from "next/image";
 import QRCode from "qrcode";
@@ -18,6 +20,9 @@ export default function QRCodeDisplay({
   isPaid,
   setIsPaid,
 }: QRCodeDisplayProps) {
+  const { language } = useLanguage();
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
+
   const [qrSVG, setQrSVG] = useState<string>("");
   useEffect(() => {
     const generateQR = async () => {
@@ -41,15 +46,20 @@ export default function QRCodeDisplay({
         const response = await PaymentApi.checkPaymentStatus(order.sku);
         if (response?.payload?.data?.paid === true) {
           setIsPaid(true);
-          toast.success("Chuyển khoản thành công");
+          toast.success(`${toaStrMsg.transferSuccessful}`);
           clearInterval(interval);
         }
       }, 3000);
 
       return () => clearInterval(interval);
     }
-  }, [order.sku, isPaid, setIsPaid]);
+  }, [order.sku, isPaid, setIsPaid, toaStrMsg]);
 
+  useEffect(() => {
+    if (isPaid) {
+      translatePage("#wrapper-payment-transfer", 10);
+    }
+  }, [isPaid]);
   return (
     <div
       id="wrapper-payment-transfer"

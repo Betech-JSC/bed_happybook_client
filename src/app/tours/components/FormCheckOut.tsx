@@ -251,9 +251,9 @@ export default function CheckOutTourForm({
               <label
                 htmlFor="fullName"
                 className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                data-translate="true"
               >
-                Họ và tên <span className="text-red-500">*</span>
+                <span data-translate="true">Họ và tên</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 id="fullName"
@@ -271,9 +271,9 @@ export default function CheckOutTourForm({
               <label
                 htmlFor="gender"
                 className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                data-translate="true"
               >
-                Giới tính <span className="text-red-500">*</span>
+                <span data-translate="true">Giới tính</span>
+                <span className="text-red-500">*</span>
               </label>
               <select
                 id="gender"

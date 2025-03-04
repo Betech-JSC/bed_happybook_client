@@ -11,6 +11,7 @@ export const toastOptions: DefaultToastOptions = {
     borderRadius: "8px",
     padding: "16px 22px",
     marginTop: "120px",
+    textAlign: "center",
   },
   success: {
     duration: 3000,

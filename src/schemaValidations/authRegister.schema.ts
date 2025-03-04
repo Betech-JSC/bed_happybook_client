@@ -10,14 +10,19 @@ export const getAuthRegisterSchema = (messages: ValidationMessages) => {
         .min(1, (messages.minLength as (length: number) => string)(1))
         .email(messages.email as string),
 
+      name: z
+        .string()
+        .min(3, (messages.minLength as (length: number) => string)(3))
+        .max(100, (messages.maxLength as (length: number) => string)(100)),
+
       password: z
         .string()
-        .min(6, (messages.minLength as (length: number) => string)(6))
+        .min(1, (messages.minLength as (length: number) => string)(1))
         .max(100, (messages.maxLength as (length: number) => string)(100)),
 
       password_confirmation: z
         .string()
-        .min(6, (messages.minLength as (length: number) => string)(6))
+        .min(1, (messages.minLength as (length: number) => string)(1))
         .max(100, (messages.maxLength as (length: number) => string)(100)),
     })
     .superRefine(({ password_confirmation, password }, ctx) => {

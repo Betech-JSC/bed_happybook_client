@@ -11,15 +11,21 @@ import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { validationMessages } from "@/lib/messages";
+import { toastMessages, validationMessages } from "@/lib/messages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { AuthApi } from "@/api/Auth";
+import { useUser } from "@/app/contexts/UserContext";
 
 export default function FormLogin() {
+  const { userInfo, setUserInfo } = useUser();
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { language } = useLanguage();
   const messages = validationMessages[language as "vi" | "en"];
   const schema = getAuthLoginSchema(messages);
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
+
   const {
     register,
     handleSubmit,
@@ -30,17 +36,31 @@ export default function FormLogin() {
   });
 
   const onSubmit = async (data: AuthLoginSchema) => {
+    toast.dismiss();
     try {
       setLoading(true);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message);
+      }
       reset();
-      toast.success("Đăng nhập thành công!");
+      toast.success(resData.message);
       setTimeout(() => {
         toast.dismiss();
+        setUserInfo(resData.user_info);
         router.push("/");
-      }, 1500);
+      }, 1000);
     } catch (error: any) {
+      toast.error(error.message);
+    } finally {
       setLoading(false);
-      toast.error("Có lỗi xảy ra. Vui lòng tải lại trang!");
     }
   };
   return (

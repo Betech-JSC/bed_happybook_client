@@ -191,7 +191,9 @@ export default function ListTour({
       </div>
       <div className="md:w-8/12 lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold">{titlePage}</h1>
+          <h1 className="text-32 font-bold" data-translate="true">
+            {titlePage}
+          </h1>
           <div className="flex my-4 md:my-0 space-x-3 items-center">
             <span data-translate="true">Sắp xếp</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">

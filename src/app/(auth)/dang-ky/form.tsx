@@ -12,13 +12,14 @@ import http from "@/lib/http";
 import { useRouter } from "next/navigation";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { AuthApi } from "@/api/Auth";
+import { HttpError } from "@/lib/error";
 
 export default function FormRegister() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { language } = useLanguage();
   const toaStrMsg = toastMessages[language as "vi" | "en"];
-
   const messages = validationMessages[language as "vi" | "en"];
   const schema = getAuthRegisterSchema(messages);
   const {
@@ -33,19 +34,21 @@ export default function FormRegister() {
   const onSubmit = async (data: AuthRegisterSchemaType) => {
     try {
       setLoading(true);
-      const response = await http.post<any>(`auth/register`, data);
+      const response = await AuthApi.register(data);
       if (response?.status === 200) {
         reset();
         toast.dismiss();
         toast.success(toaStrMsg.successRegister);
-        setTimeout(() => {
-          router.push("/dang-nhap");
-        }, 2000);
+        setTimeout(() => router.push("/dang-nhap"), 2000);
       } else if (response?.status === 201) {
         toast.error(toaStrMsg.error);
       }
     } catch (error: any) {
-      toast.error(toaStrMsg.error);
+      if (error instanceof HttpError) {
+        toast.error(error?.payload?.message ?? toaStrMsg.error);
+      } else {
+        toast.error(toaStrMsg.error);
+      }
     } finally {
       setLoading(false);
     }
@@ -54,7 +57,17 @@ export default function FormRegister() {
     <form onSubmit={handleSubmit(onSubmit)} className="mt-3 rounded-xl ">
       <div className="mt-6 pb-6 border-b-[1px] border-gray-300">
         <div className="mt-3">
-          <p data-translate>Email</p>
+          <p data-translate="true">Họ & Tên</p>
+          <input
+            type="text"
+            {...register("name")}
+            placeholder="Nhập họ & tên"
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
+          />
+          {errors.name && <p className="text-red-600">{errors.name.message}</p>}
+        </div>
+        <div className="mt-3">
+          <p data-translate="true">Email</p>
           <input
             type="text"
             {...register("email")}
@@ -66,7 +79,7 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-3">
-          <p data-translate>Mật khẩu</p>
+          <p data-translate="true">Mật khẩu</p>
           <input
             type="password"
             placeholder="Nhập mật khẩu"
@@ -78,7 +91,7 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-3">
-          <p data-translate>Nhập lại mật khẩu</p>
+          <p data-translate="true">Nhập lại mật khẩu</p>
           <input
             type="password"
             placeholder="Nhập lại mật khẩu"

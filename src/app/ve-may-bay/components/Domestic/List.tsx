@@ -393,7 +393,7 @@ export default function FilghtDomesticList({
     <Fragment>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
         <aside className="lg:col-span-3 bg-white p-4 rounded-2xl">
-          <div className="pb-3 border-b border-gray-200">
+          {/* <div className="pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("chi_tiet")}</h2>
             <select
               name=""
@@ -402,9 +402,9 @@ export default function FilghtDomesticList({
             >
               <option value="">{t("de_xuat")}</option>
             </select>
-          </div>
+          </div> */}
           {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
-            <div className="mt-3 pb-3 border-b border-gray-200">
+            <div className="pb-3 border-b border-gray-200">
               <h2 className="font-semibold">{t("so_diem_dung")}</h2>
               {flightStopNum.map((stopNum: number, index: number) => (
                 <div key={index} className="flex space-x-2 mt-3">

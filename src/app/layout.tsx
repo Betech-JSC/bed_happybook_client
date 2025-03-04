@@ -9,7 +9,8 @@ import { Toaster } from "react-hot-toast";
 import { toastOptions } from "@/lib/toastConfig";
 import AppLoader from "@/components/layout/AppLoader";
 import { LanguageProvider } from "./contexts/LanguageContext";
-import { getServerLang } from "@/lib/session";
+import { getSession } from "@/lib/session";
+import { UserProvider } from "./contexts/UserContext";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("http://client.happybooktravel.com"),
   title: "Happy Book",
   description: "Happy Book",
+  robots: "index, nofollow",
 };
 
 export default async function RootLayout({
@@ -24,24 +26,26 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const lang = await getServerLang();
+  const session = await getSession();
   return (
-    <html lang={lang}>
+    <html lang={session.language}>
       <head>
         {/* Meta */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta property="og:type" content="website" />
       </head>
       <body className={OpenSans.className}>
-        <LanguageProvider serverLang={lang}>
-          <Header></Header>
-          <HeaderMobile></HeaderMobile>
-          {children}
-          <Toaster toastOptions={toastOptions} />
-          <div id="datepicker-portal"></div>
-          <BackToTopButton></BackToTopButton>
-          <Footer></Footer>
-          <AppLoader />
+        <LanguageProvider serverLang={session.language}>
+          <UserProvider initialUser={session.userInfo}>
+            <Header></Header>
+            <HeaderMobile></HeaderMobile>
+            {children}
+            <Toaster toastOptions={toastOptions} />
+            <div id="datepicker-portal"></div>
+            <BackToTopButton></BackToTopButton>
+            <Footer></Footer>
+            <AppLoader />
+          </UserProvider>
         </LanguageProvider>
       </body>
     </html>

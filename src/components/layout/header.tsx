@@ -8,9 +8,12 @@ import clsx from "clsx";
 import { GeneralInforPaths } from "@/constants/paths";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { totalLanguages } from "@/constants/language";
+import { useUser } from "@/app/contexts/UserContext";
+import { AuthApi } from "@/api/Auth";
 
 export default function Header() {
   let headerClass = "";
+  const { userInfo } = useUser();
   const pathname: string = usePathname();
   const { language, setLanguage } = useLanguage();
   const router = useRouter();
@@ -184,11 +187,11 @@ export default function Header() {
             <button className="flex items-center space-x-1" type="button">
               <Image
                 src={`/language/${language}.svg`}
-                alt="Phone icon"
-                className="h-10 rounded-full"
-                width={22}
+                alt="Icon"
+                className={`h-10 ${language === "vi" ? "rounded-full" : ""}`}
+                width={20}
                 height={20}
-                style={{ width: 22, height: 20 }}
+                style={{ width: 20, height: 20 }}
               ></Image>
               <div>
                 <svg
@@ -220,14 +223,18 @@ export default function Header() {
                         className="flex space-x-1 items-center"
                         onClick={() => setLanguage(item.lang)}
                       >
-                        <Image
-                          src={`/language/${item.lang}.svg`}
-                          alt="Phone icon"
-                          className="h-10 rounded-full"
-                          width={20}
-                          height={20}
-                          style={{ width: 20, height: 20 }}
-                        ></Image>
+                        <div>
+                          <Image
+                            src={`/language/${item.lang}.svg`}
+                            alt="Icon"
+                            className={`h-10 ${
+                              item.lang === "vi" ? "rounded-full" : ""
+                            }`}
+                            width={20}
+                            height={20}
+                            style={{ width: 20, height: 20 }}
+                          ></Image>
+                        </div>
                         <span data-translate="true">{item.label}</span>
                       </button>
                     </div>
@@ -257,12 +264,67 @@ export default function Header() {
             </svg>
             <span className="font-medium">0983-488-937</span>
           </a>
-          <Link
-            href="/dang-nhap"
-            className={`bg-blue-600 min-w-[100px] justify-center font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
-          >
-            <span data-translate="true">Đăng nhập</span>
-          </Link>
+          {!userInfo ? (
+            <Link
+              href="/dang-nhap"
+              className={`bg-blue-600 min-w-[100px] justify-center font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
+            >
+              <span data-translate="true">Đăng nhập</span>
+            </Link>
+          ) : (
+            <div
+              className={`relative space-x-2 !h-auto min-w-[100px] max-w-40 justify-center font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] cursor-pointer flex items-center rounded-3xl outline-none
+                 ${styles.header__menu_item}`}
+            >
+              <div
+                className={`w-auto whitespace-nowrap text-ellipsis overflow-hidden font-semibold ${
+                  isSticky ? "text-gray-700" : "text-white"
+                }`}
+              >
+                {userInfo.name}
+              </div>
+              <div>
+                <svg
+                  width="22"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    stroke={isSticky ? "#283448" : "#fff"}
+                    strokeWidth="1.66667"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div
+                className={`!block !max-h-24 ${styles.header__sub_menu_item}`}
+                style={{
+                  display: "block",
+                  top: 40,
+                  width: 140,
+                  padding: 10,
+                  textAlign: "center",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                }}
+              >
+                <button
+                  type="button"
+                  data-translate="true"
+                  onClick={() => {
+                    AuthApi.logout();
+                  }}
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Menu Button */}
           {/* <div
             className={`${styles.nav_icon} ${isMenuOpen ? styles.open : ""}`}

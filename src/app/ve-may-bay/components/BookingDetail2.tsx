@@ -24,6 +24,7 @@ import { PaymentApi } from "@/api/Payment";
 import { PageApi } from "@/api/Page";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
+import { translateText } from "@/utils/translateApi";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const router = useRouter();
@@ -210,13 +211,18 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         "flights/getfarerules",
         params
       );
-      const fareRules =
+
+      const fareRules = await translateText([
         response?.payload.data.ListFareRules[0].ListRulesGroup[0]
           .ListRulesText[0] ??
-        `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
-      return fareRules;
+          `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
+      ]);
+      return fareRules?.[0];
     } catch (error: any) {
-      return `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`;
+      const fareRules = await translateText([
+        "Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.",
+      ]);
+      return fareRules?.[0];
     } finally {
       setIsLoadingRules(false);
     }
