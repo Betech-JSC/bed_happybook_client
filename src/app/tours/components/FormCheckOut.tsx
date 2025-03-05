@@ -128,6 +128,16 @@ export default function CheckOutTourForm({
                         id={`depart_date`}
                         selected={field.value || null}
                         onChange={(date: Date | null) => field.onChange(date)}
+                        onChangeRaw={(event) => {
+                          if (event) {
+                            const target = event.target as HTMLInputElement;
+                            if (target.value) {
+                              target.value = target.value
+                                .trim()
+                                .replace(/\//g, "-");
+                            }
+                          }
+                        }}
                         placeholderText="Chọn ngày khởi hành"
                         dateFormat="dd-MM-yyyy"
                         dropdownMode="select"

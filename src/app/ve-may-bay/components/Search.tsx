@@ -2,10 +2,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/datePicker.scss";
-import { vi } from "date-fns/locale";
 import { format, parse, isValid } from "date-fns";
 import SelectMenu from "./Passenger/Menu";
 import { toast } from "react-hot-toast";
@@ -15,9 +14,12 @@ import AirportSelector from "./AirportSelector";
 import { translatePage } from "@/utils/translateDom";
 import { getCurrentLanguage } from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
+import { datePickerLocale } from "@/constants/language";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function Search({ airportsData }: SearchFilghtProps) {
   const today = new Date();
+  const { language } = useLanguage();
   const pathname: string = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -43,6 +45,12 @@ export default function Search({ airportsData }: SearchFilghtProps) {
       translatePage("#wrapper-search-ticket-flight", 50);
     }
   }, [searchParams, pathname]);
+
+  useEffect(() => {
+    if (datePickerLocale[language]) {
+      registerLocale(language, datePickerLocale[language]);
+    }
+  }, [language]);
 
   useEffect(() => {
     if (airportsData.length > 0 && getCurrentLanguage() !== "vi") {
@@ -320,7 +328,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                     onChange={handleDepartDateChange}
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Chọn ngày"
-                    locale={vi}
+                    locale={language}
                     popperPlacement="bottom-start"
                     portalId="datepicker-search-flight"
                     minDate={today}
@@ -361,7 +369,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                     onChange={handleReturnDateChange}
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Chọn ngày"
-                    locale={vi}
+                    locale={language}
                     popperPlacement="bottom-start"
                     portalId="datepicker-search-flight"
                     minDate={

@@ -83,7 +83,7 @@ export default function Search() {
               <input
                 className="pl-3 flex-1 focus:outline-none text-black appearance-none"
                 name="text"
-                required
+                // required
                 placeholder="Tìm kiếm..."
                 defaultValue={searchParams.get("text") ?? ""}
                 onChange={(e) => {

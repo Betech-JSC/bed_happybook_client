@@ -97,7 +97,11 @@ export default async function TourDetail({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/" className="text-blue-700">
+                  <Link
+                    href="/"
+                    className="text-blue-700"
+                    data-translate="true"
+                  >
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>

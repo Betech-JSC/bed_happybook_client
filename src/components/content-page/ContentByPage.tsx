@@ -1,4 +1,5 @@
 "use client";
+import { renderTextContent } from "@/utils/Helper";
 import { Fragment, useEffect, useRef, useState } from "react";
 
 export default function ContentByPage({ data }: any) {
@@ -20,8 +21,8 @@ export default function ContentByPage({ data }: any) {
   }, [isExpanded]);
   return (
     <Fragment>
-      <h3 className="text-2xl font-bold" data-translate>
-        {data.title ?? ""}
+      <h3 className="text-2xl font-bold" data-translate="true">
+        {renderTextContent(data.title)}
       </h3>
       <div
         ref={contentRef}
@@ -30,9 +31,8 @@ export default function ContentByPage({ data }: any) {
           maxHeight: isExpanded ? `${contentHeight}px` : `${lineHeight * 3}px`,
         }}
         dangerouslySetInnerHTML={{
-          __html: data.content ?? "Nội dung đang cập nhật",
+          __html: renderTextContent(data.content),
         }}
-        data-translate
       ></div>
       <div
         className="flex group mt-6 space-x-2 text-blue-700 mx-auto justify-center items-center cursor-pointer"
@@ -40,7 +40,7 @@ export default function ContentByPage({ data }: any) {
       >
         <span
           className="font-medium group-hover:text-primary duration-300"
-          data-translate
+          data-translate="true"
         >
           {isExpanded ? "Ẩn bớt" : "Xem thêm"}
         </span>

@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
@@ -13,7 +13,10 @@ export default function Search({ airportsData, locationsData }: any) {
   const [activeTab, setActiveTab] = useState(0);
   const [locationSelected, setLocationSelected] = useState<any>(null);
   const { language } = useLanguage();
-
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <div className="relative z-[1] hidden lg:block">
       <div className="absolute inset-0">
@@ -166,7 +169,7 @@ export default function Search({ airportsData, locationsData }: any) {
                     height={18}
                   ></Image>
                   <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                    <option>TP.Hồ Chí Minh</option>
+                    <option data-translate="true">TP.Hồ Chí Minh</option>
                   </select>
                 </div>
               </div>
@@ -187,7 +190,7 @@ export default function Search({ airportsData, locationsData }: any) {
                     height={18}
                   />
                   <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                    <option>Hà Nội</option>
+                    <option data-translate="true">Hà Nội</option>
                   </select>
                 </div>
               </div>
@@ -288,24 +291,28 @@ export default function Search({ airportsData, locationsData }: any) {
                     width={18}
                     height={18}
                   ></Image>
-                  <Select
-                    options={locationsData}
-                    placeholder={`${
-                      language === "en" ? "Select destination" : "Chọn điểm đến"
-                    }`}
-                    className="w-full"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: "none",
-                        boxShadow: "none",
-                        cursor: "pointer",
-                      }),
-                    }}
-                    onChange={(selectedOption) =>
-                      setLocationSelected(selectedOption)
-                    }
-                  />
+                  {mounted && (
+                    <Select
+                      options={locationsData}
+                      placeholder={`${
+                        language === "en"
+                          ? "Select destination"
+                          : "Chọn điểm đến"
+                      }`}
+                      className="w-full"
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          boxShadow: "none",
+                          cursor: "pointer",
+                        }),
+                      }}
+                      onChange={(selectedOption) =>
+                        setLocationSelected(selectedOption)
+                      }
+                    />
+                  )}
                 </div>
               </div>
 

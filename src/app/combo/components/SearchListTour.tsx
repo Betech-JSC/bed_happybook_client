@@ -320,7 +320,7 @@ export default function SearchListTour({
                         >
                           chỉ từ
                         </span>
-                        {formatCurrency(item.price, language)}
+                        {formatCurrency(item.price)}
                       </div>
                     )}
                   </div>

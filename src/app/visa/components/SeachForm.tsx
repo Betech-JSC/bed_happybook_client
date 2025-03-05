@@ -55,7 +55,7 @@ export default function SearchForm({ optionsFilter }: any) {
       </div>
       <div className="w-full md:w-[30%]">
         <label htmlFor="typeVisa" className="font-medium block" data-translate>
-          Theo địa danh, điểm đến
+          Loại Visa
         </label>
         <div
           className="mt-2 border border-gray-300 rounded-lg h-12"
@@ -68,9 +68,10 @@ export default function SearchForm({ optionsFilter }: any) {
             className={`px-3 py-3 w-[90%] outline-none rounded-lg h-full ${VisaStyle.select_custom}`}
             name="loai_visa[]"
             onChange={handleChange}
+            defaultValue={""}
           >
-            <option value="" disabled selected hidden data-translate>
-              Loại Visa
+            <option value="" hidden data-translate="true">
+              Chọn loại Visa
             </option>
             {optionsFilter[0]?.option?.length > 0 &&
               optionsFilter[0]?.option?.map((value: any, index: number) => {

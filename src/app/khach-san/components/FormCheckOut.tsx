@@ -15,7 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Link from "next/link";
 import { BookingProductApi } from "@/api/BookingProduct";
 import { useRouter } from "next/navigation";
-import { renderTextContent } from "@/utils/Helper";
+import { decodeHtml, renderTextContent } from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
@@ -47,7 +47,12 @@ export default function FormCheckOut({ data, room }: any) {
         renderTextContent(data?.hotel?.information),
       ],
       language
-    ).then((data) => setTranslatedContent(data));
+    ).then((data) => {
+      data.map((text: string, index: number) => {
+        data[index] = decodeHtml(text);
+      });
+      setTranslatedContent(data);
+    });
   }, [data, language]);
 
   useEffect(() => {
@@ -147,6 +152,16 @@ export default function FormCheckOut({ data, room }: any) {
                         id={`check_in_date`}
                         selected={field.value || null}
                         onChange={(date: Date | null) => field.onChange(date)}
+                        onChangeRaw={(event) => {
+                          if (event) {
+                            const target = event.target as HTMLInputElement;
+                            if (target.value) {
+                              target.value = target.value
+                                .trim()
+                                .replace(/\//g, "-");
+                            }
+                          }
+                        }}
                         placeholderText="Chọn ngày nhận phòng"
                         dateFormat="dd-MM-yyyy"
                         dropdownMode="select"
@@ -197,6 +212,16 @@ export default function FormCheckOut({ data, room }: any) {
                       <DatePicker
                         selected={field.value || null}
                         onChange={(date: Date | null) => field.onChange(date)}
+                        onChangeRaw={(event) => {
+                          if (event) {
+                            const target = event.target as HTMLInputElement;
+                            if (target.value) {
+                              target.value = target.value
+                                .trim()
+                                .replace(/\//g, "-");
+                            }
+                          }
+                        }}
                         placeholderText="Chọn ngày trả phỏng"
                         dateFormat="dd-MM-yyyy"
                         dropdownMode="select"
@@ -542,9 +567,8 @@ export default function FormCheckOut({ data, room }: any) {
               </p>
               <div
                 className="mt-2"
-                data-translate="true"
                 dangerouslySetInnerHTML={{
-                  __html: renderTextContent(translatedContent[0]),
+                  __html: translatedContent[0],
                 }}
               ></div>
             </div>
@@ -559,9 +583,8 @@ export default function FormCheckOut({ data, room }: any) {
               </p>
               <div
                 className="mt-2"
-                data-translate="true"
                 dangerouslySetInnerHTML={{
-                  __html: renderTextContent(translatedContent[1]),
+                  __html: translatedContent[1],
                 }}
               ></div>
             </div>

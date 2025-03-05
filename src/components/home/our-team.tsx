@@ -7,6 +7,7 @@ import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
 import styles from "@/styles/styles.module.scss";
 import { cloneItemsCarousel } from "@/utils/Helper";
+import Link from "next/link";
 
 export default function OurTeam({ data }: any) {
   if (data.length > 0 && data.length < 6) {
@@ -41,6 +42,22 @@ export default function OurTeam({ data }: any) {
             Đội ngũ của chúng tôi
           </h3>
         </div>
+        <Link
+          href="/ve-chung-toi"
+          className="hidden lg:flex bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3"
+          style={{ transition: "0.3s" }}
+        >
+          <button className="text-[#175CD3] font-medium" data-translate="true">
+            Về chúng tôi
+          </button>
+          <Image
+            className=" hover:scale-110 ease-in duration-300"
+            src="/icon/chevron-right.svg"
+            alt="Icon"
+            width={20}
+            height={20}
+          />
+        </Link>
       </div>
       <div
         className="mt-8"

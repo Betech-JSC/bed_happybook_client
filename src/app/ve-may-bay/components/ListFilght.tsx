@@ -25,6 +25,7 @@ import { flightStaticText } from "@/constants/staticText";
 import { translateText } from "@/utils/translateApi";
 import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useTranslation } from "@/app/hooks/useTranslation";
 
 export default function ListFilght({ airportsData }: ListFilghtProps) {
   const router = useRouter();
@@ -102,6 +103,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
   const [flightType, setFlightType] = useState<string>("");
   const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
+  const { t } = useTranslation(translatedStaticText);
   const scrollToRef = (ref: any) => {
     if (ref.current) {
       handleScrollSmooth(ref.current);
@@ -294,9 +296,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18" data-translate>
-          Đang tải dữ liệu chuyến bay...
-        </span>
+        <span className="text-18">{t("dang_tai_du_lieu_chuyen_bay")}...</span>
       </div>
     );
   }

@@ -2,6 +2,7 @@ import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 export default function CompoItem({ data }: any) {
   const vehicleIcon = ["AirplaneTilt-2", "bus"];
@@ -69,11 +70,10 @@ export default function CompoItem({ data }: any) {
               ))}
           </div>
           <div>
-            <span data-translate>chỉ từ</span>
-            <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-              {" "}
-              {formatCurrency(data.price - data.discount_price)}
-            </span>
+            <DisplayPrice
+              price={data.price - data.discount_price}
+              textPrefix="chỉ từ"
+            />
           </div>
         </div>
       </div>

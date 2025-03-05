@@ -1,23 +1,28 @@
 "use client";
 import { useForm, Controller } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormCtvSchema, FormCtvType } from "@/schemaValidations/formCtv.shema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { Fragment } from "react";
 import LoadingButton from "@/components/base/LoadingButton";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import http from "@/lib/http";
 import { useLanguage } from "../contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
+import { datePickerLocale } from "@/constants/language";
 
 export default function FormCtv() {
   const [loading, setLoading] = useState(false);
   const { language } = useLanguage();
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
-
+  useEffect(() => {
+    if (datePickerLocale[language]) {
+      registerLocale(language, datePickerLocale[language]);
+    }
+  }, [language]);
   const {
     register,
     handleSubmit,
@@ -163,8 +168,19 @@ export default function FormCtv() {
                     id="citizen_id_date"
                     selected={field.value}
                     onChange={(date) => field.onChange(date)}
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="dd/mm/yyyy"
+                    onChangeRaw={(event) => {
+                      if (event) {
+                        const target = event.target as HTMLInputElement;
+                        if (target.value) {
+                          target.value = target.value
+                            .trim()
+                            .replace(/\//g, "-");
+                        }
+                      }
+                    }}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Chọn ngày cấp"
+                    locale={language}
                     className="text-sm pl-4 w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary"
                   />
                 )}

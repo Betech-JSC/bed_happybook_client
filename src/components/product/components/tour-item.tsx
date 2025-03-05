@@ -2,9 +2,10 @@ import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 export default function TourItem({ tour }: any) {
-  const vehicleIcon = ["AirplaneTilt-2", "bus"];
+  const vehicleIcon = ["bus", "AirplaneTilt-2"];
   if (tour?.transportation === 1) {
     vehicleIcon.splice(1, 1);
   } else if (tour?.transportation === 2) {
@@ -70,22 +71,7 @@ export default function TourItem({ tour }: any) {
               ))}
           </div>
           <div>
-            {tour.price > 0 ? (
-              <>
-                <span data-translate>chỉ từ</span>
-                <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-                  {" "}
-                  {formatCurrency(tour.price)}
-                </span>
-              </>
-            ) : (
-              <span
-                className="text-[#F27145] font-semibold text-base lg:text-xl"
-                data-translate
-              >
-                Liên hệ
-              </span>
-            )}
+            <DisplayPrice price={tour.price} textPrefix="chỉ từ" />
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, Suspense, useState } from "react";
+import { Fragment, Suspense, useEffect, useState } from "react";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import Image from "next/image";
 import { SearchFilghtProps } from "@/types/flight";
@@ -14,7 +14,10 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
   const [querySeach, setQuerySeach] = useState<string>();
   const [locationSelected, setLocationSelected] = useState<any>(null);
   const { language } = useLanguage();
-
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <Fragment>
       <h3
@@ -330,24 +333,28 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
                     width={18}
                     height={18}
                   ></Image>
-                  <Select
-                    options={locationsData}
-                    placeholder={`${
-                      language === "en" ? "Select destination" : "Chọn điểm đến"
-                    }`}
-                    className="w-full"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: "none",
-                        boxShadow: "none",
-                        cursor: "pointer",
-                      }),
-                    }}
-                    onChange={(selectedOption) =>
-                      setLocationSelected(selectedOption)
-                    }
-                  />
+                  {mounted && (
+                    <Select
+                      options={locationsData}
+                      placeholder={`${
+                        language === "en"
+                          ? "Select destination"
+                          : "Chọn điểm đến"
+                      }`}
+                      className="w-full"
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          boxShadow: "none",
+                          cursor: "pointer",
+                        }),
+                      }}
+                      onChange={(selectedOption) =>
+                        setLocationSelected(selectedOption)
+                      }
+                    />
+                  )}
                 </div>
               </div>
             </div>

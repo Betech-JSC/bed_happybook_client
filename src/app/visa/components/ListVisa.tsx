@@ -37,7 +37,7 @@ export default function ListVisa({
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
-    slug: alias ?? "",
+    category_slug: alias ?? "",
     text: searchParams?.text ?? "",
     "loai_visa[]":
       searchParams && searchParams["loai_visa[]"]

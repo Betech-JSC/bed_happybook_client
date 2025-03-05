@@ -77,6 +77,7 @@ export default function ListTour({
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
+    query.text = "";
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -321,11 +322,11 @@ export default function ListTour({
                   </div>
                   <div className="text-2xl text-primary font-bold text-end mt-3">
                     {tour.price > 0 ? (
-                      <span data-translate="true">Liên hệ</span>
-                    ) : (
                       <span>
                         {formatCurrency(tour.price - tour.discount_price)}
                       </span>
+                    ) : (
+                      <span data-translate="true">Liên hệ</span>
                     )}
                   </div>
                 </div>
@@ -341,7 +342,7 @@ export default function ListTour({
                   <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
                   <span className="text-18" data-translate="true">
                     {" "}
-                    Đang tải dữ liệu...
+                    Loading...
                   </span>
                 </>
               ) : (

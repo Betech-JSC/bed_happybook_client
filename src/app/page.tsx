@@ -119,11 +119,6 @@ export default async function Home() {
             </div>
           </AosAnimate>
         )}
-        {popularFlights?.length > 0 && (
-          <AosAnimate>
-            <Flight data={popularFlights}></Flight>
-          </AosAnimate>
-        )}
 
         {homeData?.tours?.hot.length > 0 && (
           <AosAnimate>
@@ -143,6 +138,12 @@ export default async function Home() {
           </AosAnimate>
         )}
 
+        {popularFlights?.length > 0 && (
+          <AosAnimate>
+            <Flight data={popularFlights}></Flight>
+          </AosAnimate>
+        )}
+
         {homeData?.visa?.length > 0 && (
           <AosAnimate>
             <VisaService data={homeData.visa}></VisaService>
@@ -159,17 +160,17 @@ export default async function Home() {
           <VisaSteps></VisaSteps>
         </AosAnimate>
 
-        {membersData?.length > 0 && (
-          <AosAnimate>
-            <OurTeam data={membersData}></OurTeam>
-          </AosAnimate>
-        )}
-
         {touristSuggest?.length > 0 && (
           <AosAnimate>
             <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
               <TouristSuggest data={touristSuggest}></TouristSuggest>
             </div>
+          </AosAnimate>
+        )}
+
+        {membersData?.length > 0 && (
+          <AosAnimate>
+            <OurTeam data={membersData}></OurTeam>
           </AosAnimate>
         )}
 

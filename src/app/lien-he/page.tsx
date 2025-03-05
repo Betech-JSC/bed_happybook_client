@@ -37,7 +37,7 @@ export default function Contact() {
         ></div>
         <div className="base__content h-80 md:h-[405px] lg:pr-[200px]">
           <div className="flex justify-between items-center h-full">
-            <h1 className="text-32 text-white font-bold" data-translate>
+            <h1 className="text-32 text-white font-bold" data-translate="true">
               Liên Hệ Với HappyBook
             </h1>
             <div>
@@ -55,7 +55,7 @@ export default function Contact() {
         <div className="h-auto pb-6 w-full bg-gray-100 rounded-2xl top-[-12px]">
           <div className="px-3 pt-10 lg:px-[80px] lg:pt-16">
             <div className="mx-auto p-8 lg:w-[980px] h-auto bg-white rounded-2xl  ">
-              <h3 className="text-18 font-semibold" data-translate>
+              <h3 className="text-18 font-semibold" data-translate="true">
                 Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Nếu có bất kỳ
                 câu hỏi nào hoặc cần trợ giúp, đừng ngần ngại liên hệ với chúng
                 tôi qua các kênh dưới đây:
@@ -73,14 +73,17 @@ export default function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p className="text-sm font-semibold" data-translate>
+                      <p
+                        className="text-sm font-semibold"
+                        data-translate="true"
+                      >
                         Hotline vé máy bay
                       </p>
                       <div className="text-base mt-2">
                         <span>0983.488.937 </span>
-                        <span data-translate>(Nội địa)</span>
+                        <span data-translate="true">(Nội địa)</span>
                         <span>{" - 0367.008.027 "}</span>
-                        <span data-translate>(Quốc tế)</span>
+                        <span data-translate="true">(Quốc tế)</span>
                       </div>
                     </div>
                   </div>
@@ -95,7 +98,10 @@ export default function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p className="text-sm font-semibold" data-translate>
+                      <p
+                        className="text-sm font-semibold"
+                        data-translate="true"
+                      >
                         Hotline Visa - hộ chiếu
                       </p>
                       <p className="text-base mt-2">
@@ -114,7 +120,10 @@ export default function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p className="text-sm font-semibold" data-translate>
+                      <p
+                        className="text-sm font-semibold"
+                        data-translate="true"
+                      >
                         Hotline Tour du lịch
                       </p>
                       <p className="text-base mt-2">0708.628.791</p>
@@ -133,12 +142,13 @@ export default function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p className="text-sm font-semibold" data-translate>
+                      <p
+                        className="text-sm font-semibold"
+                        data-translate="true"
+                      >
                         Email Chính thức
                       </p>
-                      <p className="text-base mt-2">
-                        0983.488.937 (Nội địa) - 0367.008.027 (Quốc tế)
-                      </p>
+                      <p className="text-base mt-2">info@happybook.com.vn</p>
                     </div>
                   </div>
                   <div className="flex space-x-4">
@@ -152,7 +162,10 @@ export default function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p className="text-sm font-semibold" data-translate>
+                      <p
+                        className="text-sm font-semibold"
+                        data-translate="true"
+                      >
                         Email tuyển dụng - đăng ký CTV
                       </p>
                       <p className="text-base mt-2 break-all">
@@ -171,7 +184,10 @@ export default function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p className="text-sm font-semibold" data-translate>
+                      <p
+                        className="text-sm font-semibold"
+                        data-translate="true"
+                      >
                         Email visa - hộ chiếu
                       </p>
                       <p className="text-base mt-2 break-all">
@@ -192,30 +208,33 @@ export default function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p className="text-sm font-semibold" data-translate>
+                      <p
+                        className="text-sm font-semibold"
+                        data-translate="true"
+                      >
                         Địa chỉ
                       </p>
                       <p className="text-gray-900">
-                        <span className="font-medium" data-translate>
+                        <span className="font-medium" data-translate="true">
                           Trụ sở chính:
                         </span>
-                        <span data-translate>
+                        <span data-translate="true">
                           Tầng 1, Phong Phú Tower, 93/10 Quang Trung, KP.1,
                           P.Hiệp Phú, TP.Thủ Đức, TP.HCM
                         </span>
                       </p>
                       <p className="text-gray-900">
-                        <span className="font-medium" data-translate>
+                        <span className="font-medium" data-translate="true">
                           Chi nhánh 1:
                         </span>{" "}
-                        <span data-translate>
+                        <span data-translate="true">
                           124 Lê Quang Định, P.14, Q.Bình Thạnh, TP.HCM
                         </span>
                       </p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold" data-translate>
+                    <p className="text-sm font-semibold" data-translate="true">
                       Theo dõi chúng tôi
                     </p>
                     <div className="flex space-x-3 mt-4">
@@ -258,7 +277,7 @@ export default function Contact() {
               </div>
             </div>
             <div className="mx-auto p-8 mt-8 lg:w-[920px] h-auto bg-white rounded-2xl  ">
-              <h3 className="text-18 font-semibold" data-translate>
+              <h3 className="text-18 font-semibold" data-translate="true">
                 Bạn có thể gửi thông tin yêu cầu của mình qua mẫu liên hệ dưới
                 đây, và chúng tôi sẽ phản hồi trong thời gian sớm nhất.
               </h3>

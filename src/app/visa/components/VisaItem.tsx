@@ -44,7 +44,7 @@ export default function VisaItem({ data }: any) {
       </div>
       <div>
         {data.map((category: any, index: number) => (
-          <>
+          <div key={index}>
             <Carousel
               opts={{
                 align: "start",
@@ -57,9 +57,9 @@ export default function VisaItem({ data }: any) {
               }`}
             >
               <CarouselContent>
-                {category.products.map((visa: any, index: number) => (
+                {category.products.map((visa: any, subIndex: number) => (
                   <CarouselItem
-                    key={index}
+                    key={subIndex}
                     className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                   >
                     <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
@@ -102,7 +102,7 @@ export default function VisaItem({ data }: any) {
                 Thông tin đang được cập nhật.....
               </p>
             </div>
-          </>
+          </div>
         ))}
       </div>
     </div>

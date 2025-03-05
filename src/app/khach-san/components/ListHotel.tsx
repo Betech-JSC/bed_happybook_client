@@ -2,7 +2,12 @@
 import { HotelApi } from "@/api/Hotel";
 import { formatCurrency } from "@/lib/formatters";
 import TourStyle from "@/styles/tour.module.scss";
-import { buildSearch, calculatorDiscountPercent } from "@/utils/Helper";
+import {
+  buildSearch,
+  calculatorDiscountPercent,
+  renderTextContent,
+} from "@/utils/Helper";
+import { translatePage } from "@/utils/translateDom";
 import { Span } from "next/dist/trace";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,9 +38,12 @@ export default function ListHotel({
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  const [translatedText, setTranslatedText] = useState<boolean>(false);
+
   const [data, setData] = useState<any>([]);
   const loadData = useCallback(async () => {
     try {
+      setTranslatedText(false);
       setLoadingLoadMore(true);
       setIsDisabled(true);
       const search = buildSearch(query);
@@ -49,6 +57,9 @@ export default function ListHotel({
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
+      translatePage("#wrapper-search-hotels", 10).then(() =>
+        setTranslatedText(true)
+      );
     } catch (error) {
       console.log("Error search: " + error);
     } finally {
@@ -95,17 +106,21 @@ export default function ListHotel({
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Đang tải dữ liệu...</span>
+        <span className="text-18">Loading...</span>
       </div>
     );
   }
 
-  if (!data) return;
   return (
-    <div className="flex mt-6 md:space-x-4 items-start pb-8">
+    <div
+      id="wrapper-search-hotels"
+      className="flex mt-6 md:space-x-4 items-start pb-8"
+    >
       <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
         <div className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none">
-          <p className="font-semibold">Sắp xếp</p>
+          <p className="font-semibold" data-translate="true">
+            Sắp xếp
+          </p>
           <select
             onChange={(e) => {
               handleSortData(e.target.value);
@@ -113,9 +128,12 @@ export default function ListHotel({
             defaultValue={"id|desc"}
             className="py-3 px-4 border border-gray-300 w-full rounded-lg mt-3 outline-none font-semibold"
           >
-            <option value="">Đề xuất</option>
-            <option value="id|desc">Mới nhất</option>
-            <option value="id|asc">Cũ nhất</option>
+            <option value="id|desc" data-translate="true">
+              Mới nhất
+            </option>
+            <option value="id|asc" data-translate="true">
+              Cũ nhất
+            </option>
           </select>
         </div>
         {optionsFilter.map((item, index) => (
@@ -123,7 +141,9 @@ export default function ListHotel({
             key={index}
             className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
           >
-            <p className="font-semibold">{item.label}</p>
+            <p className="font-semibold" data-translate="true">
+              {item.label}
+            </p>
             {item.option.map((option, index) => {
               return (
                 index < 20 && (
@@ -171,6 +191,7 @@ export default function ListHotel({
                         item.name === "star"
                       } ? "text-[#667085]" : ""`}
                       htmlFor={item.name + index}
+                      data-translate="true"
                     >
                       {option.label}
                     </label>
@@ -199,7 +220,10 @@ export default function ListHotel({
             data.map((item: any, index: number) => (
               <div
                 key={index}
-                className="flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mb-4"
+                className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mb-4
+                  transition-opacity duration-700 ${
+                    translatedText ? "opacity-100" : "opacity-0"
+                  }`}
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
                   <Link href={`/khach-san/chi-tiet/${item.slug}`}>
@@ -218,10 +242,11 @@ export default function ListHotel({
                   <div className="my-4 mr-6">
                     <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                       <Link
+                        data-translate="true"
                         href={`/khach-san/chi-tiet/${item.slug}`}
                         className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                       >
-                        {item.name}
+                        {renderTextContent(item.name)}
                       </Link>
                       <div className="flex w-[20%] space-x-1">
                         <>
@@ -257,15 +282,19 @@ export default function ListHotel({
                         width={20}
                         height={20}
                       />
-                      <span className="text-sm">{item.hotel.address}</span>
+                      <span className="text-sm" data-translate="true">
+                        {renderTextContent(item.hotel.address)}
+                      </span>
                     </div>
                     {item?.hotel?.amenity_service.length > 0 && (
                       <div className="w-full">
                         <ul className="mt-2 list-[circle] grid grid-cols-2 items-start pl-4 w-10/12 gap-2">
                           {item.hotel.amenity_service.map(
                             (service: any, index: number) => (
-                              <li key={index}>
-                                {service.hotel_amenity_service.name}
+                              <li key={index} data-translate="true">
+                                {renderTextContent(
+                                  service.hotel_amenity_service.name
+                                )}
                               </li>
                             )
                           )}
@@ -274,7 +303,10 @@ export default function ListHotel({
                     )}
                     {item.discount_price > 0 &&
                       item.price - item.discount_price <= 0 && (
-                        <div className="mt-3 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
+                        <div
+                          className="mt-3 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700"
+                          data-translate="true"
+                        >
                           Hoàn tiền toàn bộ
                         </div>
                       )}
@@ -287,11 +319,17 @@ export default function ListHotel({
                         </span>
                       )}
                       <div className="flex flex-col space-y-1">
-                        <span className="text-primary text-sm font-semibold">
+                        <span
+                          className="text-primary text-sm font-semibold"
+                          data-translate="true"
+                        >
                           {item.rating_text ?? ""}
                         </span>
 
-                        <span className="text-gray-500 text-xs">
+                        <span
+                          className="text-gray-500 text-xs"
+                          data-translate="true"
+                        >
                           {item.totalReview ?? 0} đánh giá
                         </span>
                       </div>
@@ -300,8 +338,8 @@ export default function ListHotel({
                       <div>
                         {item.discount_price > 0 && (
                           <div className="text-sm mr-2 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
+                            <span data-translate="true">Giảm </span>
                             <span>
-                              Giảm{" "}
                               {calculatorDiscountPercent(
                                 item.discount_price,
                                 item.price
@@ -318,7 +356,10 @@ export default function ListHotel({
                       <div className="text-base md:text-xl text-primary font-semibold text-end">
                         {item.price > 0 && (
                           <>
-                            <span className="text-gray-500 text-sm md:text-base mr-2">
+                            <span
+                              className="text-gray-500 text-sm md:text-base mr-2"
+                              data-translate="true"
+                            >
                               chỉ từ
                             </span>
                             {item.discount_price
@@ -340,10 +381,10 @@ export default function ListHotel({
               {loadingLoadMore ? (
                 <>
                   <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-                  <span className="text-18"> Đang tải dữ liệu...</span>
+                  <span className="text-18"> Loading...</span>
                 </>
               ) : (
-                <span className="text-18">
+                <span className="text-18" data-translate="true">
                   Không tìm thấy dữ liệu phù hợp...
                 </span>
               )}
@@ -360,7 +401,7 @@ export default function ListHotel({
                 <span className="loader_spiner"></span>
               ) : (
                 <>
-                  Xem thêm
+                  <span data-translate="true"> Xem thêm</span>
                   <svg
                     className="group-hover:stroke-primary stroke-gray-700 duration-300"
                     width="20"

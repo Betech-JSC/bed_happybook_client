@@ -170,6 +170,14 @@ const renderTextContent = (content: any) => {
   return !_.isEmpty(content) ? content : "Nội dung đang cập nhật...!";
 };
 
+function decodeHtml(html: string): string {
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = html;
+  const decoded = textarea.value;
+  textarea.remove();
+  return decoded;
+}
+
 const toSnakeCase = (str: string) =>
   _.snakeCase(
     str
@@ -182,6 +190,7 @@ const toSnakeCase = (str: string) =>
   );
 
 export {
+  decodeHtml,
   buildSearch,
   cloneItemsCarousel,
   handleSessionStorage,

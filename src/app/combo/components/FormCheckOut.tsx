@@ -8,7 +8,7 @@ import LoadingButton from "@/components/base/LoadingButton";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { toast } from "react-hot-toast";
@@ -17,6 +17,7 @@ import { BookingProductApi } from "@/api/BookingProduct";
 import { format } from "date-fns";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
+import { datePickerLocale } from "@/constants/language";
 
 export default function FormCheckOut({
   productId,
@@ -32,6 +33,12 @@ export default function FormCheckOut({
     CheckOutTourSchema(messages, generateInvoice)
   );
   const toaStrMsg = toastMessages[language as "vi" | "en"];
+
+  useEffect(() => {
+    if (datePickerLocale[language]) {
+      registerLocale(language, datePickerLocale[language]);
+    }
+  }, [language]);
 
   useEffect(() => {
     setSchemaForm(CheckOutTourSchema(messages, generateInvoice));
@@ -121,10 +128,20 @@ export default function FormCheckOut({
                         id={`depart_date`}
                         selected={field.value || null}
                         onChange={(date: Date | null) => field.onChange(date)}
+                        onChangeRaw={(event) => {
+                          if (event) {
+                            const target = event.target as HTMLInputElement;
+                            if (target.value) {
+                              target.value = target.value
+                                .trim()
+                                .replace(/\//g, "-");
+                            }
+                          }
+                        }}
                         placeholderText="Chọn ngày khởi hành"
                         dateFormat="dd-MM-yyyy"
                         dropdownMode="select"
-                        locale={vi}
+                        locale={language}
                         minDate={new Date()}
                         className="text-sm pl-4 w-full placeholder-gray-400 focus:outline-none border-none  focus:border-primary"
                       />
