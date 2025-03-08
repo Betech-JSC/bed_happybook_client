@@ -26,6 +26,10 @@ import { PostType, SearchParamsProps } from "@/types/post";
 import TableOfContents from "./components/table-content";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
+import "@/styles/ckeditor-content.scss";
+import { getServerLang } from "@/lib/session";
+import { translateText } from "@/utils/translateApi";
+import { renderTextContent } from "@/utils/Helper";
 
 type Props = {
   params: { slug: string };
@@ -64,6 +68,15 @@ export default async function Posts({
   if (!detail) {
     notFound();
   }
+  const language = await getServerLang();
+  let translateData: any = {};
+  await translateText(
+    [renderTextContent(detail.content), renderTextContent(detail.toc)],
+    language
+  ).then((data) => {
+    translateData.content = data[0];
+    translateData.toc = data[1];
+  });
   return (
     <SeoSchema
       blog={detail}
@@ -146,16 +159,17 @@ export default async function Posts({
                     : "Nội dung đang cập nhật...",
                 }}
               ></div>
-              <TableOfContents toc={detail.toc} />
-              <div
-                data-translate
-                className="post__detail_content md:max-w-[460px] lg:max-w-[820px]"
-                dangerouslySetInnerHTML={{
-                  __html: detail.content
-                    ? detail.content
-                    : "Nội dung đang cập nhật...",
-                }}
-              ></div>
+              <TableOfContents toc={translateData?.toc} />
+              {translateData?.content && (
+                <div className="ckeditor_container post__detail_content md:max-w-[460px] lg:max-w-[820px] overflow-hidden">
+                  <div
+                    className="cke_editable"
+                    dangerouslySetInnerHTML={{
+                      __html: translateData.content,
+                    }}
+                  ></div>
+                </div>
+              )}
             </div>
           </div>
           {/* Side bar */}

@@ -65,7 +65,6 @@ const TableOfContents = ({ toc }: Props) => {
       </div>
       {!isEmpty(toc) && (
         <div
-          // data-translate
           dangerouslySetInnerHTML={{
             __html: toc,
           }}
