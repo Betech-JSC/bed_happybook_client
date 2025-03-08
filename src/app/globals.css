@@ -92,6 +92,9 @@
   .custom-scrollbar::-webkit-scrollbar-track {
     background-color: #f0f0f0;
   }
+  select {
+    background-color: transparent !important;
+  }
 }
 
 @layer base {

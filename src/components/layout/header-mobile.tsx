@@ -13,7 +13,7 @@ export default function HeaderMobile() {
             <Link href="/">
               <Image
                 priority
-                src="/logo-mobile.png"
+                src="/logo-mobile.svg"
                 alt="Happy Book Logo"
                 width={160}
                 height={40}

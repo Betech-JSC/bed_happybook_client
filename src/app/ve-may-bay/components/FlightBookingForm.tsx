@@ -551,26 +551,23 @@ export default function FlightBookForm({ airportsData }: any) {
                       <span data-translate="true">Giới tính</span>
                       <span className="text-red-500">*</span>
                     </label>
-
-                    <select
-                      id="gender_person_contact"
-                      {...register("contact.gender")}
-                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                    >
-                      <option
-                        value=""
-                        className="text-gray-300"
-                        data-translate="true"
+                    <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                      <select
+                        id="gender_person_contact"
+                        className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                        {...register("contact.gender")}
                       >
-                        Vui lòng chọn giới tính
-                      </option>
-                      <option value="male" data-translate="true">
-                        Quý ông
-                      </option>
-                      <option value="female" data-translate="true">
-                        Quý bà
-                      </option>
-                    </select>
+                        <option value="" data-translate="true">
+                          Vui lòng chọn giới tính
+                        </option>
+                        <option value="male" data-translate="true">
+                          Quý ông
+                        </option>
+                        <option value="female" data-translate="true">
+                          Quý bà
+                        </option>
+                      </select>
+                    </div>
                     {errors.contact?.gender && (
                       <p className="text-red-600">
                         {errors.contact?.gender.message}
@@ -1513,7 +1510,7 @@ export default function FlightBookForm({ airportsData }: any) {
         </div>
         <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 ">
           <div className="pb-0 py-4 px-3 lg:px-6">
-            <div className="flex justify-between">
+            <div className="flex flex-col space-y-2 items-start lg:items-center lg:space-y-0 lg:flex-row lg:justify-between">
               <span className="text-22 font-semibold" data-translate="true">
                 Thông tin đặt chỗ
               </span>

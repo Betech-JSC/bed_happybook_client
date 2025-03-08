@@ -95,7 +95,7 @@ export default function VisaApplicationForm() {
                   </p>
                   <div className="mt-2">
                     <div className="flex space-x-6">
-                      <div className="flex space-x-3">
+                      <div className="flex space-x-3 items-center">
                         <input
                           type="radio"
                           value={1}
@@ -106,7 +106,7 @@ export default function VisaApplicationForm() {
                           Đã từng
                         </label>
                       </div>
-                      <div className="flex space-x-3">
+                      <div className="flex space-x-3 items-center">
                         <input
                           type="radio"
                           value={0}
@@ -250,7 +250,7 @@ export default function VisaApplicationForm() {
                 </p>
                 <div className="mt-2">
                   <div className="flex space-x-6">
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 items-center">
                       <input
                         type="radio"
                         id="is_relatives_abroad_not_legal_option_yes"
@@ -264,7 +264,7 @@ export default function VisaApplicationForm() {
                         Có
                       </label>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 items-center">
                       <input
                         type="radio"
                         id="is_relatives_abroad_not_legal_option_no"
@@ -797,7 +797,7 @@ export default function VisaApplicationForm() {
                 </div>
                 <div className="mt-2">
                   <div className="flex space-x-6">
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 items-center">
                       <input
                         type="radio"
                         value={1}
@@ -808,7 +808,7 @@ export default function VisaApplicationForm() {
                         Có
                       </label>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 items-center">
                       <input
                         type="radio"
                         value={0}
@@ -832,7 +832,7 @@ export default function VisaApplicationForm() {
                 </p>
                 <div className="mt-2">
                   <div className="flex space-x-6">
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 items-center">
                       <input
                         type="radio"
                         value={1}
@@ -843,7 +843,7 @@ export default function VisaApplicationForm() {
                         Có
                       </label>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 items-center">
                       <input
                         type="radio"
                         value={0}

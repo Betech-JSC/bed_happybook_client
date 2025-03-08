@@ -16,6 +16,7 @@ import FlightDetailPopup from "../FlightDetailPopup";
 import { FlightApi } from "@/api/Flight";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { translateText } from "@/utils/translateApi";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 const defaultFilers: filtersFlightDomestic = {
   priceWithoutTax: "0",
@@ -49,6 +50,7 @@ export default function FilghtDomesticList({
 }: ListFlight) {
   const router = useRouter();
   const { t } = useTranslation(translatedStaticText);
+  const { language } = useLanguage();
   const departFlightRef = useRef<HTMLDivElement>(null);
   const returnFlightRef = useRef<HTMLDivElement>(null);
   const [filteredData, setFilteredData] = useState<any[]>([]);
@@ -173,22 +175,26 @@ export default function FilghtDomesticList({
           params
         );
 
-        const fareRules = await translateText([
-          response?.payload.data.ListFareRules[0].ListRulesGroup[0]
-            .ListRulesText[0] ??
-            `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
-        ]);
+        const fareRules = await translateText(
+          [
+            response?.payload.data.ListFareRules[0].ListRulesGroup[0]
+              .ListRulesText[0] ??
+              `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
+          ],
+          language
+        );
         return fareRules?.[0];
       } catch (error: any) {
-        const fareRules = await translateText([
-          "Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.",
-        ]);
+        const fareRules = await translateText(
+          ["Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết."],
+          language
+        );
         return fareRules?.[0];
       } finally {
         setIsLoadingRules(false);
       }
     },
-    [flightSession]
+    [flightSession, language]
   );
 
   const toggleShowRuleTicket = useCallback(
@@ -407,7 +413,7 @@ export default function FilghtDomesticList({
             <div className="pb-3 border-b border-gray-200">
               <h2 className="font-semibold">{t("so_diem_dung")}</h2>
               {flightStopNum.map((stopNum: number, index: number) => (
-                <div key={index} className="flex space-x-2 mt-3">
+                <div key={index} className="flex space-x-2 mt-3 items-center">
                   <input
                     type="checkbox"
                     name="stopNum"
@@ -431,7 +437,7 @@ export default function FilghtDomesticList({
               <input type="checkbox" name="price" id="price_1" />
               <label htmlFor="price_1">Giá bao gồm thuế phí</label>
             </div> */}
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="priceWithoutTax"
@@ -458,7 +464,7 @@ export default function FilghtDomesticList({
               />
               <label htmlFor="sortPrice">Giá thấp tới cao</label>
             </div> */}
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="timeDepart"
@@ -469,7 +475,7 @@ export default function FilghtDomesticList({
               />
               <label htmlFor="sortTimeDepart">{t("thoi_gian_khoi_hanh")}</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="sortAirLine"
@@ -483,7 +489,7 @@ export default function FilghtDomesticList({
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("hang_hang_khong")}</h2>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"
@@ -494,7 +500,7 @@ export default function FilghtDomesticList({
               />
               <label htmlFor="airline_1">Bamboo Airways</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"
@@ -505,7 +511,7 @@ export default function FilghtDomesticList({
               />
               <label htmlFor="airline_2">Vietjet Air</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"
@@ -516,7 +522,7 @@ export default function FilghtDomesticList({
               />
               <label htmlFor="airline_3">Vietnam Airlines</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"

@@ -55,10 +55,10 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
       </form>
       <div className="relative">
         {/* Search Bar */}
-        <div className="grid grid-cols-4 gap-2 my-4 px-3">
+        <div className="grid grid-cols-4 gap-2 my-4 px-1">
           <div
             onClick={() => setActiveTabMb(0)}
-            className={`rounded-2xl text-center h-[104px] flex flex-col ${
+            className={`rounded-2xl text-center h-[104px] block content-center ${
               activeTabMb === 0
                 ? "bg-white text-[#175CD3]"
                 : "bg-[#00000054] text-white"
@@ -83,7 +83,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
           </div>
           <div
             onClick={() => setActiveTabMb(1)}
-            className={`rounded-2xl text-center h-[104px] flex flex-col ${
+            className={`rounded-2xl text-center h-[104px] block content-center ${
               activeTabMb === 1
                 ? "bg-white text-[#175CD3]"
                 : "bg-[#00000054] text-white"
@@ -108,7 +108,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
           </div>
           <div
             onClick={() => setActiveTabMb(2)}
-            className={`rounded-2xl text-center h-[104px] flex flex-col ${
+            className={`rounded-2xl text-center h-[104px] block content-center ${
               activeTabMb === 2
                 ? "bg-white text-[#175CD3]"
                 : "bg-[#00000054] text-white"
@@ -129,7 +129,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
           </div>
           <div
             onClick={() => setActiveTabMb(3)}
-            className={`rounded-2xl text-center h-[104px] flex flex-col ${
+            className={`rounded-2xl text-center h-[104px] block content-center ${
               activeTabMb === 3
                 ? "bg-white text-[#175CD3]"
                 : "bg-[#00000054] text-white"
@@ -153,7 +153,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
           </div>
         </div>
         {/* Tabs Fly */}
-        <div className="mx-3 h-fit pt-6 pb-4 bg-white rounded-2xl shadow-lg relative">
+        <div className="mx-2 h-fit pt-6 pb-4 bg-white rounded-2xl shadow-lg relative">
           {/* Tab Fly */}
           <div className={`px-3 ${activeTabMb === 0 ? "block" : "hidden"}`}>
             <Suspense>

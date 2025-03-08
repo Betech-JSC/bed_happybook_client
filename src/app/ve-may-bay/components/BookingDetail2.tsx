@@ -189,44 +189,51 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     }
   }, []);
 
-  const fetchFareRules = useCallback(async (FareData: any) => {
-    try {
-      setIsLoadingRules(true);
-      const flight = FareData.ListFlight[0];
-      const params = {
-        ListFareData: [
-          {
-            Session: FareData.Session,
-            FareDataId: FareData.FareDataId,
-            ListFlight: [
-              {
-                FlightValue: flight.FlightValue,
-              },
-            ],
-          },
-        ],
-      };
+  const fetchFareRules = useCallback(
+    async (FareData: any) => {
+      try {
+        setIsLoadingRules(true);
+        const flight = FareData.ListFlight[0];
+        const params = {
+          ListFareData: [
+            {
+              Session: FareData.Session,
+              FareDataId: FareData.FareDataId,
+              ListFlight: [
+                {
+                  FlightValue: flight.FlightValue,
+                },
+              ],
+            },
+          ],
+        };
 
-      const response = await FlightApi.getFareRules(
-        "flights/getfarerules",
-        params
-      );
+        const response = await FlightApi.getFareRules(
+          "flights/getfarerules",
+          params
+        );
 
-      const fareRules = await translateText([
-        response?.payload.data.ListFareRules[0].ListRulesGroup[0]
-          .ListRulesText[0] ??
-          `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
-      ]);
-      return fareRules?.[0];
-    } catch (error: any) {
-      const fareRules = await translateText([
-        "Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.",
-      ]);
-      return fareRules?.[0];
-    } finally {
-      setIsLoadingRules(false);
-    }
-  }, []);
+        const fareRules = await translateText(
+          [
+            response?.payload.data.ListFareRules[0].ListRulesGroup[0]
+              .ListRulesText[0] ??
+              `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
+          ],
+          language
+        );
+        return fareRules?.[0];
+      } catch (error: any) {
+        const fareRules = await translateText(
+          ["Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết."],
+          language
+        );
+        return fareRules?.[0];
+      } finally {
+        setIsLoadingRules(false);
+      }
+    },
+    [language]
+  );
 
   useEffect(() => {
     if (data?.orderInfo?.sku) {

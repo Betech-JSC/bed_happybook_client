@@ -11,10 +11,7 @@ export const CheckOutBody = (messages: ValidationMessages) =>
       .nullable()
       .refine(
         (value) =>
-          value &&
-          ["cash", "vietqr", "international_card", "bank_transfer"].includes(
-            value
-          ),
+          value && ["cash", "vietqr", "international_card"].includes(value),
         {
           message: messages.inValidPaymentMethod,
         }

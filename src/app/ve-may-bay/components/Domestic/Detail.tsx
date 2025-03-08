@@ -213,13 +213,13 @@ const FlightDomesticDetail = ({
                     return (
                       <div
                         key={index}
-                        className="py-3 px-4 md:px-6 bg-white rounded-lg min-w-[250px] max-w-[250px] md:min-w-[296px] md:max-w-[296px]"
+                        className="flex flex-col justify-between py-3 px-4 md:px-6 bg-white rounded-lg min-w-[250px] max-w-[250px] md:min-w-[296px] md:max-w-[296px]"
                       >
-                        <p className="text-gray-900 text-18 font-bold">
-                          {ticketFlight.GroupClass}
-                        </p>
-                        <div className="my-4 pb-4 border-b border-gray-200">
-                          <div className="flex justify-between items-end lg:w-11/12">
+                        <div className="mb-4 pb-1">
+                          <p className="text-gray-900 text-18 font-bold">
+                            {ticketFlight.GroupClass}
+                          </p>
+                          <div className="mt-4 flex justify-between items-end lg:w-11/12">
                             <p className="text-sm text-gray-700">
                               {t("hang_ve")}
                             </p>
@@ -258,34 +258,36 @@ const FlightDomesticDetail = ({
                             <span>{t("chi_tiet")}</span>
                           </button>
                         </div>
-                        <div>
-                          {totalPassengers > 1 ? (
-                            <div>
-                              <p className="text-primary text-22 font-bold">
-                                {`${priceTicket.toLocaleString("vi-VN")} ${
-                                  ticket.Currency
-                                }`}
-                              </p>
-                              <div className="text-sm text-gray-700">
-                                <span>{t("tong")} : </span>
-                                {formatCurrency(ticket.TotalPrice)}
+                        <div className="border-t border-gray-200 pt-4">
+                          <div>
+                            {totalPassengers > 1 ? (
+                              <div>
+                                <p className="text-primary text-22 font-bold">
+                                  {`${priceTicket.toLocaleString("vi-VN")} ${
+                                    ticket.Currency
+                                  }`}
+                                </p>
+                                <div className="text-sm text-gray-700">
+                                  <span>{t("tong")} : </span>
+                                  {formatCurrency(ticket.TotalPrice)}
+                                </div>
                               </div>
-                            </div>
-                          ) : (
-                            <p className="text-primary text-22 font-bold">
-                              {`${ticket.TotalPrice.toLocaleString("vi-VN")} ${
-                                ticket.Currency
-                              }`}
-                            </p>
-                          )}
-                        </div>
-                        <div className="mt-4">
-                          <button
-                            onClick={() => onSelectFlight(ticket)}
-                            className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
-                          >
-                            {t("dat_ve")}
-                          </button>
+                            ) : (
+                              <p className="text-primary text-22 font-bold">
+                                {`${ticket.TotalPrice.toLocaleString(
+                                  "vi-VN"
+                                )} ${ticket.Currency}`}
+                              </p>
+                            )}
+                          </div>
+                          <div className="mt-4">
+                            <button
+                              onClick={() => onSelectFlight(ticket)}
+                              className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
+                            >
+                              {t("dat_ve")}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );

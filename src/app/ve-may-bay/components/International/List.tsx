@@ -21,6 +21,7 @@ import _ from "lodash";
 import { translatePage } from "@/utils/translateDom";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { translateText } from "@/utils/translateApi";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -50,6 +51,7 @@ export default function FlightInternationalList({
   translatedStaticText,
 }: ListFlight) {
   const { t } = useTranslation(translatedStaticText);
+  const { language } = useLanguage();
   const [filteredData, setFilteredData] = useState<any[]>(flights);
   const router = useRouter();
   const [showDetail, setShowDetail] = useState<boolean>(false);
@@ -205,20 +207,24 @@ export default function FlightInternationalList({
           "flights/getfarerules",
           params
         );
-        const fareRules = await translateText([
-          response?.payload.data.ListFareRules[0].ListRulesGroup[0]
-            .ListRulesText[0] ??
-            `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
-        ]);
+        const fareRules = await translateText(
+          [
+            response?.payload.data.ListFareRules[0].ListRulesGroup[0]
+              .ListRulesText[0] ??
+              `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
+          ],
+          language
+        );
         return fareRules?.[0];
       } catch (error: any) {
-        const fareRules = await translateText([
-          "Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.",
-        ]);
+        const fareRules = await translateText(
+          ["Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết."],
+          language
+        );
         return fareRules?.[0];
       }
     },
-    [flightSession]
+    [flightSession, language]
   );
 
   const handleShowPopupFlightDetail = (
@@ -260,7 +266,7 @@ export default function FlightInternationalList({
           </div> */}
           <div className="pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("hien_thi_gia")}</h2>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="priceWithoutTax"
@@ -277,7 +283,7 @@ export default function FlightInternationalList({
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("sap_xep")}</h2>
 
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="timeDepart"
@@ -288,7 +294,7 @@ export default function FlightInternationalList({
               />
               <label htmlFor="sortTimeDepart">{t("thoi_gian_khoi_hanh")}</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="sortAirLine"
@@ -302,7 +308,7 @@ export default function FlightInternationalList({
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("hang_hang_khong")}</h2>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"
@@ -313,7 +319,7 @@ export default function FlightInternationalList({
               />
               <label htmlFor="airline_1">Bamboo Airways</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"
@@ -324,7 +330,7 @@ export default function FlightInternationalList({
               />
               <label htmlFor="airline_2">Vietjet Air</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"
@@ -335,7 +341,7 @@ export default function FlightInternationalList({
               />
               <label htmlFor="airline_3">Vietnam Airlines</label>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
                 name="airLine"
