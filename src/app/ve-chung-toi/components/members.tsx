@@ -45,11 +45,10 @@ export default function Members({ data }: any) {
                 <Image
                   src={`${member.image_url}/${member.image_location}`}
                   alt="Image"
-                  width={100}
-                  height={100}
+                  width={600}
+                  height={400}
                   sizes="100vw"
-                  className={AboutUs.member__img}
-                  style={{ width: "100%", height: 255 }}
+                  className={`${AboutUs.member__img} w-full h-[468px] md:h-[316px] lg:h-[255px]`}
                 />
                 <div className={AboutUs.member__info}>
                   <div className={`m-3 text-white`}>

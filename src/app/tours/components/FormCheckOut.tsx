@@ -285,24 +285,26 @@ export default function CheckOutTourForm({
                 <span data-translate="true">Giới tính</span>
                 <span className="text-red-500">*</span>
               </label>
-              <select
-                id="gender"
-                {...register("gender")}
-                className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-              >
-                <option value="" data-translate="true">
-                  Vui lòng chọn giới tính
-                </option>
-                <option value="male" data-translate="true">
-                  Nam
-                </option>
-                <option value="female" data-translate="true">
-                  Nữ
-                </option>
-                <option value="other" data-translate="true">
-                  Khác
-                </option>
-              </select>
+              <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                <select
+                  id="gender"
+                  className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                  {...register("gender")}
+                >
+                  <option value="" data-translate="true">
+                    Vui lòng chọn giới tính
+                  </option>
+                  <option value="male" data-translate="true">
+                    Nam
+                  </option>
+                  <option value="female" data-translate="true">
+                    Nữ
+                  </option>
+                  <option value="other" data-translate="true">
+                    Khác
+                  </option>
+                </select>
+              </div>
               {errors.gender && (
                 <p className="text-red-600">{errors.gender.message}</p>
               )}

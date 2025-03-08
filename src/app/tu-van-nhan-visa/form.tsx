@@ -60,7 +60,7 @@ export default function VisaApplicationForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="h-auto pb-6 w-full bg-gray-100 rounded-t-2xl top-[-12px]">
           <div className="px-3 pt-10 lg:px-[80px] lg:pt-16">
-            <div className="mx-auto p-8 lg:w-[980px] h-auto bg-white rounded-2xl  ">
+            <div className="mx-auto p-4 lg:p-8 lg:w-[980px] h-auto bg-white rounded-2xl  ">
               <div>
                 <h3 className="text-2xl font-semibold" data-translate>
                   PHIẾU TIẾP NHẬN THÔNG TIN XIN THỊ THỰC (VISA)
@@ -307,7 +307,7 @@ export default function VisaApplicationForm() {
                       TIỂU HỌC (CẤP 1)
                     </label>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="inline-block mr-6 mt-2 lg:mt-0">
                     <input
                       id="education_2"
                       type="radio"
@@ -322,7 +322,7 @@ export default function VisaApplicationForm() {
                       TRUNG HỌC CƠ SỞ (CẤP 2)
                     </label>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="inline-block mr-6 mt-2 lg:mt-0">
                     <input
                       id="education_3"
                       type="radio"
@@ -337,8 +337,8 @@ export default function VisaApplicationForm() {
                       TRUNG HỌC PHỔ THÔNG (CẤP 3)
                     </label>
                   </div>
-                  <div className="mt-3">
-                    <div className="inline-block mr-6">
+                  <div className="lg:mt-3">
+                    <div className="inline-block mr-6 mt-2 lg:mt-0">
                       <input
                         type="radio"
                         value={4}
@@ -353,7 +353,7 @@ export default function VisaApplicationForm() {
                         TRUNG CẤP
                       </label>
                     </div>
-                    <div className="inline-block mr-6">
+                    <div className="block lg:inline-block mr-6 mt-2 lg:mt-0">
                       <input
                         type="radio"
                         value={5}
@@ -368,7 +368,7 @@ export default function VisaApplicationForm() {
                         CAO ĐẲNG
                       </label>
                     </div>
-                    <div className="inline-block mr-6">
+                    <div className="block lg:inline-block mr-6 mt-2 lg:mt-0">
                       <input
                         type="radio"
                         value={6}
@@ -383,7 +383,7 @@ export default function VisaApplicationForm() {
                         ĐẠI HỌC
                       </label>
                     </div>
-                    <div className="inline-block mr-6">
+                    <div className="inline-block mr-6 mt-2 lg:mt-0">
                       <input
                         type="radio"
                         value={7}
@@ -398,7 +398,7 @@ export default function VisaApplicationForm() {
                         CAO HỌC
                       </label>
                     </div>
-                    <div className="inline-block mr-6">
+                    <div className="block lg:inline-block mr-6 mt-2 lg:mt-0">
                       <input
                         type="radio"
                         value={8}
@@ -427,13 +427,6 @@ export default function VisaApplicationForm() {
                 <div className="mt-2">
                   <div className="inline-block mr-6">
                     <div className="flex items-center space-x-3">
-                      <label
-                        htmlFor="purpose_visa_application_1"
-                        className="text-base text-gray-700  font-medium"
-                        data-translate
-                      >
-                        Du lịch
-                      </label>
                       <input
                         type="checkbox"
                         value={1}
@@ -441,17 +434,17 @@ export default function VisaApplicationForm() {
                         {...register("purpose_visa_application")}
                         className="w-5 h-5"
                       />
-                    </div>
-                  </div>
-                  <div className="inline-block mr-6">
-                    <div className="flex items-center space-x-3">
                       <label
-                        htmlFor="purpose_visa_application_2"
-                        className="text-base text-gray-700  font-medium"
+                        htmlFor="purpose_visa_application_1"
+                        className="text-base text-gray-700 font-medium"
                         data-translate
                       >
-                        THĂM THÂN
+                        Du lịch
                       </label>
+                    </div>
+                  </div>
+                  <div className="block lg:inline-block mr-6 mt-2 lg:mt-0">
+                    <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
                         value={2}
@@ -459,17 +452,17 @@ export default function VisaApplicationForm() {
                         {...register("purpose_visa_application")}
                         className="w-5 h-5"
                       />
-                    </div>
-                  </div>
-                  <div className="inline-block mr-6">
-                    <div className="flex items-center space-x-3">
                       <label
-                        htmlFor="purpose_visa_application_3"
+                        htmlFor="purpose_visa_application_2"
                         className="text-base text-gray-700  font-medium"
                         data-translate
                       >
-                        CÔNG TÁC
+                        THĂM THÂN
                       </label>
+                    </div>
+                  </div>
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
+                    <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
                         value={3}
@@ -477,17 +470,17 @@ export default function VisaApplicationForm() {
                         {...register("purpose_visa_application")}
                         className="w-5 h-5"
                       />
-                    </div>
-                  </div>
-                  <div className="inline-block mr-6">
-                    <div className="flex items-center space-x-3">
                       <label
-                        htmlFor="purpose_visa_application_4"
+                        htmlFor="purpose_visa_application_3"
                         className="text-base text-gray-700  font-medium"
                         data-translate
                       >
-                        DU HỌC
+                        CÔNG TÁC
                       </label>
+                    </div>
+                  </div>
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
+                    <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
                         value={4}
@@ -495,17 +488,17 @@ export default function VisaApplicationForm() {
                         {...register("purpose_visa_application")}
                         className="w-5 h-5"
                       />
-                    </div>
-                  </div>
-                  <div className="inline-block mr-6">
-                    <div className="flex items-center space-x-3">
                       <label
-                        htmlFor="purpose_visa_application_5"
+                        htmlFor="purpose_visa_application_4"
                         className="text-base text-gray-700  font-medium"
                         data-translate
                       >
-                        LAO ĐỘNG
+                        DU HỌC
                       </label>
+                    </div>
+                  </div>
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
+                    <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
                         value={5}
@@ -513,17 +506,17 @@ export default function VisaApplicationForm() {
                         {...register("purpose_visa_application")}
                         className="w-5 h-5"
                       />
-                    </div>
-                  </div>
-                  <div className="inline-block mr-6">
-                    <div className="flex items-center space-x-3">
                       <label
-                        htmlFor="purpose_visa_application_6"
+                        htmlFor="purpose_visa_application_5"
                         className="text-base text-gray-700  font-medium"
                         data-translate
                       >
-                        MỤC ĐÍCH KHÁC
+                        LAO ĐỘNG
                       </label>
+                    </div>
+                  </div>
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
+                    <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
                         value={6}
@@ -531,6 +524,13 @@ export default function VisaApplicationForm() {
                         {...register("purpose_visa_application")}
                         className="w-5 h-5"
                       />
+                      <label
+                        htmlFor="purpose_visa_application_6"
+                        className="text-base text-gray-700  font-medium"
+                        data-translate
+                      >
+                        MỤC ĐÍCH KHÁC
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -570,7 +570,7 @@ export default function VisaApplicationForm() {
                   <span className="text-red-500">*</span>
                 </div>
                 <div className="mt-2">
-                  <div className="inline-block mr-6">
+                  <div className="inline-block mr-6 mt-2 lg:mt-0">
                     <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
@@ -588,7 +588,7 @@ export default function VisaApplicationForm() {
                       </label>
                     </div>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="inline-block mr-6 mt-2 lg:mt-0">
                     <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
@@ -606,7 +606,7 @@ export default function VisaApplicationForm() {
                       </label>
                     </div>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="inline-block mr-6 mt-2 lg:mt-0">
                     <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
@@ -624,7 +624,7 @@ export default function VisaApplicationForm() {
                       </label>
                     </div>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="inline-block mr-6 mt-2 lg:mt-0">
                     <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
@@ -642,8 +642,8 @@ export default function VisaApplicationForm() {
                       </label>
                     </div>
                   </div>
-                  <div className="mt-3">
-                    <div className="flex items-center space-x-3">
+                  <div className="lg:mt-3">
+                    <div className="flex items-center space-x-3 mt-2 lg:mt-0">
                       <input
                         type="checkbox"
                         value={5}
@@ -708,7 +708,7 @@ export default function VisaApplicationForm() {
                   <span className="text-red-500">*</span>
                 </p>
                 <div className="mt-2">
-                  <div className="inline-block mr-6">
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
                     <input
                       type="radio"
                       value={1}
@@ -723,7 +723,7 @@ export default function VisaApplicationForm() {
                       100 TRIỆU
                     </label>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
                     <input
                       type="radio"
                       value={2}
@@ -738,7 +738,7 @@ export default function VisaApplicationForm() {
                       150 TRIỆU
                     </label>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
                     <input
                       type="radio"
                       value={3}
@@ -753,7 +753,7 @@ export default function VisaApplicationForm() {
                       200 TRIỆU
                     </label>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
                     <input
                       type="radio"
                       value={4}
@@ -768,7 +768,7 @@ export default function VisaApplicationForm() {
                       250 TRIỆU
                     </label>
                   </div>
-                  <div className="inline-block mr-6">
+                  <div className="block mt-2 lg:mt-0 lg:inline-block mr-6">
                     <input
                       type="radio"
                       value={5}
