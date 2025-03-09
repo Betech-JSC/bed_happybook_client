@@ -80,7 +80,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           handleSessionStorage("remove", ["bookingFlight"]);
           setTimeout(() => {
             router.push("/ve-may-bay");
-          }, 600);
+          }, 1000);
         } else {
           toast.error(toaStrMsg.sendFailed);
         }
@@ -698,7 +698,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           className="font-medium text-base"
                           data-translate="true"
                         >
-                          Thanh toán tại quầy
+                          Thanh toán sau
                         </span>
                         <p className="text-gray-500" data-translate="true">
                           Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
@@ -707,76 +707,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                     </label>
                   </div>
-                  {/* <div className="flex space-x-3 items-start mt-4">
-                    <div className="w-5 h-5">
-                      <input
-                        type="radio"
-                        value="bank_transfer"
-                        {...register("payment_method")}
-                        id="bank_transfer"
-                        className="w-5 h-5 mt-[2px]"
-                        onChange={(e) => {
-                          setSelectedPaymentMethod(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <label htmlFor="bank_transfer" className="flex space-x-1">
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/transfer.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div className="max-width-[85%] w-fit">
-                        <span className="block text-base font-medium">
-                          Chuyển khoản nhanh ngân hàng
-                        </span>
-                         <button
-                          type="button"
-                          className="text-blue-700 underline flex items-end"
-                          onClick={() => {
-                            setShowTransferInfor(!showTransferInfor);
-                          }}
-                        >
-                          Thông tin chuyển khoản{" "}
-                          <span className="ml-1">
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d={
-                                  showTransferInfor
-                                    ? "M15 12.5L10 7.5L5 12.5"
-                                    : "M5 7.5L10 12.5L15 7.5"
-                                }
-                                stroke="#175CD3"
-                                strokeWidth="1.66667"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </span>
-                        </button>
-                        {showTransferInfor && (
-                          <div
-                            className={`mt-4 pb-3 bg-white rounded-2xl leading-6`}
-                            dangerouslySetInnerHTML={{
-                              __html:
-                                transferInformation?.content ??
-                                "Nội dung đang cập nhật...",
-                            }}
-                          />
-                        )}
-                      </div>
-                    </label>
-                  </div> */}
                   <div className="flex space-x-3 items-start mt-4">
                     <input
                       type="radio"

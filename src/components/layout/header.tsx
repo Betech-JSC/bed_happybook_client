@@ -14,6 +14,7 @@ import { AuthApi } from "@/api/Auth";
 export default function Header() {
   let headerClass = "";
   const { userInfo } = useUser();
+  const inputSearchTourRef = useRef<HTMLInputElement>(null);
   const pathname: string = usePathname();
   const { language, setLanguage } = useLanguage();
   const router = useRouter();
@@ -121,15 +122,21 @@ export default function Header() {
               if (pathname !== "/tours/tim-kiem") {
                 e.preventDefault();
                 router.push(`tours/tim-kiem?text=${querySeach}`);
+                setQuerySeach("");
+                if (inputSearchTourRef.current) {
+                  inputSearchTourRef.current.blur();
+                }
               }
             }}
           >
             <input
               type="text"
+              ref={inputSearchTourRef}
               placeholder="Tìm theo điểm đến, hoạt động"
               onChange={(e) => {
                 setQuerySeach(e.target.value);
               }}
+              value={querySeach}
               required
               className={`p-2 w-full outline-none rounded-l-lg text-gray-700 h-12 ${styles.header__menu_search}`}
             />

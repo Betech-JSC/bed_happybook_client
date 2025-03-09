@@ -972,88 +972,95 @@ export default function FlightBookForm({ airportsData }: any) {
                           </p>
                         )}
                       </div>
-                      <div className="relative">
-                        <label
-                          id={`atd.${index}.cccd`}
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          <span data-translate="true">CCCD</span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id={`atd.${index}.cccd`}
-                          type="text"
-                          {...register(`atd.${index}.cccd`)}
-                          placeholder="Nhập số CCCD"
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                        />
-                        {errors.atd?.[index]?.cccd && (
-                          <p className="text-red-600">
-                            {errors.atd?.[index]?.cccd.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          id={`atd.${index}.cccd_date`}
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          <span data-translate="true">Ngày hết hạn</span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                          <Controller
-                            name={`atd.${index}.cccd_date`}
-                            control={control}
-                            render={({ field }) => (
-                              <DatePicker
-                                id={`atd.${index}.cccd_date`}
-                                selected={field.value || null}
-                                onChange={(date: Date | null) =>
-                                  field.onChange(date)
-                                }
-                                onChangeRaw={(event) => {
-                                  if (event) {
-                                    const target =
-                                      event.target as HTMLInputElement;
-                                    if (target.value) {
-                                      target.value = target.value
-                                        .trim()
-                                        .replace(/\//g, "-");
-                                    }
-                                  }
-                                }}
-                                placeholderText="Nhập ngày hết hạn"
-                                dateFormat="dd-MM-yyyy"
-                                showMonthDropdown
-                                showYearDropdown
-                                dropdownMode="select"
-                                locale={language}
-                                maxDate={
-                                  new Date(
-                                    new Date().getFullYear() + 50,
-                                    11,
-                                    31
-                                  )
-                                }
-                                minDate={
-                                  new Date(
-                                    new Date().getFullYear(),
-                                    new Date().getMonth(),
-                                    new Date().getDate()
-                                  )
-                                }
-                                className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
-                              />
+                      {flightType === "international" && (
+                        <>
+                          <div className="relative">
+                            <label
+                              id={`atd.${index}.passport`}
+                              className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                            >
+                              <span data-translate="true">Số hộ chiếu</span>
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              id={`atd.${index}.passport`}
+                              type="text"
+                              {...register(`atd.${index}.passport`)}
+                              placeholder="Nhập số hộ chiếu"
+                              className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                            />
+                            {errors.atd?.[index]?.passport && (
+                              <p className="text-red-600">
+                                {errors.atd?.[index]?.passport.message}
+                              </p>
                             )}
-                          />
-                        </div>
-                        {errors.atd?.[index]?.cccd_date && (
-                          <p className="text-red-600">
-                            {errors.atd?.[index]?.cccd_date.message}
-                          </p>
-                        )}
-                      </div>
+                          </div>
+                          <div className="relative">
+                            <label
+                              id={`atd.${index}.passport_expiry_date`}
+                              className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                            >
+                              <span data-translate="true">Ngày hết hạn</span>
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                              <Controller
+                                name={`atd.${index}.passport_expiry_date`}
+                                control={control}
+                                render={({ field }) => (
+                                  <DatePicker
+                                    id={`atd.${index}.passport_expiry_date`}
+                                    selected={field.value || null}
+                                    onChange={(date: Date | null) =>
+                                      field.onChange(date)
+                                    }
+                                    onChangeRaw={(event) => {
+                                      if (event) {
+                                        const target =
+                                          event.target as HTMLInputElement;
+                                        if (target.value) {
+                                          target.value = target.value
+                                            .trim()
+                                            .replace(/\//g, "-");
+                                        }
+                                      }
+                                    }}
+                                    placeholderText="Nhập ngày hết hạn"
+                                    dateFormat="dd-MM-yyyy"
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    locale={language}
+                                    maxDate={
+                                      new Date(
+                                        new Date().getFullYear() + 50,
+                                        11,
+                                        31
+                                      )
+                                    }
+                                    minDate={
+                                      new Date(
+                                        new Date().getFullYear(),
+                                        new Date().getMonth(),
+                                        new Date().getDate()
+                                      )
+                                    }
+                                    className="text-sm pl-4 w-full  placeholder-gray-400 focus:outline-none  focus:border-primary"
+                                  />
+                                )}
+                              />
+                            </div>
+                            {errors.atd?.[index]?.passport_expiry_date && (
+                              <p className="text-red-600">
+                                {
+                                  errors.atd?.[index]?.passport_expiry_date
+                                    .message
+                                }
+                              </p>
+                            )}
+                          </div>
+                        </>
+                      )}
 
                       {Object.keys(listBaggageGrouped).length > 0 &&
                         Object.entries(listBaggageGrouped).map(

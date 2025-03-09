@@ -8,7 +8,7 @@ export const CheckOutBody = (messages: ValidationMessages) =>
         required_error: messages.inValidPaymentMethod,
         invalid_type_error: messages.inValidPaymentMethod,
       })
-      .nullable()
+      .default("")
       .refine(
         (value) =>
           value && ["cash", "vietqr", "international_card"].includes(value),

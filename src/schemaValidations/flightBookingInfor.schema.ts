@@ -38,18 +38,21 @@ export const FlightBookingInforBody = (
           required_error: messages.required,
           invalid_type_error: messages.inValidBirthDay,
         }),
-        cccd: z
+        passport: z
           .string()
-          .min(1, {
+          .min(8, {
+            message: messages.inValid,
+          })
+          .max(10, {
             message: messages.required,
           })
-          .regex(/^\d{12}$/, {
-            message: messages.inValid,
-          }),
-        cccd_date: z.date({
-          required_error: messages.required,
-          invalid_type_error: messages.inValid,
-        }),
+          .optional(),
+        passport_expiry_date: z
+          .date({
+            required_error: messages.required,
+            invalid_type_error: messages.inValid,
+          })
+          .optional(),
         baggages: z
           .array(
             z
