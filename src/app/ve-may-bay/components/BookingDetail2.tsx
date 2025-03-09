@@ -59,7 +59,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     register,
     handleSubmit,
     reset,
-    trigger,
+    setValue,
     formState: { errors },
   } = useForm<CheckOutBodyType>({
     resolver: zodResolver(CheckOutBody(messages)),
@@ -315,7 +315,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       </div>
     );
   }
-
   if (!data || !data.datacom_data) notFound();
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
@@ -677,6 +676,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       {...register("payment_method")}
                       className="w-5 h-5 mt-[2px]"
                       onChange={(e) => {
+                        setValue("payment_method", e.target.value);
                         setSelectedPaymentMethod(e.target.value);
                       }}
                     />
@@ -715,6 +715,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       {...register("payment_method")}
                       className="w-5 h-5 mt-[2px]"
                       onChange={(e) => {
+                        setValue("payment_method", e.target.value);
                         setSelectedPaymentMethod(e.target.value);
                       }}
                     />
@@ -746,6 +747,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       {...register("payment_method")}
                       className="w-5 h-5 mt-[2px]"
                       onChange={(e) => {
+                        setValue("payment_method", e.target.value);
                         setSelectedPaymentMethod(e.target.value);
                       }}
                     />
