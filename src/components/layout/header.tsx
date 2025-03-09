@@ -186,11 +186,7 @@ export default function Header() {
             </Link>
           </div>
 
-          <div
-            className={clsx(`relative !h-auto`, styles.header__menu_item, {
-              [styles.active]: pathname.startsWith("/tours"),
-            })}
-          >
+          <div className={clsx(`relative !h-auto`, styles.header__menu_item)}>
             <button className="flex items-center space-x-1" type="button">
               <Image
                 src={`/language/${language}.svg`}

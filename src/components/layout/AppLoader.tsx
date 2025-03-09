@@ -1,116 +1,65 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import Vivus from "vivus";
 import "@/styles/AppLoader.scss";
 import { translatePage } from "@/utils/translateDom";
+import Image from "next/image";
 
 const AppLoader: React.FC = () => {
   const pathName = usePathname();
-  const svgContainerRef = useRef<HTMLDivElement>(null);
-  const [loadingCompleted, setLoadingCompleted] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const timeoutLoaderRef = useRef<NodeJS.Timeout | null>(null);
-  const isLoaderRunning = useRef<boolean>(false);
-  const isFirstLoad = useRef<boolean>(true);
-  const vivusInstanceRef = useRef<Vivus | null>(null);
+  const gifSrcRef = useRef<string>("");
 
-  const stopLoader = useCallback(() => {
-    setLoadingCompleted(true);
-    const prevSvg = svgContainerRef?.current?.querySelector("svg");
-    if (prevSvg) {
-      prevSvg.remove();
-    }
-    isFirstLoad.current = false;
-    isLoaderRunning.current = false;
+  const stopLoading = useCallback(() => {
+    setLoading(false);
+    gifSrcRef.current = "";
   }, []);
 
-  const startLoader = useCallback(() => {
-    if (!svgContainerRef.current || isLoaderRunning.current) return;
+  const startLoading = useCallback(() => {
+    setLoading(true);
+    gifSrcRef.current = `/loading.gif?${Date.now()}`;
+  }, []);
 
-    if (vivusInstanceRef.current) {
-      vivusInstanceRef.current.destroy();
-      vivusInstanceRef.current = null;
-    }
+  // useEffect(() => {
+  //   const handleLinkClick = (event: MouseEvent) => {
+  //     if (event.ctrlKey || event.metaKey || event.shiftKey) {
+  //       return;
+  //     }
+  //     const target = event.target as HTMLElement;
 
-    if (timeoutLoaderRef.current) {
-      clearTimeout(timeoutLoaderRef.current);
-    }
-    setLoadingCompleted(false);
-    isLoaderRunning.current = true;
+  //     if (target.tagName === "A" || target.closest("a")) {
+  //       const linkElement =
+  //         target.tagName === "A" ? target : target.closest("a");
+  //       const href = (linkElement as HTMLAnchorElement)?.getAttribute("href");
 
-    vivusInstanceRef.current = new Vivus(
-      svgContainerRef.current?.id || "",
-      {
-        file: "/logo-happybook.svg",
-        duration: isFirstLoad.current ? 105 : 70,
-        type: "oneByOne",
-        onReady: (myVivus) => {
-          const paths = myVivus.el.querySelectorAll("path, polygon");
-          paths.forEach((path: any) => {
-            path.style.fill = path.getAttribute("data-fill-color") || "black";
-            path.style.fillOpacity = "0";
-          });
-        },
-      },
-      () => {
-        let paths = document.querySelectorAll(
-          "#app-global-loader svg path, #app-global-loader svg polygon"
-        );
-        paths.forEach((path) => {
-          path.classList.add("animated-fill");
-        });
-        if (isFirstLoad.current) {
-          timeoutLoaderRef.current = setTimeout(() => {
-            stopLoader();
-          }, 700);
-        }
-      }
-    );
-  }, [stopLoader]);
+  //       if (
+  //         href &&
+  //         !href.startsWith("#") &&
+  //         !href.startsWith("mailto:") &&
+  //         !href.startsWith("tel:") &&
+  //         href !== window.location.pathname
+  //       ) {
+  //         startLoading();
+  //       }
+  //     }
+  //   };
 
-  useEffect(() => {
-    const handleLinkClick = (event: MouseEvent) => {
-      if (event.ctrlKey || event.metaKey || event.shiftKey) {
-        return;
-      }
-      const target = event.target as HTMLElement;
+  //   document.addEventListener("click", handleLinkClick);
 
-      if (target.tagName === "A" || target.closest("a")) {
-        const linkElement =
-          target.tagName === "A" ? target : target.closest("a");
-        const href = (linkElement as HTMLAnchorElement)?.getAttribute("href");
-
-        if (
-          href &&
-          !href.startsWith("#") &&
-          !href.startsWith("mailto:") &&
-          !href.startsWith("tel:") &&
-          href !== window.location.pathname
-        ) {
-          startLoader();
-        }
-      }
-    };
-
-    document.addEventListener("click", handleLinkClick);
-
-    return () => {
-      document.removeEventListener("click", handleLinkClick);
-    };
-  }, [startLoader]);
+  //   return () => {
+  //     document.removeEventListener("click", handleLinkClick);
+  //   };
+  // }, [startLoading, stopLoading]);
 
   useEffect(() => {
     translatePage();
 
-    if (!isLoaderRunning.current) {
-      startLoader();
-    }
+    startLoading();
 
-    if (!isFirstLoad.current) {
-      timeoutLoaderRef.current = setTimeout(() => {
-        stopLoader();
-      }, 700);
-    }
+    timeoutLoaderRef.current = setTimeout(() => {
+      stopLoading();
+    }, 1500);
 
     return () => {
       if (timeoutLoaderRef.current) {
@@ -118,14 +67,27 @@ const AppLoader: React.FC = () => {
         timeoutLoaderRef.current = null;
       }
     };
-  }, [pathName, startLoader, stopLoader]);
+  }, [pathName, startLoading, stopLoading]);
 
   return (
     <div
       id="wrapper-app-global-loader"
-      className={loadingCompleted ? "opacity-0 invisible" : ""}
+      className={!loading ? "opacity-0 invisible" : ""}
     >
-      <div ref={svgContainerRef} id="app-global-loader"></div>
+      <div className="mx-auto" style={{ height: 700, width: 900 }}>
+        {gifSrcRef.current && (
+          <Image
+            priority
+            key={pathName}
+            src={gifSrcRef.current}
+            alt="Loading"
+            width={900}
+            height={900}
+            unoptimized
+            style={{ height: 700 }}
+          />
+        )}
+      </div>
     </div>
   );
 };
