@@ -74,7 +74,7 @@ const AppLoader: React.FC = () => {
       id="wrapper-app-global-loader"
       className={!loading ? "opacity-0 invisible" : ""}
     >
-      <div className="mx-auto" style={{ height: 700, width: 900 }}>
+      <div className="mx-auto">
         {gifSrcRef.current && (
           <Image
             priority
@@ -84,7 +84,7 @@ const AppLoader: React.FC = () => {
             width={900}
             height={900}
             unoptimized
-            style={{ height: 700 }}
+            // style={{ height: 900 }}
           />
         )}
       </div>
