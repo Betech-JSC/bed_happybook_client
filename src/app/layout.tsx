@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("http://client.happybooktravel.com"),
   title: "Happy Book",
   description: "Happy Book",
-  robots: "index, nofollow",
+  robots: "nofollow",
 };
 
 export default async function RootLayout({
