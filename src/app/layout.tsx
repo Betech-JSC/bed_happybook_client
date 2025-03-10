@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("http://client.happybooktravel.com"),
   title: "Happy Book",
   description: "Happy Book",
-  robots: "nofollow",
 };
 
 export default async function RootLayout({
@@ -34,6 +33,7 @@ export default async function RootLayout({
         {/* Meta */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta property="og:type" content="website" />
+        <meta name="robots" content="noindex,nofollow"></meta>
       </head>
       <body className={OpenSans.className}>
         <LanguageProvider serverLang={session.language}>
