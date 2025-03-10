@@ -59,7 +59,7 @@ const AppLoader: React.FC = () => {
 
     timeoutLoaderRef.current = setTimeout(() => {
       stopLoading();
-    }, 1500);
+    }, 3200);
 
     return () => {
       if (timeoutLoaderRef.current) {
