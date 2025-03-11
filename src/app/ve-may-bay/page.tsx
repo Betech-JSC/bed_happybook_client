@@ -15,12 +15,13 @@ import { FlightApi } from "@/api/Flight";
 import { formatCurrency, formatDate, formatMetadata } from "@/lib/formatters";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
-import { cloneItemsCarousel } from "@/utils/Helper";
+import { buildSearch, cloneItemsCarousel } from "@/utils/Helper";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
 import FooterMenu from "@/components/content-page/footer-menu";
 import FAQ from "@/components/content-page/FAQ";
 import { getServerLang } from "@/lib/session";
+import { format, isValid } from "date-fns";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -196,37 +197,62 @@ export default async function AirlineTicket() {
                     }}
                   >
                     <CarouselContent>
-                      {popularFlights.map((item: any) => (
-                        <CarouselItem
-                          key={item.id}
-                          className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                        >
-                          <div className="px-4 py-3 border border-gray-200 rounded-2xl">
-                            <div className="flex text-sm h-5">
-                              <Image
-                                src={`${item.image_url}/${item.flight.data_hang_bay.logo}`}
-                                alt="Airline logo"
-                                width={66}
-                                height={24}
-                              />
-                              <p className="ml-2">
-                                {item.flight.data_hang_bay.name}
-                              </p>
+                      {popularFlights.map((item: any) => {
+                        const pararmSearchFlight = {
+                          tripType: "oneWay",
+                          cheapest: 0,
+                          StartPoint: item.flight.data_diem_di.ma_dia_diem,
+                          EndPoint: item.flight.data_diem_den.ma_dia_diem,
+                          DepartDate: isValid(
+                            new Date(item.flight.ngay_khoi_hanh)
+                          )
+                            ? format(item.flight.ngay_khoi_hanh, "ddMMyyyy")
+                            : format(new Date(), "ddMMyyyy"),
+                          ReturnDate: "",
+                          Adt: 1,
+                          Chd: 0,
+                          Inf: 0,
+                          from: item.flight.data_diem_di.ten_dia_diem,
+                          to: item.flight.data_diem_den.ten_dia_diem,
+                        };
+                        const querySerachFlight = `/ve-may-bay/tim-kiem-ve${buildSearch(
+                          pararmSearchFlight
+                        )}`;
+                        return (
+                          <CarouselItem
+                            key={item.id}
+                            className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
+                          >
+                            <div className="px-4 py-3 border border-gray-200 rounded-2xl">
+                              <div className="flex text-sm h-5">
+                                <Image
+                                  src={`${item.image_url}/${item.flight.data_hang_bay.logo}`}
+                                  alt="Airline logo"
+                                  width={66}
+                                  height={24}
+                                />
+                                <p className="ml-2">
+                                  {item.flight.data_hang_bay.name}
+                                </p>
+                              </div>
+                              <Link
+                                href={querySerachFlight}
+                                className="mt-2 font-semibold block"
+                              >
+                                <h3
+                                  data-translate
+                                >{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
+                              </Link>
+                              <div className="mt-2 text-sm font-normal h-6">
+                                {formatDate(item.flight.ngay_khoi_hanh)}
+                              </div>
+                              <div className="mt-3 text-right text-xl font-semibold text-primary">
+                                {formatCurrency(item.price)}
+                              </div>
                             </div>
-                            <Link href="#" className="mt-2 font-semibold block">
-                              <h3
-                                data-translate
-                              >{`${item.flight.data_diem_di.ten_dia_diem} - ${item.flight.data_diem_den.ten_dia_diem}`}</h3>
-                            </Link>
-                            <div className="mt-2 text-sm font-normal h-6">
-                              {formatDate(item.flight.ngay_khoi_hanh)}
-                            </div>
-                            <div className="mt-3 text-right text-xl font-semibold text-primary">
-                              {formatCurrency(item.price)}
-                            </div>
-                          </div>
-                        </CarouselItem>
-                      ))}
+                          </CarouselItem>
+                        );
+                      })}
                     </CarouselContent>
                     <CarouselPrevious className="hidden lg:inline-flex" />
                     <CarouselNext className="hidden lg:inline-flex" />

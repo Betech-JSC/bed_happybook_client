@@ -23,22 +23,25 @@ export default function VisaItem({ data }: any) {
           }}
         >
           <CarouselContent>
-            {data.map((tab: any, index: number) => (
-              <CarouselItem key={index} className="basis-1/8">
-                <button
-                  className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
+            {data.map(
+              (tab: any, index: number) =>
+                tab.name && (
+                  <CarouselItem key={index} className="basis-1/8">
+                    <button
+                      className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
                      ${
                        activeTab === index
                          ? "bg-[#1570EF] hover:bg-blue-700 text-white"
                          : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
                      }`}
-                  onClick={() => setActiveTab(index)}
-                  data-translate
-                >
-                  {tab.name}
-                </button>
-              </CarouselItem>
-            ))}
+                      onClick={() => setActiveTab(index)}
+                      data-translate
+                    >
+                      {tab.name}
+                    </button>
+                  </CarouselItem>
+                )
+            )}
           </CarouselContent>
         </Carousel>
       </div>
