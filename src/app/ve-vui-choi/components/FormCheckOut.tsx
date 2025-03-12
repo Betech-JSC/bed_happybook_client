@@ -235,7 +235,7 @@ export default function CheckOutForm({ product }: { product: any }) {
                     <>
                       <div
                         key={ticket.id}
-                        className="flex justify-between items-center py-4 border-b last:border-none"
+                        className="flex space-x-2 justify-between items-center py-4 border-b last:border-none"
                       >
                         <div>
                           <div
@@ -251,7 +251,7 @@ export default function CheckOutForm({ product }: { product: any }) {
                             {ticket.description}
                           </div>
                         </div>
-                        <div className="flex items-start w-[30%] justify-between">
+                        <div className="flex items-start md:w-[30%] justify-between">
                           <div>
                             <span className="text-base mr-4">
                               {formatCurrency(ticket.price)}
@@ -627,9 +627,7 @@ export default function CheckOutForm({ product }: { product: any }) {
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
-                {renderTextContent(product?.ticket?.time)}
-              </span>
+              <span data-translate="true">Mở | Thứ, 10:00-19:30</span>
             </div>
             <div className="flex space-x-2 mt-3 items-start">
               <Image

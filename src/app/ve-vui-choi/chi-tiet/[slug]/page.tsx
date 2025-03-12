@@ -106,9 +106,7 @@ export default async function EntertainmentTicketDetail({
                       width={18}
                       height={18}
                     />
-                    <span data-translate="true">
-                      {renderTextContent(detail?.ticket?.time)}
-                    </span>
+                    <span data-translate="true">Mở | Thứ, 10:00-19:30</span>
                   </div>
 
                   <div className="flex space-x-2 mt-3 items-center">

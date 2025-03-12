@@ -368,7 +368,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
                     }`
                   );
                 }}
-                className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] "
+                className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] text-center"
               >
                 <Image
                   src="/icon/search.svg"

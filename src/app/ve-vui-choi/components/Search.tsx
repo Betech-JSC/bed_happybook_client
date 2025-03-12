@@ -186,7 +186,7 @@ export default function Search({
         </div>
         <div className="mb-4">
           {data.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
               {data.map((item: any, index: number) => (
                 <div key={index} className="rounded-xl">
                   <div
