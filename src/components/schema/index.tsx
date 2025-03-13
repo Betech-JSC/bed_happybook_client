@@ -86,7 +86,7 @@ export default function SeoSchema({
       "@id": `${siteUrl}/logo-footer.svg`,
       url: `${siteUrl}/logo-footer.svg`,
       caption: "Happy Book",
-      inLanguage: "vi",
+      // inLanguage: "vi",
     },
     sameAs: [siteUrl],
   };
@@ -95,27 +95,33 @@ export default function SeoSchema({
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": ["Person", "Organization"],
-        "@id": `${siteUrl}/#person`,
+        "@type": "Organization",
+        "@id": `${siteUrl}/#organization`,
         name: siteName,
-        logo: {
-          "@type": "ImageObject",
-          "@id": `${siteUrl}/#logo`,
-          url: `${siteUrl}/logo-footer.svg`,
-          contentUrl: `${siteUrl}/logo-footer.svg`,
-          caption: siteName,
-          inLanguage: "vi",
-          width: "240",
+        url: siteUrl,
+        logo: `${siteUrl}/logo-footer.svg`,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Tầng 1, Phong Phú Tower, 93/10 Quang Trung",
+          addressLocality: "KP.1, P.Hiệp Phú, TP.Thủ Đức",
+          addressRegion: "TP.HCM",
+          postalCode: "700000",
+          addressCountry: "VN",
         },
-        image: {
-          "@type": "ImageObject",
-          "@id": `${siteUrl}/#logo`,
-          url: `${siteUrl}/logo-footer.svg`,
-          contentUrl: `${siteUrl}/logo-footer.svg`,
-          caption: siteName,
-          inLanguage: "vi",
-          width: "240",
+        telephone: "+84-983-488-937",
+        openingHours: ["Mo-Fr 07:30-17:30"],
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "5",
+          bestRating: "5",
+          // ratingCount: "10",
         },
+        // paymentAccepted: "Credit Card, Cash",
+        sameAs: [
+          siteUrl,
+          // "https://www.facebook.com/adventuretravels",
+          // "https://www.twitter.com/adventuretravels",
+        ],
       },
       {
         "@type": "WebSite",
@@ -123,7 +129,36 @@ export default function SeoSchema({
         url: siteUrl,
         name: siteName,
         publisher: { "@id": `${siteUrl}/#person` },
-        inLanguage: "vi",
+        // inLanguage: "vi",
+      },
+      {
+        "@type": "TravelAgency",
+        "@id": `${siteUrl}/#travelagency`,
+        name: siteName,
+        url: siteUrl,
+        logo: `${siteUrl}/logo-footer.svg`,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Tầng 1, Phong Phú Tower, 93/10 Quang Trung",
+          addressLocality: "KP.1, P.Hiệp Phú, TP.Thủ Đức",
+          addressRegion: "TP.HCM",
+          postalCode: "700000",
+          addressCountry: "VN",
+        },
+        telephone: "+84-983-488-937",
+        openingHours: ["Mo-Fr 07:30-17:30"],
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "5",
+          bestRating: "5",
+          // ratingCount: "10",
+        },
+        // paymentAccepted: "Credit Card, Cash",
+        sameAs: [
+          siteUrl,
+          // "https://www.facebook.com/adventuretravels",
+          // "https://www.twitter.com/adventuretravels",
+        ],
       },
     ],
   };
@@ -144,7 +179,7 @@ export default function SeoSchema({
         datePublished: article?.created_at || new Date().toISOString(),
         dateModified: article?.updated_at || new Date().toISOString(),
         isPartOf: { "@id": `${siteUrl}#website` },
-        inLanguage: "vi",
+        // inLanguage: "vi",
         breadcrumb: {
           "@id": `${url}#breadcrumb`,
         },
@@ -167,7 +202,7 @@ export default function SeoSchema({
         isPartOf: {
           "@id": `${url}#webpage`,
         },
-        inLanguage: "vi",
+        // inLanguage: "vi",
         mainEntityOfPage: {
           "@id": `${url}#webpage`,
         },
@@ -187,7 +222,7 @@ export default function SeoSchema({
         width: "1200",
         height: "800",
         caption: blog?.title,
-        inLanguage: "vi",
+        // inLanguage: "vi",
       },
       breacdscrumbJson,
       {
@@ -201,7 +236,7 @@ export default function SeoSchema({
         primaryImageOfPage: {
           "@id": blog?.image_url,
         },
-        inLanguage: "vi",
+        // inLanguage: "vi",
         breadcrumb: {
           "@id": `${url}#breadcrumb`,
         },
@@ -228,7 +263,7 @@ export default function SeoSchema({
         image: {
           "@id": `${blog.image_url}${blog.image_location}`,
         },
-        inLanguage: "vi",
+        // inLanguage: "vi",
         mainEntityOfPage: {
           "@id": `${url}#webpage`,
         },
@@ -252,7 +287,7 @@ export default function SeoSchema({
         width: "1200",
         height: "800",
         caption: product?.title,
-        inLanguage: "vi",
+        // inLanguage: "vi",
       },
       breacdscrumbJson,
       {
@@ -266,7 +301,7 @@ export default function SeoSchema({
         primaryImageOfPage: {
           "@id": product?.image_url,
         },
-        inLanguage: "vi",
+        // inLanguage: "vi",
         breadcrumb: {
           "@id": `${url}#breadcrumb`,
         },
