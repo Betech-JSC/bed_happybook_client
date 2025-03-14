@@ -5,8 +5,8 @@ const path = "/setting";
 
 const settingApi = {
   getMetaSeo: () =>
-    http.post<any>(path, {
-      keys: [
+    http.get<any>(
+      `${path}?keys=${[
         "seo_title",
         "seo_image",
         "seo_description",
@@ -17,8 +17,8 @@ const settingApi = {
         "seo_opening_hours",
         "seo_link_twitter",
         "seo_link_fb",
-      ],
-    }),
+      ].join(",")}`
+    ),
 };
 
 export { settingApi };
