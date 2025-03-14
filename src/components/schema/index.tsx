@@ -52,8 +52,8 @@ export default async function SeoSchema({
   ...props
 }: BlogPostingSchemaProps) {
   const language = await getServerLang();
-  const res = (await settingApi.getMetaSeo()) as any;
-  const seo = res?.data;
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
 
   const metadata = (props as ArticleStaticSchemaType)?.metadata;
   const product = (props as ProductSchemaType)?.product;

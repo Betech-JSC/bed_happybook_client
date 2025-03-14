@@ -12,8 +12,8 @@ export async function WebsiteSchema({
   title,
   description,
 }: WebsiteSchemaProps) {
-  const res = (await settingApi.getMetaSeo()) as any;
-  const seo = res?.data;
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
 
   return (
     <Script
