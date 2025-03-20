@@ -45,9 +45,9 @@ export default async function RootLayout({
             <div id="datepicker-portal"></div>
             <BackToTopButton></BackToTopButton>
             <Footer></Footer>
-            <LoadingProvider>
+            {/* <LoadingProvider>
               <AppLoader />
-            </LoadingProvider>
+            </LoadingProvider> */}
           </UserProvider>
         </LanguageProvider>
       </body>

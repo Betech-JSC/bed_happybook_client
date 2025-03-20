@@ -159,7 +159,7 @@ export default function Search({
             </div>
           ))}
       </div>
-      <div className="md:w-8/12 lg:w-9/12">
+      <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <h1 className="text-32 font-bold" data-translate="true">
             Vé vui chơi
@@ -186,7 +186,7 @@ export default function Search({
         </div>
         <div className="mb-4">
           {data.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
               {data.map((item: any, index: number) => (
                 <div key={index} className="rounded-xl">
                   <div
