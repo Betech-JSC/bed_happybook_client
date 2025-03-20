@@ -1,4 +1,6 @@
+import { settingApi } from "@/api/Setting";
 import { siteUrl } from "@/constants";
+import { getServerLang } from "@/lib/session";
 import Script from "next/script";
 
 export type WebsiteSchemaProps = {
@@ -6,7 +8,13 @@ export type WebsiteSchemaProps = {
   description?: string;
 };
 
-export function WebsiteSchema({ title, description }: WebsiteSchemaProps) {
+export async function WebsiteSchema({
+  title,
+  description,
+}: WebsiteSchemaProps) {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
   return (
     <Script
       id="website-schema"
@@ -37,21 +45,20 @@ export function WebsiteSchema({ title, description }: WebsiteSchemaProps) {
               telephone: "+84-983-488-937",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "Tầng 1, Phong Phú Tower, 93/10 Quang Trung",
-                addressLocality: "TP.Thủ Đức",
-                addressRegion: "TP.HCM",
-                postalCode: "700000",
+                streetAddress: seo?.seo_address,
                 addressCountry: "VN",
               },
-              openingHours: ["Mo-Fr 07:30-17:30"],
+              openingHours: [seo?.seo_opening_hours],
               aggregateRating: {
                 "@type": "AggregateRating",
                 ratingValue: "5",
                 bestRating: "5",
-                ratingCount: "10",
+                // ratingCount: "10",
               },
               sameAs: [
                 siteUrl,
+                seo?.seo_link_twitter,
+                seo?.seo_link_fb,
                 // "https://www.facebook.com/yourbusiness",
                 // "https://twitter.com/yourbusiness",
                 // "https://www.instagram.com/yourbusiness",
@@ -64,32 +71,64 @@ export function WebsiteSchema({ title, description }: WebsiteSchemaProps) {
             {
               "@type": "Organization",
               "@id": `${siteUrl}#organization`,
-              name: "Happy Book 🎉 Đại Lý Đặt Vé Máy Bay Giá Rẻ #1 Toàn Quốc",
+              name: seo?.seo_title,
               url: siteUrl,
               logo: `${siteUrl}/logo-footer.svg`,
 
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+84-983-488-937",
+                telephone: seo?.seo_hotline,
                 contactType: "Hotline",
                 availableLanguage: "Vietnamese",
                 areaServed: "VN",
               },
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "Tầng 1, Phong Phú Tower, 93/10 Quang Trung",
-                addressLocality: "TP.Thủ Đức",
-                addressRegion: "TP.HCM",
-                postalCode: "700000",
+                streetAddress: seo?.seo_address,
+                // postalCode: "700000",
                 addressCountry: "VN",
               },
               sameAs: [
                 siteUrl,
+                seo?.seo_link_twitter,
+                seo?.seo_link_fb,
                 // "https://www.facebook.com/yourorganization",
                 // "https://twitter.com/yourorganization",
                 // "https://www.linkedin.com/company/yourorganization",
               ],
               image: `${siteUrl}/logo-footer.svg`,
+            },
+            {
+              "@type": "TravelAgency",
+              "@id": `${siteUrl}/#travelagency`,
+              name: seo?.seo_title,
+              url: siteUrl,
+              logo: `${siteUrl}/logo-footer.svg`,
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: seo?.seo_address,
+                // streetAddress: "Tầng 1, Phong Phú Tower, 93/10 Quang Trung",
+                // addressLocality: "KP.1, P.Hiệp Phú, TP.Thủ Đức",
+                // addressRegion: "TP.HCM",
+                // postalCode: "700000",
+                addressCountry: "VN",
+              },
+              telephone: seo?.seo_phone,
+              openingHours: [seo?.seo_opening_hours],
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "5",
+                bestRating: "5",
+                // ratingCount: "10",
+              },
+              // paymentAccepted: "Credit Card, Cash",
+              sameAs: [
+                siteUrl,
+                seo?.seo_link_twitter,
+                seo?.seo_link_fb,
+                // "https://www.facebook.com/adventuretravels",
+                // "https://www.twitter.com/adventuretravels",
+              ],
             },
           ],
         }),

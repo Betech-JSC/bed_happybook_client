@@ -1,3 +1,4 @@
+import { arrLanguages } from "@/constants/language";
 import { parseISO, format, min, parse, isValid } from "date-fns";
 import { isNil } from "lodash";
 import { Metadata } from "next";
@@ -70,15 +71,19 @@ const formatNumberToHoursAndMinutesFlight = function (
 
 const formatMetadata = (metadata: Metadata): Metadata => {
   const { alternates, ..._metadata } = metadata;
-  const languages: Languages<null | string | URL | AlternateLinkDescriptor[]> =
-    {
-      vi: (alternates?.canonical as string) || "",
+  let languages: Languages<null | string | URL | AlternateLinkDescriptor[]>;
+
+  arrLanguages?.forEach((lang: any) => {
+    languages = {
+      ...languages,
+      [lang]: `${alternates?.canonical}?lang=${lang}`,
     };
+  });
 
   return {
     alternates: {
       ...alternates,
-      languages: alternates?.languages || languages,
+      languages: alternates?.languages || languages!,
     },
     ..._metadata,
   };

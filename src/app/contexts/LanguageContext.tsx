@@ -1,4 +1,6 @@
 "use client";
+import { arrLanguages, totalLanguages } from "@/constants/language";
+import { useParams, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type LanguageContextType = {
@@ -24,6 +26,7 @@ export const LanguageProvider = ({
   serverLang: string;
 }) => {
   const [language, setLanguage] = useState(serverLang);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     localStorage.setItem("language", serverLang);
@@ -42,6 +45,15 @@ export const LanguageProvider = ({
       location.reload();
     }
   };
+
+  useEffect(() => {
+    if (searchParams.has("lang")) {
+      const lang = searchParams.get("lang");
+      if (lang !== serverLang && arrLanguages.includes(lang!)) {
+        changeLanguage(lang!);
+      }
+    }
+  }, [searchParams, serverLang]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage: changeLanguage }}>
