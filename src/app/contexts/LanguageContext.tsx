@@ -1,7 +1,13 @@
 "use client";
 import { arrLanguages, totalLanguages } from "@/constants/language";
 import { useParams, useSearchParams } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type LanguageContextType = {
   language: string;
@@ -32,19 +38,22 @@ export const LanguageProvider = ({
     localStorage.setItem("language", serverLang);
   }, [serverLang]);
 
-  const changeLanguage = async (lang: string) => {
-    if (language !== lang) {
-      setLanguage(lang);
-      localStorage.setItem("language", lang);
+  const changeLanguage = useCallback(
+    async (lang: string) => {
+      if (language !== lang) {
+        setLanguage(lang);
+        localStorage.setItem("language", lang);
 
-      await fetch("/api/set-language", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language: lang }),
-      });
-      location.reload();
-    }
-  };
+        await fetch("/api/set-language", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ language: lang }),
+        });
+        location.reload();
+      }
+    },
+    [language]
+  );
 
   useEffect(() => {
     if (searchParams.has("lang")) {
@@ -53,7 +62,7 @@ export const LanguageProvider = ({
         changeLanguage(lang!);
       }
     }
-  }, [searchParams, serverLang]);
+  }, [searchParams, serverLang, changeLanguage]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage: changeLanguage }}>

@@ -4,36 +4,37 @@ import { usePathname, useRouter } from "next/navigation";
 import "@/styles/AppLoader.scss";
 import { translatePage } from "@/utils/translateDom";
 import Image from "next/image";
-import { useLoading } from "@/app/contexts/LoadingContext";
 
 const AppLoader: React.FC = () => {
   const pathName = usePathname();
-  const { isLoading } = useLoading();
+  // const { isLoading } = useLoading();
 
   useEffect(() => {
     translatePage();
   }, [pathName]);
 
-  if (!isLoading) return null;
+  return null;
+  // if (!isLoading) return null;
 
   return (
-    <div
-      id="wrapper-app-global-loader"
-      className={!isLoading ? "opacity-0 invisible" : ""}
-    >
-      <div className="mx-auto">
-        <Image
-          priority
-          key={pathName}
-          src={`/loading.gif`}
-          alt="Loading"
-          width={900}
-          height={900}
-          unoptimized
-          // style={{ height: 900 }}
-        />
-      </div>
-    </div>
+    <></>
+    // <div
+    //   id="wrapper-app-global-loader"
+    //   className={!isLoading ? "opacity-0 invisible" : ""}
+    // >
+    //   <div className="mx-auto">
+    //     <Image
+    //       priority
+    //       key={pathName}
+    //       src={`/loading.gif`}
+    //       alt="Loading"
+    //       width={900}
+    //       height={900}
+    //       unoptimized
+    //       style={{ height: 900 }}
+    //     />
+    //   </div>
+    // </div>
   );
 };
 

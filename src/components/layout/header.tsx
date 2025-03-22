@@ -39,6 +39,7 @@ export default function Header() {
     "/ve-may-bay/tim-kiem",
     "/khach-san",
     "/khach-san/tim-kiem",
+    "/bao-hiem",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {

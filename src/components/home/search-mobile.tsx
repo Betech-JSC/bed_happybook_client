@@ -168,7 +168,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
 
           {/* Tab */}
           <div className={`px-3 ${activeTabMb === 2 ? "block" : "hidden"}`}>
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <label className="flex items-center space-x-2">
                 <input type="radio" name="trip" className="form-radio" />
                 <span className="text-black" data-translate="true">
@@ -193,60 +193,38 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
                   Trễ chuyến bay
                 </span>
               </label>
-            </div>
+            </div> */}
 
-            <div className="grid grid-cols-1 mt-6">
+            <div className="grid grid-cols-1">
               <div className="mb-2">
                 <label
-                  className="block text-gray-700 mb-1"
+                  className="block text-gray-700 mb-2"
                   data-translate="true"
                 >
-                  Từ
+                  Bảo hiểm
                 </label>
                 <div className="flex h-12 items-center border rounded-lg px-2">
                   <Image
-                    src="/icon/place.svg"
-                    alt="Phone icon"
-                    className="h-10"
+                    src="/icon/umbrella-blue.svg"
+                    alt="Icon"
                     width={18}
                     height={18}
                   ></Image>
                   <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                    <option data-translate="true">TP.Hồ Chí Minh</option>
+                    <option data-translate="true">Gói ABCD</option>
                   </select>
                 </div>
               </div>
 
               <div className="mb-2">
                 <label
-                  className="block text-gray-700 mb-1"
+                  className="block text-gray-700 mb-2"
                   data-translate="true"
                 >
-                  Đến
+                  Ngày đi - ngày về
                 </label>
-                <div className="flex h-12 items-center border rounded-lg px-2">
-                  <Image
-                    src="/icon/place.svg"
-                    alt="Phone icon"
-                    className="h-10"
-                    width={18}
-                    height={18}
-                  />
-                  <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                    <option data-translate="true">Hà Nội</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="mb-2">
-                <label
-                  className="block text-gray-700 mb-1"
-                  data-translate="true"
-                >
-                  Ngày đi
-                </label>
-                <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
-                  <div className="flex justify-between items-center	">
+                <div className="flex gap-3 justify-between h-12 items-center border rounded-lg px-2 text-black">
+                  <div className="flex justify-between items-center w-4/12">
                     <Image
                       src="/icon/calendar.svg"
                       alt="Phone icon"
@@ -256,34 +234,27 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
                     ></Image>
                     <span>14/08/2024</span>
                   </div>
-                  <div>
+                  <div className="w-4/12">
+                    <Image
+                      src="/icon/line.png"
+                      alt="Icon"
+                      className="h-[1px] w-full"
+                      width={160}
+                      height={1}
+                    ></Image>
+                  </div>
+                  <div className="w-4/12">
                     <span> 22/08/2024</span>
                   </div>
                 </div>
               </div>
-
-              <div className="mb-2">
-                <label
-                  className="block text-gray-700 mb-1"
-                  data-translate="true"
-                >
-                  Số lượng khách
-                </label>
-                <div className="flex items-center border rounded-lg px-2 h-12">
-                  <Image
-                    src="/icon/user-circle.svg"
-                    alt="Phone icon"
-                    className="h-10"
-                    width={18}
-                    height={18}
-                  ></Image>
-                  <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                    <option data-translate="true"> 1 khách</option>
-                  </select>
-                </div>
-              </div>
             </div>
-            <div className="w-full px-3">
+            <div
+              className="w-full px-3"
+              onClick={() => {
+                router.push("/bao-hiem");
+              }}
+            >
               <label className="block text-gray-700 mb-1 h-6"></label>
               <button className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] ">
                 <Image
