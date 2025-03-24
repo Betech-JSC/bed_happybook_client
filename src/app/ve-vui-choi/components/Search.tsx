@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import TourStyle from "@/styles/tour.module.scss";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,9 +38,20 @@ export default function Search({
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {}
+  );
+  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
   const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
 
+  const toggleExpand = (name: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+  };
   const loadData = useCallback(async () => {
     try {
       setTranslatedText(false);
@@ -117,47 +128,100 @@ export default function Search({
     <div className="flex mt-6 md:space-x-4 items-start pb-8">
       <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
         {optionsFilter?.length > 0 &&
-          optionsFilter.map((item: optionFilterType, index: number) => (
-            <div
-              key={index}
-              className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none"
-            >
-              <p className="font-semibold" data-translate="true">
-                {item.label}
-              </p>
-              {item?.option?.length > 0 ? (
-                item.option.map((option, index) => {
-                  return (
-                    <div
-                      key={option.value}
-                      className="mt-3 flex space-x-2 items-center"
-                    >
-                      <input
-                        id={item.name + index}
-                        type="checkbox"
-                        value={option.value}
-                        disabled={isDisabled}
-                        className={TourStyle.custom_checkbox}
-                        onChange={(e) =>
-                          handleFilterChange(`${item.name}[]`, e.target.value)
-                        }
-                      />
-                      <label htmlFor={item.name + index} data-translate="true">
-                        {option.label}
-                      </label>
-                    </div>
-                  );
-                })
-              ) : (
-                <p
-                  className="mt-1 text-base text-gray-700"
-                  // data-translate="true"
+          optionsFilter.map((group: optionFilterType, index: number) => {
+            const showAll = expandedGroups[group.name];
+            const ref = (el: HTMLDivElement) => {
+              contentRefs.current[group.name] = el;
+            };
+            const visibleCount = 5;
+
+            const optionsToShow = group.option;
+
+            return (
+              <div
+                className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none"
+                key={index}
+              >
+                <div
+                  ref={ref}
+                  className={`pb-3 overflow-hidden transition-[max-height] ease-in-out duration-500
+                    `}
+                  style={{
+                    maxHeight: showAll
+                      ? `${(optionsToShow.length + 1) * 36}px`
+                      : `${(visibleCount + 1) * 36}px`,
+                  }}
                 >
-                  Loading...
-                </p>
-              )}
-            </div>
-          ))}
+                  <p className="font-semibold" data-translate="true">
+                    {group.label}
+                  </p>
+                  {optionsToShow.length > 0 ? (
+                    optionsToShow.map((option, optionIndex) => {
+                      return (
+                        <div
+                          key={optionIndex}
+                          className={`mt-3 flex space-x-2 items-center ${
+                            !showAll && optionIndex > visibleCount
+                              ? "invisible"
+                              : ""
+                          }`}
+                        >
+                          <input
+                            id={group.name + optionIndex}
+                            type="checkbox"
+                            value={option.value}
+                            disabled={isDisabled}
+                            className={TourStyle.custom_checkbox}
+                            onChange={(e) =>
+                              handleFilterChange(
+                                `${group.name}[]`,
+                                e.target.value
+                              )
+                            }
+                          />
+                          <label
+                            htmlFor={group.name + optionIndex}
+                            data-translate="true"
+                          >
+                            {option.label}
+                          </label>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p
+                      className="mt-1 text-base text-gray-700"
+                      // data-translate="true"
+                    >
+                      Loading...
+                    </p>
+                  )}
+                </div>
+                {group.option.length > visibleCount && (
+                  <button
+                    className="flex items-center rounded-lg space-x-3"
+                    onClick={() => toggleExpand(group.name)}
+                  >
+                    <span
+                      className="text-[#175CD3] font-medium"
+                      data-translate="true"
+                    >
+                      {showAll ? "Thu gọn" : "Xem thêm"}
+                    </span>
+                    <Image
+                      className={`transform transition-transform ${
+                        showAll ? "rotate-[270deg]" : "rotate-90"
+                      }`}
+                      src="/icon/chevron-right.svg"
+                      alt="Icon"
+                      width={20}
+                      height={20}
+                    />
+                  </button>
+                )}
+              </div>
+            );
+          })}
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">

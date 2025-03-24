@@ -17,6 +17,7 @@ import { getServerLang } from "@/lib/session";
 import { renderTextContent } from "@/utils/Helper";
 import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
+import Schedule from "../../components/Schedule";
 
 export default async function EntertainmentTicketDetail({
   params,
@@ -88,8 +89,8 @@ export default async function EntertainmentTicketDetail({
                 </div>
               </div>
             </div>
-            <div className="w-full lg:w-4/12 p-6 bg-white rounded-3xl">
-              <div className="mt-4 lg:mt-0 flex flex-col justify-between">
+            <div className="w-full lg:w-4/12">
+              <div className="mt-4 p-6 lg:mt-0 flex flex-col justify-between rounded-2xl bg-white">
                 <div>
                   <h1
                     className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
@@ -142,6 +143,31 @@ export default async function EntertainmentTicketDetail({
                       Đặt ngay
                     </span>
                   </Link>
+                </div>
+              </div>
+              <div className="mt-3">
+                <Schedule />
+              </div>
+              <div className="mt-3 bg-white rounded-2xl p-6">
+                <h2
+                  className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
+                  data-translate="true"
+                >
+                  Lưu ý
+                </h2>
+                <div className="mt-4">
+                  <ul className="pl-6 list-[circle]">
+                    <li>
+                      Khách nên có xe hơi để đến và rời khỏi nơi lưu trú này.
+                    </li>
+                    <li>
+                      Có nhận phòng không tiếp xúc và trả phòng không tiếp xúc.
+                    </li>
+                    <li>
+                      Nơi lưu trú này chào đón khách thuộc mọi xu hướng tính dục
+                      và nhận dạng giới (thân thiện với cộng đồng LGBTQ+).
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
