@@ -226,19 +226,19 @@ export default function FlightBookForm({ airportsData }: any) {
     const flightType = handleSessionStorage("get", "flightType") ?? "";
     if (departFlight) {
       flightData.push(departFlight);
-      flightDetailData.push(departFlight.ListFlight[0]);
+      flightDetailData.push(departFlight);
       setBookingSystem(departFlight?.System);
     }
     if (returnFlight) {
       flightData.push(returnFlight);
-      flightDetailData.push(returnFlight.ListFlight[0]);
+      flightDetailData.push(returnFlight);
     }
     if (
       !flightData.length ||
       !flightSession ||
       !["domestic", "international"].includes(flightType)
     ) {
-      router.push("/ve-may-bay");
+      // router.push("/ve-may-bay");
     }
 
     if (departFlight && returnFlight) setIsRoundTrip(true);
@@ -256,9 +256,6 @@ export default function FlightBookForm({ airportsData }: any) {
   let totalPriceAdt = 0;
   let totalPriceChd = 0;
   let totalPriceInf = 0;
-  let FareAdt: any = [];
-  let FareChd: any = [];
-  let FareInf: any = [];
   let keyLoopPassenger = 1;
   let keyLoopDropdown = 1;
   let totalPriceTicketAdt = 0;
@@ -268,31 +265,21 @@ export default function FlightBookForm({ airportsData }: any) {
   let totalTaxChd = 0;
   let totalTaxInf = 0;
   let dropdown: any = [];
-
-  let shouldStopMapFlights = false;
-
   flights.map((item, index) => {
-    if (shouldStopMapFlights) return;
-    totalPrice += item.TotalPrice;
-    totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
-    totalChd = item.Chd > totalChd ? item.Chd : totalChd;
-    totalInf = item.Inf > totalInf ? item.Inf : totalInf;
-    totalPriceAdt +=
-      item.FareAdt + item.TaxAdt + item.FeeAdt + item.ServiceFeeAdt;
-    totalPriceChd +=
-      item.FareChd + item.TaxChd + item.FeeChd + item.ServiceFeeChd;
-    totalPriceInf +=
-      item.FareInf + item.TaxInf + item.FeeInf + item.ServiceFeeInf;
-    FareAdt[index] = item.FareAdt + item.TaxAdt;
-    FareChd[index] = item.FareChd + item.TaxChd;
-    FareInf[index] = item.FareInf + item.TaxInf;
-    totalPriceTicketAdt += item.FareAdt + item.ServiceFeeAdt;
-    totalPriceTicketChd += item.FareChd + item.ServiceFeeChd;
-    totalPriceTicketInf += item.FareInf + item.ServiceFeeInf;
-    totalTaxAdt += item.TaxAdt + item.FeeAdt;
-    totalTaxChd += item.TaxChd + item.FeeChd;
-    totalTaxInf += item.TaxInf + item.FeeInf;
-    if (flightType === "international") shouldStopMapFlights = true;
+    const ticketClass = item.selectedTicketClass;
+    totalAdt = item.numberAdt;
+    totalChd = item.numberChd;
+    totalInf = item.numberInf;
+    totalPriceTicketAdt += ticketClass.totalAdult;
+    totalPriceTicketChd += ticketClass.totalChild;
+    totalPriceTicketInf += ticketClass.totalInfant;
+    totalTaxAdt += ticketClass.totalTaxAdt;
+    totalTaxChd += ticketClass.totalTaxChd;
+    totalTaxInf += ticketClass.totalTaxInf;
+    totalPriceAdt += ticketClass.totalAdult;
+    totalPriceChd += ticketClass.totalChild;
+    totalPriceAdt += ticketClass.totalInfant;
+    totalPrice += ticketClass.totalPrice;
   });
   if (totalAdt) {
     dropdown.push({
@@ -1537,14 +1524,15 @@ export default function FlightBookForm({ airportsData }: any) {
           {/* Flight */}
           <div>
             {flights.map((item, index) => {
-              const flight = item.ListFlight[0];
-              const durationFlight =
-                differenceInSeconds(
-                  new Date(flight.EndDate),
-                  new Date(flight.StartDate)
-                ) / 60;
+              const flight = item;
+              const durationFlight = flight.duration
+                ? flight.duration
+                : differenceInSeconds(
+                    new Date(flight.arrival.at),
+                    new Date(flight.departure.at)
+                  ) / 60;
               const startDateLocale = format(
-                new Date(flight.StartDate),
+                new Date(flight.departure.at),
                 "EEEE dd/MM/yyyy",
                 { locale: vi }
               );
@@ -1557,7 +1545,7 @@ export default function FlightBookForm({ airportsData }: any) {
                 >
                   <div className="flex justify-between">
                     <p className="font-bold" data-translate="true">
-                      {item.Leg ? "Chiều về" : "Chiều đi"}
+                      {index === 1 ? "Chiều về" : "Chiều đi"}
                     </p>
                     <p className="text-sm text-gray-500" data-translate="true">
                       {startDateLocale}
@@ -1565,7 +1553,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   </div>
                   <div className="flex my-3 item-start items-center text-left space-x-3">
                     <DisplayImage
-                      imagePath={`assets/images/airline/${flight.Airline.toLowerCase()}.gif`}
+                      imagePath={`assets/images/airline/${flight.airline.toLowerCase()}.gif`}
                       width={80}
                       height={24}
                       alt={"AirLine"}
@@ -1573,10 +1561,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     />
                     <div>
                       <h3 className="text-sm md:text-18 font-semibold mb-1">
-                        {flight.Airline}
+                        {flight.airline}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {flight.FlightNumber}
+                        {flight.flightNumber}
                       </p>
                     </div>
                   </div>
@@ -1584,10 +1572,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     <div className="flex items-center justify-between gap-4 w-full">
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
-                          {formatTime(flight.StartDate)}
+                          {formatTime(flight.departure.at)}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
-                          {flight.StartPoint}
+                          {flight.departure.IATACode}
                         </span>
                       </div>
 
@@ -1613,8 +1601,8 @@ export default function FlightBookForm({ airportsData }: any) {
                             className="text-sm text-gray-700 mt-2"
                             data-translate="true"
                           >
-                            {flight.StopNum
-                              ? `${flight.StopNum} điểm dừng`
+                            {flight.stopPoint
+                              ? `${flight.stopPoint} điểm dừng`
                               : "Bay thẳng"}
                           </span>
                         </div>
@@ -1629,10 +1617,10 @@ export default function FlightBookForm({ airportsData }: any) {
 
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
-                          {formatTime(flight.EndDate)}
+                          {formatTime(flight.arrival.at)}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
-                          {flight.EndPoint}
+                          {flight.arrival.IATACode}
                         </span>
                       </div>
                     </div>
@@ -1764,6 +1752,7 @@ export default function FlightBookForm({ airportsData }: any) {
           isOpen={showFlightDetail}
           onClose={handleClosePopupFlightDetail}
           translatedStaticText={translatedStaticText}
+          isLoadingFareRules={false}
         />
       )}
     </form>

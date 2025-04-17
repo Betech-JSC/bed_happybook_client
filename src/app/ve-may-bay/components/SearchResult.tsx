@@ -18,17 +18,21 @@ import {
 } from "@/utils/Helper";
 import { HttpError } from "@/lib/error";
 import { ListFilghtProps, TabDays } from "@/types/flight";
-import FilghtDomesticList from "./Domestic/List";
-import FlightInternationalList from "./International/List";
 import { formatTranslationMap, translatePage } from "@/utils/translateDom";
 import { flightStaticText } from "@/constants/staticText";
 import { translateText } from "@/utils/translateApi";
 import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useTranslation } from "@/app/hooks/useTranslation";
+import ListFlights from "./SearchFlights/List";
 
-export default function ListFilght({ airportsData }: ListFilghtProps) {
+export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const router = useRouter();
+  const { language } = useLanguage();
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const pathName: string = usePathname();
+  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
+  const { t } = useTranslation(translatedStaticText);
   const [isRoundTrip, setIsRoundTrip] = useState<boolean>(false);
   const [displayType, setDisplayType] = useState<"desktop" | "mobile">(
     "desktop"
@@ -38,10 +42,8 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const searchParams = useSearchParams();
   const StartPoint = searchParams.get("StartPoint") ?? "SGN";
   const EndPoint = searchParams.get("EndPoint") ?? "HAN";
-
   const from = searchParams.get("from") ?? "Sài Gòn";
   const to = searchParams.get("to") ?? "Hà Nội";
-
   const DepartDate =
     searchParams.get("DepartDate") ?? format(new Date(), "ddMMyyy");
   const ReturnDate = searchParams.get("ReturnDate") ?? DepartDate;
@@ -50,35 +52,45 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   const passengerChd = parseInt(searchParams.get("Chd") ?? "0");
   const passengerInf = parseInt(searchParams.get("Inf") ?? "0");
   const totalPassengers = passengerAdt + passengerChd + passengerInf;
-  const { language } = useLanguage();
-  const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const [flightsData, setFlightsData] = useState<any>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
+  const [flightType, setFlightType] = useState<string>("");
+
+  const [searchId, setSearchId] = useState<string | null>(null);
+  const [flightItineraryResource, setFlightItineraryResource] = useState<
+    Array<{ key: string; value: number }>
+  >([]);
+  const [isFullFlightResource, setIsFullFlightResource] =
+    useState<boolean>(false);
+  const [isReady, setIsReady] = useState(false);
+
   const params = useMemo(() => {
+    let flightType: string = "OW";
     let ListFlightSearch = [
       {
-        StartPoint: StartPoint,
-        EndPoint: EndPoint,
-        DepartDate: DepartDate,
-        Airline: "",
+        startPoint: StartPoint,
+        endPoint: EndPoint,
+        departDate: DepartDate,
+        returnDate: "",
       },
     ];
     if (tripType === "roundTrip" && ReturnDate) {
-      ListFlightSearch.push({
-        StartPoint: EndPoint,
-        EndPoint: StartPoint,
-        DepartDate: ReturnDate,
-        Airline: "",
-      });
+      ListFlightSearch[0].returnDate = ReturnDate;
+      flightType = "RT";
       setIsRoundTrip(true);
     } else {
       setIsRoundTrip(false);
     }
     return {
       TripType: tripType,
-      Adt: passengerAdt,
-      Chd: passengerChd,
-      Inf: passengerInf,
-      ViewMode: "",
-      ListFlight: ListFlightSearch,
+      adult: passengerAdt,
+      child: passengerChd,
+      infant: passengerInf,
+      type: flightType,
+      flights: ListFlightSearch,
       Language: "vi",
     };
   }, [
@@ -92,18 +104,6 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
     passengerInf,
   ]);
   // End
-  const pathName: string = usePathname();
-  const [data, setData] = useState<any>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const resultsRef = useRef<HTMLDivElement>(null);
-  const [totalFlightLeg, setTotalFlightLeg] = useState<any[]>([
-    { 0: [], 1: [] },
-  ]);
-  const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
-  const [flightType, setFlightType] = useState<string>("");
-  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
-  const { t } = useTranslation(translatedStaticText);
   const scrollToRef = (ref: any) => {
     if (ref.current) {
       handleScrollSmooth(ref.current);
@@ -202,55 +202,141 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   }, []);
 
   // Fetch and Handle Data
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFlightOperation = async () => {
       try {
-        setData([]);
+        const response = await FlightApi.searchOperation({
+          search_id: searchId,
+        });
+        if (
+          response?.payload?.data?.completedJobs ===
+          response?.payload?.data?.numberOfJobs
+        ) {
+          setIsFullFlightResource(true);
+        }
+        const resources: string[] = response?.payload?.data?.resources ?? [];
+        if (resources.length > 0) {
+          setFlightItineraryResource((prev) => {
+            const existingKeys = prev.map((item) => item.key);
+            const newItems = resources
+              .filter((k) => !existingKeys.includes(k))
+              .map((k) => ({ key: k, value: 0 }));
+
+            return [...prev, ...newItems];
+          });
+        }
+      } catch (error: any) {
+        setIsFullFlightResource(true);
+        setError(toaStrMsg.errorConnectApiFlight);
+      }
+    };
+    let timer: NodeJS.Timeout;
+    const fetchAndRepeat = async () => {
+      if (!isFullFlightResource) {
+        await fetchFlightOperation();
+        timer = setTimeout(fetchAndRepeat, 1000);
+      } else {
+        clearTimeout(timer);
+      }
+    };
+
+    if (searchId && !isFullFlightResource) {
+      fetchAndRepeat();
+    }
+
+    return () => clearTimeout(timer);
+  }, [searchId, toaStrMsg.errorConnectApiFlight, isFullFlightResource]);
+
+  useEffect(() => {
+    const fetchFlightDetails = async () => {
+      const unprocessed = flightItineraryResource.filter((r) => r.value === 0);
+      if (unprocessed.length === 0) return;
+
+      setFlightItineraryResource((prev) =>
+        prev.map((r) =>
+          unprocessed.some((u) => u.key === r.key) ? { ...r, value: 1 } : r
+        )
+      );
+
+      try {
+        const promises = unprocessed.map((r) =>
+          FlightApi.getFlightResource({
+            resource_id: r.key,
+            passengers: {
+              adt: passengerAdt,
+              chd: passengerChd,
+              inf: passengerInf,
+            },
+          })
+        );
+        const results = await Promise.all(promises);
+
+        const flightsData: any[] = [];
+
+        results.forEach((res) => {
+          const flightTrips = res?.payload?.data?.trips ?? [];
+          if (flightTrips.length) {
+            flightsData.push(...flightTrips);
+          }
+        });
+
+        if (flightsData.length) {
+          const listStopNum: number[] = [];
+          for (const item of flightsData) {
+            if (!listStopNum[item.legs]) {
+              listStopNum[item.legs] = item.legs;
+            }
+          }
+          setStopNumFilters(
+            listStopNum.filter(
+              (item: any) => item !== undefined && item !== null
+            )
+          );
+          setFlightsData((prev: any) => [...prev, ...flightsData]);
+        }
+      } catch (err) {
+        setIsFullFlightResource(true);
+        setError(toaStrMsg.errorConnectApiFlight);
+      }
+    };
+    fetchFlightDetails();
+  }, [
+    flightItineraryResource,
+    passengerAdt,
+    passengerChd,
+    passengerInf,
+    stopNumFilters,
+    toaStrMsg.errorConnectApiFlight,
+  ]);
+
+  useEffect(() => {
+    const fetchFlightSearch = async () => {
+      scrollToRef(resultsRef);
+      try {
         setLoading(true);
+        setFlightsData([]);
+        setSearchId(null);
+        setFlightItineraryResource([]);
+        setIsFullFlightResource(false);
+        setIsReady(false);
         const checkTripType =
           (tripType === "roundTrip" && ReturnDate) || tripType === "oneWay"
             ? true
             : false;
         if (StartPoint && EndPoint && DepartDate && checkTripType) {
-          params.Language = getCurrentLanguage();
-          const response = await FlightApi.search("flights/search", params);
-          const dataRespon = response?.payload.data;
-          const listFareData = dataRespon.ListFareData ?? [];
-          const flightStopNum: number[] = [];
-
-          if (listFareData.length) {
-            listFareData.forEach((flight: any) => {
-              const priceAtdWithoutTax = flight.TaxAdt * flight.Adt;
-              const priceChdWithoutTax = flight.TaxChd * flight.Chd;
-              const priceInfWithoutTax = flight.TaxInf * flight.Inf;
-              flight.TotalPriceWithOutTax =
-                flight.TotalPrice -
-                (priceAtdWithoutTax + priceChdWithoutTax + priceInfWithoutTax);
-              if (dataRespon.FlightType === "domestic" || !isRoundTrip) {
-                const stopNum = flight.ListFlight[0].StopNum;
-                if (!flightStopNum[stopNum]) {
-                  flightStopNum[stopNum] = stopNum;
-                }
-              }
-            });
-            setApiFlightSession(response?.payload.data.Session);
-            translatePage("#wrapper_search_flight", 10);
+          const response = await FlightApi.search(params);
+          if (response?.payload?.data) {
+            setSearchId(response?.payload?.data);
           }
-          setFlightType(dataRespon.FlightType);
-          setStopNumFilters(
-            flightStopNum.filter(
-              (item: any) => item !== undefined && item !== null
-            )
-          );
-          setData(listFareData);
-          setError(null);
         } else {
           router.push("/ve-may-bay");
-          setData([]);
+          setSearchId(null);
           toast.dismiss();
           toast.error(toaStrMsg.missingInfoSearchFlight);
         }
       } catch (error: any) {
+        setSearchId(null);
         if (error instanceof HttpError) {
           if (error.payload.code === 400) {
             setError(toaStrMsg.notFoundFlight);
@@ -263,7 +349,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
       }
     };
 
-    fetchData();
+    fetchFlightSearch();
   }, [
     params,
     StartPoint,
@@ -276,20 +362,13 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
     toaStrMsg,
   ]);
 
-  // useEffect(() => {
-  //   if (displayType === "mobile") {
-  //     const scrollResultMobileTimeout = setTimeout(() => {
-  //       scrollToRef(resultsRef);
-  //     }, 100);
-  //     return () => {
-  //       clearTimeout(scrollResultMobileTimeout);
-  //     };
-  //   }
-  // }, [displayType, data]);
+  useEffect(() => {
+    if (!loading && flightsData.length > 0) {
+      setIsReady(true);
+    }
+  }, [loading, flightsData]);
 
-  // Loading
-  if (loading) {
-    scrollToRef(resultsRef);
+  if (!isReady) {
     return (
       <div
         ref={resultsRef}
@@ -300,6 +379,7 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
       </div>
     );
   }
+
   // Error Connect api
   if (error) {
     return (
@@ -311,50 +391,29 @@ export default function ListFilght({ airportsData }: ListFilghtProps) {
   return (
     <Fragment>
       <div ref={resultsRef}>
-        {flightType === "domestic" || !isRoundTrip ? (
-          <FilghtDomesticList
-            from={from}
-            to={to}
-            airportsData={airportsData}
-            flights={data}
-            returnDate={ReturnDate}
-            departDate={DepartDate}
-            currentDate={currentDate}
-            currentReturnDay={currentReturnDay}
-            returnDays={returnDays}
-            departDays={days}
-            handleClickDate={handleClickDate}
-            flightSession={apiFlightSession}
-            displayType={displayType}
-            totalFlightLeg={totalFlightLeg}
-            isRoundTrip={isRoundTrip}
-            totalPassengers={totalPassengers}
-            flightType={flightType}
-            flightStopNum={stopNumFilters}
-            translatedStaticText={translatedStaticText}
-          />
-        ) : (
-          <FlightInternationalList
-            from={from}
-            to={to}
-            airportsData={airportsData}
-            flights={data}
-            returnDate={ReturnDate}
-            departDate={DepartDate}
-            currentDate={currentDate}
-            currentReturnDay={currentReturnDay}
-            returnDays={returnDays}
-            departDays={days}
-            handleClickDate={handleClickDate}
-            flightSession={apiFlightSession}
-            displayType={displayType}
-            isRoundTrip={isRoundTrip}
-            totalFlightLeg={totalFlightLeg}
-            totalPassengers={totalPassengers}
-            flightType={flightType}
-            translatedStaticText={translatedStaticText}
-          />
-        )}
+        <ListFlights
+          from={from}
+          to={to}
+          airportsData={airportsData}
+          flightsData={flightsData}
+          isFullFlightResource={isFullFlightResource}
+          returnDate={ReturnDate}
+          departDate={DepartDate}
+          currentDate={currentDate}
+          currentReturnDay={currentReturnDay}
+          returnDays={returnDays}
+          departDays={days}
+          handleClickDate={handleClickDate}
+          flightSession={apiFlightSession}
+          displayType={displayType}
+          isRoundTrip={isRoundTrip}
+          totalPassengers={totalPassengers}
+          flightType={flightType}
+          flightStopNum={stopNumFilters}
+          translatedStaticText={translatedStaticText}
+          isLoading={loading}
+          isReady={isReady}
+        />
       </div>
     </Fragment>
   );

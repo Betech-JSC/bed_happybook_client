@@ -208,10 +208,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           ],
         };
 
-        const response = await FlightApi.getFareRules(
-          "flights/getfarerules",
-          params
-        );
+        const response = await FlightApi.getFareRules(params);
 
         const fareRules = await translateText(
           [

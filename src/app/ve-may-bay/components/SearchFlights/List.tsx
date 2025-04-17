@@ -1,6 +1,6 @@
 "use client";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { format, isSameDay } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
 import Image from "next/image";
 import { pareseDateFromString } from "@/lib/formatters";
 import {
@@ -8,7 +8,6 @@ import {
   handleScrollSmooth,
   handleSessionStorage,
 } from "@/utils/Helper";
-import FlightDomesticDetail from "./Detail";
 import { filtersFlightDomestic, ListFlight } from "@/types/flight";
 import { useRouter } from "next/navigation";
 import SignUpReceiveCheapTickets from "../SignUpReceiveCheapTickets";
@@ -17,6 +16,7 @@ import { FlightApi } from "@/api/Flight";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import FlightDomesticDetail from "./Detail";
 
 const defaultFilers: filtersFlightDomestic = {
   priceWithoutTax: "0",
@@ -27,9 +27,10 @@ const defaultFilers: filtersFlightDomestic = {
   stopNum: [],
 };
 
-export default function FilghtDomesticList({
+export default function ListFlights({
   airportsData,
-  flights,
+  flightsData,
+  isFullFlightResource,
   from,
   to,
   returnDate,
@@ -42,27 +43,31 @@ export default function FilghtDomesticList({
   flightSession,
   displayType,
   isRoundTrip,
-  totalFlightLeg,
   totalPassengers,
   flightType,
   flightStopNum,
   translatedStaticText,
+  isLoading,
+  isReady,
 }: ListFlight) {
+  const INITIAL_LIMIT = 5;
   const router = useRouter();
   const { t } = useTranslation(translatedStaticText);
   const { language } = useLanguage();
   const departFlightRef = useRef<HTMLDivElement>(null);
   const returnFlightRef = useRef<HTMLDivElement>(null);
-  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [filteredFlightsData, setFilteredFlightsData] = useState<any[]>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [flightDetail, setFlightDetail] = useState<any[]>([]);
-  const [isLoadingRules, setIsLoadingRules] = useState<boolean>(false);
+  const [isLoadingFareRules, setIsLoadingFareRules] = useState<boolean>(false);
   const [tabsFlightDetail, setTabsFlightDetail] = useState<
     { id: number; name: string }[]
   >([]);
   const [isCheckOut, setIsCheckOut] = useState<boolean>(false);
   const [selectedDepartFlight, setSelectedDepartFlight] = useState<any>(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState<any>(null);
+  const [departLimit, setDepartLimit] = useState(INITIAL_LIMIT);
+  const [returnLimit, setReturnLimit] = useState(INITIAL_LIMIT);
   const [filters, setFilters] = useState({
     priceWithoutTax: "0",
     timeDepart: "",
@@ -71,6 +76,7 @@ export default function FilghtDomesticList({
     airlines: [] as string[],
     stopNum: [] as string[],
   });
+
   const scrollToRef = (ref: any) => {
     if (ref.current) {
       handleScrollSmooth(ref.current);
@@ -79,38 +85,17 @@ export default function FilghtDomesticList({
   const resetFilters = () => {
     setFilters(defaultFilers);
   };
-
-  // Group Flights
-  const groupFlights = (flights: any[]) => {
-    if (flights.length < 1) {
-      if (isRoundTrip) return [{ 0: [] }, { 1: [] }];
-      else return [{ 0: [] }];
-    }
-    const listFlights = flights.reduce((acc, flight) => {
-      const leg = flight.Leg;
-      if (!acc[leg]) {
-        acc[leg] = [];
-      }
-      acc[leg].push(flight);
-      return acc;
-    }, {} as { [key: string]: any[] });
-
-    if (isRoundTrip && !listFlights[1]) {
-      listFlights[1] = [];
-    }
-
-    totalFlightLeg.map((_: number, index: number) => {
-      if (!listFlights[index]) {
-        listFlights[index] = [];
-      }
-    });
-    return Object.values(listFlights);
+  const handleLoadMoreDepart = () => {
+    setDepartLimit((prev) => prev + INITIAL_LIMIT);
   };
 
+  const handleLoadMoreReturn = () => {
+    setReturnLimit((prev) => prev + INITIAL_LIMIT);
+  };
   // Filter data
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = event.target;
-    if (flights.length > 0) {
+    if (isFullFlightResource) {
       setFilters((prev) => {
         if (name === "airLine") {
           return {
@@ -153,56 +138,39 @@ export default function FilghtDomesticList({
   };
 
   const fetchFareRules = useCallback(
-    async (FareData: any, flight: any) => {
+    async (flight: any, indexFareOption: any) => {
       try {
-        setIsLoadingRules(true);
+        setIsLoadingFareRules(true);
         const params = {
-          ListFareData: [
-            {
-              Session: flightSession,
-              FareDataId: FareData.FareDataId,
-              ListFlight: [
-                {
-                  FlightValue: flight.FlightValue,
-                },
-              ],
-            },
-          ],
+          source: flight.source,
+          clientId: flight.clientId,
+          itinerary: {
+            airline: flight.airline,
+            departDate: format(parseISO(flight.departure.at), "yyyy-MM-dd"),
+            departure: flight.departure.IATACode,
+            arrival: flight.arrival.IATACode,
+            fareBasisCode: flight.fareOptions[indexFareOption].fareBasisCode,
+          },
+          fareValue: flight.fareOptions[indexFareOption].fareValue,
         };
-
-        const response = await FlightApi.getFareRules(
-          "flights/getfarerules",
-          params
-        );
-
-        const fareRules = await translateText(
-          [
-            response?.payload.data.ListFareRules[0].ListRulesGroup[0]
-              .ListRulesText[0] ??
-              `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
-          ],
-          language
-        );
-        return fareRules?.[0];
+        const response = await FlightApi.getFareRules(params);
+        return response?.payload?.data ?? [];
       } catch (error: any) {
         const fareRules = await translateText(
           ["Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết."],
           language
         );
-        return fareRules?.[0];
+        return fareRules;
       } finally {
-        setIsLoadingRules(false);
+        setIsLoadingFareRules(false);
       }
     },
-    [flightSession, language]
+    [language]
   );
 
   const toggleShowRuleTicket = useCallback(
-    async (flightClass: any) => {
-      const response = await fetchFareRules(
-        flightClass,
-        flightClass.ListFlight[0]
-      );
+    async (flight: any, indexFareOption: number) => {
+      const response = await fetchFareRules(flight, indexFareOption);
       return response;
     },
     [fetchFareRules]
@@ -210,18 +178,18 @@ export default function FilghtDomesticList({
 
   const handleShowPopupFlightDetail = (
     flight: any,
+    indexFareOption: number,
     tabs: { id: number; name: string }[],
     showRuleTicket = false
   ) => {
     if (showRuleTicket) {
-      const fareData = flight;
-      flight = fareData.ListFlight[0];
-      const response = toggleShowRuleTicket(fareData);
-      response.then((response) => {
-        flight.ListRuleTicket = response;
+      const response = toggleShowRuleTicket(flight, indexFareOption);
+      response.then((rules) => {
+        flight.listFareRules = rules;
       });
     }
     setShowDetail(true);
+
     setFlightDetail([flight]);
     setTabsFlightDetail(tabs);
   };
@@ -236,24 +204,24 @@ export default function FilghtDomesticList({
     if (isRoundTrip) {
       if (selectedDepartFlight && selectedReturnFlight) return;
     } else if (selectedDepartFlight) return;
-    let filtered = flights.map((flight: any) => ({ ...flight }));
+    let filtered = flightsData.map((flight: any) => ({ ...flight }));
     if (filtered.length > 0) {
       if (filters.airlines.length > 0) {
         filtered = filtered.filter((flight: any) => {
           const match = filters.airlines.some(
             (airline) =>
               airline.trim().toLowerCase() ===
-              flight.Airline.trim().toLowerCase()
+              flight.airline.trim().toLowerCase()
           );
           return match;
         });
       }
-
       if (filters.stopNum.length > 0) {
         filtered = filtered.filter((flight: any) => {
           const match = filters.stopNum.some((stopNumber) => {
             const intStopNum = parseInt(stopNumber) ?? 0;
-            return intStopNum === flight.ListFlight[0].StopNum;
+            const flightStopNum = parseInt(flight.legs) ?? 1;
+            return intStopNum === flightStopNum;
           });
           return match;
         });
@@ -262,71 +230,73 @@ export default function FilghtDomesticList({
       if (filters.timeDepart === "asc") {
         filtered = [...filtered].sort(
           (a, b) =>
-            new Date(a.ListFlight[0].StartDate).getTime() -
-            new Date(b.ListFlight[0].StartDate).getTime()
+            new Date(a.departure.at).getTime() -
+            new Date(b.departure.at).getTime()
         );
       }
 
       if (filters.sortAirLine === "asc") {
         filtered = [...filtered].sort((a, b) =>
-          a.Airline.localeCompare(b.Airline)
+          a.airline.localeCompare(b.airline)
         );
       }
     }
-    if (isRoundTrip) {
-      if (selectedDepartFlight && !selectedReturnFlight) {
-        const departureTimeGo = new Date(
-          selectedDepartFlight.ListFlight[0].EndDate
-        ).getTime();
-        filtered = filtered.filter((flight: any) => {
-          if (flight.Leg) {
-            const departureTimeReturn = new Date(
-              flight.ListFlight[0].StartDate
-            ).getTime();
-            return departureTimeReturn >= departureTimeGo + 2 * 60 * 60 * 1000;
-          }
-        });
-      } else if (!selectedDepartFlight && selectedReturnFlight) {
-        const departureTimeReturn = new Date(
-          selectedReturnFlight.ListFlight[0].StartDate
-        ).getTime();
-        filtered = filtered.filter((flight: any) => {
-          if (flight.Leg === 0) {
-            const departureTimeGo = new Date(
-              flight.ListFlight[0].EndDate
-            ).getTime();
-            return departureTimeGo <= departureTimeReturn - 2 * 60 * 60 * 1000;
-          }
-        });
-      }
-    }
-
-    setFilteredData(filtered);
+    // if (isRoundTrip) {
+    //   if (selectedDepartFlight && !selectedReturnFlight) {
+    //     const departureTimeGo = new Date(
+    //       selectedDepartFlight.departure.at
+    //     ).getTime();
+    //     filteredReturn = filteredReturn.filter((flight: any) => {
+    //       const departureTimeReturn = new Date(flight.departure.at).getTime();
+    //       return departureTimeReturn >= departureTimeGo + 2 * 60 * 60 * 1000;
+    //     });
+    //   } else if (!selectedDepartFlight && selectedReturnFlight) {
+    //     const departureTimeReturn = new Date(
+    //       selectedReturnFlight.departure.at
+    //     ).getTime();
+    //     filteredDepart = filteredDepart.filter((flight: any) => {
+    //       const departureTimeGo = new Date(flight.arrival.at).getTime();
+    //       return departureTimeGo <= departureTimeReturn - 2 * 60 * 60 * 1000;
+    //     });
+    //   }
+    // }
+    setFilteredFlightsData(filtered);
+    // setFilteredReturnFlightsData(filteredReturn);
   }, [
     filters,
-    flights,
+    isFullFlightResource,
+    flightsData,
     selectedDepartFlight,
     selectedReturnFlight,
     isRoundTrip,
   ]);
+  // Group Flights
+  const groupFlights = (flights: any[]) => {
+    if (flights.length < 1) {
+      if (isRoundTrip) return [{ 1: [] }, { 2: [] }];
+      else return [{ 1: [] }];
+    }
+    const listFlights = flights.reduce((acc, flight) => {
+      const leg = flight.flightLeg;
+      if (!acc[leg]) {
+        acc[leg] = [];
+      }
+      acc[leg].push(flight);
+      return acc;
+    }, {} as { [key: string]: any[] });
 
-  const CalculateTotalPriceWithoutTax = (flight: any) => {
-    if (!flight) return 0;
-    const priceAtdWithoutTax = flight.TaxAdt * flight.Adt;
-    const priceChdWithoutTax = flight.TaxChd * flight.Chd;
-    const priceInfWithoutTax = flight.TaxInf * flight.Inf;
-    const totalPriceWithOutTax =
-      flight.TotalPrice -
-      (priceAtdWithoutTax + priceChdWithoutTax + priceInfWithoutTax);
-    return totalPriceWithOutTax;
+    if (isRoundTrip && !listFlights[1]) {
+      listFlights[1] = [];
+    }
+    return Object.values(listFlights);
   };
 
   // Select Depart and Return Flight
-  const handleSelectDepartFlight = (flight: any) => {
-    if (selectedDepartFlight?.FareDataId === flight.FareDataId) {
+  const handleSelectDepartFlight = (flight: any, fareOptionIndex: number) => {
+    if (selectedDepartFlight?.flightCode === flight.flightCode) {
       setSelectedDepartFlight(null);
     } else {
-      flight.TotalPriceWithOutTax = CalculateTotalPriceWithoutTax(flight);
+      flight.selectedTicketClass = flight.fareOptions[fareOptionIndex];
       setSelectedDepartFlight(flight);
       if (isRoundTrip && !selectedReturnFlight) {
         setTimeout(() => {
@@ -335,12 +305,11 @@ export default function FilghtDomesticList({
       }
     }
   };
-
-  const handleSelectReturnFlight = (flight: any) => {
-    if (selectedReturnFlight?.FareDataId === flight.FareDataId) {
+  const handleSelectReturnFlight = (flight: any, fareOptionIndex: number) => {
+    if (selectedReturnFlight?.flightCode === flight.flightCode) {
       setSelectedReturnFlight(null);
     } else {
-      flight.TotalPriceWithOutTax = CalculateTotalPriceWithoutTax(flight);
+      flight.selectedTicketClass = flight.fareOptions[fareOptionIndex];
       setSelectedReturnFlight(flight);
       if (isRoundTrip && !selectedDepartFlight) {
         setTimeout(() => {
@@ -387,28 +356,16 @@ export default function FilghtDomesticList({
     flightSession,
   ]);
 
-  let flightsGroup: any = groupFlights(filteredData);
-  if (selectedDepartFlight) {
-    flightsGroup[0] = [selectedDepartFlight]; // Depart Flight
-  }
-  if (selectedReturnFlight) {
-    flightsGroup[1] = [selectedReturnFlight]; // Return flight
-  }
+  let flightsGroup: any = groupFlights(filteredFlightsData);
+  let departFlightsData = flightsGroup[0] ?? [];
+  let returnFlightsData = flightsGroup[1] ?? [];
+  if (selectedDepartFlight) departFlightsData = [selectedDepartFlight];
+  if (selectedReturnFlight) returnFlightsData = [selectedReturnFlight];
 
   return (
     <Fragment>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
         <aside className="lg:col-span-3 bg-white p-4 rounded-2xl">
-          {/* <div className="pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">{t("chi_tiet")}</h2>
-            <select
-              name=""
-              id=""
-              className="w-full p-3 mt-3 border border-gray-300 rounded-lg"
-            >
-              <option value="">{t("de_xuat")}</option>
-            </select>
-          </div> */}
           {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
             <div className="pb-3 border-b border-gray-200">
               <h2 className="font-semibold">{t("so_diem_dung")}</h2>
@@ -433,10 +390,7 @@ export default function FilghtDomesticList({
           )}
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("hien_thi_gia")}</h2>
-            {/* <div className="flex space-x-2 mt-3">
-              <input type="checkbox" name="price" id="price_1" />
-              <label htmlFor="price_1">Giá bao gồm thuế phí</label>
-            </div> */}
+
             <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
@@ -453,17 +407,7 @@ export default function FilghtDomesticList({
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("sap_xep")}</h2>
-            {/* <div className="flex space-x-2 mt-3">
-              <input
-                type="checkbox"
-                name="sortPrice"
-                id="sortPrice"
-                value="asc"
-                onChange={handleCheckboxChange}
-                checked={filters.sortPrice === "asc"}
-              />
-              <label htmlFor="sortPrice">Giá thấp tới cao</label>
-            </div> */}
+
             <div className="flex space-x-2 mt-3 items-center">
               <input
                 type="checkbox"
@@ -601,21 +545,56 @@ export default function FilghtDomesticList({
                     </button>
                   ))}
                 </div>
-                {flightsGroup[0].length > 0 ? (
-                  <div className="my-6">
-                    {flightsGroup[0].map((item: any, index: number) => (
-                      <div key={index}>
-                        <FlightDomesticDetail
-                          FareData={item}
-                          onSelectFlight={handleSelectDepartFlight}
-                          selectedFlight={selectedDepartFlight}
-                          setFlightDetail={handleShowPopupFlightDetail}
-                          filters={filters}
-                          totalPassengers={totalPassengers}
-                          translatedStaticText={translatedStaticText}
-                        />
+                {isLoading ? (
+                  <div
+                    className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
+                  >
+                    <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
+                    <span className="text-18">
+                      {t("dang_tai_du_lieu_chuyen_bay")}...
+                    </span>
+                  </div>
+                ) : isReady && departFlightsData.length > 0 ? (
+                  <div className="mt-6">
+                    {departFlightsData
+                      .slice(0, departLimit)
+                      .map((item: any, index: number) => (
+                        <div key={index}>
+                          <FlightDomesticDetail
+                            FareData={item}
+                            onSelectFlight={handleSelectDepartFlight}
+                            selectedFlight={selectedDepartFlight}
+                            setFlightDetail={handleShowPopupFlightDetail}
+                            filters={filters}
+                            totalPassengers={totalPassengers}
+                            translatedStaticText={translatedStaticText}
+                          />
+                        </div>
+                      ))}
+                    {departLimit < departFlightsData.length && (
+                      <div className="max-w-[250px] text-center flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white text-gray-700 rounded-lg">
+                        <button onClick={handleLoadMoreDepart}>
+                          Xem thêm chuyến bay
+                        </button>
+                        <div>
+                          <svg
+                            width="22"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5 7.5L10 12.5L15 7.5"
+                              stroke="#283448"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
                 ) : (
                   <div className="w-full my-12 text-center text-2xl font-semibold">
@@ -628,8 +607,8 @@ export default function FilghtDomesticList({
                   </div>
                 )}
               </div>
-              {flightsGroup.length > 1 && (
-                <div ref={returnFlightRef}>
+              {isRoundTrip && (
+                <div ref={returnFlightRef} className="mt-8">
                   <div
                     className="flex text-white p-4 rounded-t-2xl shadow-md space-x-4 items-center"
                     style={{
@@ -687,33 +666,68 @@ export default function FilghtDomesticList({
                       </button>
                     ))}
                   </div>
-                  {Array.isArray(flightsGroup) &&
-                  Array.isArray(flightsGroup[1]) &&
-                  flightsGroup[1].length > 0 ? (
+                  {isLoading ? (
+                    <div
+                      className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
+                    >
+                      <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
+                      <span className="text-18">
+                        {t("dang_tai_du_lieu_chuyen_bay")}...
+                      </span>
+                    </div>
+                  ) : returnFlightsData.length > 0 ? (
                     <div className="my-6">
-                      {flightsGroup[1].map((item: any, index: number) => (
-                        <div key={index}>
-                          <FlightDomesticDetail
-                            FareData={item}
-                            onSelectFlight={handleSelectReturnFlight}
-                            selectedFlight={selectedReturnFlight}
-                            setFlightDetail={handleShowPopupFlightDetail}
-                            filters={filters}
-                            totalPassengers={totalPassengers}
-                            translatedStaticText={translatedStaticText}
-                          />
+                      {returnFlightsData
+                        .slice(0, returnLimit)
+                        .map((item: any, index: number) => (
+                          <div key={index}>
+                            <FlightDomesticDetail
+                              FareData={item}
+                              onSelectFlight={handleSelectReturnFlight}
+                              selectedFlight={selectedReturnFlight}
+                              setFlightDetail={handleShowPopupFlightDetail}
+                              filters={filters}
+                              totalPassengers={totalPassengers}
+                              translatedStaticText={translatedStaticText}
+                            />
+                          </div>
+                        ))}
+                      {returnLimit < returnFlightsData.length && (
+                        <div className="max-w-[250px] text-center flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white text-gray-700 rounded-lg">
+                          <button onClick={handleLoadMoreReturn}>
+                            Xem thêm chuyến bay
+                          </button>
+                          <div>
+                            <svg
+                              width="22"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5 7.5L10 12.5L15 7.5"
+                                stroke="#283448"
+                                strokeWidth="1.66667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
                         </div>
-                      ))}
+                      )}
                     </div>
                   ) : (
-                    <div className="w-full mt-12 text-center text-2xl font-semibold">
-                      <p>{t("khong_co_chuyen_bay_nao_trong_ngay_hom_nay")}</p>
-                      <p className="mt-1">
-                        {t(
-                          "quy_khach_vui_long_chuyen_sang_ngay_khac_de_dat_ve_xin_cam_on"
-                        )}
-                      </p>
-                    </div>
+                    isFullFlightResource && (
+                      <div className="w-full mt-12 text-center text-2xl font-semibold">
+                        <p>{t("khong_co_chuyen_bay_nao_trong_ngay_hom_nay")}</p>
+                        <p className="mt-1">
+                          {t(
+                            "quy_khach_vui_long_chuyen_sang_ngay_khac_de_dat_ve_xin_cam_on"
+                          )}
+                        </p>
+                      </div>
+                    )
                   )}
                 </div>
               )}
@@ -728,6 +742,7 @@ export default function FilghtDomesticList({
           isOpen={showDetail}
           onClose={handleClosePopupFlightDetail}
           translatedStaticText={translatedStaticText}
+          isLoadingFareRules={isLoadingFareRules}
         />
       </div>
     </Fragment>
