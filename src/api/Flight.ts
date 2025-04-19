@@ -14,7 +14,7 @@ const FlightApi = {
     return http.get<any>(`${path}/search-cheapest-fare${querySearch}`);
   },
   getFareRules: (data: any) => http.post<any>(`${path}/fare-rules`, data),
-  getBaggage: (url: string, data: any) => http.post<any>(url, data),
+  getBaggage: (data: any) => http.post<any>(`${path}/list-ancillary`, data),
   bookFlight: (url: string, data: any) => http.post<any>(url, data),
   airPorts: () => http.get<any>("danh-sach-diem-di-den-ve-may-bay"),
   searchAirPorts: (searchParams: string) =>

@@ -25,6 +25,7 @@ import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import ListFlights from "./SearchFlights/List";
+import { isEmpty } from "lodash";
 
 export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const router = useRouter();
@@ -37,7 +38,6 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const [displayType, setDisplayType] = useState<"desktop" | "mobile">(
     "desktop"
   );
-  const [apiFlightSession, setApiFlightSession] = useState<string>("");
   // Handle Params
   const searchParams = useSearchParams();
   const StartPoint = searchParams.get("StartPoint") ?? "SGN";
@@ -58,14 +58,13 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
   const [flightType, setFlightType] = useState<string>("");
-
   const [searchId, setSearchId] = useState<string | null>(null);
   const [flightItineraryResource, setFlightItineraryResource] = useState<
     Array<{ key: string; value: number }>
   >([]);
   const [isFullFlightResource, setIsFullFlightResource] =
     useState<boolean>(false);
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
   const params = useMemo(() => {
     let flightType: string = "OW";
@@ -231,13 +230,16 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         setError(toaStrMsg.errorConnectApiFlight);
       }
     };
+
     let timer: NodeJS.Timeout;
+    let cancelled = false;
     const fetchAndRepeat = async () => {
-      if (!isFullFlightResource) {
-        await fetchFlightOperation();
+      if (cancelled || isFullFlightResource) return;
+
+      await fetchFlightOperation();
+
+      if (!cancelled && !isFullFlightResource) {
         timer = setTimeout(fetchAndRepeat, 1000);
-      } else {
-        clearTimeout(timer);
       }
     };
 
@@ -245,14 +247,17 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
       fetchAndRepeat();
     }
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [searchId, toaStrMsg.errorConnectApiFlight, isFullFlightResource]);
 
   useEffect(() => {
     const fetchFlightDetails = async () => {
       const unprocessed = flightItineraryResource.filter((r) => r.value === 0);
-      if (unprocessed.length === 0) return;
 
+      if (unprocessed.length === 0) return;
       setFlightItineraryResource((prev) =>
         prev.map((r) =>
           unprocessed.some((u) => u.key === r.key) ? { ...r, value: 1 } : r
@@ -270,14 +275,16 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
             },
           })
         );
-        const results = await Promise.all(promises);
+        const results = await Promise.allSettled(promises);
 
         const flightsData: any[] = [];
 
         results.forEach((res) => {
-          const flightTrips = res?.payload?.data?.trips ?? [];
-          if (flightTrips.length) {
-            flightsData.push(...flightTrips);
+          if (res.status === "fulfilled") {
+            const flightTrips = res?.value?.payload?.data?.trips ?? [];
+            if (flightTrips.length) {
+              flightsData.push(...flightTrips);
+            }
           }
         });
 
@@ -300,7 +307,9 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         setError(toaStrMsg.errorConnectApiFlight);
       }
     };
-    fetchFlightDetails();
+    if (flightItineraryResource.length) {
+      fetchFlightDetails();
+    }
   }, [
     flightItineraryResource,
     passengerAdt,
@@ -315,19 +324,32 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
       scrollToRef(resultsRef);
       try {
         setLoading(true);
-        setFlightsData([]);
-        setSearchId(null);
-        setFlightItineraryResource([]);
-        setIsFullFlightResource(false);
         setIsReady(false);
-        const checkTripType =
-          (tripType === "roundTrip" && ReturnDate) || tripType === "oneWay"
-            ? true
-            : false;
-        if (StartPoint && EndPoint && DepartDate && checkTripType) {
+        setSearchId(null);
+        setFlightsData([]);
+        setIsFullFlightResource(false);
+        setFlightItineraryResource([]);
+        if (StartPoint && EndPoint && DepartDate) {
           const response = await FlightApi.search(params);
-          if (response?.payload?.data) {
-            setSearchId(response?.payload?.data);
+          const responseData = response?.payload?.data;
+          const resources: any = responseData?.resources ?? [];
+          if (responseData?.searchId) setSearchId(responseData?.searchId);
+          if (resources.length) setFlightItineraryResource(resources);
+          if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
+          const flightsData: any = responseData?.trips ?? [];
+          if (flightsData.length) {
+            const listStopNum: number[] = [];
+            for (const item of flightsData) {
+              if (!listStopNum[item.legs]) {
+                listStopNum[item.legs] = item.legs;
+              }
+            }
+            setStopNumFilters(
+              listStopNum.filter(
+                (item: any) => item !== undefined && item !== null
+              )
+            );
+            setFlightsData(flightsData);
           }
         } else {
           router.push("/ve-may-bay");
@@ -404,7 +426,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
           returnDays={returnDays}
           departDays={days}
           handleClickDate={handleClickDate}
-          flightSession={apiFlightSession}
+          flightSession={searchId}
           displayType={displayType}
           isRoundTrip={isRoundTrip}
           totalPassengers={totalPassengers}
@@ -412,7 +434,6 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
           flightStopNum={stopNumFilters}
           translatedStaticText={translatedStaticText}
           isLoading={loading}
-          isReady={isReady}
         />
       </div>
     </Fragment>

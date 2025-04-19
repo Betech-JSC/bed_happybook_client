@@ -48,7 +48,6 @@ export default function ListFlights({
   flightStopNum,
   translatedStaticText,
   isLoading,
-  isReady,
 }: ListFlight) {
   const INITIAL_LIMIT = 5;
   const router = useRouter();
@@ -554,7 +553,7 @@ export default function ListFlights({
                       {t("dang_tai_du_lieu_chuyen_bay")}...
                     </span>
                   </div>
-                ) : isReady && departFlightsData.length > 0 ? (
+                ) : departFlightsData.length > 0 ? (
                   <div className="mt-6">
                     {departFlightsData
                       .slice(0, departLimit)

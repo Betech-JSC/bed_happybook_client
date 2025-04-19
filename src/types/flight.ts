@@ -113,7 +113,7 @@ export interface filtersFlightDomestic {
 }
 export interface ListFlight {
   airportsData: AirportsCountry[];
-  flightSession: string;
+  flightSession: string | null;
   flightsData: any;
   isFullFlightResource: boolean;
   from: string | null;
@@ -132,7 +132,6 @@ export interface ListFlight {
   flightStopNum: number[];
   translatedStaticText: any;
   isLoading?: boolean;
-  isReady?: boolean;
 }
 export interface FlightDetailPopupProps {
   isOpen: boolean;

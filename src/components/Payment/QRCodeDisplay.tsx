@@ -106,7 +106,9 @@ export default function QRCodeDisplay({
             <span className="w-1/3" data-translate="true">
               Số tài khoản
             </span>
-            <span className="w-2/3 font-medium">{`${vietQrData.bankAccount}`}</span>
+            <span className="w-2/3 font-medium">{`${
+              vietQrData.bankAccount || ""
+            }`}</span>
           </div>
           <div className="flex mt-3 space-x-2">
             <span className="w-1/3" data-translate="true">
