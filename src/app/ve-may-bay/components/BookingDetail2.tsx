@@ -208,10 +208,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           ],
         };
 
-        const response = await FlightApi.getFareRules(
-          "flights/getfarerules",
-          params
-        );
+        const response = await FlightApi.getFareRules(params);
 
         const fareRules = await translateText(
           [
@@ -315,7 +312,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       </div>
     );
   }
-  if (!data || !data.datacom_data) notFound();
+  if (!data) notFound();
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">

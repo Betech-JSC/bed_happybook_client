@@ -11,7 +11,6 @@ import Image from "next/image";
 import Link from "next/link";
 import Partner from "../components/Partner";
 import Search from "../components/Search";
-import ListFilght from "../components/ListFilght";
 import { FlightApi } from "@/api/Flight";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
@@ -21,6 +20,7 @@ import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
+import SearchFlightsResult from "../components/SearchResult";
 
 export const metadata: Metadata = formatMetadata({
   title: "Tìm kiếm Vé máy bay",
@@ -99,7 +99,7 @@ export default async function SearchTicket() {
               </BreadcrumbList>
             </Breadcrumb>
             <div className="min-h-40" id="wrapper_search_flight">
-              <ListFilght airportsData={airportsData} />
+              <SearchFlightsResult airportsData={airportsData} />
             </div>
           </div>
           <Partner />
