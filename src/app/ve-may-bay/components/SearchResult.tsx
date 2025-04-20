@@ -438,6 +438,16 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     }
   }, [loading, flightsData, isFullFlightResource]);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!flightsData || flightsData.length === 0) {
+        setIsReady(true);
+      }
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, [flightsData]);
+
   if (!isReady) {
     return (
       <div
