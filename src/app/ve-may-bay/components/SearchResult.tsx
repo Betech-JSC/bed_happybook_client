@@ -225,7 +225,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
             const newItems = resources
               .filter((k) => !existingKeys.includes(k))
               .map((k) => ({ key: k, value: 0 }));
-
+            if (newItems.length === 0) return prev;
             return [...prev, ...newItems];
           });
         }
@@ -409,34 +409,30 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     });
     const uniqueAirlines = Array.from(airlineSet);
     setAirLinesCode(uniqueAirlines);
-    setShouldFetchAirlines(true);
-  }, [flightItineraryResource, flightsData]);
-
-  useEffect(() => {
-    if (!shouldFetchAirlines || !airlinesCode.length) return;
-
     const fetchAirlines = async () => {
       try {
         const response = await FlightApi.getAirlines({
-          code: airlinesCode,
+          code: uniqueAirlines,
         });
         const responseData = response?.payload?.data ?? [];
-        setAirlineData(responseData);
+        const airlineDataSorted = responseData.sort((a: any, b: any) =>
+          a.name.localeCompare(b.name)
+        );
+        setAirlineData(airlineDataSorted);
       } catch (error: any) {
         setError(toaStrMsg.errorConnectApiFlight);
-      } finally {
-        setShouldFetchAirlines(false);
       }
     };
-
-    fetchAirlines();
-  }, [shouldFetchAirlines, airlinesCode, toaStrMsg]);
+    if (uniqueAirlines.length) {
+      fetchAirlines();
+    }
+  }, [flightItineraryResource, flightsData, toaStrMsg]);
 
   useEffect(() => {
-    if (!loading && flightsData.length > 0 && isFullFlightResource) {
+    if (!loading && flightsData.length > 0) {
       setIsReady(true);
     }
-  }, [loading, flightsData, isFullFlightResource]);
+  }, [loading, flightsData]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
