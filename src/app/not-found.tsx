@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 export default function Custom404() {
   const router = useRouter();
   const [countDown, setCountDown] = useState<number>(10);
-  const [isLoaderVisible, setIsLoaderVisible] = useState<boolean>(true);
+  const [isLoaderVisible, setIsLoaderVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const checkLoaderVisibility = setInterval(() => {

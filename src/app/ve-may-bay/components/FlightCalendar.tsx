@@ -10,36 +10,30 @@ import {
 } from "@/utils/Helper";
 import { FlightApi } from "@/api/Flight";
 import FlightSearchPopup from "./FlightSearchPopup";
-import { getDay, isValid, parse, format } from "date-fns";
-import { AirportOption, FlightCalendarProps } from "@/types/flight";
+import {
+  getDay,
+  isValid,
+  parse,
+  format,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
+import {
+  AirlineType,
+  AirportOption,
+  FlightCalendarProps,
+} from "@/types/flight";
 import { HttpError } from "@/lib/error";
 import { translatePage } from "@/utils/translateDom";
-
-const airLines = [
-  {
-    label: "Vietjet Air",
-    value: "VJ",
-  },
-  {
-    label: "Vietnam Airlines",
-    value: "VN",
-  },
-  {
-    label: "Bamboo Airways",
-    value: "QH",
-  },
-  {
-    label: "Vietravel Airlines",
-    value: "VU",
-  },
-];
+import { formatCurrency } from "@/lib/formatters";
+import DisplayImage from "@/components/base/DisplayImage";
 
 const mapDataByDay = (data: any[]) => {
   const mappedData: Record<number, { flights: any[] } | undefined> = {};
   data.forEach((item) => {
-    const date = new Date(item.DepartDate);
+    const date = new Date(item.date);
     const day = date.getDate();
-    mappedData[day] = { flights: item.ListFareData };
+    mappedData[day] = { flights: item.cheapestFare };
   });
   return mappedData;
 };
@@ -47,14 +41,19 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
   const allFlights = flights.flat();
 
   const filteredFlights = airlineFilter
-    ? allFlights.filter((flight) => flight.Airline === airlineFilter)
+    ? allFlights.filter((flight) => {
+        if (flight.listAirlines.includes(airlineFilter)) {
+          flight.airline = airlineFilter;
+          return flight;
+        }
+      })
     : allFlights;
   if (filteredFlights.length === 0) return null;
   return filteredFlights.reduce((lowest, flight) =>
-    flight.FareAdt < lowest.FareAdt ? flight : lowest
+    flight.totalFare < lowest.totalFare ? flight : lowest
   );
 };
-const listNextMonth = generateMonth(12);
+const listNextMonth = generateMonth(3);
 
 export default function FlightCalendar({
   airports,
@@ -72,7 +71,7 @@ export default function FlightCalendar({
   const [month, setMonth] = useState<number>(0);
   const [year, setYear] = useState<number>(0);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const [dataFlightDepart, setDataFlightDepart] = useState<
+  const [cheapestFareDepart, setCheapestFareDepart] = useState<
     Record<number, { flights: any[] } | undefined>
   >({});
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -89,6 +88,7 @@ export default function FlightCalendar({
       handleScrollSmooth(resultsRef.current);
     }
   };
+  const [airLines, setAirLines] = useState<AirlineType[]>([]);
 
   useEffect(() => {
     const totalDays = getDaysInMonth(year, month);
@@ -140,16 +140,23 @@ export default function FlightCalendar({
         const EndPoint = toOption?.code ?? "HAN";
         if (year && month) {
           setAirlineFilter(null);
-          const response = await FlightApi.search("flights/searchmonth", {
-            StartPoint: StartPoint,
-            EndPoint: EndPoint,
-            Airline: "",
-            Month: month,
-            Year: year,
+          const response = await FlightApi.searchCheapestFare({
+            departure: StartPoint,
+            arrival: EndPoint,
+            startDate: format(
+              startOfMonth(new Date(year, month - 1)),
+              "yyyy-MM-dd"
+            ),
+            endDate: format(
+              endOfMonth(new Date(year, month - 1)),
+              "yyyy-MM-dd"
+            ),
           });
-          const ListMinPrice = response?.payload.data.ListMinPrice ?? [];
-          const mappedData = mapDataByDay(ListMinPrice);
-          setDataFlightDepart(mappedData);
+          const listMinPrice = response?.payload.data.listMinPrice ?? [];
+          const airLinesData = response?.payload.data.arilines ?? [];
+          const mappedData = mapDataByDay(listMinPrice);
+          setCheapestFareDepart(mappedData);
+          setAirLines(airLinesData);
           setError(null);
         }
       } catch (error: any) {
@@ -174,7 +181,7 @@ export default function FlightCalendar({
 
   useEffect(() => {
     translatePage("#wrapper-find-cheap-tickets-flight", 10);
-  }, [dataFlightDepart]);
+  }, [cheapestFareDepart]);
 
   if (!month) return null;
   // Loading
@@ -243,7 +250,7 @@ export default function FlightCalendar({
                 className="h-10"
                 width={18}
                 height={18}
-              ></Image>
+              />
               <div className="w-full cursor-pointer">
                 <input
                   type="text"
@@ -281,34 +288,6 @@ export default function FlightCalendar({
                   readOnly
                   className="outline-none w-full pl-3"
                 />
-                {/* <Select
-                options={airports}
-                value={to}
-                onChange={setTo}
-                placeholder={"Chọn điểm đến"}
-                isClearable
-                styles={{
-                  control: (provided) => ({
-                    ...provided,
-                    border: "none",
-                    boxShadow: "none",
-                    cursor: "pointer",
-                  }),
-                  menu: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                    width: "260px",
-                  }),
-                  indicatorSeparator: () => ({
-                    display: "none",
-                  }),
-                  dropdownIndicator: () => ({
-                    display: "none",
-                  }),
-                }}
-                components={{ Option: CustomOptionSelect, NoOptionsMessage }}
-                menuPlacement="auto"
-              /> */}
               </div>
             </div>
           </div>
@@ -363,8 +342,8 @@ export default function FlightCalendar({
                     Chọn hãng
                   </option>
                   {airLines.map((item: any, index: any) => (
-                    <option key={index} value={item.value}>
-                      {item.label}
+                    <option key={index} value={item.code}>
+                      {item.name}
                     </option>
                   ))}
                 </select>
@@ -448,7 +427,7 @@ export default function FlightCalendar({
             );
           })}
           {daysInMonth.map((day, index) => {
-            const flightData = dataFlightDepart[day ?? 0];
+            const flightData = cheapestFareDepart[day ?? 0];
             const flightLowestPrice =
               flightData && getLowestPrice(flightData.flights, airlineFilter);
             const disabled = isDisabled(day ?? 0);
@@ -470,26 +449,41 @@ export default function FlightCalendar({
                       <span className="text-xs font-semibold md:font-normal  md:text-base">
                         {day.toString().padStart(2, "0")}
                       </span>
-                      {flightLowestPrice && (
-                        <div className="">
-                          <Image
-                            src={`/airline/${flightLowestPrice.Airline}.svg`}
-                            alt={"VN"}
-                            width={40}
-                            height={40}
-                            className="w-4 h-4 md:w-6 md:h-6 lg:w-10 lg:h-10"
-                          />
-                        </div>
-                      )}
+                      {flightLowestPrice &&
+                        (["VJ", "VN", "QH", "VU"].includes(
+                          flightLowestPrice.airline
+                        ) ? (
+                          <div className="">
+                            <Image
+                              src={`/airline/${flightLowestPrice.airline}.svg`}
+                              alt={flightLowestPrice.airline}
+                              width={40}
+                              height={40}
+                              className="w-4 h-4 md:w-6 md:h-6 lg:w-10 lg:h-10"
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <DisplayImage
+                              imagePath={`assets/images/airline/${flightLowestPrice.airline.toLowerCase()}.gif`}
+                              width={80}
+                              height={40}
+                              alt={flightLowestPrice.airline}
+                              classStyle="max-w-4 max-h-4 md:max-w-16 md:max-h-8"
+                            />
+                          </div>
+                        ))}
                     </div>
                     <div className="font-semibold text-left">
                       {flightLowestPrice && (
                         <Fragment>
                           <div className="font-semibold hidden lg:block">
-                            {flightLowestPrice.FareAdt.toLocaleString()} vnd
+                            {formatCurrency(flightLowestPrice.totalFare)}
                           </div>
                           <div className="text-sm md:text-base md:text-left text-center font-semibold block lg:hidden">
-                            {`${Math.floor(flightLowestPrice.FareAdt / 1000)}`}
+                            {`${Math.floor(
+                              flightLowestPrice.totalFare / 1000
+                            )}`}
                             <span className="text-xs font-semibold">K</span>
                           </div>
                         </Fragment>

@@ -113,8 +113,10 @@ export interface filtersFlightDomestic {
 }
 export interface ListFlight {
   airportsData: AirportsCountry[];
-  flightSession: string;
-  flights: any;
+  flightSession: string | null;
+  flightsData: any;
+  airlineData: { id: number; name: string; code: string; logo: string }[];
+  isFullFlightResource: boolean;
   from: string | null;
   to: string | null;
   returnDate: any;
@@ -125,12 +127,12 @@ export interface ListFlight {
   returnDays: TabDays[];
   displayType: string;
   isRoundTrip: boolean;
-  totalFlightLeg: number[];
   totalPassengers: number;
   handleClickDate: (date: Date, TypeIndex: number) => void;
   flightType?: string;
-  flightStopNum?: number[];
+  flightStopNum: number[];
   translatedStaticText: any;
+  isLoading?: boolean;
 }
 export interface FlightDetailPopupProps {
   isOpen: boolean;
@@ -142,6 +144,7 @@ export interface FlightDetailPopupProps {
   flights: any;
   onClose: () => void;
   translatedStaticText: any;
+  isLoadingFareRules: boolean;
 }
 
 export interface FlightDetailInternationalProps {
@@ -170,9 +173,10 @@ export interface FlightDetailDomesticProps {
   };
   selectedFlight: any;
   totalPassengers: number;
-  onSelectFlight: (flight: any) => void;
+  onSelectFlight: (flight: any, fareOptionIndex: number) => void;
   setFlightDetail: (
     flight: any,
+    indexFareOption: number,
     tabs: {
       id: number;
       name: string;
@@ -180,4 +184,11 @@ export interface FlightDetailDomesticProps {
     showRuleTicket?: boolean
   ) => void;
   translatedStaticText: any;
+}
+
+export interface AirlineType {
+  id: number;
+  name: string;
+  code: string;
+  logo: string;
 }

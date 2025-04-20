@@ -32,6 +32,11 @@ import { datePickerLocale } from "@/constants/language";
 import { toastMessages, validationMessages } from "@/lib/messages";
 
 export default function FlightBookForm({ airportsData }: any) {
+  const router = useRouter();
+  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
+  const { language } = useLanguage();
+  const messages = validationMessages[language as "vi" | "en"];
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,12 +56,6 @@ export default function FlightBookForm({ airportsData }: any) {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
   const [bookingSystem, setBookingSystem] = useState<string>("");
-  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
-  const { language } = useLanguage();
-  const router = useRouter();
-
-  const messages = validationMessages[language as "vi" | "en"];
-  const toaStrMsg = toastMessages[language as "vi" | "en"];
 
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -97,7 +96,7 @@ export default function FlightBookForm({ airportsData }: any) {
   });
 
   const onSubmit = (data: FlightBookingInforType) => {
-    setLoading(true);
+    // setLoading(true);
     const adtArr = data.atd.map((item, index) => {
       if (listBaggagePassenger.atd && listBaggagePassenger.atd[index]) {
         item.baggages = listBaggagePassenger.atd[index];
@@ -147,31 +146,15 @@ export default function FlightBookForm({ airportsData }: any) {
     data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
     let fare_data: any = [];
-    if (flightType === "international") {
+
+    flights.map((item) => {
       fare_data.push({
         session: flightSession,
-        fare_data_id_api: flights[0].FareDataId,
-        AutoIssue: false,
-        flights: [],
+        fare_data_id_api: 1,
+        source: item.source,
+        flights: [{ flight_value: item.selectedTicketClass.fareValue }],
       });
-      let ListFlightObj: any = [];
-      flights.map((item, _) => {
-        ListFlightObj.push({ flight_value: item.ListFlight[0].FlightValue });
-      });
-      if (ListFlightObj.length) {
-        fare_data[0].flights = ListFlightObj;
-      }
-    } else {
-      flights.map((item, _) => {
-        fare_data.push({
-          session: flightSession,
-          fare_data_id_api: item.FareDataId,
-          AutoIssue: false,
-          flights: [{ flight_value: item.ListFlight[0].FlightValue }],
-        });
-      });
-    }
-
+    });
     formatData.contact.gender =
       formatData.contact.gender === "male" ? true : false;
     if (!generateInvoice) {
@@ -188,13 +171,13 @@ export default function FlightBookForm({ airportsData }: any) {
       try {
         setLoading(true);
         const respon = await FlightApi.bookFlight(
-          `book-flight${bookingSystem === "1G" ? "-1G" : ""}`,
+          `/flights-v2/book-flight`,
           finalData
         );
         if (respon?.status === 200) {
           reset();
           toast.success(toaStrMsg.sendSuccess);
-          handleSessionStorage("save", "bookingFlight", respon?.payload);
+          handleSessionStorage("save", "bookingFlight", respon?.payload?.data);
           handleSessionStorage("remove", [
             "flightSession",
             "departFlight",
@@ -226,17 +209,17 @@ export default function FlightBookForm({ airportsData }: any) {
     const flightType = handleSessionStorage("get", "flightType") ?? "";
     if (departFlight) {
       flightData.push(departFlight);
-      flightDetailData.push(departFlight.ListFlight[0]);
+      flightDetailData.push(departFlight);
       setBookingSystem(departFlight?.System);
     }
     if (returnFlight) {
       flightData.push(returnFlight);
-      flightDetailData.push(returnFlight.ListFlight[0]);
+      flightDetailData.push(returnFlight);
     }
     if (
       !flightData.length ||
-      !flightSession ||
-      !["domestic", "international"].includes(flightType)
+      !flightSession
+      // !["domestic", "international"].includes(flightType)
     ) {
       router.push("/ve-may-bay");
     }
@@ -256,9 +239,6 @@ export default function FlightBookForm({ airportsData }: any) {
   let totalPriceAdt = 0;
   let totalPriceChd = 0;
   let totalPriceInf = 0;
-  let FareAdt: any = [];
-  let FareChd: any = [];
-  let FareInf: any = [];
   let keyLoopPassenger = 1;
   let keyLoopDropdown = 1;
   let totalPriceTicketAdt = 0;
@@ -268,31 +248,21 @@ export default function FlightBookForm({ airportsData }: any) {
   let totalTaxChd = 0;
   let totalTaxInf = 0;
   let dropdown: any = [];
-
-  let shouldStopMapFlights = false;
-
-  flights.map((item, index) => {
-    if (shouldStopMapFlights) return;
-    totalPrice += item.TotalPrice;
-    totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
-    totalChd = item.Chd > totalChd ? item.Chd : totalChd;
-    totalInf = item.Inf > totalInf ? item.Inf : totalInf;
-    totalPriceAdt +=
-      item.FareAdt + item.TaxAdt + item.FeeAdt + item.ServiceFeeAdt;
-    totalPriceChd +=
-      item.FareChd + item.TaxChd + item.FeeChd + item.ServiceFeeChd;
-    totalPriceInf +=
-      item.FareInf + item.TaxInf + item.FeeInf + item.ServiceFeeInf;
-    FareAdt[index] = item.FareAdt + item.TaxAdt;
-    FareChd[index] = item.FareChd + item.TaxChd;
-    FareInf[index] = item.FareInf + item.TaxInf;
-    totalPriceTicketAdt += item.FareAdt + item.ServiceFeeAdt;
-    totalPriceTicketChd += item.FareChd + item.ServiceFeeChd;
-    totalPriceTicketInf += item.FareInf + item.ServiceFeeInf;
-    totalTaxAdt += item.TaxAdt + item.FeeAdt;
-    totalTaxChd += item.TaxChd + item.FeeChd;
-    totalTaxInf += item.TaxInf + item.FeeInf;
-    if (flightType === "international") shouldStopMapFlights = true;
+  flights.map((item) => {
+    const ticketClass = item.selectedTicketClass;
+    totalAdt = item.numberAdt;
+    totalChd = item.numberChd;
+    totalInf = item.numberInf;
+    totalPriceTicketAdt += ticketClass.fareAdult;
+    totalPriceTicketChd += ticketClass.fareChild;
+    totalPriceTicketInf += ticketClass.fareInfant;
+    totalTaxAdt += ticketClass.taxAdult;
+    totalTaxChd += ticketClass.taxChild;
+    totalTaxInf += ticketClass.taxInfant;
+    totalPriceAdt += ticketClass.totalAdult;
+    totalPriceChd += ticketClass.totalChild;
+    totalPriceAdt += ticketClass.totalInfant;
+    totalPrice += ticketClass.totalPrice;
   });
   if (totalAdt) {
     dropdown.push({
@@ -354,17 +324,17 @@ export default function FlightBookForm({ airportsData }: any) {
       }
       if (code) {
         listBaggage.find((item) => {
-          if (item.Code === code && item.Leg === leg) {
-            let finalPriceTmp = finalPrice + item.Price;
+          if (item.code_uni === code && item.leg === leg) {
+            let finalPriceTmp = finalPrice + item.price;
             const baggageObj = {
-              airline: item.Airline,
-              leg: item.Leg,
-              route: item.Route,
-              code: item.Code,
-              currency: item.Currency,
-              name: item.Name,
-              price: item.Price,
-              value: item.Value,
+              airline: item.airline,
+              leg: item.leg,
+              route: item.route,
+              currency: "VND",
+              code: item.code,
+              name: item.detail.weight + item.detail.unit,
+              price: item.price,
+              value: item.ssrValue || "unknown",
             };
             const index = listBaggagePassenger[typePassenger][
               passengerIndex
@@ -410,51 +380,83 @@ export default function FlightBookForm({ airportsData }: any) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let params: any = {
-          ListFareData: [],
-        };
-        if (flightSession) {
-          flights.map((flight) => {
-            params["ListFareData"].push({
-              Session: flightSession,
-              FareDataId: flight.FareDataId,
-              ListFlight: [
-                {
-                  FlightValue: flight.ListFlight[0].FlightValue,
-                },
-              ],
+        let params: any = [];
+        flights.map((flight) => {
+          let baggeParams: any = {
+            source: flight.source,
+            paxList: [
+              {
+                type: "ADULT",
+                count: 1,
+              },
+              {
+                type: "CHILD",
+                count: 1,
+              },
+            ],
+            itineraries: [],
+            flightLeg: flight.flightLeg,
+          };
+          flight.segments.map((segment: any) => {
+            baggeParams.itineraries.push({
+              airline: segment.airline,
+              source: flight.source,
+              departure: segment.departure.IATACode,
+              arrival: segment.arrival.IATACode,
+              departureDate: segment.departure.at,
+              arrivalDate: segment.arrival.at,
+              flightNumber: segment.flightNumber,
+              flightNOP: segment.flightNOP
+                ? segment.flightNOP
+                : segment.flightNumber,
+              fareBasisCode: segment.fareBasisCode,
+              bookingClass: segment.bookingClass,
+              groupClass: segment.groupClass,
+              segmentId: segment.segmentId,
+              fareValue: flight.selectedTicketClass.fareValue,
+              itineraryId: flight.itineraryId
+                ? flight.itineraryId.toString()
+                : "1",
             });
+            params.push(baggeParams);
           });
+        });
+        const promises = params.map((param: any) =>
+          FlightApi.getBaggage(param)
+        );
+        const results = await Promise.all(promises);
+        const bagsData: any[] = [];
 
-          const response = await FlightApi.getBaggage(
-            "flights/getbaggage",
-            params
-          );
-          const data = response?.payload.ListBaggage ?? [];
-          const defaultGroupedObj =
-            flights.length > 1 ? { 0: [], 1: [] } : { 0: [] };
+        results.forEach((res) => {
+          const bags = res?.payload?.data ?? [];
+          if (bags.length) {
+            bagsData.push(...bags);
+          }
+        });
+        const defaultGroupedObj =
+          flights.length > 1 ? { 0: [], 1: [] } : { 0: [] };
 
-          const groupedByLeg = data.reduce((acc: any, item: any) => {
-            acc[item.Leg].push(item);
-            return acc;
-          }, defaultGroupedObj as { [key: number]: typeof data });
-          setListBaggage(data);
-          setListBaggageGrouped(groupedByLeg);
-          translatePage("#wrapper-flight-booking-form", 100);
-        }
+        const groupedByLeg = bagsData.reduce((acc: any, item: any) => {
+          acc[item.leg].push(item);
+          return acc;
+        }, defaultGroupedObj as { [key: number]: typeof bagsData });
+        setListBaggage(bagsData);
+        setListBaggageGrouped(groupedByLeg);
+        translatePage("#wrapper-flight-booking-form", 100);
       } catch (error: any) {
         setListBaggage([]);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [flightSession, flights]);
+    if (flights.length > 0) {
+      fetchData();
+    }
+  }, [flights]);
 
   const handleClosePopupFlightDetail = () => {
     setShowFlightDetail(false);
   };
-
   useEffect(() => {
     translateText(flightStaticText, language).then((data) => {
       const translationMap = formatTranslationMap(flightStaticText, data);
@@ -1066,7 +1068,13 @@ export default function FlightBookForm({ airportsData }: any) {
                         Object.entries(listBaggageGrouped).map(
                           ([flightLeg, items]) => {
                             const leg = parseInt(flightLeg);
-                            const hasBaggage = items.length > 0 ? true : false;
+                            const adtBaggages = items.filter((bag: any) => {
+                              return (
+                                bag.paxType === "ADULT" || bag.paxType === "ALL"
+                              );
+                            });
+                            const hasBaggage =
+                              adtBaggages.length > 0 ? true : false;
                             return (
                               <div
                                 id={`wrapper-baggage-atd-leg-${leg}`}
@@ -1104,19 +1112,19 @@ export default function FlightBookForm({ airportsData }: any) {
                                         : "Chuyến bay không hỗ trợ mua thêm hành lý"}
                                     </option>
                                     {hasBaggage &&
-                                      items.map((baggage: any, key: any) => (
-                                        <option
-                                          key={key}
-                                          value={baggage.Code}
-                                          data-translate="true"
-                                        >
-                                          {baggage.Name} {" / "}
-                                          {baggage.Price.toLocaleString(
-                                            "vi-VN"
-                                          )}{" "}
-                                          {baggage.Currency}
-                                        </option>
-                                      ))}
+                                      adtBaggages.map(
+                                        (baggage: any, key: any) => (
+                                          <option
+                                            key={key}
+                                            value={baggage.code_uni}
+                                            data-translate="true"
+                                          >
+                                            {`${baggage.detail.weight} ${baggage.detail.unit}`}{" "}
+                                            {" / "}
+                                            {formatCurrency(baggage.price)}
+                                          </option>
+                                        )
+                                      )}
                                   </select>
                                 </div>
                               </div>
@@ -1286,7 +1294,13 @@ export default function FlightBookForm({ airportsData }: any) {
                         Object.entries(listBaggageGrouped).map(
                           ([flightLeg, items]) => {
                             const leg = parseInt(flightLeg);
-                            const hasBaggage = items.length > 0 ? true : false;
+                            const chdBaggages = items.filter((bag: any) => {
+                              return (
+                                bag.paxType === "CHILD" || bag.paxType === "ALL"
+                              );
+                            });
+                            const hasBaggage =
+                              chdBaggages.length > 0 ? true : false;
                             return (
                               <div
                                 className={`relative ${
@@ -1323,19 +1337,19 @@ export default function FlightBookForm({ airportsData }: any) {
                                         : "Chuyến bay không hỗ trợ mua thêm hành lý"}
                                     </option>
                                     {hasBaggage &&
-                                      items.map((baggage: any, key: any) => (
-                                        <option
-                                          key={key}
-                                          value={baggage.Code}
-                                          data-translate="true"
-                                        >
-                                          {baggage.Name} {" / "}
-                                          {baggage.Price.toLocaleString(
-                                            "vi-VN"
-                                          )}{" "}
-                                          {baggage.Currency}
-                                        </option>
-                                      ))}
+                                      chdBaggages.map(
+                                        (baggage: any, key: any) => (
+                                          <option
+                                            key={key}
+                                            value={baggage.code_uni}
+                                            data-translate="true"
+                                          >
+                                            {`${baggage.detail.weight} ${baggage.detail.unit}`}{" "}
+                                            {" / "}
+                                            {formatCurrency(baggage.price)}
+                                          </option>
+                                        )
+                                      )}
                                   </select>
                                 </div>
                               </div>
@@ -1537,14 +1551,15 @@ export default function FlightBookForm({ airportsData }: any) {
           {/* Flight */}
           <div>
             {flights.map((item, index) => {
-              const flight = item.ListFlight[0];
-              const durationFlight =
-                differenceInSeconds(
-                  new Date(flight.EndDate),
-                  new Date(flight.StartDate)
-                ) / 60;
+              const flight = item;
+              const durationFlight = flight.duration
+                ? flight.duration
+                : differenceInSeconds(
+                    new Date(flight.arrival.at),
+                    new Date(flight.departure.at)
+                  ) / 60;
               const startDateLocale = format(
-                new Date(flight.StartDate),
+                new Date(flight.departure.at),
                 "EEEE dd/MM/yyyy",
                 { locale: vi }
               );
@@ -1557,7 +1572,7 @@ export default function FlightBookForm({ airportsData }: any) {
                 >
                   <div className="flex justify-between">
                     <p className="font-bold" data-translate="true">
-                      {item.Leg ? "Chiều về" : "Chiều đi"}
+                      {index === 1 ? "Chiều về" : "Chiều đi"}
                     </p>
                     <p className="text-sm text-gray-500" data-translate="true">
                       {startDateLocale}
@@ -1565,7 +1580,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   </div>
                   <div className="flex my-3 item-start items-center text-left space-x-3">
                     <DisplayImage
-                      imagePath={`assets/images/airline/${flight.Airline.toLowerCase()}.gif`}
+                      imagePath={`assets/images/airline/${flight.airline.toLowerCase()}.gif`}
                       width={80}
                       height={24}
                       alt={"AirLine"}
@@ -1573,10 +1588,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     />
                     <div>
                       <h3 className="text-sm md:text-18 font-semibold mb-1">
-                        {flight.Airline}
+                        {flight.airline}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {flight.FlightNumber}
+                        {flight.flightNumber}
                       </p>
                     </div>
                   </div>
@@ -1584,10 +1599,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     <div className="flex items-center justify-between gap-4 w-full">
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
-                          {formatTime(flight.StartDate)}
+                          {formatTime(flight.departure.at)}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
-                          {flight.StartPoint}
+                          {flight.departure.IATACode}
                         </span>
                       </div>
 
@@ -1613,8 +1628,8 @@ export default function FlightBookForm({ airportsData }: any) {
                             className="text-sm text-gray-700 mt-2"
                             data-translate="true"
                           >
-                            {flight.StopNum
-                              ? `${flight.StopNum} điểm dừng`
+                            {flight.stopPoint
+                              ? `${flight.stopPoint} điểm dừng`
                               : "Bay thẳng"}
                           </span>
                         </div>
@@ -1629,10 +1644,10 @@ export default function FlightBookForm({ airportsData }: any) {
 
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
-                          {formatTime(flight.EndDate)}
+                          {formatTime(flight.arrival.at)}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
-                          {flight.EndPoint}
+                          {flight.arrival.IATACode}
                         </span>
                       </div>
                     </div>
@@ -1747,13 +1762,6 @@ export default function FlightBookForm({ airportsData }: any) {
               </div>
             </div>
           </div>
-          {/* <div className="hidden md:block pb-0 py-4 px-3 lg:px-6">
-            <LoadingButton
-              isLoading={loading}
-              text="Thanh toán"
-              disabled={false}
-            />
-          </div> */}
         </div>
       </div>
       {flightsDetail.length > 0 && (
@@ -1764,6 +1772,7 @@ export default function FlightBookForm({ airportsData }: any) {
           isOpen={showFlightDetail}
           onClose={handleClosePopupFlightDetail}
           translatedStaticText={translatedStaticText}
+          isLoadingFareRules={false}
         />
       )}
     </form>
