@@ -66,7 +66,7 @@ const FlightDomesticDetail = ({
             <div className="col-span-2 border-r border-gray-200">
               <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
                 <DisplayImage
-                  imagePath={`assets/images/airline/${flight.airline.toLowerCase()}.gif`}
+                  imagePath={`assets/images/airline/${flight.airLineCode.toLowerCase()}.gif`}
                   width={80}
                   height={24}
                   alt={flight.airline}

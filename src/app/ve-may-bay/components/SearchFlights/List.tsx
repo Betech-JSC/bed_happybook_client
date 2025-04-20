@@ -30,6 +30,7 @@ const defaultFilers: filtersFlightDomestic = {
 export default function ListFlights({
   airportsData,
   flightsData,
+  airlineData,
   isFullFlightResource,
   from,
   to,
@@ -210,7 +211,7 @@ export default function ListFlights({
           const match = filters.airlines.some(
             (airline) =>
               airline.trim().toLowerCase() ===
-              flight.airline.trim().toLowerCase()
+              flight.airLineCode.trim().toLowerCase()
           );
           return match;
         });
@@ -240,27 +241,26 @@ export default function ListFlights({
         );
       }
     }
-    // if (isRoundTrip) {
-    //   if (selectedDepartFlight && !selectedReturnFlight) {
-    //     const departureTimeGo = new Date(
-    //       selectedDepartFlight.departure.at
-    //     ).getTime();
-    //     filteredReturn = filteredReturn.filter((flight: any) => {
-    //       const departureTimeReturn = new Date(flight.departure.at).getTime();
-    //       return departureTimeReturn >= departureTimeGo + 2 * 60 * 60 * 1000;
-    //     });
-    //   } else if (!selectedDepartFlight && selectedReturnFlight) {
-    //     const departureTimeReturn = new Date(
-    //       selectedReturnFlight.departure.at
-    //     ).getTime();
-    //     filteredDepart = filteredDepart.filter((flight: any) => {
-    //       const departureTimeGo = new Date(flight.arrival.at).getTime();
-    //       return departureTimeGo <= departureTimeReturn - 2 * 60 * 60 * 1000;
-    //     });
-    //   }
-    // }
+    if (isRoundTrip) {
+      if (selectedDepartFlight && !selectedReturnFlight) {
+        const departureTimeGo = new Date(
+          selectedDepartFlight.arrival.at
+        ).getTime();
+        filtered = filtered.filter((flight: any) => {
+          const departureTimeReturn = new Date(flight.departure.at).getTime();
+          return departureTimeReturn >= departureTimeGo + 2 * 60 * 60 * 1000;
+        });
+      } else if (!selectedDepartFlight && selectedReturnFlight) {
+        const departureTimeReturn = new Date(
+          selectedReturnFlight.departure.at
+        ).getTime();
+        filtered = filtered.filter((flight: any) => {
+          const departureTimeGo = new Date(flight.arrival.at).getTime();
+          return departureTimeGo <= departureTimeReturn - 2 * 60 * 60 * 1000;
+        });
+      }
+    }
     setFilteredFlightsData(filtered);
-    // setFilteredReturnFlightsData(filteredReturn);
   }, [
     filters,
     isFullFlightResource,
@@ -360,11 +360,15 @@ export default function ListFlights({
   let returnFlightsData = flightsGroup[1] ?? [];
   if (selectedDepartFlight) departFlightsData = [selectedDepartFlight];
   if (selectedReturnFlight) returnFlightsData = [selectedReturnFlight];
-
   return (
     <Fragment>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
-        <aside className="lg:col-span-3 bg-white p-4 rounded-2xl">
+        <aside
+          className="lg:col-span-3 bg-white p-4 rounded-2xl"
+          style={{
+            opacity: isFullFlightResource ? 1 : 0.5,
+          }}
+        >
           {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
             <div className="pb-3 border-b border-gray-200">
               <h2 className="font-semibold">{t("so_diem_dung")}</h2>
@@ -430,53 +434,24 @@ export default function ListFlights({
               <label htmlFor="sortAirLine">{t("hang_hang_khong")}</label>
             </div>
           </div>
-          <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">{t("hang_hang_khong")}</h2>
-            <div className="flex space-x-2 mt-3 items-center">
-              <input
-                type="checkbox"
-                name="airLine"
-                value="QH"
-                id="airline_1"
-                onChange={handleCheckboxChange}
-                checked={filters.airlines.includes("QH")}
-              />
-              <label htmlFor="airline_1">Bamboo Airways</label>
+          {airlineData.length > 0 && (
+            <div className="mt-3 pb-3 border-b border-gray-200">
+              <h2 className="font-semibold">{t("hang_hang_khong")}</h2>
+              {airlineData.map((airline, index) => (
+                <div key={index} className="flex space-x-2 mt-3 items-center">
+                  <input
+                    type="checkbox"
+                    name="airLine"
+                    value={airline.code}
+                    id={`airline_${index}`}
+                    onChange={handleCheckboxChange}
+                    checked={filters.airlines.includes(airline.code)}
+                  />
+                  <label htmlFor={`airline_${index}`}>{airline.name}</label>
+                </div>
+              ))}
             </div>
-            <div className="flex space-x-2 mt-3 items-center">
-              <input
-                type="checkbox"
-                name="airLine"
-                value="VJ"
-                id="airline_2"
-                onChange={handleCheckboxChange}
-                checked={filters.airlines.includes("VJ")}
-              />
-              <label htmlFor="airline_2">Vietjet Air</label>
-            </div>
-            <div className="flex space-x-2 mt-3 items-center">
-              <input
-                type="checkbox"
-                name="airLine"
-                value="VN"
-                id="airline_3"
-                onChange={handleCheckboxChange}
-                checked={filters.airlines.includes("VN")}
-              />
-              <label htmlFor="airline_3">Vietnam Airlines</label>
-            </div>
-            <div className="flex space-x-2 mt-3 items-center">
-              <input
-                type="checkbox"
-                name="airLine"
-                value="VU"
-                id="airline_4"
-                onChange={handleCheckboxChange}
-                checked={filters.airlines.includes("VU")}
-              />
-              <label htmlFor="airline_4">Vietravel Airlines</label>
-            </div>
-          </div>
+          )}
           <button
             className="w-full mt-3 py-3 bg-blue-600 text-white rounded-lg font-medium"
             onClick={resetFilters}
