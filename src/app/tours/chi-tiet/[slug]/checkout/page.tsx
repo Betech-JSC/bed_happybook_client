@@ -10,9 +10,9 @@ import { renderTextContent } from "@/utils/Helper";
 export default async function TourCheckout({
   params,
 }: {
-  params: { alias: string };
+  params: { slug: string };
 }) {
-  const res = (await TourApi.detail(params.alias)) as any;
+  const res = (await TourApi.getDetailBySlug(params.slug)) as any;
   const detail = res?.payload?.data;
   if (!detail) {
     notFound();

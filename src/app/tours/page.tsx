@@ -20,7 +20,6 @@ import ContentByPage from "@/components/content-page/ContentByPage";
 import { PageApi } from "@/api/Page";
 import FAQ from "@/components/content-page/FAQ";
 import { getServerLang } from "@/lib/session";
-
 export const metadata: Metadata = formatMetadata({
   title: "Đặt Tour Du Lịch Gia Đình, Bạn Bè | Tour Giá Rẻ 2024",
   description:
@@ -133,221 +132,108 @@ export default async function Tours() {
                 </div>
               </div>
             </div>
-            {/* Tour nội địa */}
-            {data?.tourDomestic?.length > 0 && (
-              <div className="mt-6">
-                <div className="flex justify-between">
-                  <div>
-                    <h2
-                      className="text-[24px] lg:text-[32px] font-bold"
-                      data-translate
-                    >
-                      Tour trong nước
-                    </h2>
-                  </div>
-                  <Link
-                    href="/tours/noi-dia"
-                    className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
-                  >
-                    <span className="text-[#175CD3] font-medium" data-translate>
-                      Xem tất cả
-                    </span>
-                    <Image
-                      className="hover:scale-110 ease-in duration-300"
-                      src="/icon/chevron-right.svg"
-                      alt="Icon"
-                      width={20}
-                      height={20}
-                    />
-                  </Link>
-                </div>
-                <p className="text-16 font-medium mt-3" data-translate>
-                  Chơi Hè Thả Ga, Không Lo Về Giá
-                </p>
-                <Link
-                  href="/tours/noi-dia"
-                  className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
-                >
-                  <span className="text-[#175CD3] font-medium" data-translate>
-                    Xem tất cả
-                  </span>
-                  <Image
-                    className=" hover:scale-110 ease-in duration-300"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </Link>
-                <div className="mt-8 w-full">
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: true,
-                    }}
-                  >
-                    <CarouselContent>
-                      {data.tourDomestic.map((tour: any, index: number) => (
-                        <CarouselItem
-                          key={index}
-                          className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
+            {(() => {
+              const elements = [];
+              interface TourType {
+                title: string;
+                data: any[];
+                link: string;
+              }
+              
+              const tourTypes: Record<string, TourType> = {
+                domestic: {
+                  title: "Tour trong nước",
+                  data: data.tourDomestic || [],
+                  link: "/tours/13"
+                },
+                international: {
+                  title: "Tour quốc tế",
+                  data: data.tourInternational || [],
+                  link: "/tours/11"  
+                },
+          
+              };
+
+              for (const [key, tourType] of Object.entries(tourTypes)) {
+                if (tourType.data?.length > 0) {
+                  elements.push(
+                    <div key={key} className="mt-6">
+                      <div className="flex justify-between">
+                        <div>
+                          <h2 className="text-[24px] lg:text-[32px] font-bold" data-translate>
+                            {tourType.title}
+                          </h2>
+                        </div>
+                        <Link
+                          href={tourType.link}
+                          className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
                         >
-                          <TourItem tour={tour} />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden lg:inline-flex" />
-                    <CarouselNext className="hidden lg:inline-flex" />
-                  </Carousel>
-                </div>
-              </div>
-            )}
-            {/* Tour nước ngoài */}
-            {data?.tourInternational?.length > 0 && (
-              <div className="mt-12">
-                <div className="flex justify-between">
-                  <div>
-                    <h2
-                      className="text-[24px] lg:text-[32px] font-bold"
-                      data-translate
-                    >
-                      Tour Du Lịch Nước Ngoài Cao Cấp
-                    </h2>
-                  </div>
-                  <Link
-                    href="#"
-                    className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
-                  >
-                    <span className="text-[#175CD3] font-medium" data-translate>
-                      Xem tất cả
-                    </span>
-                    <Image
-                      className="hover:scale-110 ease-in duration-300"
-                      src="/icon/chevron-right.svg"
-                      alt="Icon"
-                      width={20}
-                      height={20}
-                    />
-                  </Link>
-                </div>
-                <p className="text-16 font-medium mt-3" data-translate>
-                  Trải Nghiệm Thế Giới, Khám Phá Bản Thân
-                </p>
-                <Link
-                  href="/tours/tour-quoc-te"
-                  className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
-                >
-                  <span className="text-[#175CD3] font-medium" data-translate>
-                    Xem tất cả
-                  </span>
-                  <Image
-                    className=" hover:scale-110 ease-in duration-300"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </Link>
-                <div className="mt-8 w-full">
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: true,
-                    }}
-                  >
-                    <CarouselContent>
-                      {data.tourInternational.map(
-                        (tour: any, index: number) => (
-                          <CarouselItem
-                            key={index}
-                            className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                          >
-                            <TourItem tour={tour} />
-                          </CarouselItem>
-                        )
-                      )}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden lg:inline-flex" />
-                    <CarouselNext className="hidden lg:inline-flex" />
-                  </Carousel>
-                </div>
-              </div>
-            )}
+                          <span className="text-[#175CD3] font-medium" data-translate>
+                            Xem tất cả
+                          </span>
+                          <Image
+                            className="hover:scale-110 ease-in duration-300"
+                            src="/icon/chevron-right.svg"
+                            alt="Icon"
+                            width={20}
+                            height={20}
+                          />
+                        </Link>
+                      </div>
+                      <p className="text-16 font-medium mt-3" data-translate>
+                        Chơi Hè Thả Ga, Không Lo Về Giá
+                      </p>
+                      <Link
+                        href={tourType.link}
+                        className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+                      >
+                        <span className="text-[#175CD3] font-medium" data-translate>
+                          Xem tất cả
+                        </span>
+                        <Image
+                          className=" hover:scale-110 ease-in duration-300"
+                          src="/icon/chevron-right.svg"
+                          alt="Icon"
+                          width={20}
+                          height={20}
+                        />
+                      </Link>
+                      <div className="mt-8 w-full">
+                        <Carousel
+                          opts={{
+                            align: "start",
+                            loop: true,
+                          }}
+                        >
+                          <CarouselContent>
+                            {tourType.data.map((tour: any, index: number) => (
+                              <CarouselItem
+                                key={index}
+                                className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
+                              >
+                                <TourItem tour={tour} />
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                          <CarouselPrevious className="hidden lg:inline-flex" />
+                          <CarouselNext className="hidden lg:inline-flex" />
+                        </Carousel>
+                      </div>
+                    </div>
+                  );
+                }
+              }
+              return elements;
+            })()}
+           
+           
             {/* Suggest Tour */}
             {touristSuggest?.length > 0 && (
               <div className="mt-6">
                 <TouristSuggest data={touristSuggest}></TouristSuggest>
               </div>
             )}
-            {/* Tour du thuyền */}
-            {data?.tourYacht?.length > 0 && (
-              <div className="mt-12">
-                <div className="flex justify-between">
-                  <div>
-                    <h2
-                      className="text-[24px] lg:text-[32px] font-bold"
-                      data-translate
-                    >
-                      Tour Du Thuyền
-                    </h2>
-                  </div>
-                  <Link
-                    href="/tours/tour-du-thuyen"
-                    className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
-                  >
-                    <span className="text-[#175CD3] font-medium" data-translate>
-                      Xem tất cả
-                    </span>
-                    <Image
-                      className="hover:scale-110 ease-in duration-300"
-                      src="/icon/chevron-right.svg"
-                      alt="Icon"
-                      width={20}
-                      height={20}
-                    />
-                  </Link>
-                </div>
-                <p className="text-16 font-medium mt-3" data-translate>
-                  Trải nghiệm xu hướng du lịch mới và đẳng cấp
-                </p>
-                <Link
-                  href="/tours/tour-du-thuyen"
-                  className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
-                >
-                  <span className="text-[#175CD3] font-medium" data-translate>
-                    Xem tất cả
-                  </span>
-                  <Image
-                    className=" hover:scale-110 ease-in duration-300"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </Link>
-                <div className="mt-8 w-full">
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: true,
-                    }}
-                  >
-                    <CarouselContent>
-                      {data.tourYacht.map((tour: any, index: number) => (
-                        <CarouselItem
-                          key={index}
-                          className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                        >
-                          <TourItem tour={tour} />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden lg:inline-flex" />
-                    <CarouselNext className="hidden lg:inline-flex" />
-                  </Carousel>
-                </div>
-              </div>
-            )}
+         
             {/* Blog */}
             {contentPage?.content && (
               <div className="mt-8 rounded-2xl bg-gray-50 p-8">

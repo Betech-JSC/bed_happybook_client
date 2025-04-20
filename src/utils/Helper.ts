@@ -170,6 +170,12 @@ const renderTextContent = (content: any) => {
   return !_.isEmpty(content) ? content : "Nội dung đang cập nhật...!";
 };
 
+const renderTextContentArray = (content: any) => {
+  return !_.isEmpty(content)
+    ? `- ` + content.map((item: any) => renderTextContent(item)).join("<br /> - ")
+    : "Nội dung đang cập nhật...!";
+};
+
 function decodeHtml(html: string): string {
   const textarea = document.createElement("textarea");
   textarea.innerHTML = html;
@@ -202,5 +208,6 @@ export {
   getLabelRatingProduct,
   getCurrentLanguage,
   renderTextContent,
+  renderTextContentArray,
   toSnakeCase,
 };

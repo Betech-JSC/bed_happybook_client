@@ -45,7 +45,6 @@ export default function CustomerRating({
   const { language } = useLanguage();
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
-
   const criteria = [
     { id: 2, name: "Hướng dẫn viên" },
     { id: 3, name: "Lộ trình" },
@@ -143,6 +142,7 @@ export default function CustomerRating({
       const res = await ProductRating.list(
         `/product/rating/list/${product_id}${search}`
       );
+      console.log("12121", res);
       const result = res?.payload?.data;
       setDataRating((prevData: any) => [...prevData, ...result.items]);
       if (result?.last_page === query.page) {

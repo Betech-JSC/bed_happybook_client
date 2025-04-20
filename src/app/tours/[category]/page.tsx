@@ -9,7 +9,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { TourApi } from "@/api/Tour";
-import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
@@ -22,7 +21,8 @@ import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = (await TourApi.getCategory("tour")) as any;
+  console.log(params);
+  const res = (await TourApi.getCategory(params.category)) as any;
   const data = res?.payload.data;
   return formatMetadata({
     title: data?.meta_title ?? data?.title,
@@ -40,24 +40,13 @@ export default async function CategoryPosts({
 }: {
   params: { category: string };
 }) {
+  const res = (await TourApi.getCategory(params.category)) as any;
+  const data = res?.payload?.data;
   let typeTour: number | undefined;
-  let titlePage: string;
-  switch (params.category) {
-    case "tour-noi-dia":
-      typeTour = 0;
-      titlePage = "Tour nội địa";
-      break;
-    case "tour-quoc-te":
-      typeTour = 1;
-      titlePage = "Tour quốc tế";
-      break;
-    case "tour-du-thuyen":
-      typeTour = 2;
-      titlePage = "Tour du thuyền";
-      break;
-    default:
-      typeTour = undefined;
-      titlePage = "Tìm kiếm";
+  let titlePage: string | undefined;
+  if (data) {
+    typeTour = data.id;
+    titlePage = data.name;
   }
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("tours", language))?.payload
@@ -110,7 +99,7 @@ export default async function CategoryPosts({
           <Suspense>
             <ListTour
               type_tour={typeTour ?? undefined}
-              titlePage={titlePage}
+              titlePage={titlePage ?? ""}
               optionsFilter={optionsFilter}
             />
           </Suspense>

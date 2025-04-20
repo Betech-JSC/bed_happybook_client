@@ -10,6 +10,7 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 import { totalLanguages } from "@/constants/language";
 import { useUser } from "@/app/contexts/UserContext";
 import { AuthApi } from "@/api/Auth";
+import { TourApi } from "@/api/Tour";
 
 export default function Header() {
   let headerClass = "";
@@ -22,6 +23,7 @@ export default function Header() {
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
+  const [listCategoryTour, setListCategoryTour] = useState<any[]>([]);
   const subMenuRef = useRef<HTMLDivElement>(null);
   const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
   const excludePaths = [
@@ -86,6 +88,13 @@ export default function Header() {
     };
   }, [subMenuRef]);
 
+  useEffect(() => {
+    const fetchListCategoryTour = async () => {
+      const res = await TourApi.getListCategoryTour();
+      setListCategoryTour(res?.payload?.data ?? []);
+    };
+    fetchListCategoryTour();
+  }, []);
   return (
     <header
       className={clsx(
@@ -351,15 +360,15 @@ export default function Header() {
                 Tours
               </Link>
               <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/tours/tour-noi-dia" data-translate="true">
-                  Tour Nội Địa
-                </Link>
-                <Link href="/tours/tour-quoc-te" data-translate="true">
-                  Tour Quốc Tế
-                </Link>
-                <Link href="/tours/tour-du-thuyen" data-translate="true">
-                  Tour Du Thuyền
-                </Link>
+                {listCategoryTour.map((item: any, index: number) => (
+                  <Link
+                    key={index}
+                    href={`/tours/${item.permalink}`}
+                    data-translate="true"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
               </div>
             </div>
 
