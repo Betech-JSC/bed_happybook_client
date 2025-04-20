@@ -15,7 +15,7 @@ const nextConfig = {
       },
     ],
     loader: "default",
-    path: process.env.NEXT_PUBLIC_CDN_URL,
+    // path: process.env.NEXT_PUBLIC_CDN_URL,
   },
 };
 export default nextConfig;
