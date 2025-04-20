@@ -25,7 +25,6 @@ import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import ListFlights from "./SearchFlights/List";
-import { isEmpty } from "lodash";
 
 export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const router = useRouter();
@@ -65,6 +64,11 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const [isFullFlightResource, setIsFullFlightResource] =
     useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
+  const [airlinesCode, setAirLinesCode] = useState<string[]>([]);
+  const [airlineData, setAirlineData] = useState<
+    { id: number; name: string; code: string; logo: string }[]
+  >([]);
+  const [shouldFetchAirlines, setShouldFetchAirlines] = useState(false);
 
   const params = useMemo(() => {
     let flightType: string = "OW";
@@ -329,13 +333,19 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         setFlightsData([]);
         setIsFullFlightResource(false);
         setFlightItineraryResource([]);
+        setAirLinesCode([]);
+        setAirlineData([]);
+        setError("");
         if (StartPoint && EndPoint && DepartDate) {
           const response = await FlightApi.search(params);
           const responseData = response?.payload?.data;
           const resources: any = responseData?.resources ?? [];
-          if (responseData?.searchId) setSearchId(responseData?.searchId);
+          if (responseData?.searchId) {
+            setSearchId(responseData?.searchId);
+          } else {
+            throw new Error("Search Error");
+          }
           if (resources.length) setFlightItineraryResource(resources);
-          if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
           const flightsData: any = responseData?.trips ?? [];
           if (flightsData.length) {
             const listStopNum: number[] = [];
@@ -351,6 +361,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
             );
             setFlightsData(flightsData);
           }
+          if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
         } else {
           router.push("/ve-may-bay");
           setSearchId(null);
@@ -359,6 +370,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         }
       } catch (error: any) {
         setSearchId(null);
+        setIsReady(true);
         if (error instanceof HttpError) {
           if (error.payload.code === 400) {
             setError(toaStrMsg.notFoundFlight);
@@ -385,10 +397,46 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   ]);
 
   useEffect(() => {
-    if (!loading && flightsData.length > 0) {
+    const unprocessed = flightItineraryResource.filter((r) => r.value === 0);
+
+    if (unprocessed.length > 0) return;
+
+    const airlineSet = new Set<string>();
+    flightsData.forEach((flight: any) => {
+      if (flight.segments.length) {
+        flight.segments.map((segment: any) => airlineSet.add(segment.airline));
+      }
+    });
+    const uniqueAirlines = Array.from(airlineSet);
+    setAirLinesCode(uniqueAirlines);
+    setShouldFetchAirlines(true);
+  }, [flightItineraryResource, flightsData]);
+
+  useEffect(() => {
+    if (!shouldFetchAirlines || !airlinesCode.length) return;
+
+    const fetchAirlines = async () => {
+      try {
+        const response = await FlightApi.getAirlines({
+          code: airlinesCode,
+        });
+        const responseData = response?.payload?.data ?? [];
+        setAirlineData(responseData);
+      } catch (error: any) {
+        setError(toaStrMsg.errorConnectApiFlight);
+      } finally {
+        setShouldFetchAirlines(false);
+      }
+    };
+
+    fetchAirlines();
+  }, [shouldFetchAirlines, airlinesCode, toaStrMsg]);
+
+  useEffect(() => {
+    if (!loading && flightsData.length > 0 && isFullFlightResource) {
       setIsReady(true);
     }
-  }, [loading, flightsData]);
+  }, [loading, flightsData, isFullFlightResource]);
 
   if (!isReady) {
     return (
@@ -418,6 +466,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
           to={to}
           airportsData={airportsData}
           flightsData={flightsData}
+          airlineData={airlineData}
           isFullFlightResource={isFullFlightResource}
           returnDate={ReturnDate}
           departDate={DepartDate}

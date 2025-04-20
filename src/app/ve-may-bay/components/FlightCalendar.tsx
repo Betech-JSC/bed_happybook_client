@@ -18,30 +18,15 @@ import {
   startOfMonth,
   endOfMonth,
 } from "date-fns";
-import { AirportOption, FlightCalendarProps } from "@/types/flight";
+import {
+  AirlineType,
+  AirportOption,
+  FlightCalendarProps,
+} from "@/types/flight";
 import { HttpError } from "@/lib/error";
 import { translatePage } from "@/utils/translateDom";
 import { formatCurrency } from "@/lib/formatters";
 import DisplayImage from "@/components/base/DisplayImage";
-
-const airLines = [
-  {
-    label: "Vietjet Air",
-    value: "VJ",
-  },
-  {
-    label: "Vietnam Airlines",
-    value: "VN",
-  },
-  {
-    label: "Bamboo Airways",
-    value: "QH",
-  },
-  {
-    label: "Vietravel Airlines",
-    value: "VU",
-  },
-];
 
 const mapDataByDay = (data: any[]) => {
   const mappedData: Record<number, { flights: any[] } | undefined> = {};
@@ -56,14 +41,19 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
   const allFlights = flights.flat();
 
   const filteredFlights = airlineFilter
-    ? allFlights.filter((flight) => flight.airline === airlineFilter)
+    ? allFlights.filter((flight) => {
+        if (flight.listAirlines.includes(airlineFilter)) {
+          flight.airline = airlineFilter;
+          return flight;
+        }
+      })
     : allFlights;
   if (filteredFlights.length === 0) return null;
   return filteredFlights.reduce((lowest, flight) =>
     flight.totalFare < lowest.totalFare ? flight : lowest
   );
 };
-const listNextMonth = generateMonth(5);
+const listNextMonth = generateMonth(3);
 
 export default function FlightCalendar({
   airports,
@@ -98,6 +88,7 @@ export default function FlightCalendar({
       handleScrollSmooth(resultsRef.current);
     }
   };
+  const [airLines, setAirLines] = useState<AirlineType[]>([]);
 
   useEffect(() => {
     const totalDays = getDaysInMonth(year, month);
@@ -162,8 +153,10 @@ export default function FlightCalendar({
             ),
           });
           const listMinPrice = response?.payload.data.listMinPrice ?? [];
+          const airLinesData = response?.payload.data.arilines ?? [];
           const mappedData = mapDataByDay(listMinPrice);
           setCheapestFareDepart(mappedData);
+          setAirLines(airLinesData);
           setError(null);
         }
       } catch (error: any) {
@@ -349,8 +342,8 @@ export default function FlightCalendar({
                     Chọn hãng
                   </option>
                   {airLines.map((item: any, index: any) => (
-                    <option key={index} value={item.value}>
-                      {item.label}
+                    <option key={index} value={item.code}>
+                      {item.name}
                     </option>
                   ))}
                 </select>

@@ -115,6 +115,7 @@ export interface ListFlight {
   airportsData: AirportsCountry[];
   flightSession: string | null;
   flightsData: any;
+  airlineData: { id: number; name: string; code: string; logo: string }[];
   isFullFlightResource: boolean;
   from: string | null;
   to: string | null;
@@ -183,4 +184,11 @@ export interface FlightDetailDomesticProps {
     showRuleTicket?: boolean
   ) => void;
   translatedStaticText: any;
+}
+
+export interface AirlineType {
+  id: number;
+  name: string;
+  code: string;
+  logo: string;
 }
