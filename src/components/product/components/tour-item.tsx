@@ -4,6 +4,7 @@ import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
 import DisplayPrice from "@/components/base/DisplayPrice";
 
+const defaultImage = 'https://storage.googleapis.com/tour-bucket-dev/tour/2025/04/08/1717798505-1717798505-1717798505-1717798505.jpg'
 export default function TourItem({ tour }: any) {
   const vehicleIcon = ["bus", "AirplaneTilt-2"];
   if (tour?.transportation === 1) {
@@ -15,10 +16,10 @@ export default function TourItem({ tour }: any) {
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
-        <Link href={`/tours/chi-tiet/${tour.slug}`}>
+        <Link href={`/tours/chi-tiet/${tour.permalink}`}>
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
-            src={`${tour.image_url}/${tour.image_location}`}
+            src={tour.bucket_img ?? defaultImage}
             alt="Tour Image"
             width={320}
             height={320}
@@ -29,7 +30,7 @@ export default function TourItem({ tour }: any) {
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
-          <span data-translate>{tour.category_name ?? ""}</span>
+          <span data-translate>{tour.type_tour_price_id_name ?? ""}</span>
         </div>
         {tour.is_hot ? (
           <div className="absolute top-3 left-3 text-white px-3 py-1 bg-[#F27145] rounded-md">
@@ -41,10 +42,10 @@ export default function TourItem({ tour }: any) {
       </div>
       <div className="py-3 px-4">
         <Link
-          href={`/tours/chi-tiet/${tour.slug}`}
+          href={`/tours/chi-tiet/${tour.id}`}
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
-          <h3 data-translate>{tour.product_name ?? ""}</h3>
+          <h3 data-translate>{tour.tour_name ?? ""}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <Image
@@ -53,7 +54,7 @@ export default function TourItem({ tour }: any) {
             width={20}
             height={20}
           />
-          <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""} ${
+          <span data-translate>{`${tour.date_type_name} ${
             tour.night ? `${tour.night} đêm` : ""
           }`}</span>
         </p>

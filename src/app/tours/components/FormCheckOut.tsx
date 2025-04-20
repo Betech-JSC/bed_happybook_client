@@ -22,7 +22,7 @@ import { datePickerLocale } from "@/constants/language";
 export default function CheckOutTourForm({
   productId,
 }: {
-  productId: number | string;
+  productId: number;
 }) {
   const router = useRouter();
   const { language } = useLanguage();

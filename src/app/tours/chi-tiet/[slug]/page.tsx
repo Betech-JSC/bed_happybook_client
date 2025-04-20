@@ -56,10 +56,11 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 export default async function TourDetail({
   params,
 }: {
-  params: { alias: string };
+  params: { slug: string };
 }) {
+  const slug = params.slug;
   const language = await getServerLang();
-  const res = (await TourApi.detail(params.alias, language)) as any;
+  const res = (await TourApi.getDetailBySlug(slug)) as any;
   const detail = res?.payload?.data;
   if (!detail) {
     notFound();
@@ -138,9 +139,9 @@ export default async function TourDetail({
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery gallery={detail.gallery} />
+              {/* <ImageGallery gallery={detail?.gallery} /> */}
               <div className="mt-4">
-                <Tabs detail={detail} />
+                <Tabs detail={detail} id={detail.id} />
               </div>
               <div className="mt-4 mb-8">
                 <QuestionAndAnswer productId={detail.id} />
@@ -186,9 +187,7 @@ export default async function TourDetail({
                       height={18}
                     />
                     <span>
-                      <span data-translate>{`${
-                        detail.day ? `${detail.day} ngày` : ""
-                      } ${detail.night ? `${detail.night} đêm` : ""}`}</span>
+                      <span data-translate>{detail.duration}</span>
                     </span>
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
@@ -200,8 +199,8 @@ export default async function TourDetail({
                       height={18}
                     />
                     <span data-translate>
-                      {detail.depart_point
-                        ? `Khởi hành từ ${detail.depart_point}`
+                      {detail.place_start
+                        ? `Khởi hành từ ${detail.place_start}`
                         : ""}
                     </span>
                   </div>
@@ -213,29 +212,27 @@ export default async function TourDetail({
                       width={18}
                       height={18}
                     />
-                    <span data-translate>{detail.destination_point ?? ""}</span>
+                    <span data-translate>{detail.place_end ?? ""}</span>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                  <p className="text-gray-500 line-through">
-                    {detail.discount_price > 0 &&
-                    detail.discount_price < detail.price
+                  {/* <p className="text-gray-500 line-through">
+                    {detail.price > 0
                       ? `${formatCurrency(detail.price)}`
                       : ""}
-                  </p>
+                  </p> */}
                   <p className="text-2xl text-primary font-bold mt-3">
-                    {detail.price > 0 ? (
-                      <span>
-                        {formatCurrency(detail.price - detail.discount_price)}
+                    {detail.price > 0
+                      ? <span>
+                        {formatCurrency(detail.price)}
                       </span>
-                    ) : (
-                      <span data-translate>Liên hệ</span>
-                    )}
+                      : <span data-translate>Liên hệ</span>
+                    }
                   </p>
                 </div>
                 <div className="mt-6">
                   <Link
-                    href={`/tours/chi-tiet/${detail.slug}/checkout`}
+                    href={`/tours/chi-tiet/${slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
                     <span
@@ -259,7 +256,7 @@ export default async function TourDetail({
       <div>
         <div className="bg-white">
           <div className="px-3 lg:px-[80px] max__screen">
-            {detail.similar_tours.length > 0 && (
+            {detail?.similar_tours?.length > 0 && (
               <div className="w-full">
                 <p className="text-32 font-bold my-6" data-translate>
                   Tour du lịch tương tự

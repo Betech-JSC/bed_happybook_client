@@ -47,6 +47,7 @@ export default function ListTour({
   const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
+  const defaultImage = "https://storage.googleapis.com/gst-nhanhtravel-com/upload/tour/20241018151946.webp?GoogleAccessId=firebase-adminsdk-1qkmx%40nhanhtravel-129e6.iam.gserviceaccount.com&Expires=2229239586&Signature=ekTzZpKt9mPRSsSIJbaQZHkJNO5V9fOtdBZy2DfQSLSEBejWt%2BG5wp4Odh3tGw%2FS%2BzF1CW4EXR2zyny5LwAeU%2Bvgd2x8Z0gS%2B0qDk%2B%2BkFU2LJem6c1l7zc%2F%2FS2kDKXhHgwIUh6%2B0yc27lKzPOR47fYPBbuC4eHRmGaZMVCAI2P3Mi03whRqNniEvAvs7b%2BG85L9czdurKtfEvv%2FaQafrALjNQ6IiZDZEL96S%2FbzpD4pkKqHMGXM3PJmz2CElrG0sGc%2BfnvUIrM3n7t6lSXACA8EcMEUKgXVVIe1xXlAmd4OX8bO%2Bq7QpTo0yw8vzWLx7U7eDXaVIoBheYQUP7wvASA%3D%3D";
   const loadData = useCallback(async () => {
     try {
       setLoadingLoadMore(true);
@@ -225,20 +226,21 @@ export default function ListTour({
                 }`}
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                  <Link href={`/tours/chi-tiet/${tour.slug}`}>
+                  <Link href={`/tours/chi-tiet/${tour.permalink}`}>
                     <Image
-                      className=" hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
-                      src={`${tour.image_url}/${tour.image_location}`}
-                      alt="Image"
+                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
+                      src={tour.bucket_img || defaultImage}
+                      alt={`Tour ${tour.tour_name || 'image'}`}
                       width={360}
                       height={270}
-                      sizes="100vw"
-                      style={{ height: 270 }}
+                      unoptimized
+                      loading="eager"
+                      style={{ height: 270, objectFit: 'cover' }}
                     />
                   </Link>
                   <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
                     <span data-translate="true">
-                      {renderTextContent(tour?.category_name)}
+                      {renderTextContent(tour?.type_tour_price_id_name)}
                     </span>
                   </div>
                   {tour.is_hot > 0 && (
@@ -254,7 +256,7 @@ export default function ListTour({
                       className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                     >
                       <h2 data-translate="true">
-                        {renderTextContent(tour?.product_name)}
+                        {renderTextContent(tour?.tour_name)}
                       </h2>
                     </Link>
                     <div className="flex space-x-2 mt-2">
@@ -287,11 +289,9 @@ export default function ListTour({
                         width={18}
                         height={18}
                       />
-                      <span data-translate="true">{`${
-                        tour.day ? `${tour.day} ngày` : ""
-                      } ${tour.night ? `${tour.night} đêm` : ""}`}</span>
+                      <span data-translate="true">{tour.date_type_name}</span>
                     </div>
-                    {tour.depart_point && (
+                    {tour.place_start && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
                           className="w-4 h-4"
@@ -301,11 +301,11 @@ export default function ListTour({
                           height={18}
                         />
                         <span data-translate="true">
-                          Khởi hành từ {renderTextContent(tour.depart_point)}
+                          Khởi hành từ {renderTextContent(tour.place_start)}
                         </span>
                       </div>
                     )}
-                    {tour.destination_point && (
+                    {tour.place_end && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
                           className="w-4 h-4"
@@ -315,15 +315,15 @@ export default function ListTour({
                           height={18}
                         />
                         <span data-translate="true">
-                          {renderTextContent(tour.destination_point)}
+                          {renderTextContent(tour.place_end)}
                         </span>
                       </div>
                     )}
                   </div>
                   <div className="text-2xl text-primary font-bold text-end mt-3">
-                    {tour.price > 0 ? (
+                    {tour.price_arr.length > 0 ? (
                       <span>
-                        {formatCurrency(tour.price - tour.discount_price)}
+                        {formatCurrency(tour.price_arr[0])}
                       </span>
                     ) : (
                       <span data-translate="true">Liên hệ</span>
