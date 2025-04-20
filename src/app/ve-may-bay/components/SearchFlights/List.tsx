@@ -366,7 +366,7 @@ export default function ListFlights({
         <aside
           className="lg:col-span-3 bg-white p-4 rounded-2xl"
           style={{
-            opacity: isFullFlightResource ? 1 : 0.5,
+            opacity: flightsData.length > 0 ? 1 : 0.5,
           }}
         >
           {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
