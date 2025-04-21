@@ -194,7 +194,7 @@ export default function Tabs({ detail, id }: any) {
                   {detail.prices.map((item: any, index: number) => (
                     <tr key={index}>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {formatDate(item.number_of_guests)}
+                        {item.number_of_guests > 0 ? item.number_of_guests : "Liên hệ"}
                       </td>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
                         {item.price_per_person > 0

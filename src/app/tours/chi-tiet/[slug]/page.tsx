@@ -16,7 +16,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Fragment } from "react";
-import ImageGallery from "../../components/ImageGallery";
+import ImageTour from "../../components/Image";
 import Tabs from "../../components/Tabs";
 import QuestionAndAnswer from "@/components/product/QuestionAndAnswer";
 import TourItem from "@/components/product/components/tour-item";
@@ -28,30 +28,29 @@ import { formatCurrency, formatMetadata, formatMoney } from "@/lib/formatters";
 import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
 import { getServerLang } from "@/lib/session";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = (await TourApi.detail(params.alias)) as any;
-
-  const data = res?.payload.data;
-  return formatMetadata({
-    title: data?.meta_title ?? data?.title,
-    description: data?.meta_description,
-    robots: data?.meta_robots,
-    keywords: data?.keywords,
-    alternates: {
-      canonical: pageUrl(data?.slug, ProductTypes.TOURS, true),
-    },
-    openGraph: {
-      images: [
-        {
-          url: data?.meta_image
-            ? data.meta_image
-            : `${data?.image_url}${data?.image_location}`,
-          alt: data?.meta_title,
-        },
-      ],
-    },
-  });
-}
+// export async function generateMetadata({ params }: any): Promise<Metadata> {
+//   const res = (await TourApi.getDetailBySlug(params.slug)) as any;
+//   const data = res?.payload.data;
+//   return formatMetadata({
+//     title: data?.meta_title ?? data?.title,
+//     description: data?.meta_description,
+//     robots: data?.meta_robots,
+//     keywords: data?.keywords,
+//     alternates: {
+//       canonical: pageUrl(data?.slug, ProductTypes.TOURS, true),
+//     },
+//     openGraph: {
+//       images: [
+//         {
+//           url: data?.meta_image
+//             ? data.meta_image
+//             : `${data?.image_url}${data?.image_location}`,
+//           alt: data?.meta_title,
+//         },
+//       ],
+//     },
+//   });
+// }
 
 export default async function TourDetail({
   params,
@@ -61,7 +60,9 @@ export default async function TourDetail({
   const slug = params.slug;
   const language = await getServerLang();
   const res = (await TourApi.getDetailBySlug(slug)) as any;
+
   const detail = res?.payload?.data;
+
   if (!detail) {
     notFound();
   }
@@ -139,7 +140,7 @@ export default async function TourDetail({
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              {/* <ImageGallery gallery={detail?.gallery} /> */}
+              {detail?.tour_image && <ImageTour url={detail?.tour_image} />}
               <div className="mt-4">
                 <Tabs detail={detail} id={detail.id} />
               </div>
@@ -222,9 +223,9 @@ export default async function TourDetail({
                       : ""}
                   </p> */}
                   <p className="text-2xl text-primary font-bold mt-3">
-                    {detail.price > 0
+                    {detail.price
                       ? <span>
-                        {formatCurrency(detail.price)}
+                        {formatCurrency(detail.price.replace(/,/g, ""))}
                       </span>
                       : <span data-translate>Liên hệ</span>
                     }
