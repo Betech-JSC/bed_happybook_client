@@ -439,7 +439,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
       if (!flightsData || flightsData.length === 0) {
         setIsReady(true);
       }
-    }, 10000);
+    }, 12000);
 
     return () => clearTimeout(timeout);
   }, [flightsData]);
