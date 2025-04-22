@@ -21,7 +21,6 @@ import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  console.log(params);
   const res = (await TourApi.getCategory(params.category)) as any;
   const data = res?.payload.data;
   return formatMetadata({
@@ -52,8 +51,6 @@ export default async function CategoryPosts({
   const contentPage = (await PageApi.getContent("tours", language))?.payload
     ?.data as any;
   const category: any = [];
-  const optionsFilter = (await TourApi.getOptionsFilter(typeTour))?.payload
-    ?.data as any;
   return (
     <SeoSchema
       article={category}
@@ -100,7 +97,7 @@ export default async function CategoryPosts({
             <ListTour
               type_tour={typeTour ?? undefined}
               titlePage={titlePage ?? ""}
-              optionsFilter={optionsFilter}
+              optionsFilter={[]}
             />
           </Suspense>
           {/* <div className="min-h-52 text-center mt-20 text-xl">

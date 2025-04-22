@@ -1,4 +1,4 @@
-import TourItem from "@/components/product/components/tour-item";
+import HotTourItem from "@/components/product/components/hot-tour-item";
 import Image from "next/image";
 import {
   Carousel,
@@ -101,7 +101,7 @@ export default function TourHot({ data }: any) {
                     key={index}
                     className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
                   >
-                    <TourItem tour={tour} />
+                    <HotTourItem tour={tour} isHot={true} />
                   </CarouselItem>
                 ))}
               </CarouselContent>
