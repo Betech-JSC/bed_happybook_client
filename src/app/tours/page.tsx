@@ -144,12 +144,12 @@ export default async function Tours() {
                 domestic: {
                   title: "Tour trong nước",
                   data: data.tourDomestic || [],
-                  link: "/tours/13"
+                  link: "/tours/tour-trong-nuoc"
                 },
                 international: {
                   title: "Tour quốc tế",
                   data: data.tourInternational || [],
-                  link: "/tours/11"  
+                  link: "/tours/tour-nuoc-ngoai"  
                 },
           
               };
