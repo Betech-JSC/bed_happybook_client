@@ -64,11 +64,9 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const [isFullFlightResource, setIsFullFlightResource] =
     useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const [airlinesCode, setAirLinesCode] = useState<string[]>([]);
   const [airlineData, setAirlineData] = useState<
     { id: number; name: string; code: string; logo: string }[]
   >([]);
-  const [shouldFetchAirlines, setShouldFetchAirlines] = useState(false);
 
   const params = useMemo(() => {
     let flightType: string = "OW";
@@ -204,8 +202,81 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch and Handle Data
+  // Search flight
+  useEffect(() => {
+    const fetchFlightSearch = async () => {
+      scrollToRef(resultsRef);
+      try {
+        setLoading(true);
+        setIsReady(false);
+        setSearchId(null);
+        setFlightsData([]);
+        setIsFullFlightResource(false);
+        setFlightItineraryResource([]);
+        setAirlineData([]);
+        setError("");
+        if (StartPoint && EndPoint && DepartDate) {
+          const response = await FlightApi.search(params);
+          const responseData = response?.payload?.data;
+          const resources: any = responseData?.resources ?? [];
+          if (responseData?.searchId) {
+            setSearchId(responseData?.searchId);
+          } else {
+            throw new Error("Search Error");
+          }
+          if (resources.length) setFlightItineraryResource(resources);
 
+          const flightsData: any = responseData?.trips ?? [];
+          if (flightsData.length) {
+            const listStopNum: number[] = [];
+            for (const item of flightsData) {
+              if (!listStopNum[item.legs]) {
+                listStopNum[item.legs] = item.legs;
+              }
+            }
+            setStopNumFilters(
+              listStopNum.filter(
+                (item: any) => item !== undefined && item !== null
+              )
+            );
+            setFlightsData(flightsData);
+          }
+          if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
+        } else {
+          router.push("/ve-may-bay");
+          setSearchId(null);
+          toast.dismiss();
+          toast.error(toaStrMsg.missingInfoSearchFlight);
+        }
+      } catch (error: any) {
+        setSearchId(null);
+        setIsReady(true);
+        if (error instanceof HttpError) {
+          if (error.payload.code === 400) {
+            setError(toaStrMsg.notFoundFlight);
+          }
+        } else {
+          setError(toaStrMsg.errorConnectApiFlight);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFlightSearch();
+  }, [
+    params,
+    StartPoint,
+    EndPoint,
+    DepartDate,
+    ReturnDate,
+    tripType,
+    isRoundTrip,
+    router,
+    toaStrMsg,
+  ]);
+
+  // Fetch resources
   useEffect(() => {
     const fetchFlightOperation = async () => {
       try {
@@ -257,6 +328,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     };
   }, [searchId, toaStrMsg.errorConnectApiFlight, isFullFlightResource]);
 
+  // Fetch flights by resource
   useEffect(() => {
     const fetchFlightDetails = async () => {
       const unprocessed = flightItineraryResource.filter((r) => r.value === 0);
@@ -323,79 +395,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     toaStrMsg.errorConnectApiFlight,
   ]);
 
-  useEffect(() => {
-    const fetchFlightSearch = async () => {
-      scrollToRef(resultsRef);
-      try {
-        setLoading(true);
-        setIsReady(false);
-        setSearchId(null);
-        setFlightsData([]);
-        setIsFullFlightResource(false);
-        setFlightItineraryResource([]);
-        setAirLinesCode([]);
-        setAirlineData([]);
-        setError("");
-        if (StartPoint && EndPoint && DepartDate) {
-          const response = await FlightApi.search(params);
-          const responseData = response?.payload?.data;
-          const resources: any = responseData?.resources ?? [];
-          if (responseData?.searchId) {
-            setSearchId(responseData?.searchId);
-          } else {
-            throw new Error("Search Error");
-          }
-          if (resources.length) setFlightItineraryResource(resources);
-          const flightsData: any = responseData?.trips ?? [];
-          if (flightsData.length) {
-            const listStopNum: number[] = [];
-            for (const item of flightsData) {
-              if (!listStopNum[item.legs]) {
-                listStopNum[item.legs] = item.legs;
-              }
-            }
-            setStopNumFilters(
-              listStopNum.filter(
-                (item: any) => item !== undefined && item !== null
-              )
-            );
-            setFlightsData(flightsData);
-          }
-          if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
-        } else {
-          router.push("/ve-may-bay");
-          setSearchId(null);
-          toast.dismiss();
-          toast.error(toaStrMsg.missingInfoSearchFlight);
-        }
-      } catch (error: any) {
-        setSearchId(null);
-        setIsReady(true);
-        if (error instanceof HttpError) {
-          if (error.payload.code === 400) {
-            setError(toaStrMsg.notFoundFlight);
-          }
-        } else {
-          setError(toaStrMsg.errorConnectApiFlight);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFlightSearch();
-  }, [
-    params,
-    StartPoint,
-    EndPoint,
-    DepartDate,
-    ReturnDate,
-    tripType,
-    isRoundTrip,
-    router,
-    toaStrMsg,
-  ]);
-
+  // Fetch airline data
   useEffect(() => {
     const unprocessed = flightItineraryResource.filter((r) => r.value === 0);
 
@@ -408,7 +408,6 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
       }
     });
     const uniqueAirlines = Array.from(airlineSet);
-    setAirLinesCode(uniqueAirlines);
     const fetchAirlines = async () => {
       try {
         const response = await FlightApi.getAirlines({
@@ -482,13 +481,12 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
           departDays={days}
           handleClickDate={handleClickDate}
           flightSession={searchId}
-          displayType={displayType}
           isRoundTrip={isRoundTrip}
           totalPassengers={totalPassengers}
           flightType={flightType}
           flightStopNum={stopNumFilters}
           translatedStaticText={translatedStaticText}
-          isLoading={loading}
+          isReady={isReady}
         />
       </div>
     </Fragment>

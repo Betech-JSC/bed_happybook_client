@@ -125,14 +125,13 @@ export interface ListFlight {
   currentReturnDay: any;
   departDays: TabDays[];
   returnDays: TabDays[];
-  displayType: string;
   isRoundTrip: boolean;
   totalPassengers: number;
   handleClickDate: (date: Date, TypeIndex: number) => void;
   flightType?: string;
   flightStopNum: number[];
   translatedStaticText: any;
-  isLoading?: boolean;
+  isReady: boolean;
 }
 export interface FlightDetailPopupProps {
   isOpen: boolean;
