@@ -58,6 +58,9 @@ const FlightDomesticDetail = ({
     setHeight(showDetails ? contentRef.current.scrollHeight + 60 : 0);
     setHasHeight(true);
   }, [showDetails]);
+  if (flight?.fareOptions?.length < 1) {
+    return;
+  }
   return (
     <Fragment>
       {flight && (
