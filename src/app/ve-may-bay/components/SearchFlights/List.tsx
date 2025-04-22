@@ -17,6 +17,8 @@ import { useTranslation } from "@/app/hooks/useTranslation";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import FlightDomesticDetail from "./Detail";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const defaultFilers: filtersFlightDomestic = {
   priceWithoutTax: "0",
@@ -42,13 +44,12 @@ export default function ListFlights({
   returnDays,
   handleClickDate,
   flightSession,
-  displayType,
   isRoundTrip,
   totalPassengers,
   flightType,
   flightStopNum,
   translatedStaticText,
-  isLoading,
+  isReady,
 }: ListFlight) {
   const INITIAL_LIMIT = 5;
   const router = useRouter();
@@ -76,7 +77,13 @@ export default function ListFlights({
     airlines: [] as string[],
     stopNum: [] as string[],
   });
-
+  useEffect(() => {
+    AOS.init({
+      duration: 400,
+      easing: "ease-in",
+      once: true,
+    });
+  }, []);
   const scrollToRef = (ref: any) => {
     if (ref.current) {
       handleScrollSmooth(ref.current);
@@ -366,7 +373,7 @@ export default function ListFlights({
         <aside
           className="lg:col-span-3 bg-white p-4 rounded-2xl"
           style={{
-            opacity: flightsData.length > 0 ? 1 : 0.5,
+            opacity: isReady ? 1 : 0.5,
           }}
         >
           {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
@@ -459,7 +466,7 @@ export default function ListFlights({
             {t("xoa_bo_loc")}
           </button>
         </aside>
-        <div className="lg:col-span-9">
+        <div className="lg:col-span-9" data-aos="fade">
           <div className="max-w-5xl mx-auto">
             <div>
               <div ref={departFlightRef}>
@@ -519,16 +526,7 @@ export default function ListFlights({
                     </button>
                   ))}
                 </div>
-                {isLoading ? (
-                  <div
-                    className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
-                  >
-                    <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-                    <span className="text-18">
-                      {t("dang_tai_du_lieu_chuyen_bay")}...
-                    </span>
-                  </div>
-                ) : departFlightsData.length > 0 ? (
+                {departFlightsData.length > 0 ? (
                   <div className="mt-6">
                     {departFlightsData
                       .slice(0, departLimit)
@@ -546,12 +544,21 @@ export default function ListFlights({
                         </div>
                       ))}
                     {departLimit < departFlightsData.length && (
-                      <div className="max-w-[250px] text-center flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white text-gray-700 rounded-lg">
-                        <button onClick={handleLoadMoreDepart}>
+                      <div
+                        onClick={handleLoadMoreDepart}
+                        className="group hover:border-primary duration-300 max-w-[250px] text-center 
+                      flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white
+                       text-gray-700 rounded-lg"
+                      >
+                        <button
+                          type="button"
+                          className="group-hover:text-primary duration-300"
+                        >
                           Xem thêm chuyến bay
                         </button>
                         <div>
                           <svg
+                            className="group-hover:stroke-primary stroke-[#283448] duration-300"
                             width="22"
                             height="20"
                             viewBox="0 0 20 20"
@@ -560,7 +567,6 @@ export default function ListFlights({
                           >
                             <path
                               d="M5 7.5L10 12.5L15 7.5"
-                              stroke="#283448"
                               strokeWidth="1.66667"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -640,16 +646,7 @@ export default function ListFlights({
                       </button>
                     ))}
                   </div>
-                  {isLoading ? (
-                    <div
-                      className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
-                    >
-                      <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-                      <span className="text-18">
-                        {t("dang_tai_du_lieu_chuyen_bay")}...
-                      </span>
-                    </div>
-                  ) : returnFlightsData.length > 0 ? (
+                  {returnFlightsData.length > 0 ? (
                     <div className="my-6">
                       {returnFlightsData
                         .slice(0, returnLimit)
@@ -667,12 +664,21 @@ export default function ListFlights({
                           </div>
                         ))}
                       {returnLimit < returnFlightsData.length && (
-                        <div className="max-w-[250px] text-center flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white text-gray-700 rounded-lg">
-                          <button onClick={handleLoadMoreReturn}>
+                        <div
+                          onClick={handleLoadMoreReturn}
+                          className="group hover:border-primary duration-300 max-w-[250px] text-center 
+                      flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white
+                       text-gray-700 rounded-lg"
+                        >
+                          <button
+                            type="button"
+                            className="group-hover:text-primary duration-300"
+                          >
                             Xem thêm chuyến bay
                           </button>
                           <div>
                             <svg
+                              className="group-hover:stroke-primary stroke-[#283448] duration-300"
                               width="22"
                               height="20"
                               viewBox="0 0 20 20"
@@ -681,7 +687,6 @@ export default function ListFlights({
                             >
                               <path
                                 d="M5 7.5L10 12.5L15 7.5"
-                                stroke="#283448"
                                 strokeWidth="1.66667"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"

@@ -1,9 +1,10 @@
 import { ValidationMessages } from "@/lib/messages";
-import z from "zod";
+import z, { optional } from "zod";
 
 export const FlightBookingInforBody = (
   messages: ValidationMessages,
-  checkBoxGenerateInvoice: boolean
+  checkBoxGenerateInvoice: boolean,
+  flightType: string
 ) =>
   z.object({
     atd: z.array(
@@ -38,21 +39,25 @@ export const FlightBookingInforBody = (
           required_error: messages.required,
           invalid_type_error: messages.inValidBirthDay,
         }),
-        passport: z
-          .string()
-          .min(8, {
-            message: messages.inValid,
-          })
-          .max(10, {
-            message: messages.required,
-          })
-          .optional(),
-        passport_expiry_date: z
-          .date({
-            required_error: messages.required,
-            invalid_type_error: messages.inValid,
-          })
-          .optional(),
+        passport:
+          flightType === "international"
+            ? z
+                .string()
+                .min(8, {
+                  message: messages.required,
+                })
+                .max(10, {
+                  message: messages.inValid,
+                })
+                .optional()
+            : z.string().optional(),
+        passport_expiry_date:
+          flightType === "international"
+            ? z.date({
+                required_error: messages.required,
+                invalid_type_error: messages.inValid,
+              })
+            : z.date().optional(),
         baggages: z
           .array(
             z
