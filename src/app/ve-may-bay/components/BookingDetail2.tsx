@@ -2,7 +2,7 @@
 import { formatCurrency, formatTime } from "@/lib/formatters";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { differenceInSeconds, format, parse } from "date-fns";
+import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
@@ -36,7 +36,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     quantity: number;
   }>({ price: 0, quantity: 0 });
   const [isLoadingRules, setIsLoadingRules] = useState<boolean>(false);
-  const [showRuleTicket, setShowRuleTicket] = useState<number | null>(null);
+  const [showRuleTicket, setShowRuleTicket] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
   const [ticketPaymentTimeout, setTicketPaymentTimeout] =
@@ -111,26 +111,23 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   let totalTaxInf = 0;
   let dropdown: any = [];
   let fareData: any = [];
-  if (data?.datacom_data?.ListFareStatus.length) {
-    data?.datacom_data?.ListFareStatus.map((fareStatus: any, index: number) => {
-      const item = fareStatus.FareData;
-      fareData.push(item);
-      totalPrice += item.TotalPrice;
-      totalAdt = item.Adt > totalAdt ? item.Adt : totalAdt;
-      totalChd = item.Chd > totalChd ? item.Chd : totalChd;
-      totalInf = item.Inf > totalInf ? item.Inf : totalInf;
-      totalPriceAdt +=
-        item.FareAdt + item.TaxAdt + item.FeeAdt + item.ServiceFeeAdt;
-      totalPriceChd +=
-        item.FareChd + item.TaxChd + item.FeeChd + item.ServiceFeeChd;
-      totalPriceInf +=
-        item.FareInf + item.TaxInf + item.FeeInf + item.ServiceFeeInf;
-      totalPriceTicketAdt += item.FareAdt + item.ServiceFeeAdt;
-      totalPriceTicketChd += item.FareChd + item.ServiceFeeChd;
-      totalPriceTicketInf += item.FareInf + item.ServiceFeeInf;
-      totalTaxAdt += item.TaxAdt + item.FeeAdt;
-      totalTaxChd += item.TaxChd + item.FeeChd;
-      totalTaxInf += item.TaxInf + item.FeeInf;
+  if (data?.flights?.length) {
+    data.flights.map((flightItem: any, index: number) => {
+      fareData.push(flightItem);
+      const item = flightItem.selectedTicketClass;
+      totalPrice += item.totalPrice;
+      totalAdt = flightItem.numberAdt;
+      totalChd = flightItem.numberChd;
+      totalInf = flightItem.numberInf;
+      totalPriceAdt += item.totalPriceAdt;
+      totalPriceChd += item.totalPriceChd;
+      totalPriceInf += item.totalPriceInf;
+      totalPriceTicketAdt += item.fareAdultFinal;
+      totalPriceTicketChd += item.fareChildFinal;
+      totalPriceTicketInf += item.fareInfantFinal;
+      totalTaxAdt += item.totalTaxAdt;
+      totalTaxChd += item.totalTaxChd;
+      totalTaxInf += item.totalTaxInf;
     });
   }
 
@@ -190,41 +187,29 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   }, []);
 
   const fetchFareRules = useCallback(
-    async (FareData: any) => {
+    async (flight: any) => {
       try {
         setIsLoadingRules(true);
-        const flight = FareData.ListFlight[0];
         const params = {
-          ListFareData: [
-            {
-              Session: FareData.Session,
-              FareDataId: FareData.FareDataId,
-              ListFlight: [
-                {
-                  FlightValue: flight.FlightValue,
-                },
-              ],
-            },
-          ],
+          source: flight.source,
+          clientId: flight.clientId,
+          itinerary: {
+            airline: flight.airline,
+            departDate: format(parseISO(flight.departure.at), "yyyy-MM-dd"),
+            departure: flight.departure.IATACode,
+            arrival: flight.arrival.IATACode,
+            fareBasisCode: flight.selectedTicketClass.fareBasisCode,
+          },
+          fareValue: flight.selectedTicketClass.fareValue,
         };
-
         const response = await FlightApi.getFareRules(params);
-
-        const fareRules = await translateText(
-          [
-            response?.payload.data.ListFareRules[0].ListRulesGroup[0]
-              .ListRulesText[0] ??
-              `Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết.`,
-          ],
-          language
-        );
-        return fareRules?.[0];
+        return response?.payload?.data ?? [];
       } catch (error: any) {
         const fareRules = await translateText(
           ["Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết."],
           language
         );
-        return fareRules?.[0];
+        return fareRules;
       } finally {
         setIsLoadingRules(false);
       }
@@ -243,17 +228,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   }, [data?.orderInfo?.sku]);
 
   const toggleShowRuleTicket = useCallback(
-    async (FareData: any, indexFlight: number) => {
+    async (FareData: any) => {
       setShowRuleTicket(
-        showRuleTicket === FareData.FareDataId + indexFlight
-          ? null
-          : FareData.FareDataId + indexFlight
+        showRuleTicket === FareData.flightCode ? null : FareData.flightCode
       );
-
-      if (!FareData.ListFlight[indexFlight].ListRulesTicket) {
-        FareData.ListFlight[indexFlight].ListRulesTicket = await fetchFareRules(
-          FareData
-        );
+      if (!FareData.ListRulesTicket) {
+        FareData.ListRulesTicket = await fetchFareRules(FareData);
       }
     },
     [showRuleTicket, fetchFareRules]
@@ -313,6 +293,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     );
   }
   if (!data) notFound();
+
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
@@ -350,203 +331,261 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           <p className="font-bold text-18" data-translate="true">
             Tóm tắt chuyến bay
           </p>
-          {fareData.map((item: any, key: number) =>
-            item.ListFlight.map((flight: any, indexFlight: number) => {
-              const fromOption = airports
-                .flatMap((country) => country.airports)
-                .find((airport) => airport.code === flight.StartPoint);
-              const toOption = airports
-                .flatMap((country) => country.airports)
-                .find((airport) => airport.code === flight.EndPoint);
-              return (
-                <div
-                  key={indexFlight}
-                  className="bg-white rounded-xl p-3 md:p-6 mt-3"
-                >
-                  <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
-                    <p
-                      className="lg:w-2/12 text-sm text-gray-700"
-                      data-translate="true"
-                    >
-                      Chuyến bay
-                    </p>
-                    <div className="lg:w-10/12 font-bold">
-                      {fromOption && toOption ? (
-                        <p data-translate="true">
-                          {`${fromOption?.city} (${flight.StartPoint}) - ${toOption?.city} (${flight.EndPoint}) `}
-                        </p>
-                      ) : (
-                        <p data-translate="true">{`${flight.StartPoint} - ${flight.EndPoint}`}</p>
-                      )}
-                    </div>
+          {fareData.map((flight: any, indexFlight: number) => {
+            const fromOption = airports
+              .flatMap((country) => country.airports)
+              .find((airport) => airport.code === flight.departure.IATACode);
+            const toOption = airports
+              .flatMap((country) => country.airports)
+              .find((airport) => airport.code === flight.arrival.IATACode);
+            return (
+              <div
+                key={indexFlight}
+                className="bg-white rounded-xl p-3 md:p-6 mt-3"
+              >
+                <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
+                  <p
+                    className="lg:w-2/12 text-sm text-gray-700"
+                    data-translate="true"
+                  >
+                    Chuyến bay
+                  </p>
+                  <div className="lg:w-10/12 font-bold">
+                    {fromOption && toOption ? (
+                      <p data-translate="true">
+                        {`${fromOption?.city} (${fromOption.code}) - ${toOption?.city} (${toOption.code}) `}
+                      </p>
+                    ) : (
+                      <p data-translate="true">{`${flight.departure.IATACode} - ${flight.arrival.IATACode}`}</p>
+                    )}
                   </div>
-                  {flight.ListSegment.map(
-                    (segment: any, segmentIndex: number) => {
-                      const fromSegmenOption = airports
-                        .flatMap((country) => country.airports)
-                        .find((airport) => airport.code === flight.StartPoint);
-                      const toSegmentOption = airports
-                        .flatMap((country) => country.airports)
-                        .find((airport) => airport.code === flight.EndPoint);
-                      const durationFlight =
-                        differenceInSeconds(
-                          new Date(segment.EndTime),
-                          new Date(segment.StartTime)
-                        ) / 60;
-                      return (
-                        <div
-                          key={segmentIndex}
-                          className="flex flex-col-reverse lg:flex-row items-start justify-between mt-4 lg:space-x-3"
-                        >
-                          <div className="w-full lg:w-2/12 mt-5 lg:mt-0">
-                            <div className="flex flex-row lg:flex-col justify-between lg:justify-normal items-center md:items-baseline w-full text-left mb-3">
-                              <div>
-                                <DisplayImage
-                                  imagePath={`assets/images/airline/${segment.Airline.toLowerCase()}.gif`}
-                                  width={80}
-                                  height={24}
-                                  alt={"AirLine"}
-                                  classStyle={"max-w-16 md:max-w-20 max-h-10"}
-                                />
-                              </div>
-                              <div className="">
-                                <h3
-                                  className="text-sm my-2"
-                                  style={{ wordBreak: "break-word" }}
-                                >
-                                  {segment.FlightNumber}
-                                </h3>
-                                <div className="text-sm text-gray-500">
-                                  <span data-translate="true"> Hạng:</span>
-                                  <span>{flight.FareClass}</span>
-                                </div>
-                              </div>
-                            </div>
+                </div>
+                {flight.segments.map((segment: any, segmentIndex: number) => {
+                  const fromSegmenOption = airports
+                    .flatMap((country) => country.airports)
+                    .find(
+                      (airport) => airport.code === flight.departure.IATACode
+                    );
+                  const toSegmentOption = airports
+                    .flatMap((country) => country.airports)
+                    .find(
+                      (airport) => airport.code === flight.arrival.IATACode
+                    );
+                  const durationFlight =
+                    differenceInSeconds(
+                      new Date(segment.arrival.at),
+                      new Date(segment.departure.at)
+                    ) / 60;
+                  return (
+                    <div
+                      key={segmentIndex}
+                      className="flex flex-col-reverse lg:flex-row items-start justify-between mt-4 lg:space-x-3"
+                    >
+                      <div className="w-full lg:w-2/12 mt-5 lg:mt-0">
+                        <div className="flex flex-row lg:flex-col justify-between lg:justify-normal items-center md:items-baseline w-full text-left mb-3">
+                          <div>
+                            <DisplayImage
+                              imagePath={`assets/images/airline/${segment.airline.toLowerCase()}.gif`}
+                              width={80}
+                              height={24}
+                              alt={"AirLine"}
+                              classStyle={"max-w-16 md:max-w-20 max-h-10"}
+                            />
                           </div>
-                          <div className="lg:w-10/12 text-center flex justify-between">
-                            <div className="flex gap-6 w-full">
-                              <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
-                                <span
-                                  className="text-sm w-full"
-                                  data-translate="true"
-                                >
-                                  {format(
-                                    new Date(flight.StartDate),
-                                    "EEEE, d 'tháng' M yyyy",
-                                    { locale: vi }
-                                  )}
-                                </span>
-                                <span className="mt-2 text-lg font-bold w-full">
-                                  {formatTime(segment.StartTime)}
-                                </span>
-                                <span className="mt-2 text-sm text-gray-500 w-full">
-                                  {fromSegmenOption ? (
-                                    <p data-translate="true">
-                                      {`${fromSegmenOption?.city} (${segment.StartPoint})`}
-                                    </p>
-                                  ) : (
-                                    <p>{segment.StartPoint}</p>
-                                  )}
-                                </span>
-                              </div>
-
-                              <div className="w-[30%] flex items-center space-x-3">
-                                <div className="flex flex-col space-y-2 items-center w-full">
-                                  <span className="text-sm text-gray-700 ">
-                                    <Image
-                                      src={`/icon/AirplaneTilt-2.svg`}
-                                      width={20}
-                                      height={20}
-                                      alt="Icon"
-                                      className="w-5 h-5"
-                                    />
-                                  </span>
-                                  <div className="relative flex items-center w-full">
-                                    <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
-                                    <div className="flex-grow h-px bg-gray-500"></div>
-                                    <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
-                                  </div>
-                                  <span
-                                    className="text-sm text-gray-700"
-                                    data-translate="true"
-                                  >
-                                    {durationFlight
-                                      ? `${Math.floor(
-                                          durationFlight / 60
-                                        )} giờ ${Math.floor(
-                                          durationFlight % 60
-                                        )} phút`
-                                      : ""}
-                                  </span>
-                                  {flight.ListSegment.length <= 1 && (
-                                    <span
-                                      className="text-sm text-gray-500"
-                                      data-translate="true"
-                                    >
-                                      Bay thẳng
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
-                                <span
-                                  className="text-sm w-full"
-                                  data-translate="true"
-                                >
-                                  {format(
-                                    new Date(flight.EndDate),
-                                    "EEEE, d 'tháng' M yyyy",
-                                    { locale: vi }
-                                  )}
-                                </span>
-                                <span className="mt-2 text-lg font-bold w-full">
-                                  {formatTime(segment.EndTime)}
-                                </span>
-                                <span className="mt-2 text-sm text-gray-500 w-full">
-                                  {toSegmentOption ? (
-                                    <p data-translate="true">{`${toSegmentOption?.city} (${segment.EndPoint})`}</p>
-                                  ) : (
-                                    <p>{segment.EndPoint}</p>
-                                  )}
-                                </span>
-                              </div>
+                          <div className="">
+                            <h3
+                              className="text-sm my-2"
+                              style={{ wordBreak: "break-word" }}
+                            >
+                              {segment.flightNumber}
+                            </h3>
+                            <div className="text-sm text-gray-500">
+                              <span data-translate="true"> Hạng: </span>
+                              <span>
+                                {flight.selectedTicketClass.bookingClass}
+                              </span>
                             </div>
                           </div>
                         </div>
-                      );
-                    }
-                  )}
-                  <div>
-                    <button
-                      className=" text-blue-700 border-b border-blue-700 font-medium"
-                      onClick={() => toggleShowRuleTicket(item, indexFlight)}
-                      disabled={isLoadingRules}
-                      data-translate="true"
-                    >
-                      Điều kiện vé
-                    </button>
+                      </div>
+                      <div className="lg:w-10/12 text-center flex justify-between">
+                        <div className="flex gap-6 w-full">
+                          <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
+                            <span
+                              className="text-sm w-full"
+                              data-translate="true"
+                            >
+                              {format(
+                                new Date(flight.departure.at),
+                                "EEEE, d 'tháng' M yyyy",
+                                { locale: vi }
+                              )}
+                            </span>
+                            <span className="mt-2 text-lg font-bold w-full">
+                              {formatTime(segment.departure.at)}
+                            </span>
+                            <span className="mt-2 text-sm text-gray-500 w-full">
+                              {fromSegmenOption ? (
+                                <p data-translate="true">
+                                  {`${fromSegmenOption?.city} (${segment.departure.IATACode})`}
+                                </p>
+                              ) : (
+                                <p>{segment.departure.IATACode}</p>
+                              )}
+                            </span>
+                          </div>
 
-                    <div>
-                      {showRuleTicket === item.FareDataId + indexFlight &&
-                        isLoadingRules && (
-                          <span className="loader_spiner mt-2"></span>
-                        )}
-                      {showRuleTicket === item.FareDataId + indexFlight &&
-                        !isLoadingRules && (
-                          <div
-                            className="mt -2text-sm text-gray-600 mt-1 list-disc list-inside"
-                            dangerouslySetInnerHTML={{
-                              __html: flight.ListRulesTicket,
-                            }}
-                          ></div>
-                        )}
+                          <div className="w-[30%] flex items-center space-x-3">
+                            <div className="flex flex-col space-y-2 items-center w-full">
+                              <span className="text-sm text-gray-700 ">
+                                <Image
+                                  src={`/icon/AirplaneTilt-2.svg`}
+                                  width={20}
+                                  height={20}
+                                  alt="Icon"
+                                  className="w-5 h-5"
+                                />
+                              </span>
+                              <div className="relative flex items-center w-full">
+                                <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
+                                <div className="flex-grow h-px bg-gray-500"></div>
+                                <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
+                              </div>
+                              <span
+                                className="text-sm text-gray-700"
+                                data-translate="true"
+                              >
+                                {durationFlight
+                                  ? `${Math.floor(
+                                      durationFlight / 60
+                                    )} giờ ${Math.floor(
+                                      durationFlight % 60
+                                    )} phút`
+                                  : ""}
+                              </span>
+                              {flight.legs < 1 && (
+                                <span
+                                  className="text-sm text-gray-500"
+                                  data-translate="true"
+                                >
+                                  Bay thẳng
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
+                            <span
+                              className="text-sm w-full"
+                              data-translate="true"
+                            >
+                              {format(
+                                new Date(flight.arrival.at),
+                                "EEEE, d 'tháng' M yyyy",
+                                { locale: vi }
+                              )}
+                            </span>
+                            <span className="mt-2 text-lg font-bold w-full">
+                              {formatTime(segment.arrival.at)}
+                            </span>
+                            <span className="mt-2 text-sm text-gray-500 w-full">
+                              {toSegmentOption ? (
+                                <p data-translate="true">{`${toSegmentOption?.city} (${segment.arrival.IATACode})`}</p>
+                              ) : (
+                                <p>{segment.arrival.IATACode}</p>
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                  );
+                })}
+                <div>
+                  <button
+                    className=" text-blue-700 border-b border-blue-700 font-medium mb-2"
+                    onClick={() => toggleShowRuleTicket(flight)}
+                    disabled={isLoadingRules}
+                    data-translate="true"
+                  >
+                    Điều kiện vé
+                  </button>
+
+                  <div>
+                    {showRuleTicket === flight.flightCode && isLoadingRules && (
+                      <span className="loader_spiner mt-2"></span>
+                    )}
+                    {showRuleTicket === flight.flightCode &&
+                      !isLoadingRules && (
+                        <div className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0">
+                          {Array.isArray(flight.ListRulesTicket) &&
+                          flight.ListRulesTicket.length > 0 ? (
+                            (() => {
+                              const isFareRulesOfStrings =
+                                Array.isArray(flight.ListRulesTicket) &&
+                                typeof flight.ListRulesTicket[0] === "string";
+
+                              return (
+                                <div>
+                                  {isFareRulesOfStrings ? (
+                                    <ul
+                                      className="mt-4 pl-6"
+                                      style={{ listStyle: "circle" }}
+                                    >
+                                      {flight.ListRulesTicket.map(
+                                        (text: any, indexRule: number) => (
+                                          <li key={indexRule}>{text}</li>
+                                        )
+                                      )}
+                                    </ul>
+                                  ) : (
+                                    <div>
+                                      {flight.ListRulesTicket.map(
+                                        (item: any, indexRule: number) => (
+                                          <div key={indexRule} className="mb-4">
+                                            {item.key && (
+                                              <p className="font-semibold text-18">
+                                                {item.key}
+                                              </p>
+                                            )}
+                                            <ul
+                                              className="mt-4 pl-6"
+                                              style={{ listStyle: "circle" }}
+                                            >
+                                              {item?.value?.length > 0 &&
+                                                item.value.map(
+                                                  (
+                                                    ruleText: string,
+                                                    indexRuleText: number
+                                                  ) =>
+                                                    ruleText && (
+                                                      <li key={indexRuleText}>
+                                                        {ruleText}
+                                                      </li>
+                                                    )
+                                                )}
+                                            </ul>
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })()
+                          ) : (
+                            <div className="mb-4">
+                              Xin vui lòng liên hệ với Happy Book để nhận thông
+                              tin chi tiết.
+                            </div>
+                          )}
+                        </div>
+                      )}
                   </div>
                 </div>
-              );
-            })
-          )}
+              </div>
+            );
+          })}
         </div>
         <div className="mt-6">
           <p className="font-bold text-18" data-translate="true">
