@@ -211,6 +211,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         setIsReady(false);
         setSearchId(null);
         setFlightsData([]);
+        setStopNumFilters([]);
         setIsFullFlightResource(false);
         setFlightItineraryResource([]);
         setAirlineData([]);
@@ -365,17 +366,17 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         });
 
         if (flightsData.length) {
-          const listStopNum: number[] = [];
-          for (const item of flightsData) {
-            if (!listStopNum[item.legs]) {
-              listStopNum[item.legs] = item.legs;
-            }
-          }
-          setStopNumFilters(
-            listStopNum.filter(
-              (item: any) => item !== undefined && item !== null
-            )
-          );
+          setStopNumFilters((prev) => {
+            return Array.from(
+              new Set([
+                ...prev,
+                ...flightsData
+                  .map((f) => f.legs)
+                  .filter((v) => v !== undefined && v !== null),
+              ])
+            ).sort((a, b) => a - b);
+          });
+
           setFlightsData((prev: any) => [...prev, ...flightsData]);
         }
       } catch (err) {

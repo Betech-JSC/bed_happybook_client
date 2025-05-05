@@ -176,8 +176,10 @@ export default function FlightBookForm({ airportsData }: any) {
         );
         if (respon?.status === 200) {
           reset();
+          const resData = respon?.payload?.data;
+          resData.flights = flights;
           toast.success(toaStrMsg.sendSuccess);
-          handleSessionStorage("save", "bookingFlight", respon?.payload?.data);
+          handleSessionStorage("save", "bookingFlight", resData);
           handleSessionStorage("remove", [
             "flightSession",
             "departFlight",
@@ -215,7 +217,10 @@ export default function FlightBookForm({ airportsData }: any) {
       flightData.push(returnFlight);
       flightDetailData.push(returnFlight);
     }
-    if (!flightData.length) router.push("/ve-may-bay");
+    if (!flightData.length) {
+      router.push("/ve-may-bay");
+      return;
+    }
 
     if (departFlight && returnFlight) setIsRoundTrip(true);
     setFlights(flightData);
@@ -223,7 +228,7 @@ export default function FlightBookForm({ airportsData }: any) {
     setFlightsDetail(flightDetailData);
     setFlightSession(flightSession);
     setDocumentReady(true);
-  }, [router, flightSession]);
+  }, [router]);
 
   let totalPrice = 0;
   let totalAdt = 1;
