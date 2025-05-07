@@ -23,13 +23,6 @@ type optionFilterType = {
   }[];
 };
 
-type LocationData = {
-  countries: any;
-  areas: any;
-  cities: any;
-  districts: any;
-}
-
 export default function ListTour({
   type_tour,
   titlePage,
@@ -54,21 +47,6 @@ export default function ListTour({
   const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
-  const defaultImage = "https://storage.googleapis.com/gst-nhanhtravel-com/upload/tour/20241018151946.webp?GoogleAccessId=firebase-adminsdk-1qkmx%40nhanhtravel-129e6.iam.gserviceaccount.com&Expires=2229239586&Signature=ekTzZpKt9mPRSsSIJbaQZHkJNO5V9fOtdBZy2DfQSLSEBejWt%2BG5wp4Odh3tGw%2FS%2BzF1CW4EXR2zyny5LwAeU%2Bvgd2x8Z0gS%2B0qDk%2B%2BkFU2LJem6c1l7zc%2F%2FS2kDKXhHgwIUh6%2B0yc27lKzPOR47fYPBbuC4eHRmGaZMVCAI2P3Mi03whRqNniEvAvs7b%2BG85L9czdurKtfEvv%2FaQafrALjNQ6IiZDZEL96S%2FbzpD4pkKqHMGXM3PJmz2CElrG0sGc%2BfnvUIrM3n7t6lSXACA8EcMEUKgXVVIe1xXlAmd4OX8bO%2Bq7QpTo0yw8vzWLx7U7eDXaVIoBheYQUP7wvASA%3D%3D";
-  const [countries, setCountries] = useState<any[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedCity, setSelectedCity] = useState<string>("");
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
-  
-  const [areas, setAreas] = useState<any[]>([]);
-  const [cities, setCities] = useState<any[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
-
-  const [loadingArea, setLoadingArea] = useState(false);
-  const [loadingCity, setLoadingCity] = useState(false);
-  const [loadingDistrict, setLoadingDistrict] = useState(false);
-
   const loadData = useCallback(async () => {
     try {
       setLoadingLoadMore(true);
@@ -76,8 +54,6 @@ export default function ListTour({
       setIsDisabled(true);
       const search = buildSearch(query);
       const res = await TourApi.search(`/product/tours/search${search}`);
-      const countries = (await TourApi.getCountry())?.payload?.data;
-      setCountries(countries || []);
       const result = res?.payload?.data;
       setData((prevData: any) =>
         result.items.length > 0 && !query.isFilters
@@ -127,72 +103,6 @@ export default function ListTour({
     setQuery({ ...query, sort: sort, order: order, isFilters: true });
   };
 
-  const handleCountryChange = async (countryId: string) => {
-    setSelectedCountry(countryId);
-    setSelectedArea("");
-    setSelectedCity("");
-    setSelectedDistrict("");
-    setCities([]);
-    setDistricts([]);
-    handleFilterChange("country_id", countryId);
-    if (countryId) {
-      try {
-        setLoadingArea(true);
-        const res = await TourApi.getAreaByCountry(Number(countryId));
-        setAreas(res?.payload?.data || []);
-      } catch (error) {
-        console.error("Error loading areas:", error);
-        setAreas([]);
-      } finally {
-        setLoadingArea(false);
-      }
-    } else {
-      setAreas([]);
-    }
-  };
-
-  const handleAreaChange = async (areaId: string, countryId: string) => {
-    setSelectedArea(areaId);
-    setSelectedCity("");
-    setSelectedDistrict("");
-    setDistricts([]);
-    handleFilterChange("area_id", areaId);
-    if (areaId) {
-      try {
-        setLoadingCity(true);
-        const res = await TourApi.getCityByLocation(Number(areaId), Number(countryId));
-        setCities(res?.payload?.data || []);
-      } catch (error) {
-        console.error("Error loading cities:", error);
-        setCities([]);
-      } finally {
-        setLoadingCity(false);
-      }
-    } else {
-      setCities([]);
-    }
-  };
-
-  const handleCityChange = async (cityId: string, countryId: string, areaId: string) => {
-    setSelectedCity(cityId);
-    setSelectedDistrict("");
-    handleFilterChange("city_id", cityId);
-    if (cityId) {
-      try {
-        setLoadingDistrict(true);
-        const res = await TourApi.getDistrictByCity(Number(cityId), Number(countryId), Number(areaId));
-        setDistricts(res?.payload?.data || []);
-      } catch (error) {
-        console.error("Error loading districts:", error);
-        setDistricts([]);
-      } finally {
-        setLoadingDistrict(false);
-      }
-    } else {
-      setDistricts([]);
-    }
-  };
-
   useEffect(() => {
     loadData();
   }, [query, loadData]);
@@ -215,86 +125,7 @@ export default function ListTour({
       className="flex mt-6 md:space-x-4 items-start pb-8"
     >
       <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
-        <div className="pb-3 mb-3 border-b border-gray-200">
-          <p className="font-semibold mb-3" data-translate="true">Địa điểm</p>
-          
-          <div className="mb-3">
-            <select 
-              className="w-full p-2 border rounded"
-              value={selectedCountry}
-              onChange={(e) => handleCountryChange(e.target.value)}
-            >
-              <option value="">Chọn quốc gia</option>
-              {countries?.map((country: any) => (
-                <option key={country.id} value={country.id}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {selectedCountry && (
-            <div className="mb-3">
-              <select 
-                className="w-full p-2 border rounded"
-                value={selectedArea}
-                onChange={(e) => handleAreaChange(e.target.value, selectedCountry)}
-                disabled={loadingArea}
-              >
-                <option value="">
-                  {loadingArea ? "Đang tải..." : "Chọn khu vực"}
-                </option>
-                {areas.map((area: any) => (
-                  <option key={area.id} value={area.id}>
-                    {area.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {selectedArea && (
-            <div className="mb-3">
-              <select 
-                className="w-full p-2 border rounded"
-                value={selectedCity}
-                onChange={(e) => handleCityChange(e.target.value, selectedCountry, selectedArea)}
-                disabled={loadingCity}
-              >
-                <option value="">
-                  {loadingCity ? "Đang tải..." : "Chọn thành phố"}
-                </option>
-                {cities.map((city: any) => (
-                  <option key={city.id} value={city.id}>
-                    {city.city_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {selectedCity && (
-            <div className="mb-3">
-              <select 
-                className="w-full p-2 border rounded"
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                disabled={loadingDistrict}
-              >
-                <option value="">
-                  {loadingDistrict ? "Đang tải..." : "Chọn quận/huyện"}
-                </option>
-                {districts.map((district: any) => (
-                  <option key={district.id} value={district.id}>
-                    {district.district_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-
-        {/* {optionsFilter?.length > 0 &&
+        {optionsFilter?.length > 0 &&
           optionsFilter.map((item: optionFilterType, index: number) => (
             <div
               key={index}
@@ -357,7 +188,7 @@ export default function ListTour({
                 </button>
               )}
             </div>
-          ))} */}
+          ))}
       </div>
       <div className="md:w-8/12 lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -394,21 +225,20 @@ export default function ListTour({
                 }`}
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                  <Link href={`/tours/chi-tiet/${tour.slug ?? tour.permalink + '-' + tour.tour_id + '-' + tour.id}`}>
+                  <Link href={`/tours/chi-tiet/${tour.slug}`}>
                     <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
-                      src={tour.bucket_img || defaultImage}
-                      alt={`Tour ${tour.tour_name || 'image'}`}
+                      className=" hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
+                      src={`${tour.image_url}/${tour.image_location}`}
+                      alt="Image"
                       width={360}
                       height={270}
-                      unoptimized
-                      loading="eager"
-                      style={{ height: 270, objectFit: 'cover' }}
+                      sizes="100vw"
+                      style={{ height: 270 }}
                     />
                   </Link>
                   <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
                     <span data-translate="true">
-                      {renderTextContent(tour?.type_tour_price_id_name)}
+                      {renderTextContent(tour?.category_name)}
                     </span>
                   </div>
                   {tour.is_hot > 0 && (
@@ -420,11 +250,11 @@ export default function ListTour({
                 <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
                   <div>
                     <Link
-                      href={`/tours/chi-tiet/${tour.slug ?? tour.permalink + '-' + tour.tour_id + '-' + tour.id}`}
+                      href={`/tours/chi-tiet/${tour.slug}`}
                       className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                     >
                       <h2 data-translate="true">
-                        {renderTextContent(tour?.tour_name)}
+                        {renderTextContent(tour?.product_name)}
                       </h2>
                     </Link>
                     <div className="flex space-x-2 mt-2">
@@ -457,40 +287,24 @@ export default function ListTour({
                         width={18}
                         height={18}
                       />
-                      <span data-translate="true">{tour.date_type_name}</span>
+                      <span data-translate="true">{`${
+                        tour.day ? `${tour.day} ngày` : ""
+                      } ${tour.night ? `${tour.night} đêm` : ""}`}</span>
                     </div>
-                    {tour.date_start_tour && (
+                    {tour.start_date && tour.end_date && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
                           className="w-4 h-4"
-                          src="/icon/clock.svg"
-                          alt="Icon"
+                          src="/icon/clock-check.svg"
+                          alt="Time"
                           width={18}
                           height={18}
                         />
-                        <span data-translate="true"> Ngày khởi hành: {tour.date_start_tour} 
-                        </span>
+                        <span data-translate="true">{`Khởi hành vào: ${tour.start_date.split("-").reverse().join("/")}`}</span>
                       </div>
                     )}
 
-                    {tour.date_end_tour && (
-                      <div className="flex space-x-2 mt-2 items-center">
-                        <Image
-                          className="w-4 h-4"
-                          src="/icon/clock.svg"
-                          alt="Icon"
-                          width={18}
-                          height={18}
-                        />
-                        <span data-translate="true"> Ngày kết thúc: {tour.date_end_tour} 
-                        </span>
-                      </div>
-                    )}
-
-                    
-
-
-                    {tour.place_start && (
+                    {tour.depart_point && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
                           className="w-4 h-4"
@@ -500,11 +314,11 @@ export default function ListTour({
                           height={18}
                         />
                         <span data-translate="true">
-                          Khởi hành từ {renderTextContent(tour.place_start)}
+                          Khởi hành từ {renderTextContent(tour.depart_point)}
                         </span>
                       </div>
                     )}
-                    {tour.place_end && (
+                    {tour.destination_point && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
                           className="w-4 h-4"
@@ -514,15 +328,15 @@ export default function ListTour({
                           height={18}
                         />
                         <span data-translate="true">
-                          {renderTextContent(tour.place_end)}
+                          {renderTextContent(tour.destination_point)}
                         </span>
                       </div>
                     )}
                   </div>
                   <div className="text-2xl text-primary font-bold text-end mt-3">
-                    {tour.price_arr.length > 0 ? (
+                    {tour.price > 0 ? (
                       <span>
-                        {formatCurrency(tour.price_arr[0])}
+                        {formatCurrency(tour.price - tour.discount_price)}
                       </span>
                     ) : (
                       <span data-translate="true">Liên hệ</span>

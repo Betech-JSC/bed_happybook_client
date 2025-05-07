@@ -8,7 +8,6 @@ import "swiper/css/thumbs";
 
 export default function ImageTour({ url }: any) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
-
   return (
     <div className="image-gallery">
       <Swiper
