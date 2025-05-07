@@ -1,27 +1,24 @@
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
-import { formatCurrency, formatDate } from "@/lib/formatters";
+import { formatCurrency } from "@/lib/formatters";
 import DisplayPrice from "@/components/base/DisplayPrice";
 
-const defaultImage = 'https://storage.googleapis.com/tour-bucket-dev/tour/2025/04/08/1717798505-1717798505-1717798505-1717798505.jpg'
 export default function TourItem({ tour }: any) {
-  
   const vehicleIcon = ["bus", "AirplaneTilt-2"];
   if (tour?.transportation === 1) {
     vehicleIcon.splice(1, 1);
   } else if (tour?.transportation === 2) {
     vehicleIcon.splice(0, 1);
   }
-  const slug = `/${tour.permalink}-${tour.tour_id}-${tour.id}`;
   if (!tour) return;
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
-        <Link href={`/tours/chi-tiet/${slug}`}>
+        <Link href={`/tours/chi-tiet/${tour.slug}`}>
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
-            src={tour.bucket_img ?? defaultImage}
+            src={`${tour.image_url}/${tour.image_location}`}
             alt="Tour Image"
             width={320}
             height={320}
@@ -32,7 +29,7 @@ export default function TourItem({ tour }: any) {
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
-          <span data-translate>{tour.type_tour_price_id_name ?? ""}</span>
+          <span data-translate>{tour.category_name ?? ""}</span>
         </div>
         {tour.is_hot ? (
           <div className="absolute top-3 left-3 text-white px-3 py-1 bg-[#F27145] rounded-md">
@@ -44,10 +41,10 @@ export default function TourItem({ tour }: any) {
       </div>
       <div className="py-3 px-4">
         <Link
-          href={`/tours/chi-tiet/${slug}`}
+          href={`/tours/chi-tiet/${tour.slug}`}
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
-          <h3 data-translate>{tour.tour_name ?? ""}</h3>
+          <h3 data-translate>{tour.product_name ?? ""}</h3>
         </Link>
         <p className="flex space-x-2 mt-2">
           <Image
@@ -56,27 +53,16 @@ export default function TourItem({ tour }: any) {
             width={20}
             height={20}
           />
-          <span data-translate>{tour.date_type_name}</span>
+          <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""} ${
+            tour.night ? `${tour.night} đêm` : ""
+          }`}</span>
         </p>
-        <p className="flex space-x-2 mt-2">
-          <Image
-            src="/icon/clock.svg"
-            alt="Time"
-            width={20}
-            height={20}
-          />
-          <span data-translate> Ngày khởi hành: {tour.date_start_tour ? formatDate(tour.date_start_tour) : ""}</span>
-        </p>
-
-        <p className="flex space-x-2 mt-2">
-          <Image
-            src="/icon/clock.svg"
-            alt="Time"
-            width={20}
-            height={20}
-          />
-          <span data-translate> Ngày kết thúc: {tour.date_end_tour ? formatDate(tour.date_end_tour) : ""}</span>
-        </p>
+        {tour.start_date && tour.end_date && (
+         
+          <p className="flex space-x-2 mt-2">
+            <span data-translate>{`Khởi hành vào: ${tour.start_date.split("-").reverse().join("/")}`}</span>
+            </p>
+        )}
         <div className="flex justify-between mt-[14px]">
           <div className="flex space-x-2">
             {tour?.transportation > 0 &&
@@ -91,7 +77,7 @@ export default function TourItem({ tour }: any) {
               ))}
           </div>
           <div>
-            <DisplayPrice price={tour.price_arr_min ? tour.price_arr_min.replace(/,/g, "") : 0} textPrefix="chỉ từ" />
+            <DisplayPrice price={tour.price} textPrefix="chỉ từ" />
           </div>
         </div>
       </div>

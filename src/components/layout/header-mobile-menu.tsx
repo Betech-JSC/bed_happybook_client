@@ -4,12 +4,10 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GeneralInforPaths } from "@/constants/paths";
-import { TourApi } from "@/api/Tour";
 export default function HeaderMobileMenu() {
   const pathname = usePathname();
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
   const [menuHeight, setMenuHeight] = useState("0px");
-  const [listCategoryTour, setListCategoryTour] = useState<any[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (dropdownRef.current) {
@@ -23,13 +21,6 @@ export default function HeaderMobileMenu() {
   useEffect(() => {
     setIsMenuMbOpen(false);
   }, [pathname]);
-  useEffect(() => {
-    const fetchListCategoryTour = async () => {
-      const res = await TourApi.getListCategoryTour();
-      setListCategoryTour(res?.payload?.data ?? []);
-    };
-    fetchListCategoryTour();
-  }, []);
   return (
     <Fragment>
       <div
@@ -58,15 +49,24 @@ export default function HeaderMobileMenu() {
             <p className="mt-3">
               <strong>Dịch vụ</strong>
             </p>
-            {listCategoryTour.map((item: any, index: number) => (
-              <Link
-                key={index}
-                href={`/tours/${item.permalink}`}
-                className="block mt-4 cursor-pointer hover:text-[#F27145]"
-              >
-                {item.name}
-              </Link>
-            ))}
+            <Link
+              href="/tours/tour-noi-dia"
+              className="block mt-4 cursor-pointer hover:text-[#F27145]"
+            >
+              Tour nội địa
+            </Link>
+            <Link
+              href="/tours/tour-quoc-te"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              Tour quốc tế
+            </Link>
+            <Link
+              href="/tours/tour-du-thuyen"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              Tour du thuyền
+            </Link>
             <Link
               href="/ve-may-bay"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
