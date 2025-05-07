@@ -1,7 +1,61 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format, parse, isValid } from "date-fns";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { datePickerLocale } from "@/constants/language";
 
+interface SearchForm {
+  productId: number | null;
+  departureDate: Date | null;
+  returnDate: Date | null;
+}
 export default function SearchFormInsurance() {
+  const today = new Date();
+  const { language } = useLanguage();
+  const departDateRef = useRef<DatePicker | null>(null);
+  const returnDateRef = useRef<DatePicker | null>(null);
+  const handleFocusNextDate = (nextRef: React.RefObject<DatePicker | null>) => {
+    if (nextRef.current) {
+      nextRef.current.setFocus();
+    }
+  };
+  const [formData, setFormData] = useState<SearchForm>({
+    productId: null,
+    departureDate: null,
+    returnDate: null,
+  });
+  const handleDepartDateChange = (date: Date | null) => {
+    if (!formData.returnDate) {
+      handleFocusNextDate(returnDateRef);
+    }
+    if (formData.returnDate && date && date > formData.returnDate) {
+      formData.returnDate = date;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      departureDate: date,
+    }));
+  };
+
+  const handleReturnDateChange = (date: Date | null) => {
+    if (formData.departureDate && date && date < formData.departureDate) {
+      date = formData.departureDate;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      returnDate: date,
+    }));
+  };
+
+  useEffect(() => {
+    if (datePickerLocale[language]) {
+      registerLocale(language, datePickerLocale[language]);
+    }
+  }, [language]);
+
   return (
     <div className="flex lg:space-x-1 xl:space-x-2">
       <div className="w-[42.5%]">
@@ -26,7 +80,7 @@ export default function SearchFormInsurance() {
           Ngày đi - ngày về
         </label>
         <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
-          <div className="flex justify-between items-center	">
+          <div className="w-1/4 flex justify-between items-center	">
             <Image
               src="/icon/calendar.svg"
               alt="Phone icon"
@@ -34,9 +88,26 @@ export default function SearchFormInsurance() {
               width={18}
               height={18}
             ></Image>
-            <span>14/08/2024</span>
+            <div className="w-full [&>div]:w-full border-none">
+              <DatePicker
+                id="start_date"
+                ref={departDateRef}
+                selected={formData.departureDate}
+                onChange={handleDepartDateChange}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Ngày đi"
+                popperPlacement="bottom-start"
+                minDate={today}
+                locale={language}
+                onFocus={(e) => e.target.blur()}
+                onKeyDown={(e) => {
+                  e.preventDefault();
+                }}
+                className="z-20 pl-3 w-full outline-none"
+              />
+            </div>
           </div>
-          <div>
+          <div className="w-1/2">
             <Image
               src="/icon/line.png"
               alt="Icon"
@@ -45,8 +116,32 @@ export default function SearchFormInsurance() {
               height={1}
             ></Image>
           </div>
-          <div>
-            <span> 22/08/2024</span>
+          <div className="w-1/4 [&>div]:w-full border-none">
+            <DatePicker
+              id="start_date"
+              ref={returnDateRef}
+              selected={formData.returnDate}
+              onChange={handleReturnDateChange}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Ngày về"
+              popperPlacement="bottom-start"
+              locale={language}
+              minDate={
+                formData.departureDate && isValid(formData.departureDate)
+                  ? formData.departureDate
+                  : today
+              }
+              openToDate={
+                formData.departureDate && isValid(formData.departureDate)
+                  ? formData.departureDate
+                  : today
+              }
+              onFocus={(e) => e.target.blur()}
+              onKeyDown={(e) => {
+                e.preventDefault();
+              }}
+              className="z-20 pl-3 w-full outline-none"
+            />
           </div>
         </div>
       </div>

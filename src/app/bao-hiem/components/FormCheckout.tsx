@@ -1,5 +1,6 @@
 import LoadingButton from "@/components/base/LoadingButton";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function FormCheckOut() {
   return (
@@ -17,7 +18,7 @@ export default function FormCheckOut() {
         </div>
         <div className="relative">
           <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs">
-            <span data-translate="true">Nơi đi</span>
+            <span data-translate="true">Nơi đến</span>
           </label>
           <input
             type="text"
@@ -77,12 +78,26 @@ export default function FormCheckOut() {
           </div>
           <div className="mt-4 flex gap-4">
             <div className="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" className="w-4 h-4" />
-              <span className="text-sm">Bản thân</span>
+              <input
+                id="informationBySelf"
+                type="checkbox"
+                className="w-4 h-4"
+                name="insurance_buyer_infor"
+              />
+              <label htmlFor="informationBySelf" className="text-sm">
+                Bản thân
+              </label>
             </div>
             <div className="flex space-x-2 cursor-pointer">
-              <input type="checkbox" className="w-4 h-4" />
-              <span className="text-sm">Thông tin liên hệ theo người mua</span>
+              <input
+                id="informationByBuyer"
+                type="checkbox"
+                className="w-4 h-4"
+                name="insurance_buyer_infor"
+              />
+              <label htmlFor="informationByBuyer" className="text-sm">
+                Thông tin liên hệ theo người mua
+              </label>
             </div>
           </div>
           <div className="mt-4">
@@ -203,10 +218,21 @@ export default function FormCheckOut() {
             <div className="mt-4">
               <div className="flex justify-between">
                 <div className="flex items-center space-x-2 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4" />
-                  <label className="text-sm">
-                    Tôi xác nhận thông tin trên và chấp nhận các của Điều khoản
-                    sử dụng website
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4"
+                    name="termsOfUse"
+                    id="termsOfUse"
+                  />
+                  <label className="text-sm" htmlFor="termsOfUse">
+                    Tôi xác nhận thông tin trên và chấp nhận các của{" "}
+                    <Link
+                      className="text-blue-700 font-semibold underline"
+                      href="/thong-tin-chung/dieu-khoan-su-dung"
+                      target="_blank"
+                    >
+                      Điều khoản sử dụng website
+                    </Link>
                   </label>
                 </div>
                 <div className="w-[300px]">

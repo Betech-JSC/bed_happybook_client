@@ -7,6 +7,7 @@ import { SearchFilghtProps } from "@/types/flight";
 import SearchHotel from "@/app/khach-san/components/Search";
 import Select from "react-select";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import SearchFormInsurance from "@/app/bao-hiem/components/SearchForm";
 
 export default function Search({ airportsData, locationsData }: any) {
   const router = useRouter();
@@ -125,8 +126,8 @@ export default function Search({ airportsData, locationsData }: any) {
           </div>
           {/* Tabs 2 */}
           <div className={`mt-8 ${activeTab === 2 ? "block" : "hidden"}`}>
-            <div className="flex lg:space-x-1 xl:space-x-2">
-              <div className="w-[42.5%]">
+            <SearchFormInsurance />
+            {/* <div className="w-[42.5%]">
                 <label
                   className="block text-gray-700 mb-1"
                   data-translate="true"
@@ -203,8 +204,7 @@ export default function Search({ airportsData, locationsData }: any) {
                     Tra cứu
                   </button>
                 </div>
-              </div>
-            </div>
+              </div> */}
           </div>
 
           {/* Tabs 3 */}
