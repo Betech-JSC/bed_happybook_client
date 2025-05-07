@@ -5,9 +5,9 @@ import { formatCurrency } from "@/lib/formatters";
 import CustomerRating from "@/components/product/CustomerRating";
 import { formatDate } from "@/lib/formatters";
 import { isEmpty } from "lodash";
-import { renderTextContent, renderTextContentArray } from "@/utils/Helper";
+import { renderTextContent } from "@/utils/Helper";
 
-export default function Tabs({ detail, id }: any) {
+export default function Tabs({ detail }: any) {
   const [activeTab, setActiveTab] = useState(0);
   const [currentTabWidth, setCurrentTabWidth] = useState(0);
   const tabContainerRef = useRef<HTMLDivElement>(null);
@@ -72,7 +72,7 @@ export default function Tabs({ detail, id }: any) {
           <div
             className="mt-4 text-base"
             dangerouslySetInnerHTML={{
-              __html: renderTextContentArray(detail?.highlights),
+              __html: renderTextContent(detail?.overview),
             }}
           ></div>
         </div>
@@ -140,9 +140,8 @@ export default function Tabs({ detail, id }: any) {
                       ${
                         openDropdown === key ? "max-h-[5000px] pb-4" : "max-h-0"
                       }`}
-                  // ACTIVITIES IS ARRAY STRING
                   dangerouslySetInnerHTML={{
-                    __html: renderTextContentArray(schedule?.activities),
+                    __html: renderTextContent(schedule?.content),
                   }}
                 ></div>
               </div>
@@ -176,37 +175,56 @@ export default function Tabs({ detail, id }: any) {
                       className="py-4 px-2 border border-gray-200"
                       data-translate
                     >
-                      Số khách
+                      Ngày khởi hành
+                    </th>
+                    {/* <th
+                      className="py-4 px-2  border border-gray-200"
+                      data-translate
+                    >
+                      Mã Tour
+                    </th> */}
+                    <th
+                      className="py-4 px-2  border border-gray-200"
+                      data-translate
+                    >
+                      Giá người lớn
                     </th>
                     <th
                       className="py-4 px-2  border border-gray-200"
                       data-translate
                     >
-                      Giá bán 1 khách
+                      Giá trẻ em
                     </th>
                     <th
                       className="py-4 px-2  border border-gray-200"
                       data-translate
                     >
-                      Tổng giá bán
+                      Giá em bé
                     </th>
                   </tr>
                   {detail.prices.map((item: any, index: number) => (
                     <tr key={index}>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {item.number_of_guests > 0 ? item.number_of_guests : "Liên hệ"}
+                        {formatDate(detail.start_date)}
                       </td>
+                      {/* <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
+                        {item.code ?? ""}
+                      </td> */}
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {item.price_per_person > 0
-                          ? formatCurrency(item.price_per_person)
+                        {item.price_tour > 0
+                          ? formatCurrency(item.price_tour)
                           : "Liên hệ"}
                       </td>
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {item.total_price > 0
-                          ? formatCurrency(item.total_price)
+                        {item.price_child > 0
+                          ? formatCurrency(item.price_child)
                           : "Liên hệ"}
                       </td>
-                     
+                      <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
+                        {item.price_baby > 0
+                          ? formatCurrency(item.price_baby)
+                          : "Liên hệ"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -228,12 +246,12 @@ export default function Tabs({ detail, id }: any) {
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
             data-translate
           >
-            Lưu ý
+            Quy định dịch vụ
           </h2>
           <div
             className="mt-4 text-base"
             dangerouslySetInnerHTML={{
-              __html: renderTextContentArray(detail?.notes),
+              __html: renderTextContent(detail?.service_regulation),
             }}
           ></div>
         </div>
@@ -243,13 +261,13 @@ export default function Tabs({ detail, id }: any) {
           }`}
         >
           <CustomerRating
-            product_id={id}
-            total_rating={detail.product_rate.total_rating}
-            average_rating={detail.product_rate.average_rating}
-            average_tour_guide_rating={detail.product_rate.average_tour_guide_rating}
-            average_route_rating={detail.product_rate.average_route_rating}
-            average_transportation_rating={detail.product_rate.average_transportation_rating}
-            average_price_rating={detail.product_rate.average_price_rating}
+            product_id={detail.id}
+            total_rating={detail.total_rating}
+            average_rating={detail.average_rating}
+            average_tour_guide_rating={detail.average_tour_guide_rating}
+            average_route_rating={detail.average_route_rating}
+            average_transportation_rating={detail.average_transportation_rating}
+            average_price_rating={detail.average_price_rating}
           />
         </div>
       </div>

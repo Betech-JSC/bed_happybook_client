@@ -69,7 +69,7 @@ export default function TourNoiDia({ data }: any) {
           {/* Tabs */}
           <div className="w-full mt-6">
             <div className="border-b border-gray-200">
-              {/* <div className="flex space-x-3 mb-8">
+              <div className="flex space-x-3 mb-8">
                 {data.map(
                   (
                     category: {
@@ -94,29 +94,42 @@ export default function TourNoiDia({ data }: any) {
                     </button>
                   )
                 )}
-              </div> */}
-                        <div className="mt-8 w-full">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-            >
-              <CarouselContent>
-                {data.map((tour: any, index: number) => (
-                  <CarouselItem
-                    key={index}
-                    className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                  >
-                    <TourItem tour={tour} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="hidden lg:inline-flex" />
-              <CarouselNext className="hidden lg:inline-flex" />
-            </Carousel>
-          </div>
-              
+              </div>
+              {data.map(
+                (
+                  category: {
+                    name: string;
+                    id: number;
+                    type_tour: number;
+                    tours: any[];
+                  },
+                  tabIndex: number
+                ) => (
+                  <div className="" key={tabIndex}>
+                    {/* {activeTab === tabIndex && ( */}
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                      }}
+                      className={`${
+                        activeTab === tabIndex ? "block" : "hidden"
+                      }`}
+                    >
+                      <CarouselContent>
+                        {category.tours.map((tour, index) => (
+                          <CarouselItem key={index} className="basis-1/4">
+                            <TourItem key={index} tour={tour} />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                    {/* )} */}
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
