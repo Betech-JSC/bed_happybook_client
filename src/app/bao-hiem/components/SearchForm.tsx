@@ -6,6 +6,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format, parse, isValid } from "date-fns";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-hot-toast";
+import Select from "react-select";
+import { isNumber } from "lodash";
 
 interface SearchForm {
   productId: number | null;
@@ -14,19 +18,55 @@ interface SearchForm {
 }
 export default function SearchFormInsurance() {
   const today = new Date();
+  const router = useRouter();
   const { language } = useLanguage();
+  const searchParams = useSearchParams();
   const departDateRef = useRef<DatePicker | null>(null);
   const returnDateRef = useRef<DatePicker | null>(null);
-  const handleFocusNextDate = (nextRef: React.RefObject<DatePicker | null>) => {
-    if (nextRef.current) {
-      nextRef.current.setFocus();
-    }
-  };
+
   const [formData, setFormData] = useState<SearchForm>({
     productId: null,
     departureDate: null,
     returnDate: null,
   });
+
+  useEffect(() => {
+    if (datePickerLocale[language]) {
+      registerLocale(language, datePickerLocale[language]);
+    }
+  }, [language]);
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const departDate = parse(
+      searchParams.get("departDate") ?? "",
+      "ddMMyyyy",
+      new Date()
+    );
+    const returnDate = parse(
+      searchParams.get("returnDate") ?? "",
+      "ddMMyyyy",
+      new Date()
+    );
+    setFormData({
+      productId: isNumber(parseInt(searchParams.get("insurance") ?? "0"))
+        ? parseInt(searchParams.get("insurance") ?? "0")
+        : null,
+      departureDate: isValid(departDate) ? departDate : null,
+      returnDate: isValid(returnDate) ? returnDate : null,
+    });
+  }, [searchParams]);
+
+  const handleFocusNextDate = (nextRef: React.RefObject<DatePicker | null>) => {
+    if (nextRef.current) {
+      nextRef.current.setFocus();
+    }
+  };
+
   const handleDepartDateChange = (date: Date | null) => {
     if (!formData.returnDate) {
       handleFocusNextDate(returnDateRef);
@@ -50,12 +90,33 @@ export default function SearchFormInsurance() {
     }));
   };
 
-  useEffect(() => {
-    if (datePickerLocale[language]) {
-      registerLocale(language, datePickerLocale[language]);
+  const handleSearch = () => {
+    const { productId, departureDate, returnDate } = formData;
+    if (productId && departureDate && returnDate) {
+      const formattedDate = departureDate
+        ? format(departureDate, "ddMMyyyy")
+        : "";
+      const formattedReturndate = returnDate
+        ? format(returnDate, "ddMMyyyy")
+        : "";
+      const queryString = `/bao-hiem?insurance=${productId}&departDate=${formattedDate}&returnDate=${formattedReturndate}`;
+      router.push(queryString);
+    } else {
+      toast.dismiss();
+      toast.error("Vui lòng chọn đầy đủ thông tin");
     }
-  }, [language]);
+  };
 
+  const insuranceOptions = [
+    {
+      value: 1,
+      label: "Gói ABCD",
+    },
+    {
+      value: 2,
+      label: "Gói ABCDE",
+    },
+  ];
   return (
     <div className="flex lg:space-x-1 xl:space-x-2">
       <div className="w-[42.5%]">
@@ -69,9 +130,32 @@ export default function SearchFormInsurance() {
             width={18}
             height={18}
           ></Image>
-          <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-            <option data-translate="true">Gói ABCD</option>
-          </select>
+          {mounted && (
+            <Select
+              value={insuranceOptions.find(
+                (opt) => opt.value === formData.productId
+              )}
+              options={insuranceOptions}
+              placeholder={`${
+                language === "en" ? "Select insurance" : "Chọn bảo hiểm"
+              }`}
+              className="w-full flex-1 focus:outline-none text-black appearance-none"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  border: "none",
+                  boxShadow: "none",
+                  cursor: "pointer",
+                }),
+              }}
+              onChange={(selectedOption) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  productId: selectedOption ? selectedOption.value : null,
+                }))
+              }
+            />
+          )}
         </div>
       </div>
 
@@ -146,7 +230,7 @@ export default function SearchFormInsurance() {
         </div>
       </div>
 
-      <div className="w-[15%]">
+      <div className="w-[15%]" onClick={handleSearch}>
         <label className="block text-gray-700 mb-1 h-6"></label>
         <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600  ">
           <Image

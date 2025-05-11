@@ -147,12 +147,28 @@ export default function FlightBookForm({ airportsData }: any) {
     data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
     let fare_data: any = [];
+    let total_price_net = 0;
+    let total_tax = 0;
+    let total_fee_service = 0;
+    let total_price = 0;
+
     flights.map((item) => {
+      total_price_net += item.selectedTicketClass.totalPriceWithOutTax;
+      total_tax +=
+        item.selectedTicketClass.totalTaxAdt +
+        item.selectedTicketClass.totalTaxChd +
+        item.selectedTicketClass.totalTaxInf;
+      total_price += item.selectedTicketClass.totalPrice;
       fare_data.push({
         session: flightSession,
         fare_data_id_api: 1,
         source: item.source,
-        flights: [{ flight_value: item.selectedTicketClass.fareValue }],
+        flights: [
+          {
+            flight_value: item.selectedTicketClass.fareValue,
+            detail: item.selectedTicketClass,
+          },
+        ],
       });
     });
     formatData.contact.gender =
@@ -166,6 +182,10 @@ export default function FlightBookForm({ airportsData }: any) {
       fare_data,
       is_invoice: generateInvoice,
       flightType: flightType,
+      total_price_net: total_price_net,
+      total_tax: total_tax,
+      total_fee_service: total_fee_service,
+      total_price: total_price,
     };
     const bookFlight = async () => {
       try {
