@@ -161,12 +161,12 @@ export default function FlightBookForm({ airportsData }: any) {
       total_price += item.selectedTicketClass.totalPrice;
       fare_data.push({
         session: flightSession,
-        fare_data_id_api: 1,
+        fare_data_id_api: item.flightId,
         source: item.source,
         flights: [
           {
             flight_value: item.selectedTicketClass.fareValue,
-            detail: item.selectedTicketClass,
+            detail: item,
           },
         ],
       });
