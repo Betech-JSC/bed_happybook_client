@@ -7,6 +7,7 @@ import SearchHotel from "@/app/khach-san/components/Search";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import SearchFormInsurance from "@/app/bao-hiem/components/SearchForm";
 
 export default function SearchMobile({ airportsData, locationsData }: any) {
   const [activeTabMb, setActiveTabMb] = useState(0);
@@ -168,111 +169,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
 
           {/* Tab */}
           <div className={`px-3 ${activeTabMb === 2 ? "block" : "hidden"}`}>
-            {/* <div className="grid grid-cols-2 gap-3">
-              <label className="flex items-center space-x-2">
-                <input type="radio" name="trip" className="form-radio" />
-                <span className="text-black" data-translate="true">
-                  Du lịch nội địa
-                </span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input type="radio" name="trip" className="form-radio" />
-                <span className="text-black" data-translate="true">
-                  Du lịch quốc tế
-                </span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input type="radio" name="trip" className="form-radio" />
-                <span className="text-black" data-translate="true">
-                  Nhập cảnh
-                </span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input type="radio" name="trip" className="form-radio" />
-                <span className="text-black" data-translate="true">
-                  Trễ chuyến bay
-                </span>
-              </label>
-            </div> */}
-
-            <div className="grid grid-cols-1">
-              <div className="mb-2">
-                <label
-                  className="block text-gray-700 mb-2"
-                  data-translate="true"
-                >
-                  Bảo hiểm
-                </label>
-                <div className="flex h-12 items-center border rounded-lg px-2">
-                  <Image
-                    src="/icon/umbrella-blue.svg"
-                    alt="Icon"
-                    width={18}
-                    height={18}
-                  ></Image>
-                  <select className="ml-2 flex-1 focus:outline-none text-black appearance-none">
-                    <option data-translate="true">Gói ABCD</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="mb-2">
-                <label
-                  className="block text-gray-700 mb-2"
-                  data-translate="true"
-                >
-                  Ngày đi - ngày về
-                </label>
-                <div className="flex gap-3 justify-between h-12 items-center border rounded-lg px-2 text-black">
-                  <div className="flex justify-between items-center w-4/12">
-                    <Image
-                      src="/icon/calendar.svg"
-                      alt="Phone icon"
-                      className="h-10"
-                      width={18}
-                      height={18}
-                    ></Image>
-                    <span>14/08/2024</span>
-                  </div>
-                  <div className="w-4/12">
-                    <Image
-                      src="/icon/line.png"
-                      alt="Icon"
-                      className="h-[1px] w-full"
-                      width={160}
-                      height={1}
-                    ></Image>
-                  </div>
-                  <div className="w-4/12">
-                    <span> 22/08/2024</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              className="w-full px-3"
-              onClick={() => {
-                router.push("/bao-hiem");
-              }}
-            >
-              <label className="block text-gray-700 mb-1 h-6"></label>
-              <button className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] ">
-                <Image
-                  src="/icon/search.svg"
-                  alt="Phone icon"
-                  className="h-10 inline-block"
-                  width={18}
-                  height={18}
-                  style={{ width: 20, height: 20 }}
-                ></Image>
-                <span
-                  className="ml-2 h-12 text-white rounded-lg  focus:outline-none"
-                  data-translate="true"
-                >
-                  Tìm kiếm
-                </span>
-              </button>
-            </div>
+            <SearchFormInsurance />
           </div>
 
           {/* Tab Ticket */}

@@ -279,7 +279,7 @@ export default function FlightBookForm({ airportsData }: any) {
     totalTaxInf += ticketClass.taxInfant;
     totalPriceAdt += ticketClass.totalAdult;
     totalPriceChd += ticketClass.totalChild;
-    totalPriceAdt += ticketClass.totalInfant;
+    totalPriceInf += ticketClass.totalInfant;
     totalPrice += ticketClass.totalPrice;
   });
   if (totalAdt) {
@@ -1373,7 +1373,10 @@ export default function FlightBookForm({ airportsData }: any) {
                                           >
                                             {`${baggage.detail.weight} ${baggage.detail.unit}`}{" "}
                                             {" / "}
-                                            {formatCurrency(baggage.price)}
+                                            {formatCurrency(baggage.price)}{" "}
+                                            {baggage.description
+                                              ? `(${baggage.description})`
+                                              : ""}
                                           </option>
                                         )
                                       )}
