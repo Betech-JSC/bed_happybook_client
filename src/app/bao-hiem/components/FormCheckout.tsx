@@ -73,7 +73,7 @@ export default function FormCheckOut() {
   ];
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid lg:grid-cols-3 gap-4">
         <div className="relative">
           <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs">
             <span data-translate="true">Nơi đi</span>
@@ -116,9 +116,11 @@ export default function FormCheckOut() {
         </div>
       </div>
       <div className="mt-6">
-        <p className="text-22 font-bold">Thông tin người mua bảo hiểm</p>
+        <p className="text-18 lg:text-22 font-bold">
+          Thông tin người mua bảo hiểm
+        </p>
         <div className="mt-6">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid lg:grid-cols-3 gap-4">
             <div className="relative">
               <input
                 type="text"
@@ -159,8 +161,8 @@ export default function FormCheckOut() {
               )}
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-4 gap-4">
-            <div className="col-span-2 relative">
+          <div className="mt-4 grid lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-2 relative">
               <input
                 type="text"
                 placeholder="Địa chỉ"
@@ -173,7 +175,7 @@ export default function FormCheckOut() {
                 </p>
               )}
             </div>
-            <div className="col-span-1 relative">
+            <div className="lg:col-span-1 relative">
               <input
                 type="text"
                 placeholder="Số điện thoại"
@@ -186,7 +188,7 @@ export default function FormCheckOut() {
                 </p>
               )}
             </div>
-            <div className="col-span-1 relative">
+            <div className="lg:col-span-1 relative">
               <input
                 type="text"
                 placeholder="Email"
@@ -200,7 +202,7 @@ export default function FormCheckOut() {
               )}
             </div>
           </div>
-          <div className="mt-4 flex gap-4">
+          <div className="mt-4 flex flex-col lg:flex-row gap-4">
             <div className="flex items-center space-x-2 cursor-pointer">
               <input
                 id="informationBySelf"
@@ -334,7 +336,7 @@ export default function FormCheckOut() {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-3 mt-4 gap-4">
+            <div className="grid lg:grid-cols-3 mt-4 gap-4">
               <div className="relative">
                 <label
                   htmlFor="GenerateInvoice_recipient_name"
@@ -400,15 +402,18 @@ export default function FormCheckOut() {
             </div>
           </div>
           <div className="mt-6">
-            <div className="flex items-center p-4 rounded-lg bg-gray-100">
-              <div className="w-[62%]">
+            <div className="flex flex-wrap items-center p-4 rounded-lg bg-gray-100">
+              <div className="w-full lg:w-[62%]">
                 <p>
                   Để thuận tiện việc nhập Danh sách khách đoàn, Quý khách có thể
                   tải mẫu Excel, điền thông tin và tải lên.
                 </p>
               </div>
-              <div className="w-[38%] flex gap-4 justify-end">
-                <button className="flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white">
+              <div className="w-full flex gap-2 lg:gap-4 flex-wrap lg:flex-nowrap mt-3 lg:mt-0 lg:w-[38%] justify-end">
+                <button
+                  type="button"
+                  className="w-full lg:w-auto flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white"
+                >
                   <Image
                     src="/icon/download.svg"
                     alt="Icon"
@@ -417,7 +422,10 @@ export default function FormCheckOut() {
                   />
                   <p>Tải danh sách mẫu</p>
                 </button>
-                <button className="flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white">
+                <label
+                  // type="button"
+                  className="w-full lg:w-auto cursor-pointer flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white"
+                >
                   <Image
                     src="/icon/download.svg"
                     alt="Icon"
@@ -425,15 +433,17 @@ export default function FormCheckOut() {
                     height={20}
                   />
                   <p>Chọn danh sách</p>
-                </button>
+                </label>
               </div>
             </div>
           </div>
           <div className="mt-6">
-            <p className="text-22 font-bold">Thông tin người hưởng bảo hiểm</p>
+            <p className="text-18 lg:text-22 font-bold">
+              Thông tin người hưởng bảo hiểm
+            </p>
             {insuredUser.map((item, index) => (
               <Fragment key={index}>
-                <div className="mt-6 grid grid-cols-4 gap-4">
+                <div className="mt-6 grid lg:grid-cols-4 gap-4">
                   <div className="relative">
                     <label
                       htmlFor="service"
@@ -468,7 +478,7 @@ export default function FormCheckOut() {
                       defaultValue={item.fullName}
                       placeholder="Nguyễn Văn A"
                       {...register(`insuredUser.${index}.fullName`)}
-                      className="h-full text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />{" "}
                     {errors.insuredUser?.[index]?.fullName && (
                       <p className="text-red-600">
@@ -482,7 +492,7 @@ export default function FormCheckOut() {
                       placeholder="Ngày sinh"
                       defaultValue={item.birthday}
                       {...register(`insuredUser.${index}.birthday`)}
-                      className="h-full text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />{" "}
                     {errors.insuredUser?.[index]?.birthday && (
                       <p className="text-red-600">
@@ -496,7 +506,7 @@ export default function FormCheckOut() {
                       placeholder="Số CCCD"
                       defaultValue={item.citizenId}
                       {...register(`insuredUser.${index}.citizenId`)}
-                      className="h-full text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />{" "}
                     {errors.insuredUser?.[index]?.citizenId && (
                       <p className="text-red-600">
@@ -505,7 +515,7 @@ export default function FormCheckOut() {
                     )}
                   </div>
                 </div>
-                <div className="mt-6 grid grid-cols-4 gap-4">
+                <div className="mt-6 grid lg:grid-cols-4 gap-4">
                   <div className="relative">
                     <label
                       htmlFor="service"
@@ -529,30 +539,30 @@ export default function FormCheckOut() {
                     <input
                       type="text"
                       placeholder="Địa chỉ"
-                      className="h-full text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Số điện thoại"
-                      className="h-full text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Nhập Email"
-                      className="h-full text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
                 <div className="mt-4">
-                  <div className="flex justify-between">
-                    <div className="flex items-center space-x-2 cursor-pointer">
+                  <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 justify-between">
+                    <div className="flex items-start lg:items-center space-x-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        className="w-4 h-4"
+                        className="w-4 h-4 mt-1 lg:mt-0 flex-shrink-0"
                         name="termsOfUse"
                         id="termsOfUse"
                       />
@@ -568,7 +578,7 @@ export default function FormCheckOut() {
                         website
                       </label>
                     </div>
-                    <div className="w-[300px]">
+                    <div className="w-full lg:w-[300px]">
                       <LoadingButton
                         text="Đặt đơn bảo hiểm"
                         isLoading={false}

@@ -10,12 +10,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Select from "react-select";
 import { isNumber } from "lodash";
+import { SearchForm } from "@/types/insurance";
+import { ProductInsurance } from "@/api/ProductInsurance";
 
-interface SearchForm {
-  productId: number | null;
-  departureDate: Date | null;
-  returnDate: Date | null;
-}
 export default function SearchFormInsurance() {
   const today = new Date();
   const router = useRouter();
@@ -23,7 +20,10 @@ export default function SearchFormInsurance() {
   const searchParams = useSearchParams();
   const departDateRef = useRef<DatePicker | null>(null);
   const returnDateRef = useRef<DatePicker | null>(null);
-
+  const [mounted, setMounted] = useState(false);
+  const [insuranceOptions, setInsuranceOptions] = useState<
+    { value: number; label: string }[]
+  >([]);
   const [formData, setFormData] = useState<SearchForm>({
     productId: null,
     departureDate: null,
@@ -31,12 +31,19 @@ export default function SearchFormInsurance() {
   });
 
   useEffect(() => {
+    const getOptions = async () => {
+      const response = await ProductInsurance.options();
+      setInsuranceOptions(response?.payload?.data ?? []);
+    };
+    getOptions();
+  }, []);
+
+  useEffect(() => {
     if (datePickerLocale[language]) {
       registerLocale(language, datePickerLocale[language]);
     }
   }, [language]);
 
-  const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -107,20 +114,13 @@ export default function SearchFormInsurance() {
     }
   };
 
-  const insuranceOptions = [
-    {
-      value: 1,
-      label: "Gói ABCD",
-    },
-    {
-      value: 2,
-      label: "Gói ABCDE",
-    },
-  ];
   return (
-    <div className="flex lg:space-x-1 xl:space-x-2">
-      <div className="w-[42.5%]">
-        <label className="block text-gray-700 mb-1" data-translate="true">
+    <div className="flex flex-wrap lg:flex-nowrap space-y-4 lg:space-y-0 lg:space-x-1 xl:space-x-2">
+      <div className="w-full lg:w-[42.5%]">
+        <label
+          className="block text-gray-700 mb-2 lg:mb-1"
+          data-translate="true"
+        >
           Bảo hiểm
         </label>
         <div className="flex h-12 items-center border rounded-lg px-2">
@@ -159,12 +159,15 @@ export default function SearchFormInsurance() {
         </div>
       </div>
 
-      <div className="w-[42.5%]">
-        <label className="block text-gray-700 mb-1" data-translate="true">
+      <div className="w-full lg:w-[42.5%]">
+        <label
+          className="block text-gray-700 mb-2 lg:mb-1"
+          data-translate="true"
+        >
           Ngày đi - ngày về
         </label>
         <div className="flex justify-between h-12 items-center border rounded-lg px-2 text-black">
-          <div className="w-1/4 flex justify-between items-center	">
+          <div className="w-[45%] xl:w-1/4 flex justify-between items-center	">
             <Image
               src="/icon/calendar.svg"
               alt="Phone icon"
@@ -191,16 +194,16 @@ export default function SearchFormInsurance() {
               />
             </div>
           </div>
-          <div className="w-1/2">
+          <div className="w-[10%] xl:w-1/2">
             <Image
               src="/icon/line.png"
               alt="Icon"
-              className="h-[1px] max-w-[280px]"
+              className="h-[1px] xl:max-w-[280px] mx-auto"
               width={280}
               height={1}
             ></Image>
           </div>
-          <div className="w-1/4 [&>div]:w-full border-none">
+          <div className="w-[45%] xl:w-1/4 [&>div]:w-full border-none">
             <DatePicker
               id="start_date"
               ref={returnDateRef}
@@ -210,6 +213,7 @@ export default function SearchFormInsurance() {
               placeholderText="Ngày về"
               popperPlacement="bottom-start"
               locale={language}
+              autoComplete="off"
               minDate={
                 formData.departureDate && isValid(formData.departureDate)
                   ? formData.departureDate
@@ -224,14 +228,14 @@ export default function SearchFormInsurance() {
               onKeyDown={(e) => {
                 e.preventDefault();
               }}
-              className="z-20 pl-3 w-full outline-none"
+              className="z-20 lg:pl-3 w-full outline-none text-center"
             />
           </div>
         </div>
       </div>
 
-      <div className="w-[15%]" onClick={handleSearch}>
-        <label className="block text-gray-700 mb-1 h-6"></label>
+      <div className="w-full lg:w-[15%]" onClick={handleSearch}>
+        <label className="hidden lg:block text-gray-700 mb-1 h-6"></label>
         <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600  ">
           <Image
             src="/icon/search.svg"

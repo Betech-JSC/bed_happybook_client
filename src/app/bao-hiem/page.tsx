@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { Suspense } from "react";
-import { formatCurrency, formatDate, formatMetadata } from "@/lib/formatters";
+import { formatMetadata } from "@/lib/formatters";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
-import { buildSearch } from "@/utils/Helper";
 import SearchFormInsurance from "./components/SearchForm";
 import SearchResults from "./components/SearchResults";
+import { SearchProps } from "@/types/insurance";
+import { format, parse, isValid, addDays, isBefore, isEqual } from "date-fns";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = formatMetadata({
   title:
@@ -18,8 +19,38 @@ export const metadata: Metadata = formatMetadata({
     canonical: pageUrl("bao-hiem"),
   },
 });
+export default async function Insurance({ searchParams }: SearchProps) {
+  const today = new Date();
 
-export default async function Insurance() {
+  const parseDate = (value?: string): Date | null => {
+    if (!value || value.length !== 8) return null;
+    const parsed = parse(value, "ddMMyyyy", new Date());
+    return isValid(parsed) ? parsed : null;
+  };
+
+  const departDate = parseDate(searchParams?.departDate ?? "") ?? today;
+  let returnDate = parseDate(searchParams?.returnDate ?? "");
+
+  if (
+    !returnDate ||
+    isBefore(returnDate, departDate) ||
+    isEqual(returnDate, departDate)
+  ) {
+    returnDate = addDays(departDate, 1);
+  }
+
+  const newParams = new URLSearchParams({
+    departDate: format(departDate, "ddMMyyyy"),
+    returnDate: format(returnDate, "ddMMyyyy"),
+  });
+
+  if (
+    searchParams.departDate !== newParams.get("departDate") ||
+    searchParams.returnDate !== newParams.get("returnDate")
+  ) {
+    redirect(`?${newParams.toString()}`);
+  }
+
   return (
     <SeoSchema
       metadata={metadata}
@@ -56,14 +87,17 @@ export default async function Insurance() {
           </div>
         </div>
       </div>
-      <main className="w-full bg-gray-100 relative z-2 rounded-2xl top-[-12px] py-12">
+      <main className="w-full bg-gray-100 relative z-2 rounded-2xl top-[-12px] py-5 lg:py-12">
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           <div>
-            <h2 className="text-32 font-bold !leading-tight">
+            <h2 className="text-2xl lg:text-32 font-bold !leading-tight">
               Bảo hiểm du lịch quốc tế
             </h2>
             <p className="text-base font-normal leading-normal text-gray-500 mt-2">
-              04/09/2024 - 07/09/2024
+              {`${format(departDate, "dd/MM/yyyy")} - ${format(
+                returnDate,
+                "dd/MM/yyyy"
+              )}`}
             </p>
           </div>
           <div className="mt-6">

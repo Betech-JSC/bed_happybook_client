@@ -18,15 +18,15 @@ export default function InsuranceCheckout() {
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
           <div className="mt-12 relative">
             <div className="text-center">
-              <h1 className="text-32 text-white font-bold">
+              <h1 className="text-2xl lg:text-32 text-white font-bold">
                 Bảo hiểm du lịch quốc tế
               </h1>
               <p className="mt-3 text-base text-white">
-                Việt Nam - Châu Âu (06/09/2024 - 09/09/2024) 4 Ngày
+                (06/09/2024 - 09/09/2024) 4 Ngày
               </p>
             </div>
-            <div className="mt-8 grid grid-cols-8 items-center justify-between bg-white py-6 px-8 rounded-2xl relative">
-              <div className="col-span-6">
+            <div className="mt-8 flex space-y-3 flex-wrap lg:flex-none lg:grid grid-cols-8 items-center justify-between bg-white px-3 py-6 lg:px-8 rounded-2xl relative">
+              <div className="w-full lg:col-span-6">
                 <div className="flex flex-col md:flex-row item-start gap-2 md:gap-8 text-center">
                   <div>
                     <Image
@@ -46,7 +46,7 @@ export default function InsuranceCheckout() {
                   </div>
                 </div>
               </div>
-              <div className="col-span-1 w-full text-center h-full">
+              <div className="w-1/2 lg:w-full lg:col-span-1  text-center h-full">
                 <div className="text-left flex flex-col justify-between h-full">
                   <p className="text-sm font-normal leading-snug text-gray-500">
                     Tổng tiền
@@ -56,10 +56,10 @@ export default function InsuranceCheckout() {
                   </p>
                 </div>
               </div>
-              <div className="col-span-1 w-full text-center">
+              <div className="w-1/2 lg:w-full lg:col-span-1  text-center">
                 <Link
                   href="/bao-hiem"
-                  className="max-w-32 block text-center w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
+                  className="lg:max-w-32 block text-center w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
                 >
                   Đổi gói
                 </Link>
@@ -68,9 +68,9 @@ export default function InsuranceCheckout() {
           </div>
         </div>
       </div>
-      <main className="w-full bg-gray-100 relative z-2 rounded-2xl pb-12">
+      <main className="w-full bg-gray-100 relative z-2 rounded-2xl pb-4 lg:pb-12">
         <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen relative top-[-30px]">
-          <div className="py-5 px-8 bg-white rounded-2xl">
+          <div className="px-3 py-5 lg:px-8 bg-white rounded-2xl">
             <FormCheckOut />
           </div>
         </div>
