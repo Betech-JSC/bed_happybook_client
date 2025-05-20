@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { differenceInSeconds, format } from "date-fns";
+import { differenceInSeconds, format, parseISO } from "date-fns";
 import {
   formatNumberToHoursAndMinutesFlight,
   formatTime,
@@ -153,12 +153,16 @@ export default function FlightDetailPopup({
                       </h2>
                       {flight?.segments?.length > 0 &&
                         flight.segments.map((segment: any, index: number) => {
+                          const segmentArrivalAt = parseISO(segment.arrival.at);
+                          const segmentDepartureAt = parseISO(
+                            segment.departure.at
+                          );
                           const durationFlight =
                             segment.duration > 0
                               ? segment.duration
                               : differenceInSeconds(
-                                  new Date(segment.departure.at),
-                                  new Date(segment.arrival.at)
+                                  segmentArrivalAt,
+                                  segmentDepartureAt
                                 ) / 60;
                           const airPortStartPoint =
                             airports

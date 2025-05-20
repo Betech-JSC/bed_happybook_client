@@ -13,6 +13,7 @@ import { Fragment, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { ProductInsurance } from "@/api/ProductInsurance";
 
 export default function FormCheckOut() {
   const { language } = useLanguage();
@@ -59,6 +60,23 @@ export default function FormCheckOut() {
       setLoading(false);
     }
   };
+
+  const handleDownload = async () => {
+    console.log(123);
+    // const res = await ProductInsurance.downLoadSampleExcel();
+    // if (!res.ok) {
+    //   toast.error("Có lỗi xảy ra. Vui lòng thử lại sau!");
+    //   return;
+    // }
+    // const blob = await res.blob();
+    // const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement("a");
+    // a.href = url;
+    // a.download = "danh_sach.xlsx";
+    // a.click();
+    // window.URL.revokeObjectURL(url);
+  };
+
   const insuredUser = [
     {
       gender: "male",
@@ -412,6 +430,7 @@ export default function FormCheckOut() {
               <div className="w-full flex gap-2 lg:gap-4 flex-wrap lg:flex-nowrap mt-3 lg:mt-0 lg:w-[38%] justify-end">
                 <button
                   type="button"
+                  onClick={handleDownload}
                   className="w-full lg:w-auto flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white"
                 >
                   <Image
