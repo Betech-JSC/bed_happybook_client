@@ -234,35 +234,37 @@ export default function ListFlights({
         });
       }
 
-      if (filters.timeDepart === "asc") {
-        filtered = [...filtered].sort(
-          (a, b) =>
-            new Date(a.departure.at).getTime() -
-            new Date(b.departure.at).getTime()
-        );
-      }
+      filtered = [...filtered].sort((a, b) => {
+        if (filters.timeDepart === "asc") {
+          const timeA = parseISO(a.departure.at).getTime();
+          const timeB = parseISO(b.departure.at).getTime();
+          if (timeA !== timeB) return timeA - timeB;
+        }
 
-      if (filters.sortAirLine === "asc") {
-        filtered = [...filtered].sort((a, b) =>
-          a.airline.localeCompare(b.airline)
-        );
-      }
+        if (filters.sortAirLine === "asc") {
+          const nameA = a.airline?.toLowerCase() ?? "";
+          const nameB = b.airline?.toLowerCase() ?? "";
+          const nameCompare = nameA.localeCompare(nameB);
+          if (nameCompare !== 0) return nameCompare;
+        }
+        return a.fareOptions?.[0]?.totalPrice - b.fareOptions?.[0]?.totalPrice;
+      });
     }
     if (isRoundTrip) {
       if (selectedDepartFlight && !selectedReturnFlight) {
-        const departureTimeGo = new Date(
+        const departureTimeGo = parseISO(
           selectedDepartFlight.arrival.at
         ).getTime();
         filtered = filtered.filter((flight: any) => {
-          const departureTimeReturn = new Date(flight.departure.at).getTime();
+          const departureTimeReturn = parseISO(flight.departure.at).getTime();
           return departureTimeReturn >= departureTimeGo + 2 * 60 * 60 * 1000;
         });
       } else if (!selectedDepartFlight && selectedReturnFlight) {
-        const departureTimeReturn = new Date(
+        const departureTimeReturn = parseISO(
           selectedReturnFlight.departure.at
         ).getTime();
         filtered = filtered.filter((flight: any) => {
-          const departureTimeGo = new Date(flight.arrival.at).getTime();
+          const departureTimeGo = parseISO(flight.arrival.at).getTime();
           return departureTimeGo <= departureTimeReturn - 2 * 60 * 60 * 1000;
         });
       }
