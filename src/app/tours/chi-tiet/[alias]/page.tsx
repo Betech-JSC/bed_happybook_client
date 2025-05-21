@@ -193,6 +193,19 @@ export default async function TourDetail({
                       </span>
                     </span>
                   </div>
+                  <div>
+                  {detail.remain && (
+                    <p className="flex space-x-2 mt-2">
+                      <Image
+                        src="/icon/Ticket.svg"
+                        alt="Time"
+                        width={20}
+                        height={20}
+                      />
+                      <span data-translate>{`Chỗ trống: ${detail.remain}`}</span>
+                    </p>
+                    )}
+                  </div>
                   <div className="flex space-x-2 mt-3 items-center">
                     <Image
                       className="w-4 h-4"

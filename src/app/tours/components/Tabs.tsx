@@ -8,6 +8,7 @@ import { isEmpty } from "lodash";
 import { renderTextContent } from "@/utils/Helper";
 
 export default function Tabs({ detail }: any) {
+  console.log(detail);
   const [activeTab, setActiveTab] = useState(0);
   const [currentTabWidth, setCurrentTabWidth] = useState(0);
   const tabContainerRef = useRef<HTMLDivElement>(null);
@@ -207,9 +208,6 @@ export default function Tabs({ detail }: any) {
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
                         {formatDate(detail.start_date)}
                       </td>
-                      {/* <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {item.code ?? ""}
-                      </td> */}
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
                         {item.price_tour > 0
                           ? formatCurrency(item.price_tour)
