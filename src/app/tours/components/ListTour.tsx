@@ -303,7 +303,20 @@ export default function ListTour({
                         <span data-translate="true">{`Khởi hành vào: ${tour.start_date.split("-").reverse().join("/")}`}</span>
                       </div>
                     )}
+                    {tour.remain && (
+                      <div className="flex space-x-2 mt-2 items-center">
+                        <Image
+                          className="w-4 h-4"
+                          src="/icon/Ticket.svg"
+                          alt="Time"
+                          width={18}
+                          height={18}
+                        />
+                        <span data-translate="true">{`Chỗ trống: ${tour.remain}`}</span>
+                      </div>
+                    )}
 
+                    
                     {tour.depart_point && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
