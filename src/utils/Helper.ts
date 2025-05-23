@@ -177,6 +177,18 @@ const renderTextContentArray = (content: any) => {
 };
 
 function decodeHtml(html: string): string {
+  if (typeof document === 'undefined') {
+    // Server-side fallback - basic HTML entity decoding
+    return html
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ');
+  }
+  
+  // Client-side implementation
   const textarea = document.createElement("textarea");
   textarea.innerHTML = html;
   const decoded = textarea.value;
