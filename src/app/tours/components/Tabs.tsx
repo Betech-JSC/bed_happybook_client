@@ -6,6 +6,7 @@ import CustomerRating from "@/components/product/CustomerRating";
 import { formatDate } from "@/lib/formatters";
 import { isEmpty } from "lodash";
 import { renderTextContent } from "@/utils/Helper";
+import { decodeHtml } from "@/utils/Helper";
 
 export default function Tabs({ detail }: any) {
   console.log(detail);
@@ -249,9 +250,10 @@ export default function Tabs({ detail }: any) {
           <div
             className="mt-4 text-base"
             dangerouslySetInnerHTML={{
-              __html: renderTextContent(detail?.service_regulation),
+              __html: decodeHtml(renderTextContent(detail?.service_regulation)).replace(/ü/g, '')
             }}
           ></div>
+          <div></div>
         </div>
         <div
           className={`bg-white rounded-2xl p-6  ${
