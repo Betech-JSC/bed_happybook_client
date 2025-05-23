@@ -36,7 +36,7 @@ export default async function TourCheckout({
               </h3>
             </div>
             <div className="mt-4">
-              <CheckOutTourForm productId={detail.id} />
+              <CheckOutTourForm productId={detail.id} startDate={detail.start_date} depart_point={detail.depart_point} />
             </div>
           </div>
           <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl">

@@ -21,8 +21,12 @@ import { datePickerLocale } from "@/constants/language";
 
 export default function CheckOutTourForm({
   productId,
+  startDate,
+  depart_point,
 }: {
   productId: number | string;
+  startDate: string;
+  depart_point: string;
 }) {
   const router = useRouter();
   const { language } = useLanguage();
@@ -126,7 +130,7 @@ export default function CheckOutTourForm({
                     render={({ field }) => (
                       <DatePicker
                         id={`depart_date`}
-                        selected={field.value || null}
+                        selected={field.value || startDate}
                         onChange={(date: Date | null) => field.onChange(date)}
                         onChangeRaw={(event) => {
                           if (event) {
@@ -176,6 +180,7 @@ export default function CheckOutTourForm({
                 </label>
                 <input
                   id="service"
+                  defaultValue={depart_point}
                   type="input"
                   placeholder="Nhập điểm khởi hành"
                   {...register("depart_point")}
