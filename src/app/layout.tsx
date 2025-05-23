@@ -12,6 +12,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { getSession } from "@/lib/session";
 import { UserProvider } from "./contexts/UserContext";
 import { LoadingProvider } from "./contexts/LoadingContext";
+import { useRouter } from 'next/navigation';
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -45,9 +46,9 @@ export default async function RootLayout({
             <div id="datepicker-portal"></div>
             <BackToTopButton></BackToTopButton>
             <Footer></Footer>
-            {/* <LoadingProvider> */}
-            <AppLoader />
-            {/* </LoadingProvider>  */}
+            <LoadingProvider>
+              <AppLoader />
+            </LoadingProvider>
           </UserProvider>
         </LanguageProvider>
       </body>

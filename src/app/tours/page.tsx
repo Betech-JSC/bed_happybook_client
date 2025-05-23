@@ -215,7 +215,7 @@ export default async function Tours() {
                     </h2>
                   </div>
                   <Link
-                    href="#"
+                    href="/tours/tour-quoc-te"
                     className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
                   >
                     <span className="text-[#175CD3] font-medium" data-translate>
