@@ -159,6 +159,7 @@ export default function FlightBookForm({ airportsData }: any) {
         item.selectedTicketClass.totalTaxChd +
         item.selectedTicketClass.totalTaxInf;
       total_price += item.selectedTicketClass.totalPrice;
+      total_fee_service += item.selectedTicketClass.totalServiceFee;
       fare_data.push({
         session: flightSession,
         fare_data_id_api: item.flightId,
