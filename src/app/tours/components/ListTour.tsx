@@ -233,7 +233,7 @@ export default function ListTour({
                       width={360}
                       height={270}
                       sizes="100vw"
-                      style={{ height: 270 }}
+                      // style={{ height: 270 }}
                     />
                   </Link>
                   <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
@@ -300,7 +300,10 @@ export default function ListTour({
                           width={18}
                           height={18}
                         />
-                        <span data-translate="true">{`Khởi hành vào: ${tour.start_date.split("-").reverse().join("/")}`}</span>
+                        <span data-translate="true">{`Khởi hành vào: ${tour.start_date
+                          .split("-")
+                          .reverse()
+                          .join("/")}`}</span>
                       </div>
                     )}
                     {tour.remain && (
@@ -316,7 +319,6 @@ export default function ListTour({
                       </div>
                     )}
 
-                    
                     {tour.depart_point && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
