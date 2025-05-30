@@ -10,6 +10,7 @@ export interface ValidationMessages {
   inValidLastName: string;
   inValidBirthDay: string;
   inValidPaymentMethod: string;
+  inValidAgreeTerms: string;
 }
 
 export const validationMessages: Record<"vi" | "en", ValidationMessages> = {
@@ -26,6 +27,7 @@ export const validationMessages: Record<"vi" | "en", ValidationMessages> = {
       "Vui lòng nhập Tên đệm & Tên không dấu và không có các chữ số",
     inValidBirthDay: "Ngày sinh không đúng định dạng",
     inValidPaymentMethod: "Vui lòng chọn phương thức thanh toán",
+    inValidAgreeTerms: "Vui lòng xác nhận thông tin này",
   },
   en: {
     required: "This field is required",
@@ -40,6 +42,7 @@ export const validationMessages: Record<"vi" | "en", ValidationMessages> = {
       "Please enter Middle Name & First Name without accents and without numbers",
     inValidBirthDay: "Date of birth is not in correct format",
     inValidPaymentMethod: "Please select payment method",
+    inValidAgreeTerms: "Please confirm this information",
   },
 };
 

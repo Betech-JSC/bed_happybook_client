@@ -2,7 +2,7 @@
 
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import LoadingButton from "@/components/base/LoadingButton";
-import { validationMessages } from "@/lib/messages";
+import { toastMessages, validationMessages } from "@/lib/messages";
 import {
   checkOutInsuranceSchema,
   checkOutInsuranceType,
@@ -11,15 +11,76 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { ProductInsurance } from "@/api/ProductInsurance";
+import { InsuranceInfoType, SearchForm } from "@/types/insurance";
+import { useRouter, useSearchParams } from "next/navigation";
+import { format, parse, isValid } from "date-fns";
+import { isNumber } from "lodash";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { vi, enUS } from "date-fns/locale";
+import "@/styles/flightBooking.scss";
+import ExcelUploader from "./ExcelUploader";
 
-export default function FormCheckOut() {
+export default function FormCheckOut({ detail }: any) {
   const { language } = useLanguage();
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const searchParams = useSearchParams();
+  const [isAgreeTerms, setIsAgreeTerms] = useState<boolean>(false);
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const messages = validationMessages[language as "vi" | "en"];
+  const [buyerBuyForSelf, setBuyerBuyForSelf] = useState(true);
+  const [insuranceBuyerInfo, setInsuranceBuyerInfo] =
+    useState<InsuranceInfoType>({
+      gender: "male",
+      name: "",
+      birthday: null,
+      citizenId: "",
+      buyFor: "self",
+      address: "",
+      phone: "",
+      email: "",
+    });
+  const [insuredInfoList, setInsuredInfoList] = useState<InsuranceInfoType[]>(
+    []
+  );
+
+  const [searchForm, setSearchForm] = useState<SearchForm>({
+    departurePlace: "",
+    destinationPlace: "",
+    departureDate: null,
+    returnDate: null,
+    guests: 1,
+    type: "",
+  });
+
+  useEffect(() => {
+    const departDate = parse(
+      searchParams.get("departure_date") ?? "",
+      "ddMMyyyy",
+      new Date()
+    );
+    const returnDate = parse(
+      searchParams.get("return_date") ?? "",
+      "ddMMyyyy",
+      new Date()
+    );
+    setSearchForm({
+      departurePlace: searchParams.get("departure") ?? "",
+      destinationPlace: searchParams.get("destination") ?? "",
+      departureDate: isValid(departDate) ? departDate : null,
+      returnDate: isValid(returnDate) ? returnDate : null,
+      guests: isNumber(parseInt(searchParams.get("guests") ?? "1"))
+        ? parseInt(searchParams.get("guests") ?? "1")
+        : 1,
+      type: searchParams.get("type") ?? "",
+    });
+  }, [searchParams]);
+
   const [schemaForm, setSchemaForm] = useState(() =>
     checkOutInsuranceSchema(messages, generateInvoice)
   );
@@ -27,12 +88,22 @@ export default function FormCheckOut() {
     register,
     handleSubmit,
     reset,
+    setValue,
     control,
+
     formState: { errors },
   } = useForm<checkOutInsuranceType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
+      birthday_buyer: insuranceBuyerInfo.birthday
+        ? insuranceBuyerInfo.birthday
+        : undefined,
       checkBoxGenerateInvoice: false,
+      from_address: searchParams.get("departure") ?? "",
+      to_address: searchParams.get("destination") ?? "",
+      number_insured: isNumber(parseInt(searchParams.get("guests") ?? "1"))
+        ? parseInt(searchParams.get("guests") ?? "1")
+        : 1,
     },
   });
 
@@ -40,55 +111,80 @@ export default function FormCheckOut() {
     setSchemaForm(checkOutInsuranceSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
 
-  const onSubmit = async (data: checkOutInsuranceType) => {
+  const onSubmit = async (formData: checkOutInsuranceType) => {
     try {
-      // setLoading(true);
-      console.log(data);
-      // const respon = await BookingProductApi.Combo(formatData);
-      // if (respon?.status === 200) {
-      //   reset();
-      //   toast.success(toaStrMsg.sendSuccess);
-      //   setTimeout(() => {
-      //     router.push("/combo");
-      //   }, 1500);
-      // } else {
-      //   toast.error(toaStrMsg.sendFailed);
-      // }
+      setLoading(true);
+      const genderMap: Record<string, boolean> = {
+        male: true,
+        female: false,
+      };
+
+      formData.insured_info = formData.insured_info.map((item: any) => ({
+        ...item,
+        gender: genderMap[item.gender] || false,
+      }));
+      let finalData = {
+        ...formData,
+        insurance_package_id: detail.id,
+        has_invoice: generateInvoice,
+        insurance_type_id: detail.insurance_type_id,
+      };
+      const respon = await ProductInsurance.booking(finalData);
+      if (respon?.status === 200) {
+        reset();
+        toast.success(toaStrMsg.sendSuccess);
+        setTimeout(() => {
+          router.push("/");
+        }, 1200);
+      } else {
+        toast.error(toaStrMsg.sendFailed);
+      }
     } catch (error: any) {
-      // toast.error(toaStrMsg.error);
+      toast.error(toaStrMsg.error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownload = async () => {
-    console.log(123);
-    // const res = await ProductInsurance.downLoadSampleExcel();
-    // if (!res.ok) {
-    //   toast.error("Có lỗi xảy ra. Vui lòng thử lại sau!");
-    //   return;
-    // }
-    // const blob = await res.blob();
-    // const url = window.URL.createObjectURL(blob);
-    // const a = document.createElement("a");
-    // a.href = url;
-    // a.download = "danh_sach.xlsx";
-    // a.click();
-    // window.URL.revokeObjectURL(url);
+  useEffect(() => {
+    setInsuredInfoList((prev) => {
+      const updated = [...prev];
+      updated[0] = {
+        ...insuranceBuyerInfo,
+        buyFor: buyerBuyForSelf ? "self" : "member",
+      };
+      return updated;
+    });
+  }, [buyerBuyForSelf, insuranceBuyerInfo]);
+
+  useEffect(() => {
+    if (buyerBuyForSelf) {
+      setInsuredInfoList((prev) => {
+        const updated = [...prev];
+        updated[0] = { ...insuranceBuyerInfo };
+        return updated;
+      });
+    }
+  }, [insuranceBuyerInfo, buyerBuyForSelf]);
+
+  const handleUploadSuccess = (data: any[]) => {
+    setInsuredInfoList(data);
+    setSearchForm((prev) => ({
+      ...prev,
+      guests: data.length,
+    }));
   };
 
-  const insuredUser = [
-    {
-      gender: "male",
-      fullName: "",
-      birthday: "",
-      citizenId: "",
-      buyFor: "self",
-      address: "",
-      phone: "",
-      email: "",
-    },
-  ];
+  useEffect(() => {
+    const formatted = insuredInfoList.map((item) => {
+      return {
+        ...item,
+        birthday: item.birthday ? new Date(item.birthday) : undefined,
+      };
+    });
+    reset({ insured_info: formatted });
+  }, [insuredInfoList, reset]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid lg:grid-cols-3 gap-4">
@@ -99,11 +195,12 @@ export default function FormCheckOut() {
           <input
             type="text"
             placeholder="Nhập nơi đi"
-            {...register("departurePoint")}
+            readOnly
+            {...register("from_address")}
             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
           />
-          {errors.departurePoint && (
-            <p className="text-red-600">{errors.departurePoint.message}</p>
+          {errors.from_address && (
+            <p className="text-red-600">{errors.from_address.message}</p>
           )}
         </div>
         <div className="relative">
@@ -113,11 +210,13 @@ export default function FormCheckOut() {
           <input
             type="text"
             placeholder="Nhập nơi đến"
-            {...register("destination")}
+            {...register("to_address")}
+            readOnly
+            defaultValue={searchForm?.destinationPlace}
             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
           />
-          {errors.destination && (
-            <p className="text-red-600">{errors.destination.message}</p>
+          {errors.to_address && (
+            <p className="text-red-600">{errors.to_address.message}</p>
           )}
         </div>
         <div className="relative">
@@ -127,10 +226,13 @@ export default function FormCheckOut() {
           <input
             type="text"
             placeholder="Nhập số lượng"
-            {...register("qty")}
+            {...register("number_insured")}
+            value={searchForm.guests}
             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
           />
-          {errors.qty && <p className="text-red-600">{errors.qty.message}</p>}
+          {errors.number_insured && (
+            <p className="text-red-600">{errors.number_insured.message}</p>
+          )}
         </div>
       </div>
       <div className="mt-6">
@@ -143,38 +245,85 @@ export default function FormCheckOut() {
               <input
                 type="text"
                 placeholder="Nguyễn Văn A"
-                {...register(`insuranceBuyer.fullName`)}
+                {...register(`name_buyer`)}
+                onChange={(e) =>
+                  setInsuranceBuyerInfo((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
                 className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
               />
-              {errors.insuranceBuyer?.fullName && (
-                <p className="text-red-600">
-                  {errors.insuranceBuyer?.fullName?.message}
-                </p>
+              {errors.name_buyer && (
+                <p className="text-red-600">{errors.name_buyer?.message}</p>
               )}
             </div>
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Ngày sinh"
-                {...register(`insuranceBuyer.birthday`)}
-                className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-              />
-              {errors.insuranceBuyer?.birthday && (
-                <p className="text-red-600">
-                  {errors.insuranceBuyer?.birthday?.message}
-                </p>
+              <div className="w-full booking-form-birthday flex justify-between items-center py-3 pl-1 pr-4 border border-gray-300 rounded-md">
+                <Controller
+                  name="birthday_buyer"
+                  control={control}
+                  render={({ field }) => (
+                    <DatePicker
+                      id="birthday_buyer"
+                      selected={
+                        field.value instanceof Date
+                          ? field.value
+                          : field.value
+                          ? new Date(field.value)
+                          : null
+                      }
+                      onChange={(date: Date | null) => field.onChange(date)}
+                      onChangeRaw={(event) => {
+                        if (event) {
+                          const target = event.target as HTMLInputElement;
+                          if (target.value) {
+                            target.value = target.value
+                              .trim()
+                              .replace(/\//g, "-");
+                          }
+                        }
+                      }}
+                      placeholderText="Ngày sinh"
+                      dateFormat="dd-MM-yyyy"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      locale={language === "vi" ? vi : enUS}
+                      maxDate={new Date(new Date().getFullYear() - 18, 11, 31)}
+                      minDate={new Date(new Date().getFullYear() - 100, 11, 31)}
+                      className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                    />
+                  )}
+                />{" "}
+                <Image
+                  src="/icon/calendar.svg"
+                  alt="Icon"
+                  className="h-5"
+                  width={18}
+                  height={20}
+                />
+              </div>
+              {errors.birthday_buyer && (
+                <p className="text-red-600">{errors.birthday_buyer?.message}</p>
               )}
             </div>
             <div className="relative">
               <input
                 type="text"
                 placeholder="Số CCCD"
-                {...register(`insuranceBuyer.citizenId`)}
+                {...register(`passport_number_buyer`)}
+                onChange={(e) =>
+                  setInsuranceBuyerInfo((prev) => ({
+                    ...prev,
+                    citizenId: e.target.value,
+                  }))
+                }
                 className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
               />{" "}
-              {errors.insuranceBuyer?.citizenId && (
+              {errors.passport_number_buyer && (
                 <p className="text-red-600">
-                  {errors.insuranceBuyer?.citizenId?.message}
+                  {errors.passport_number_buyer?.message}
                 </p>
               )}
             </div>
@@ -184,39 +333,51 @@ export default function FormCheckOut() {
               <input
                 type="text"
                 placeholder="Địa chỉ"
-                {...register(`insuranceBuyer.address`)}
+                {...register(`address_buyer`)}
+                onChange={(e) =>
+                  setInsuranceBuyerInfo((prev) => ({
+                    ...prev,
+                    address: e.target.value,
+                  }))
+                }
                 className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
               />{" "}
-              {errors.insuranceBuyer?.address && (
-                <p className="text-red-600">
-                  {errors.insuranceBuyer?.address?.message}
-                </p>
+              {errors.address_buyer && (
+                <p className="text-red-600">{errors.address_buyer?.message}</p>
               )}
             </div>
             <div className="lg:col-span-1 relative">
               <input
                 type="text"
                 placeholder="Số điện thoại"
-                {...register(`insuranceBuyer.phone`)}
+                {...register(`phone_buyer`)}
+                onChange={(e) =>
+                  setInsuranceBuyerInfo((prev) => ({
+                    ...prev,
+                    phone: e.target.value,
+                  }))
+                }
                 className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
               />
-              {errors.insuranceBuyer?.phone && (
-                <p className="text-red-600">
-                  {errors.insuranceBuyer?.phone?.message}
-                </p>
+              {errors.phone_buyer && (
+                <p className="text-red-600">{errors.phone_buyer?.message}</p>
               )}
             </div>
             <div className="lg:col-span-1 relative">
               <input
                 type="text"
                 placeholder="Email"
-                {...register(`insuranceBuyer.email`)}
+                {...register(`email_buyer`)}
+                onChange={(e) =>
+                  setInsuranceBuyerInfo((prev) => ({
+                    ...prev,
+                    email: e.target.value,
+                  }))
+                }
                 className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
               />
-              {errors.insuranceBuyer?.email && (
-                <p className="text-red-600">
-                  {errors.insuranceBuyer?.email?.message}
-                </p>
+              {errors.email_buyer && (
+                <p className="text-red-600">{errors.email_buyer?.message}</p>
               )}
             </div>
           </div>
@@ -226,7 +387,9 @@ export default function FormCheckOut() {
                 id="informationBySelf"
                 type="checkbox"
                 className="w-4 h-4"
-                name="insurance_buyer_infor"
+                name="insurance_buyer_buyfor"
+                checked={buyerBuyForSelf}
+                onChange={(e) => setBuyerBuyForSelf(e.target.checked)}
               />
               <label htmlFor="informationBySelf" className="text-sm">
                 Bản thân
@@ -237,7 +400,8 @@ export default function FormCheckOut() {
                 id="informationByBuyer"
                 type="checkbox"
                 className="w-4 h-4"
-                name="insurance_buyer_infor"
+                name="insurance_buyer_contact"
+                // checked={true}
               />
               <label htmlFor="informationByBuyer" className="text-sm">
                 Thông tin liên hệ theo người mua
@@ -420,49 +584,17 @@ export default function FormCheckOut() {
             </div>
           </div>
           <div className="mt-6">
-            <div className="flex flex-wrap items-center p-4 rounded-lg bg-gray-100">
-              <div className="w-full lg:w-[62%]">
-                <p>
-                  Để thuận tiện việc nhập Danh sách khách đoàn, Quý khách có thể
-                  tải mẫu Excel, điền thông tin và tải lên.
-                </p>
-              </div>
-              <div className="w-full flex gap-2 lg:gap-4 flex-wrap lg:flex-nowrap mt-3 lg:mt-0 lg:w-[38%] justify-end">
-                <button
-                  type="button"
-                  onClick={handleDownload}
-                  className="w-full lg:w-auto flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white"
-                >
-                  <Image
-                    src="/icon/download.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                  <p>Tải danh sách mẫu</p>
-                </button>
-                <label
-                  // type="button"
-                  className="w-full lg:w-auto cursor-pointer flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white"
-                >
-                  <Image
-                    src="/icon/download.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                  <p>Chọn danh sách</p>
-                </label>
-              </div>
-            </div>
+            <ExcelUploader onSuccess={handleUploadSuccess} />
           </div>
           <div className="mt-6">
             <p className="text-18 lg:text-22 font-bold">
               Thông tin người hưởng bảo hiểm
             </p>
-            {insuredUser.map((item, index) => (
-              <Fragment key={index}>
-                <div className="mt-6 grid lg:grid-cols-4 gap-4">
+
+            {insuredInfoList.map((item, index: number) => (
+              <div className="mb-3 mt-6" key={index}>
+                <p className="mb-4 font-medium">Người hưởng {index + 1}</p>
+                <div className="grid lg:grid-cols-4 gap-4">
                   <div className="relative">
                     <label
                       htmlFor="service"
@@ -474,7 +606,7 @@ export default function FormCheckOut() {
                     <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                       <select
                         className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-2.5"
-                        {...register(`insuredUser.${index}.gender`)}
+                        {...register(`insured_info.${index}.gender`)}
                         defaultValue={item.gender}
                       >
                         <option value="male" data-translate="true">
@@ -485,37 +617,82 @@ export default function FormCheckOut() {
                         </option>
                       </select>
                     </div>
-                    {errors.insuredUser?.[index]?.gender && (
+                    {errors.insured_info?.[index]?.gender && (
                       <p className="text-red-600">
-                        {errors.insuredUser[index].gender?.message}
+                        {errors.insured_info?.[index]?.gender?.message}
                       </p>
                     )}
                   </div>
                   <div className="relative">
                     <input
                       type="text"
-                      defaultValue={item.fullName}
                       placeholder="Nguyễn Văn A"
-                      {...register(`insuredUser.${index}.fullName`)}
+                      defaultValue={item.name}
+                      {...register(`insured_info.${index}.name`)}
                       className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />{" "}
-                    {errors.insuredUser?.[index]?.fullName && (
+                    {errors.insured_info?.[index]?.name && (
                       <p className="text-red-600">
-                        {errors.insuredUser[index].fullName?.message}
+                        {errors.insured_info?.[index]?.name?.message}
                       </p>
                     )}
                   </div>
                   <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Ngày sinh"
-                      defaultValue={item.birthday}
-                      {...register(`insuredUser.${index}.birthday`)}
-                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />{" "}
-                    {errors.insuredUser?.[index]?.birthday && (
+                    <div className="h-[54.4px] w-full booking-form-birthday flex justify-between items-center py-3 pl-1 pr-4 border border-gray-300 rounded-md">
+                      <Controller
+                        name={`insured_info.${index}.birthday`}
+                        control={control}
+                        render={({ field }) => (
+                          <DatePicker
+                            id={`insured_info.${index}.birthday`}
+                            selected={
+                              field.value instanceof Date
+                                ? field.value
+                                : field.value
+                                ? new Date(field.value)
+                                : null
+                            }
+                            onChange={(date: Date | null) =>
+                              field.onChange(date)
+                            }
+                            onChangeRaw={(event) => {
+                              if (event) {
+                                const target = event.target as HTMLInputElement;
+                                if (target.value) {
+                                  target.value = target.value
+                                    .trim()
+                                    .replace(/\//g, "-");
+                                }
+                              }
+                            }}
+                            placeholderText="Ngày sinh"
+                            dateFormat="dd-MM-yyyy"
+                            showMonthDropdown
+                            showYearDropdown
+                            dropdownMode="select"
+                            locale={language === "vi" ? vi : enUS}
+                            maxDate={
+                              new Date(new Date().getFullYear() - 15, 11, 31)
+                            }
+                            minDate={
+                              new Date(new Date().getFullYear() - 100, 11, 31)
+                            }
+                            className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                          />
+                        )}
+                      />{" "}
+                      <Image
+                        src="/icon/calendar.svg"
+                        alt="Icon"
+                        className="h-5"
+                        width={18}
+                        height={20}
+                      />
+                    </div>
+
+                    {errors.insured_info?.[index]?.birthday && (
                       <p className="text-red-600">
-                        {errors.insuredUser[index].birthday?.message}
+                        {errors.insured_info?.[index]?.birthday?.message}
                       </p>
                     )}
                   </div>
@@ -524,12 +701,12 @@ export default function FormCheckOut() {
                       type="text"
                       placeholder="Số CCCD"
                       defaultValue={item.citizenId}
-                      {...register(`insuredUser.${index}.citizenId`)}
+                      {...register(`insured_info.${index}.passport_number`)}
                       className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />{" "}
-                    {errors.insuredUser?.[index]?.citizenId && (
+                    {errors.insured_info?.[index]?.passport_number && (
                       <p className="text-red-600">
-                        {errors.insuredUser[index].citizenId?.message}
+                        {errors.insured_info?.[index]?.passport_number?.message}
                       </p>
                     )}
                   </div>
@@ -545,11 +722,14 @@ export default function FormCheckOut() {
                     <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
                       <select
                         className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-2.5"
-                        {...register(`insuredUser.${index}.buyFor`)}
+                        {...register(`insured_info.${index}.buyFor`)}
                         defaultValue={item.buyFor}
                       >
                         <option value="self" data-translate="true">
                           Bản thân
+                        </option>
+                        <option value="member" data-translate="true">
+                          Thành viên đoàn
                         </option>
                       </select>
                     </div>
@@ -558,55 +738,86 @@ export default function FormCheckOut() {
                     <input
                       type="text"
                       placeholder="Địa chỉ"
+                      defaultValue={item.address}
+                      {...register(`insured_info.${index}.address`)}
                       className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />
+                    {errors.insured_info?.[index]?.address && (
+                      <p className="text-red-600">
+                        {errors.insured_info?.[index]?.address?.message}
+                      </p>
+                    )}
                   </div>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Số điện thoại"
+                      defaultValue={item.phone}
+                      {...register(`insured_info.${index}.phone`)}
                       className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />
+                    />{" "}
+                    {errors.insured_info?.[index]?.phone && (
+                      <p className="text-red-600">
+                        {errors.insured_info?.[index]?.phone?.message}
+                      </p>
+                    )}
                   </div>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Nhập Email"
+                      defaultValue={item.email}
+                      {...register(`insured_info.${index}.email`)}
                       className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />
+                    />{" "}
+                    {errors.insured_info?.[index]?.email && (
+                      <p className="text-red-600">
+                        {errors.insured_info?.[index]?.email?.message}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div className="mt-4">
-                  <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 justify-between">
-                    <div className="flex items-start lg:items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 mt-1 lg:mt-0 flex-shrink-0"
-                        name="termsOfUse"
-                        id="termsOfUse"
-                      />
-                      <label className="text-sm" htmlFor="termsOfUse">
-                        Tôi xác nhận thông tin trên và chấp nhận các của{" "}
-                        <Link
-                          className="text-blue-700 font-bold"
-                          href="/thong-tin-chung/dieu-khoan-su-dung"
-                          target="_blank"
-                        >
-                          Điều khoản sử dụng
-                        </Link>{" "}
-                        website
-                      </label>
-                    </div>
-                    <div className="w-full lg:w-[300px]">
-                      <LoadingButton
-                        text="Đặt đơn bảo hiểm"
-                        isLoading={false}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Fragment>
+              </div>
             ))}
+            <div className="mt-4">
+              <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 justify-between">
+                <div>
+                  <div className="flex items-start lg:items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 mt-1 lg:mt-0 flex-shrink-0"
+                      {...register("agreeTerms")}
+                      onChange={() => setIsAgreeTerms(!isAgreeTerms)}
+                      id="acceptTermsOfUse"
+                    />
+                    <label className="text-sm" htmlFor="acceptTermsOfUse">
+                      Tôi xác nhận thông tin trên và chấp nhận các của{" "}
+                      <Link
+                        className="text-blue-700 font-bold"
+                        href="/thong-tin-chung/dieu-khoan-su-dung"
+                        target="_blank"
+                      >
+                        Điều khoản sử dụng
+                      </Link>{" "}
+                      website
+                    </label>
+                  </div>
+                  {errors.agreeTerms && (
+                    <p className="text-red-600">{errors.agreeTerms?.message}</p>
+                  )}
+                </div>
+                <div className="w-full lg:w-[300px]">
+                  <LoadingButton
+                    text="Đặt đơn bảo hiểm"
+                    isLoading={loading}
+                    disabled={!isAgreeTerms}
+                    style={`${
+                      !isAgreeTerms ? "bg-gray-300 !cursor-not-allowed" : ""
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -6,14 +6,14 @@ export const checkOutInsuranceSchema = (
   checkBoxGenerateInvoice: boolean
 ) => {
   return z.object({
-    departurePoint: z.string().min(1, {
+    from_address: z.string().min(1, {
       message: messages.required,
     }),
-    destination: z.string().min(1, {
+    to_address: z.string().min(1, {
       message: messages.required,
     }),
-    qty: z
-      .string()
+    number_insured: z
+      .union([z.string(), z.number()])
       .transform((val) => {
         const num = Number(val);
         return isNaN(num) ? 0 : num;
@@ -22,36 +22,34 @@ export const checkOutInsuranceSchema = (
       .refine((val) => val <= 100, {
         message: messages.inValid,
       }),
-    insuranceBuyer: z.object({
-      fullName: z.string().min(3, { message: messages.required }).max(255, {
+    name_buyer: z.string().min(3, { message: messages.required }).max(255, {
+      message: messages.inValid,
+    }),
+    address_buyer: z.string().min(3, { message: messages.required }),
+    birthday_buyer: z.date({
+      required_error: messages.required,
+      invalid_type_error: messages.required,
+    }),
+    passport_number_buyer: z
+      .string()
+      .min(1, { message: messages.required })
+      .refine((val) => /^\d{12}$/.test(val) || /^[A-Z][0-9]{6,8}$/.test(val), {
         message: messages.inValid,
       }),
-      address: z.string().min(3, { message: messages.required }),
-      birthday: z.date({
-        required_error: messages.required,
-        invalid_type_error: messages.required,
+
+    phone_buyer: z
+      .string()
+      .min(1, {
+        message: messages.required,
+      })
+      .regex(/^0\d{9}$/, {
+        message: messages.inValid,
       }),
-      citizenId: z
-        .string()
-        .min(1, {
-          message: messages.required,
-        })
-        .regex(/^0\d{12}$/, {
-          message: messages.inValid,
-        }),
-      phone: z
-        .string()
-        .min(1, {
-          message: messages.required,
-        })
-        .regex(/^0\d{9}$/, {
-          message: messages.inValid,
-        }),
-      email: z.string().min(1, { message: messages.required }).email({
-        message: messages.email,
-      }),
+    email_buyer: z.string().min(1, { message: messages.required }).email({
+      message: messages.email,
     }),
-    insuredUser: z.array(
+
+    insured_info: z.array(
       z.object({
         gender: z
           .string()
@@ -61,7 +59,7 @@ export const checkOutInsuranceSchema = (
           .refine((value) => ["male", "female"].includes(value), {
             message: messages.required,
           }),
-        fullName: z.string().min(3, { message: messages.required }).max(255, {
+        name: z.string().min(3, { message: messages.required }).max(255, {
           message: messages.inValid,
         }),
         address: z.string().min(3, { message: messages.required }),
@@ -69,14 +67,15 @@ export const checkOutInsuranceSchema = (
           required_error: messages.required,
           invalid_type_error: messages.required,
         }),
-        citizenId: z
+        passport_number: z
           .string()
-          .min(1, {
-            message: messages.required,
-          })
-          .regex(/^0\d{12}$/, {
-            message: messages.inValid,
-          }),
+          .min(1, { message: messages.required })
+          .refine(
+            (val) => /^\d{12}$/.test(val) || /^[A-Z][0-9]{6,8}$/.test(val),
+            {
+              message: messages.inValid,
+            }
+          ),
         buyFor: z.string().min(3, { message: messages.required }),
         phone: z
           .string()
@@ -134,6 +133,9 @@ export const checkOutInsuranceSchema = (
           })
           .optional(),
     checkBoxGenerateInvoice: z.boolean(),
+    agreeTerms: z.boolean().refine((val) => val === true, {
+      message: messages.inValidAgreeTerms,
+    }),
   });
 };
 

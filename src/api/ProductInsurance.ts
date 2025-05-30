@@ -1,15 +1,21 @@
 import http from "@/lib/http";
 
-const path = "product/insurance";
+const path = "/insurance";
 const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
 const ProductInsurance = {
   search: (queryString: string) => http.get<any>(queryString),
-  detail: (slug: string) => http.get<any>(`${path}/detail/${slug}`),
-  options: () => http.get<any>(`${path}/options`),
+  location: () => http.get<any>(`${path}/location`),
+  detail: (id: string | number) => http.get<any>(`${path}/${id}`),
+  booking: (data: any) => http.post<any>(`${path}/booking`, data),
   downLoadSampleExcel: () =>
-    fetch(`${baseUrl}/${path}/export-sample-excel`, {
+    fetch(`${baseUrl}/insurance/sample-execel`, {
       method: "GET",
+    }),
+  import: (data: any) =>
+    fetch(`${baseUrl}/insurance/import`, {
+      method: "POST",
+      body: data,
     }),
 };
 

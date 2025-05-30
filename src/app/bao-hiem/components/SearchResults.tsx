@@ -5,22 +5,28 @@ import { format, parse, isValid } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { SearchForm } from "@/types/insurance";
-import { isNumber } from "lodash";
+import { isEmpty, isNumber } from "lodash";
 import { ProductInsurance } from "@/api/ProductInsurance";
 import "@/styles/ckeditor-content.scss";
+import { handleScrollSmooth, renderTextContent } from "@/utils/Helper";
+import DisplayImage from "@/components/base/DisplayImage";
 
-export default function SearchResults({ items }: any) {
+export default function SearchResults() {
   const searchParams = useSearchParams();
   const [showDetail, setShowDetail] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [data, setData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  const [querySearch, setQuerySearch] = useState<string>("");
+  const resultsRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<SearchForm>({
-    productId: null,
+    departurePlace: "",
+    destinationPlace: "",
     departureDate: null,
     returnDate: null,
+    guests: 1,
+    type: "",
   });
 
   const toggleShowDetail = useCallback(
@@ -41,41 +47,68 @@ export default function SearchResults({ items }: any) {
       new Date()
     );
     setFormData({
-      productId: isNumber(parseInt(searchParams.get("insurance") ?? "0"))
-        ? parseInt(searchParams.get("insurance") ?? "0")
-        : null,
+      departurePlace: searchParams.get("departure") ?? "",
+      destinationPlace: searchParams.get("destination") ?? "",
       departureDate: isValid(departDate) ? departDate : null,
       returnDate: isValid(returnDate) ? returnDate : null,
+      guests: isNumber(parseInt(searchParams.get("guests") ?? "1"))
+        ? parseInt(searchParams.get("guests") ?? "1")
+        : 1,
+      type: searchParams.get("type") ?? "",
     });
   }, [searchParams]);
 
+  const handleChoose = (id: number) => {
+    router.push(`/bao-hiem/checkout/${id}${querySearch}`);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
         const formattedDate = formData.departureDate
-          ? format(formData.departureDate, "ddMMyyyy")
+          ? format(formData.departureDate, "dd-MM-yyyy")
           : "";
         const formattedReturndate = formData.returnDate
+          ? format(formData.returnDate, "dd-MM-yyyy")
+          : "";
+        const formattedDateSearch = formData.departureDate
+          ? format(formData.departureDate, "ddMMyyyy")
+          : "";
+        const formattedReturndateSearch = formData.returnDate
           ? format(formData.returnDate, "ddMMyyyy")
           : "";
-        const queryString = `/product/insurance/search?insurance=${formData.productId}&departDate=${formattedDate}&returnDate=${formattedReturndate}`;
-        const reponse = await ProductInsurance.search(queryString);
-        setData(reponse?.payload?.data ?? []);
+        const queryString = `?departure=${formData.departurePlace}&destination=${formData.destinationPlace}&departure_date=${formattedDate}&return_date=${formattedReturndate}&guests=${formData.guests}&type=${formData.type}`;
+        const querySearch = `?departure=${formData.departurePlace}&destination=${formData.destinationPlace}&departDate=${formattedDateSearch}&returnDate=${formattedReturndateSearch}&guests=${formData.guests}&type=${formData.type}`;
+        const response = await ProductInsurance.search(
+          `/insurance/search${queryString}`
+        );
+        setQuerySearch(querySearch);
+        setData(response?.payload?.data ?? []);
       } catch (err) {
         console.log(err);
       } finally {
         setIsLoading(false);
+        if (resultsRef.current) {
+          handleScrollSmooth(resultsRef.current);
+        }
       }
     };
-    if (formData.productId && formData.departureDate && formData.returnDate) {
+    if (
+      formData.departurePlace &&
+      formData.destinationPlace &&
+      formData.departureDate &&
+      formData.returnDate
+    ) {
       fetchData();
+    } else {
+      setIsLoading(false);
     }
   }, [formData]);
 
   if (isLoading) {
     return (
       <div
+        ref={resultsRef}
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
@@ -83,9 +116,8 @@ export default function SearchResults({ items }: any) {
       </div>
     );
   }
-
   return (
-    <Fragment>
+    <div ref={resultsRef}>
       {data?.length > 0 ? (
         data.map((item: any, index: number) => (
           <div className="mb-6 last:mb-0  h-fit" key={index}>
@@ -93,20 +125,20 @@ export default function SearchResults({ items }: any) {
               <div className="col-span-8 lg:col-span-6">
                 <div className="flex flex-col md:flex-row items-start gap-4 text-center md:text-left mb-3">
                   <div>
-                    <Image
-                      src="/insurance/brand.png"
+                    <DisplayImage
+                      imagePath={item.image ?? ""}
                       width={174}
                       height={58}
                       alt={"Brand"}
-                      className=""
+                      classStyle="max-w-[174px] max-h-[58px]"
                     />
                   </div>
                   <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
                     <h3 className="text-18 font-bold !leading-normal">
-                      {item.category_name}
+                      {renderTextContent(item.name)}
                     </h3>
                     <p className="text-sm font-normal leading-snug text-gray-500">
-                      {item.name}
+                      {renderTextContent(item.description)}
                     </p>
                   </div>
                 </div>
@@ -116,7 +148,7 @@ export default function SearchResults({ items }: any) {
                 <div className="flex flex-row-reverse w-full lg:w-auto lg:flex-col justify-between float-end gap-2">
                   <button
                     type="button"
-                    onClick={() => router.push("bao-hiem/checkout")}
+                    onClick={() => handleChoose(item.id)}
                     className="max-w-32 block text-center w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
                   >
                     Chọn
@@ -147,20 +179,40 @@ export default function SearchResults({ items }: any) {
                   <p className="text-blue-700 text-22 font-bold mb-4">
                     Quyền lợi bảo hiểm
                   </p>
-                  <div
-                    className="ckeditor_container mt-2 py-4"
-                    dangerouslySetInnerHTML={{
-                      __html: item.description,
-                    }}
-                  ></div>
+                  {item?.insurance_package_benefits?.length > 0 ? (
+                    item.insurance_package_benefits.map(
+                      (benefit: any, benefitIndex: number) => (
+                        <div
+                          key={benefitIndex}
+                          className="mb-4 pb-4 border-b border-b-gray-200"
+                        >
+                          <p className="mb-1">
+                            {renderTextContent(benefit.name)}
+                          </p>
+                          <p className="mb-1">
+                            {renderTextContent(benefit.description)}
+                          </p>
+                          {benefit.price && (
+                            <p className="text-primary text-base font-bold">
+                              {formatCurrency(benefit.price)}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    )
+                  ) : (
+                    <p>Nội dung đang cập nhật...</p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         ))
       ) : (
-        <div>Không tìm thấy dữ liệu phù hợp....</div>
+        <div className="text-18 md:text-2xl text-center">
+          Không tìm thấy dữ liệu phù hợp....
+        </div>
       )}
-    </Fragment>
+    </div>
   );
 }

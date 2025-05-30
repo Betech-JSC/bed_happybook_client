@@ -16,6 +16,7 @@ import { getCurrentLanguage } from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
 import { datePickerLocale } from "@/constants/language";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { vi, enUS } from "date-fns/locale";
 
 export default function Search({ airportsData }: SearchFilghtProps) {
   const today = new Date();
@@ -46,11 +47,11 @@ export default function Search({ airportsData }: SearchFilghtProps) {
     }
   }, [searchParams, pathname]);
 
-  useEffect(() => {
-    if (datePickerLocale[language]) {
-      registerLocale(language, datePickerLocale[language]);
-    }
-  }, [language]);
+  // useEffect(() => {
+  //   if (datePickerLocale[language]) {
+  //     registerLocale(language, datePickerLocale[language]);
+  //   }
+  // }, [language]);
 
   useEffect(() => {
     if (airportsData.length > 0 && getCurrentLanguage() !== "vi") {
@@ -328,7 +329,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                     onChange={handleDepartDateChange}
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Chọn ngày"
-                    locale={language}
+                    locale={language === "vi" ? vi : enUS}
                     popperPlacement="bottom-start"
                     portalId="datepicker-search-flight"
                     minDate={today}
@@ -369,7 +370,7 @@ export default function Search({ airportsData }: SearchFilghtProps) {
                     onChange={handleReturnDateChange}
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Chọn ngày"
-                    locale={language}
+                    locale={language === "vi" ? vi : enUS}
                     popperPlacement="bottom-start"
                     portalId="datepicker-search-flight"
                     minDate={
