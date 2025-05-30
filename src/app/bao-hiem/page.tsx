@@ -12,9 +12,9 @@ import { redirect } from "next/navigation";
 
 export const metadata: Metadata = formatMetadata({
   title:
-    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
+    "Bảo hiểm - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   description:
-    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
+    "Bảo hiểm  - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   alternates: {
     canonical: pageUrl("bao-hiem"),
   },
@@ -27,7 +27,7 @@ export default async function Insurance({ searchParams }: SearchProps) {
     const parsed = parse(value, "ddMMyyyy", new Date());
     return isValid(parsed) ? parsed : null;
   };
-
+  const areaType = searchParams?.type ?? "";
   const departDate = parseDate(searchParams?.departDate ?? "") ?? today;
   let returnDate = parseDate(searchParams?.returnDate ?? "");
 
@@ -50,6 +50,7 @@ export default async function Insurance({ searchParams }: SearchProps) {
   ) {
     redirect(`?${newParams.toString()}`);
   }
+  const types = ["domestic", "international"];
 
   return (
     <SeoSchema
@@ -91,7 +92,12 @@ export default async function Insurance({ searchParams }: SearchProps) {
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           <div>
             <h2 className="text-2xl lg:text-32 font-bold !leading-tight">
-              Bảo hiểm du lịch quốc tế
+              Bảo hiểm du lịch{" "}
+              {types.includes(areaType)
+                ? areaType === "domestic"
+                  ? "nội địa"
+                  : "quốc tế"
+                : ""}
             </h2>
             <p className="text-base font-normal leading-normal text-gray-500 mt-2">
               {`${format(departDate, "dd/MM/yyyy")} - ${format(

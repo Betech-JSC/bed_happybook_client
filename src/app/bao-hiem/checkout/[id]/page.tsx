@@ -1,10 +1,43 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, Suspense } from "react";
+import { Fragment } from "react";
 import { formatCurrency } from "@/lib/formatters";
-import FormCheckOut from "../components/FormCheckout";
+import FormCheckOut from "../../components/FormCheckout";
+import { ProductInsurance } from "@/api/ProductInsurance";
+import { notFound } from "next/navigation";
+import { isEmpty } from "lodash";
+import { differenceInDays, parse, format } from "date-fns";
+import DisplayImage from "@/components/base/DisplayImage";
 
-export default function InsuranceCheckout() {
+export default async function InsuranceCheckout({
+  params,
+  searchParams,
+}: {
+  params: { id: string | number };
+  searchParams: { [key: string]: string | string[] };
+}) {
+  const safeParams: Record<string, string> = {};
+  Object.entries(searchParams).forEach(([key, value]) => {
+    safeParams[key] = Array.isArray(value) ? value[0] : value;
+  });
+  const queryString = new URLSearchParams(safeParams).toString();
+  const types = ["domestic", "international"];
+
+  const startDate = parse(safeParams.departDate, "ddMMyyyy", new Date());
+  const endDate = parse(safeParams.returnDate, "ddMMyyyy", new Date());
+
+  const diffDate = differenceInDays(endDate, startDate);
+  const detail =
+    ((await ProductInsurance.detail(params.id))?.payload?.data as any) ?? null;
+
+  const matchedFee = detail?.insurance_package_prices?.find(
+    (item: any) => diffDate >= item.day_start && diffDate <= item.day_end
+  );
+  const totalFee =
+    parseInt(matchedFee.price) * (parseInt(safeParams.guests) ?? 1);
+  if (isEmpty(detail) || !matchedFee) {
+    notFound();
+  }
   return (
     <Fragment>
       <div className="relative h-max pb-14">
@@ -19,21 +52,31 @@ export default function InsuranceCheckout() {
           <div className="mt-12 relative">
             <div className="text-center">
               <h1 className="text-2xl lg:text-32 text-white font-bold">
-                Bảo hiểm du lịch quốc tế
+                Bảo hiểm du lịch{" "}
+                {types.includes(safeParams.type)
+                  ? safeParams.type === "domestic"
+                    ? "nội địa"
+                    : "quốc tế"
+                  : ""}
               </h1>
               <p className="mt-3 text-base text-white">
-                (06/09/2024 - 09/09/2024) 4 Ngày
+                {`(${format(startDate, "dd/MM/yyyy")} - ${format(
+                  endDate,
+                  "dd/MM/yyyy"
+                )}) `}
+                {diffDate > 0 && `${diffDate} Ngày`}
               </p>
             </div>
             <div className="mt-8 flex space-y-3 flex-wrap lg:flex-none lg:grid grid-cols-8 items-center justify-between bg-white px-3 py-6 lg:px-8 rounded-2xl relative">
               <div className="w-full lg:col-span-6">
                 <div className="flex flex-col md:flex-row item-start gap-2 md:gap-8 text-center">
                   <div>
-                    <Image
-                      src="/insurance/brand-2.png"
+                    <DisplayImage
+                      imagePath={detail.image ?? ""}
                       width={205}
                       height={48}
                       alt={"Brand"}
+                      classStyle="max-w-[205px] max-h-[48px]"
                     />
                   </div>
                   <div className="text-left flex flex-col justify-between">
@@ -41,7 +84,7 @@ export default function InsuranceCheckout() {
                       Gói bảo hiểm
                     </p>
                     <p className="text-18 font-bold !leading-normal">
-                      Du lịch quốc tế Toàn Cầu - Gói C
+                      {detail.name}
                     </p>
                   </div>
                 </div>
@@ -52,13 +95,13 @@ export default function InsuranceCheckout() {
                     Tổng tiền
                   </p>
                   <p className="text-18 font-bold !leading-normal">
-                    {formatCurrency(243000)}
+                    {formatCurrency(totalFee)}
                   </p>
                 </div>
               </div>
               <div className="w-1/2 lg:w-full lg:col-span-1  text-center">
                 <Link
-                  href="/bao-hiem"
+                  href={`/bao-hiem?${queryString}`}
                   className="lg:max-w-32 block text-center w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
                 >
                   Đổi gói
@@ -71,7 +114,7 @@ export default function InsuranceCheckout() {
       <main className="w-full bg-gray-100 relative z-2 rounded-2xl pb-4 lg:pb-12">
         <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen relative top-[-30px]">
           <div className="px-3 py-5 lg:px-8 bg-white rounded-2xl">
-            <FormCheckOut />
+            <FormCheckOut detail={detail} />
           </div>
         </div>
       </main>
