@@ -281,7 +281,7 @@ export default function SearchFormInsurance() {
             className="block text-gray-700 mb-2 lg:mb-1"
             data-translate="true"
           >
-            Ngày đi - ngày về
+            Ngày đi - Ngày về
           </label>
           <div className="flex gap-3 h-12 items-center border rounded-lg px-2 text-black">
             <div className="w-[45%] flex justify-between items-center	">
@@ -311,11 +311,11 @@ export default function SearchFormInsurance() {
                 />
               </div>
             </div>
-            <div className="w-[10%] xl:w-[20px]">
+            <div className="w-[12px] xl:w-[20px]">
               <Image
                 src="/icon/line.png"
                 alt="Icon"
-                className="h-[1px] xl:max-w-[20px] mx-auto"
+                className="h-[1px] max-w-[12px] xl:max-w-[20px] mx-auto"
                 width={280}
                 height={1}
               ></Image>
@@ -365,19 +365,19 @@ export default function SearchFormInsurance() {
               width={18}
               height={18}
             ></Image>
-            <div className="w-full justify-center flex items-center gap-3">
+            <div className="w-full justify-center flex items-center gap-5 md:gap-3">
               <button
-                onClick={() => handleDecrement}
-                className={`w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center`}
+                onClick={() => handleDecrement()}
+                className={`w-8 h-8 md:w-6 md:h-6 rounded-full bg-gray-200 flex items-center justify-center`}
               >
-                -
+                <span className="mb-1">-</span>
               </button>
               <span className="text-base">{totalGuests} hành khách</span>
               <button
                 onClick={() => handleIncrement()}
-                className={`w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center `}
+                className={`w-8 h-8 md:w-6 md:h-6 rounded-full bg-blue-500 text-white flex items-center justify-center `}
               >
-                +
+                <span className="mb-1">+</span>
               </button>
             </div>
           </div>

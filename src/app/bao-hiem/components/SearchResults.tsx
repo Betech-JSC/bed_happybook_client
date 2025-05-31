@@ -125,13 +125,23 @@ export default function SearchResults() {
               <div className="col-span-8 lg:col-span-6">
                 <div className="flex flex-col md:flex-row items-start gap-4 text-center md:text-left mb-3">
                   <div>
-                    <DisplayImage
-                      imagePath={item.image ?? ""}
-                      width={174}
-                      height={58}
-                      alt={"Brand"}
-                      classStyle="max-w-[174px] max-h-[58px]"
-                    />
+                    {!isEmpty(item.image) ? (
+                      <DisplayImage
+                        imagePath={item.image ?? ""}
+                        width={174}
+                        height={58}
+                        alt={"Brand"}
+                        classStyle="max-w-[174px] max-h-[58px] rounded-sm"
+                      />
+                    ) : (
+                      <Image
+                        src="/default-image.png"
+                        width={174}
+                        height={58}
+                        alt={"Brand"}
+                        className="max-w-[174px] max-h-[58px] object-cover rounded-sm"
+                      />
+                    )}
                   </div>
                   <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
                     <h3 className="text-18 font-bold !leading-normal">

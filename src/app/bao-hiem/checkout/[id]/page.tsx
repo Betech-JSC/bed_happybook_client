@@ -71,13 +71,23 @@ export default async function InsuranceCheckout({
               <div className="w-full lg:col-span-6">
                 <div className="flex flex-col md:flex-row item-start gap-2 md:gap-8 text-center">
                   <div>
-                    <DisplayImage
-                      imagePath={detail.image ?? ""}
-                      width={205}
-                      height={48}
-                      alt={"Brand"}
-                      classStyle="max-w-[205px] max-h-[48px]"
-                    />
+                    {!isEmpty(detail.image) ? (
+                      <DisplayImage
+                        imagePath={detail.image ?? ""}
+                        width={205}
+                        height={48}
+                        alt={"Brand"}
+                        classStyle="max-w-[205px] max-h-[48px]"
+                      />
+                    ) : (
+                      <Image
+                        src="/default-image.png"
+                        width={205}
+                        height={48}
+                        alt={"Brand"}
+                        className="max-w-[205px] max-h-[48px] object-cover rounded-sm"
+                      />
+                    )}
                   </div>
                   <div className="text-left flex flex-col justify-between">
                     <p className="text-sm font-normal leading-snug text-gray-500">
