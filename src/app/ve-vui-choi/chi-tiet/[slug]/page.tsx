@@ -7,28 +7,60 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-
 import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import ImageGallery from "../../components/ImageGallery";
 import { ProductTicket } from "@/api/ProductTicket";
-import { getServerLang } from "@/lib/session";
 import { renderTextContent } from "@/utils/Helper";
 import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import Schedule from "../../components/Schedule";
+import "@/styles/ckeditor-content.scss";
+import { format, parse } from "date-fns";
 
 export default async function EntertainmentTicketDetail({
   params,
+  searchParams,
 }: {
   params: { slug: string };
+  searchParams: { [key: string]: string | undefined };
 }) {
-  // const language = await getServerLang();
-  const res = (await ProductTicket.detail(params.slug)) as any;
+  const res = (await ProductTicket.detail(
+    params.slug,
+    searchParams.departDate ?? ""
+  )) as any;
   const detail = res?.payload?.data;
   if (!detail) notFound();
-
+  const minPrice = Number(detail?.ticket_prices?.[0]?.special_days_price ?? 0);
+  const dayMap: Record<string, string> = {
+    monday: "Thứ Hai",
+    tuesday: "Ba",
+    wednesday: "Tư",
+    thursday: "Năm",
+    friday: "Sáu",
+    saturday: "Bảy",
+    sunday: "Chủ nhật",
+  };
+  const daysOpeningRaw = detail?.ticket?.opening_days;
+  const daysOpening = Array.isArray(daysOpeningRaw)
+    ? daysOpeningRaw
+    : typeof daysOpeningRaw === "string"
+    ? JSON.parse(daysOpeningRaw)
+    : [];
+  const isFullWeek = daysOpening.length === 7;
+  const displayDaysOpening = isFullWeek
+    ? "Mỗi ngày"
+    : daysOpening
+        .map((day: any) => dayMap[day])
+        .filter(Boolean)
+        .join(", ");
+  const parsedTimeOpening = parse(
+    detail?.ticket?.opening_time,
+    "HH:mm:ss",
+    new Date()
+  );
+  const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -107,7 +139,9 @@ export default async function EntertainmentTicketDetail({
                       width={18}
                       height={18}
                     />
-                    <span data-translate="true">Mở | Thứ, 10:00-19:30</span>
+                    <span data-translate="true">
+                      Mở {displayTimeOpening} | {displayDaysOpening}
+                    </span>
                   </div>
 
                   <div className="flex space-x-2 mt-3 items-center">
@@ -128,12 +162,14 @@ export default async function EntertainmentTicketDetail({
                     Giá từ
                   </span>
                   <span className="text-2xl text-primary font-bold mt-3">
-                    {formatCurrency(detail?.price)}
+                    {formatCurrency(minPrice)}
                   </span>
                 </div>
                 <div className="mt-6">
                   <Link
-                    href={`/ve-vui-choi/chi-tiet/${detail?.slug}/checkout`}
+                    href={`/ve-vui-choi/chi-tiet/${
+                      detail?.slug
+                    }/checkout?departDate=${searchParams.departDate ?? ""}`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
                     <span
@@ -146,7 +182,7 @@ export default async function EntertainmentTicketDetail({
                 </div>
               </div>
               <div className="mt-3">
-                <Schedule />
+                <Schedule schedule={detail?.schedule ?? []} />
               </div>
               <div className="mt-3 bg-white rounded-2xl p-6">
                 <h2
@@ -156,7 +192,15 @@ export default async function EntertainmentTicketDetail({
                   Lưu ý
                 </h2>
                 <div className="mt-4">
-                  <ul className="pl-6 list-[circle]">
+                  <div className="ckeditor_container">
+                    <div
+                      className="cke_editable mt-2"
+                      dangerouslySetInnerHTML={{
+                        __html: renderTextContent(detail?.ticket?.note),
+                      }}
+                    ></div>
+                  </div>
+                  {/* <ul className="pl-6 list-[circle]">
                     <li>
                       Khách nên có xe hơi để đến và rời khỏi nơi lưu trú này.
                     </li>
@@ -167,7 +211,7 @@ export default async function EntertainmentTicketDetail({
                       Nơi lưu trú này chào đón khách thuộc mọi xu hướng tính dục
                       và nhận dạng giới (thân thiện với cộng đồng LGBTQ+).
                     </li>
-                  </ul>
+                  </ul> */}
                 </div>
               </div>
             </div>

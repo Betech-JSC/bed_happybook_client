@@ -1,46 +1,13 @@
 "use client";
-
 import { renderTextContent } from "@/utils/Helper";
 import { useState } from "react";
 import "@/styles/ckeditor-content.scss";
 
-export default function Schedule() {
+export default function Schedule({ schedule }: any) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(0);
   const toggleDropdown = (id: number) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
-  const schedule = [
-    {
-      id: 16,
-      product_id: 37,
-      title: "Ngày 1: TP. Hồ Chí Minh - Tiền Giang - Bến Tre - Cần Thơ",
-      content:
-        "<p><strong>Buổi sáng</strong></p><p>HDV và xe đón Quý khách tại điểm hẹn khu vực Quận 1 để khởi hành đi Tiền Giang.</p><p>Đến Tiền Giang, đoàn xuống bến Tàu 30/04 bắt đầu hành trình du lịch sông Tiền.</p>",
-      ordering: "1",
-      created_at: "2025-02-25T08:21:50.000000Z",
-      updated_at: "2025-02-25T08:28:11.000000Z",
-    },
-    {
-      id: 17,
-      product_id: 37,
-      title: "Ngày 2",
-      content:
-        "<p><strong>Buổi sáng</strong></p><p>HDV và xe đón Quý khách tại điểm hẹn khu vực Quận 1 để khởi hành đi Tiền Giang.</p><p>Đến Tiền Giang, đoàn xuống bến Tàu 30/04 bắt đầu hành trình du lịch sông Tiền.</p>",
-      ordering: "1",
-      created_at: "2025-02-25T08:21:50.000000Z",
-      updated_at: "2025-02-25T08:28:11.000000Z",
-    },
-    {
-      id: 18,
-      product_id: 37,
-      title: "Ngày 3",
-      content:
-        "<p><strong>Buổi sáng</strong></p><p>HDV và xe đón Quý khách tại điểm hẹn khu vực Quận 1 để khởi hành đi Tiền Giang.</p><p>Đến Tiền Giang, đoàn xuống bến Tàu 30/04 bắt đầu hành trình du lịch sông Tiền.</p>",
-      ordering: "1",
-      created_at: "2025-02-25T08:21:50.000000Z",
-      updated_at: "2025-02-25T08:28:11.000000Z",
-    },
-  ];
   return (
     <div className={`bg-white rounded-2xl p-6`}>
       <h2
@@ -99,7 +66,7 @@ export default function Schedule() {
                     ${openDropdown === key ? "max-h-[5000px]" : "max-h-0"}`}
               >
                 <div
-                  className="cke_editable"
+                  className="cke_editable mt-2"
                   dangerouslySetInnerHTML={{
                     __html: renderTextContent(schedule?.content),
                   }}

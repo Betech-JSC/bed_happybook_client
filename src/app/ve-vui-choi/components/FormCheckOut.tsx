@@ -8,7 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 import { BookingProductApi } from "@/api/BookingProduct";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
@@ -19,7 +19,8 @@ import {
 import { renderTextContent } from "@/utils/Helper";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { datePickerLocale } from "@/constants/language";
-import { format } from "date-fns";
+import { isEmpty } from "lodash";
+import { format, parse } from "date-fns";
 
 interface Ticket {
   id: number;
@@ -28,48 +29,73 @@ interface Ticket {
   price: number;
   name: string;
   minQty: number;
+  quantity: number;
 }
 
 export default function CheckOutForm({ product }: { product: any }) {
   const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const searchParams = useSearchParams();
   const { language } = useLanguage();
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [schemaForm, setSchemaForm] = useState(() =>
     checkOutAmusementTicketSchema(messages, generateInvoice)
   );
-  const tickets: Ticket[] = useMemo(() => {
-    return [
-      {
-        id: 1,
-        title: "Người lớn",
-        description: "Cao từ 140cm",
-        price: parseInt(product?.ticket_prices?.[0]?.price_adult) ?? 0,
-        name: "number_adult",
-        minQty: 1,
-      },
-      {
-        id: 2,
-        title: "Trẻ em",
-        description: "Cao từ 100cm - 139cm",
-        price: parseInt(product?.ticket_prices?.[0]?.price_child) ?? 0,
-        name: "number_child",
-        minQty: 0,
-      },
-    ];
+  const dayMap: Record<string, string> = {
+    monday: "Thứ Hai",
+    tuesday: "Ba",
+    wednesday: "Tư",
+    thursday: "Năm",
+    friday: "Sáu",
+    saturday: "Bảy",
+    sunday: "Chủ nhật",
+  };
+  const daysOpeningRaw = product?.ticket?.opening_days;
+  const daysOpening = Array.isArray(daysOpeningRaw)
+    ? daysOpeningRaw
+    : typeof daysOpeningRaw === "string"
+    ? JSON.parse(daysOpeningRaw)
+    : [];
+  const isFullWeek = daysOpening.length === 7;
+  const displayDaysOpening = isFullWeek
+    ? "Mỗi ngày"
+    : daysOpening
+        .map((day: any) => dayMap[day])
+        .filter(Boolean)
+        .join(", ");
+  const parsedTimeOpening = parse(
+    product?.ticket?.opening_time,
+    "HH:mm:ss",
+    new Date()
+  );
+  const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+
+  useEffect(() => {
+    if (product?.ticket_prices) {
+      const initialTickets: Ticket[] = [...product.ticket_prices]
+        .sort((a, b) => {
+          return (b?.special_days_price || 0) - (a?.special_days_price || 0);
+        })
+        .map((item: any, index: number) => ({
+          id: item.id,
+          title: item?.type?.name || "",
+          description: item?.type?.description || "",
+          price: item?.special_days_price || 0,
+          name: `number_${item.id}`,
+          minQty: index ? 0 : 1,
+          quantity: index ? 0 : 1,
+        }));
+
+      setTickets(initialTickets);
+    }
   }, [product?.ticket_prices]);
 
   useEffect(() => {
     setSchemaForm(checkOutAmusementTicketSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
-
-  useEffect(() => {
-    if (datePickerLocale[language]) {
-      registerLocale(language, datePickerLocale[language]);
-    }
-  }, [language]);
 
   const {
     register,
@@ -81,19 +107,25 @@ export default function CheckOutForm({ product }: { product: any }) {
     resolver: zodResolver(schemaForm),
     defaultValues: {
       checkBoxGenerateInvoice: false,
+      depart_date: searchParams.get("departDate")
+        ? new Date(searchParams.get("departDate") ?? "")
+        : new Date(),
     },
   });
 
   const onSubmit = async (data: checkOutAmusementTicketType) => {
     try {
       setLoading(true);
+      const ticketsBooking = tickets.map((item: any, index: number) => ({
+        id: item.id,
+        quantity: item.quantity,
+      }));
       const formatData = {
         is_invoice: generateInvoice,
         product_id: product?.id,
         booking: {
-          departure_date: format(data.depart_date, "dd/MM/yyyy"),
-          number_adult: counts[1],
-          number_child: counts[2],
+          departure_date: format(data.depart_date, "yyyy-MM-dd"),
+          tickets: ticketsBooking,
         },
         contact: {
           email: data.email,
@@ -112,7 +144,7 @@ export default function CheckOutForm({ product }: { product: any }) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
         setTimeout(() => {
-          router.push("/ve-vui-choi");
+          router.push("/");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);
@@ -124,30 +156,31 @@ export default function CheckOutForm({ product }: { product: any }) {
     }
   };
 
-  const [counts, setCounts] = useState<{ [key: number]: number }>({
-    1: 1,
-    2: 0,
-  });
+  const [counts, setCounts] = useState<{ [key: number]: number }>({});
+  useEffect(() => {
+    const initialCounts: { [key: number]: number } = {};
+    tickets.forEach((ticket) => {
+      initialCounts[ticket.id] = ticket.minQty;
+    });
+    setCounts(initialCounts);
+  }, [tickets]);
 
-  const [totalPrice, setTotalPrice] = useState<number>(tickets[0].price);
-
-  const updateCount = (
-    id: number,
-    delta: number,
-    ticketPrice: number,
-    minQty: number
-  ) => {
-    setCounts((prev) => ({
-      ...prev,
-      [id]: Math.max(minQty, (prev[id] ?? minQty) + delta),
-    }));
-    if (delta === 1) {
-      setTotalPrice(totalPrice + ticketPrice);
-    } else if (delta === -1) {
-      setTotalPrice(totalPrice - ticketPrice);
-    }
+  const updateCount = (id: number, delta: number) => {
+    setTickets((prev) =>
+      prev.map((ticket) => {
+        if (ticket.id === id) {
+          const newQty = Math.max(ticket.minQty, ticket.quantity + delta);
+          return { ...ticket, quantity: newQty };
+        }
+        return ticket;
+      })
+    );
   };
 
+  const totalPrice = tickets.reduce(
+    (sum, ticket) => sum + ticket.quantity * ticket.price,
+    0
+  );
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 rounded-2xl">
@@ -184,9 +217,17 @@ export default function CheckOutForm({ product }: { product: any }) {
                     htmlFor="depart_date"
                     className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                   >
-                    <span data-translate="true">Ngày khởi hành</span>
-                    <span className="text-red-500">*</span>
+                    <span data-translate="true">Ngày tham quan</span>
+                    {/* <span className="text-red-500">*</span> */}
                   </label>
+                  {/* <div className="w-1/2 pt-6 pb-2 pr-2 rounded-md">
+                    <input
+                      type="text"
+                      {...register("depart_date")}
+                      className="indent-4 outline-none"
+                      readOnly
+                    />
+                  </div> */}
                   <div className="[&>div]:w-full pt-6 pb-2 pr-2 w-full rounded-md">
                     <Controller
                       name={`depart_date`}
@@ -195,21 +236,22 @@ export default function CheckOutForm({ product }: { product: any }) {
                         <DatePicker
                           id={`depart_date`}
                           selected={field.value || null}
-                          onChange={(date: Date | null) => field.onChange(date)}
-                          onChangeRaw={(event) => {
-                            if (event) {
-                              const target = event.target as HTMLInputElement;
-                              if (target.value) {
-                                target.value = target.value
-                                  .trim()
-                                  .replace(/\//g, "-");
-                              }
-                            }
-                          }}
+                          onChange={() => {}}
+                          // onChange={(date: Date | null) => field.onChange(date)}
+                          // onChangeRaw={(event) => {
+                          //   if (event) {
+                          //     const target = event.target as HTMLInputElement;
+                          //     if (target.value) {
+                          //       target.value = target.value
+                          //         .trim()
+                          //         .replace(/\//g, "-");
+                          //     }
+                          //   }
+                          // }}
+                          readOnly
                           placeholderText="Chọn ngày khởi hành"
                           dateFormat="dd-MM-yyyy"
                           dropdownMode="select"
-                          locale={language}
                           minDate={new Date()}
                           className="text-sm pl-4 !w-full placeholder-gray-400 focus:outline-none border-none focus:border-primary"
                         />
@@ -226,92 +268,78 @@ export default function CheckOutForm({ product }: { product: any }) {
               className="text-blue-700 text-base font-medium"
               data-translate="true"
             >
-              Vé vào cửa tiêu chuẩn {product?.name ?? ""}
+              Vé vào cửa {product?.name}
             </p>
-            <div>
+            <div className="mt-1">
               {tickets.map(
-                (ticket) =>
+                (ticket, index: number) =>
                   ticket.price > 0 && (
-                    <>
-                      <div
-                        key={ticket.id}
-                        className="flex space-x-2 justify-between items-center py-4 border-b last:border-none"
-                      >
+                    <div
+                      key={index}
+                      className="flex space-x-2 justify-between items-start py-4 border-b last:border-none"
+                    >
+                      <div>
+                        <div
+                          className="font-semibold text-base"
+                          data-translate="true"
+                        >
+                          {renderTextContent(ticket.title)}
+                        </div>
+                        <div
+                          className="text-sm text-gray-500"
+                          data-translate="true"
+                        >
+                          {!isEmpty(ticket.description)
+                            ? renderTextContent(ticket.description)
+                            : ""}
+                        </div>
+                      </div>
+                      <div className="flex items-start md:w-[30%] justify-between">
                         <div>
-                          <div
-                            className="font-semibold text-base"
-                            data-translate="true"
-                          >
-                            {ticket.title}
-                          </div>
-                          <div
+                          <span className="text-base mr-4">
+                            {formatCurrency(ticket.price)}
+                          </span>
+                          <p
                             className="text-sm text-gray-500"
                             data-translate="true"
                           >
-                            {ticket.description}
-                          </div>
+                            Giá / Khách
+                          </p>
                         </div>
-                        <div className="flex items-start md:w-[30%] justify-between">
-                          <div>
-                            <span className="text-base mr-4">
-                              {formatCurrency(ticket.price)}
-                            </span>
-                            <p
-                              className="text-sm text-gray-500"
-                              data-translate="true"
-                            >
-                              Giá / Khách
-                            </p>
-                          </div>
-                          <div className="flex items-center">
-                            <button
-                              type="button"
-                              className={`w-6 h-6 font-medium text-xl rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            className={`w-6 h-6 font-medium text-xl rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center
                           ${
-                            counts[ticket.id] <= ticket.minQty
+                            ticket.quantity <= ticket.minQty
                               ? "cursor-not-allowed opacity-50"
                               : ""
                           } `}
-                              onClick={() =>
-                                updateCount(
-                                  ticket.id,
-                                  -1,
-                                  ticket.price,
-                                  ticket.minQty
-                                )
-                              }
-                              disabled={counts[ticket.id] <= ticket.minQty}
-                            >
-                              -
-                            </button>
-                            <span className="w-8 outline-none text-center text-18 text-blue-700 font-bold">
-                              {counts[ticket.id]}
-                            </span>
+                            onClick={() => updateCount(ticket.id, -1)}
+                            disabled={ticket.quantity <= ticket.minQty}
+                          >
+                            <span className="mb-1">-</span>
+                          </button>
+                          <span className="w-8 outline-none text-center text-18 text-blue-700 font-bold">
+                            {ticket.quantity}
+                          </span>
 
-                            <button
-                              type="button"
-                              className={`w-6 h-6 text-xl font-medium rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center 
+                          <button
+                            type="button"
+                            className={`w-6 h-6 text-xl font-medium rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center 
                            ${
-                             counts[ticket.id] >= 20
+                             ticket.quantity >= 20
                                ? "cursor-not-allowed opacity-50"
                                : ""
                            }`}
-                              onClick={() =>
-                                updateCount(
-                                  ticket.id,
-                                  1,
-                                  ticket.price,
-                                  ticket.minQty
-                                )
-                              }
-                              disabled={counts[ticket.id] >= 20}
-                            >
-                              +
-                            </button>
-                          </div>
+                            onClick={() => updateCount(ticket.id, 1)}
+                            disabled={ticket.quantity >= 20}
+                          >
+                            <span className="mb-1">+</span>
+                          </button>
                         </div>
                       </div>
-                    </>
+                    </div>
                   )
               )}
             </div>
@@ -627,7 +655,9 @@ export default function CheckOutForm({ product }: { product: any }) {
                 width={18}
                 height={18}
               />
-              <span data-translate="true">Mở | Thứ, 10:00-19:30</span>
+              <span data-translate="true">
+                Mở {displayTimeOpening} | {displayDaysOpening}
+              </span>
             </div>
             <div className="flex space-x-2 mt-3 items-start">
               <Image
@@ -641,18 +671,14 @@ export default function CheckOutForm({ product }: { product: any }) {
                 {renderTextContent(product?.ticket?.address)}
               </span>
             </div>
-            <div className="mt-2 flex justify-between">
-              <span data-translate="true">Vé người lớn</span>
-              <span className="font-bold text-sm">
-                {`${formatCurrency(tickets[0].price)} x ${counts[1]}`}
-              </span>
-            </div>
-            <div className="mt-2 flex justify-between">
-              <span data-translate="true">Vé trẻ em</span>
-              <span className="font-bold text-sm">
-                {`${formatCurrency(tickets[1].price)} x ${counts[2]}`}
-              </span>
-            </div>
+            {tickets?.map((item: any) => (
+              <div key={item.id} className="mt-2 flex justify-between">
+                <span data-translate="true">{item.title}</span>
+                <span className="font-bold text-sm">
+                  {`${formatCurrency(item.price)} x ${item.quantity}`}
+                </span>
+              </div>
+            ))}
           </div>
           <div className="mt-4 flex justify-between">
             <span data-translate="true">Tổng cộng</span>

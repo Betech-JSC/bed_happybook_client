@@ -7,10 +7,15 @@ import { ProductTicket } from "@/api/ProductTicket";
 
 export default async function TourCheckout({
   params,
+  searchParams,
 }: {
   params: { slug: string };
+  searchParams: { [key: string]: string | undefined };
 }) {
-  const res = (await ProductTicket.detail(params.slug)) as any;
+  const res = (await ProductTicket.detail(
+    params.slug,
+    searchParams.departDate ?? ""
+  )) as any;
   const detail = res?.payload?.data;
   if (!detail) notFound();
   return (
