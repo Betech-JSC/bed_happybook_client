@@ -200,6 +200,10 @@ export default function SearchFormInsurance() {
                     boxShadow: "none",
                     cursor: "pointer",
                   }),
+                  menu: (base) => ({
+                    ...base,
+                    width: "260px",
+                  }),
                 }}
                 onChange={(selectedOption) =>
                   setFormData((prev) => ({
@@ -246,6 +250,10 @@ export default function SearchFormInsurance() {
                     border: "none",
                     boxShadow: "none",
                     cursor: "pointer",
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    width: "260px",
                   }),
                 }}
                 onChange={(selectedOption) => {
@@ -294,7 +302,7 @@ export default function SearchFormInsurance() {
               ></Image>
               <div className="w-full [&>div]:w-full border-none">
                 <DatePicker
-                  id="start_date"
+                  id="insurance_start_date"
                   ref={departDateRef}
                   selected={formData.departureDate}
                   onChange={handleDepartDateChange}
@@ -322,7 +330,7 @@ export default function SearchFormInsurance() {
             </div>
             <div className="w-[45%] [&>div]:w-full border-none">
               <DatePicker
-                id="start_date"
+                id="insurance_return_date"
                 ref={returnDateRef}
                 selected={formData.returnDate}
                 onChange={handleReturnDateChange}

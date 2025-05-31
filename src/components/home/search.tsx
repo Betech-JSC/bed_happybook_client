@@ -1,23 +1,15 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
 import Image from "next/image";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import { SearchFilghtProps } from "@/types/flight";
 import SearchHotel from "@/app/khach-san/components/Search";
-import Select from "react-select";
-import { useLanguage } from "@/app/contexts/LanguageContext";
 import SearchFormInsurance from "@/app/bao-hiem/components/SearchForm";
+import { default as TicketSearchForm } from "@/app/ve-vui-choi/components/SearchForm";
 
-export default function Search({ airportsData, locationsData }: any) {
-  const router = useRouter();
+export default function Search({ airportsData }: any) {
   const [activeTab, setActiveTab] = useState(0);
-  const [locationSelected, setLocationSelected] = useState<any>(null);
-  const { language } = useLanguage();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+
   return (
     <div className="relative z-[1] hidden lg:block">
       <div className="absolute inset-0">
@@ -131,88 +123,7 @@ export default function Search({ airportsData, locationsData }: any) {
 
           {/* Tabs 3 */}
           <div className={`${activeTab === 3 ? "block" : "hidden"}`}>
-            <div className="flex space-x-12 mb-3 mt-2">
-              <label className="flex items-center space-x-2">
-                <span
-                  className="text-[18px] font-semibold text-black"
-                  data-translate="true"
-                >
-                  Tìm vé vui chơi
-                </span>
-              </label>
-            </div>
-
-            <div className="flex lg:space-x-1 xl:space-x-2">
-              <div className="w-full md:w-9/12">
-                <label
-                  className="block text-gray-700 mb-1"
-                  data-translate="true"
-                >
-                  Nơi đi
-                </label>
-                <div className="flex h-12 items-center border rounded-lg px-2">
-                  <Image
-                    src="/icon/place.svg"
-                    alt="Phone icon"
-                    className="h-10"
-                    width={18}
-                    height={18}
-                  ></Image>
-                  {mounted && (
-                    <Select
-                      options={locationsData}
-                      placeholder={`${
-                        language === "en"
-                          ? "Select destination"
-                          : "Chọn điểm đến"
-                      }`}
-                      className="w-full"
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          border: "none",
-                          boxShadow: "none",
-                          cursor: "pointer",
-                        }),
-                      }}
-                      onChange={(selectedOption) =>
-                        setLocationSelected(selectedOption)
-                      }
-                    />
-                  )}
-                </div>
-              </div>
-
-              <div className="w-full md:w-3/12">
-                <label className="block text-gray-700 mb-1 h-6"></label>
-                <div
-                  onClick={() => {
-                    router.push(
-                      `/ve-vui-choi?location=${
-                        locationSelected ? locationSelected.label : ""
-                      }`
-                    );
-                  }}
-                  className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600  "
-                >
-                  <Image
-                    src="/icon/search.svg"
-                    alt="Phone icon"
-                    className="h-10 inline-block"
-                    width={18}
-                    height={18}
-                    style={{ width: 18, height: 18 }}
-                  ></Image>
-                  <button
-                    type="button"
-                    className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
-                    data-translate="true"
-                  >
-                    Tìm kiếm
-                  </button>
-                </div>
-              </div>
-            </div>
+            <TicketSearchForm />
           </div>
         </div>
       </div>

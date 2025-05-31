@@ -5,20 +5,13 @@ import Image from "next/image";
 import { SearchFilghtProps } from "@/types/flight";
 import SearchHotel from "@/app/khach-san/components/Search";
 import { useRouter } from "next/navigation";
-import Select from "react-select";
-import { useLanguage } from "@/app/contexts/LanguageContext";
 import SearchFormInsurance from "@/app/bao-hiem/components/SearchForm";
+import { default as TicketSearchForm } from "@/app/ve-vui-choi/components/SearchForm";
 
-export default function SearchMobile({ airportsData, locationsData }: any) {
+export default function SearchMobile({ airportsData }: any) {
   const [activeTabMb, setActiveTabMb] = useState(0);
   const router = useRouter();
   const [querySeach, setQuerySeach] = useState<string>();
-  const [locationSelected, setLocationSelected] = useState<any>(null);
-  const { language } = useLanguage();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   return (
     <Fragment>
       <h3
@@ -174,94 +167,7 @@ export default function SearchMobile({ airportsData, locationsData }: any) {
 
           {/* Tab Ticket */}
           <div className={`px-3 ${activeTabMb === 3 ? "block" : "hidden"}`}>
-            <div className="flex space-x-12 mb-4">
-              <label className="flex items-center space-x-2">
-                <span
-                  className="text-[18px] font-semibold text-black"
-                  data-translate="true"
-                >
-                  Tìm vé vui chơi
-                </span>
-              </label>
-            </div>
-
-            <div className="grid grid-cols-1">
-              <div className="mb-2">
-                <label
-                  className="block text-gray-700 mb-1"
-                  data-translate="true"
-                >
-                  Nơi đi
-                </label>
-                <div className="flex h-12 items-center border rounded-lg px-2">
-                  <Image
-                    src="/icon/place.svg"
-                    alt="Phone icon"
-                    className="h-10"
-                    width={18}
-                    height={18}
-                  ></Image>
-                  {mounted && (
-                    <Select
-                      options={locationsData}
-                      placeholder={`${
-                        language === "en"
-                          ? "Select destination"
-                          : "Chọn điểm đến"
-                      }`}
-                      className="w-full"
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          border: "none",
-                          boxShadow: "none",
-                          cursor: "pointer",
-                        }),
-                      }}
-                      onChange={(selectedOption) =>
-                        setLocationSelected(selectedOption)
-                      }
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="w-full px-3">
-              <label className="block text-gray-700 mb-1 h-6"></label>
-              <div
-                onClick={() => {
-                  router.push(
-                    `/ve-vui-choi?location=${
-                      locationSelected ? locationSelected.label : ""
-                    }`
-                  );
-                }}
-                className="w-full items-center justify-center border rounded-lg px-2 h-12 bg-[#F27145] text-center"
-              >
-                <Image
-                  src="/icon/search.svg"
-                  alt="Phone icon"
-                  className="h-10 inline-block"
-                  width={18}
-                  height={18}
-                  style={{ width: 20, height: 20 }}
-                ></Image>
-                <button
-                  type="button"
-                  className="ml-2 h-12 text-white rounded-lg  focus:outline-none"
-                  data-translate="true"
-                  onClick={() => {
-                    router.push(
-                      `/ve-vui-choi?location=${
-                        locationSelected ? locationSelected.label : ""
-                      }`
-                    );
-                  }}
-                >
-                  Tìm kiếm
-                </button>
-              </div>
-            </div>
+            <TicketSearchForm />
           </div>
         </div>
       </div>

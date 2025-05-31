@@ -40,15 +40,6 @@ export const metadata: Metadata = formatMetadata({
 
 export default async function Home() {
   const language = await getServerLang();
-  const locationsData =
-    ((await ProductLocation.list(language))?.payload?.data as any) ?? [];
-  const formatLocationsData =
-    locationsData?.length > 0
-      ? locationsData.map((opt: any) => ({
-          value: opt.id,
-          label: opt.name,
-        }))
-      : [];
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   const homeApiReponse = await HomeApi.index();
@@ -73,10 +64,7 @@ export default async function Home() {
       <WebsiteSchema {...(metadata as any)} url={siteUrl} />
 
       <Suspense>
-        <Search
-          airportsData={airportsData}
-          locationsData={formatLocationsData}
-        />
+        <Search airportsData={airportsData} />
       </Suspense>
       {/* Search Mobile */}
       <div className="mt-[68px] block lg:hidden relative h-max pb-10">
@@ -99,10 +87,7 @@ export default async function Home() {
             }}
           ></div>
           <div className="relative">
-            <SearchMobile
-              airportsData={airportsData}
-              locationsData={formatLocationsData}
-            />
+            <SearchMobile airportsData={airportsData} />
           </div>
         </div>
       </div>
