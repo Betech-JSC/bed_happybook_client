@@ -33,7 +33,8 @@ export default function FormCheckOut({ detail }: any) {
   const [isAgreeTerms, setIsAgreeTerms] = useState<boolean>(false);
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const messages = validationMessages[language as "vi" | "en"];
-  const [buyerBuyForSelf, setBuyerBuyForSelf] = useState(true);
+  const [buyerBuyForSelf, setBuyerBuyForSelf] = useState<boolean>(true);
+  const [contactByBuyer, setContactByBuyer] = useState<boolean>(false);
   const [insuranceBuyerInfo, setInsuranceBuyerInfo] =
     useState<InsuranceInfoType>({
       gender: "male",
@@ -89,15 +90,13 @@ export default function FormCheckOut({ detail }: any) {
     handleSubmit,
     reset,
     setValue,
+    getValues,
     control,
 
     formState: { errors },
   } = useForm<checkOutInsuranceType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
-      birthday_buyer: insuranceBuyerInfo.birthday
-        ? insuranceBuyerInfo.birthday
-        : undefined,
       checkBoxGenerateInvoice: false,
       from_address: searchParams.get("departure") ?? "",
       to_address: searchParams.get("destination") ?? "",
@@ -128,10 +127,12 @@ export default function FormCheckOut({ detail }: any) {
         insurance_package_id: detail.id,
         has_invoice: generateInvoice,
         insurance_type_id: detail.insurance_type_id,
+        contactByBuyer: contactByBuyer,
       };
       const respon = await ProductInsurance.booking(finalData);
       if (respon?.status === 200) {
         reset();
+        setInsuredInfoList([]);
         toast.success(toaStrMsg.sendSuccess);
         setTimeout(() => {
           router.push("/");
@@ -147,25 +148,28 @@ export default function FormCheckOut({ detail }: any) {
   };
 
   useEffect(() => {
-    setInsuredInfoList((prev) => {
-      const updated = [...prev];
-      updated[0] = {
-        ...insuranceBuyerInfo,
-        buyFor: buyerBuyForSelf ? "self" : "member",
-      };
-      return updated;
-    });
-  }, [buyerBuyForSelf, insuranceBuyerInfo]);
+    const timer = setTimeout(() => {
+      setValue(
+        "birthday_buyer",
+        insuranceBuyerInfo.birthday ? insuranceBuyerInfo.birthday : new Date()
+      );
+    }, 50);
 
-  useEffect(() => {
     if (buyerBuyForSelf) {
       setInsuredInfoList((prev) => {
         const updated = [...prev];
-        updated[0] = { ...insuranceBuyerInfo };
+        updated[0] = { ...insuranceBuyerInfo, buyFor: "self" };
+        return updated;
+      });
+    } else {
+      setInsuredInfoList((prev) => {
+        const updated = [...prev];
+        updated[0] = { ...updated[0], buyFor: "member" };
         return updated;
       });
     }
-  }, [insuranceBuyerInfo, buyerBuyForSelf]);
+    return () => clearTimeout(timer);
+  }, [insuranceBuyerInfo, buyerBuyForSelf, setValue]);
 
   const handleUploadSuccess = (data: any[]) => {
     setInsuredInfoList(data);
@@ -184,7 +188,6 @@ export default function FormCheckOut({ detail }: any) {
     });
     reset({ insured_info: formatted });
   }, [insuredInfoList, reset]);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid lg:grid-cols-3 gap-4">
@@ -266,14 +269,13 @@ export default function FormCheckOut({ detail }: any) {
                   render={({ field }) => (
                     <DatePicker
                       id="birthday_buyer"
-                      selected={
-                        field.value instanceof Date
-                          ? field.value
-                          : field.value
-                          ? new Date(field.value)
-                          : null
+                      selected={insuranceBuyerInfo.birthday || null}
+                      onChange={(date: Date | null) =>
+                        setInsuranceBuyerInfo((prev) => ({
+                          ...prev,
+                          birthday: date,
+                        }))
                       }
-                      onChange={(date: Date | null) => field.onChange(date)}
                       onChangeRaw={(event) => {
                         if (event) {
                           const target = event.target as HTMLInputElement;
@@ -395,19 +397,20 @@ export default function FormCheckOut({ detail }: any) {
                 Bản thân
               </label>
             </div>
-            <div className="flex space-x-2 cursor-pointer">
+            <div className="flex space-x-2 cursor-pointer items-center">
               <input
                 id="informationByBuyer"
                 type="checkbox"
                 className="w-4 h-4"
                 name="insurance_buyer_contact"
-                // checked={true}
+                checked={contactByBuyer}
+                onChange={() => setContactByBuyer(!contactByBuyer)}
               />
               <label htmlFor="informationByBuyer" className="text-sm">
                 Thông tin liên hệ theo người mua
               </label>
             </div>
-            <div className="flex space-x-2 cursor-pointer">
+            <div className="flex space-x-2 cursor-pointer items-center">
               <input
                 type="checkbox"
                 {...register("checkBoxGenerateInvoice")}
