@@ -1,7 +1,7 @@
 "use client";
 import { formatCurrency } from "@/lib/formatters";
 import Image from "next/image";
-import { format, parse, isValid } from "date-fns";
+import { format, parse, isValid, differenceInDays } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { SearchForm } from "@/types/insurance";
@@ -18,6 +18,7 @@ export default function SearchResults() {
   const router = useRouter();
   const [data, setData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [diffDate, setDiffDate] = useState<number>(0);
   const [querySearch, setQuerySearch] = useState<string>("");
   const resultsRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<SearchForm>({
@@ -56,6 +57,7 @@ export default function SearchResults() {
         : 1,
       type: searchParams.get("type") ?? "",
     });
+    setDiffDate(differenceInDays(returnDate, departDate));
   }, [searchParams]);
 
   const handleChoose = (id: number) => {
@@ -119,105 +121,135 @@ export default function SearchResults() {
   return (
     <div ref={resultsRef}>
       {data?.length > 0 ? (
-        data.map((item: any, index: number) => (
-          <div className="mb-6 last:mb-0  h-fit" key={index}>
-            <div className="grid grid-cols-8 items-start justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
-              <div className="col-span-8 lg:col-span-6">
-                <div className="flex flex-col md:flex-row items-start gap-4 text-center md:text-left mb-3">
-                  <div>
-                    {!isEmpty(item.image) ? (
-                      <DisplayImage
-                        imagePath={item.image ?? ""}
-                        width={174}
-                        height={58}
-                        alt={"Brand"}
-                        classStyle="max-w-[174px] max-h-[58px] rounded-sm"
-                      />
+        data.map((item: any, index: number) => {
+          const matchedFee = item?.insurance_package_prices?.find(
+            (item: any) =>
+              diffDate >= item.day_start && diffDate <= item.day_end
+          );
+          const totalFee = parseInt(matchedFee.price) * (formData.guests ?? 1);
+          return (
+            <div className="mb-6 last:mb-0  h-fit" key={index}>
+              <div className="grid grid-cols-8 items-start justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
+                <div className="col-span-8 lg:col-span-3">
+                  <div className="flex flex-col md:flex-row items-start gap-4 text-center md:text-left mb-3">
+                    <div>
+                      {!isEmpty(item.image) ? (
+                        <DisplayImage
+                          imagePath={item.image ?? ""}
+                          width={174}
+                          height={58}
+                          alt={"Brand"}
+                          classStyle="max-w-[174px] max-h-[58px] rounded-sm"
+                        />
+                      ) : (
+                        <Image
+                          src="/default-image.png"
+                          width={174}
+                          height={58}
+                          alt={"Brand"}
+                          className="max-w-[174px] max-h-[58px] object-cover rounded-sm"
+                        />
+                      )}
+                    </div>
+                    <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
+                      <h3 className="text-18 font-bold !leading-normal">
+                        {renderTextContent(item.name)}
+                      </h3>
+                      <p className="text-sm font-normal leading-snug text-gray-500">
+                        {renderTextContent(item.description)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-8 lg:col-span-5">
+                  <div className="grid grid-cols-4">
+                    <div className="hidden lg:block col-span-2 lg:col-span-1">
+                      <p className="text-gray-700">Giá / Khách</p>
+                      <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
+                        <p className="mt-1 leading-snug font-medium">
+                          {formatCurrency(parseInt(matchedFee.price) ?? 0)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="hidden lg:block col-span-2 lg:col-span-1 text-center">
+                      <p className="text-gray-700">Số lượng</p>
+                      <p className="mt-1 leading-snug font-medium">
+                        {formData.guests}
+                      </p>
+                    </div>
+                    <div className="col-span-4 lg:col-span-1 text-right lg:text-center mb-4">
+                      <p className="text-gray-700">Tổng</p>
+                      <p className="mt-1 leading-snug font-medium text-primary text-18">
+                        {formatCurrency(totalFee)}
+                      </p>
+                    </div>
+                    <div className="col-span-4 lg:col-span-1 w-full text-center md:text-right xl:pr-8">
+                      <div className="flex flex-row-reverse w-full lg:w-auto lg:flex-col justify-between float-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleChoose(item.id)}
+                          className="max-w-32 block text-center w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
+                        >
+                          Chọn
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => toggleShowDetail(index)}
+                          className="text-blue-700 font-medium text-base border-b border-b-blue-700"
+                        >
+                          Xem quyền lợi
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                ref={contentRef}
+                style={{
+                  maxHeight: showDetail === index ? "500px" : "0px",
+                }}
+                className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
+                  showDetail === index
+                    ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
+                    : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
+                } overflow-y-auto rounded-lg`}
+              >
+                <div className="flex flex-col justify-between py-3 px-4 md:px-6 bg-white rounded-lg">
+                  <div className="pb-1">
+                    <p className="text-blue-700 text-22 font-bold mb-4">
+                      Quyền lợi bảo hiểm
+                    </p>
+                    {item?.insurance_package_benefits?.length > 0 ? (
+                      item.insurance_package_benefits.map(
+                        (benefit: any, benefitIndex: number) => (
+                          <div
+                            key={benefitIndex}
+                            className="mb-4 pb-4 border-b border-b-gray-200"
+                          >
+                            <p className="mb-1">
+                              {renderTextContent(benefit.name)}
+                            </p>
+                            <p className="mb-1">
+                              {renderTextContent(benefit.description)}
+                            </p>
+                            {benefit.price && (
+                              <p className="text-primary text-base font-bold">
+                                {formatCurrency(benefit.price)}
+                              </p>
+                            )}
+                          </div>
+                        )
+                      )
                     ) : (
-                      <Image
-                        src="/default-image.png"
-                        width={174}
-                        height={58}
-                        alt={"Brand"}
-                        className="max-w-[174px] max-h-[58px] object-cover rounded-sm"
-                      />
+                      <p>Nội dung đang cập nhật...</p>
                     )}
                   </div>
-                  <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
-                    <h3 className="text-18 font-bold !leading-normal">
-                      {renderTextContent(item.name)}
-                    </h3>
-                    <p className="text-sm font-normal leading-snug text-gray-500">
-                      {renderTextContent(item.description)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-span-8 lg:col-span-2 w-full text-center md:text-right xl:pr-8">
-                <div className="flex flex-row-reverse w-full lg:w-auto lg:flex-col justify-between float-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleChoose(item.id)}
-                    className="max-w-32 block text-center w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
-                  >
-                    Chọn
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => toggleShowDetail(index)}
-                    className="text-blue-700 font-medium text-base border-b border-b-blue-700"
-                  >
-                    Xem quyền lợi
-                  </button>
                 </div>
               </div>
             </div>
-            <div
-              ref={contentRef}
-              style={{
-                maxHeight: showDetail === index ? "500px" : "0px",
-              }}
-              className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
-                showDetail === index
-                  ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
-                  : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
-              } overflow-y-auto rounded-lg`}
-            >
-              <div className="flex flex-col justify-between py-3 px-4 md:px-6 bg-white rounded-lg">
-                <div className="pb-1">
-                  <p className="text-blue-700 text-22 font-bold mb-4">
-                    Quyền lợi bảo hiểm
-                  </p>
-                  {item?.insurance_package_benefits?.length > 0 ? (
-                    item.insurance_package_benefits.map(
-                      (benefit: any, benefitIndex: number) => (
-                        <div
-                          key={benefitIndex}
-                          className="mb-4 pb-4 border-b border-b-gray-200"
-                        >
-                          <p className="mb-1">
-                            {renderTextContent(benefit.name)}
-                          </p>
-                          <p className="mb-1">
-                            {renderTextContent(benefit.description)}
-                          </p>
-                          {benefit.price && (
-                            <p className="text-primary text-base font-bold">
-                              {formatCurrency(benefit.price)}
-                            </p>
-                          )}
-                        </div>
-                      )
-                    )
-                  ) : (
-                    <p>Nội dung đang cập nhật...</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))
+          );
+        })
       ) : (
         <div className="text-18 md:text-2xl text-center">
           Không tìm thấy dữ liệu phù hợp....
