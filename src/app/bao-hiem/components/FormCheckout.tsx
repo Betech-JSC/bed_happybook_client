@@ -9,22 +9,33 @@ import {
 } from "@/schemaValidations/checkOutInsurance.schema";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { ProductInsurance } from "@/api/ProductInsurance";
 import { InsuranceInfoType, SearchForm } from "@/types/insurance";
 import { useRouter, useSearchParams } from "next/navigation";
-import { format, parse, isValid } from "date-fns";
+import { format, parse, isValid, previousDay } from "date-fns";
 import { isNumber } from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import "@/styles/flightBooking.scss";
 import ExcelUploader from "./ExcelUploader";
+import { formatCurrency } from "@/lib/formatters";
 
-export default function FormCheckOut({ detail }: any) {
+const defaultInsuranceInfo = {
+  gender: "male",
+  name: "",
+  birthday: null,
+  citizenId: "",
+  buyFor: "self",
+  address: "",
+  phone: "",
+  email: "",
+};
+export default function FormCheckOut({ detail, matchedInsurance }: any) {
   const { language } = useLanguage();
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -34,21 +45,17 @@ export default function FormCheckOut({ detail }: any) {
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const messages = validationMessages[language as "vi" | "en"];
   const [buyerBuyForSelf, setBuyerBuyForSelf] = useState<boolean>(true);
-  const [contactByBuyer, setContactByBuyer] = useState<boolean>(false);
-  const [insuranceBuyerInfo, setInsuranceBuyerInfo] =
-    useState<InsuranceInfoType>({
-      gender: "male",
-      name: "",
-      birthday: null,
-      citizenId: "",
-      buyFor: "self",
-      address: "",
-      phone: "",
-      email: "",
-    });
+  const [contactByBuyer, setContactByBuyer] = useState<boolean>(true);
+  const [height, setHeight] = useState<number | string>(0);
+  const insuranceDetailRef = useRef<HTMLDivElement>(null);
+  const [showInsuranceDetails, setShowInsuranceDetails] = useState<number[]>(
+    []
+  );
   const [insuredInfoList, setInsuredInfoList] = useState<InsuranceInfoType[]>(
     []
   );
+  const [insuranceBuyerInfo, setInsuranceBuyerInfo] =
+    useState<InsuranceInfoType>(defaultInsuranceInfo);
 
   const [searchForm, setSearchForm] = useState<SearchForm>({
     departurePlace: "",
@@ -70,6 +77,9 @@ export default function FormCheckOut({ detail }: any) {
       "ddMMyyyy",
       new Date()
     );
+    const totalGuests = isNumber(parseInt(searchParams.get("guests") ?? "1"))
+      ? parseInt(searchParams.get("guests") ?? "1")
+      : 1;
     setSearchForm({
       departurePlace: searchParams.get("departure") ?? "",
       destinationPlace: searchParams.get("destination") ?? "",
@@ -80,10 +90,16 @@ export default function FormCheckOut({ detail }: any) {
         : 1,
       type: searchParams.get("type") ?? "",
     });
+
+    setInsuredInfoList(
+      Array.from({ length: totalGuests }, () => ({
+        ...defaultInsuranceInfo,
+      }))
+    );
   }, [searchParams]);
 
   const [schemaForm, setSchemaForm] = useState(() =>
-    checkOutInsuranceSchema(messages, generateInvoice)
+    checkOutInsuranceSchema(messages, generateInvoice, contactByBuyer)
   );
   const {
     register,
@@ -107,8 +123,10 @@ export default function FormCheckOut({ detail }: any) {
   });
 
   useEffect(() => {
-    setSchemaForm(checkOutInsuranceSchema(messages, generateInvoice));
-  }, [generateInvoice, messages]);
+    setSchemaForm(
+      checkOutInsuranceSchema(messages, generateInvoice, contactByBuyer)
+    );
+  }, [contactByBuyer, generateInvoice, messages]);
 
   const onSubmit = async (formData: checkOutInsuranceType) => {
     try {
@@ -149,12 +167,10 @@ export default function FormCheckOut({ detail }: any) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setValue(
-        "birthday_buyer",
-        insuranceBuyerInfo.birthday ? insuranceBuyerInfo.birthday : new Date()
-      );
+      if (insuranceBuyerInfo.birthday) {
+        setValue("birthday_buyer", insuranceBuyerInfo.birthday);
+      }
     }, 50);
-
     if (buyerBuyForSelf) {
       setInsuredInfoList((prev) => {
         const updated = [...prev];
@@ -177,6 +193,26 @@ export default function FormCheckOut({ detail }: any) {
       ...prev,
       guests: data.length,
     }));
+    if (data?.length > 0) {
+      if (buyerBuyForSelf) {
+        const firstCustomer = data[0];
+        firstCustomer.birthday = new Date(firstCustomer.birthday);
+        setInsuranceBuyerInfo(firstCustomer);
+        reset({
+          name_buyer: firstCustomer.name,
+          birthday_buyer: new Date(firstCustomer.birthday),
+          address_buyer: firstCustomer.address,
+          passport_number_buyer: firstCustomer.citizenId,
+          phone_buyer: firstCustomer.phone,
+          email_buyer: firstCustomer.email,
+        });
+      }
+      const totalPriceEL = document.getElementById("totalInsurcePrice");
+      if (totalPriceEL) {
+        const totalFee = parseInt(matchedInsurance.price) * data.length;
+        totalPriceEL.textContent = `${formatCurrency(totalFee)}`;
+      }
+    }
   };
 
   useEffect(() => {
@@ -188,6 +224,37 @@ export default function FormCheckOut({ detail }: any) {
     });
     reset({ insured_info: formatted });
   }, [insuredInfoList, reset]);
+
+  const toggleShowInsuranceDetails = useCallback(
+    (itemId: any) => {
+      if (showInsuranceDetails.includes(itemId)) {
+        setShowInsuranceDetails(
+          showInsuranceDetails.filter((item) => item !== itemId)
+        );
+      } else {
+        setShowInsuranceDetails((prev) => [...prev, itemId]);
+      }
+    },
+    [showInsuranceDetails]
+  );
+
+  useEffect(() => {
+    if (!insuranceDetailRef.current) return;
+    setHeight(
+      insuranceDetailRef ? insuranceDetailRef.current.scrollHeight + 200 : 0
+    );
+  }, [showInsuranceDetails]);
+
+  useEffect(() => {
+    if (!contactByBuyer) {
+      setShowInsuranceDetails(
+        Array.from({ length: searchForm.guests }, (_, i) => i + 1)
+      );
+    } else {
+      setShowInsuranceDetails([]);
+    }
+  }, [contactByBuyer, searchForm]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid lg:grid-cols-3 gap-4">
@@ -293,7 +360,7 @@ export default function FormCheckOut({ detail }: any) {
                       dropdownMode="select"
                       locale={language === "vi" ? vi : enUS}
                       maxDate={new Date(new Date().getFullYear() - 18, 11, 31)}
-                      minDate={new Date(new Date().getFullYear() - 100, 11, 31)}
+                      minDate={new Date(new Date().getFullYear() - 90, 11, 31)}
                       className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                     />
                   )}
@@ -311,6 +378,13 @@ export default function FormCheckOut({ detail }: any) {
               )}
             </div>
             <div className="relative">
+              <Image
+                src="/icon/info-circle.svg"
+                alt="Icon"
+                className="h-5 absolute top-1/2 -translate-y-1/2 right-4 lg:right-5 z-10"
+                width={18}
+                height={20}
+              />
               <input
                 type="text"
                 placeholder="Số CCCD"
@@ -321,7 +395,7 @@ export default function FormCheckOut({ detail }: any) {
                     citizenId: e.target.value,
                   }))
                 }
-                className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                className="relative text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
               />{" "}
               {errors.passport_number_buyer && (
                 <p className="text-red-600">
@@ -594,195 +668,256 @@ export default function FormCheckOut({ detail }: any) {
               Thông tin người hưởng bảo hiểm
             </p>
 
-            {insuredInfoList.map((item, index: number) => (
-              <div className="mb-3 mt-6" key={index}>
-                <p className="mb-4 font-medium">Người hưởng {index + 1}</p>
-                <div className="grid lg:grid-cols-4 gap-4">
-                  <div className="relative">
-                    <label
-                      htmlFor="service"
-                      className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
-                    >
-                      <span data-translate="true">Giới tính</span>{" "}
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                      <select
-                        className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-2.5"
-                        {...register(`insured_info.${index}.gender`)}
-                        defaultValue={item.gender}
+            {insuredInfoList.map((item, index: number) => {
+              const itemId = index + 1;
+              return (
+                <div className="mb-3 mt-6" key={index}>
+                  <p className="mb-4 font-medium">Người hưởng {itemId}</p>
+                  <div className="grid lg:grid-cols-4 gap-4">
+                    <div className="relative">
+                      <label
+                        htmlFor="service"
+                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                       >
-                        <option value="male" data-translate="true">
-                          Nam
-                        </option>
-                        <option value="female" data-translate="true">
-                          Nữ
-                        </option>
-                      </select>
+                        <span data-translate="true">Giới tính</span>{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                        <select
+                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-2.5"
+                          {...register(`insured_info.${index}.gender`)}
+                          defaultValue={item.gender}
+                        >
+                          <option value="male" data-translate="true">
+                            Nam
+                          </option>
+                          <option value="female" data-translate="true">
+                            Nữ
+                          </option>
+                        </select>
+                      </div>
+                      {errors.insured_info?.[index]?.gender && (
+                        <p className="text-red-600">
+                          {errors.insured_info?.[index]?.gender?.message}
+                        </p>
+                      )}
                     </div>
-                    {errors.insured_info?.[index]?.gender && (
-                      <p className="text-red-600">
-                        {errors.insured_info?.[index]?.gender?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Nguyễn Văn A"
-                      defaultValue={item.name}
-                      {...register(`insured_info.${index}.name`)}
-                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />{" "}
-                    {errors.insured_info?.[index]?.name && (
-                      <p className="text-red-600">
-                        {errors.insured_info?.[index]?.name?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <div className="h-[54.4px] w-full booking-form-birthday flex justify-between items-center py-3 pl-1 pr-4 border border-gray-300 rounded-md">
-                      <Controller
-                        name={`insured_info.${index}.birthday`}
-                        control={control}
-                        render={({ field }) => (
-                          <DatePicker
-                            id={`insured_info.${index}.birthday`}
-                            selected={
-                              field.value instanceof Date
-                                ? field.value
-                                : field.value
-                                ? new Date(field.value)
-                                : null
-                            }
-                            onChange={(date: Date | null) =>
-                              field.onChange(date)
-                            }
-                            onChangeRaw={(event) => {
-                              if (event) {
-                                const target = event.target as HTMLInputElement;
-                                if (target.value) {
-                                  target.value = target.value
-                                    .trim()
-                                    .replace(/\//g, "-");
-                                }
-                              }
-                            }}
-                            placeholderText="Ngày sinh"
-                            dateFormat="dd-MM-yyyy"
-                            showMonthDropdown
-                            showYearDropdown
-                            dropdownMode="select"
-                            locale={language === "vi" ? vi : enUS}
-                            maxDate={
-                              new Date(new Date().getFullYear() - 15, 11, 31)
-                            }
-                            minDate={
-                              new Date(new Date().getFullYear() - 100, 11, 31)
-                            }
-                            className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                          />
-                        )}
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Nguyễn Văn A"
+                        defaultValue={item.name}
+                        {...register(`insured_info.${index}.name`)}
+                        className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                       />{" "}
+                      {errors.insured_info?.[index]?.name && (
+                        <p className="text-red-600">
+                          {errors.insured_info?.[index]?.name?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <div className="h-[54.4px] w-full booking-form-birthday flex justify-between items-center py-3 pl-1 pr-4 border border-gray-300 rounded-md">
+                        <Controller
+                          name={`insured_info.${index}.birthday`}
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              id={`insured_info.${index}.birthday`}
+                              selected={
+                                field.value instanceof Date
+                                  ? field.value
+                                  : field.value
+                                  ? new Date(field.value)
+                                  : null
+                              }
+                              onChange={(date: Date | null) =>
+                                field.onChange(date)
+                              }
+                              onChangeRaw={(event) => {
+                                if (event) {
+                                  const target =
+                                    event.target as HTMLInputElement;
+                                  if (target.value) {
+                                    target.value = target.value
+                                      .trim()
+                                      .replace(/\//g, "-");
+                                  }
+                                }
+                              }}
+                              placeholderText="Ngày sinh"
+                              dateFormat="dd-MM-yyyy"
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                              locale={language === "vi" ? vi : enUS}
+                              maxDate={
+                                new Date(new Date().getFullYear() - 15, 11, 31)
+                              }
+                              minDate={
+                                new Date(new Date().getFullYear() - 85, 11, 31)
+                              }
+                              className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                            />
+                          )}
+                        />{" "}
+                        <Image
+                          src="/icon/calendar.svg"
+                          alt="Icon"
+                          className="h-5"
+                          width={18}
+                          height={20}
+                        />
+                      </div>
+
+                      {errors.insured_info?.[index]?.birthday && (
+                        <p className="text-red-600">
+                          {errors.insured_info?.[index]?.birthday?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
                       <Image
-                        src="/icon/calendar.svg"
+                        src="/icon/info-circle.svg"
                         alt="Icon"
-                        className="h-5"
+                        className="h-5 absolute top-1/2 -translate-y-1/2 right-4 lg:right-5 z-10"
                         width={18}
                         height={20}
                       />
+                      <input
+                        type="text"
+                        placeholder="Số CCCD"
+                        defaultValue={item.citizenId}
+                        {...register(`insured_info.${index}.passport_number`)}
+                        className="relative h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      />{" "}
+                      {errors.insured_info?.[index]?.passport_number && (
+                        <p className="text-red-600">
+                          {
+                            errors.insured_info?.[index]?.passport_number
+                              ?.message
+                          }
+                        </p>
+                      )}
                     </div>
-
-                    {errors.insured_info?.[index]?.birthday && (
-                      <p className="text-red-600">
-                        {errors.insured_info?.[index]?.birthday?.message}
-                      </p>
-                    )}
                   </div>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Số CCCD"
-                      defaultValue={item.citizenId}
-                      {...register(`insured_info.${index}.passport_number`)}
-                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />{" "}
-                    {errors.insured_info?.[index]?.passport_number && (
-                      <p className="text-red-600">
-                        {errors.insured_info?.[index]?.passport_number?.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="mt-6 grid lg:grid-cols-4 gap-4">
-                  <div className="relative">
-                    <label
-                      htmlFor="service"
-                      className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                  <div className="my-4 text-right flex w-full justify-end">
+                    <div
+                      className="flex gap-1 text-sm items-end justify-end cursor-pointer"
+                      onClick={() => {
+                        toggleShowInsuranceDetails(itemId);
+                      }}
                     >
-                      <span data-translate="true">Mua cho</span>
-                    </label>
-                    <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                      <select
-                        className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-2.5"
-                        {...register(`insured_info.${index}.buyFor`)}
-                        defaultValue={item.buyFor}
+                      <button
+                        type="button"
+                        className="text-blue-700 outline-none"
                       >
-                        <option value="self" data-translate="true">
-                          Bản thân
-                        </option>
-                        <option value="member" data-translate="true">
-                          Thành viên đoàn
-                        </option>
-                      </select>
+                        Chi tiết
+                      </button>
+                      <svg
+                        width="22"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`${
+                          showInsuranceDetails.includes(itemId)
+                            ? "rotate-180"
+                            : ""
+                        }`}
+                      >
+                        <path
+                          d="M5 7.5L10 12.5L15 7.5"
+                          stroke="#175CD3"
+                          strokeWidth="1.66667"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </div>
                   </div>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Địa chỉ"
-                      defaultValue={item.address}
-                      {...register(`insured_info.${index}.address`)}
-                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />
-                    {errors.insured_info?.[index]?.address && (
-                      <p className="text-red-600">
-                        {errors.insured_info?.[index]?.address?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Số điện thoại"
-                      defaultValue={item.phone}
-                      {...register(`insured_info.${index}.phone`)}
-                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />{" "}
-                    {errors.insured_info?.[index]?.phone && (
-                      <p className="text-red-600">
-                        {errors.insured_info?.[index]?.phone?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Nhập Email"
-                      defaultValue={item.email}
-                      {...register(`insured_info.${index}.email`)}
-                      className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />{" "}
-                    {errors.insured_info?.[index]?.email && (
-                      <p className="text-red-600">
-                        {errors.insured_info?.[index]?.email?.message}
-                      </p>
-                    )}
+                  <div
+                    ref={insuranceDetailRef}
+                    className={`grid lg:grid-cols-4 gap-4 transition-[opacity,max-height,transform] ease-out duration-300 overflow-hidden ${
+                      showInsuranceDetails.includes(itemId)
+                        ? `opacity-1 border-blue-500 translate-y-0`
+                        : "opacity-0 border-none -translate-y-6 invisible"
+                    }`}
+                    style={{
+                      maxHeight: showInsuranceDetails.includes(itemId)
+                        ? height
+                        : "0px",
+                    }}
+                  >
+                    <div className="relative">
+                      <label
+                        htmlFor="service"
+                        className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
+                      >
+                        <span data-translate="true">Mua cho</span>
+                      </label>
+                      <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                        <select
+                          className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-2.5"
+                          {...register(`insured_info.${index}.buyFor`)}
+                          defaultValue={item.buyFor}
+                        >
+                          <option value="self" data-translate="true">
+                            Bản thân
+                          </option>
+                          <option value="member" data-translate="true">
+                            Thành viên đoàn
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Địa chỉ"
+                        defaultValue={item.address}
+                        {...register(`insured_info.${index}.address`)}
+                        className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      />
+                      {errors.insured_info?.[index]?.address && (
+                        <p className="text-red-600">
+                          {errors.insured_info?.[index]?.address?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Số điện thoại"
+                        defaultValue={item.phone}
+                        {...register(`insured_info.${index}.phone`)}
+                        className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      />{" "}
+                      {errors.insured_info?.[index]?.phone && (
+                        <p className="text-red-600">
+                          {errors.insured_info?.[index]?.phone?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Nhập Email"
+                        defaultValue={item.email}
+                        {...register(`insured_info.${index}.email`)}
+                        className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      />{" "}
+                      {errors.insured_info?.[index]?.email && (
+                        <p className="text-red-600">
+                          {errors.insured_info?.[index]?.email?.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div className="mt-4">
+              );
+            })}
+            <div className="mt-4 lg:mt-6">
               <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 justify-between">
                 <div>
                   <div className="flex items-start lg:items-center space-x-2 cursor-pointer">

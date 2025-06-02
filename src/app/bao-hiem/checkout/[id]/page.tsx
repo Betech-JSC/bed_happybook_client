@@ -30,12 +30,12 @@ export default async function InsuranceCheckout({
   const detail =
     ((await ProductInsurance.detail(params.id))?.payload?.data as any) ?? null;
 
-  const matchedFee = detail?.insurance_package_prices?.find(
+  const matchedInsurance = detail?.insurance_package_prices?.find(
     (item: any) => diffDate >= item.day_start && diffDate <= item.day_end
   );
   const totalFee =
-    parseInt(matchedFee.price) * (parseInt(safeParams.guests) ?? 1);
-  if (isEmpty(detail) || !matchedFee) {
+    parseInt(matchedInsurance.price) * (parseInt(safeParams.guests) ?? 1);
+  if (isEmpty(detail) || !matchedInsurance) {
     notFound();
   }
   return (
@@ -104,7 +104,10 @@ export default async function InsuranceCheckout({
                   <p className="text-sm font-normal leading-snug text-gray-500">
                     Tổng tiền
                   </p>
-                  <p className="text-18 font-bold !leading-normal">
+                  <p
+                    id="totalInsurcePrice"
+                    className="text-18 font-bold !leading-normal"
+                  >
                     {formatCurrency(totalFee)}
                   </p>
                 </div>
@@ -124,7 +127,7 @@ export default async function InsuranceCheckout({
       <main className="w-full bg-gray-100 relative z-2 rounded-2xl pb-4 lg:pb-12">
         <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen relative top-[-30px]">
           <div className="px-3 py-5 lg:px-8 bg-white rounded-2xl">
-            <FormCheckOut detail={detail} />
+            <FormCheckOut detail={detail} matchedInsurance={matchedInsurance} />
           </div>
         </div>
       </main>

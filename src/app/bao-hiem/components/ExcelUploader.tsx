@@ -3,8 +3,9 @@
 import { ProductInsurance } from "@/api/ProductInsurance";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { toastMessages } from "@/lib/messages";
+import { isEmpty } from "lodash";
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function ExcelUploader({
@@ -12,6 +13,7 @@ export default function ExcelUploader({
 }: {
   onSuccess: (data: any[]) => void;
 }) {
+  const [fileNameUpload, setFileNameUpload] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, number[]>>({});
   const { language } = useLanguage();
   const toaStrMsg = toastMessages[language as "vi" | "en"];
@@ -20,10 +22,12 @@ export default function ExcelUploader({
     const input = e.target;
     const selectedFile = input.files?.[0];
     if (!selectedFile) return;
+    setFileNameUpload(selectedFile.name);
     const formData = new FormData();
     formData.append("file", selectedFile);
     try {
-      onSuccess([]);
+      toast.dismiss();
+      // onSuccess([]);
       const res = await ProductInsurance.import(formData);
       const data = await res.json();
       if (!res.ok) {
@@ -92,6 +96,11 @@ export default function ExcelUploader({
             <p>Chọn danh sách</p>
           </label>
         </div>
+        {/* {!isEmpty(fileNameUpload) && (
+          <p className="w-full text-right mt-2">
+            Danh sách đã chọn: {fileNameUpload}
+          </p>
+        )} */}
       </div>
       {Object.keys(errors).length > 0 && (
         <div className="text-red-600 my-3">

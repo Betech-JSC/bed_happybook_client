@@ -178,8 +178,8 @@ export default function SearchResults() {
                       </p>
                     </div>
                     <div className="col-span-4 lg:col-span-1 text-right lg:text-center mb-4">
-                      <p className="text-gray-700">Tổng</p>
-                      <p className="mt-1 leading-snug font-medium text-primary text-18">
+                      <p className="text-gray-700 font-semibold">Tổng</p>
+                      <p className="mt-1 leading-snug text-primary text-18 font-semibold">
                         {formatCurrency(totalFee)}
                       </p>
                     </div>

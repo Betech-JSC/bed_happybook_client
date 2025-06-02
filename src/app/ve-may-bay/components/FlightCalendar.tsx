@@ -53,7 +53,7 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
     flight.totalFare < lowest.totalFare ? flight : lowest
   );
 };
-const listNextMonth = generateMonth(3);
+const listNextMonth = generateMonth(10);
 
 export default function FlightCalendar({
   airports,

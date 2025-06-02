@@ -11,8 +11,10 @@ import Search from "./components/Search";
 import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { ProductTicket } from "@/api/ProductTicket";
+import { notFound } from "next/navigation";
 
 export default async function EntertainmentTickets() {
+  notFound();
   const optionsFilter = (await ProductTicket.getOptionsFilter())?.payload
     ?.data as any;
   return (
