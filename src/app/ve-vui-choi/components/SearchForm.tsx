@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ProductTicket } from "@/api/ProductTicket";
 import { format, parse, isValid } from "date-fns";
+import toast from "react-hot-toast";
 
 type Option = {
   name: string;
@@ -25,7 +26,7 @@ export default function SearchForm() {
   const [mounted, setMounted] = useState(false);
 
   const handleSearch = () => {
-    if (locationSelected) {
+    if (locationSelected && isValid(departureDate)) {
       const date = format(
         isValid(departureDate ?? undefined) ? departureDate! : new Date(),
         "yyyy-MM-dd"
@@ -33,6 +34,9 @@ export default function SearchForm() {
       router.push(
         `/ve-vui-choi/chi-tiet/${locationSelected.value}?departDate=${date}`
       );
+    } else {
+      toast.dismiss();
+      toast.error("Vui lòng chọn đầy đủ thông tin");
     }
 
     return;

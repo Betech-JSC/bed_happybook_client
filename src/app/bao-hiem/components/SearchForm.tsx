@@ -378,14 +378,14 @@ export default function SearchFormInsurance() {
                 onClick={() => handleDecrement()}
                 className={`w-8 h-8 md:w-6 md:h-6 rounded-full bg-gray-200 flex items-center justify-center`}
               >
-                <span className="mb-1">-</span>
+                <span>-</span>
               </button>
               <span className="text-base">{totalGuests} hành khách</span>
               <button
                 onClick={() => handleIncrement()}
                 className={`w-8 h-8 md:w-6 md:h-6 rounded-full bg-blue-500 text-white flex items-center justify-center `}
               >
-                <span className="mb-1">+</span>
+                <span>+</span>
               </button>
             </div>
           </div>

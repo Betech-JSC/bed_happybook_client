@@ -3,7 +3,8 @@ import z from "zod";
 
 export const checkOutInsuranceSchema = (
   messages: ValidationMessages,
-  checkBoxGenerateInvoice: boolean
+  checkBoxGenerateInvoice: boolean,
+  checkBoxcontactByBuyer: boolean
 ) => {
   return z.object({
     from_address: z.string().min(1, {
@@ -62,7 +63,6 @@ export const checkOutInsuranceSchema = (
         name: z.string().min(3, { message: messages.required }).max(255, {
           message: messages.inValid,
         }),
-        address: z.string().min(3, { message: messages.required }),
         birthday: z.date({
           required_error: messages.required,
           invalid_type_error: messages.required,
@@ -77,17 +77,24 @@ export const checkOutInsuranceSchema = (
             }
           ),
         buyFor: z.string().min(3, { message: messages.required }),
-        phone: z
-          .string()
-          .min(1, {
-            message: messages.required,
-          })
-          .regex(/^0\d{9}$/, {
-            message: messages.inValid,
-          }),
-        email: z.string().min(1, { message: messages.required }).email({
-          message: messages.email,
-        }),
+        address: !checkBoxcontactByBuyer
+          ? z.string().min(3, { message: messages.required })
+          : z.string().optional(),
+        phone: !checkBoxcontactByBuyer
+          ? z
+              .string()
+              .min(1, {
+                message: messages.required,
+              })
+              .regex(/^0\d{9}$/, {
+                message: messages.inValid,
+              })
+          : z.string().optional(),
+        email: !checkBoxcontactByBuyer
+          ? z.string().min(1, { message: messages.required }).email({
+              message: messages.email,
+            })
+          : z.string().optional(),
       })
     ),
     invoice: checkBoxGenerateInvoice
