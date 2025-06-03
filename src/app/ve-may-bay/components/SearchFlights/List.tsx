@@ -470,6 +470,7 @@ export default function ListFlights({
                       departureTime: time,
                     }));
                   }}
+                  allowCross={false}
                 />
               </div>
             </div>

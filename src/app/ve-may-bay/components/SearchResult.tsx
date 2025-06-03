@@ -485,7 +485,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
           isRoundTrip={isRoundTrip}
           totalPassengers={totalPassengers}
           flightType={flightType}
-          flightStopNum={stopNumFilters}
+          flightStopNum={stopNumFilters.filter((item) => item > 0)}
           translatedStaticText={translatedStaticText}
           isReady={isReady}
         />
