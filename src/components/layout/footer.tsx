@@ -21,45 +21,45 @@ export default function Footer() {
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Hotline vé máy bay:
               </p>
-              <p className="inline-block mr-1">0983.488.937</p>
-              <p className="inline-block mr-1" data-translate="true">
+              <p className="inline-block mr-1">1900.633.437 - EXT (1)</p>
+              {/* <p className="inline-block mr-1" data-translate="true">
                 (Nội địa)
               </p>
-              <p className="inline-block mr-1"> - 0367.008.027 </p>
+              <p className="inline-block mr-1"> - 1900.633.437 </p>
               <p className="inline-block" data-translate="true">
                 (Quốc tế)
-              </p>
+              </p> */}
             </div>
             <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Hotline Visa - hộ chiếu:
               </p>
-              <p className="inline-block">0708.628.791 - 0904.221.293</p>
+              <p className="inline-block">1900.633.437 - EXT (2)</p>
             </div>
             <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Hotline Tour du lịch:
               </p>
-              <p className="inline-block">0708.628.791</p>
+              <p className="inline-block">1900.633.437 - EXT (3)</p>
             </div>
-            <div className="mt-1">
+            {/* <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Email Chính thức:
               </p>
               <p className="inline-block">info@happybook.com.vn</p>
-            </div>
+            </div> */}
             <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Email tuyển dụng - đăng ký CTV:
               </p>
-              <p className="inline-block">HR@happybook.com.vn</p>
+              <p className="inline-block">HR@happybooktravel.com.vn</p>
             </div>
-            <div className="mt-1">
+            {/* <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Email visa - hộ chiếu:
               </p>
               <p className="inline-block"> visaonline@happybook.com.vn</p>
-            </div>
+            </div> */}
             <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Trụ sở chính:
