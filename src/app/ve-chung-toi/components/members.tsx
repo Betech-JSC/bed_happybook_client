@@ -48,7 +48,7 @@ export default function Members({ data }: any) {
                   width={600}
                   height={400}
                   sizes="100vw"
-                  className={`${AboutUs.member__img} w-full h-[468px] md:h-[316px] lg:h-[255px]`}
+                  className={`${AboutUs.member__img} w-full h-[468px] md:h-[316px] lg:h-[255px] object-cover`}
                 />
                 <div className={AboutUs.member__info}>
                   <div className={`m-3 text-white`}>

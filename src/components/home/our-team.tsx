@@ -89,7 +89,7 @@ export default function OurTeam({ data }: any) {
                   width={100}
                   height={100}
                   sizes="100vw"
-                  className={styles.member__img}
+                  className={`object-cover ${styles.member__img}`}
                   style={{ width: "90%", height: 255 }}
                 />
                 <div className={styles.member__info}>

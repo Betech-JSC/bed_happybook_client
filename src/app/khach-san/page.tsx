@@ -168,7 +168,7 @@ export default async function Hotel() {
                   <div className="overflow-hidden rounded-t-2xl">
                     <Link href={item.url ?? "#"}>
                       <Image
-                        className="hover:scale-110 ease-in duration-300 cursor-pointer w-full rounded-t-2xl"
+                        className="hover:scale-110 ease-in duration-300 cursor-pointer w-full rounded-t-2xl object-cover"
                         src={`${item.image_url}/${item.image_location}`}
                         alt="Image"
                         width={250}

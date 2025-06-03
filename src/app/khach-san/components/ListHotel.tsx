@@ -228,7 +228,7 @@ export default function ListHotel({
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
                   <Link href={`/khach-san/chi-tiet/${item.slug}`}>
                     <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl"
+                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
                       src={`${item.image_url}/${item.image_location}`}
                       alt="Image"
                       width={450}

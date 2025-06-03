@@ -11,7 +11,7 @@ export default function HotelItem({ hotel }: any) {
           <div className="overflow-hidden rounded-t-2xl relative h-52">
             <Link href={`/khach-san/chi-tiet/${hotel.slug}`}>
               <Image
-                className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
+                className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                 src={`${hotel.image_url}/${hotel.image_location}`}
                 alt="Hotel Image"
                 width={320}

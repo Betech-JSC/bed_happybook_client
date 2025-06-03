@@ -227,7 +227,7 @@ export default function ListTour({
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                   <Link href={`/tours/chi-tiet/${tour.slug}`}>
                     <Image
-                      className=" hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
+                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                       src={`${tour.image_url}/${tour.image_location}`}
                       alt="Image"
                       width={360}

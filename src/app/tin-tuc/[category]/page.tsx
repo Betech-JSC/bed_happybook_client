@@ -129,7 +129,7 @@ export default async function CategoryPosts({
                         <div className="overflow-hidden rounded-xl">
                           <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
                             <Image
-                              className="ease-in duration-300"
+                              className="ease-in duration-300 object-cover"
                               src={`/posts/category-posts/${index + 1}.png`}
                               alt="Tin tức"
                               width={140}

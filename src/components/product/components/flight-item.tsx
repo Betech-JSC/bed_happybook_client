@@ -28,7 +28,7 @@ export default function FlightItem({ data }: any) {
       <div className="relative overflow-hidden rounded-t-2xl">
         <Link href={querySerach}>
           <Image
-            className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
+            className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
             src={`${data.image_url}/${data.image_location}`}
             alt="Image"
             width={200}
