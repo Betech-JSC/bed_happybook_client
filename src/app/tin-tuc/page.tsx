@@ -49,7 +49,7 @@ export default async function Posts() {
                       alt={lastestPosts[0].title}
                       width={844}
                       height={545}
-                      className="ease-in duration-300 w-full lg:h-[545px]"
+                      className="ease-in duration-300 w-full lg:h-[545px] object-cover"
                       sizes="100vw"
                     />
                   </Link>
@@ -94,7 +94,7 @@ export default async function Posts() {
                             width={388}
                             height={240}
                             sizes="100vw"
-                            className="ease-in duration-300"
+                            className="ease-in duration-300 object-cover"
                             style={{ width: "100%", height: "240px" }}
                           />
                         </Link>
@@ -154,7 +154,7 @@ export default async function Posts() {
                         <div className="overflow-hidden rounded-xl">
                           <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
                             <Image
-                              className="ease-in duration-300"
+                              className="ease-in duration-300 object-cover"
                               src={item.image_url + item.image_location}
                               alt={item.title}
                               width={252}

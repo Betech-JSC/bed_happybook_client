@@ -20,9 +20,9 @@ const nextConfig = {
       },
     ],
     loader: "default",
-    path: process.env.NEXT_PUBLIC_CDN_URL,
-    domains: ['storage.googleapis.com'],
-    unoptimized: true
+    // path: process.env.NEXT_PUBLIC_CDN_URL,
+    // domains: ["storage.googleapis.com"],
+    // unoptimized: true
   },
 };
 export default nextConfig;

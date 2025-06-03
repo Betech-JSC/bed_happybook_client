@@ -16,7 +16,7 @@ export default function CompoItem({ data }: any) {
       <div className="relative overflow-hidden rounded-t-2xl">
         <Link href={`/combo/chi-tiet/${data.slug}`}>
           <Image
-            className="hover:scale-110 ease-in duration-300 cursor-pointer"
+            className="hover:scale-110 ease-in duration-300 cursor-pointer object-cover"
             src={`${data.image_url}/${data.image_location}`}
             alt="Banner"
             width={200}

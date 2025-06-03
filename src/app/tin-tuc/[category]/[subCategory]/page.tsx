@@ -113,7 +113,7 @@ export default async function SubCategoryPosts({
                         <div className="overflow-hidden rounded-xl">
                           <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
                             <Image
-                              className="ease-in duration-300"
+                              className="ease-in duration-300 object-cover"
                               src={item.image_url + item.image_location}
                               alt="Tin tức"
                               width={140}

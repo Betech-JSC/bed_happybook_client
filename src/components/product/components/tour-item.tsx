@@ -17,7 +17,7 @@ export default function TourItem({ tour }: any) {
       <div className="relative overflow-hidden rounded-t-2xl">
         <Link href={`/tours/chi-tiet/${tour.slug}`}>
           <Image
-            className=" hover:scale-110 ease-in duration-300 cursor-pointer	"
+            className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
             src={`${tour.image_url}/${tour.image_location}`}
             alt="Tour Image"
             width={320}
@@ -58,21 +58,18 @@ export default function TourItem({ tour }: any) {
           }`}</span>
         </p>
         {tour.start_date && tour.end_date && (
-         
           <p className="flex space-x-2 mt-2">
-            <span data-translate>{`Khởi hành vào: ${tour.start_date.split("-").reverse().join("/")}`}</span>
-            </p>
+            <span data-translate>{`Khởi hành vào: ${tour.start_date
+              .split("-")
+              .reverse()
+              .join("/")}`}</span>
+          </p>
         )}
         {tour.remain && (
-        <p className="flex space-x-2 mt-2">
-          <Image
-            src="/icon/Ticket.svg"
-            alt="Time"
-            width={20}
-            height={20}
-          />
-          <span data-translate>{`Chỗ trống: ${tour.remain}`}</span>
-        </p>
+          <p className="flex space-x-2 mt-2">
+            <Image src="/icon/Ticket.svg" alt="Time" width={20} height={20} />
+            <span data-translate>{`Chỗ trống: ${tour.remain}`}</span>
+          </p>
         )}
         <div className="flex justify-between mt-[14px]">
           <div className="flex space-x-2">

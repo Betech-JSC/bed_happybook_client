@@ -21,7 +21,9 @@ export default function Footer() {
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Hotline vé máy bay:
               </p>
-              <p className="inline-block mr-1">1900.633.437 - EXT (1)</p>
+              <a href="tel:1900633437" className="inline-block mr-1">
+                1900.633.437 - EXT (1)
+              </a>
               {/* <p className="inline-block mr-1" data-translate="true">
                 (Nội địa)
               </p>
@@ -34,13 +36,17 @@ export default function Footer() {
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Hotline Visa - hộ chiếu:
               </p>
-              <p className="inline-block">1900.633.437 - EXT (2)</p>
+              <a href="tel:1900633437" className="inline-block">
+                1900.633.437 - EXT (2)
+              </a>
             </div>
             <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Hotline Tour du lịch:
               </p>
-              <p className="inline-block">1900.633.437 - EXT (3)</p>
+              <a href="tel:1900633437" className="inline-block">
+                1900.633.437 - EXT (3)
+              </a>
             </div>
             {/* <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
@@ -52,7 +58,12 @@ export default function Footer() {
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Email tuyển dụng - đăng ký CTV:
               </p>
-              <p className="inline-block">HR@happybooktravel.com.vn</p>
+              <a
+                href="mailto:HR@happybooktravel.com.vn"
+                className="inline-block"
+              >
+                HR@happybooktravel.com.vn
+              </a>
             </div>
             {/* <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">

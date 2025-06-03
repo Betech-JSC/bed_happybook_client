@@ -109,7 +109,7 @@ export default async function CompoTour() {
                                 src={`${item.image_url}/${item.image_location}`}
                                 width={365}
                                 height={245}
-                                className=" h-56 rounded-lg hover:scale-110 ease-in duration-300"
+                                className="h-56 rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                                 sizes="100vw"
                                 alt={item.name}
                               />
