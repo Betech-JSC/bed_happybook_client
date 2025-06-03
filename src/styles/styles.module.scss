@@ -250,7 +250,7 @@ $color-blue-700: #2e90fa;
   }
 }
 .back__top {
-  @apply fixed bottom-[15%] right-1 z-[999];
+  @apply fixed bottom-[10%] right-1 z-[999];
   &_btn {
     @apply w-16 flex flex-col items-center h-[78px] transition duration-500 opacity-0 transform translate-y-10;
   }

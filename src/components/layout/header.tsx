@@ -248,7 +248,7 @@ export default function Header() {
           </div>
 
           <a
-            href="tel:0983-488-937"
+            href="tel:1900633437"
             className={`flex lg:max-h-10 items-center space-x-2 border border-white px-3 py-2 rounded-3xl ${styles.header__menu_phone_contact}`}
           >
             <svg
@@ -266,7 +266,7 @@ export default function Header() {
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="font-medium">0983-488-937</span>
+            <span className="font-medium">1900-633-437</span>
           </a>
           {!userInfo ? (
             <Link
