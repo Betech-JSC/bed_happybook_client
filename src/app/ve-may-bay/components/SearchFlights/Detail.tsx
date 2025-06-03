@@ -12,7 +12,7 @@ import {
   formatNumberToHoursAndMinutesFlight,
   formatTime,
 } from "@/lib/formatters";
-import { FlightDetailDomesticProps } from "@/types/flight";
+import { FlightDetailProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { isEmpty } from "lodash";
@@ -25,7 +25,7 @@ const FlightDomesticDetail = ({
   setFlightDetail,
   totalPassengers,
   translatedStaticText,
-}: FlightDetailDomesticProps) => {
+}: FlightDetailProps) => {
   const { t } = useTranslation(translatedStaticText);
   const [showDetails, setShowDetails] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);

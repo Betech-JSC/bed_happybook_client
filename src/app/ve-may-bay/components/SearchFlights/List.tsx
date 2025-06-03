@@ -2,13 +2,13 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { format, isSameDay, parseISO } from "date-fns";
 import Image from "next/image";
-import { pareseDateFromString } from "@/lib/formatters";
+import { formatTimeFromHour, pareseDateFromString } from "@/lib/formatters";
 import {
   getCurrentLanguage,
   handleScrollSmooth,
   handleSessionStorage,
 } from "@/utils/Helper";
-import { filtersFlightDomestic, ListFlight } from "@/types/flight";
+import { filtersFlight, ListFlight } from "@/types/flight";
 import { useRouter } from "next/navigation";
 import SignUpReceiveCheapTickets from "../SignUpReceiveCheapTickets";
 import FlightDetailPopup from "../FlightDetailPopup";
@@ -19,14 +19,17 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 import FlightDomesticDetail from "./Detail";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import TimeRangeSlider from "@/components/base/TimeRangeSlider";
 
-const defaultFilers: filtersFlightDomestic = {
+const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
   timeDepart: "",
   sortAirLine: "",
   sortPrice: "",
   airlines: [],
   stopNum: [],
+  departureTime: [0, 24],
+  arrivalTime: [0, 24],
 };
 
 export default function ListFlights({
@@ -69,14 +72,7 @@ export default function ListFlights({
   const [selectedReturnFlight, setSelectedReturnFlight] = useState<any>(null);
   const [departLimit, setDepartLimit] = useState(INITIAL_LIMIT);
   const [returnLimit, setReturnLimit] = useState(INITIAL_LIMIT);
-  const [filters, setFilters] = useState({
-    priceWithoutTax: "0",
-    timeDepart: "",
-    sortAirLine: "",
-    sortPrice: "",
-    airlines: [] as string[],
-    stopNum: [] as string[],
-  });
+  const [filters, setFilters] = useState(defaultFilers);
   useEffect(() => {
     AOS.init({
       duration: 400,
@@ -211,7 +207,9 @@ export default function ListFlights({
     if (isRoundTrip) {
       if (selectedDepartFlight && selectedReturnFlight) return;
     } else if (selectedDepartFlight) return;
+
     let filtered = flightsData.map((flight: any) => ({ ...flight }));
+
     if (filtered.length > 0) {
       if (filters.airlines.length > 0) {
         filtered = filtered.filter((flight: any) => {
@@ -223,6 +221,7 @@ export default function ListFlights({
           return match;
         });
       }
+
       if (filters.stopNum.length > 0) {
         filtered = filtered.filter((flight: any) => {
           const match = filters.stopNum.some((stopNumber) => {
@@ -234,19 +233,48 @@ export default function ListFlights({
         });
       }
 
-      filtered = [...filtered].sort((a, b) => {
-        if (filters.timeDepart === "asc") {
-          const timeA = parseISO(a.departure.at).getTime();
-          const timeB = parseISO(b.departure.at).getTime();
-          if (timeA !== timeB) return timeA - timeB;
-        }
+      if (
+        filters?.departureTime?.[0] !== 0 ||
+        filters?.departureTime?.[1] !== 24
+      ) {
+        const [startHour, endHour] = filters.departureTime;
+        const fromMinute = startHour * 60;
+        const toMinute = endHour * 60;
+        filtered = filtered.filter((flight: any) => {
+          const departure = parseISO(flight.departure.at);
+          const departureMinutes =
+            departure.getHours() * 60 + departure.getMinutes();
+          return departureMinutes >= fromMinute && departureMinutes <= toMinute;
+        });
+      }
 
+      if (filters?.arrivalTime?.[0] !== 0 || filters?.arrivalTime?.[1] !== 24) {
+        const [startHour, endHour] = filters.arrivalTime;
+        const fromMinute = startHour * 60;
+        const toMinute = endHour * 60;
+        filtered = filtered.filter((flight: any) => {
+          const arrival = parseISO(flight.arrival.at);
+          const arrivalMinutes = arrival.getHours() * 60 + arrival.getMinutes();
+          return arrivalMinutes >= fromMinute && arrivalMinutes <= toMinute;
+        });
+      }
+
+      filtered = [...filtered].sort((a, b) => {
         if (filters.sortAirLine === "asc") {
           const nameA = a.airline?.toLowerCase() ?? "";
           const nameB = b.airline?.toLowerCase() ?? "";
           const nameCompare = nameA.localeCompare(nameB);
           if (nameCompare !== 0) return nameCompare;
         }
+
+        const stopNumA = a.legs ?? 0;
+        const stopNumB = b.legs ?? 0;
+        if (stopNumA !== stopNumB) return stopNumA - stopNumB;
+
+        const timeA = parseISO(a.departure.at).getTime();
+        const timeB = parseISO(b.departure.at).getTime();
+        if (timeA !== timeB) return timeA - timeB;
+
         return a.fareOptions?.[0]?.totalPrice - b.fareOptions?.[0]?.totalPrice;
       });
     }
@@ -313,6 +341,7 @@ export default function ListFlights({
       }
     }
   };
+
   const handleSelectReturnFlight = (flight: any, fareOptionIndex: number) => {
     if (selectedReturnFlight?.flightCode === flight.flightCode) {
       setSelectedReturnFlight(null);
@@ -378,26 +407,30 @@ export default function ListFlights({
             opacity: isReady ? 1 : 0.5,
           }}
         >
-          {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
+          {Array.isArray(flightStopNum) && flightStopNum.length >= 1 && (
             <div className="pb-3 border-b border-gray-200">
               <h2 className="font-semibold">{t("so_diem_dung")}</h2>
-              {flightStopNum.map((stopNum: number, index: number) => (
-                <div key={index} className="flex space-x-2 mt-3 items-center">
-                  <input
-                    type="checkbox"
-                    name="stopNum"
-                    value={`${stopNum}`}
-                    id={`stopNum_${index}`}
-                    onChange={handleCheckboxChange}
-                    checked={filters.stopNum.includes(`${stopNum}`)}
-                  />
-                  <label htmlFor={`${`stopNum_${index}`}`}>
-                    {stopNum < 1
-                      ? t("chuyen_bay_thang")
-                      : `${stopNum} ${t("diem_dung")}`}
-                  </label>
-                </div>
-              ))}
+              {flightStopNum.map(
+                (stopNum: number, index: number) =>
+                  stopNum >= 1 && (
+                    <div
+                      key={index}
+                      className="flex space-x-2 mt-3 items-center"
+                    >
+                      <input
+                        type="checkbox"
+                        name="stopNum"
+                        value={`${stopNum}`}
+                        id={`stopNum_${index}`}
+                        onChange={handleCheckboxChange}
+                        checked={filters.stopNum.includes(`${stopNum}`)}
+                      />
+                      <label htmlFor={`${`stopNum_${index}`}`}>
+                        {` ${stopNum} ${t("diem_dung")}`}
+                      </label>
+                    </div>
+                  )
+              )}
             </div>
           )}
           <div className="mt-3 pb-3 border-b border-gray-200">
@@ -418,10 +451,56 @@ export default function ListFlights({
             </div>
           </div>
           <div className="mt-3 pb-3 border-b border-gray-200">
+            <h2 className="font-semibold">Thời gian</h2>
+            <div className="flex flex-col gap-2 mt-3">
+              <div className="flex gap-2">
+                <p>Giờ cất cánh</p>
+                <div className="flex gap-2">
+                  <span>{formatTimeFromHour(filters.departureTime[0])}</span>
+                  <span>-</span>
+                  <span>{formatTimeFromHour(filters.departureTime[1])}</span>
+                </div>
+              </div>
+              <div className="slider-container w-[90%] mx-auto mt-1">
+                <TimeRangeSlider
+                  defaultValue={[0, 24]}
+                  onFinalChange={(time) => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      departureTime: time,
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="flex gap-2">
+                <p>Giờ hạ cánh</p>
+                <div className="flex gap-2">
+                  <span>{formatTimeFromHour(filters.arrivalTime[0])}</span>
+                  <span>-</span>
+                  <span>{formatTimeFromHour(filters.arrivalTime[1])}</span>
+                </div>
+              </div>
+              <div className="slider-container w-[90%] mx-auto mt-1">
+                <TimeRangeSlider
+                  defaultValue={[0, 24]}
+                  onFinalChange={(time) => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      arrivalTime: time,
+                    }));
+                  }}
+                  allowCross={false}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("sap_xep")}</h2>
 
             <div className="flex space-x-2 mt-3 items-center">
-              <input
+              {/* <input
                 type="checkbox"
                 name="timeDepart"
                 value="asc"
@@ -429,9 +508,9 @@ export default function ListFlights({
                 onChange={handleCheckboxChange}
                 checked={filters.timeDepart === "asc"}
               />
-              <label htmlFor="sortTimeDepart">{t("thoi_gian_khoi_hanh")}</label>
+              <label htmlFor="sortTimeDepart">{t("thoi_gian_khoi_hanh")}</label> */}
             </div>
-            <div className="flex space-x-2 mt-3 items-center">
+            <div className="flex space-x-2 items-center">
               <input
                 type="checkbox"
                 name="sortAirLine"

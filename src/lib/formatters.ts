@@ -7,6 +7,8 @@ import {
   Languages,
 } from "next/dist/lib/metadata/types/alternative-urls-types";
 
+const formatTimeFromHour = (h: number) => `${String(h).padStart(2, "0")}:00`;
+
 const formatDate = (isoDate: string, dateFormat: string = "dd/MM/yyyy") => {
   if (isNil(isoDate)) return "";
   const date = new Date(isoDate);
@@ -97,4 +99,5 @@ export {
   formatNumberToHoursAndMinutesFlight,
   pareseDateFromString,
   formatMetadata,
+  formatTimeFromHour,
 };

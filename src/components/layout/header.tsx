@@ -381,15 +381,6 @@ export default function Header() {
               Visa
             </Link>
             <Link
-              href="/dinh-cu"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/dinh-cu"),
-              })}
-              data-translate="true"
-            >
-              Định cư
-            </Link>
-            <Link
               href="/khach-san"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/khach-san"),
@@ -414,7 +405,9 @@ export default function Header() {
               }}
               className={`relative flex cursor-pointer ${styles.header__menu_item}`}
             >
-              <span data-translate="true">Khác</span>
+              <span data-translate="true" className="mr-1">
+                Khác
+              </span>
               <div className="h-5 self-center">
                 <svg
                   width="16"
@@ -442,12 +435,20 @@ export default function Header() {
                     : "[&>a]:max-h-0 invisible"
                 }`}
                 style={{
-                  maxHeight: isMenuOpen ? "240px" : "0px ",
+                  maxHeight: isMenuOpen ? "274px" : "0px ",
                   opacity: isMenuOpen ? "1" : "0",
                   zIndex: isMenuOpen ? "10" : "-1",
                   transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
                 }}
               >
+                <Link
+                  href="/dinh-cu"
+                  className={styles.text_hover_default}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  data-translate="true"
+                >
+                  Định cư
+                </Link>
                 <Link
                   href="/dang-ky-ctv"
                   className={styles.text_hover_default}
