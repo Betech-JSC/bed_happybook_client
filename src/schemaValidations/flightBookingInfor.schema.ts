@@ -1,5 +1,5 @@
 import { ValidationMessages } from "@/lib/messages";
-import z, { optional } from "zod";
+import z from "zod";
 
 export const FlightBookingInforBody = (
   messages: ValidationMessages,
@@ -43,12 +43,12 @@ export const FlightBookingInforBody = (
           flightType === "international"
             ? z
                 .string()
-                .min(8, {
+                .min(1, {
                   message: messages.required,
                 })
-                .max(10, {
-                  message: messages.inValid,
-                })
+                // .max(10, {
+                //   message: messages.inValid,
+                // })
                 .optional()
             : z.string().optional(),
         passport_expiry_date:

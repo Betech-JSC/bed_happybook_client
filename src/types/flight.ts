@@ -95,21 +95,23 @@ export interface TabDays {
   disabled: boolean;
 }
 
+// export interface filtersFlight {
+//   priceWithoutTax: string;
+//   timeDepart: string;
+//   sortAirLine: string;
+//   sortPrice: string;
+//   airlines: string[];
+// }
+
 export interface filtersFlight {
   priceWithoutTax: string;
   timeDepart: string;
   sortAirLine: string;
   sortPrice: string;
   airlines: string[];
-}
-
-export interface filtersFlightDomestic {
-  priceWithoutTax: string;
-  timeDepart: string;
-  sortAirLine: string;
-  sortPrice: string;
-  airlines: string[];
   stopNum: string[];
+  departureTime: [number, number];
+  arrivalTime: [number, number];
 }
 export interface ListFlight {
   airportsData: AirportsCountry[];
@@ -146,22 +148,16 @@ export interface FlightDetailPopupProps {
   isLoadingFareRules: boolean;
 }
 
-export interface FlightDetailInternationalProps {
-  FareData: any;
-  filters: {
-    priceWithoutTax: string;
-    timeDepart: string;
-    sortAirLine: string;
-    sortPrice: string;
-    airlines: string[];
-  };
-  onSelectFlight: (flight: any) => void;
-  setFlightDetail: (FareData: any, indexFlight: number) => void;
-  leg: number;
-  translatedStaticText: any;
-}
+// export interface FlightDetailInternationalProps {
+//   FareData: any;
+//   filters: filtersFlight;
+//   onSelectFlight: (flight: any) => void;
+//   setFlightDetail: (FareData: any, indexFlight: number) => void;
+//   leg: number;
+//   translatedStaticText: any;
+// }
 
-export interface FlightDetailDomesticProps {
+export interface FlightDetailProps {
   FareData: any;
   filters: {
     priceWithoutTax: string;
