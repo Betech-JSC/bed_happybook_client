@@ -62,7 +62,7 @@ export default function Footer() {
                 href="mailto:HR@happybooktravel.com.vn"
                 className="inline-block"
               >
-                HR@happybooktravel.com.vn
+                HR@happybooktravel.com
               </a>
             </div>
             {/* <div className="mt-1">
@@ -117,39 +117,48 @@ export default function Footer() {
               <p className="mt-8" data-translate="true">
                 <strong>Theo dõi chúng tôi</strong>
               </p>
-              <div className="flex space-x-3 mt-4">
-                <button>
+              <div className="flex gap-4 mt-4">
+                <Link
+                  href="https://www.facebook.com/happybooktravel"
+                  target="_blank"
+                >
                   <Image
                     src="/social/fb.svg"
                     alt="Icon"
                     width={32}
                     height={32}
                   />
-                </button>
-                <button>
+                </Link>
+                <Link
+                  href="https://www.tiktok.com/@happybook_visa"
+                  target="_blank"
+                >
                   <Image
                     src="/social/tiktok.svg"
                     alt="Icon"
                     width={32}
                     height={32}
                   />
-                </button>
-                <button>
+                </Link>
+                {/* <button>
                   <Image
                     src="/social/zalo.svg"
                     alt="Icon"
                     width={32}
                     height={32}
                   />
-                </button>
-                <button>
+                </button> */}
+                <Link
+                  href="https://zalo.me/2451421179976954585/"
+                  target="_blank"
+                >
                   <Image
                     src="/social/ytb.svg"
                     alt="Icon"
                     width={32}
                     height={32}
                   />
-                </button>
+                </Link>
               </div>
             </div>
             <div>
@@ -243,7 +252,7 @@ export default function Footer() {
               <p className="mt-8 font-bold" data-translate="true">
                 Hình thức thanh toán
               </p>
-              <div className="grid grid-cols-3 gap-3 mt-4">
+              <div className="grid grid-cols-4 md:grid-cols-3 gap-3 mt-4">
                 <button>
                   <Image
                     src="/payment/1.svg"

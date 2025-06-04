@@ -433,7 +433,7 @@ export default function ListFlights({
               )}
             </div>
           )}
-          <div className="mt-3 pb-3 border-b border-gray-200">
+          {/* <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("hien_thi_gia")}</h2>
 
             <div className="flex space-x-2 mt-3 items-center">
@@ -449,7 +449,7 @@ export default function ListFlights({
                 {t("gia_chua_bao_gom_thue_phi")}
               </label>
             </div>
-          </div>
+          </div> */}
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">Thời gian</h2>
             <div className="flex flex-col gap-2 mt-3">
