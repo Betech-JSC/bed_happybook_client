@@ -30,6 +30,7 @@ import { ProductLocation } from "@/api/ProductLocation";
 import { getServerLang } from "@/lib/session";
 
 export const metadata: Metadata = formatMetadata({
+  robots: "index, follow",
   title: "HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   description:
     "HappyBook Travel - Hỗ trợ đặt vé máy bay, tour du lịch, khách sạn và tư vấn visa nhanh chóng. Là đại lý CẤP #1 uy tín với hơn >100.000 Quý khách tin tưởng 2024.",

@@ -24,6 +24,7 @@ import { getServerLang } from "@/lib/session";
 import { format, isValid } from "date-fns";
 
 export const metadata: Metadata = formatMetadata({
+  robots: "index, follow",
   title:
     "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   description:

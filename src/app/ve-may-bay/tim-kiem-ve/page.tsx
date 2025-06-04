@@ -23,6 +23,7 @@ import { getServerLang } from "@/lib/session";
 import SearchFlightsResult from "../components/SearchResult";
 
 export const metadata: Metadata = formatMetadata({
+  robots: "index, follow",
   title: "Tìm kiếm Vé máy bay",
   description: "Happy Book | Tìm kiếm Vé máy bay",
   keywords: "Tìm kiếm Vé máy bay",
