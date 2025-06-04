@@ -16,11 +16,22 @@ import SupportFloatingIcons from "@/components/layout/support-floating-icons";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("http://client.happybooktravel.com"),
-  title: "Happy Book",
-  description: "Happy Book",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Happy Book",
+    description: "Happy Book",
+    robots: "noindex, nofollow",
+    metadataBase: new URL("https://happybooktravel.com"),
+    openGraph: {
+      type: "website",
+    },
+  };
+}
+// export const metadata: Metadata = {
+//   metadataBase: new URL("http://client.happybooktravel.com"),
+//   title: "Happy Book",
+//   description: "Happy Book",
+// };
 
 export default async function RootLayout({
   children,
@@ -30,12 +41,9 @@ export default async function RootLayout({
   const session = await getSession();
   return (
     <html lang={session.language}>
-      <head>
-        {/* Meta */}
+      {/* <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta property="og:type" content="website" />
-        <meta name="robots" content="noindex,nofollow"></meta>
-      </head>
+      </head> */}
       <body className={OpenSans.className}>
         <LanguageProvider serverLang={session.language}>
           <UserProvider initialUser={session.userInfo}>
