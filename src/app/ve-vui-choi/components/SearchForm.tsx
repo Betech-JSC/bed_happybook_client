@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Fragment, use, useCallback, useEffect, useState } from "react";
+import { Fragment, use, useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useRouter } from "next/navigation";
@@ -7,23 +7,85 @@ import { vi, enUS } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ProductTicket } from "@/api/ProductTicket";
-import { format, parse, isValid } from "date-fns";
+import { format, isValid } from "date-fns";
 import toast from "react-hot-toast";
 
 type Option = {
-  name: string;
-  id: number | string;
-  slug: string;
+  label: string;
+  value: string;
 };
 
 export default function SearchForm() {
   const router = useRouter();
   const today = new Date();
   const { language } = useLanguage();
+
   const [locationSelected, setLocationSelected] = useState<any>(null);
   const [departureDate, setDepartureDate] = useState<Date | null>(today);
   const [locations, setLocations] = useState<Option[]>([]);
   const [mounted, setMounted] = useState(false);
+  const locationRef = useRef<Option | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const isFetchedRef = useRef(false);
+  const lastFetchedDateRef = useRef<string | null>(null);
+  const hasOpenedRef = useRef(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    const dateStr = format(
+      isValid(departureDate) ? departureDate! : new Date(),
+      "yyyy-MM-dd"
+    );
+
+    if (isFetchedRef.current && lastFetchedDateRef.current === dateStr) {
+      return;
+    }
+
+    setIsLoading(true);
+    setLocations([]);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const res = await ProductTicket.search(`?departDate=${dateStr}`);
+      const data = res?.payload?.data ?? [];
+
+      const newOptions: Option[] = data.map((item: any) => ({
+        label: item.name,
+        value: `${item.slug}-${item.id}`,
+      }));
+
+      setLocations(newOptions);
+
+      isFetchedRef.current = true;
+      lastFetchedDateRef.current = dateStr;
+
+      const current = locationRef.current;
+      if (current) {
+        const stillExists = newOptions.find(
+          (opt) => opt.value === current.value
+        );
+        setLocationSelected(stillExists ?? null);
+      }
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [departureDate]);
+
+  useEffect(() => {
+    if (hasOpenedRef.current) {
+      fetchData();
+    }
+  }, [departureDate, fetchData]);
+
+  useEffect(() => {
+    locationRef.current = locationSelected;
+  }, [locationSelected]);
 
   const handleSearch = () => {
     if (locationSelected && isValid(departureDate)) {
@@ -31,46 +93,14 @@ export default function SearchForm() {
         isValid(departureDate ?? undefined) ? departureDate! : new Date(),
         "yyyy-MM-dd"
       );
-      router.push(
-        `/ve-vui-choi/chi-tiet/${locationSelected.value}?departDate=${date}`
-      );
+      const lastDashIndex = locationSelected.value.lastIndexOf("-");
+      const slug = locationSelected.value.substring(0, lastDashIndex);
+      router.push(`/ve-vui-choi/chi-tiet/${slug}?departDate=${date}`);
     } else {
       toast.dismiss();
       toast.error("Vui lòng chọn đầy đủ thông tin");
     }
-
-    return;
   };
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  const fetchData = useCallback(async () => {
-    try {
-      const date = format(
-        isValid(departureDate ?? undefined) ? departureDate! : new Date(),
-        "yyyy-MM-dd"
-      );
-
-      const res = await ProductTicket.search(`?departDate=${date}`);
-      const data = res?.payload?.data ?? [];
-      setLocations(
-        data.map((item: Option) => ({
-          label: item.name,
-          value: item.slug,
-        }))
-      );
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-    }
-  }, [departureDate]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  useEffect(() => {
-    setLocationSelected(null);
-  }, [locations]);
   return (
     <Fragment>
       <div className="flex space-x-12 mb-3 mt-2">
@@ -120,6 +150,13 @@ export default function SearchForm() {
                   IndicatorSeparator: () => null,
                   DropdownIndicator: () => null,
                 }}
+                onMenuOpen={() => {
+                  if (!hasOpenedRef.current) {
+                    hasOpenedRef.current = true;
+                    fetchData();
+                  }
+                }}
+                isLoading={isLoading}
               />
             )}
           </div>
@@ -173,6 +210,7 @@ export default function SearchForm() {
               type="button"
               className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
               data-translate="true"
+              disabled={isLoading}
             >
               Tìm kiếm
             </button>
