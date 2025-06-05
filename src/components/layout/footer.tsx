@@ -89,58 +89,61 @@ export default function Footer() {
               </p>
             </div>
           </div>
-          <div className="mt-12 lg:mt-0 basis-1/2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12">
+          <div className="mt-12 lg:mt-0 basis-1/2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 md:gap-12">
             <div>
               <p className="font-bold" data-translate="true">
                 Về Happy Book
               </p>
-              <p className={`mt-4 ${styles.text_hover_default}`}>
-                <Link href="/ve-chung-toi" data-translate="true">
-                  Về chúng tôi
-                </Link>
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
-                <Link href="/tin-tuc" data-translate="true">
-                  Tin tức
-                </Link>
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
-                <Link href="/lien-he" data-translate="true">
-                  Liên hệ chúng tôi
-                </Link>
-              </p>
-              <p className={`mt-3 ${styles.text_hover_default}`}>
-                <Link href="/dang-ky-ctv" data-translate="true">
-                  Đăng ký CTV
-                </Link>
-              </p>
-              <p className="mt-8" data-translate="true">
-                <strong>Theo dõi chúng tôi</strong>
-              </p>
-              <div className="flex gap-4 mt-4">
-                <Link
-                  href="https://www.facebook.com/happybooktravel"
-                  target="_blank"
-                >
-                  <Image
-                    src="/social/fb.svg"
-                    alt="Icon"
-                    width={32}
-                    height={32}
-                  />
-                </Link>
-                <Link
-                  href="https://www.tiktok.com/@happybook_visa"
-                  target="_blank"
-                >
-                  <Image
-                    src="/social/tiktok.svg"
-                    alt="Icon"
-                    width={32}
-                    height={32}
-                  />
-                </Link>
-                {/* <button>
+              <div className="grid grid-cols-2 md:grid-cols-1">
+                <p className={`mt-4 ${styles.text_hover_default}`}>
+                  <Link href="/ve-chung-toi" data-translate="true">
+                    Về chúng tôi
+                  </Link>
+                </p>
+                <p className={`mt-3 ${styles.text_hover_default}`}>
+                  <Link href="/tin-tuc" data-translate="true">
+                    Tin tức
+                  </Link>
+                </p>
+                <p className={`mt-3 ${styles.text_hover_default}`}>
+                  <Link href="/lien-he" data-translate="true">
+                    Liên hệ chúng tôi
+                  </Link>
+                </p>
+                <p className={`mt-3 ${styles.text_hover_default}`}>
+                  <Link href="/dang-ky-ctv" data-translate="true">
+                    Đăng ký CTV
+                  </Link>
+                </p>
+              </div>
+              <div className="hidden md:block">
+                <p className="mt-8" data-translate="true">
+                  <strong>Theo dõi chúng tôi</strong>
+                </p>
+                <div className="flex gap-4 mt-4">
+                  <Link
+                    href="https://www.facebook.com/happybooktravel"
+                    target="_blank"
+                  >
+                    <Image
+                      src="/social/fb.svg"
+                      alt="Icon"
+                      width={32}
+                      height={32}
+                    />
+                  </Link>
+                  <Link
+                    href="https://www.tiktok.com/@happybook_visa"
+                    target="_blank"
+                  >
+                    <Image
+                      src="/social/tiktok.svg"
+                      alt="Icon"
+                      width={32}
+                      height={32}
+                    />
+                  </Link>
+                  {/* <button>
                   <Image
                     src="/social/zalo.svg"
                     alt="Icon"
@@ -148,81 +151,81 @@ export default function Footer() {
                     height={32}
                   />
                 </button> */}
-                <Link
-                  href="https://zalo.me/2451421179976954585/"
-                  target="_blank"
-                >
-                  <Image
-                    src="/social/ytb.svg"
-                    alt="Icon"
-                    width={32}
-                    height={32}
-                  />
-                </Link>
+                  <Link
+                    href="https://zalo.me/2451421179976954585/"
+                    target="_blank"
+                  >
+                    <Image
+                      src="/social/ytb.svg"
+                      alt="Icon"
+                      width={32}
+                      height={32}
+                    />
+                  </Link>
+                </div>
               </div>
             </div>
             <div>
               <p className="font-bold" data-translate="true">
                 Dịch vụ
               </p>
-              <Link
-                href="/tours/tour-noi-dia"
-                className={`block mt-4 ${styles.text_hover_default}`}
-                data-translate="true"
-              >
-                Tour nội địa
-              </Link>
-              <Link
-                href="/tours/tour-quoc-te"
-                className={`block mt-3 ${styles.text_hover_default}`}
-                data-translate="true"
-              >
-                Tour quốc tế
-              </Link>
-              <Link
-                href="/tours/tour-du-thuyen"
-                className={`block mt-3 ${styles.text_hover_default}`}
-                data-translate="true"
-              >
-                Tour du thuyền
-              </Link>
-              <Link
-                href="/ve-may-bay"
-                className={`block mt-3 ${styles.text_hover_default}`}
-                data-translate="true"
-              >
-                Vé máy bay
-              </Link>
-              {/* <p className={`mt-3 ${styles.text_hover_default}`}>
-                Vé máy bay quốc tế
-              </p> */}
-              <Link
-                href="/visa"
-                className={`block mt-3 ${styles.text_hover_default}`}
-                data-translate="true"
-              >
-                Dịch vụ làm Visa
-              </Link>
-              <Link
-                href="/dinh-cu"
-                className={`block mt-3 ${styles.text_hover_default}`}
-                data-translate="true"
-              >
-                Định cư
-              </Link>
-              <Link
-                href="/khach-san"
-                className={`block mt-3 ${styles.text_hover_default}`}
-                data-translate="true"
-              >
-                Khách sạn
-              </Link>
-              <Link
-                href="/combo"
-                className={`block mt-3 ${styles.text_hover_default}`}
-              >
-                Combo
-              </Link>
+              <div className="grid grid-cols-2 md:grid-cols-1">
+                <Link
+                  href="/tours/tour-noi-dia"
+                  className={`block mt-4 ${styles.text_hover_default}`}
+                  data-translate="true"
+                >
+                  Tour nội địa
+                </Link>
+                <Link
+                  href="/tours/tour-quoc-te"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                  data-translate="true"
+                >
+                  Tour quốc tế
+                </Link>
+                <Link
+                  href="/tours/tour-du-thuyen"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                  data-translate="true"
+                >
+                  Tour du thuyền
+                </Link>
+                <Link
+                  href="/ve-may-bay"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                  data-translate="true"
+                >
+                  Vé máy bay
+                </Link>
+                <Link
+                  href="/visa"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                  data-translate="true"
+                >
+                  Dịch vụ làm Visa
+                </Link>
+                <Link
+                  href="/dinh-cu"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                  data-translate="true"
+                >
+                  Định cư
+                </Link>
+                <Link
+                  href="/khach-san"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                  data-translate="true"
+                >
+                  Khách sạn
+                </Link>
+                <Link
+                  href="/combo"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                >
+                  Combo
+                </Link>
+              </div>
             </div>
             <div>
               <p className="font-bold" data-translate="true">
@@ -248,7 +251,54 @@ export default function Footer() {
                   </div>
                 )
               )}
-
+              <div className="block md:hidden">
+                <p className="mt-8" data-translate="true">
+                  <strong>Theo dõi chúng tôi</strong>
+                </p>
+                <div className="flex gap-4 mt-4">
+                  <Link
+                    href="https://www.facebook.com/happybooktravel"
+                    target="_blank"
+                  >
+                    <Image
+                      src="/social/fb.svg"
+                      alt="Icon"
+                      width={32}
+                      height={32}
+                    />
+                  </Link>
+                  <Link
+                    href="https://www.tiktok.com/@happybook_visa"
+                    target="_blank"
+                  >
+                    <Image
+                      src="/social/tiktok.svg"
+                      alt="Icon"
+                      width={32}
+                      height={32}
+                    />
+                  </Link>
+                  {/* <button>
+                  <Image
+                    src="/social/zalo.svg"
+                    alt="Icon"
+                    width={32}
+                    height={32}
+                  />
+                </button> */}
+                  <Link
+                    href="https://zalo.me/2451421179976954585/"
+                    target="_blank"
+                  >
+                    <Image
+                      src="/social/ytb.svg"
+                      alt="Icon"
+                      width={32}
+                      height={32}
+                    />
+                  </Link>
+                </div>
+              </div>
               <p className="mt-8 font-bold" data-translate="true">
                 Hình thức thanh toán
               </p>

@@ -137,13 +137,13 @@ export default function VisaService({ data }: any) {
                               <div className="overflow-hidden rounded-t-2xl	">
                                 <Link href={`/visa/chi-tiet/${visa.slug}`}>
                                   <Image
-                                    className="hover:scale-110 ease-in duration-300 cursor-pointer object-cover"
+                                    className="hover:scale-110 ease-in duration-300 cursor-pointer"
                                     src={`${visa.image_url}/${visa.image_location}`}
                                     alt="Visa Image"
                                     width={320}
                                     height={320}
                                     sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                    style={{ height: 220, width: "100%" }}
+                                    style={{ height: 200, width: "100%" }}
                                   />
                                 </Link>
                               </div>
