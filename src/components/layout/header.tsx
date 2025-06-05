@@ -390,6 +390,24 @@ export default function Header() {
               Khách sạn
             </Link>
             <Link
+              href="/bao-hiem"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/bao-hiem"),
+              })}
+              data-translate="true"
+            >
+              Bảo hiểm
+            </Link>
+            <Link
+              href="/ve-vui-choi"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/ve-vui-choi"),
+              })}
+              data-translate="true"
+            >
+              Vé vui chơi
+            </Link>
+            <Link
               href="/combo"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/combo"),
