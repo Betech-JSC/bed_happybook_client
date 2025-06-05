@@ -22,7 +22,7 @@ export default function Footer() {
                 Hotline vé máy bay:
               </p>
               <a href="tel:1900633437" className="inline-block mr-1">
-                1900.633.437 - EXT (1)
+                1900.633.437 - Nhấn phím (1)
               </a>
               {/* <p className="inline-block mr-1" data-translate="true">
                 (Nội địa)
@@ -37,7 +37,7 @@ export default function Footer() {
                 Hotline Visa - hộ chiếu:
               </p>
               <a href="tel:1900633437" className="inline-block">
-                1900.633.437 - EXT (2)
+                1900.633.437 - Nhấn phím (2)
               </a>
             </div>
             <div className="mt-1">
@@ -45,7 +45,7 @@ export default function Footer() {
                 Hotline Tour du lịch:
               </p>
               <a href="tel:1900633437" className="inline-block">
-                1900.633.437 - EXT (3)
+                1900.633.437 - Nhấn phím (3)
               </a>
             </div>
             {/* <div className="mt-1">
