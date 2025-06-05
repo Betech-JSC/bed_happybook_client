@@ -173,12 +173,6 @@ export default function Tabs({ detail }: any) {
               <table className="w-max min-w-[700px] lg:min-w-[100%] text-left align-middle ">
                 <tbody>
                   <tr className="bg-[#FEF8F5] text-primary">
-                    <th
-                      className="py-4 px-2 border border-gray-200"
-                      data-translate
-                    >
-                      Ngày khởi hành
-                    </th>
                     {/* <th
                       className="py-4 px-2  border border-gray-200"
                       data-translate
@@ -206,9 +200,7 @@ export default function Tabs({ detail }: any) {
                   </tr>
                   {detail.prices.map((item: any, index: number) => (
                     <tr key={index}>
-                      <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
-                        {formatDate(detail.start_date)}
-                      </td>
+                
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
                         {item.price_tour > 0
                           ? formatCurrency(item.price_tour)
