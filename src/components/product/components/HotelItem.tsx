@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function HotelItem({ hotel }: any) {
+  const minPrice = hotel?.hotel?.rooms?.[0] ?? null;
   return (
     <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white h-full">
       <div className="flex flex-col justify-between h-full">
@@ -20,12 +21,15 @@ export default function HotelItem({ hotel }: any) {
                 style={{ height: 220, width: "100%" }}
               />
             </Link>
-            {hotel.discount_price > 0 && (
+            {minPrice?.discount_price > 0 && (
               <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#F27145] rounded-tr-3xl">
                 <span data-translate>Tiết kiệm </span>
                 <span>
                   {" "}
-                  {calculatorDiscountPercent(hotel.discount_price, hotel.price)}
+                  {calculatorDiscountPercent(
+                    minPrice.discount_price,
+                    minPrice.price
+                  )}
                 </span>
               </div>
             )}
@@ -63,17 +67,17 @@ export default function HotelItem({ hotel }: any) {
               )}
             </>
           </div>
-          <div className={`text-right ${hotel.price > 0 ? "" : "pb-4"}`}>
-            {hotel.discount_price > 0 && (
+          <div className={`text-right ${minPrice?.price > 0 ? "" : "pb-4"}`}>
+            {minPrice?.discount_price > 0 && (
               <p className="line-through text-[#667085] font-semibold h-6">
-                {formatCurrency(hotel.price)}
+                {formatCurrency(minPrice.price)}
               </p>
             )}
-            {hotel.price > 0 && (
+            {minPrice?.price > 0 && (
               <p className="text-[#F27145] text-xl font-semibold">
-                {hotel.discount_price
-                  ? formatCurrency(hotel.price - hotel.discount_price)
-                  : formatCurrency(hotel.price)}
+                {minPrice.discount_price > 0
+                  ? formatCurrency(minPrice.price - minPrice.discount_price)
+                  : formatCurrency(minPrice.price)}
               </p>
             )}
           </div>

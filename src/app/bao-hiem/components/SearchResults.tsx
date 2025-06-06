@@ -164,8 +164,9 @@ export default function SearchResults() {
                   (item: any) =>
                     diffDate >= item.day_start && diffDate <= item.day_end
                 );
-              const matchedFee = matchedInsurancePackagePrice?.price ?? 0;
-              const totalFee = parseInt(matchedFee) * (formData.guests ?? 1);
+              const matchedFee =
+                parseInt(matchedInsurancePackagePrice?.price) ?? 0;
+              const totalFee = matchedFee * (formData.guests ?? 1);
               return (
                 <>
                   {totalFee > 0 && (
@@ -208,9 +209,7 @@ export default function SearchResults() {
                               <p className="text-gray-700">Giá / Khách</p>
                               <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
                                 <p className="mt-1 leading-snug font-medium">
-                                  {formatCurrency(
-                                    parseInt(matchedFee.price) ?? 0
-                                  )}
+                                  {formatCurrency(matchedFee)}
                                 </p>
                               </div>
                             </div>

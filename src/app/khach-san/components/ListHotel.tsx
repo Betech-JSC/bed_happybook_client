@@ -12,7 +12,7 @@ import { Span } from "next/dist/trace";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function ListHotel({
   optionsFilter,
@@ -39,6 +39,16 @@ export default function ListHotel({
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [translatedText, setTranslatedText] = useState<boolean>(false);
+  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {}
+  );
+  const toggleExpand = (name: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+  };
 
   const [data, setData] = useState<any>([]);
   const loadData = useCallback(async () => {
@@ -136,125 +146,58 @@ export default function ListHotel({
             </option>
           </select>
         </div>
-        {optionsFilter.map((item, index) => (
-          <div
-            key={index}
-            className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
-          >
-            <p className="font-semibold" data-translate="true">
-              {item.label}
-            </p>
-            {item.option.map((option, index) => {
-              return (
-                index < 20 && (
-                  <div
-                    key={option.value}
-                    className="mt-3 flex space-x-2 items-center"
-                  >
-                    <input
-                      type="checkbox"
-                      disabled={isDisabled}
-                      id={item.name + index}
-                      value={option.value}
-                      className={TourStyle.custom_checkbox}
-                      onChange={(e) =>
-                        handleFilterChange(`${item.name}[]`, e.target.value)
-                      }
-                    />
-                    {item.name === "star" && (
-                      <div className="flex space-x-1">
-                        {Array.from({ length: 5 }, (_, index) =>
-                          option.value && index < option.value ? (
-                            <Image
-                              key={index}
-                              className="w-auto"
-                              src="/icon/starFull.svg"
-                              alt="Icon"
-                              width={10}
-                              height={10}
-                            />
-                          ) : (
-                            <Image
-                              key={index}
-                              className="w-auto"
-                              src="/icon/star.svg"
-                              alt="Icon"
-                              width={10}
-                              height={10}
-                            />
-                          )
-                        )}
-                      </div>
-                    )}
-                    <label
-                      className={`${
-                        item.name === "star"
-                      } ? "text-[#667085]" : ""`}
-                      htmlFor={item.name + index}
-                      data-translate="true"
-                    >
-                      {option.label}
-                    </label>
-                  </div>
-                )
-              );
-            })}
-            {item.option.length > 20 && (
-              <button className="mt-3 flex items-center rounded-lg space-x-3 ">
-                <span className="text-[#175CD3] font-medium">Xem thêm</span>
-                <Image
-                  className="hover:scale-110 ease-in duration-300 rotate-90"
-                  src="/icon/chevron-right.svg"
-                  alt="Icon"
-                  width={20}
-                  height={20}
-                />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-      <div className="md:w-8/12 lg:w-9/12">
-        <div className="mb-4">
-          {data.length > 0 ? (
-            data.map((item: any, index: number) => (
+        {optionsFilter.map((item, index) => {
+          const showAll = expandedGroups[item.name];
+          const ref = (el: HTMLDivElement) => {
+            contentRefs.current[item.name] = el;
+          };
+          const visibleCount = 5;
+          const optionsToShow = item.option;
+          return (
+            <div
+              key={index}
+              className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
+            >
               <div
-                key={index}
-                className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mb-4
-                  transition-opacity duration-700 ${
-                    translatedText ? "opacity-100" : "opacity-0"
-                  }`}
+                ref={ref}
+                className={`pb-3 overflow-hidden transition-[max-height] ease-in-out duration-500
+                    `}
+                style={{
+                  maxHeight: showAll
+                    ? `${(optionsToShow.length + 1) * 40}px`
+                    : `${(visibleCount + 1) * 40}px`,
+                }}
               >
-                <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
-                  <Link href={`/khach-san/chi-tiet/${item.slug}`}>
-                    <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
-                      src={`${item.image_url}/${item.image_location}`}
-                      alt="Image"
-                      width={450}
-                      height={350}
-                      sizes="100vw"
-                      style={{ height: 275, width: "100%" }}
-                    />
-                  </Link>
-                </div>
-                <div className="w-full px-3 lg:px-0 lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
-                  <div className="my-4 mr-6">
-                    <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
-                      <Link
-                        data-translate="true"
-                        href={`/khach-san/chi-tiet/${item.slug}`}
-                        className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
-                      >
-                        {renderTextContent(item.name)}
-                      </Link>
-                      <div className="flex w-[20%] space-x-1">
-                        <>
-                          {Array.from({ length: 5 }, (_, index) =>
-                            item?.hotel?.star && index < item.hotel.star ? (
+                <p className="font-semibold" data-translate="true">
+                  {item.label}
+                </p>
+                {optionsToShow.map((option, optionIndex) => {
+                  return (
+                    <div
+                      key={optionIndex}
+                      className={`mt-3 flex space-x-2 items-center ${
+                        !showAll && optionIndex > visibleCount
+                          ? "invisible"
+                          : ""
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        disabled={isDisabled}
+                        id={item.name + optionIndex}
+                        value={option.value}
+                        className={`flex-shrink-0 ${TourStyle.custom_checkbox}`}
+                        onChange={(e) =>
+                          handleFilterChange(`${item.name}[]`, e.target.value)
+                        }
+                      />
+                      {item.name === "star" && (
+                        <div className="flex space-x-1">
+                          {Array.from({ length: 5 }, (_, starIndex) =>
+                            option.value && starIndex < option.value ? (
                               <Image
-                                key={index}
-                                className="w-4 h-4"
+                                key={starIndex}
+                                className="w-auto"
                                 src="/icon/starFull.svg"
                                 alt="Icon"
                                 width={10}
@@ -262,8 +205,8 @@ export default function ListHotel({
                               />
                             ) : (
                               <Image
-                                key={index}
-                                className="w-4 h-4"
+                                key={starIndex}
+                                className="w-auto"
                                 src="/icon/star.svg"
                                 alt="Icon"
                                 width={10}
@@ -271,108 +214,211 @@ export default function ListHotel({
                               />
                             )
                           )}
-                        </>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2 mt-2 items-center">
-                      <Image
-                        className="w-4 h-4"
-                        src="/icon/marker-pin-01.svg"
-                        alt="Icon"
-                        width={20}
-                        height={20}
-                      />
-                      <span className="text-sm" data-translate="true">
-                        {renderTextContent(item.hotel.address)}
-                      </span>
-                    </div>
-                    {item?.hotel?.amenity_service.length > 0 && (
-                      <div className="w-full">
-                        <ul className="mt-2 list-[circle] grid grid-cols-2 items-start pl-4 w-10/12 gap-2">
-                          {item.hotel.amenity_service.map(
-                            (service: any, index: number) => (
-                              <li key={index} data-translate="true">
-                                {renderTextContent(
-                                  service.hotel_amenity_service.name
-                                )}
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                    {item.discount_price > 0 &&
-                      item.price - item.discount_price <= 0 && (
-                        <div
-                          className="mt-3 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700"
-                          data-translate="true"
-                        >
-                          Hoàn tiền toàn bộ
                         </div>
                       )}
+                      <label
+                        className={`line-clamp-2 ${
+                          item.name === "star" ? "text-[#667085]" : ""
+                        } `}
+                        htmlFor={item.name + optionIndex}
+                        data-translate="true"
+                      >
+                        {option.label}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              {item.option.length > visibleCount && (
+                <button
+                  className="flex items-center rounded-lg gap-2"
+                  onClick={() => toggleExpand(item.name)}
+                >
+                  <span
+                    className="text-[#175CD3] font-medium"
+                    data-translate="true"
+                  >
+                    {showAll ? "Thu gọn" : "Xem thêm"}
+                  </span>
+                  <Image
+                    className={`transform transition-transform ${
+                      showAll ? "rotate-[270deg]" : "rotate-90"
+                    }`}
+                    src="/icon/chevron-right.svg"
+                    alt="Icon"
+                    width={20}
+                    height={20}
+                  />
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="md:w-8/12 lg:w-9/12">
+        <div className="mb-4">
+          {data.length > 0 ? (
+            data.map((item: any, index: number) => {
+              const minPrice = item?.hotel?.rooms?.[0] ?? null;
+              return (
+                <div
+                  key={index}
+                  className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mb-4
+                  transition-opacity duration-700 ${
+                    translatedText ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
+                    <Link href={`/khach-san/chi-tiet/${item.slug}`}>
+                      <Image
+                        className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
+                        src={`${item.image_url}/${item.image_location}`}
+                        alt="Image"
+                        width={450}
+                        height={350}
+                        sizes="100vw"
+                        style={{ height: 275, width: "100%" }}
+                      />
+                    </Link>
                   </div>
-                  <div className="flex space-x-2 p-2 lg:mr-6 mt-3 mb-4 items-end justify-between bg-gray-50 rounded-lg">
-                    <div className="flex space-x-1">
-                      {item.rating && (
-                        <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
-                          {item.rating ?? 0}
-                        </span>
-                      )}
-                      <div className="flex flex-col space-y-1">
-                        <span
-                          className="text-primary text-sm font-semibold"
+                  <div className="w-full px-3 lg:px-0 lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
+                    <div className="my-4 mr-6">
+                      <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
+                        <Link
                           data-translate="true"
+                          href={`/khach-san/chi-tiet/${item.slug}`}
+                          className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                         >
-                          {item.rating_text ?? ""}
-                        </span>
-
-                        <span
-                          className="text-gray-500 text-xs"
-                          data-translate="true"
-                        >
-                          {item.totalReview ?? 0} đánh giá
+                          {renderTextContent(item.name)}
+                        </Link>
+                        <div className="flex w-[20%] space-x-1">
+                          <>
+                            {Array.from({ length: 5 }, (_, index) =>
+                              item?.hotel?.star && index < item.hotel.star ? (
+                                <Image
+                                  key={index}
+                                  className="w-4 h-4"
+                                  src="/icon/starFull.svg"
+                                  alt="Icon"
+                                  width={10}
+                                  height={10}
+                                />
+                              ) : (
+                                <Image
+                                  key={index}
+                                  className="w-4 h-4"
+                                  src="/icon/star.svg"
+                                  alt="Icon"
+                                  width={10}
+                                  height={10}
+                                />
+                              )
+                            )}
+                          </>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2 mt-2 items-center">
+                        <Image
+                          className="w-4 h-4"
+                          src="/icon/marker-pin-01.svg"
+                          alt="Icon"
+                          width={20}
+                          height={20}
+                        />
+                        <span className="text-sm" data-translate="true">
+                          {renderTextContent(item.hotel.address)}
                         </span>
                       </div>
-                    </div>
-                    <div className="flex flex-col space-y-2">
-                      <div>
-                        {item.discount_price > 0 && (
-                          <div className="text-sm mr-2 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
-                            <span data-translate="true">Giảm </span>
-                            <span>
-                              {calculatorDiscountPercent(
-                                item.discount_price,
-                                item.price
-                              )}
-                            </span>
+                      {item?.hotel?.amenity_service.length > 0 && (
+                        <div className="w-full">
+                          <ul className="mt-2 list-[circle] grid grid-cols-2 items-start pl-4 w-10/12 gap-2">
+                            {item.hotel.amenity_service.map(
+                              (service: any, index: number) => (
+                                <li key={index} data-translate="true">
+                                  {renderTextContent(
+                                    service.hotel_amenity_service.name
+                                  )}
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                      {minPrice?.discount_price > 0 &&
+                        minPrice.price - minPrice.discount_price <= 0 && (
+                          <div
+                            className="mt-3 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700"
+                            data-translate="true"
+                          >
+                            Hoàn tiền toàn bộ
                           </div>
                         )}
-                        {item.discount_price > 0 && (
-                          <span className="text-gray-500 line-through ">
-                            {formatCurrency(item.price)}
+                    </div>
+                    <div className="flex space-x-2 p-2 lg:mr-6 mt-3 mb-4 items-end justify-between bg-gray-50 rounded-lg">
+                      <div className="flex space-x-1">
+                        {item.rating && (
+                          <span className="inline-flex items-center justify-center w-9 h-9 rounded-[18px] rounded-tr bg-primary text-white font-semibold">
+                            {item.rating ?? 0}
                           </span>
                         )}
+                        <div className="flex flex-col space-y-1">
+                          <span
+                            className="text-primary text-sm font-semibold"
+                            data-translate="true"
+                          >
+                            {item.rating_text ?? ""}
+                          </span>
+
+                          <span
+                            className="text-gray-500 text-xs"
+                            data-translate="true"
+                          >
+                            {item.totalReview ?? 0} đánh giá
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-base md:text-xl text-primary font-semibold text-end">
-                        {item.price > 0 && (
-                          <>
-                            <span
-                              className="text-gray-500 text-sm md:text-base mr-2"
-                              data-translate="true"
-                            >
-                              chỉ từ
+                      <div className="flex flex-col space-y-2">
+                        <div>
+                          {minPrice?.discount_price > 0 && (
+                            <div className="text-sm mr-2 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
+                              <span data-translate="true">Giảm </span>
+                              <span>
+                                {calculatorDiscountPercent(
+                                  minPrice.discount_price,
+                                  minPrice.price
+                                )}
+                              </span>
+                            </div>
+                          )}
+                          {minPrice?.discount_price > 0 && (
+                            <span className="text-gray-500 line-through ">
+                              {formatCurrency(minPrice.price)}
                             </span>
-                            {item.discount_price
-                              ? formatCurrency(item.price - item.discount_price)
-                              : formatCurrency(item.price)}
-                          </>
-                        )}
+                          )}
+                        </div>
+                        <div className="text-base md:text-xl text-primary font-semibold text-end">
+                          {minPrice?.price > 0 && (
+                            <>
+                              <span
+                                className="text-gray-500 text-sm md:text-base mr-2"
+                                data-translate="true"
+                              >
+                                chỉ từ
+                              </span>
+                              {minPrice.discount_price
+                                ? formatCurrency(
+                                    minPrice.price - minPrice.discount_price
+                                  )
+                                : formatCurrency(minPrice.price)}
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div
               className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
