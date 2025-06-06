@@ -508,10 +508,7 @@ export default function FlightDetailPopup({
                                 ></rect>
                                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                               </svg>
-                              <p>
-                                Hành lý xách tay:{" "}
-                                {flightDetail?.fareRules?.carry_on_baggage}
-                              </p>
+                              <p>{flightDetail?.fareRules?.carry_on_baggage}</p>
                             </div>
                           )}
                           <div className="flex gap-2">
@@ -537,7 +534,6 @@ export default function FlightDetailPopup({
                                   : ""
                               }`}
                             >
-                              Hành lý ký gửi:{" "}
                               {!isEmpty(
                                 flightDetail?.fareRules?.checked_baggage
                               )
@@ -555,10 +551,7 @@ export default function FlightDetailPopup({
                                 alt="Icon"
                                 className="w-6 h-6"
                               />
-                              <span>
-                                Được phép hoàn định danh:
-                                {flightDetail?.fareRules?.can_refund}
-                              </span>
+                              <span>{flightDetail?.fareRules?.can_refund}</span>
                             </div>
                           )}
                           {!isEmpty(flightDetail?.fareRules?.can_change) && (
@@ -570,10 +563,7 @@ export default function FlightDetailPopup({
                                 alt="Icon"
                                 className="w-6 h-6"
                               />
-                              <span>
-                                Được phép đổi:{" "}
-                                {flightDetail?.fareRules?.can_change}
-                              </span>
+                              <span>{flightDetail?.fareRules?.can_change}</span>
                             </div>
                           )}
                         </div>
