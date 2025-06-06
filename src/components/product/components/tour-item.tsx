@@ -68,7 +68,7 @@ export default function TourItem({ tour }: any) {
         {tour.remain && (
           <p className="flex space-x-2 mt-2">
             <Image src="/icon/Ticket.svg" alt="Time" width={20} height={20} />
-            <span data-translate>{`Chỗ trống: ${tour.remain}`}</span>
+            <span data-translate>{`Chỗ trống: ${tour.remain ?? 'Liên hệ'}`}</span>
           </p>
         )}
         <div className="flex justify-between mt-[14px]">
