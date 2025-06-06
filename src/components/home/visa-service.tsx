@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/formatters";
 
 export default function VisaService({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -147,12 +148,31 @@ export default function VisaService({ data }: any) {
                                   />
                                 </Link>
                               </div>
-                              <div className="py-3 px-4 lg:h-[72px] ">
+                              <div className="py-3 px-4 h-fit ">
                                 <Link
                                   href={`/visa/chi-tiet/${visa.slug}`}
                                   className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
                                 >
                                   <h3 data-translate>{visa.name}</h3>
+                                  <div className="mt-2 text-end">
+                                    {visa.price > 0 ? (
+                                      <>
+                                        <span data-translate="true">
+                                          chỉ từ{" "}
+                                        </span>
+                                        <span className="text-[#F27145] font-semibold text-base lg:text-xl">
+                                          {formatCurrency(visa.price)}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span
+                                        className="text-[#F27145] font-semibold text-base lg:text-xl"
+                                        data-translate="true"
+                                      >
+                                        Liên hệ
+                                      </span>
+                                    )}
+                                  </div>
                                 </Link>
                               </div>
                             </div>

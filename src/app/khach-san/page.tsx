@@ -173,7 +173,7 @@ export default async function Hotel() {
                         alt="Image"
                         width={250}
                         height={260}
-                        style={{ height: 245 }}
+                        style={{ height: 220 }}
                       />
                     </Link>
                   </div>
