@@ -216,13 +216,13 @@ export default function ListVisa({
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                   <Link href={`/visa/chi-tiet/${item.slug}`}>
                     <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
+                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
                       src={`${item.image_url}/${item.image_location}`}
                       alt="Image"
                       width={360}
                       height={270}
                       sizes="100vw"
-                      style={{ height: 310, width: "100%" }}
+                      style={{ height: "auto", width: "100%" }}
                     />
                   </Link>
                   {item.is_outstanding == 1 && (

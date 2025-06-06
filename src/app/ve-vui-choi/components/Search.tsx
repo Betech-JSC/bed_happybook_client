@@ -1,6 +1,8 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useCallback, useEffect, useRef, useState } from "react";
 import TourStyle from "@/styles/tour.module.scss";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +12,8 @@ import { useSearchParams } from "next/navigation";
 import { ProductTicket } from "@/api/ProductTicket";
 import { translatePage } from "@/utils/translateDom";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { vi, enUS } from "date-fns/locale";
+import { format, isValid } from "date-fns";
 
 type optionFilterType = {
   label: string;
@@ -25,6 +29,9 @@ export default function Search({
 }: {
   optionsFilter: optionFilterType[];
 }) {
+  const today = new Date();
+  const { language } = useLanguage();
+
   const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
     page: number;
@@ -32,8 +39,8 @@ export default function Search({
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
+    departureDate: format(today, "yyyy-MM-dd"),
   });
-  const { language } = useLanguage();
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -61,7 +68,7 @@ export default function Search({
       const res = await ProductTicket.search(`${search}`);
       const result = res?.payload?.data;
       setData((prevData: any) =>
-        result.items.length > 0 && !query.isFilters
+        result?.items.length > 0 && !query.isFilters
           ? [...prevData, ...result.items]
           : result.items
       );
@@ -108,6 +115,13 @@ export default function Search({
     setQuery({ ...query, sort: sort, order: order, isFilters: true });
   };
 
+  // useEffect(() => {
+  //   setQuery((prev) => ({
+  //     ...prev,
+  //     departureDate: departDate,
+  //   }));
+  // }, [departDate]);
+
   useEffect(() => {
     loadData();
   }, [query, loadData]);
@@ -127,6 +141,45 @@ export default function Search({
   return (
     <div className="flex mt-6 md:space-x-4 items-start pb-8">
       <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
+        <div className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none">
+          <p className="font-semibold" data-translate="true">
+            Ngày đi
+          </p>
+          <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
+            <Image
+              src="/icon/calendar.svg"
+              alt="Phone icon"
+              className="h-10"
+              width={18}
+              height={18}
+            />
+            <div className="w-full [&>div]:w-full">
+              <DatePicker
+                selected={query.departureDate}
+                onChange={(date) =>
+                  setQuery({
+                    ...query,
+                    departureDate: format(
+                      date ? date : new Date(),
+                      "yyyy-MM-dd"
+                    ),
+                    isFilters: true,
+                  })
+                }
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Chọn ngày"
+                popperPlacement="bottom-start"
+                minDate={today}
+                locale={language === "vi" ? vi : enUS}
+                onFocus={(e) => e.target.blur()}
+                onKeyDown={(e) => {
+                  e.preventDefault();
+                }}
+                className="z-20 pl-3 w-full outline-none"
+              />
+            </div>
+          </div>
+        </div>
         {optionsFilter?.length > 0 &&
           optionsFilter.map((group: optionFilterType, index: number) => {
             const showAll = expandedGroups[group.name];
@@ -251,39 +304,50 @@ export default function Search({
         <div className="mb-4">
           {data.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
-              {data.map((item: any, index: number) => (
-                <div key={index} className="rounded-xl">
-                  <div
-                    className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${
-                      translatedText ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    <Link href={`/ve-vui-choi/chi-tiet/${item.slug}`}>
-                      <Image
-                        className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
-                        src={`${item.image_url}/${item.image_location}`}
-                        alt="Image"
-                        width={360}
-                        height={270}
-                        sizes="100vw"
-                        style={{ height: 217 }}
-                      />
-                    </Link>
-                  </div>
-                  <div className="py-3 px-5 bg-white rounded-b-xl">
-                    <Link
-                      href={`/ve-vui-choi/chi-tiet/${item.slug}`}
-                      className="text-base font-bold line-clamp-2 h-12"
-                      data-translate="true"
+              {data.map((item: any, index: number) => {
+                const minPrice = Number(
+                  item?.ticket_prices?.[0]?.special_days_price ?? 0
+                );
+
+                return (
+                  <div key={index} className="rounded-xl">
+                    <div
+                      className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${
+                        translatedText ? "opacity-100" : "opacity-0"
+                      }`}
                     >
-                      {renderTextContent(item.name)}
-                    </Link>
-                    <p className="text-xl font-semibold mt-1 text-right text-primary">
-                      {formatCurrency(item.price)}
-                    </p>
+                      <Link
+                        href={`/ve-vui-choi/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                      >
+                        <Image
+                          className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
+                          src={`${item.image_url}/${item.image_location}`}
+                          alt="Image"
+                          width={360}
+                          height={270}
+                          sizes="100vw"
+                          style={{ height: 217 }}
+                        />
+                      </Link>
+                    </div>
+                    <div className="py-3 px-5 bg-white rounded-b-xl">
+                      <Link
+                        href={`/ve-vui-choi/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                        className="text-base font-bold line-clamp-2 h-12"
+                        data-translate="true"
+                      >
+                        {renderTextContent(item.name)}
+                      </Link>
+                      <div className="mt-1 text-end">
+                        <span>Giá từ </span>
+                        <span className="text-xl font-semibold text-right text-primary">
+                          {formatCurrency(minPrice)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div

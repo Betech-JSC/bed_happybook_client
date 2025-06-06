@@ -5,6 +5,7 @@ import CustomerRating from "@/components/product/CustomerRating";
 import { renderTextContent } from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import "@/styles/ckeditor-content.scss";
 
 export default function Tabs({ detail }: any) {
   const { language } = useLanguage();
@@ -76,12 +77,14 @@ export default function Tabs({ detail }: any) {
           >
             Tìm hiểu Visa
           </h2>
-          <div
-            className="mt-4 leading-6"
-            dangerouslySetInnerHTML={{
-              __html: translatedContent[0],
-            }}
-          ></div>
+          <div className="ckeditor_container mt-4">
+            <div
+              className="cke_editable"
+              dangerouslySetInnerHTML={{
+                __html: translatedContent[0],
+              }}
+            ></div>
+          </div>
         </div>
 
         <div
@@ -95,12 +98,14 @@ export default function Tabs({ detail }: any) {
           >
             Giá dịch vụ, phí nộp ĐSQ, chuẩn bị hồ sơ
           </h2>
-          <div
-            className="mt-4 leading-6"
-            dangerouslySetInnerHTML={{
-              __html: translatedContent[1],
-            }}
-          ></div>
+          <div className="ckeditor_container mt-4">
+            <div
+              className="cke_editable"
+              dangerouslySetInnerHTML={{
+                __html: translatedContent[1],
+              }}
+            ></div>
+          </div>
         </div>
 
         <div

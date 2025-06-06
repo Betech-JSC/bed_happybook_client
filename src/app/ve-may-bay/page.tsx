@@ -35,7 +35,7 @@ export const metadata: Metadata = formatMetadata({
 });
 
 export default async function AirlineTicket() {
-  const airportsReponse = await FlightApi.airPorts();
+  const airportsReponse: any = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   let popularFlights = (await FlightApi.getPopularFlights())?.payload
     ?.data as any;

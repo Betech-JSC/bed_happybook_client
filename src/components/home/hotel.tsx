@@ -130,14 +130,16 @@ export default function Hotel({ data }: any) {
                         }`}
                       >
                         <CarouselContent>
-                          {category.products.map((hotel: any) => (
-                            <CarouselItem
-                              key={hotel.id}
-                              className="basis-10/12 md:basis-5/12 lg:basis-1/4"
-                            >
-                              <HotelItem hotel={hotel} />
-                            </CarouselItem>
-                          ))}
+                          {category.products.map(
+                            (hotel: any, hotelIndex: number) => (
+                              <CarouselItem
+                                key={hotelIndex}
+                                className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+                              >
+                                <HotelItem hotel={hotel} />
+                              </CarouselItem>
+                            )
+                          )}
                         </CarouselContent>
                         <CarouselPrevious className="hidden lg:inline-flex" />
                         <CarouselNext className="hidden lg:inline-flex" />
@@ -146,7 +148,10 @@ export default function Hotel({ data }: any) {
                     </div>
                   ) : (
                     activeTab === index && (
-                      <div className="min-h-[100px] content-center text-center">
+                      <div
+                        key={index}
+                        className="min-h-[100px] content-center text-center"
+                      >
                         <p className="font-bold text-xl" data-translate>
                           Thông tin đang được cập nhật.....
                         </p>

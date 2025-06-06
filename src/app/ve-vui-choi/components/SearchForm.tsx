@@ -50,7 +50,7 @@ export default function SearchForm() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const res = await ProductTicket.search(`?departDate=${dateStr}`);
+      const res = await ProductTicket.location(`?departDate=${dateStr}`);
       const data = res?.payload?.data ?? [];
 
       const newOptions: Option[] = data.map((item: any) => ({

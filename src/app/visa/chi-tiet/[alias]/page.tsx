@@ -138,10 +138,7 @@ export default async function CategoryPosts({
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery
-                gallery={detail.gallery}
-                imageUrl={detail.image_url}
-              />
+              <ImageGallery detail={detail} />
               <div className="mt-4">
                 <Tabs detail={detail} />
               </div>

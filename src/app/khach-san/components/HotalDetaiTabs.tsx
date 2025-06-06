@@ -8,6 +8,7 @@ import { isEmpty } from "lodash";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect, Fragment } from "react";
+import "@/styles/ckeditor-content.scss";
 
 export default function HotelDetailTabs({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -43,7 +44,7 @@ export default function HotelDetailTabs({ data }: any) {
   return (
     <div className="w-full mt-6 pb-12">
       <div
-        className="flex flex-wrap md:justify-between mb-4 bg-white p-3 rounded-xl relative"
+        className="grid grid-cols-2 md:flex md:flex-wrap md:justify-between mb-4 bg-white p-3 rounded-xl relative"
         ref={tabContainerRef}
       >
         {[
@@ -91,14 +92,14 @@ export default function HotelDetailTabs({ data }: any) {
           <h3 className="mt-4 text-22 font-semibold" data-translate="true">
             {renderTextContent(data.name)}
           </h3>
-          <div
-            // data-translate="true"
-            className="mt-3 leading-6"
-            dangerouslySetInnerHTML={{
-              __html: translatedContent[0],
-            }}
-          ></div>
-
+          <div className="ckeditor_container mt-3">
+            <div
+              className="cke_editable"
+              dangerouslySetInnerHTML={{
+                __html: translatedContent[0],
+              }}
+            ></div>
+          </div>
           {/* <div className="w-full mt-4 text-center">
               <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
                 Xem thêm
@@ -156,11 +157,14 @@ export default function HotelDetailTabs({ data }: any) {
                   </div>
                   <div>
                     <div className="mt-4 text-right">
-                      <p className="text-gray-500 h-6">
-                        {item.discount_price > 0
-                          ? formatCurrency(item.discount_price)
-                          : ""}
-                      </p>
+                      <div className="text-gray-500 h-6 text-sm">
+                        <span data-translate="true">Giảm giá: </span>
+                        <span>
+                          {item.discount_price > 0
+                            ? formatCurrency(item.discount_price)
+                            : ""}
+                        </span>
+                      </div>
                       <p>
                         <span className="text-gray-500" data-translate="true">
                           Tổng:
@@ -283,12 +287,14 @@ export default function HotelDetailTabs({ data }: any) {
               >
                 Thông tin về nơi lưu trú này
               </h2>
-              <div
-                className="mt-4 leading-6"
-                dangerouslySetInnerHTML={{
-                  __html: translatedContent[1],
-                }}
-              ></div>
+              <div className="ckeditor_container mt-4">
+                <div
+                  className="cke_editable"
+                  dangerouslySetInnerHTML={{
+                    __html: translatedContent[1],
+                  }}
+                ></div>
+              </div>
             </div>
           </div>
         )}
@@ -336,12 +342,14 @@ export default function HotelDetailTabs({ data }: any) {
             >
               Chính sách
             </h2>
-            <div
-              className="mt-4 leading-6"
-              dangerouslySetInnerHTML={{
-                __html: translatedContent[2],
-              }}
-            ></div>
+            <div className="ckeditor_container mt-4">
+              <div
+                className="cke_editable"
+                dangerouslySetInnerHTML={{
+                  __html: translatedContent[2],
+                }}
+              ></div>
+            </div>
           </div>
         </div>
         {data.hotel.information && (
@@ -353,12 +361,14 @@ export default function HotelDetailTabs({ data }: any) {
               >
                 Thông tin quan trọng
               </h2>
-              <div
-                className="mt-4 leading-6"
-                dangerouslySetInnerHTML={{
-                  __html: translatedContent[3],
-                }}
-              ></div>
+              <div className="ckeditor_container mt-4">
+                <div
+                  className="cke_editable"
+                  dangerouslySetInnerHTML={{
+                    __html: translatedContent[3],
+                  }}
+                ></div>
+              </div>
             </div>
           </div>
         )}

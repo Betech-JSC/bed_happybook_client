@@ -1,6 +1,27 @@
+"use client";
+
 import { renderTextContent } from "@/utils/Helper";
+import "@/styles/ckeditor-content.scss";
+import { useEffect, useState } from "react";
+import { translateText } from "@/utils/translateApi";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function Tabs({ data }: any) {
+  const { language } = useLanguage();
+
+  const [translatedContent, setTranslatedContent] = useState<string[]>([]);
+  useEffect(() => {
+    translateText(
+      [
+        renderTextContent(data?.combo?.description),
+        renderTextContent(data?.combo?.requirements),
+      ],
+      language
+    ).then((dataTranslate) => {
+      setTranslatedContent(dataTranslate);
+    });
+  }, [data, language]);
+
   return (
     <div className="w-full mt-6">
       <div className="bg-white rounded-2xl p-6">
@@ -10,13 +31,14 @@ export default function Tabs({ data }: any) {
         >
           COMBO BAO GỒM
         </h2>
-        <div
-          data-translate="true"
-          className="mt-4 leading-6"
-          dangerouslySetInnerHTML={{
-            __html: renderTextContent(data?.combo?.description),
-          }}
-        ></div>
+        <div className="ckeditor_container mt-4">
+          <div
+            className="cke_editable"
+            dangerouslySetInnerHTML={{
+              __html: translatedContent[0],
+            }}
+          ></div>
+        </div>
       </div>
       <div className="bg-white rounded-2xl p-6 mt-4">
         <h2
@@ -25,13 +47,14 @@ export default function Tabs({ data }: any) {
         >
           ĐIỀU KIỆN ÁP DỤNG
         </h2>
-        <div
-          className="mt-4 leading-6"
-          data-translate="true"
-          dangerouslySetInnerHTML={{
-            __html: renderTextContent(data?.combo?.requirements),
-          }}
-        ></div>
+        <div className="ckeditor_container mt-4">
+          <div
+            className="cke_editable"
+            dangerouslySetInnerHTML={{
+              __html: translatedContent[1],
+            }}
+          ></div>
+        </div>
       </div>
     </div>
   );

@@ -14,7 +14,6 @@ import { ProductTicket } from "@/api/ProductTicket";
 import { notFound } from "next/navigation";
 
 export default async function EntertainmentTickets() {
-  notFound();
   const optionsFilter = (await ProductTicket.getOptionsFilter())?.payload
     ?.data as any;
   return (
