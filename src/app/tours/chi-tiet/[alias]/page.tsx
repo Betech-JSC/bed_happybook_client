@@ -202,7 +202,7 @@ export default async function TourDetail({
                         width={20}
                         height={20}
                       />
-                      <span data-translate>{`Chỗ trống: ${detail.remain}`}</span>
+                      <span data-translate>{`Chỗ trống: ${detail.remain ?? 'Liên hệ'}`}</span>
                     </p>
                     )}
                   </div>

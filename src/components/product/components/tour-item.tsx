@@ -70,7 +70,7 @@ export default function TourItem({ tour }: any) {
         <p className="flex space-x-2 mt-2">
           <Image src="/icon/Ticket.svg" alt="Time" width={20} height={20} />
           <span data-translate>{`Chỗ trống: ${
-            tour.remain ? tour.remain : ""
+            tour.remain ? tour.remain : "Liên hệ"
           }`}</span>
         </p>
         {/* )} */}
