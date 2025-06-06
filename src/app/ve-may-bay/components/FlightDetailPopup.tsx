@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { differenceInSeconds, format, parseISO } from "date-fns";
 import {
   formatNumberToHoursAndMinutesFlight,
@@ -38,14 +38,16 @@ export default function FlightDetailPopup({
     }
   }, [tabs, activeTab]);
   let isFareRulesOfStrings = false;
-  const flightFareRules =
-    flights[0]?.listFareRules && flights[0]?.listFareRules?.length > 0
-      ? flights[0]?.listFareRules
-      : null;
-  if (flightFareRules) {
-    isFareRulesOfStrings =
-      Array.isArray(flightFareRules) && typeof flightFareRules[0] === "string";
-  }
+  const flightDetail = flights?.[0];
+  // const flightFareRules =
+  //   flights[0]?.listFareRules && flights[0]?.listFareRules?.length > 0
+  //     ? flights[0]?.listFareRules
+  //     : null;
+  // if (flightFareRules) {
+  //   isFareRulesOfStrings =
+  //     Array.isArray(flightFareRules) && typeof flightFareRules[0] === "string";
+  // }
+  console.log(flightDetail);
   return (
     <div
       id="flight-detail-popup-wrapper"
@@ -60,7 +62,7 @@ export default function FlightDetailPopup({
         flights.length > 0 &&
         Array.isArray(tabs) &&
         tabs.length > 0 && (
-          <div className="relative bg-white max-h-[90vh] min-h-[60vh] overflow-y-auto custom-scrollbar  py-6 px-4 md:px-8 pb-8 md:max-w-[680px] md:min-w-[680px] rounded-lg">
+          <div className="relative bg-white max-h-[90vh] overflow-y-auto custom-scrollbar  py-6 px-4 md:px-8 pb-8 md:max-w-[680px] md:min-w-[680px] rounded-lg">
             {tabs.length > 1 && (
               <div className="flex justify-between items-end sticky top-[-25px] bg-white z-[999]">
                 <p className="text-22 font-bold" data-translate="true">
@@ -192,6 +194,10 @@ export default function FlightDetailPopup({
                                 (airport: any) =>
                                   airport.code === segment.stopPoint
                               ) || null;
+
+                          const operatingAirline = !isEmpty(segment?.operating)
+                            ? segment?.operating
+                            : segment.airline;
                           return (
                             <div
                               className={`grid grid-cols-12 items-start gap-6 ${
@@ -261,7 +267,7 @@ export default function FlightDetailPopup({
                                     <div className="rounded-lg py-3 px-4 bg-gray-50">
                                       <div className="flex space-x-3">
                                         <DisplayImage
-                                          imagePath={`assets/images/airline/${segment.airline.toLowerCase()}.gif`}
+                                          imagePath={`assets/images/airline/${operatingAirline.toLowerCase()}.gif`}
                                           width={82}
                                           height={24}
                                           alt={"AirLine"}
@@ -355,69 +361,230 @@ export default function FlightDetailPopup({
                   );
                 })}
               {activeTab === 2 && (
-                <div>
-                  {isLoadingFareRules ? (
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                      <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
+                <Fragment>
+                  {!flightDetail.domestic &&
+                  ["1G", "VN1A"].includes(flightDetail.source) ? (
+                    <div className="flex flex-col gap-2">
+                      {!isEmpty(
+                        flightDetail?.fareOptSelected?.carryOnBaggage
+                      ) && (
+                        <div className="flex gap-2">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20px"
+                            height="20px"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="ml-[2px] text-[#efad02]"
+                          >
+                            <rect
+                              x="2"
+                              y="7"
+                              width="20"
+                              height="14"
+                              rx="2"
+                              ry="2"
+                            ></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                          </svg>
+                          <p>
+                            Hành lý xách tay:{" "}
+                            {flightDetail?.fareOptSelected?.carryOnBaggage}
+                          </p>
+                        </div>
+                      )}
+                      {!isEmpty(
+                        flightDetail?.fareOptSelected?.checkedBaggae
+                      ) && (
+                        <div className="flex gap-2">
+                          <Image
+                            src={`/icon/flight/${
+                              !isEmpty(
+                                flightDetail?.fareOptSelected?.checkedBaggae
+                              )
+                                ? "luggage"
+                                : "no-luggage"
+                            }.svg`}
+                            width={24}
+                            height={24}
+                            alt="Icon"
+                            className="w-6 h-6"
+                          />
+                          <p
+                            className={`${
+                              isEmpty(
+                                flightDetail?.fareOptSelected?.checkedBaggae
+                              )
+                                ? "text-[#ef5350]"
+                                : ""
+                            }`}
+                          >
+                            Hành lý ký gửi:{" "}
+                            {!isEmpty(
+                              flightDetail?.fareOptSelected?.checkedBaggae
+                            )
+                              ? flightDetail?.fareOptSelected?.checkedBaggae
+                              : "Không bao gồm"}
+                          </p>
+                        </div>
+                      )}
+                      {flightDetail?.fareOptSelected?.noRefund && (
+                        <div className="flex gap-2">
+                          <Image
+                            src="/icon/flight/can-refund.svg"
+                            width={24}
+                            height={24}
+                            alt="Icon"
+                            className="w-6 h-6"
+                          />
+                          <span>Hoàn vé: Được phép</span>
+                          <span className="text-[#166987] font-semibold">
+                            (Phí vui lòng liên hệ booker).
+                          </span>
+                        </div>
+                      )}
+                      {flightDetail?.fareOptSelected?.changePenalties?.length >
+                        0 && (
+                        <div className="flex gap-2">
+                          <Image
+                            src="/icon/flight/can-change.svg"
+                            width={24}
+                            height={24}
+                            alt="Icon"
+                            className="w-6 h-6"
+                          />
+                          <span>Đổi vé: Được phép</span>
+                          <span className="text-[#166987] font-semibold">
+                            (Phí vui lòng liên hệ booker).
+                          </span>
+                        </div>
+                      )}
+                      {flightDetail?.fareOptSelected?.noshowPenalties &&
+                        !flightDetail?.fareOptSelected?.noshowPenalties
+                          .length && (
+                          <div className="flex gap-2">
+                            <Image
+                              src="/icon/flight/no-change.svg"
+                              width={24}
+                              height={24}
+                              alt="Icon"
+                              className="w-6 h-6"
+                            />
+                            <p>Không được No Show</p>
+                          </div>
+                        )}
                     </div>
                   ) : (
-                    <div className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0">
-                      {Array.isArray(flightFareRules) &&
-                      flightFareRules.length > 0 ? (
-                        <div>
-                          {isFareRulesOfStrings ? (
-                            <ul
-                              className="mt-4 pl-6"
-                              style={{ listStyle: "circle" }}
+                    <div>
+                      {flightDetail?.fareRules ? (
+                        <div className="flex flex-col gap-2">
+                          {!isEmpty(
+                            flightDetail?.fareRules?.carry_on_baggage
+                          ) && (
+                            <div className="ml-[2px] flex gap-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-[#efad02]"
+                              >
+                                <rect
+                                  x="2"
+                                  y="7"
+                                  width="20"
+                                  height="14"
+                                  rx="2"
+                                  ry="2"
+                                ></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                              </svg>
+                              <p>
+                                Hành lý xách tay:{" "}
+                                {flightDetail?.fareRules?.carry_on_baggage}
+                              </p>
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <Image
+                              src={`/icon/flight/${
+                                !isEmpty(
+                                  flightDetail?.fareRules?.checked_baggage
+                                )
+                                  ? "luggage"
+                                  : "no-luggage"
+                              }.svg`}
+                              width={24}
+                              height={24}
+                              alt="Icon"
+                              className="w-6 h-6"
+                            />
+                            <p
+                              className={`${
+                                isEmpty(
+                                  flightDetail?.fareRules?.checked_baggage
+                                )
+                                  ? "text-[#ef5350]"
+                                  : ""
+                              }`}
                             >
-                              {flightFareRules.map(
-                                (text: any, indexRule: number) => (
-                                  <li key={indexRule}>{text}</li>
-                                )
-                              )}
-                            </ul>
-                          ) : (
-                            <div>
-                              {flightFareRules.map(
-                                (item: any, indexRule: number) => (
-                                  <div key={indexRule} className="mb-4">
-                                    {item.key && (
-                                      <p className="font-semibold text-18">
-                                        {item.key}
-                                      </p>
-                                    )}
-                                    <ul
-                                      className="mt-4 pl-6"
-                                      style={{ listStyle: "circle" }}
-                                    >
-                                      {item?.value?.length > 0 &&
-                                        item.value.map(
-                                          (
-                                            ruleText: string,
-                                            indexRuleText: number
-                                          ) =>
-                                            ruleText && (
-                                              <li key={indexRuleText}>
-                                                {ruleText}
-                                              </li>
-                                            )
-                                        )}
-                                    </ul>
-                                  </div>
-                                )
-                              )}
+                              Hành lý ký gửi:{" "}
+                              {!isEmpty(
+                                flightDetail?.fareRules?.checked_baggage
+                              )
+                                ? flightDetail?.fareRules?.checked_baggage
+                                : "Không bao gồm"}
+                            </p>
+                          </div>
+
+                          {!isEmpty(flightDetail?.fareRules?.can_refund) && (
+                            <div className="flex gap-2">
+                              <Image
+                                src="/icon/flight/can-refund.svg"
+                                width={24}
+                                height={24}
+                                alt="Icon"
+                                className="w-6 h-6"
+                              />
+                              <span>
+                                Được phép hoàn định danh:
+                                {flightDetail?.fareRules?.can_refund}
+                              </span>
+                            </div>
+                          )}
+                          {!isEmpty(flightDetail?.fareRules?.can_change) && (
+                            <div className="flex gap-2">
+                              <Image
+                                src="/icon/flight/can-change.svg"
+                                width={24}
+                                height={24}
+                                alt="Icon"
+                                className="w-6 h-6"
+                              />
+                              <span>
+                                Được phép đổi:{" "}
+                                {flightDetail?.fareRules?.can_change}
+                              </span>
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div className="mb-4">
-                          Xin vui lòng liên hệ với Happy Book để nhận thông tin
-                          chi tiết.
+                        <div>
+                          Xin vui lòng liên hệ HappyBook để biết thêm chi tiết.
                         </div>
                       )}
                     </div>
                   )}
-                </div>
+                </Fragment>
               )}
             </div>
           </div>

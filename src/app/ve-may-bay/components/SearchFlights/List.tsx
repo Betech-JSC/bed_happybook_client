@@ -171,13 +171,11 @@ export default function ListFlights({
     [language]
   );
 
-  const toggleShowRuleTicket = useCallback(
-    async (flight: any, indexFareOption: number) => {
-      const response = await fetchFareRules(flight, indexFareOption);
-      return response;
-    },
-    [fetchFareRules]
-  );
+  const toggleShowRuleTicket = useCallback(async (flight: any) => {
+    // const response = await fetchFareRules(flight, indexFareOption);
+    const response = await FlightApi.getFareRules(flight);
+    return response?.payload?.data ?? [];
+  }, []);
 
   const handleShowPopupFlightDetail = (
     flight: any,
@@ -186,14 +184,22 @@ export default function ListFlights({
     showRuleTicket = false
   ) => {
     if (showRuleTicket) {
-      const response = toggleShowRuleTicket(flight, indexFareOption);
-      response.then((rules) => {
-        flight.listFareRules = rules;
-      });
+      flight.fareOptSelected = flight.fareOptions[indexFareOption];
+      if (!flight.domestic && ["1G", "VN1A"].includes(flight.source)) {
+        setShowDetail(true);
+        setFlightDetail([flight]);
+      } else {
+        const response = toggleShowRuleTicket(flight);
+        response.then((rules) => {
+          if (rules) flight.fareRules = rules;
+          setShowDetail(true);
+          setFlightDetail([flight]);
+        });
+      }
+    } else {
+      setShowDetail(true);
+      setFlightDetail([flight]);
     }
-    setShowDetail(true);
-
-    setFlightDetail([flight]);
     setTabsFlightDetail(tabs);
   };
 
