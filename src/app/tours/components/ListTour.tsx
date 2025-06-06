@@ -315,7 +315,7 @@ export default function ListTour({
                           width={18}
                           height={18}
                         />
-                        <span data-translate="true">{`Chỗ trống: ${tour.remain}`}</span>
+                        <span data-translate="true">{`Chỗ trống: ${tour.remain ?? 'Liên hệ'}`}</span>
                       </div>
                     )}
 
