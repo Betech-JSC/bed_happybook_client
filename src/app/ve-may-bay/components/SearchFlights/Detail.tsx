@@ -58,9 +58,14 @@ const FlightDomesticDetail = ({
     setHeight(showDetails ? contentRef.current.scrollHeight + 60 : 0);
     setHasHeight(true);
   }, [showDetails]);
+
   if (flight?.fareOptions?.length < 1) {
     return;
   }
+
+  const startOperating = !isEmpty(flight.segments?.[0]?.operating)
+    ? flight.segments?.[0]?.operating
+    : flight.airLineCode;
   return (
     <Fragment>
       {flight && (
@@ -69,10 +74,10 @@ const FlightDomesticDetail = ({
             <div className="col-span-2 border-r border-gray-200">
               <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
                 <DisplayImage
-                  imagePath={`assets/images/airline/${flight.airLineCode.toLowerCase()}.gif`}
+                  imagePath={`assets/images/airline/${startOperating.toLowerCase()}.gif`}
                   width={80}
                   height={24}
-                  alt={flight.airline}
+                  alt={startOperating}
                   classStyle={"max-w-16 md:max-w-20 max-h-10 mx-auto md:mx-0"}
                 />
                 <div>
@@ -233,7 +238,9 @@ const FlightDomesticDetail = ({
                       >
                         <div className="mb-4 pb-1">
                           <p className="text-gray-900 text-18 font-bold">
-                            {ticket.groupClass}
+                            {!isEmpty(ticket.fareType)
+                              ? ticket.fareType
+                              : ticket.groupClass}
                           </p>
                           <div className="mt-4 flex justify-between items-end">
                             <p className="text-sm text-gray-700">
