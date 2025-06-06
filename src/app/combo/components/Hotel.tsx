@@ -1,13 +1,33 @@
+"use client";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import { formatCurrency } from "@/lib/formatters";
 import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
+import { translateText } from "@/utils/translateApi";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
+import "@/styles/ckeditor-content.scss";
 
 export default function Hotel({ data }: any) {
   const labelRatingHotel = getLabelRatingProduct(
     data?.hotelOfCompo?.hotel?.average_rating
   );
+  const { language } = useLanguage();
+
+  const [translatedContent, setTranslatedContent] = useState<string[]>([]);
+  useEffect(() => {
+    translateText(
+      [
+        renderTextContent(data?.hotelOfCompo?.hotel?.reside_information),
+        renderTextContent(data?.hotelOfCompo?.hotel?.policy),
+        renderTextContent(data?.hotelOfCompo?.hotel?.information),
+      ],
+      language
+    ).then((dataTranslate) => {
+      setTranslatedContent(dataTranslate);
+    });
+  }, [data, language]);
+
   return (
     <Fragment>
       <div className="bg-white p-6 rounded-2xl">
@@ -148,15 +168,14 @@ export default function Hotel({ data }: any) {
           <h3 className="mt-4 text-22 font-semibold" data-translate="true">
             {renderTextContent(data?.hotelOfCompo?.name)}
           </h3>
-          <div
-            className="mt-3 leading-6"
-            data-translate="true"
-            dangerouslySetInnerHTML={{
-              __html: renderTextContent(
-                data?.hotelOfCompo?.hotel?.reside_information
-              ),
-            }}
-          ></div>
+          <div className="ckeditor_container mt-3">
+            <div
+              className="cke_editable"
+              dangerouslySetInnerHTML={{
+                __html: translatedContent[0],
+              }}
+            ></div>
+          </div>
 
           {/* <div className="w-full mt-4 text-center">
             <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
@@ -199,7 +218,7 @@ export default function Hotel({ data }: any) {
           {data.hotelOfCompo?.hotel?.amenities.length > 0 ? (
             <ul className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 list-disc pl-4 leading-6">
               {data.hotelOfCompo.hotel.amenities.map((item: any) => (
-                <li key={item.id}>
+                <li key={item.id} data-translate="true">
                   {renderTextContent(item.hotel_amenity.name)}
                 </li>
               ))}
@@ -219,13 +238,14 @@ export default function Hotel({ data }: any) {
           >
             Chính sách
           </h2>
-          <div
-            className="mt-4 leading-6"
-            data-translate="true"
-            dangerouslySetInnerHTML={{
-              __html: renderTextContent(data?.hotelOfCompo?.hotel?.policy),
-            }}
-          ></div>
+          <div className="ckeditor_container mt-4">
+            <div
+              className="cke_editable"
+              dangerouslySetInnerHTML={{
+                __html: translatedContent[1],
+              }}
+            ></div>
+          </div>
         </div>
       </div>
       <div className="w-full mt-6">
@@ -236,13 +256,14 @@ export default function Hotel({ data }: any) {
           >
             Thông tin quan trọng
           </h2>
-          <div
-            className="mt-4 leading-6"
-            data-translate="true"
-            dangerouslySetInnerHTML={{
-              __html: renderTextContent(data?.hotelOfCompo?.hotel?.information),
-            }}
-          ></div>
+          <div className="ckeditor_container mt-4">
+            <div
+              className="cke_editable"
+              dangerouslySetInnerHTML={{
+                __html: translatedContent[2],
+              }}
+            ></div>
+          </div>
         </div>
       </div>
     </Fragment>

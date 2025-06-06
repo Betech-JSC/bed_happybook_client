@@ -44,7 +44,7 @@ export default function HotelDetailTabs({ data }: any) {
   return (
     <div className="w-full mt-6 pb-12">
       <div
-        className="flex flex-wrap md:justify-between mb-4 bg-white p-3 rounded-xl relative"
+        className="grid grid-cols-2 md:flex md:flex-wrap md:justify-between mb-4 bg-white p-3 rounded-xl relative"
         ref={tabContainerRef}
       >
         {[
@@ -157,11 +157,14 @@ export default function HotelDetailTabs({ data }: any) {
                   </div>
                   <div>
                     <div className="mt-4 text-right">
-                      <p className="text-gray-500 h-6">
-                        {item.discount_price > 0
-                          ? formatCurrency(item.discount_price)
-                          : ""}
-                      </p>
+                      <div className="text-gray-500 h-6 text-sm">
+                        <span data-translate="true">Giảm giá: </span>
+                        <span>
+                          {item.discount_price > 0
+                            ? formatCurrency(item.discount_price)
+                            : ""}
+                        </span>
+                      </div>
                       <p>
                         <span className="text-gray-500" data-translate="true">
                           Tổng:

@@ -41,7 +41,7 @@ export default function HotelItem({ hotel }: any) {
             <h3 data-translate>{hotel.name}</h3>
           </Link>
         </div>
-        <div className="mt-2 px-4">
+        <div className="my-2 px-4">
           <div className="flex">
             <>
               {Array.from({ length: 5 }, (_, index) =>

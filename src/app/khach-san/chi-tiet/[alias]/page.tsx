@@ -125,7 +125,7 @@ export default async function HotelDetail({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 rounded-lg">
               <div className="overflow-hidden rounded-lg">
                 <Image
-                  className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
+                  className="cursor-pointer w-full h-[280px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                   src={`${detail.image_url}/${detail.image_location}`}
                   alt="Image"
                   width={700}
@@ -139,17 +139,17 @@ export default async function HotelDetail({
                     (item: any, index: number) =>
                       index <= 4 && (
                         <div
-                          className="overflow-hidden rounded-lg h-[220px]"
+                          className="overflow-hidden rounded-lg h-32 md:h-[220px]"
                           key={index}
                         >
                           <Image
-                            className="cursor-pointer w-full h-32 md:h-[220px] rounded-lg hover:scale-110 ease-in duration-300"
+                            className="cursor-pointer w-full h-32 md:h-[220px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                             src={`${item.image_url}${item.image}`}
                             alt="Image"
                             width={320}
                             height={220}
                             sizes="100vw"
-                            style={{ height: "100%", width: "100%" }}
+                            // style={{ height: "100%", width: "100%" }}
                           />
                         </div>
                       )
