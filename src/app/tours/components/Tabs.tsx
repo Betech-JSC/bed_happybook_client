@@ -17,6 +17,7 @@ export default function Tabs({ detail }: any) {
   const tabContainerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [openDropdown, setOpenDropdown] = useState<number | null>(0);
+  const [isExporting, setIsExporting] = useState(false);
   const toggleDropdown = (id: number) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
@@ -28,6 +29,7 @@ export default function Tabs({ detail }: any) {
   }, [activeTab]);
 
   const exportScheduleToPDF = async () => {
+    setIsExporting(true);
     const doc = new jsPDF();
 
     // Font hỗ trợ tiếng Việt / Trung
@@ -183,6 +185,7 @@ export default function Tabs({ detail }: any) {
       doc.save('lich-trinh-tour.pdf');
     } finally {
       document.body.removeChild(headerDiv);
+      setIsExporting(false);
     }
   };
 
@@ -252,13 +255,23 @@ export default function Tabs({ detail }: any) {
             </h2>
             <button
               onClick={exportScheduleToPDF}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              disabled={isExporting}
+              className={`flex items-center gap-2 px-4 py-2 bg-[#F27145] text-white rounded-lg border-2 border-transparent hover:border-[#F27145] hover:bg-[#F27145] transition-all
+                ${isExporting ? "opacity-60 cursor-not-allowed" : ""}
+              `}
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 13.3333L10 3.33333M10 13.3333L6.66667 10M10 13.3333L13.3333 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M3.33333 16.6667H16.6667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              Xuất PDF
+              {isExporting ? (
+                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 13.3333L10 3.33333M10 13.3333L6.66667 10M10 13.3333L13.3333 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3.33333 16.6667H16.6667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+              {isExporting ? "Đang xuất..." : "Xuất PDF"}
             </button>
           </div>
           {detail.schedule.length > 0 ? (
