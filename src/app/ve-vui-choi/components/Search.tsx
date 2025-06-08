@@ -67,11 +67,20 @@ export default function Search({
       const search = buildSearch(query);
       const res = await ProductTicket.search(`${search}`);
       const result = res?.payload?.data;
-      setData((prevData: any) =>
-        result?.items.length > 0 && !query.isFilters
-          ? [...prevData, ...result.items]
-          : result.items
-      );
+
+      setData((prevData: any[]) => {
+        const combined =
+          result?.items.length > 0 && !query.isFilters
+            ? [...prevData, ...result.items]
+            : result.items;
+
+        const uniqueById = Array.from(
+          new Map(combined.map((item: any) => [item.id, item])).values()
+        );
+
+        return uniqueById;
+      });
+
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
@@ -114,13 +123,6 @@ export default function Search({
     const [sort, order] = value.split("|");
     setQuery({ ...query, sort: sort, order: order, isFilters: true });
   };
-
-  // useEffect(() => {
-  //   setQuery((prev) => ({
-  //     ...prev,
-  //     departureDate: departDate,
-  //   }));
-  // }, [departDate]);
 
   useEffect(() => {
     loadData();
@@ -305,10 +307,6 @@ export default function Search({
           {data.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
               {data.map((item: any, index: number) => {
-                const minPrice = Number(
-                  item?.ticket_prices?.[0]?.special_days_price ?? 0
-                );
-
                 return (
                   <div key={index} className="rounded-xl">
                     <div
@@ -341,7 +339,7 @@ export default function Search({
                       <div className="mt-1 text-end">
                         <span>Giá từ </span>
                         <span className="text-xl font-semibold text-right text-primary">
-                          {formatCurrency(minPrice)}
+                          {formatCurrency(item.minPrice)}
                         </span>
                       </div>
                     </div>

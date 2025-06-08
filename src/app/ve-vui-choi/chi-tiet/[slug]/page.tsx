@@ -17,7 +17,9 @@ import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import Schedule from "../../components/Schedule";
 import "@/styles/ckeditor-content.scss";
-import { format, parse } from "date-fns";
+import { format, parse, parseISO } from "date-fns";
+import { isEmpty } from "lodash";
+import SmoothScrollLink from "@/components/base/SmoothScrollLink";
 
 export default async function EntertainmentTicketDetail({
   params,
@@ -31,8 +33,9 @@ export default async function EntertainmentTicketDetail({
     searchParams.departDate ?? ""
   )) as any;
   const detail = res?.payload?.data;
+
   if (!detail) notFound();
-  const minPrice = Number(detail?.ticket_prices?.[0]?.special_days_price ?? 0);
+
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
     tuesday: "Ba",
@@ -61,6 +64,10 @@ export default async function EntertainmentTicketDetail({
     new Date()
   );
   const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+  const departDate = searchParams.departDate
+    ? format(parseISO(searchParams.departDate), "dd/MM/yyyy")
+    : null;
+
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -103,6 +110,91 @@ export default async function EntertainmentTicketDetail({
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
               <ImageGallery gallery={detail?.gallery} />
+              <div id="cac-goi-dich-vu" className="mt-4">
+                <div className={`bg-white rounded-2xl p-6`}>
+                  <h2
+                    className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+                    data-translate="true"
+                  >
+                    Các gói dịch vụ
+                  </h2>
+                  <div className="mt-6">
+                    {detail?.ticket_options?.length > 0 &&
+                      detail?.ticket_options.map((option: any) => (
+                        <div
+                          key={option.id}
+                          className="mb-6 last:mb-0 py-2 px-4 border border-gray-300 rounded-2xl"
+                        >
+                          <div className="flex gap-2 flex-col md:flex-row items-start justify-between md:items-center py-4 border-b">
+                            <p
+                              className="text-blue-700 text-18 font-semibold"
+                              data-translate="true"
+                            >
+                              {option?.name}
+                            </p>
+                            {departDate && (
+                              <div className="w-32 flex-shrink-0">
+                                <span>Ngày </span>
+                                <span>{departDate}</span>
+                              </div>
+                            )}
+                          </div>
+                          {option.prices.map((ticket: any) => (
+                            <div
+                              key={ticket.id}
+                              className="flex space-x-2 justify-between items-start py-4 border-b last:border-none"
+                            >
+                              <div>
+                                <div
+                                  className="font-semibold text-base"
+                                  data-translate="true"
+                                >
+                                  {renderTextContent(ticket?.type?.name)}
+                                </div>
+                                <div
+                                  className="text-sm text-gray-500 mt-1"
+                                  data-translate="true"
+                                >
+                                  {!isEmpty(ticket?.type?.description)
+                                    ? renderTextContent(
+                                        ticket?.type?.description
+                                      )
+                                    : ""}
+                                </div>
+                              </div>
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <span className="text-base mr-4">
+                                    {formatCurrency(ticket.day_price)}
+                                  </span>
+                                  <p
+                                    className="text-sm text-gray-500 mt-1"
+                                    data-translate="true"
+                                  >
+                                    Giá / Khách
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          <div className="text-end mt-6 mb-2">
+                            <Link
+                              href={`/ve-vui-choi/chi-tiet/${
+                                detail?.slug
+                              }/checkout?option=${option.id}&departDate=${
+                                searchParams.departDate ?? ""
+                              }`}
+                              className="bg-blue-600 w-[110px] text__default_hover p-[10px] text-white rounded-lg inline-flex items-center justify-center"
+                              data-translate="true"
+                            >
+                              Chọn
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
               <div className="mt-4">
                 <div className={`bg-white rounded-2xl p-6`}>
                   <h2
@@ -157,28 +249,28 @@ export default async function EntertainmentTicketDetail({
                     </span>
                   </div>
                 </div>
-                <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
+                {/* <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
                   <span className="mr-3" data-translate="true">
                     Giá từ
                   </span>
                   <span className="text-2xl text-primary font-bold mt-3">
                     {formatCurrency(minPrice)}
                   </span>
-                </div>
+                </div> */}
                 <div className="mt-6">
-                  <Link
-                    href={`/ve-vui-choi/chi-tiet/${
-                      detail?.slug
-                    }/checkout?departDate=${searchParams.departDate ?? ""}`}
-                    className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
-                  >
-                    <span
-                      className="mx-auto text-base font-medium"
-                      data-translate="true"
+                  <SmoothScrollLink targetId="cac-goi-dich-vu" offset={-100}>
+                    <button
+                      type="button"
+                      className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                     >
-                      Đặt ngay
-                    </span>
-                  </Link>
+                      <span
+                        className="mx-auto text-base font-medium"
+                        data-translate="true"
+                      >
+                        Chọn các gói dịch vụ
+                      </span>
+                    </button>
+                  </SmoothScrollLink>
                 </div>
               </div>
               <div className="mt-3">
