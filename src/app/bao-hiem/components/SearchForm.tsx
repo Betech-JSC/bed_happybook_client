@@ -283,7 +283,7 @@ export default function SearchFormInsurance() {
         </div>
       </div>
 
-      <div className="w-full xl:w-[50%] flex flex-wrap md:flex-nowrap gap:2 md:gap-3">
+      <div className="w-full xl:w-[50%] flex flex-wrap md:flex-nowrap gap-2 md:gap-3">
         <div className="w-full md:w-1/2 lg:w-[55%]">
           <label
             className="block text-gray-700 mb-2 lg:mb-1"
