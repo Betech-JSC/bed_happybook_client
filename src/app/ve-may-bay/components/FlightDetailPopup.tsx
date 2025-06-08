@@ -486,7 +486,7 @@ export default function FlightDetailPopup({
                     </div>
                   ) : (
                     <div>
-                      {flightDetail?.fareRules ? (
+                      {!isEmpty(flightDetail?.fareRules) ? (
                         <div className="flex flex-col gap-2">
                           {!isEmpty(
                             flightDetail?.fareRules?.carry_on_baggage
@@ -517,36 +517,27 @@ export default function FlightDetailPopup({
                               <p>{flightDetail?.fareRules?.carry_on_baggage}</p>
                             </div>
                           )}
-                          <div className="flex gap-2">
-                            <Image
-                              src={`/icon/flight/${
-                                !isEmpty(
-                                  flightDetail?.fareRules?.checked_baggage
-                                )
-                                  ? "luggage"
-                                  : "no-luggage"
-                              }.svg`}
-                              width={24}
-                              height={24}
-                              alt="Icon"
-                              className="w-6 h-6"
-                            />
-                            <p
-                              className={`${
-                                isEmpty(
-                                  flightDetail?.fareRules?.checked_baggage
-                                )
-                                  ? "text-[#ef5350]"
-                                  : ""
-                              }`}
-                            >
-                              {!isEmpty(
-                                flightDetail?.fareRules?.checked_baggage
-                              )
-                                ? flightDetail?.fareRules?.checked_baggage
-                                : "Không bao gồm"}
-                            </p>
-                          </div>
+
+                          {!isEmpty(
+                            flightDetail?.fareRules?.checked_baggage
+                          ) && (
+                            <div className="flex gap-2">
+                              <Image
+                                src={`/icon/flight/${
+                                  !isEmpty(
+                                    flightDetail?.fareRules?.checked_baggage
+                                  )
+                                    ? "luggage"
+                                    : "no-luggage"
+                                }.svg`}
+                                width={24}
+                                height={24}
+                                alt="Icon"
+                                className="w-6 h-6"
+                              />
+                              <p>{flightDetail?.fareRules?.checked_baggage}</p>
+                            </div>
+                          )}
 
                           {!isEmpty(flightDetail?.fareRules?.can_refund) && (
                             <div className="flex gap-2">

@@ -158,12 +158,12 @@ export default function HotelDetailTabs({ data }: any) {
                   <div>
                     <div className="mt-4 text-right">
                       <div className="text-gray-500 h-6 text-sm">
-                        <span data-translate="true">Giảm giá: </span>
-                        <span>
-                          {item.discount_price > 0
-                            ? formatCurrency(item.discount_price)
-                            : ""}
-                        </span>
+                        {item.discount_price > 0 && (
+                          <div>
+                            <span data-translate="true">Giảm giá: </span>
+                            <span>{formatCurrency(item.discount_price)}</span>
+                          </div>
+                        )}
                       </div>
                       <p>
                         <span className="text-gray-500" data-translate="true">
@@ -255,7 +255,7 @@ export default function HotelDetailTabs({ data }: any) {
           </div>
           <div className="mt-4">
             <p className="text-18 font-semibold" data-translate="true">
-              Tiện nghi dịch vụ
+              Tiện nghi khách sạn
             </p>
             <ul
               className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2 list-disc pl-4 leading-6"
