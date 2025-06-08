@@ -172,22 +172,23 @@ const renderTextContent = (content: any) => {
 
 const renderTextContentArray = (content: any) => {
   return !_.isEmpty(content)
-    ? `- ` + content.map((item: any) => renderTextContent(item)).join("<br /> - ")
+    ? `- ` +
+        content.map((item: any) => renderTextContent(item)).join("<br /> - ")
     : "Nội dung đang cập nhật...!";
 };
 
 function decodeHtml(html: string): string {
-  if (typeof document === 'undefined') {
+  if (typeof document === "undefined") {
     // Server-side fallback - basic HTML entity decoding
     return html
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
-      .replace(/&nbsp;/g, ' ');
+      .replace(/&nbsp;/g, " ");
   }
-  
+
   // Client-side implementation
   const textarea = document.createElement("textarea");
   textarea.innerHTML = html;
@@ -222,4 +223,5 @@ export {
   renderTextContent,
   renderTextContentArray,
   toSnakeCase,
+  smoothScrollTo,
 };

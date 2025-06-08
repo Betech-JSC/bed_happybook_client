@@ -32,7 +32,13 @@ interface Ticket {
   quantity: number;
 }
 
-export default function CheckOutForm({ product }: { product: any }) {
+export default function CheckOutForm({
+  product,
+  ticketOptionId,
+}: {
+  product: any;
+  ticketOptionId: number;
+}) {
   const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -77,13 +83,13 @@ export default function CheckOutForm({ product }: { product: any }) {
     if (product?.ticket_prices) {
       const initialTickets: Ticket[] = [...product.ticket_prices]
         .sort((a, b) => {
-          return (b?.special_days_price || 0) - (a?.special_days_price || 0);
+          return (b?.day_price || 0) - (a?.day_price || 0);
         })
         .map((item: any, index: number) => ({
           id: item.id,
           title: item?.type?.name || "",
           description: item?.type?.description || "",
-          price: item?.special_days_price || 0,
+          price: item?.day_price || 0,
           name: `number_${item.id}`,
           minQty: index ? 0 : 1,
           quantity: index ? 0 : 1,
@@ -125,6 +131,7 @@ export default function CheckOutForm({ product }: { product: any }) {
         product_id: product?.id,
         booking: {
           departure_date: format(data.depart_date, "yyyy-MM-dd"),
+          ticket_option_id: ticketOptionId,
           tickets: ticketsBooking,
         },
         contact: {
@@ -286,7 +293,7 @@ export default function CheckOutForm({ product }: { product: any }) {
                           {renderTextContent(ticket.title)}
                         </div>
                         <div
-                          className="text-sm text-gray-500"
+                          className="text-sm text-gray-500 mt-1"
                           data-translate="true"
                         >
                           {!isEmpty(ticket.description)
@@ -300,7 +307,7 @@ export default function CheckOutForm({ product }: { product: any }) {
                             {formatCurrency(ticket.price)}
                           </span>
                           <p
-                            className="text-sm text-gray-500"
+                            className="text-sm text-gray-500 mt-1"
                             data-translate="true"
                           >
                             Giá / Khách

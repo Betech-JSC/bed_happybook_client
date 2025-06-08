@@ -17,11 +17,27 @@ export default async function TourCheckout({
     searchParams.departDate ?? ""
   )) as any;
   const detail = res?.payload?.data;
+
   if (!detail) notFound();
+
+  const optionSelectedId = Number(searchParams.option) || 0;
+
+  const optionSelected = detail.ticket_options.find(
+    (item: any) => item.id === optionSelectedId
+  );
+
+  if (!optionSelected || !optionSelected?.prices?.length) {
+    notFound();
+  }
+
+  const newDetail = {
+    ...detail,
+    ticket_prices: optionSelected.prices,
+  };
   return (
     <main className="bg-gray-100 mt-10">
       <div className="base__content ">
-        <CheckOutForm product={detail} />
+        <CheckOutForm product={newDetail} ticketOptionId={optionSelected.id} />
       </div>
     </main>
   );
