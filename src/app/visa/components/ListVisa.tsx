@@ -1,16 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import TourStyle from "@/styles/tour.module.scss";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { VisaApi } from "@/api/Visa";
-import { buildSearch, getCurrentLanguage } from "@/utils/Helper";
+import { buildSearch } from "@/utils/Helper";
 import { formatTranslationMap, translatePage } from "@/utils/translateDom";
 import { translateText } from "@/utils/translateApi";
 import { visaStaticText } from "@/constants/staticText";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import SearchFilters from "./SearchFilters";
+import { debounce } from "lodash";
+import { formatCurrency } from "@/lib/formatters";
 
 export default function ListVisa({
   alias,
@@ -25,6 +27,7 @@ export default function ListVisa({
     option: string[];
   }[];
 }) {
+  const { language } = useLanguage();
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
@@ -44,7 +47,7 @@ export default function ListVisa({
         ? [searchParams["loai_visa[]"]]
         : [],
   });
-  const { language } = useLanguage();
+
   useEffect(() => {
     translateText(visaStaticText, language).then((data) => {
       const translationMap = formatTranslationMap(visaStaticText, data);
@@ -53,26 +56,35 @@ export default function ListVisa({
   }, [language]);
 
   const { t } = useTranslation(translatedStaticText);
-  const loadData = useCallback(async () => {
+
+  const performSearch = useCallback(async () => {
     try {
-      setTranslatedText(false);
-      setLoadingLoadMore(true);
-      setIsDisabled(true);
       query.locale = language;
       const search = buildSearch(query);
+
       const res = await VisaApi.search(`/product/visa/search${search}`);
       const result = res?.payload?.data;
-      setData((prevData: any) =>
-        result.items.length > 0 && !query.isFilters
-          ? [...prevData, ...result.items]
-          : result.items
-      );
+
+      setData((prevData: any[]) => {
+        const map = new Map();
+
+        [...prevData, ...result.items].forEach((item) => {
+          map.set(item.id, item);
+        });
+
+        const unique = Array.from(map.values());
+
+        return result.items.length > 0 && !query.isFilters
+          ? unique
+          : result.items;
+      });
+
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
-      translatePage("#wrapper-search-visa", 10).then(() =>
-        setTranslatedText(true)
-      );
+
+      await translatePage("#wrapper-search-visa", 10);
+      setTranslatedText(true);
     } catch (error) {
       console.log("Error search: " + error);
     } finally {
@@ -81,6 +93,28 @@ export default function ListVisa({
       setLoadingLoadMore(false);
     }
   }, [query, language]);
+
+  const debouncedSearch = useMemo(
+    () => debounce(performSearch, 500),
+    [performSearch]
+  );
+
+  const loadData = useCallback(async () => {
+    setTranslatedText(false);
+    setLoadingLoadMore(true);
+    setIsDisabled(true);
+    debouncedSearch();
+  }, [debouncedSearch]);
+
+  const resetFilters = () => {
+    setQuery((prev: any) => ({
+      ...prev,
+      page: 1,
+      text: "",
+      "loai_visa[]": [],
+      "diem_den[]": [],
+    }));
+  };
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
@@ -112,7 +146,8 @@ export default function ListVisa({
 
   useEffect(() => {
     loadData();
-  }, [query, loadData]);
+    return () => debouncedSearch.cancel();
+  }, [query, debouncedSearch, loadData]);
 
   if (firstLoad) {
     return (
@@ -127,68 +162,23 @@ export default function ListVisa({
   return (
     <div
       id="wrapper-search-visa"
-      className="flex mt-6 md:space-x-4 items-start pb-8"
+      className="block lg:flex mt-6 lg:space-x-4 items-start pb-8"
     >
-      <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
-        {optionsFilter.length > 0 &&
-          optionsFilter.map((item, index) => (
-            <div
-              key={index}
-              className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none"
-            >
-              <p className="font-semibold" data-translate="true">
-                {item.label}
-              </p>
-              {item.option.map((value: string, index: number) => {
-                if (value) {
-                  return (
-                    <div
-                      key={index}
-                      className="mt-3 flex space-x-2 items-center"
-                    >
-                      <input
-                        type="checkbox"
-                        id={item.name + index}
-                        value={value}
-                        disabled={isDisabled}
-                        defaultChecked={
-                          searchParams && searchParams["loai_visa[]"]
-                            ? searchParams["loai_visa[]"] === value
-                            : undefined
-                        }
-                        className={TourStyle.custom_checkbox}
-                        onChange={(e) =>
-                          handleFilterChange(`${item.name}[]`, e.target.value)
-                        }
-                      />
-                      <label htmlFor={item.name + index} data-translate="true">
-                        {value}
-                      </label>
-                    </div>
-                  );
-                }
-              })}
-              {/* {item.option.length > 30 && (
-                <button className="mt-3 flex items-center rounded-lg space-x-3 ">
-                  <span className="text-[#175CD3] font-medium" data-translate>
-                    Xem thêm
-                  </span>
-                  <Image
-                    className="hover:scale-110 ease-in duration-300 rotate-90"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </button>
-              )} */}
-            </div>
-          ))}
-      </div>
-      <div className="md:w-8/12 lg:w-9/12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <SearchFilters
+        filters={query}
+        resetFilters={resetFilters}
+        searchParams={searchParams}
+        isDisabled={isDisabled}
+        options={optionsFilter}
+        handleFilterChange={handleFilterChange}
+        handleSortData={handleSortData}
+        textTranSlate={t}
+      />
+
+      <div className="w-full lg:w-9/12">
+        <div className="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center">
           <h1 className="text-32 font-bold">{t("dich_vu_visa")}</h1>
-          <div className="flex my-4 md:my-0 space-x-3 items-center">
+          <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
               <select
@@ -204,142 +194,155 @@ export default function ListVisa({
             </div>
           </div>
         </div>
-        <div className="mb-4">
-          {data.length > 0 ? (
-            data.map((item: any, index: number) => (
-              <div
-                key={index}
-                className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 mt-4 transition-opacity duration-700 ${
-                  translatedText ? "opacity-100" : "opacity-0"
-                }`}
-              >
-                <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                  <Link href={`/visa/chi-tiet/${item.slug}`}>
-                    <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
-                      src={`${item.image_url}/${item.image_location}`}
-                      alt="Image"
-                      width={360}
-                      height={270}
-                      sizes="100vw"
-                      style={{ height: "auto", width: "100%" }}
-                    />
-                  </Link>
-                  {item.is_outstanding == 1 && (
-                    <div className="absolute top-3 left-3 text-white px-3 py-1 bg-[#F27145] rounded-md">
-                      <span>Hot Visa</span>
-                    </div>
-                  )}
-                </div>
-                <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
-                  <div>
-                    <Link
-                      href={`/visa/chi-tiet/${item.slug}`}
-                      className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
-                    >
-                      <h2>{item.name}</h2>
+        <div>
+          <div className="mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
+            {data.length > 0 ? (
+              data.map((item: any, index: number) => (
+                <div
+                  key={index}
+                  className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 transition-opacity duration-700 ${
+                    translatedText ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
+                    <Link href={`/visa/chi-tiet/${item.slug}`}>
+                      <Image
+                        className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
+                        src={`${item.image_url}/${item.image_location}`}
+                        alt="Image"
+                        width={360}
+                        height={270}
+                        sizes="100vw"
+                        style={{ height: "auto", width: "100%" }}
+                      />
                     </Link>
-                    <div className="mt-3 font-semibold">
-                      <span className="mr-1">{`${t("loai_visa")}:`}</span>
-                      <span>{item.loai_visa ?? ""}</span>
-                    </div>
-                    <div className="mt-3 font-semibold">
-                      <span className="mr-1">{`${t("diem_den")}:`}</span>
-                      <span>{item.diem_den ?? ""}</span>
-                    </div>
-                    <div className="mt-3 font-semibold">
-                      <span className="mr-1">{`${t(
-                        "thoi_gian_lam_visa"
-                      )}:`}</span>
-                      <span>{item.thoi_gian_lam_visa ?? ""}</span>
-                    </div>
-                    <div className="mt-3 font-semibold">
-                      <span className="mr-1">{`${t(
-                        "thoi_gian_luu_tru"
-                      )}:`}</span>
-                      <span>{item.thoi_gian_luu_tru ?? ""}</span>
-                    </div>
-                    <div className="mt-3 font-semibold">
-                      <span className="mr-1">{`${t(
-                        "so_lan_nhap_canh"
-                      )}:`}</span>
-                      <span>{item.so_lan_nhap_canh ?? ""}</span>
-                    </div>
-                    {item.phi_nop_tai_dsq && (
-                      <div className="mt-3 font-semibold">
-                        <span className="mr-1">{`${t(
-                          "phi_nop_tai_dsq"
-                        )}:`}</span>
-                        <span>{item.phi_nop_tai_dsq ?? ""}</span>
+                    {item.is_outstanding == 1 && (
+                      <div className="absolute top-3 left-3 text-white px-3 py-1 bg-[#F27145] rounded-md">
+                        <span>Hot Visa</span>
                       </div>
                     )}
                   </div>
-                  {/* <div className="text-end mt-3">
-                          <p className="line-through text-gray-500">
-                            3.000.000 vnđ
+                  <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
+                    <div>
+                      <Link
+                        href={`/visa/chi-tiet/${item.slug}`}
+                        className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
+                      >
+                        <h2>{item.name}</h2>
+                      </Link>
+                      <div className="mt-3 font-semibold">
+                        <span className="mr-1">{`${t("loai_visa")}:`}</span>
+                        <span>{item.loai_visa ?? ""}</span>
+                      </div>
+                      <div className="mt-3 font-semibold">
+                        <span className="mr-1">{`${t("diem_den")}:`}</span>
+                        <span>{item.diem_den ?? ""}</span>
+                      </div>
+                      <div className="mt-3 font-semibold">
+                        <span className="mr-1">{`${t(
+                          "thoi_gian_lam_visa"
+                        )}:`}</span>
+                        <span>{item.thoi_gian_lam_visa ?? ""}</span>
+                      </div>
+                      <div className="mt-3 font-semibold">
+                        <span className="mr-1">{`${t(
+                          "thoi_gian_luu_tru"
+                        )}:`}</span>
+                        <span>{item.thoi_gian_luu_tru ?? ""}</span>
+                      </div>
+                      <div className="mt-3 font-semibold">
+                        <span className="mr-1">{`${t(
+                          "so_lan_nhap_canh"
+                        )}:`}</span>
+                        <span>{item.so_lan_nhap_canh ?? ""}</span>
+                      </div>
+                      {item.phi_nop_tai_dsq && (
+                        <div className="mt-3 font-semibold">
+                          <span className="mr-1">{`${t(
+                            "phi_nop_tai_dsq"
+                          )}:`}</span>
+                          <span>{item.phi_nop_tai_dsq ?? ""}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-end mt-3">
+                      {item?.price > 0 ? (
+                        <div className="flex gap-2 justify-end items-end font-semibold">
+                          <p data-translate="true">Giá dịch vụ hỗ trợ từ</p>
+                          <p className="text-xl text-primary">
+                            {formatCurrency(item.price)}
                           </p>
-                          <p className="mt-2 text-xl text-primary font-semibold">
-                            2.500.000 vnđ
-                          </p>
-                        </div> */}
+                        </div>
+                      ) : (
+                        <p
+                          data-translate="true"
+                          className="text-xl text-primary font-semibold"
+                        >
+                          Liên hệ
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div
+                className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
+              >
+                <span className="!border-blue-500 !border-t-blue-200"></span>
+                {loadingLoadMore ? (
+                  <>
+                    <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
+                    <span className="text-18">Loading...</span>
+                  </>
+                ) : (
+                  !data?.length && (
+                    <span className="text-18">
+                      {t("khong_tim_thay_du_lieu_phu_hop")}
+                    </span>
+                  )
+                )}
               </div>
-            ))
-          ) : (
-            <div
-              className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
-            >
-              <span className="!border-blue-500 !border-t-blue-200"></span>
-              {loadingLoadMore ? (
-                <>
-                  <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-                  <span className="text-18">Loading...</span>
-                </>
-              ) : (
-                <span className="text-18">
-                  {t("khong_tim_thay_du_lieu_phu_hop")}
-                </span>
-              )}
+            )}
+          </div>
+          {data.length > 0 && !isLastPage && (
+            <div className="mt-4">
+              <button
+                onClick={() => {
+                  setQuery({
+                    ...query,
+                    page: query.page + 1,
+                  });
+                }}
+                className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
+                justify-center items-center hover:border-primary"
+              >
+                {loadingLoadMore ? (
+                  <span className="loader_spiner"></span>
+                ) : (
+                  <>
+                    <span>{t("xem_them")}</span>
+                    <svg
+                      className="group-hover:stroke-primary stroke-gray-700 duration-300"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 7.5L10 12.5L15 7.5"
+                        strokeWidth="1.66667"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </>
+                )}
+              </button>
             </div>
           )}
         </div>
-        {data.length > 0 && !isLastPage && (
-          <div className="mt-4">
-            <button
-              onClick={() => {
-                setQuery({
-                  ...query,
-                  page: query.page + 1,
-                });
-              }}
-              className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
-                justify-center items-center hover:border-primary"
-            >
-              {loadingLoadMore ? (
-                <span className="loader_spiner"></span>
-              ) : (
-                <>
-                  <span>{t("xem_them")}</span>
-                  <svg
-                    className="group-hover:stroke-primary stroke-gray-700 duration-300"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      strokeWidth="1.66667"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </>
-              )}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

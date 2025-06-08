@@ -62,7 +62,7 @@ export default function FlightDetailPopup({
         flights.length > 0 &&
         Array.isArray(tabs) &&
         tabs.length > 0 && (
-          <div className="relative bg-white max-h-[90vh] overflow-y-auto custom-scrollbar  py-6 px-4 md:px-8 pb-8 md:max-w-[680px] md:min-w-[680px] rounded-lg">
+          <div className="relative bg-white max-h-[90vh] overflow-y-auto custom-scrollbar py-6 px-4 md:px-8 pb-8 w-full md:max-w-[680px] md:min-w-[680px] rounded-lg">
             {tabs.length > 1 && (
               <div className="flex justify-between items-end sticky top-[-25px] bg-white z-[999]">
                 <p className="text-22 font-bold" data-translate="true">
@@ -433,37 +433,43 @@ export default function FlightDetailPopup({
                         </div>
                       )}
                       {flightDetail?.fareOptSelected?.noRefund && (
-                        <div className="flex gap-2">
-                          <Image
-                            src="/icon/flight/can-refund.svg"
-                            width={24}
-                            height={24}
-                            alt="Icon"
-                            className="w-6 h-6"
-                          />
-                          <span>Hoàn vé: Được phép</span>
-                          <span className="text-[#166987] font-semibold">
+                        <div className="flex flex-col md:flex-row gap-1">
+                          <div className="flex gap-2">
+                            <Image
+                              src="/icon/flight/can-refund.svg"
+                              width={24}
+                              height={24}
+                              alt="Icon"
+                              className="w-6 h-6"
+                            />
+                            <span data-translate="true">Hoàn vé: </span>
+                            <p data-translate="true">Được phép</p>
+                          </div>
+                          <p className="text-[#166987] font-semibold text-end">
                             (Phí vui lòng liên hệ booker).
-                          </span>
+                          </p>
                         </div>
                       )}
                       {flightDetail?.fareOptSelected?.changePenalties?.length >
                         0 && (
-                        <div className="flex gap-2">
-                          <Image
-                            src="/icon/flight/can-change.svg"
-                            width={24}
-                            height={24}
-                            alt="Icon"
-                            className="w-6 h-6"
-                          />
-                          <span>Đổi vé: Được phép</span>
-                          <span className="text-[#166987] font-semibold">
+                        <div className="flex flex-col md:flex-row gap-1">
+                          <div className="flex gap-2">
+                            <Image
+                              src="/icon/flight/can-change.svg"
+                              width={24}
+                              height={24}
+                              alt="Icon"
+                              className="w-6 h-6"
+                            />
+                            <span data-translate="true">Đổi vé:</span>
+                            <p data-translate="true">Được phép</p>
+                          </div>
+                          <p className="text-[#166987] font-semibold text-end">
                             (Phí vui lòng liên hệ booker).
-                          </span>
+                          </p>
                         </div>
                       )}
-                      {flightDetail?.fareOptSelected?.noshowPenalties &&
+                      {/* {flightDetail?.fareOptSelected?.noshowPenalties &&
                         !flightDetail?.fareOptSelected?.noshowPenalties
                           .length && (
                           <div className="flex gap-2">
@@ -476,7 +482,7 @@ export default function FlightDetailPopup({
                             />
                             <p>Không được No Show</p>
                           </div>
-                        )}
+                        )} */}
                     </div>
                   ) : (
                     <div>
