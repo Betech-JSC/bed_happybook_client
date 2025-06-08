@@ -502,14 +502,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                   );
                 })}
                 <div>
-                  <button
+                  {/* <button
                     className=" text-blue-700 border-b border-blue-700 font-medium mb-2"
                     onClick={() => toggleShowRuleTicket(flight)}
                     disabled={isLoadingRules}
                     data-translate="true"
                   >
                     Điều kiện vé
-                  </button>
+                  </button> */}
 
                   <div>
                     {showRuleTicket === flight.flightCode && isLoadingRules && (
