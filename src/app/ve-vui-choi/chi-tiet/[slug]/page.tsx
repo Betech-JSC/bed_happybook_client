@@ -20,6 +20,8 @@ import "@/styles/ckeditor-content.scss";
 import { format, parse, parseISO } from "date-fns";
 import { isEmpty } from "lodash";
 import SmoothScrollLink from "@/components/base/SmoothScrollLink";
+import TicketOptionContent from "../../components/TicketOptionContent";
+import "@/styles/ckeditor-content.scss";
 
 export default async function EntertainmentTicketDetail({
   params,
@@ -67,7 +69,6 @@ export default async function EntertainmentTicketDetail({
   const departDate = searchParams.departDate
     ? format(parseISO(searchParams.departDate), "dd/MM/yyyy")
     : null;
-
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -109,7 +110,7 @@ export default async function EntertainmentTicketDetail({
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery gallery={detail?.gallery} />
+              <ImageGallery detail={detail} />
               <div id="cac-goi-dich-vu" className="mt-4">
                 <div className={`bg-white rounded-2xl p-6`}>
                   <h2
@@ -125,19 +126,24 @@ export default async function EntertainmentTicketDetail({
                           key={option.id}
                           className="mb-6 last:mb-0 py-2 px-4 border border-gray-300 rounded-2xl"
                         >
-                          <div className="flex gap-2 flex-col md:flex-row items-start justify-between md:items-center py-4 border-b">
-                            <p
-                              className="text-blue-700 text-18 font-semibold"
-                              data-translate="true"
-                            >
-                              {option?.name}
-                            </p>
-                            {departDate && (
-                              <div className="w-32 flex-shrink-0">
-                                <span>Ngày </span>
-                                <span>{departDate}</span>
-                              </div>
-                            )}
+                          <div className="border-b py-5">
+                            <div className="flex gap-2 md:gap-3 flex-col md:flex-row justify-between items-start">
+                              <p
+                                className="text-blue-700 text-18 font-semibold"
+                                data-translate="true"
+                              >
+                                {option?.name}
+                              </p>
+                              {departDate && (
+                                <div className="w-32 flex-shrink-0">
+                                  <span>Ngày </span>
+                                  <span>{departDate}</span>
+                                </div>
+                              )}
+                            </div>
+                            <TicketOptionContent
+                              content={option?.description}
+                            />
                           </div>
                           {option.prices.map((ticket: any) => (
                             <div
@@ -203,13 +209,15 @@ export default async function EntertainmentTicketDetail({
                   >
                     Chi tiết địa điểm
                   </h2>
-                  <div
-                    className="mt-4 text-base leading-6"
-                    data-translate="true"
-                    dangerouslySetInnerHTML={{
-                      __html: renderTextContent(detail?.ticket?.description),
-                    }}
-                  ></div>
+                  <div className="ckeditor_container">
+                    <div
+                      data-translate="true"
+                      className="cke_editable"
+                      dangerouslySetInnerHTML={{
+                        __html: renderTextContent(detail?.ticket?.description),
+                      }}
+                    ></div>
+                  </div>
                 </div>
               </div>
             </div>
