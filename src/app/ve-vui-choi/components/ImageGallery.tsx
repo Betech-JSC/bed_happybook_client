@@ -6,10 +6,16 @@ import Image from "next/image";
 import "swiper/css";
 import "swiper/css/thumbs";
 
-export default function ImageGallery({ gallery }: any) {
+export default function ImageGallery({ detail }: any) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+  const gallery = detail?.gallery ?? [];
+  const imageUrl = detail?.image_url;
   if (!gallery?.length) {
-    gallery[0] = { image_url: "", image: "default-image.png" };
+    if (detail?.image_location) {
+      gallery[0] = { image_url: imageUrl, image: detail?.image_location };
+    } else {
+      gallery[0] = { image_url: "", image: "default-image.png" };
+    }
   }
   return (
     <div className="image-gallery">
