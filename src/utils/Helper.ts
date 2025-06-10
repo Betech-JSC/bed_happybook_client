@@ -208,6 +208,27 @@ const toSnakeCase = (str: string) =>
       .trim()
   );
 
+const displayProductPrice = (
+  price: any,
+  currency: any,
+  fixed: boolean = false,
+  digits: number = 2
+) => {
+  if (!price) return "";
+  const number = Number(price);
+  let displayPrice = "";
+  const symbolLeft = currency?.symbol_left ?? "";
+  const symbolRight = currency?.symbol_right ?? "";
+  if (fixed) {
+    displayPrice = number.toLocaleString("vi", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: digits,
+    });
+  } else {
+    displayPrice = Math.round(number).toLocaleString("vi");
+  }
+  return `${symbolLeft} ${displayPrice} ${symbolRight}`;
+};
 export {
   decodeHtml,
   buildSearch,
@@ -224,4 +245,5 @@ export {
   renderTextContentArray,
   toSnakeCase,
   smoothScrollTo,
+  displayProductPrice,
 };

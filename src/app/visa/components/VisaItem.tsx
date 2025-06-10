@@ -11,6 +11,7 @@ import {
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
+import { displayProductPrice } from "@/utils/Helper";
 
 export default function VisaItem({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -94,7 +95,10 @@ export default function VisaItem({ data }: any) {
                               <>
                                 <span data-translate="true">chỉ từ </span>
                                 <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-                                  {formatCurrency(visa.price)}
+                                  {displayProductPrice(
+                                    visa.price,
+                                    visa?.currency
+                                  )}
                                 </span>
                               </>
                             ) : (
