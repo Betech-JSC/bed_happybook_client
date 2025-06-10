@@ -22,12 +22,12 @@ import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
-import { formatCurrency, formatMetadata } from "@/lib/formatters";
+import { formatCurrency, formatMetadata, formatMoney } from "@/lib/formatters";
 import FAQ from "@/components/content-page/FAQ";
 import ImageGallery from "../../components/ImageGallery";
 import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
-import { renderTextContent } from "@/utils/Helper";
+import { displayProductPrice, renderTextContent } from "@/utils/Helper";
 import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
@@ -214,22 +214,27 @@ export default async function CategoryPosts({
                 </div>
                 {/* {detail.price > 0 && ( */}
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
-                  <p className="text-gray-500 line-through text-sm md:text-base">
+                  {/* <p className="text-gray-500 line-through text-sm md:text-base">
                     {detail.discount_price > 0
                       ? formatCurrency(detail.price)
                       : ""}
-                  </p>
+                  </p> */}
                   <div className="flex justify-between mt-3 items-end">
                     <p className="font-semibold" data-translate="true">
                       Giá dịch vụ hỗ trợ từ:
                     </p>
-                    <p className="text-base md:text-xl text-primary font-semibold">
+                    <div className="text-base md:text-xl text-primary font-semibold">
                       {detail.price > 0 ? (
-                        formatCurrency(detail.price - detail.discount_price)
+                        <p>
+                          {`${displayProductPrice(
+                            detail.price - detail.discount_price,
+                            detail?.currency
+                          )} `}
+                        </p>
                       ) : (
                         <span data-translate="true">Liên hệ</span>
                       )}
-                    </p>
+                    </div>
                   </div>
                 </div>
                 {/* // )} */}

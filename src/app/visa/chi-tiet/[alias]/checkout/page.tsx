@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { VisaApi } from "@/api/Visa";
 import FormCheckOut from "@/app/visa/components/FormCheckOut";
-import { renderTextContent } from "@/utils/Helper";
+import { displayProductPrice, renderTextContent } from "@/utils/Helper";
 
 export default async function VisaCheckOut({
   params,
@@ -112,11 +112,7 @@ export default async function VisaCheckOut({
               {detail.price > 0 && (
                 <div className=" bg-gray-50 text-end p-2 rounded-lg mt-2">
                   <span className="text-xl lg:text-2xl text-primary font-bold">
-                    {formatCurrency(
-                      detail.discount_price
-                        ? detail.price - detail.discount_price
-                        : detail.price
-                    )}
+                    {displayProductPrice(detail.price, detail?.currency)}
                   </span>
                 </div>
               )}

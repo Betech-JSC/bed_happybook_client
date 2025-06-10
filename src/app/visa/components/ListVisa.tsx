@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { VisaApi } from "@/api/Visa";
-import { buildSearch } from "@/utils/Helper";
+import { buildSearch, displayProductPrice } from "@/utils/Helper";
 import { formatTranslationMap, translatePage } from "@/utils/translateDom";
 import { translateText } from "@/utils/translateApi";
 import { visaStaticText } from "@/constants/staticText";
@@ -270,7 +270,7 @@ export default function ListVisa({
                         <div className="flex gap-2 justify-end items-end font-semibold">
                           <p data-translate="true">Giá dịch vụ hỗ trợ từ</p>
                           <p className="text-xl text-primary">
-                            {formatCurrency(item.price)}
+                            {displayProductPrice(item.price, item?.currency)}
                           </p>
                         </div>
                       ) : (

@@ -56,7 +56,7 @@ const formatMoney = (
       maximumFractionDigits: digits,
     });
   } else {
-    return Math.round(number).toLocaleString();
+    return Math.round(number).toLocaleString("vi");
   }
 };
 
