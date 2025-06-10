@@ -219,10 +219,8 @@ export default async function CategoryPosts({
                       ? formatCurrency(detail.price)
                       : ""}
                   </p> */}
-                  <div className="flex justify-between mt-3 items-end">
-                    <p className="font-semibold" data-translate="true">
-                      Giá dịch vụ hỗ trợ từ:
-                    </p>
+                  <div className="flex gap-2 mt-3 items-end w-full justify-end">
+                    <p data-translate="true">Giá</p>
                     <div className="text-base md:text-xl text-primary font-semibold">
                       {detail.price > 0 ? (
                         <p>
