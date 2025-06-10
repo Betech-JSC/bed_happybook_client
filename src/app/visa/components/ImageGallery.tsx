@@ -67,7 +67,7 @@ export default function ImageGallery({ detail }: any) {
           {gallery.map((item: any, index: number) => (
             <SwiperSlide key={index} className="overflow-hidden rounded-lg">
               <Image
-                className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
+                className="cursor-pointer h-24 md:h-[110px] rounded-lg hover:scale-110 ease-in duration-300"
                 src={`${item.image_url}/${item.image}`}
                 alt="Image"
                 width={135}

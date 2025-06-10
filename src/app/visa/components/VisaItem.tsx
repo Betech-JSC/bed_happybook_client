@@ -86,14 +86,19 @@ export default function VisaItem({ data }: any) {
                         <div className="py-3 px-4 h-fit ">
                           <Link
                             href={`/visa/chi-tiet/${visa.slug}`}
-                            className={`text-base font-semibold line-clamp-2 ${styles.text_hover_default}`}
+                            className={`text-base font-semibold ${styles.text_hover_default}`}
                           >
-                            <h3 data-translate="true"> {visa.name}</h3>
+                            <h3
+                              data-translate="true"
+                              className="h-12 line-clamp-2"
+                            >
+                              {visa.name}
+                            </h3>
                           </Link>
                           <div className="mt-2 text-end">
                             {visa.price > 0 ? (
                               <>
-                                <span data-translate="true">chỉ từ </span>
+                                <span data-translate="true">Giá </span>
                                 <span className="text-[#F27145] font-semibold text-base lg:text-xl">
                                   {displayProductPrice(
                                     visa.price,

@@ -268,7 +268,7 @@ export default function ListVisa({
                     <div className="text-end mt-3">
                       {item?.price > 0 ? (
                         <div className="flex gap-2 justify-end items-end font-semibold">
-                          <p data-translate="true">Giá dịch vụ hỗ trợ từ</p>
+                          <p data-translate="true">Giá </p>
                           <p className="text-xl text-primary">
                             {displayProductPrice(item.price, item?.currency)}
                           </p>
