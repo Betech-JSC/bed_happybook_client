@@ -475,7 +475,7 @@ export default function Tabs({ detail }: any) {
         >
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate
+            data-translate="true"
           >
             Quy định dịch vụ
           </h2>

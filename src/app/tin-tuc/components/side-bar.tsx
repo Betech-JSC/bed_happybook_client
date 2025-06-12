@@ -46,7 +46,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
               >
                 <div className="basis-[35%]">
                   <div className="overflow-hidden rounded-sm">
-                    <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
+                    <Link href={`/${item.alias}`}>
                       <Image
                         className="ease-in duration-300"
                         src={`/posts/popular/${index + 1}.png`}
@@ -59,7 +59,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                   </div>
                 </div>
                 <div className="basis-[65%]">
-                  <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
+                  <Link href={`/${item.alias}`}>
                     <h3
                       data-translate
                       className={`text-base ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
