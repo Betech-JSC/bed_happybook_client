@@ -98,7 +98,7 @@ export default async function SubCategoryPosts({
         <div className="flex flex-col md:flex-row mt-12 md:space-x-16">
           <div className="basis-[65%]">
             <h3 className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold">
-              Visa Đức
+              {category.name}
               <div className="mt-6"></div>
             </h3>
             <div className="mt-8">
@@ -111,7 +111,7 @@ export default async function SubCategoryPosts({
                     >
                       <div className="basis-[35%]">
                         <div className="overflow-hidden rounded-xl">
-                          <Link href="/tin-tuc/chi-tiet/huong-dan-thu-tuc-xin-visa-di-duc-tham-than-chi-tiet-cho-nguoi-moi-bat-dau">
+                          <Link href={`/${item.alias}`}>
                             <Image
                               className="ease-in duration-300 object-cover"
                               src={item.image_url + item.image_location}
@@ -126,7 +126,7 @@ export default async function SubCategoryPosts({
                       <div className="basis-[63%]">
                         <Link
                           data-translate
-                          href={`/tin-tuc/chi-tiet/${item.alias}`}
+                          href={`/${item.alias}`}
                           className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${PostStyle.post__item_title}`}
                         >
                           {item.title}

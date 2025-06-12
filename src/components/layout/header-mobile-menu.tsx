@@ -4,11 +4,17 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GeneralInforPaths } from "@/constants/paths";
+import { totalLanguages } from "@/constants/language";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import Image from "next/image";
+import clsx from "clsx";
 export default function HeaderMobileMenu() {
   const pathname = usePathname();
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
   const [menuHeight, setMenuHeight] = useState("0px");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { language, setLanguage } = useLanguage();
+
   useEffect(() => {
     if (dropdownRef.current) {
       if (isMenuMbOpen) {
@@ -18,18 +24,80 @@ export default function HeaderMobileMenu() {
       }
     }
   }, [isMenuMbOpen]);
+
   useEffect(() => {
     setIsMenuMbOpen(false);
   }, [pathname]);
   return (
     <Fragment>
-      <div
-        className={`${styles.nav_icon} ${isMenuMbOpen ? styles.open : ""} `}
-        onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
-      >
-        <span className="!bg-black"></span>
-        <span className="!bg-black"></span>
-        <span className="!bg-black"></span>
+      <div className="flex items-center gap-4">
+        <div className={clsx(`relative !h-auto`, styles.header__menu_item)}>
+          <button className="flex items-center space-x-1" type="button">
+            <Image
+              src={`/language/${language}.svg`}
+              alt="Icon"
+              className={`h-10 ${language === "vi" ? "rounded-full" : ""}`}
+              width={20}
+              height={20}
+              style={{ width: 20, height: 20 }}
+            ></Image>
+            <div>
+              <svg
+                width="22"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 7.5L10 12.5L15 7.5"
+                  stroke={"#283448"}
+                  strokeWidth="1.66667"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </button>
+          <div
+            className={`!block !max-h-24 ${styles.header__sub_menu_item}`}
+            style={{ display: "block", top: 32, left: -36 }}
+          >
+            {totalLanguages.map(
+              (item: any, index: number) =>
+                item.lang !== language && (
+                  <div key={index}>
+                    <button
+                      className="flex space-x-1 items-center"
+                      onClick={() => setLanguage(item.lang)}
+                    >
+                      <div>
+                        <Image
+                          src={`/language/${item.lang}.svg`}
+                          alt="Icon"
+                          className={`h-10 ${
+                            item.lang === "vi" ? "rounded-full" : ""
+                          }`}
+                          width={20}
+                          height={20}
+                          style={{ width: 20, height: 20 }}
+                        ></Image>
+                      </div>
+                      <span data-translate="true">{item.label}</span>
+                    </button>
+                  </div>
+                )
+            )}
+          </div>
+        </div>
+        <div
+          className={`${styles.nav_icon} ${isMenuMbOpen ? styles.open : ""} `}
+          onClick={() => setIsMenuMbOpen(!isMenuMbOpen)}
+        >
+          <span className="!bg-black"></span>
+          <span className="!bg-black"></span>
+          <span className="!bg-black"></span>
+        </div>
       </div>
       {/* Mobile Menu */}
       <div

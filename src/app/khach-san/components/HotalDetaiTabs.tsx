@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect, Fragment } from "react";
 import "@/styles/ckeditor-content.scss";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default function HotelDetailTabs({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -92,13 +93,8 @@ export default function HotelDetailTabs({ data }: any) {
           <h3 className="mt-4 text-22 font-semibold" data-translate="true">
             {renderTextContent(data.name)}
           </h3>
-          <div className="ckeditor_container mt-3">
-            <div
-              className="cke_editable"
-              dangerouslySetInnerHTML={{
-                __html: translatedContent[0],
-              }}
-            ></div>
+          <div className="mt-3">
+            <DisplayContentEditor content={translatedContent[0]} />
           </div>
           {/* <div className="w-full mt-4 text-center">
               <button className="py-3 px-12  text-[#175CD3] font-medium bg-blue-50 rounded-lg">
@@ -287,13 +283,8 @@ export default function HotelDetailTabs({ data }: any) {
               >
                 Thông tin về nơi lưu trú này
               </h2>
-              <div className="ckeditor_container mt-4">
-                <div
-                  className="cke_editable"
-                  dangerouslySetInnerHTML={{
-                    __html: translatedContent[1],
-                  }}
-                ></div>
+              <div className="mt-4">
+                <DisplayContentEditor content={translatedContent[1]} />
               </div>
             </div>
           </div>
@@ -342,13 +333,8 @@ export default function HotelDetailTabs({ data }: any) {
             >
               Chính sách
             </h2>
-            <div className="ckeditor_container mt-4">
-              <div
-                className="cke_editable"
-                dangerouslySetInnerHTML={{
-                  __html: translatedContent[2],
-                }}
-              ></div>
+            <div className="mt-4">
+              <DisplayContentEditor content={translatedContent[2]} />
             </div>
           </div>
         </div>
@@ -361,13 +347,8 @@ export default function HotelDetailTabs({ data }: any) {
               >
                 Thông tin quan trọng
               </h2>
-              <div className="ckeditor_container mt-4">
-                <div
-                  className="cke_editable"
-                  dangerouslySetInnerHTML={{
-                    __html: translatedContent[3],
-                  }}
-                ></div>
+              <div className=" mt-4">
+                <DisplayContentEditor content={translatedContent[3]} />
               </div>
             </div>
           </div>

@@ -67,7 +67,7 @@ export default function Hotel({ data }: any) {
             </Link>
           </div>
           <p className="text-sm lg:text-base font-medium mt-3" data-translate>
-            Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
+            {/* Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao! */}
           </p>
           <Link
             href="/khach-san"

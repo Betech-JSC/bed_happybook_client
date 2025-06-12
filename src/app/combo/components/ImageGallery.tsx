@@ -23,7 +23,7 @@ export default function ImageGallery({ gallery }: any) {
           gallery.map((item: any) => (
             <SwiperSlide key={item.id}>
               <Image
-                className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
+                className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                 src={`${item.image_url}/${item.image}`}
                 alt="Image"
                 width={845}
@@ -63,7 +63,7 @@ export default function ImageGallery({ gallery }: any) {
             gallery.map((item: any) => (
               <SwiperSlide key={item.id} className="overflow-hidden rounded-lg">
                 <Image
-                  className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
+                  className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                   src={`${item.image_url}/${item.image}`}
                   alt="Image"
                   width={135}

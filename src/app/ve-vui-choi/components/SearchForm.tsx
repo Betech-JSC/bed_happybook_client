@@ -54,10 +54,14 @@ export default function SearchForm() {
       const data = res?.payload?.data ?? [];
 
       const newOptions: Option[] = data.map((item: any) => ({
-        label: item.name,
+        label: `${item.name} ${
+          item?.ticket?.location?.name
+            ? `(${item?.ticket?.location?.name})`
+            : ""
+        }`,
         value: `${item.slug}-${item.id}`,
       }));
-
+      console.log(newOptions);
       setLocations(newOptions);
 
       isFetchedRef.current = true;

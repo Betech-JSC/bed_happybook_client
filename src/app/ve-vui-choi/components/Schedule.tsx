@@ -2,6 +2,7 @@
 import { renderTextContent } from "@/utils/Helper";
 import { useState } from "react";
 import "@/styles/ckeditor-content.scss";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default function Schedule({ schedule }: any) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(0);
@@ -59,18 +60,13 @@ export default function Schedule({ schedule }: any) {
                 </button>
               </div>
             </div>
-            <div className="ckeditor_container">
-              <div
-                className={`ml-5 transition-[max-height] ease-in-out duration-500 overflow-hidden 
+            <div
+              className={`ml-5 transition-[max-height] ease-in-out duration-500 overflow-hidden 
                     border-b border-b-gray-200 leading-6 pb-3
                     ${openDropdown === key ? "max-h-[5000px]" : "max-h-0"}`}
-              >
-                <div
-                  className="cke_editable mt-2"
-                  dangerouslySetInnerHTML={{
-                    __html: renderTextContent(schedule?.content),
-                  }}
-                ></div>
+            >
+              <div className="mt-2">
+                <DisplayContentEditor content={schedule?.content} />
               </div>
             </div>
           </div>

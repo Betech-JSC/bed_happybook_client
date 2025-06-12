@@ -22,6 +22,7 @@ import "@/styles/ckeditor-content.scss";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import TicketOptionContent from "../../components/TicketOptionContent";
 import Schedule from "../../components/Schedule";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default async function EntertainmentTicketDetail({
   params,
@@ -284,14 +285,7 @@ export default async function EntertainmentTicketDetail({
                   Lưu ý
                 </h2>
                 <div className="mt-4">
-                  <div className="ckeditor_container">
-                    <div
-                      className="cke_editable mt-2"
-                      dangerouslySetInnerHTML={{
-                        __html: renderTextContent(detail?.yacht?.note),
-                      }}
-                    ></div>
-                  </div>
+                  <DisplayContentEditor content={detail?.yacht?.note} />
                 </div>
               </div>
             </div>

@@ -1,3 +1,4 @@
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 import { renderTextContent } from "@/utils/Helper";
 
 export default function Tabs({ data }: any) {
@@ -11,13 +12,12 @@ export default function Tabs({ data }: any) {
           >
             Tổng quan
           </h2>
-          <div
-            data-translate
-            className="mt-4 text-base"
-            dangerouslySetInnerHTML={{
-              __html: renderTextContent(data.content_gia_dich_vu),
-            }}
-          ></div>
+          <div className="mt-4">
+            <DisplayContentEditor
+              content={data?.content_gia_dich_vu}
+              autoTranslate={true}
+            />
+          </div>
         </div>
         <div className="bg-white rounded-2xl p-6 mt-4">
           <h2
@@ -26,13 +26,12 @@ export default function Tabs({ data }: any) {
           >
             Đối tượng thỏa điều kiện
           </h2>
-          <div
-            data-translate
-            className="mt-4 text-base"
-            dangerouslySetInnerHTML={{
-              __html: renderTextContent(data.content_tim_hieu_visa),
-            }}
-          ></div>
+          <div className="text-base">
+            <DisplayContentEditor
+              content={data?.content_tim_hieu_visa}
+              autoTranslate={true}
+            />
+          </div>
         </div>
       </div>
     </div>
