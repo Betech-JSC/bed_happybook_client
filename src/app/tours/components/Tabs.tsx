@@ -7,9 +7,10 @@ import { formatDate } from "@/lib/formatters";
 import { isEmpty } from "lodash";
 import { renderTextContent } from "@/utils/Helper";
 import { decodeHtml } from "@/utils/Helper";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import 'jspdf-autotable';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import "jspdf-autotable";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default function Tabs({ detail }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -33,20 +34,24 @@ export default function Tabs({ detail }: any) {
     const doc = new jsPDF();
 
     // Font hỗ trợ tiếng Việt / Trung
-    doc.addFont('https://cdn.jsdelivr.net/npm/noto-sans-sc@1.0.1/NotoSansSC-Regular.otf', 'NotoSansSC', 'normal');
-    doc.setFont('NotoSansSC');
-    
+    doc.addFont(
+      "https://cdn.jsdelivr.net/npm/noto-sans-sc@1.0.1/NotoSansSC-Regular.otf",
+      "NotoSansSC",
+      "normal"
+    );
+    doc.setFont("NotoSansSC");
+
     // Tạo headerDiv cho tiêu đề chính
-    const headerDiv = document.createElement('div');
-    headerDiv.innerHTML = '<strong>Lịch trình tour</strong>';
+    const headerDiv = document.createElement("div");
+    headerDiv.innerHTML = "<strong>Lịch trình tour</strong>";
     Object.assign(headerDiv.style, {
-      padding: '10px',
-      fontWeight: 'bold',
+      padding: "10px",
+      fontWeight: "bold",
       fontFamily: "'Roboto', 'Arial', 'Noto Sans', sans-serif",
-      background: '#fff',
-      fontSize: '42px',
-      lineHeight: '1.2',
-      color: '#F27145'
+      background: "#fff",
+      fontSize: "42px",
+      lineHeight: "1.2",
+      color: "#F27145",
     });
     document.body.appendChild(headerDiv);
 
@@ -54,29 +59,37 @@ export default function Tabs({ detail }: any) {
       const headerCanvas = await html2canvas(headerDiv, {
         scale: 3,
         useCORS: true,
-        backgroundColor: '#fff'
+        backgroundColor: "#fff",
       });
 
-      const headerImgData = headerCanvas.toDataURL('image/png');
+      const headerImgData = headerCanvas.toDataURL("image/png");
       const headerImgWidth = 180;
-      const headerImgHeight = (headerCanvas.height * headerImgWidth) / headerCanvas.width;
+      const headerImgHeight =
+        (headerCanvas.height * headerImgWidth) / headerCanvas.width;
 
-      doc.addImage(headerImgData, 'PNG', 20, 20, headerImgWidth, headerImgHeight);
+      doc.addImage(
+        headerImgData,
+        "PNG",
+        20,
+        20,
+        headerImgWidth,
+        headerImgHeight
+      );
       let yPosition = 20 + headerImgHeight + 10;
 
       for (let i = 0; i < detail.schedule.length; i++) {
         const schedule = detail.schedule[i];
 
         // --- Tạo titleDiv ---
-        const titleDiv = document.createElement('div');
+        const titleDiv = document.createElement("div");
         titleDiv.innerHTML = `<strong>${schedule.title}</strong>`;
         Object.assign(titleDiv.style, {
-          padding: '10px 10px 18px 10px',
-          fontWeight: 'bold',
+          padding: "10px 10px 18px 10px",
+          fontWeight: "bold",
           fontFamily: "'Roboto', 'Arial', 'Noto Sans', sans-serif",
-          background: '#fff',
-          fontSize: '30px',
-          lineHeight: '1.4'
+          background: "#fff",
+          fontSize: "30px",
+          lineHeight: "1.4",
         });
         document.body.appendChild(titleDiv);
 
@@ -85,45 +98,53 @@ export default function Tabs({ detail }: any) {
           const titleCanvas = await html2canvas(titleDiv, {
             scale: 3,
             useCORS: true,
-            backgroundColor: '#fff'
+            backgroundColor: "#fff",
           });
 
-          const titleImgData = titleCanvas.toDataURL('image/png');
+          const titleImgData = titleCanvas.toDataURL("image/png");
           const titleImgWidth = 180;
-          titleImgHeight = (titleCanvas.height * titleImgWidth) / titleCanvas.width;
+          titleImgHeight =
+            (titleCanvas.height * titleImgWidth) / titleCanvas.width;
 
           if (yPosition + titleImgHeight > 270) {
             doc.addPage();
             yPosition = 20;
           }
 
-          doc.addImage(titleImgData, 'PNG', 20, yPosition, titleImgWidth, titleImgHeight);
+          doc.addImage(
+            titleImgData,
+            "PNG",
+            20,
+            yPosition,
+            titleImgWidth,
+            titleImgHeight
+          );
           yPosition += titleImgHeight + 5;
         } finally {
           document.body.removeChild(titleDiv);
         }
 
         // --- Tạo contentDiv ---
-        const contentDiv = document.createElement('div');
+        const contentDiv = document.createElement("div");
         contentDiv.innerHTML = renderTextContent(schedule.content);
         Object.assign(contentDiv.style, {
-          padding: '10px',
+          padding: "10px",
           fontFamily: "'Roboto', 'Arial', 'Noto Sans', sans-serif",
-          background: '#fff',
-          color: '#000',
-          fontSize: '32px',
-          lineHeight: '1.4',
-          margin: '0',
-          textIndent: '0',
+          background: "#fff",
+          color: "#000",
+          fontSize: "32px",
+          lineHeight: "1.4",
+          margin: "0",
+          textIndent: "0",
         });
 
         // Reset margin/padding cho các thẻ con
-        ['p', 'ul', 'ol', 'li', 'blockquote'].forEach(tag => {
-          contentDiv.querySelectorAll(tag).forEach(el => {
-            (el as HTMLElement).style.margin = '0';
-            (el as HTMLElement).style.padding = '0';
-            (el as HTMLElement).style.textIndent = '0';
-            (el as HTMLElement).style.listStylePosition = 'inside';
+        ["p", "ul", "ol", "li", "blockquote"].forEach((tag) => {
+          contentDiv.querySelectorAll(tag).forEach((el) => {
+            (el as HTMLElement).style.margin = "0";
+            (el as HTMLElement).style.padding = "0";
+            (el as HTMLElement).style.textIndent = "0";
+            (el as HTMLElement).style.listStylePosition = "inside";
           });
         });
 
@@ -133,7 +154,7 @@ export default function Tabs({ detail }: any) {
           const canvas = await html2canvas(contentDiv, {
             scale: 2,
             useCORS: true,
-            backgroundColor: '#fff'
+            backgroundColor: "#fff",
           });
 
           const imgWidth = 180;
@@ -142,17 +163,20 @@ export default function Tabs({ detail }: any) {
           let renderedHeight = 0;
 
           while (renderedHeight < imgHeight) {
-            if (yPosition + Math.min(pageHeight, imgHeight - renderedHeight) > 270) {
+            if (
+              yPosition + Math.min(pageHeight, imgHeight - renderedHeight) >
+              270
+            ) {
               doc.addPage();
               yPosition = 20;
             }
 
             // Tạo canvas phụ để crop phần cần vẽ
             const cropHeight = Math.min(pageHeight, imgHeight - renderedHeight);
-            const tempCanvas = document.createElement('canvas');
+            const tempCanvas = document.createElement("canvas");
             tempCanvas.width = canvas.width;
             tempCanvas.height = (cropHeight * canvas.width) / imgWidth;
-            const ctx = tempCanvas.getContext('2d');
+            const ctx = tempCanvas.getContext("2d");
             ctx?.drawImage(
               canvas,
               0,
@@ -164,11 +188,11 @@ export default function Tabs({ detail }: any) {
               canvas.width,
               tempCanvas.height
             );
-            const croppedImgData = tempCanvas.toDataURL('image/png');
+            const croppedImgData = tempCanvas.toDataURL("image/png");
 
             doc.addImage(
               croppedImgData,
-              'PNG',
+              "PNG",
               20,
               yPosition,
               imgWidth,
@@ -182,7 +206,7 @@ export default function Tabs({ detail }: any) {
         }
       }
 
-      doc.save('lich-trinh-tour.pdf');
+      doc.save("lich-trinh-tour.pdf");
     } finally {
       document.body.removeChild(headerDiv);
       setIsExporting(false);
@@ -236,12 +260,10 @@ export default function Tabs({ detail }: any) {
           >
             Tổng quan
           </h2>
-          <div
-            className="mt-4 text-base"
-            dangerouslySetInnerHTML={{
-              __html: renderTextContent(detail?.overview),
-            }}
-          ></div>
+
+          <div className="mt-4">
+            <DisplayContentEditor content={detail?.overview} />
+          </div>
         </div>
 
         <div
@@ -250,7 +272,10 @@ export default function Tabs({ detail }: any) {
           }`}
         >
           <div className="flex justify-between items-center mb-5">
-            <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold" data-translate>
+            <h2
+              className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
+              data-translate
+            >
               Lịch trình
             </h2>
             <button
@@ -261,14 +286,47 @@ export default function Tabs({ detail }: any) {
               `}
             >
               {isExporting ? (
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 13.3333L10 3.33333M10 13.3333L6.66667 10M10 13.3333L13.3333 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M3.33333 16.6667H16.6667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13.3333L10 3.33333M10 13.3333L6.66667 10M10 13.3333L13.3333 10"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M3.33333 16.6667H16.6667"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               )}
               {isExporting ? "Đang xuất..." : "Xuất PDF"}
@@ -326,10 +384,9 @@ export default function Tabs({ detail }: any) {
                       ${
                         openDropdown === key ? "max-h-[5000px] pb-4" : "max-h-0"
                       }`}
-                  dangerouslySetInnerHTML={{
-                    __html: renderTextContent(schedule?.content),
-                  }}
-                ></div>
+                >
+                  <DisplayContentEditor content={schedule?.content} />
+                </div>
               </div>
             ))
           ) : (
@@ -384,7 +441,6 @@ export default function Tabs({ detail }: any) {
                   </tr>
                   {detail.prices.map((item: any, index: number) => (
                     <tr key={index}>
-                
                       <td className="w-1/5 py-3 font-me px-[10px] border-[0.5px] border-gray-200">
                         {item.price_tour > 0
                           ? formatCurrency(item.price_tour)
@@ -423,12 +479,16 @@ export default function Tabs({ detail }: any) {
           >
             Quy định dịch vụ
           </h2>
-          <div
-            className="mt-4 text-base"
-            dangerouslySetInnerHTML={{
-              __html: decodeHtml(renderTextContent(detail?.service_regulation)).replace(/ü/g, '')
-            }}
-          ></div>
+          <div className="mt-4">
+            <div
+              className="ckeditor_content_container"
+              dangerouslySetInnerHTML={{
+                __html: decodeHtml(
+                  renderTextContent(detail?.service_regulation)
+                ).replace(/ü/g, ""),
+              }}
+            ></div>
+          </div>
           <div></div>
         </div>
         <div

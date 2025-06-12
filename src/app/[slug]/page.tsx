@@ -21,15 +21,16 @@ import { fetchNewsDetail } from "@/api/news";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
 import { formatDate, formatMetadata } from "@/lib/formatters";
-import SideBar from "../../components/side-bar";
 import { PostType, SearchParamsProps } from "@/types/post";
-import TableOfContents from "./components/table-content";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
 import "@/styles/ckeditor-content.scss";
 import { getServerLang } from "@/lib/session";
 import { translateText } from "@/utils/translateApi";
 import { renderTextContent } from "@/utils/Helper";
+import SideBar from "../tin-tuc/components/side-bar";
+import TableOfContents from "../tin-tuc/components/TableOfContents";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 type Props = {
   params: { slug: string };
@@ -153,21 +154,13 @@ export default async function Posts({
               <div
                 data-translate
                 className="mb-8 pb-8 border-b-2 border-gray-200"
-                dangerouslySetInnerHTML={{
-                  __html: detail.description
-                    ? detail.description
-                    : "Nội dung đang cập nhật...",
-                }}
-              ></div>
+              >
+                <DisplayContentEditor content={detail?.description} />
+              </div>
               <TableOfContents toc={translateData?.toc} />
               {translateData?.content && (
-                <div className="ckeditor_container post__detail_content md:max-w-[460px] lg:max-w-[820px] overflow-hidden">
-                  <div
-                    className="cke_editable"
-                    dangerouslySetInnerHTML={{
-                      __html: translateData.content,
-                    }}
-                  ></div>
+                <div className="post__detail_content md:max-w-[460px] lg:max-w-[820px] overflow-hidden">
+                  <DisplayContentEditor content={translateData.content} />
                 </div>
               )}
             </div>
@@ -200,7 +193,7 @@ export default async function Posts({
                       >
                         <div key={index} className={`${Post.post__item}`}>
                           <div className="overflow-hidden rounded-xl">
-                            <Link href={`/tin-tuc/chi-tiet/${post.alias}`}>
+                            <Link href={`/${post.alias}`}>
                               <Image
                                 className="ease-in duration-300"
                                 src="/posts/related/1.png"
@@ -211,7 +204,7 @@ export default async function Posts({
                               />
                             </Link>
                           </div>
-                          <Link href={`/tin-tuc/chi-tiet/${post.alias}`}>
+                          <Link href={`/${post.alias}`}>
                             <p
                               data-translate
                               className={`min-h-12 ease-in duration-300 text-base font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}

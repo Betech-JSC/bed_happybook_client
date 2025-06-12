@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import "@/styles/ckeditor-content.scss";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default function Hotel({ data }: any) {
   const labelRatingHotel = getLabelRatingProduct(
@@ -168,13 +169,8 @@ export default function Hotel({ data }: any) {
           <h3 className="mt-4 text-22 font-semibold" data-translate="true">
             {renderTextContent(data?.hotelOfCompo?.name)}
           </h3>
-          <div className="ckeditor_container mt-3">
-            <div
-              className="cke_editable"
-              dangerouslySetInnerHTML={{
-                __html: translatedContent[0],
-              }}
-            ></div>
+          <div className="mt-3">
+            <DisplayContentEditor content={translatedContent[0]} />
           </div>
 
           {/* <div className="w-full mt-4 text-center">
@@ -238,13 +234,8 @@ export default function Hotel({ data }: any) {
           >
             Chính sách
           </h2>
-          <div className="ckeditor_container mt-4">
-            <div
-              className="cke_editable"
-              dangerouslySetInnerHTML={{
-                __html: translatedContent[1],
-              }}
-            ></div>
+          <div className="mt-4">
+            <DisplayContentEditor content={translatedContent[1]} />
           </div>
         </div>
       </div>
@@ -257,12 +248,7 @@ export default function Hotel({ data }: any) {
             Thông tin quan trọng
           </h2>
           <div className="ckeditor_container mt-4">
-            <div
-              className="cke_editable"
-              dangerouslySetInnerHTML={{
-                __html: translatedContent[2],
-              }}
-            ></div>
+            <DisplayContentEditor content={translatedContent[2]} />
           </div>
         </div>
       </div>

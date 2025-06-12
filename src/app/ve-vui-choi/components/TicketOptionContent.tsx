@@ -7,7 +7,7 @@ export default function TicketOptionContent({ content }: any) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showToggleButton, setShowToggleButton] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
-  const [lineHeight, setLineHeight] = useState(24); // fallback
+  const [lineHeight, setLineHeight] = useState(24);
 
   const contentRef = useRef<HTMLDivElement>(null);
 

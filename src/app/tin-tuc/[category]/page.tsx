@@ -98,7 +98,7 @@ export default async function CategoryPosts({
           <div className="basis-[65%]">
             <h1
               className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold"
-              data-translate
+              data-translate="true"
             >
               {category.name}
               <div className="mt-6"></div>
@@ -110,7 +110,7 @@ export default async function CategoryPosts({
                     key={item.id}
                     className="text-sm font-medium text-gray-700 py-[6px] px-[10px] text__default_hover"
                   >
-                    <Link href={`/tin-tuc/lam-visa/${item.alias}`}>
+                    <Link href={`/tin-tuc/${item.alias}`}>
                       <h2 data-translate> {item.name}</h2>
                     </Link>
                   </li>
@@ -127,11 +127,11 @@ export default async function CategoryPosts({
                     >
                       <div className="basis-[35%]">
                         <div className="overflow-hidden rounded-xl">
-                          <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
+                          <Link href={`/${item.alias}`}>
                             <Image
                               className="ease-in duration-300 object-cover"
-                              src={`/posts/category-posts/${index + 1}.png`}
-                              alt="Tin tức"
+                              src={item.image_url + item.image_location}
+                              alt={item.title}
                               width={140}
                               height={100}
                               style={{ width: "100%", height: "auto" }}
@@ -141,7 +141,7 @@ export default async function CategoryPosts({
                       </div>
                       <div className="basis-[63%]">
                         <Link
-                          href={`/tin-tuc/chi-tiet/${item.alias}`}
+                          href={`/${item.alias}`}
                           className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                         >
                           <h3 data-translate>{item.title}</h3>

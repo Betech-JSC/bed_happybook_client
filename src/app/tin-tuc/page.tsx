@@ -8,6 +8,7 @@ import { formatDate, formatMetadata } from "@/lib/formatters";
 import { CategoryPostsType, PostType } from "@/types/post";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
+import { renderTextContent } from "@/utils/Helper";
 
 export const metadata: Metadata = formatMetadata({
   title: "Blog - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
@@ -40,7 +41,7 @@ export default async function Posts() {
             <div className="basis-full lg:basis-[65%]">
               <div className={Post.post__item}>
                 <div className="overflow-hidden rounded-xl">
-                  <Link href={`/tin-tuc/chi-tiet/${lastestPosts[0].alias}`}>
+                  <Link href={`/${lastestPosts[0].alias}`}>
                     <Image
                       src={
                         lastestPosts[0].image_url +
@@ -65,7 +66,7 @@ export default async function Posts() {
                     data-translate
                     className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
                   >
-                    <Link href={`/tin-tuc/chi-tiet/${lastestPosts[0].alias}`}>
+                    <Link href={`/${lastestPosts[0].alias}`}>
                       <h3>{lastestPosts[0].title ?? ""}</h3>
                     </Link>
                   </h3>
@@ -73,9 +74,7 @@ export default async function Posts() {
                     data-translate
                     className="text-base mt-2 line-clamp-2"
                     dangerouslySetInnerHTML={{
-                      __html: lastestPosts[0].description
-                        ? lastestPosts[0].description
-                        : "Nội dung đang cập nhật",
+                      __html: renderTextContent(lastestPosts[0].description),
                     }}
                   ></div>
                 </div>
@@ -87,7 +86,7 @@ export default async function Posts() {
                   index > 0 && (
                     <div key={item.id} className={`mb-8 ${Post.post__item}`}>
                       <div className="overflow-hidden rounded-xl">
-                        <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
+                        <Link href={`/${item.alias}`}>
                           <Image
                             src={item.image_url + item.image_location}
                             alt={item.title}
@@ -104,10 +103,10 @@ export default async function Posts() {
                           data-translate
                           className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300"
                         >
-                          {item.category.name ?? ""}
+                          {item?.category?.name ?? ""}
                         </p>
                         <Link
-                          href={`/tin-tuc/chi-tiet/${item.alias}`}
+                          href={`/${item.alias}`}
                           className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
                         >
                           <h3 data-translate>{item.title ?? ""}</h3>
@@ -121,7 +120,7 @@ export default async function Posts() {
           </div>
         )}
         <div className="flex flex-col md:flex-row md:space-x-12 mt-4 mb-8 lg:mt-12">
-          <div className="basis-full md:basis-[65%]">
+          <div className="basis-full md:basis-[65%] mt-3 md:mt-6">
             {categoriesWithPosts.map((item, index) => (
               <div key={index} className="w-full mb-9">
                 <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row justify-between">

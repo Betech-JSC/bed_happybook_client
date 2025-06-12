@@ -27,7 +27,34 @@ export const metadata: Metadata = formatMetadata({
 export default async function Hotel() {
   // const locations = (await HotelApi.getLocations())?.payload?.data as any;
   const language = await getServerLang();
-  const hotelData = (await HotelApi.getAll())?.payload?.data as any;
+  const hotelData = (await HotelApi.getAll())?.payload?.data ?? ([] as any);
+  const hotelFeatured: any[] = [];
+  const hotelPopular: any[] = [];
+
+  if (hotelData?.length) {
+    hotelData.forEach((group: any) => {
+      const featuredItems = group?.products?.filter(
+        (item: any) => item?.hotel?.is_featured === 1
+      );
+      const normalItems = group?.products?.filter(
+        (item: any) => item?.hotel?.is_featured === 0
+      );
+
+      if (featuredItems.length) {
+        hotelFeatured.push({
+          ...group,
+          products: featuredItems,
+        });
+      }
+
+      if (normalItems.length) {
+        hotelPopular.push({
+          ...group,
+          products: normalItems,
+        });
+      }
+    });
+  }
   const contentPage = (await PageApi.getContent("khach-san", language))?.payload
     ?.data as any;
   const provincePopular =
@@ -131,8 +158,28 @@ export default async function Hotel() {
               </div>
             </div>
           </div>
+          {/* Hotel nổi bật */}
+          {hotelFeatured?.length > 0 && (
+            <div className="mt-6 py-6">
+              <div>
+                <div className="flex justify-between">
+                  <div>
+                    <h2
+                      className="text-[24px] lg:text-32 font-bold"
+                      data-translate="true"
+                    >
+                      Khách Sạn Nổi Bật
+                    </h2>
+                  </div>
+                </div>
+                <div className="mt-8 w-full">
+                  <HotelTabs data={hotelFeatured} />
+                </div>
+              </div>
+            </div>
+          )}
           {/* Hotel */}
-          {hotelData?.length > 0 && (
+          {hotelPopular?.length > 0 && (
             <div className="mt-6 py-6">
               <div>
                 <div className="flex justify-between">
@@ -146,7 +193,7 @@ export default async function Hotel() {
                   </div>
                 </div>
                 <div className="mt-8 w-full">
-                  <HotelTabs data={hotelData} />
+                  <HotelTabs data={hotelPopular} />
                 </div>
               </div>
             </div>

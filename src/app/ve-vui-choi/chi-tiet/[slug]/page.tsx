@@ -22,6 +22,7 @@ import { isEmpty } from "lodash";
 import SmoothScrollLink from "@/components/base/SmoothScrollLink";
 import TicketOptionContent from "../../components/TicketOptionContent";
 import "@/styles/ckeditor-content.scss";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default async function EntertainmentTicketDetail({
   params,
@@ -292,26 +293,7 @@ export default async function EntertainmentTicketDetail({
                   Lưu ý
                 </h2>
                 <div className="mt-4">
-                  <div className="ckeditor_container">
-                    <div
-                      className="cke_editable mt-2"
-                      dangerouslySetInnerHTML={{
-                        __html: renderTextContent(detail?.ticket?.note),
-                      }}
-                    ></div>
-                  </div>
-                  {/* <ul className="pl-6 list-[circle]">
-                    <li>
-                      Khách nên có xe hơi để đến và rời khỏi nơi lưu trú này.
-                    </li>
-                    <li>
-                      Có nhận phòng không tiếp xúc và trả phòng không tiếp xúc.
-                    </li>
-                    <li>
-                      Nơi lưu trú này chào đón khách thuộc mọi xu hướng tính dục
-                      và nhận dạng giới (thân thiện với cộng đồng LGBTQ+).
-                    </li>
-                  </ul> */}
+                  <DisplayContentEditor content={detail?.ticket?.note} />
                 </div>
               </div>
             </div>

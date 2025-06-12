@@ -5,6 +5,7 @@ import "@/styles/ckeditor-content.scss";
 import { useEffect, useState } from "react";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default function Tabs({ data }: any) {
   const { language } = useLanguage();
@@ -31,13 +32,8 @@ export default function Tabs({ data }: any) {
         >
           COMBO BAO GỒM
         </h2>
-        <div className="ckeditor_container mt-4">
-          <div
-            className="cke_editable"
-            dangerouslySetInnerHTML={{
-              __html: translatedContent[0],
-            }}
-          ></div>
+        <div className="mt-4">
+          <DisplayContentEditor content={translatedContent[0]} />
         </div>
       </div>
       <div className="bg-white rounded-2xl p-6 mt-4">
@@ -47,13 +43,8 @@ export default function Tabs({ data }: any) {
         >
           ĐIỀU KIỆN ÁP DỤNG
         </h2>
-        <div className="ckeditor_container mt-4">
-          <div
-            className="cke_editable"
-            dangerouslySetInnerHTML={{
-              __html: translatedContent[1],
-            }}
-          ></div>
+        <div className="mt-4">
+          <DisplayContentEditor content={translatedContent[1]} />
         </div>
       </div>
     </div>
