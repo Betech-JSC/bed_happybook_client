@@ -50,6 +50,12 @@ export default function HeaderMobileMenu() {
               <strong>Dịch vụ</strong>
             </p>
             <Link
+              href="/ve-may-bay"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              Vé máy bay
+            </Link>
+            <Link
               href="/tours/tour-noi-dia"
               className="block mt-4 cursor-pointer hover:text-[#F27145]"
             >
@@ -62,16 +68,10 @@ export default function HeaderMobileMenu() {
               Tour quốc tế
             </Link>
             <Link
-              href="/tours/tour-du-thuyen"
+              href="/du-thuyen"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Tour du thuyền
-            </Link>
-            <Link
-              href="/ve-may-bay"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              Vé máy bay
+              Du thuyền
             </Link>
             {/* <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Vé máy bay quốc tế

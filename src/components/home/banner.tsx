@@ -36,7 +36,7 @@ export default function Banner({ data }: any) {
                   width={628}
                   height={210}
                   sizes="100vw"
-                  className="rounded-xl w-full object-cover"
+                  className="h-[156px] rounded-xl w-full object-cover"
                 />
               </CarouselItem>
             ))}
