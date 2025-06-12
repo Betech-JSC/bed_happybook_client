@@ -9,6 +9,7 @@ const BookingProductApi = {
   DinhCu: (data: any) => http.post<any>(`${path}/dinhcu`, data),
   Combo: (data: any) => http.post<any>(`${path}/combo`, data),
   Ticket: (data: any) => http.post<any>(`${path}/ticket`, data),
+  Yacht: (data: any) => http.post<any>(`${path}/yacht`, data),
 };
 
 export { BookingProductApi };

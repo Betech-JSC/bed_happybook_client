@@ -59,7 +59,7 @@ export default function CheckOutForm({
     saturday: "Bảy",
     sunday: "Chủ nhật",
   };
-  const daysOpeningRaw = product?.ticket?.opening_days;
+  const daysOpeningRaw = product?.yacht?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
@@ -73,7 +73,7 @@ export default function CheckOutForm({
         .filter(Boolean)
         .join(", ");
   const parsedTimeOpening = parse(
-    product?.ticket?.opening_time,
+    product?.yacht?.opening_time,
     "HH:mm:ss",
     new Date()
   );
@@ -146,7 +146,7 @@ export default function CheckOutForm({
       if (!generateInvoice) {
         delete formatData.invoice;
       }
-      const respon = await BookingProductApi.Ticket(formatData);
+      const respon = await BookingProductApi.Yacht(formatData);
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
@@ -675,7 +675,7 @@ export default function CheckOutForm({
                 height={18}
               />
               <span data-translate="true">
-                {renderTextContent(product?.ticket?.address)}
+                {renderTextContent(product?.yacht?.address)}
               </span>
             </div>
             {tickets?.map((item: any) => (

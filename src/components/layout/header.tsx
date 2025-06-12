@@ -357,9 +357,9 @@ export default function Header() {
                 <Link href="/tours/tour-quoc-te" data-translate="true">
                   Tour Quốc Tế
                 </Link>
-                <Link href="/tours/tour-du-thuyen" data-translate="true">
+                {/* <Link href="/tours/tour-du-thuyen" data-translate="true">
                   Tour Du Thuyền
-                </Link>
+                </Link> */}
               </div>
             </div>
 
@@ -379,6 +379,15 @@ export default function Header() {
               })}
             >
               Visa
+            </Link>
+            <Link
+              href="/du-thuyen"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/du-thuyen"),
+              })}
+              data-translate="true"
+            >
+              Du thuyền
             </Link>
             <Link
               href="/khach-san"
