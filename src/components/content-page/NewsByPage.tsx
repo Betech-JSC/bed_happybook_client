@@ -18,7 +18,7 @@ export default function NewsByPage({
     <div className={wrapperStyle}>
       <div className="flex justify-between">
         <div>
-          <h2 className="text-[32px] font-bold" data-translate>
+          <h2 className="text-[32px] font-bold" data-translate="true">
             {title}
           </h2>
         </div>
@@ -27,7 +27,7 @@ export default function NewsByPage({
           className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
           style={{ transition: "0.3s" }}
         >
-          <button className="text-[#175CD3] font-medium" data-translate>
+          <button className="text-[#175CD3] font-medium" data-translate="true">
             {" "}
             Xem tất cả
           </button>
@@ -59,7 +59,7 @@ export default function NewsByPage({
       <div className="mt-8 w-full flex flex-col lg:flex-row lg:space-x-4 space-y-6 lg:space-y-0">
         <div className={`basis-1/2 cursor-pointer ${styles.travel_guide_item}`}>
           <Link
-            href={`/tin-tuc/chi-tiet/${firstItem.alias}`}
+            href={`/${firstItem.alias}`}
             className="block relative group overflow-hidden rounded-xl w-full h-[360px] lg:h-[584px]"
           >
             <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
@@ -67,7 +67,7 @@ export default function NewsByPage({
                 src={`${firstItem.image_url}/${firstItem.image_location}`}
                 width={500}
                 height={584}
-                className="w-full h-[360px] md:h-[584px]"
+                className="w-full h-[280px] md:h-[500px] object-cover"
                 alt="blog"
               />
             </div>
@@ -79,8 +79,8 @@ export default function NewsByPage({
               }}
             >
               <h3
-                data-translate
-                className="absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
+                data-translate="true"
+                className="line-clamp-3 absolute bottom-3 left-5 right-5 text-xl text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
               >
                 {firstItem.title}
               </h3>
@@ -91,7 +91,7 @@ export default function NewsByPage({
           {news.length > 0 &&
             news.map((item: any) => (
               <Link
-                href={`/tin-tuc/chi-tiet/${item.alias}`}
+                href={`/${item.alias}`}
                 key={item.id}
                 className="block relative rounded-xl cursor-pointer group overflow-hidden w-full h-[280px]"
               >
@@ -100,7 +100,7 @@ export default function NewsByPage({
                     src={`${item.image_url}/${item.image_location}`}
                     width={500}
                     height={280}
-                    className="w-full h-[280px]"
+                    className="w-full h-[220px] object-cover"
                     alt="blog"
                   />
                 </div>
@@ -112,8 +112,8 @@ export default function NewsByPage({
                   }}
                 >
                   <h3
-                    data-translate
-                    className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
+                    data-translate="true"
+                    className="line-clamp-2 absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
                   >
                     {item.title}
                   </h3>
@@ -132,9 +132,9 @@ export default function NewsByPage({
             <CarouselContent>
               {news.length > 0 &&
                 news.map((item: any) => (
-                  <CarouselItem className="basis-9/12 h-[280px]" key={item.id}>
+                  <CarouselItem className="basis-9/12 h-[200px]" key={item.id}>
                     <Link
-                      href={`/tin-tuc/chi-tiet/${item.alias}`}
+                      href={`/${item.alias}`}
                       className="block relative rounded-xl cursor-pointer h-full"
                     >
                       <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
@@ -142,7 +142,7 @@ export default function NewsByPage({
                           src={`${item.image_url}/${item.image_location}`}
                           width={500}
                           height={280}
-                          className="rounded-xl w-full h-[280px]"
+                          className="rounded-xl w-full h-[200px] object-cover"
                           alt="Blog image"
                         />
                       </div>
@@ -154,8 +154,8 @@ export default function NewsByPage({
                         }}
                       >
                         <h3
-                          data-translate
-                          className="absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
+                          data-translate="true"
+                          className="line-clamp-2 absolute bottom-3 left-5 right-5 text-white font-semibold transition-colors duration-500 group-hover:text-[#f27145]"
                         >
                           {item.title}
                         </h3>

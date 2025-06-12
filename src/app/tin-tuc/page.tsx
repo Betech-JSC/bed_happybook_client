@@ -151,7 +151,7 @@ export default async function Posts() {
                     {item.news.map((item, key) => (
                       <div key={key} className={`mt-8 ${Post.post__item}`}>
                         <div className="overflow-hidden rounded-xl">
-                          <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
+                          <Link href={`/${item.alias}`}>
                             <Image
                               className="ease-in duration-300 object-cover"
                               src={item.image_url + item.image_location}
@@ -162,7 +162,7 @@ export default async function Posts() {
                             />
                           </Link>
                         </div>
-                        <Link href={`/tin-tuc/chi-tiet/${item.alias}`}>
+                        <Link href={`/${item.alias}`}>
                           <h3
                             data-translate
                             className={`ease-in duration-300 text-base font-semibold mt-3 line-clamp-3 ${Post.post__item_title}`}
