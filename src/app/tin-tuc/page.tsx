@@ -11,6 +11,7 @@ import SeoSchema from "@/components/schema";
 import { renderTextContent } from "@/utils/Helper";
 
 export const metadata: Metadata = formatMetadata({
+  robots: "index, follow",
   title: "Blog - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   description:
     "Happy Book là đại lý cung cấp dịch vụ làm visa lớn và uy tín hàng đầu Việt Nam",

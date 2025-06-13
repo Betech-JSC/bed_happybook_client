@@ -1,4 +1,5 @@
 import { formatCurrency } from "@/lib/formatters";
+import { displayProductPrice } from "@/utils/Helper";
 import clsx from "clsx";
 import { isEmpty } from "lodash";
 
@@ -6,10 +7,12 @@ export default function DisplayPrice({
   price,
   textPrefix,
   className = "",
+  currency = null,
 }: {
   price: number;
   textPrefix?: string;
   className?: string;
+  currency?: any;
 }) {
   return (
     <div>
@@ -26,7 +29,11 @@ export default function DisplayPrice({
               className
             )}
           >
-            {formatCurrency(price)}
+            {!isEmpty(currency) ? (
+              <>{displayProductPrice(price, currency)}</>
+            ) : (
+              <>{formatCurrency(price)}</>
+            )}
           </span>
         </>
       ) : (

@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     robots: news?.meta_robots,
     keywords: news?.keywords,
     alternates: {
-      canonical: news?.canonical_link ?? `/tin-tuc/chi-tiet/${news?.alias}`,
+      canonical: news?.canonical_link ?? `/${news?.alias}`,
     },
     openGraph: {
       images: [

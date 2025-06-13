@@ -85,7 +85,7 @@ export default async function CompoTour() {
         <div className="bg-white relative z-2 rounded-2xl top-[-12px] mt-10">
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
             {/* Tours */}
-            {hotDestination?.length > 0 && (
+            {comboData?.comboHot?.length > 0 && (
               <div className="w-full">
                 <h2 className="text-32 font-bold" data-translate="true">
                   Khám phá các điểm đến HOT
@@ -98,13 +98,13 @@ export default async function CompoTour() {
                     }}
                   >
                     <CarouselContent>
-                      {hotDestination.map((item: any) => (
+                      {comboData?.comboHot?.map((item: any) => (
                         <CarouselItem
                           key={item.id}
                           className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
                         >
                           <div className="overflow-hidden rounded-lg relative">
-                            <Link href={item.url ?? "#"}>
+                            <Link href={`/combo/chi-tiet/${item.slug}`}>
                               <Image
                                 src={`${item.image_url}/${item.image_location}`}
                                 width={365}
@@ -115,7 +115,7 @@ export default async function CompoTour() {
                               />
                             </Link>
                             <div className="absolute bottom-3 left-2 text-white px-3 py-1">
-                              <Link href={item.url ?? "#"}>
+                              <Link href={`/combo/chi-tiet/${item.slug}`}>
                                 <h3
                                   className="line-clamp-2"
                                   data-translate="true"
@@ -134,34 +134,24 @@ export default async function CompoTour() {
                 </div>
               </div>
             )}
-            {comboData?.comboDomestic?.length > 0 && (
-              <>
-                <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
-                  <h2 className="text-32 font-bold" data-translate="true">
-                    Các combo du lịch ưu đãi
-                  </h2>
-                  {/* <div className="flex my-4 md:my-0 space-x-3 items-center">
-                    <span>Sắp xếp</span>
-                    <div className="w-40 bg-white border border-gray-200 rounded-lg">
-                      <select
-                        className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
-                        name=""
-                        id=""
-                      >
-                        <option value="">Mới nhất</option>
-                        <option value="">Cũ nhất</option>
-                      </select>
-                    </div>
-                  </div> */}
-                </div>
-                <div className="mt-8 grid md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-                  {comboData?.comboDomestic.map((combo: any) => (
-                    <div key={combo.id}>
-                      <CompoItem data={combo} />
-                    </div>
-                  ))}
-                </div>
-              </>
+
+            <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
+              <h2 className="text-32 font-bold" data-translate="true">
+                Các combo du lịch ưu đãi
+              </h2>
+            </div>
+            {comboData?.comboDomestic?.length > 0 ? (
+              <div className="mt-8 grid md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+                {comboData?.comboDomestic.map((combo: any) => (
+                  <div key={combo.id}>
+                    <CompoItem data={combo} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-base md:text-xl font-semibold my-4 text-center">
+                Thông tin đang cập nhật...
+              </p>
             )}
             {/* Faq */}
             <div className="my-8">
