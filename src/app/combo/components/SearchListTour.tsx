@@ -14,8 +14,9 @@ import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { translatePage } from "@/utils/translateDom";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
-export default function SearchListTour({
+export default function SearchListCombo({
   optionsFilter,
   translatedStaticText,
 }: {
@@ -312,17 +313,14 @@ export default function SearchListTour({
                         </span>
                       </div>
                     </div>
-                    {item.price && (
-                      <div className="text-base md:text-xl text-primary font-semibold text-end">
-                        <span
-                          className="text-gray-500 text-sm md:text-base mr-2"
-                          data-translate="true"
-                        >
-                          chỉ từ
-                        </span>
-                        {formatCurrency(item.price)}
-                      </div>
-                    )}
+                    <div className="text-base text-end">
+                      <DisplayPrice
+                        price={item?.price - item?.discount_price}
+                        textPrefix={`${
+                          item?.discount_price > 0 ? "giá ưu đãi" : "chỉ từ"
+                        }`}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -8,12 +8,12 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Fragment, Suspense } from "react";
-import SearchListTour from "../components/SearchListTour";
 import { ComboApi } from "@/api/Combo";
 import { translateText } from "@/utils/translateApi";
 import { comboStaticText } from "@/constants/staticText";
 import { getServerLang } from "@/lib/session";
 import { formatTranslationMap } from "@/utils/translateDom";
+import SearchListCombo from "../components/SearchListTour";
 
 export const metadata: Metadata = {
   title: "Compo Nha Trang",
@@ -62,7 +62,7 @@ export default async function SearchCombo() {
           </Breadcrumb>
           {/* Section Tour */}
           <Suspense>
-            <SearchListTour
+            <SearchListCombo
               optionsFilter={optionsFilter}
               translatedStaticText={translationMap}
             />
