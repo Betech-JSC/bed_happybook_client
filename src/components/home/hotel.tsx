@@ -11,6 +11,7 @@ import {
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import HotelItem from "../product/components/HotelItem";
+import HotelTabs from "@/app/khach-san/components/HotelTabs";
 
 export default function Hotel({ data }: any) {
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -86,82 +87,7 @@ export default function Hotel({ data }: any) {
             />
           </Link>
           {/* Tabs */}
-          <div className="w-full mt-6">
-            <div className="">
-              <div className="space-x-3 mb-8">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {data.map((tab: any, index: number) => (
-                      <CarouselItem key={index} className="basis-1/8">
-                        <button
-                          key={index}
-                          className={`px-4 py-2 outline-none rounded-[8px] duration-300 border-2  border-solid ${
-                            activeTab === index
-                              ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                              : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                          }`}
-                          onClick={() => setActiveTab(index)}
-                          data-translate
-                        >
-                          {tab.name}
-                        </button>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
-              </div>
-              <div>
-                {data.map((category: any, index: number) =>
-                  category.products.length > 0 ? (
-                    <div key={index}>
-                      {/* {activeTab === index && ( */}
-                      <Carousel
-                        opts={{
-                          align: "start",
-                          loop: true,
-                        }}
-                        className={`${
-                          activeTab === index ? "block" : "hidden"
-                        }`}
-                      >
-                        <CarouselContent>
-                          {category.products.map(
-                            (hotel: any, hotelIndex: number) => (
-                              <CarouselItem
-                                key={hotelIndex}
-                                className="basis-10/12 md:basis-5/12 lg:basis-1/4"
-                              >
-                                <HotelItem hotel={hotel} />
-                              </CarouselItem>
-                            )
-                          )}
-                        </CarouselContent>
-                        <CarouselPrevious className="hidden lg:inline-flex" />
-                        <CarouselNext className="hidden lg:inline-flex" />
-                      </Carousel>
-                      {/* )} */}
-                    </div>
-                  ) : (
-                    activeTab === index && (
-                      <div
-                        key={index}
-                        className="min-h-[100px] content-center text-center"
-                      >
-                        <p className="font-bold text-xl" data-translate>
-                          Thông tin đang được cập nhật.....
-                        </p>
-                      </div>
-                    )
-                  )
-                )}
-              </div>
-            </div>
-          </div>
+          <HotelTabs data={data} />
         </div>
         {/* End */}
       </div>

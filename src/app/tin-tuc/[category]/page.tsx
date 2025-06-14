@@ -123,9 +123,9 @@ export default async function CategoryPosts({
                   news.map((item, index) => (
                     <div
                       key={index}
-                      className={`mt-3 mb-6 flex space-x-6 items-center pb-3 ${Post.post__item}`}
+                      className={`mt-3 mb-6 flex flex-col lg:flex-row gap-2 lg:gap-6 items-center pb-3 ${Post.post__item}`}
                     >
-                      <div className="basis-[35%]">
+                      <div className="w-full lg:w-[35%]">
                         <div className="overflow-hidden rounded-xl">
                           <Link href={`/${item.alias}`}>
                             <Image
@@ -139,7 +139,7 @@ export default async function CategoryPosts({
                           </Link>
                         </div>
                       </div>
-                      <div className="basis-[63%]">
+                      <div className="w-full lg:w-[65%]">
                         <Link
                           href={`/${item.alias}`}
                           className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
@@ -148,7 +148,7 @@ export default async function CategoryPosts({
                         </Link>
                         <div
                           data-translate
-                          className="text-sm text-gray-700 line-clamp-3 mt-2"
+                          className="text-sm text-gray-700 line-clamp-3 mt-2 text-justify"
                           dangerouslySetInnerHTML={{
                             __html: !isEmpty(item.description)
                               ? item.description

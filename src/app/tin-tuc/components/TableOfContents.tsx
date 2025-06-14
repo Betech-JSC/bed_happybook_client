@@ -32,7 +32,7 @@ const TableOfContents = ({ toc }: Props) => {
           <Image
             onClick={toggleMenu}
             className={`ease-in duration-300 cursor-pointer h-5 absolute top-0  ${
-              isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
+              !isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
             }`}
             src={`/icon/menu-mb.svg`}
             alt="Icon"
@@ -42,7 +42,7 @@ const TableOfContents = ({ toc }: Props) => {
           <div
             onClick={toggleMenu}
             className={`ease-in duration-300 cursor-pointer absolute top-0 ${
-              !isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
+              isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
             }`}
           >
             <svg

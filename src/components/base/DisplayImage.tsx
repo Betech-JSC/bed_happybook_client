@@ -14,7 +14,7 @@ export default function DisplayImage({
   classStyle: string;
 }) {
   const cmsDomain =
-    process.env.NEXT_PUBLIC_CMS_URL || "http://cms.happybooktravel.com";
+    process.env.NEXT_PUBLIC_CMS_URL || "https://cms.happybooktravel.com";
   const fullImageUrl = imagePath.startsWith("/")
     ? `${cmsDomain}${imagePath}`
     : `${cmsDomain}/${imagePath}`;

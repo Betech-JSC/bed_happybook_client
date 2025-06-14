@@ -127,8 +127,8 @@ export default async function Posts() {
                 <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row justify-between">
                   <div className="lg:basis-10/12">
                     <h2
-                      className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold"
-                      data-translate
+                      className="pl-2 border-l-4 border-[#F27145] text-2xl lg:text-3xl font-bold"
+                      data-translate="true"
                     >
                       {item.name}
                     </h2>
@@ -148,18 +148,17 @@ export default async function Posts() {
                   </Link>
                 </div>
                 {item.news.length > 0 ? (
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-[26.33px]">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-1 lg:gap-6">
                     {item.news.map((item, key) => (
                       <div key={key} className={`mt-8 ${Post.post__item}`}>
                         <div className="overflow-hidden rounded-xl">
                           <Link href={`/${item.alias}`}>
                             <Image
-                              className="ease-in duration-300 object-cover"
+                              className="block ease-in duration-300 object-cover w-full h-auto lg:h-[168px]"
                               src={item.image_url + item.image_location}
                               alt={item.title}
                               width={252}
                               height={168}
-                              style={{ width: "100%", height: "168px" }}
                             />
                           </Link>
                         </div>
