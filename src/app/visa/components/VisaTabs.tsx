@@ -10,10 +10,9 @@ import {
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
-import { formatCurrency } from "@/lib/formatters";
 import { displayProductPrice } from "@/utils/Helper";
 
-export default function VisaItem({ data }: any) {
+export default function VisaTabs({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="w-full mt-6">

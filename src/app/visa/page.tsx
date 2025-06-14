@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
-import VisaItem from "./components/VisaItem";
+import VisaTabs from "./components/VisaTabs";
 import VisaSteps from "@/components/home/visa-steps";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
@@ -120,7 +120,7 @@ export default async function Visa() {
                     height={20}
                   />
                 </Link>
-                <VisaItem data={data.visaOutstanding} />
+                <VisaTabs data={data.visaOutstanding} />
               </div>
             )}
             {newsByPage.length > 0 && (
@@ -178,7 +178,7 @@ export default async function Visa() {
                       height={20}
                     />
                   </Link>
-                  <VisaItem data={parentCategory.children} />
+                  <VisaTabs data={parentCategory.children} />
                 </div>
               ))}
           </div>

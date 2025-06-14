@@ -1,20 +1,8 @@
-"use client";
-import { useState } from "react";
 import Image from "next/image";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
-import { formatCurrency } from "@/lib/formatters";
-import { displayProductPrice } from "@/utils/Helper";
+import VisaTabs from "@/app/visa/components/VisaTabs";
 
 export default function VisaService({ data }: any) {
-  const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="relative py-6 lg:mt-12 lg:px-6 lg:py-8 rounded-3xl">
@@ -51,7 +39,7 @@ export default function VisaService({ data }: any) {
               </h2>
             </div>
             <Link
-              href="/visa"
+              href="visa/tim-kiem?text=tat-ca-visa-noi-bat"
               className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
@@ -72,7 +60,7 @@ export default function VisaService({ data }: any) {
             Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
           </p>
           <Link
-            href="/visa"
+            href="visa/tim-kiem?text=tat-ca-visa-noi-bat"
             className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
           >
             <button className="text-[#175CD3] font-medium" data-translate>
@@ -88,121 +76,7 @@ export default function VisaService({ data }: any) {
             />
           </Link>
           {/* Tabs */}
-          <div className="w-full mt-6">
-            <div className="lg:space-x-3 mb-6 lg:mb-8">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-              >
-                <CarouselContent>
-                  {data.map((tab: any, index: number) => (
-                    <CarouselItem key={index} className="basis-1/8">
-                      <button
-                        key={index}
-                        className={`h-10 text-sm outline-none lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300  border-solid  border-2 
-                           ${
-                             activeTab === index
-                               ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                               : "text-gray-500border-[#D0D5DD] hover:bg-gray-100"
-                           }`}
-                        onClick={() => setActiveTab(index)}
-                        data-translate
-                      >
-                        {tab.name}
-                      </button>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
-            </div>
-            <div>
-              {data.map((category: any, index: number) =>
-                category.products.length > 0 ? (
-                  <div key={index}>
-                    {/* {activeTab === index && ( */}
-                    <Carousel
-                      opts={{
-                        align: "start",
-                        loop: true,
-                      }}
-                      className={`${activeTab === index ? "block" : "hidden"}`}
-                    >
-                      <CarouselContent>
-                        {category.products.map((visa: any) => (
-                          <CarouselItem
-                            key={visa.id}
-                            className="basis-10/12 md:basis-5/12 lg:basis-1/4"
-                          >
-                            <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                              <div className="overflow-hidden rounded-t-2xl	">
-                                <Link href={`/visa/chi-tiet/${visa.slug}`}>
-                                  <Image
-                                    className="hover:scale-110 ease-in duration-300 cursor-pointer"
-                                    src={`${visa.image_url}/${visa.image_location}`}
-                                    alt="Visa Image"
-                                    width={320}
-                                    height={320}
-                                    sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                    style={{ height: 200, width: "100%" }}
-                                  />
-                                </Link>
-                              </div>
-                              <div className="py-3 px-4 h-fit ">
-                                <Link
-                                  href={`/visa/chi-tiet/${visa.slug}`}
-                                  className={`text-base ${styles.text_hover_default}`}
-                                >
-                                  <h3
-                                    data-translate
-                                    className="h-12 line-clamp-2 font-semibold"
-                                  >
-                                    {visa.name}
-                                  </h3>
-                                  <div className="text-end">
-                                    {visa.price > 0 ? (
-                                      <>
-                                        <span data-translate="true">Giá </span>
-                                        <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-                                          {displayProductPrice(
-                                            visa.price,
-                                            visa?.currency
-                                          )}
-                                        </span>
-                                      </>
-                                    ) : (
-                                      <span
-                                        className="text-[#F27145] font-semibold text-base lg:text-xl"
-                                        data-translate="true"
-                                      >
-                                        Liên hệ
-                                      </span>
-                                    )}
-                                  </div>
-                                </Link>
-                              </div>
-                            </div>
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      <CarouselPrevious className="hidden lg:inline-flex" />
-                      <CarouselNext className="hidden lg:inline-flex" />
-                    </Carousel>
-                    {/* )} */}
-                  </div>
-                ) : (
-                  activeTab === index && (
-                    <div className="min-h-[100px] content-center text-center">
-                      <p className="font-bold text-xl" data-translate>
-                        Thông tin đang được cập nhật.....
-                      </p>
-                    </div>
-                  )
-                )
-              )}
-            </div>
-          </div>
+          <VisaTabs data={data} />
         </div>
         {/* End */}
       </div>
