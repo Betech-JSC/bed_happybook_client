@@ -155,15 +155,17 @@ export default async function CategoryPosts({
                   >
                     {renderTextContent(detail?.name)}
                   </h1>
-                  <div className="mt-6">
-                    <div>
-                      <span className="font-semibold" data-translate="true">
-                        Mã visa:
-                      </span>{" "}
-                      <span data-translate="true">
-                        {renderTextContent(detail?.product_visa?.ma_visa)}
-                      </span>
-                    </div>
+                  <div className="mt-4">
+                    {detail?.product_visa?.ma_visa && (
+                      <div>
+                        <span className="font-semibold" data-translate="true">
+                          Mã visa:
+                        </span>{" "}
+                        <span data-translate="true">
+                          {renderTextContent(detail?.product_visa?.ma_visa)}
+                        </span>
+                      </div>
+                    )}
                     <div className="mt-1">
                       <span className="font-semibold" data-translate="true">
                         Loại Visa:

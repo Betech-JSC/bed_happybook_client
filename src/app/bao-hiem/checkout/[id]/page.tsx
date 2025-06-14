@@ -34,10 +34,13 @@ export default async function InsuranceCheckout({
     (item: any) => diffDate >= item.day_start && diffDate <= item.day_end
   );
   const totalFee =
-    parseInt(matchedInsurance.price) * (parseInt(safeParams.guests) ?? 1);
+    parseInt(matchedInsurance.parsed_price) *
+    (parseInt(safeParams.guests) ?? 1);
   if (isEmpty(detail) || !matchedInsurance) {
     notFound();
   }
+  const currencyFormatDisplay =
+    detail?.currency?.toLowerCase() === "usd" ? "en" : "vi";
   return (
     <Fragment>
       <div className="relative h-max pb-14">
@@ -71,13 +74,13 @@ export default async function InsuranceCheckout({
               <div className="w-full lg:col-span-6">
                 <div className="flex flex-col md:flex-row item-start gap-2 md:gap-8 text-center">
                   <div>
-                    {!isEmpty(detail.image) ? (
+                    {!isEmpty(detail?.insurance_type?.image_location) ? (
                       <DisplayImage
-                        imagePath={detail.image ?? ""}
+                        imagePath={detail?.insurance_type?.image_location}
                         width={205}
                         height={48}
                         alt={"Brand"}
-                        classStyle="max-w-[205px] max-h-[48px]"
+                        classStyle="max-w-[205px] h-auto"
                       />
                     ) : (
                       <Image
@@ -108,7 +111,7 @@ export default async function InsuranceCheckout({
                     id="totalInsurcePrice"
                     className="text-18 font-bold !leading-normal"
                   >
-                    {formatCurrency(totalFee)}
+                    {formatCurrency(totalFee, currencyFormatDisplay)}
                   </p>
                 </div>
               </div>

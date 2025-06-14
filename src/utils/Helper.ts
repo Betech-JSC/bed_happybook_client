@@ -227,7 +227,7 @@ const displayProductPrice = (
   } else {
     displayPrice = Math.round(number).toLocaleString("vi");
   }
-  return `${symbolLeft} ${displayPrice} ${symbolRight}`;
+  return `${symbolLeft}${displayPrice} ${symbolRight}`;
 };
 export {
   decodeHtml,

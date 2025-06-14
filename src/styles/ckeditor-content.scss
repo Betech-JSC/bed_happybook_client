@@ -1,3 +1,6 @@
+.ckeditor_content_container {
+  overflow: auto;
+}
 .ckeditor_content_container *,
 .ckeditor_container .cke_editable * {
   all: revert-layer;
@@ -42,7 +45,10 @@
     border: #d3d3d3 1px dotted;
   }
   img {
-    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 4px;
     height: auto !important;
+    display: block !important;
+    margin: 0 auto !important;
   }
 }

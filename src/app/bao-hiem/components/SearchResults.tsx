@@ -1,5 +1,5 @@
 "use client";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrency, formatMoney } from "@/lib/formatters";
 import Image from "next/image";
 import { format, parse, isValid, differenceInDays } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -165,23 +165,27 @@ export default function SearchResults() {
                     diffDate >= item.day_start && diffDate <= item.day_end
                 );
               const matchedFee =
-                parseInt(matchedInsurancePackagePrice?.price) ?? 0;
+                parseInt(matchedInsurancePackagePrice?.parsed_price) ?? 0;
               const totalFee = matchedFee * (formData.guests ?? 1);
+              const currencyFormatDisplay =
+                item?.currency.toLowerCase() === "usd" ? "en" : "vi";
               return (
                 <>
                   {totalFee > 0 && (
                     <div className="mb-6 last:mb-0  h-fit" key={index}>
-                      <div className="grid grid-cols-8 items-start justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
+                      <div className="grid gap-1 md:gap-2 grid-cols-8 items-start justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
                         <div className="col-span-8 lg:col-span-3">
                           <div className="flex flex-col md:flex-row items-start gap-4 text-center md:text-left mb-3">
                             <div>
-                              {!isEmpty(item.image) ? (
+                              {!isEmpty(item?.insurance_type.image_location) ? (
                                 <DisplayImage
-                                  imagePath={item.image ?? ""}
+                                  imagePath={
+                                    item?.insurance_type.image_location
+                                  }
                                   width={174}
                                   height={58}
                                   alt={"Brand"}
-                                  classStyle="max-w-[174px] max-h-[58px] rounded-sm"
+                                  classStyle="max-w-[174px] h-auto rounded-sm"
                                 />
                               ) : (
                                 <Image
@@ -193,23 +197,41 @@ export default function SearchResults() {
                                 />
                               )}
                             </div>
-                            <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
+                            <div className="flex gap-1 flex-col items-start justify-between space-y-1 lg:space-y-0">
                               <h3 className="text-18 font-bold !leading-normal">
                                 {renderTextContent(item.name)}
                               </h3>
-                              <p className="text-sm font-normal leading-snug text-gray-500">
+                              <p className="text-sm font-normal leading-snug text-gray-500 text-justify">
                                 {renderTextContent(item.description)}
                               </p>
                             </div>
                           </div>
                         </div>
                         <div className="col-span-8 lg:col-span-5">
-                          <div className="grid grid-cols-4">
-                            <div className="hidden lg:block col-span-2 lg:col-span-1">
+                          <div
+                            className={`grid grid-cols-${
+                              currencyFormatDisplay === "vi" ? "4" : "5"
+                            }`}
+                          >
+                            {!isEmpty(item.exchange_rate) &&
+                              currencyFormatDisplay !== "vi" && (
+                                <div className="hidden lg:block col-span-2 lg:col-span-1 text-center">
+                                  <p className="text-gray-700">Tỷ giá</p>
+                                  <div className="flex flex-col items-center justify-between space-y-1 lg:space-y-0">
+                                    <p className="mt-1 leading-snug font-medium">
+                                      {formatCurrency(item.exchange_rate)}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                            <div className="hidden lg:block col-span-2 lg:col-span-1 text-center">
                               <p className="text-gray-700">Giá / Khách</p>
-                              <div className="flex flex-col items-start justify-between space-y-1 lg:space-y-0">
+                              <div className="flex flex-col items-center justify-between space-y-1 lg:space-y-0">
                                 <p className="mt-1 leading-snug font-medium">
-                                  {formatCurrency(matchedFee)}
+                                  {formatCurrency(
+                                    matchedFee,
+                                    currencyFormatDisplay
+                                  )}
                                 </p>
                               </div>
                             </div>
@@ -224,7 +246,10 @@ export default function SearchResults() {
                                 Tổng
                               </p>
                               <p className="mt-1 leading-snug text-primary text-18 font-semibold">
-                                {formatCurrency(totalFee)}
+                                {formatCurrency(
+                                  totalFee,
+                                  currencyFormatDisplay
+                                )}
                               </p>
                             </div>
                             <div className="col-span-4 lg:col-span-1 w-full text-center md:text-right xl:pr-8">
@@ -277,9 +302,12 @@ export default function SearchResults() {
                                     <p className="mb-1">
                                       {renderTextContent(benefit.description)}
                                     </p>
-                                    {benefit.price && (
+                                    {benefit.parsed_price && (
                                       <p className="text-primary text-base font-bold">
-                                        {formatCurrency(benefit.price)}
+                                        {formatCurrency(
+                                          benefit.parsed_price,
+                                          currencyFormatDisplay
+                                        )}
                                       </p>
                                     )}
                                   </div>
