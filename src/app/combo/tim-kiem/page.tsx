@@ -13,7 +13,7 @@ import { translateText } from "@/utils/translateApi";
 import { comboStaticText } from "@/constants/staticText";
 import { getServerLang } from "@/lib/session";
 import { formatTranslationMap } from "@/utils/translateDom";
-import SearchListCombo from "../components/SearchListTour";
+import SearchResult from "../components/SearchResult";
 
 export const metadata: Metadata = {
   title: "Compo Nha Trang",
@@ -62,7 +62,7 @@ export default async function SearchCombo() {
           </Breadcrumb>
           {/* Section Tour */}
           <Suspense>
-            <SearchListCombo
+            <SearchResult
               optionsFilter={optionsFilter}
               translatedStaticText={translationMap}
             />

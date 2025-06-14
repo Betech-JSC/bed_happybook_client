@@ -15,8 +15,9 @@ import { useTranslation } from "@/app/hooks/useTranslation";
 import { translatePage } from "@/utils/translateDom";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 
-export default function SearchListCombo({
+export default function SearchResult({
   optionsFilter,
   translatedStaticText,
 }: {
@@ -57,11 +58,20 @@ export default function SearchListCombo({
       const search = buildSearch(query);
       const res = await ComboApi.search(`/product/combo/search${search}`);
       const result = res?.payload?.data;
-      setData((prevData: any) =>
-        result?.items?.length > 0 && !query.isFilters
-          ? [...prevData, ...result.items]
-          : result?.items
-      );
+
+      setData((prevData: any[]) => {
+        const combined =
+          result?.items.length > 0 && !query.isFilters
+            ? [...prevData, ...result.items]
+            : result.items;
+
+        const uniqueById = Array.from(
+          new Map(combined.map((item: any) => [item.id, item])).values()
+        );
+
+        return uniqueById;
+      });
+
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
@@ -121,79 +131,20 @@ export default function SearchListCombo({
   return (
     <div
       id="wrapper-search-combo"
-      className="flex mt-6 md:space-x-4 items-start pb-8"
+      className="flex flex-col lg:flex-row mt-6 lg:gap-4 items-start pb-8"
     >
-      <div
-        className={`hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl transition-opacity duration-300 ${
-          firstLoad ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        {optionsFilter?.map((item, index) => (
-          <div
-            key={index}
-            className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
-          >
-            <p className="font-semibold" data-translate="true">
-              {item.label}
-            </p>
-            {item.option.map((option, index) => {
-              return (
-                <div
-                  key={option.value}
-                  className="mt-3 flex space-x-2 items-center"
-                >
-                  <input
-                    type="checkbox"
-                    disabled={isDisabled}
-                    id={item.name + index}
-                    value={option.value}
-                    className={TourStyle.custom_checkbox}
-                    onChange={(e) =>
-                      handleFilterChange(`${item.name}[]`, e.target.value)
-                    }
-                  />
-                  {item.name === "star" && (
-                    <div className="flex space-x-1">
-                      {Array.from({ length: 5 }, (_, index) =>
-                        option.value && index < option.value ? (
-                          <Image
-                            key={index}
-                            className="w-auto"
-                            src="/icon/starFull.svg"
-                            alt="Icon"
-                            width={10}
-                            height={10}
-                          />
-                        ) : (
-                          <Image
-                            key={index}
-                            className="w-auto"
-                            src="/icon/star.svg"
-                            alt="Icon"
-                            width={10}
-                            height={10}
-                          />
-                        )
-                      )}
-                    </div>
-                  )}
-                  <label
-                    className={`${
-                      item.name === "star"
-                    } ? "text-[#667085]" : ""`}
-                    htmlFor={item.name + index}
-                    data-translate="true"
-                  >
-                    {option.label}
-                  </label>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+      <div className="lg:block w-full lg:w-3/12">
+        <SideBarFilterProduct
+          setQuery={setQuery}
+          query={query}
+          isDisabled={isDisabled}
+          options={optionsFilter}
+          handleFilterChange={handleFilterChange}
+          handleSortData={handleSortData}
+        />
       </div>
-      <div className="md:w-8/12 lg:w-9/12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="w-full lg:w-9/12">
+        <div className="hidden lg:flex flex-col md:flex-row justify-between items-start md:items-center">
           <h1 className="text-32 font-bold">{t("tim_kiem")}</h1>
           <div className="flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
@@ -216,35 +167,35 @@ export default function SearchListCombo({
             data.map((item: any, index: number) => (
               <div
                 key={index}
-                className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mt-4 transition-opacity duration-700 ${
+                className={`flex flex-col md:flex-row lg:space-x-6 rounded-3xl bg-white mt-4 transition-opacity duration-700 ${
                   translatedText ? "opacity-100" : "opacity-0"
                 }`}
               >
-                <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
+                <div className="w-full md:w-5/12 relative overflow-hidden rounded-t-2xl lg:rounded-none lg:rounded-l-2xl">
                   <Link href={`/combo/chi-tiet/${item.slug}`}>
                     <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
+                      className="block hover:scale-110 ease-in duration-300 cursor-pointer h-auto w-full rounded-t-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
                       src={`${item.image_url}/${item.image_location}`}
                       alt="Image"
                       width={360}
                       height={270}
                       sizes="100vw"
-                      style={{ height: 270 }}
+                      style={{ maxHeight: 270 }}
                     />
                   </Link>
                 </div>
-                <div className="w-full px-3 lg:px-0 lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
-                  <div className="my-4 mr-6">
+                <div className="w-full px-3 lg:px-0 md:w-7/12 flex flex-col justify-between">
+                  <div className="my-4 lg:mr-6">
                     <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                       <Link
                         href={`/combo/chi-tiet/${item.slug}`}
-                        className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
+                        className="w-full md:w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                       >
                         <h2 data-translate="true">
                           {renderTextContent(item.name)}
                         </h2>
                       </Link>
-                      <div className="flex w-[20%] space-x-1">
+                      <div className="flex w-full md:w-[20%] space-x-1">
                         <>
                           {Array.from({ length: 5 }, (_, index) =>
                             item?.combo?.hotel?.star &&
@@ -346,6 +297,13 @@ export default function SearchListCombo({
         {data?.length > 0 && !isLastPage && (
           <div className="mt-4">
             <button
+              onClick={() => {
+                setQuery({
+                  ...query,
+                  page: query.page + 1,
+                  isFilters: false,
+                });
+              }}
               className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
             justify-center items-center hover:border-primary"
             >

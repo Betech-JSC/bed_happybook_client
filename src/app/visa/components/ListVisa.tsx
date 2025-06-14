@@ -13,6 +13,7 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 import SearchFilters from "./SearchFilters";
 import { debounce } from "lodash";
 import { formatCurrency } from "@/lib/formatters";
+import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 
 export default function ListVisa({
   alias,
@@ -106,16 +107,6 @@ export default function ListVisa({
     debouncedSearch();
   }, [debouncedSearch]);
 
-  const resetFilters = () => {
-    setQuery((prev: any) => ({
-      ...prev,
-      page: 1,
-      text: "",
-      "loai_visa[]": [],
-      "diem_den[]": [],
-    }));
-  };
-
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
     setQuery((prevFilters) => {
@@ -159,22 +150,22 @@ export default function ListVisa({
       </div>
     );
   }
+
   return (
     <div
       id="wrapper-search-visa"
       className="block lg:flex mt-6 lg:space-x-4 items-start pb-8"
     >
-      <SearchFilters
-        filters={query}
-        resetFilters={resetFilters}
-        searchParams={searchParams}
-        isDisabled={isDisabled}
-        options={optionsFilter}
-        handleFilterChange={handleFilterChange}
-        handleSortData={handleSortData}
-        textTranSlate={t}
-      />
-
+      <div className="lg:block w-full lg:w-3/12">
+        <SideBarFilterProduct
+          setQuery={setQuery}
+          query={query}
+          isDisabled={isDisabled}
+          options={optionsFilter}
+          handleFilterChange={handleFilterChange}
+          handleSortData={handleSortData}
+        />
+      </div>
       <div className="w-full lg:w-9/12">
         <div className="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center">
           <h1 className="text-32 font-bold">{t("dich_vu_visa")}</h1>
@@ -200,7 +191,7 @@ export default function ListVisa({
               data.map((item: any, index: number) => (
                 <div
                   key={index}
-                  className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 transition-opacity duration-700 ${
+                  className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-3 md:p-5 transition-opacity duration-700 ${
                     translatedText ? "opacity-100" : "opacity-0"
                   }`}
                 >

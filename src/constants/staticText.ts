@@ -81,3 +81,10 @@ export const comboStaticText: string[] = [
   "Đang tải dữ liệu",
   "Xem thêm",
 ];
+
+export const ProductFilterStaticText: string[] = [
+  "Sắp xếp",
+  "Mới nhất",
+  "Cũ nhất",
+  "Không tìm thấy dữ liệu phù hợp",
+];
