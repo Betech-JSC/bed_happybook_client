@@ -20,6 +20,7 @@ import FlightDomesticDetail from "./Detail";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import TimeRangeSlider from "@/components/base/TimeRangeSlider";
+import SideBarFilterFlights from "../SideBarFilter";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -408,155 +409,17 @@ export default function ListFlights({
   if (selectedReturnFlight) returnFlightsData = [selectedReturnFlight];
   return (
     <Fragment>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12">
-        <aside
-          className="lg:col-span-3 bg-white p-4 rounded-2xl"
-          style={{
-            opacity: isReady ? 1 : 0.5,
-          }}
-        >
-          {Array.isArray(flightStopNum) && flightStopNum.length >= 1 && (
-            <div className="pb-3 border-b border-gray-200">
-              <h2 className="font-semibold">{t("so_diem_dung")}</h2>
-              {flightStopNum.map(
-                (stopNum: number, index: number) =>
-                  stopNum >= 1 && (
-                    <div
-                      key={index}
-                      className="flex space-x-2 mt-3 items-center"
-                    >
-                      <input
-                        type="checkbox"
-                        name="stopNum"
-                        value={`${stopNum}`}
-                        id={`stopNum_${index}`}
-                        onChange={handleCheckboxChange}
-                        checked={filters.stopNum.includes(`${stopNum}`)}
-                      />
-                      <label htmlFor={`${`stopNum_${index}`}`}>
-                        {` ${stopNum} ${t("diem_dung")}`}
-                      </label>
-                    </div>
-                  )
-              )}
-            </div>
-          )}
-          {/* <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">{t("hien_thi_gia")}</h2>
-
-            <div className="flex space-x-2 mt-3 items-center">
-              <input
-                type="checkbox"
-                name="priceWithoutTax"
-                value="1"
-                id="priceWithoutTax"
-                onChange={handleCheckboxChange}
-                checked={filters.priceWithoutTax === "1"}
-              />
-              <label htmlFor="priceWithoutTax">
-                {t("gia_chua_bao_gom_thue_phi")}
-              </label>
-            </div>
-          </div> */}
-          <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">Thời gian</h2>
-            <div className="flex flex-col gap-2 mt-3">
-              <div className="flex gap-2">
-                <p>Giờ cất cánh</p>
-                <div className="flex gap-2">
-                  <span>{formatTimeFromHour(filters.departureTime[0])}</span>
-                  <span>-</span>
-                  <span>{formatTimeFromHour(filters.departureTime[1])}</span>
-                </div>
-              </div>
-              <div className="slider-container w-[90%] mx-auto mt-1">
-                <TimeRangeSlider
-                  defaultValue={[0, 24]}
-                  onFinalChange={(time) => {
-                    setFilters((prev) => ({
-                      ...prev,
-                      departureTime: time,
-                    }));
-                  }}
-                  allowCross={false}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 mt-2">
-              <div className="flex gap-2">
-                <p>Giờ hạ cánh</p>
-                <div className="flex gap-2">
-                  <span>{formatTimeFromHour(filters.arrivalTime[0])}</span>
-                  <span>-</span>
-                  <span>{formatTimeFromHour(filters.arrivalTime[1])}</span>
-                </div>
-              </div>
-              <div className="slider-container w-[90%] mx-auto mt-1">
-                <TimeRangeSlider
-                  defaultValue={[0, 24]}
-                  onFinalChange={(time) => {
-                    setFilters((prev) => ({
-                      ...prev,
-                      arrivalTime: time,
-                    }));
-                  }}
-                  allowCross={false}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="mt-3 pb-3 border-b border-gray-200">
-            <h2 className="font-semibold">{t("sap_xep")}</h2>
-
-            <div className="flex space-x-2 mt-3 items-center">
-              {/* <input
-                type="checkbox"
-                name="timeDepart"
-                value="asc"
-                id="sortTimeDepart"
-                onChange={handleCheckboxChange}
-                checked={filters.timeDepart === "asc"}
-              />
-              <label htmlFor="sortTimeDepart">{t("thoi_gian_khoi_hanh")}</label> */}
-            </div>
-            <div className="flex space-x-2 items-center">
-              <input
-                type="checkbox"
-                name="sortAirLine"
-                value="asc"
-                id="sortAirLine"
-                onChange={handleCheckboxChange}
-                checked={filters.sortAirLine === "asc"}
-              />
-              <label htmlFor="sortAirLine">{t("hang_hang_khong")}</label>
-            </div>
-          </div>
-          {airlineData.length > 0 && (
-            <div className="mt-3 pb-3 border-b border-gray-200">
-              <h2 className="font-semibold">{t("hang_hang_khong")}</h2>
-              {airlineData.map((airline, index) => (
-                <div key={index} className="flex space-x-2 mt-3 items-center">
-                  <input
-                    type="checkbox"
-                    name="airLine"
-                    value={airline.code}
-                    id={`airline_${index}`}
-                    onChange={handleCheckboxChange}
-                    checked={filters.airlines.includes(airline.code)}
-                  />
-                  <label htmlFor={`airline_${index}`}>{airline.name}</label>
-                </div>
-              ))}
-            </div>
-          )}
-          <button
-            className="w-full mt-3 py-3 bg-blue-600 text-white rounded-lg font-medium"
-            onClick={resetFilters}
-          >
-            {t("xoa_bo_loc")}
-          </button>
-        </aside>
-        <div className="lg:col-span-9" data-aos="fade">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start mt-6 pb-12">
+        <SideBarFilterFlights
+          flightStopNum={flightStopNum}
+          setFilters={setFilters}
+          filters={filters}
+          handleCheckboxChange={handleCheckboxChange}
+          airlineData={airlineData}
+          resetFilters={resetFilters}
+          t={t}
+        />
+        <div className="xl:col-span-9" data-aos="fade">
           <div className="max-w-5xl mx-auto">
             <div>
               <div ref={departFlightRef}>
