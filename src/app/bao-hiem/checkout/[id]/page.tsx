@@ -73,14 +73,14 @@ export default async function InsuranceCheckout({
             <div className="mt-8 flex space-y-3 flex-wrap lg:flex-none lg:grid grid-cols-8 items-center justify-between bg-white px-3 py-6 lg:px-8 rounded-2xl relative">
               <div className="w-full lg:col-span-6">
                 <div className="flex flex-col md:flex-row item-start gap-2 md:gap-8 text-center">
-                  <div>
+                  <div className="w-full md:w-[120px] flex-shrink-0">
                     {!isEmpty(detail?.insurance_type?.image_location) ? (
                       <DisplayImage
                         imagePath={detail?.insurance_type?.image_location}
                         width={205}
                         height={48}
                         alt={"Brand"}
-                        classStyle="max-w-[205px] h-auto"
+                        classStyle="w-full h-auto rounded-lg object-cover"
                       />
                     ) : (
                       <Image
@@ -88,11 +88,11 @@ export default async function InsuranceCheckout({
                         width={205}
                         height={48}
                         alt={"Brand"}
-                        className="max-w-[205px] max-h-[48px] object-cover rounded-sm"
+                        className="w=full h-auto object-cover rounded-lg"
                       />
                     )}
                   </div>
-                  <div className="text-left flex flex-col justify-between">
+                  <div className="text-left flex flex-col">
                     <p className="text-sm font-normal leading-snug text-gray-500">
                       Gói bảo hiểm
                     </p>
@@ -103,7 +103,7 @@ export default async function InsuranceCheckout({
                 </div>
               </div>
               <div className="w-1/2 lg:w-full lg:col-span-1  text-center h-full">
-                <div className="text-left flex flex-col justify-between h-full">
+                <div className="text-left flex flex-col h-full">
                   <p className="text-sm font-normal leading-snug text-gray-500">
                     Tổng tiền
                   </p>
@@ -115,7 +115,7 @@ export default async function InsuranceCheckout({
                   </p>
                 </div>
               </div>
-              <div className="w-1/2 lg:w-full lg:col-span-1  text-center">
+              <div className="w-1/2 lg:w-full lg:col-span-1 text-center h-full">
                 <Link
                   href={`/bao-hiem?${queryString}`}
                   className="lg:max-w-32 block text-center w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
