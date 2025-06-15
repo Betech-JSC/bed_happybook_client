@@ -5,6 +5,8 @@ import { formatCurrency } from "@/lib/formatters";
 import { VisaApi } from "@/api/Visa";
 import FormCheckOut from "@/app/visa/components/FormCheckOut";
 import { displayProductPrice, renderTextContent } from "@/utils/Helper";
+import DisplayPrice from "@/components/base/DisplayPrice";
+import { isEmpty } from "lodash";
 
 export default async function VisaCheckOut({
   params,
@@ -60,14 +62,16 @@ export default async function VisaCheckOut({
                 {renderTextContent(detail.name)}
               </Link>
               <div className="mt-6 mb-2">
-                <div>
-                  <span className="font-semibold" data-translate="true">
-                    Mã visa:
-                  </span>{" "}
-                  <span data-translate="true">
-                    {renderTextContent(detail.product_visa.ma_visa)}
-                  </span>
-                </div>
+                {!isEmpty(detail.product_visa.ma_visa) && (
+                  <div>
+                    <span className="font-semibold" data-translate="true">
+                      Mã visa:
+                    </span>{" "}
+                    <span data-translate="true">
+                      {renderTextContent(detail.product_visa.ma_visa)}
+                    </span>
+                  </div>
+                )}
                 <div className="mt-1">
                   <span className="font-semibold" data-translate="true">
                     Loại Visa:
@@ -109,13 +113,13 @@ export default async function VisaCheckOut({
                   </span>
                 </div>
               </div>
-              {detail.price > 0 && (
-                <div className=" bg-gray-50 text-end p-2 rounded-lg mt-2">
-                  <span className="text-xl lg:text-2xl text-primary font-bold">
-                    {displayProductPrice(detail.price, detail?.currency)}
-                  </span>
-                </div>
-              )}
+              <div className=" bg-gray-50 text-end p-2 rounded-lg mt-2">
+                <DisplayPrice
+                  textPrefix={"Giá"}
+                  price={detail.price - detail.discount_price}
+                  currency={detail?.currency}
+                />
+              </div>
             </div>
           </div>
         </div>

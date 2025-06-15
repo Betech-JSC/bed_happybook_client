@@ -527,23 +527,23 @@ export default function FlightBookForm({ airportsData }: any) {
                       htmlFor="FirstName"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      <span data-translate="true">Họ</span>
+                      <span data-translate="true">Họ và tên</span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="FirstName"
                       type="text"
-                      {...register("contact.first_name")}
-                      placeholder="Nhập Họ"
+                      {...register("contact.full_name")}
+                      placeholder="Nhập Họ và tên"
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                     />
-                    {errors.contact?.first_name && (
+                    {errors.contact?.full_name && (
                       <p className="text-red-600">
-                        {errors.contact?.first_name.message}
+                        {errors.contact?.full_name.message}
                       </p>
                     )}
                   </div>
-                  <div className="relative">
+                  {/* <div className="relative">
                     <label
                       htmlFor="LastName"
                       className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
@@ -563,7 +563,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         {errors.contact?.last_name.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                   <div className="relative">
                     <label
                       htmlFor="gender_person_contact"

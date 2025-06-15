@@ -271,7 +271,7 @@ export default function SideBarFilterProduct({
               <h2 className="text-2xl font-bold" data-translate="true">
                 Bộ lọc
               </h2>
-              <button
+              {/* <button
                 className="text-xl"
                 onClick={() => {
                   resetFilters();
@@ -285,7 +285,7 @@ export default function SideBarFilterProduct({
                   width={20}
                   height={20}
                 />
-              </button>
+              </button> */}
             </div>
             {showFilterDate && (
               <div className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none">

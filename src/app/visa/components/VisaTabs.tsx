@@ -11,6 +11,7 @@ import {
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { displayProductPrice } from "@/utils/Helper";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 export default function VisaTabs({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -95,24 +96,13 @@ export default function VisaTabs({ data }: any) {
                             </h3>
                           </Link>
                           <div className="mt-2 text-end">
-                            {visa.price > 0 ? (
-                              <>
-                                <span data-translate="true">Giá </span>
-                                <span className="text-[#F27145] font-semibold text-base lg:text-xl">
-                                  {displayProductPrice(
-                                    visa.price,
-                                    visa?.currency
-                                  )}
-                                </span>
-                              </>
-                            ) : (
-                              <span
-                                className="text-[#F27145] font-semibold text-base lg:text-xl"
-                                data-translate="true"
-                              >
-                                Liên hệ
-                              </span>
-                            )}
+                            <DisplayPrice
+                              textPrefix={
+                                visa.discount_price > 0 ? "Giá ưu đãi" : "Giá"
+                              }
+                              price={visa.price - visa.discount_price}
+                              currency={visa?.currency}
+                            />
                           </div>
                         </div>
                       </div>
