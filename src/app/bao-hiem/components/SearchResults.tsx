@@ -173,10 +173,10 @@ export default function SearchResults() {
                 <>
                   {totalFee > 0 && (
                     <div className="mb-6 last:mb-0  h-fit" key={index}>
-                      <div className="grid gap-1 md:gap-2 grid-cols-8 items-start justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
+                      <div className="grid gap-1 grid-cols-8 items-start justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
                         <div className="col-span-8 lg:col-span-3">
                           <div className="flex flex-col md:flex-row items-start gap-4 text-center md:text-left mb-3">
-                            <div>
+                            <div className="w-full md:w-[120px] flex-shrink-0">
                               {!isEmpty(item?.insurance_type.image_location) ? (
                                 <DisplayImage
                                   imagePath={
@@ -185,7 +185,7 @@ export default function SearchResults() {
                                   width={174}
                                   height={58}
                                   alt={"Brand"}
-                                  classStyle="max-w-[174px] h-auto rounded-sm"
+                                  classStyle="w-full h-auto rounded-sm object-cover "
                                 />
                               ) : (
                                 <Image
@@ -193,7 +193,7 @@ export default function SearchResults() {
                                   width={174}
                                   height={58}
                                   alt={"Brand"}
-                                  className="max-w-[174px] max-h-[58px] object-cover rounded-sm"
+                                  className="w-full h-auto object-cover rounded-sm"
                                 />
                               )}
                             </div>
@@ -201,7 +201,7 @@ export default function SearchResults() {
                               <h3 className="text-18 font-bold !leading-normal">
                                 {renderTextContent(item.name)}
                               </h3>
-                              <p className="text-sm font-normal leading-snug text-gray-500 text-justify">
+                              <p className="line-clamp-5 text-sm font-normal leading-snug text-gray-500 text-justify">
                                 {renderTextContent(item.description)}
                               </p>
                             </div>
@@ -209,7 +209,7 @@ export default function SearchResults() {
                         </div>
                         <div className="col-span-8 lg:col-span-5">
                           <div
-                            className={`grid grid-cols-${
+                            className={`grid grid-cols-4 lg:grid-cols-${
                               currencyFormatDisplay === "vi" ? "4" : "5"
                             }`}
                           >

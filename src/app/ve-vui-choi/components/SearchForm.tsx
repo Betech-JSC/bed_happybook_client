@@ -25,11 +25,10 @@ export default function SearchForm() {
   const [locations, setLocations] = useState<Option[]>([]);
   const [mounted, setMounted] = useState(false);
   const locationRef = useRef<Option | null>(null);
-
   const [isLoading, setIsLoading] = useState(false);
-  const isFetchedRef = useRef(false);
+  const isFetchedRef = useRef<boolean>(false);
   const lastFetchedDateRef = useRef<string | null>(null);
-  const hasOpenedRef = useRef(false);
+  const hasOpenedRef = useRef<boolean>(false);
 
   useEffect(() => {
     setMounted(true);
@@ -61,7 +60,7 @@ export default function SearchForm() {
         }`,
         value: `${item.slug}-${item.id}`,
       }));
-      console.log(newOptions);
+
       setLocations(newOptions);
 
       isFetchedRef.current = true;

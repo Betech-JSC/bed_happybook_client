@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse, isValid } from "date-fns";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Select from "react-select";
 import { isNumber } from "lodash";
@@ -16,6 +16,7 @@ import { vi, enUS } from "date-fns/locale";
 export default function SearchFormInsurance() {
   const today = new Date();
   const router = useRouter();
+  const pathname: string = usePathname();
   const { language } = useLanguage();
   const searchParams = useSearchParams();
   const departDateRef = useRef<DatePicker | null>(null);
@@ -26,6 +27,8 @@ export default function SearchFormInsurance() {
   const [destination, setDestination] = useState<InsuranceLocation[]>([]);
   const [totalGuests, setTotalGuests] = useState<number>(1);
   const [areaType, setAreaType] = useState<string>("");
+  const hasOpenedRef = useRef<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<SearchForm>({
     departurePlace: "",
     destinationPlace: "",
@@ -36,7 +39,12 @@ export default function SearchFormInsurance() {
   });
 
   useEffect(() => {
-    const getOptions = async () => {
+    setMounted(true);
+  }, []);
+
+  const getOptions = useCallback(async () => {
+    try {
+      setIsLoading(true);
       const response = await ProductInsurance.location();
       if (response?.payload?.data?.departure?.length) {
         const departure = response?.payload?.data?.departure.map(
@@ -56,14 +64,20 @@ export default function SearchFormInsurance() {
         );
         setDestination(destination);
       }
+      hasOpenedRef.current = true;
       setLocationData(response?.payload?.data ?? []);
-    };
-    getOptions();
+    } catch (error) {
+      console.error("Error fetching", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (pathname === "/bao-hiem") {
+      getOptions();
+    }
+  }, [pathname, getOptions]);
 
   const handleIncrement = () => {
     if (totalGuests < 100) {
@@ -215,6 +229,12 @@ export default function SearchFormInsurance() {
                   IndicatorSeparator: () => null,
                   DropdownIndicator: () => null,
                 }}
+                onMenuOpen={() => {
+                  if (!hasOpenedRef.current) {
+                    getOptions();
+                  }
+                }}
+                isLoading={isLoading}
               />
             )}
           </div>
@@ -277,6 +297,12 @@ export default function SearchFormInsurance() {
                   IndicatorSeparator: () => null,
                   DropdownIndicator: () => null,
                 }}
+                onMenuOpen={() => {
+                  if (!hasOpenedRef.current) {
+                    getOptions();
+                  }
+                }}
+                isLoading={isLoading}
               />
             )}
           </div>
