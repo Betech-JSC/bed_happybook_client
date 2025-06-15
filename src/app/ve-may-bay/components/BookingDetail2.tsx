@@ -604,7 +604,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               </div>
               <div className="w-3/4 ">
                 <p className="font-bold" data-translate="true">
-                  {data.contact.first_name} {data.contact.last_name}
+                  {data?.contact?.full_name}
                 </p>
                 {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
               </div>

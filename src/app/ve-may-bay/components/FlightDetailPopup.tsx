@@ -47,7 +47,7 @@ export default function FlightDetailPopup({
   //   isFareRulesOfStrings =
   //     Array.isArray(flightFareRules) && typeof flightFareRules[0] === "string";
   // }
-  console.log(flightDetail);
+  // console.log(flightDetail);
   return (
     <div
       id="flight-detail-popup-wrapper"

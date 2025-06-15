@@ -171,12 +171,12 @@ export const FlightBookingInforBody = (
             ["male", "female"].includes(val as string),
           { message: messages.required }
         ),
-      first_name: z.string().min(1, { message: messages.required }).max(30, {
+      full_name: z.string().min(3, { message: messages.required }).max(200, {
         message: messages.inValid,
       }),
-      last_name: z.string().min(1, { message: messages.required }).max(100, {
-        message: messages.inValid,
-      }),
+      // last_name: z.string().min(1, { message: messages.required }).max(100, {
+      //   message: messages.inValid,
+      // }),
       phone: z
         .string()
         .min(1, {

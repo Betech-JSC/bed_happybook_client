@@ -273,15 +273,17 @@ export default function ListFlights({
           if (nameCompare !== 0) return nameCompare;
         }
 
+        const priceA = a.fareOptions?.[0]?.totalPrice ?? 0;
+        const priceB = b.fareOptions?.[0]?.totalPrice ?? 0;
+        if (priceA !== priceB) return priceA - priceB;
+
         const stopNumA = a.legs ?? 0;
         const stopNumB = b.legs ?? 0;
         if (stopNumA !== stopNumB) return stopNumA - stopNumB;
 
         const timeA = parseISO(a.departure.at).getTime();
         const timeB = parseISO(b.departure.at).getTime();
-        if (timeA !== timeB) return timeA - timeB;
-
-        return a.fareOptions?.[0]?.totalPrice - b.fareOptions?.[0]?.totalPrice;
+        return timeA - timeB;
       });
     }
     if (isRoundTrip) {

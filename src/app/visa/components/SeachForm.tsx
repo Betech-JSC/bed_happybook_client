@@ -74,11 +74,15 @@ export default function SearchForm({ optionsFilter }: any) {
               Chọn loại Visa
             </option>
             {optionsFilter[0]?.option?.length > 0 &&
-              optionsFilter[0]?.option?.map((value: any, index: number) => {
-                if (value) {
+              optionsFilter[0]?.option?.map((option: any, index: number) => {
+                if (option) {
                   return (
-                    <option key={index} value={value} data-translate>
-                      {value}
+                    <option
+                      key={index}
+                      value={option.value}
+                      data-translate="true"
+                    >
+                      {option.label}
                     </option>
                   );
                 }

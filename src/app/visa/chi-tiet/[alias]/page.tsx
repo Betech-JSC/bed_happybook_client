@@ -29,6 +29,7 @@ import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import { displayProductPrice, renderTextContent } from "@/utils/Helper";
 import { getServerLang } from "@/lib/session";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = await VisaApi.detail(params.alias);
@@ -222,19 +223,13 @@ export default async function CategoryPosts({
                       : ""}
                   </p> */}
                   <div className="flex gap-2 mt-3 items-end w-full justify-end">
-                    <p data-translate="true">Giá</p>
-                    <div className="text-base md:text-xl text-primary font-semibold">
-                      {detail.price > 0 ? (
-                        <p>
-                          {`${displayProductPrice(
-                            detail.price - detail.discount_price,
-                            detail?.currency
-                          )} `}
-                        </p>
-                      ) : (
-                        <span data-translate="true">Liên hệ</span>
-                      )}
-                    </div>
+                    <DisplayPrice
+                      textPrefix={
+                        detail.discount_price > 0 ? "Giá ưu đãi" : "Giá"
+                      }
+                      price={detail.price - detail.discount_price}
+                      currency={detail?.currency}
+                    />
                   </div>
                 </div>
                 {/* // )} */}

@@ -1,5 +1,6 @@
 "use client";
 import { HotelApi } from "@/api/Hotel";
+import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import { formatCurrency } from "@/lib/formatters";
 import TourStyle from "@/styles/tour.module.scss";
 import {
@@ -8,7 +9,6 @@ import {
   renderTextContent,
 } from "@/utils/Helper";
 import { translatePage } from "@/utils/translateDom";
-import { Span } from "next/dist/trace";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -39,16 +39,6 @@ export default function ListHotel({
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [translatedText, setTranslatedText] = useState<boolean>(false);
-  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
-    {}
-  );
-  const toggleExpand = (name: string) => {
-    setExpandedGroups((prev) => ({
-      ...prev,
-      [name]: !prev[name],
-    }));
-  };
 
   const [data, setData] = useState<any>([]);
   const loadData = useCallback(async () => {
@@ -59,11 +49,20 @@ export default function ListHotel({
       const search = buildSearch(query);
       const res = await HotelApi.search(`/product/hotel/search${search}`);
       const result = res?.payload?.data;
-      setData((prevData: any) =>
-        result.items.length > 0 && !query.isFilters
-          ? [...prevData, ...result.items]
-          : result.items
-      );
+
+      setData((prevData: any[]) => {
+        const combined =
+          result?.items.length > 0 && !query.isFilters
+            ? [...prevData, ...result.items]
+            : result.items;
+
+        const uniqueById = Array.from(
+          new Map(combined.map((item: any) => [item.id, item])).values()
+        );
+
+        return uniqueById;
+      });
+
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
@@ -124,10 +123,10 @@ export default function ListHotel({
   return (
     <div
       id="wrapper-search-hotels"
-      className="flex mt-6 md:space-x-4 items-start pb-8"
+      className="flex flex-col lg:flex-row mt-6 gap-4 items-start pb-8"
     >
-      <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
-        <div className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none">
+      <div className="w-full lg:w-3/12 lg:bg-white lg:rounded-2xl">
+        <div className="hidden lg:block p-4 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none">
           <p className="font-semibold" data-translate="true">
             Sắp xếp
           </p>
@@ -146,116 +145,16 @@ export default function ListHotel({
             </option>
           </select>
         </div>
-        {optionsFilter.map((item, index) => {
-          const showAll = expandedGroups[item.name];
-          const ref = (el: HTMLDivElement) => {
-            contentRefs.current[item.name] = el;
-          };
-          const visibleCount = 5;
-          const optionsToShow = item.option;
-          return (
-            <div
-              key={index}
-              className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none text-sm text-gray-700"
-            >
-              <div
-                ref={ref}
-                className={`pb-3 overflow-hidden transition-[max-height] ease-in-out duration-500
-                    `}
-                style={{
-                  maxHeight: showAll
-                    ? `${(optionsToShow.length + 1) * 40}px`
-                    : `${(visibleCount + 1) * 40}px`,
-                }}
-              >
-                <p className="font-semibold" data-translate="true">
-                  {item.label}
-                </p>
-                {optionsToShow.map((option, optionIndex) => {
-                  return (
-                    <div
-                      key={optionIndex}
-                      className={`mt-3 flex space-x-2 items-center ${
-                        !showAll && optionIndex > visibleCount
-                          ? "invisible"
-                          : ""
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        disabled={isDisabled}
-                        id={item.name + optionIndex}
-                        value={option.value}
-                        className={`flex-shrink-0 ${TourStyle.custom_checkbox}`}
-                        onChange={(e) =>
-                          handleFilterChange(`${item.name}[]`, e.target.value)
-                        }
-                      />
-                      {item.name === "star" && (
-                        <div className="flex space-x-1">
-                          {Array.from({ length: 5 }, (_, starIndex) =>
-                            option.value && starIndex < option.value ? (
-                              <Image
-                                key={starIndex}
-                                className="w-auto"
-                                src="/icon/starFull.svg"
-                                alt="Icon"
-                                width={10}
-                                height={10}
-                              />
-                            ) : (
-                              <Image
-                                key={starIndex}
-                                className="w-auto"
-                                src="/icon/star.svg"
-                                alt="Icon"
-                                width={10}
-                                height={10}
-                              />
-                            )
-                          )}
-                        </div>
-                      )}
-                      <label
-                        className={`line-clamp-2 ${
-                          item.name === "star" ? "text-[#667085]" : ""
-                        } `}
-                        htmlFor={item.name + optionIndex}
-                        data-translate="true"
-                      >
-                        {option.label}
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-              {item.option.length > visibleCount && (
-                <button
-                  className="flex items-center rounded-lg gap-2"
-                  onClick={() => toggleExpand(item.name)}
-                >
-                  <span
-                    className="text-[#175CD3] font-medium"
-                    data-translate="true"
-                  >
-                    {showAll ? "Thu gọn" : "Xem thêm"}
-                  </span>
-                  <Image
-                    className={`transform transition-transform ${
-                      showAll ? "rotate-[270deg]" : "rotate-90"
-                    }`}
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </button>
-              )}
-            </div>
-          );
-        })}
+        <SideBarFilterProduct
+          setQuery={setQuery}
+          query={query}
+          isDisabled={isDisabled}
+          options={optionsFilter}
+          handleFilterChange={handleFilterChange}
+          handleSortData={handleSortData}
+        />
       </div>
-      <div className="md:w-8/12 lg:w-9/12">
+      <div className="w-full lg:w-9/12">
         <div className="mb-4">
           {data.length > 0 ? (
             data.map((item: any, index: number) => {
@@ -263,15 +162,15 @@ export default function ListHotel({
               return (
                 <div
                   key={index}
-                  className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white mb-4
-                  transition-opacity duration-700 ${
+                  className={`flex flex-col md:flex-row lg:space-x-6 rounded-3xl bg-white mb-4
+                  transition-opacity duration-700  ${
                     translatedText ? "opacity-100" : "opacity-0"
                   }`}
                 >
-                  <div className="w-full lg:w-5/12 relative overflow-hidden rounded-l-2xl">
+                  <div className="w-full md:w-5/12 relative overflow-hidden md:rounded-l-2xl">
                     <Link href={`/khach-san/chi-tiet/${item.slug}`}>
                       <Image
-                        className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
+                        className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-t-2xl md:rounded-none md:rounded-l-2xl object-cover"
                         src={`${item.image_url}/${item.image_location}`}
                         alt="Image"
                         width={450}
@@ -281,17 +180,17 @@ export default function ListHotel({
                       />
                     </Link>
                   </div>
-                  <div className="w-full px-3 lg:px-0 lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
-                    <div className="my-4 mr-6">
+                  <div className="w-full px-3 lg:px-0 md:w-7/12 flex flex-col justify-between">
+                    <div className="my-4 lg:mr-6">
                       <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                         <Link
                           data-translate="true"
                           href={`/khach-san/chi-tiet/${item.slug}`}
-                          className="w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
+                          className="w-full md:w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                         >
                           {renderTextContent(item.name)}
                         </Link>
-                        <div className="flex w-[20%] space-x-1">
+                        <div className="flex w-full md:w-[20%] space-x-1">
                           <>
                             {Array.from({ length: 5 }, (_, index) =>
                               item?.hotel?.star && index < item.hotel.star ? (
@@ -317,9 +216,9 @@ export default function ListHotel({
                           </>
                         </div>
                       </div>
-                      <div className="flex space-x-2 mt-2 items-center">
+                      <div className="flex space-x-2 mt-2 items-start">
                         <Image
-                          className="w-4 h-4"
+                          className="w-4 h-4 mt-1"
                           src="/icon/marker-pin-01.svg"
                           alt="Icon"
                           width={20}
@@ -331,7 +230,7 @@ export default function ListHotel({
                       </div>
                       {item?.hotel?.amenity_service.length > 0 && (
                         <div className="w-full">
-                          <ul className="mt-2 list-[circle] grid grid-cols-2 items-start pl-4 w-10/12 gap-2">
+                          <ul className="mt-2 list-[circle] grid grid-cols-2 items-start pl-5 w-full lg:w-10/12 gap-4">
                             {item.hotel.amenity_service.map(
                               (service: any, index: number) => (
                                 <li key={index} data-translate="true">
@@ -440,6 +339,13 @@ export default function ListHotel({
         {data.length > 0 && !isLastPage && (
           <div className="mt-4">
             <button
+              onClick={() => {
+                setQuery({
+                  ...query,
+                  page: query.page + 1,
+                  isFilters: false,
+                });
+              }}
               className="flex mx-auto group w-40 py-3 rounded-lg px-4 bg-white mt-6 space-x-2 border duration-300 text__default_hover
             justify-center items-center hover:border-primary"
             >
