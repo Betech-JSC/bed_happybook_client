@@ -1,6 +1,6 @@
 "use client";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { format, isSameDay, parseISO } from "date-fns";
+import { differenceInHours, format, isSameDay, parseISO } from "date-fns";
 import Image from "next/image";
 import { formatTimeFromHour, pareseDateFromString } from "@/lib/formatters";
 import {
@@ -289,20 +289,24 @@ export default function ListFlights({
     }
     if (isRoundTrip) {
       if (selectedDepartFlight && !selectedReturnFlight) {
-        const departureTimeGo = parseISO(
-          selectedDepartFlight.arrival.at
-        ).getTime();
+        const arrivalTimeGo = parseISO(selectedDepartFlight.arrival.at);
         filtered = filtered.filter((flight: any) => {
-          const departureTimeReturn = parseISO(flight.departure.at).getTime();
-          return departureTimeReturn >= departureTimeGo + 2 * 60 * 60 * 1000;
+          const departureTimeReturn = parseISO(flight.departure.at);
+          const hoursDiff = differenceInHours(
+            departureTimeReturn,
+            arrivalTimeGo
+          );
+          return flight.flightLeg === 1 && hoursDiff >= 2;
         });
       } else if (!selectedDepartFlight && selectedReturnFlight) {
-        const departureTimeReturn = parseISO(
-          selectedReturnFlight.departure.at
-        ).getTime();
+        const departureTimeReturn = parseISO(selectedReturnFlight.departure.at);
         filtered = filtered.filter((flight: any) => {
-          const departureTimeGo = parseISO(flight.arrival.at).getTime();
-          return departureTimeGo <= departureTimeReturn - 2 * 60 * 60 * 1000;
+          const arrivalTimeGo = parseISO(flight.arrival.at);
+          const hoursDiff = differenceInHours(
+            departureTimeReturn,
+            arrivalTimeGo
+          );
+          return flight.flightLeg === 0 && hoursDiff >= 2;
         });
       }
     }
@@ -318,8 +322,7 @@ export default function ListFlights({
   // Group Flights
   const groupFlights = (flights: any[]) => {
     if (flights.length < 1) {
-      if (isRoundTrip) return [{ 1: [] }, { 2: [] }];
-      else return [{ 1: [] }];
+      return isRoundTrip ? { 0: [], 1: [] } : { 0: [] };
     }
     const listFlights = flights.reduce((acc, flight) => {
       const leg = flight.flightLeg;
@@ -333,7 +336,7 @@ export default function ListFlights({
     if (isRoundTrip && !listFlights[1]) {
       listFlights[1] = [];
     }
-    return Object.values(listFlights);
+    return listFlights;
   };
 
   // Select Depart and Return Flight
