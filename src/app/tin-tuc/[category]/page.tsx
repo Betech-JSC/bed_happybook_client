@@ -78,7 +78,7 @@ export default async function CategoryPosts({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/" className="text-blue-700" data-translate>
+                <Link href="/" className="text-blue-700" data-translate="true">
                   Trang chủ
                 </Link>
               </BreadcrumbLink>
@@ -86,12 +86,24 @@ export default async function CategoryPosts({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/tin-tuc" className="text-gray-700" data-translate>
+                <Link
+                  href="/tin-tuc"
+                  className="text-blue-700"
+                  data-translate="true"
+                >
                   Tin tức
                 </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
+
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="#" className="text-gray-700" data-translate="true">
+                  {category?.name}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <div className="flex flex-col md:flex-row mt-12 md:space-x-16">
@@ -111,7 +123,7 @@ export default async function CategoryPosts({
                     className="text-sm font-medium text-gray-700 py-[6px] px-[10px] text__default_hover"
                   >
                     <Link href={`/tin-tuc/${item.alias}`}>
-                      <h2 data-translate> {item.name}</h2>
+                      <h2 data-translate="true"> {item.name}</h2>
                     </Link>
                   </li>
                 ))}
@@ -144,10 +156,10 @@ export default async function CategoryPosts({
                           href={`/${item.alias}`}
                           className={`text-[18px] leading-[26.1px] ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                         >
-                          <h3 data-translate>{item.title}</h3>
+                          <h3 data-translate="true">{item.title}</h3>
                         </Link>
                         <div
-                          data-translate
+                          data-translate="true"
                           className="text-sm text-gray-700 line-clamp-3 mt-2 text-justify"
                           dangerouslySetInnerHTML={{
                             __html: !isEmpty(item.description)
@@ -162,7 +174,7 @@ export default async function CategoryPosts({
                     </div>
                   ))
                 ) : (
-                  <p className="text-xl" data-translate>
+                  <p className="text-xl" data-translate="true">
                     Tin tức đang cập nhật....
                   </p>
                 )}

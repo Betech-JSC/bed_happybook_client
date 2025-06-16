@@ -38,8 +38,8 @@ export default function SideBar({ categories, news }: SidebarProps) {
           Bài viết phổ biến
         </p>
         <div>
-          {news.length > 0 ? (
-            news.map((item, index) => (
+          {news?.length > 0 &&
+            news.map((item) => (
               <div
                 key={item.id}
                 className={`mt-3 flex space-x-3 items-center pb-3 border-b-[1px] border-gray-200 ${Post.post__item}`}
@@ -49,7 +49,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                     <Link href={`/${item.alias}`}>
                       <Image
                         className="ease-in duration-300"
-                        src={`/posts/popular/${index + 1}.png`}
+                        src={`${item.image_url}/${item.image_location}`}
                         alt="Tin tức"
                         width={140}
                         height={100}
@@ -70,12 +70,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                   <p className="text-sm mt-2">{formatDate(item.created_at)}</p>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="my-4 text-xl" data-translate>
-              Tin tức đang cập nhật....
-            </p>
-          )}
+            ))}
         </div>
       </div>
     </div>
