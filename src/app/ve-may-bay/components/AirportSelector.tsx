@@ -90,11 +90,11 @@ export default function AirportPopupSelector({
     }
   }, [selectedDeparture, selectedDestination]);
 
-  useEffect(() => {
-    if (isPopupVisible && inputSearchRef.current) {
-      inputSearchRef.current?.focus();
-    }
-  }, [isPopupVisible]);
+  // useEffect(() => {
+  //   if (isPopupVisible && inputSearchRef.current) {
+  //     inputSearchRef.current?.focus();
+  //   }
+  // }, [isPopupVisible]);
 
   useEffect(() => {
     debounceRef.current = debounce((query: string) => {

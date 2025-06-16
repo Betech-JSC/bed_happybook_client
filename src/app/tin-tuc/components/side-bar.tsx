@@ -8,7 +8,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
   return (
     <div className="basis-full md:basis-[35%]">
       <div className="hidden md:block p-6 border-t-4 border-blue-700 bg-gray-50 rounded-b-2xl">
-        <p className="text-2xl font-bold" data-translate>
+        <p className="text-2xl font-bold" data-translate="true">
           Chủ đề khác
         </p>
         <div>
@@ -23,23 +23,23 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 }
                 className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
               >
-                <h2 data-translate>{item.name}</h2>
+                <h2 data-translate="true">{item.name}</h2>
               </Link>
             ))
           ) : (
-            <p className="mt-3 text-xl" data-translate>
+            <p className="mt-3 text-xl" data-translate="true">
               Chủ đề đang cập nhật...
             </p>
           )}
         </div>
       </div>
-      <div className="mt-4">
-        <p className="text-2xl font-bold" data-translate>
-          Bài viết phổ biến
-        </p>
-        <div>
-          {news?.length > 0 &&
-            news.map((item) => (
+      {news?.length > 0 && (
+        <div className="mt-4">
+          <p className="text-2xl font-bold" data-translate="true">
+            Bài viết phổ biến
+          </p>
+          <div>
+            {news.map((item) => (
               <div
                 key={item.id}
                 className={`mt-3 flex space-x-3 items-center pb-3 border-b-[1px] border-gray-200 ${Post.post__item}`}
@@ -61,7 +61,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 <div className="basis-[65%]">
                   <Link href={`/${item.alias}`}>
                     <h3
-                      data-translate
+                      data-translate="true"
                       className={`text-base ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                     >
                       {item.title}
@@ -71,8 +71,9 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 </div>
               </div>
             ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -30,6 +30,7 @@ import { formatTranslationMap, translatePage } from "@/utils/translateDom";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
 import { toastMessages, validationMessages } from "@/lib/messages";
+import VoucherInput from "@/components/product/components/VoucherInput";
 
 export default function FlightBookForm({ airportsData }: any) {
   const router = useRouter();
@@ -1780,6 +1781,9 @@ export default function FlightBookForm({ airportsData }: any) {
                     : "0đ"}
                 </p>
               </div>
+              {/* <div className="pt-4 border-t">
+                <VoucherInput />
+              </div> */}
               <div className="flex pt-4 justify-between border-t border-t-gray-200">
                 <span
                   className=" text-gray-700 font-bold"
