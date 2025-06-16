@@ -99,7 +99,11 @@ export default async function Posts({
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/" className="text-blue-700" data-translate>
+                    <Link
+                      href="/"
+                      className="text-blue-700"
+                      data-translate="true"
+                    >
                       Trang chủ
                     </Link>
                   </BreadcrumbLink>
@@ -110,7 +114,7 @@ export default async function Posts({
                     <Link
                       href="/tin-tuc"
                       className="text-blue-700"
-                      data-translate
+                      data-translate="true"
                     >
                       Tin tức
                     </Link>
@@ -121,10 +125,22 @@ export default async function Posts({
                   <BreadcrumbLink asChild>
                     <Link
                       href={`/tin-tuc/${detail.category.alias}`}
-                      className="text-gray-700"
-                      data-translate
+                      className="text-blue-700"
+                      data-translate="true"
                     >
                       {detail.category.name}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link
+                      href="#"
+                      className="text-gray-700"
+                      data-translate="true"
+                    >
+                      {detail?.title}
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -132,14 +148,17 @@ export default async function Posts({
             </Breadcrumb>
             <div className="h-6 cursor-pointer mt-8 rounded">
               <p
-                data-translate
+                data-translate="true"
                 className="inline-block rounded text-blue-700 py-1 px-2 text-sm font-medium hover:bg-blue-200 duration-300 bg-[#EFF8FF]"
               >
                 {detail.category.name}
               </p>
             </div>
             <div className="post__detail mt-4">
-              <h1 className="text-gray-900 text-32 font-bold" data-translate>
+              <h1
+                className="text-gray-900 text-32 font-bold"
+                data-translate="true"
+              >
                 {detail.title}
               </h1>
               <div className="my-6">
@@ -152,7 +171,7 @@ export default async function Posts({
                 />
               </div>
               <div
-                data-translate
+                data-translate="true"
                 className="mb-8 pb-8 border-b-2 border-gray-200"
               >
                 <DisplayContentEditor content={detail?.description} />
@@ -173,7 +192,7 @@ export default async function Posts({
           <div className="mt-8">
             <h3
               className="pl-2 border-l-4 border-[#F27145] text-3xl font-bold"
-              data-translate
+              data-translate="true"
             >
               Các bài viết liên quan
             </h3>
@@ -195,8 +214,8 @@ export default async function Posts({
                           <div className="overflow-hidden rounded-xl">
                             <Link href={`/${post.alias}`}>
                               <Image
-                                className="ease-in duration-300"
-                                src="/posts/related/1.png"
+                                className="ease-in duration-300 lg:h-[256px] object-cover"
+                                src={`${post.image_url}/${post.image_location}`}
                                 alt="Tin tức"
                                 width={410}
                                 height={272}
@@ -206,7 +225,7 @@ export default async function Posts({
                           </div>
                           <Link href={`/${post.alias}`}>
                             <p
-                              data-translate
+                              data-translate="true"
                               className={`min-h-12 ease-in duration-300 text-base font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                             >
                               {post.title}
