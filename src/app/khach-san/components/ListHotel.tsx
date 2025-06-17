@@ -46,6 +46,7 @@ export default function ListHotel({
       setTranslatedText(false);
       setLoadingLoadMore(true);
       setIsDisabled(true);
+      setIsLastPage(false);
       const search = buildSearch(query);
       const res = await HotelApi.search(`/product/hotel/search${search}`);
       const result = res?.payload?.data;
@@ -88,12 +89,14 @@ export default function ListHotel({
         return {
           ...prevFilters,
           [group]: groupFilters.filter((item: string) => item !== value),
+          page: 1,
           isFilter: true,
         };
       } else {
         return {
           ...prevFilters,
           [group]: [...groupFilters, value],
+          page: 1,
           isFilter: true,
         };
       }
@@ -102,7 +105,7 @@ export default function ListHotel({
   const handleSortData = (value: string) => {
     setData([]);
     const [sort, order] = value.split("|");
-    setQuery({ ...query, sort: sort, order: order, isFilter: true });
+    setQuery({ ...query, page: 1, sort: sort, order: order, isFilter: true });
   };
 
   useEffect(() => {
