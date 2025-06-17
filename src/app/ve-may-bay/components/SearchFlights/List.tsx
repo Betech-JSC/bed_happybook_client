@@ -32,6 +32,7 @@ const defaultFilers: filtersFlight = {
   departureTime: [0, 24],
   arrivalTime: [0, 24],
 };
+const INITIAL_LIMIT = 5;
 
 export default function ListFlights({
   airportsData,
@@ -55,7 +56,6 @@ export default function ListFlights({
   translatedStaticText,
   isReady,
 }: ListFlight) {
-  const INITIAL_LIMIT = 5;
   const router = useRouter();
   const { t } = useTranslation(translatedStaticText);
   const { language } = useLanguage();
@@ -410,6 +410,68 @@ export default function ListFlights({
   let returnFlightsData = flightsGroup[1] ?? [];
   if (selectedDepartFlight) departFlightsData = [selectedDepartFlight];
   if (selectedReturnFlight) returnFlightsData = [selectedReturnFlight];
+
+  // Load more depart flights
+  const visibleDepartData = departFlightsData.slice(0, departLimit);
+  const loadMoreDepartRef = useRef<HTMLDivElement | null>(null);
+  const timeoutDepartId = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!loadMoreDepartRef.current || departLimit >= departFlightsData.length)
+      return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          timeoutDepartId.current = setTimeout(() => {
+            setDepartLimit((prev) =>
+              Math.min(prev + INITIAL_LIMIT, departFlightsData.length)
+            );
+            timeoutDepartId.current = null;
+          }, 500);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loadMoreDepartRef.current);
+
+    return () => {
+      observer.disconnect();
+      if (timeoutDepartId.current) clearTimeout(timeoutDepartId.current);
+    };
+  }, [departLimit, departFlightsData.length]);
+
+  // Load more return flights
+  const visibleReturnData = returnFlightsData.slice(0, returnLimit);
+  const loadMoreReturnRef = useRef<HTMLDivElement | null>(null);
+  const timeoutReturnId = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (!loadMoreReturnRef.current || returnLimit >= returnFlightsData.length)
+      return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          timeoutReturnId.current = setTimeout(() => {
+            setReturnLimit((prev) =>
+              Math.min(prev + INITIAL_LIMIT, returnFlightsData.length)
+            );
+            timeoutReturnId.current = null;
+          }, 500);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loadMoreReturnRef.current);
+
+    return () => {
+      observer.disconnect();
+      if (timeoutReturnId.current) clearTimeout(timeoutReturnId.current);
+    };
+  }, [returnLimit, returnFlightsData.length]);
+
   return (
     <Fragment>
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start mt-6 pb-12">
@@ -482,53 +544,30 @@ export default function ListFlights({
                     </button>
                   ))}
                 </div>
-                {departFlightsData.length > 0 ? (
+                {visibleDepartData.length > 0 ? (
                   <div className="mt-6">
-                    {departFlightsData
-                      .slice(0, departLimit)
-                      .map((item: any, index: number) => (
-                        <div key={index}>
-                          <FlightDomesticDetail
-                            FareData={item}
-                            onSelectFlight={handleSelectDepartFlight}
-                            selectedFlight={selectedDepartFlight}
-                            setFlightDetail={handleShowPopupFlightDetail}
-                            filters={filters}
-                            totalPassengers={totalPassengers}
-                            translatedStaticText={translatedStaticText}
-                          />
-                        </div>
-                      ))}
+                    {visibleDepartData.map((item: any, index: number) => (
+                      <div key={index}>
+                        <FlightDomesticDetail
+                          FareData={item}
+                          onSelectFlight={handleSelectDepartFlight}
+                          selectedFlight={selectedDepartFlight}
+                          setFlightDetail={handleShowPopupFlightDetail}
+                          filters={filters}
+                          totalPassengers={totalPassengers}
+                          translatedStaticText={translatedStaticText}
+                        />
+                      </div>
+                    ))}
                     {departLimit < departFlightsData.length && (
                       <div
-                        onClick={handleLoadMoreDepart}
-                        className="group hover:border-primary duration-300 max-w-[250px] text-center 
-                      flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white
-                       text-gray-700 rounded-lg"
+                        ref={loadMoreDepartRef}
+                        className="mt-4 h-10 text-center inline-flex justify-center items-center w-full gap-3"
                       >
-                        <button
-                          type="button"
-                          className="group-hover:text-primary duration-300"
-                        >
-                          Xem thêm chuyến bay
-                        </button>
-                        <div>
-                          <svg
-                            className="group-hover:stroke-primary stroke-[#283448] duration-300"
-                            width="22"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M5 7.5L10 12.5L15 7.5"
-                              strokeWidth="1.66667"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </div>
+                        <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
+                        <span className="text-18">
+                          {t("dang_tai_them_chuyen_bay")}...
+                        </span>
                       </div>
                     )}
                   </div>
@@ -602,53 +641,30 @@ export default function ListFlights({
                       </button>
                     ))}
                   </div>
-                  {returnFlightsData.length > 0 ? (
+                  {visibleReturnData.length > 0 ? (
                     <div className="my-6">
-                      {returnFlightsData
-                        .slice(0, returnLimit)
-                        .map((item: any, index: number) => (
-                          <div key={index}>
-                            <FlightDomesticDetail
-                              FareData={item}
-                              onSelectFlight={handleSelectReturnFlight}
-                              selectedFlight={selectedReturnFlight}
-                              setFlightDetail={handleShowPopupFlightDetail}
-                              filters={filters}
-                              totalPassengers={totalPassengers}
-                              translatedStaticText={translatedStaticText}
-                            />
-                          </div>
-                        ))}
+                      {visibleReturnData.map((item: any, index: number) => (
+                        <div key={index}>
+                          <FlightDomesticDetail
+                            FareData={item}
+                            onSelectFlight={handleSelectReturnFlight}
+                            selectedFlight={selectedReturnFlight}
+                            setFlightDetail={handleShowPopupFlightDetail}
+                            filters={filters}
+                            totalPassengers={totalPassengers}
+                            translatedStaticText={translatedStaticText}
+                          />
+                        </div>
+                      ))}
                       {returnLimit < returnFlightsData.length && (
                         <div
-                          onClick={handleLoadMoreReturn}
-                          className="group hover:border-primary duration-300 max-w-[250px] text-center 
-                      flex gap-2 mt-6 mx-auto py-3 justify-center items-center border border-gray-300 bg-white
-                       text-gray-700 rounded-lg"
+                          ref={loadMoreReturnRef}
+                          className="mt-4 h-10 text-center inline-flex justify-center items-center w-full gap-3"
                         >
-                          <button
-                            type="button"
-                            className="group-hover:text-primary duration-300"
-                          >
-                            Xem thêm chuyến bay
-                          </button>
-                          <div>
-                            <svg
-                              className="group-hover:stroke-primary stroke-[#283448] duration-300"
-                              width="22"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M5 7.5L10 12.5L15 7.5"
-                                strokeWidth="1.66667"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
+                          <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
+                          <span className="text-18">
+                            {t("dang_tai_them_chuyen_bay")}...
+                          </span>
                         </div>
                       )}
                     </div>
