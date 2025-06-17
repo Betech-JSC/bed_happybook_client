@@ -23,6 +23,7 @@ import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 import ImageGallery from "../components/ImageGallery";
 import TicketOptionContent from "../components/TicketOptionContent";
 import Schedule from "../components/Schedule";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 export default async function EntertainmentTicketDetail({
   params,
@@ -171,9 +172,12 @@ export default async function EntertainmentTicketDetail({
                               </div>
                               <div className="flex items-start justify-between">
                                 <div>
-                                  <span className="text-base mr-4">
-                                    {formatCurrency(ticket.day_price)}
-                                  </span>
+                                  <DisplayPrice
+                                    className={`!text-base mr-4 text-black !font-normal`}
+                                    price={ticket.day_price}
+                                    currency={detail?.currency}
+                                  />
+
                                   <p
                                     className="text-sm text-gray-500 mt-1"
                                     data-translate="true"
