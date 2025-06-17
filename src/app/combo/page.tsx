@@ -104,7 +104,7 @@ export default async function CompoTour() {
                           className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
                         >
                           <div className="overflow-hidden rounded-lg relative">
-                            <Link href={`/combo/chi-tiet/${item.slug}`}>
+                            <Link href={`/combo/${item.slug}`}>
                               <Image
                                 src={`${item.image_url}/${item.image_location}`}
                                 width={365}
@@ -115,7 +115,7 @@ export default async function CompoTour() {
                               />
                             </Link>
                             <div className="absolute bottom-3 left-2 text-white px-3 py-1">
-                              <Link href={`/combo/chi-tiet/${item.slug}`}>
+                              <Link href={`/combo/${item.slug}`}>
                                 <h3
                                   className="line-clamp-2"
                                   data-translate="true"

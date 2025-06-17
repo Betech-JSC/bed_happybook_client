@@ -7,13 +7,13 @@ import TourStyle from "@/styles/tour.module.scss";
 import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
-import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
 import { translatePage } from "@/utils/translateDom";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { format, isValid } from "date-fns";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 type optionFilterType = {
   label: string;
@@ -53,6 +53,7 @@ export default function Search({
       setTranslatedText(false);
       setLoadingLoadMore(true);
       setIsDisabled(true);
+      setIsLastPage(false);
       const search = buildSearch(query);
       const res = await ProductYachtApi.search(`${search}`);
       const result = res?.payload?.data;
@@ -96,12 +97,14 @@ export default function Search({
         return {
           ...prevFilters,
           [group]: groupFilters.filter((item: string) => item !== value),
+          page: 1,
           isFilter: true,
         };
       } else {
         return {
           ...prevFilters,
           [group]: [...groupFilters, value],
+          page: 1,
           isFilter: true,
         };
       }
@@ -111,7 +114,7 @@ export default function Search({
   const handleSortData = (value: string) => {
     setData([]);
     const [sort, order] = value.split("|");
-    setQuery({ ...query, sort: sort, order: order, isFilters: true });
+    setQuery({ ...query, page: 1, sort: sort, order: order, isFilters: true });
   };
 
   useEffect(() => {
@@ -180,7 +183,7 @@ export default function Search({
                       }`}
                     >
                       <Link
-                        href={`/du-thuyen/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/du-thuyen/${item.slug}?departDate=${query.departureDate}`}
                       >
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
@@ -195,17 +198,18 @@ export default function Search({
                     </div>
                     <div className="py-3 px-5 bg-white rounded-b-xl">
                       <Link
-                        href={`/du-thuyen/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/du-thuyen/${item.slug}?departDate=${query.departureDate}`}
                         className="text-base font-bold line-clamp-2 h-12"
                         data-translate="true"
                       >
                         {renderTextContent(item.name)}
                       </Link>
                       <div className="mt-1 text-end">
-                        <span>Giá từ </span>
-                        <span className="text-xl font-semibold text-right text-primary">
-                          {formatCurrency(item.minPrice)}
-                        </span>
+                        <DisplayPrice
+                          price={item.minPrice}
+                          textPrefix="Giá từ"
+                          currency={item?.currency}
+                        />
                       </div>
                     </div>
                   </div>

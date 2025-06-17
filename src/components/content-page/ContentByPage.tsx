@@ -33,14 +33,14 @@ export default function ContentByPage({ data }: any) {
   return (
     <Fragment>
       {data.title && (
-        <h3 className="text-2xl font-bold" data-translate="true">
+        <h3 className="mb-3 text-2xl font-bold" data-translate="true">
           {renderTextContent(data.title)}
         </h3>
       )}
       <div className="relative">
         <div
           ref={contentRef}
-          className={`text-base mt-3 transition-[max-height] ease-in-out duration-500 overflow-hidden  `}
+          className={`text-base transition-[max-height] ease-in-out duration-500 overflow-hidden  `}
           style={{
             maxHeight: isExpanded
               ? `${contentHeight}px`

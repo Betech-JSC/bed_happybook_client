@@ -428,7 +428,7 @@ export default function ListFlights({
               Math.min(prev + INITIAL_LIMIT, departFlightsData.length)
             );
             timeoutDepartId.current = null;
-          }, 500);
+          }, 200);
         }
       },
       { threshold: 1 }
@@ -458,7 +458,7 @@ export default function ListFlights({
               Math.min(prev + INITIAL_LIMIT, returnFlightsData.length)
             );
             timeoutReturnId.current = null;
-          }, 500);
+          }, 200);
         }
       },
       { threshold: 1 }
@@ -565,9 +565,9 @@ export default function ListFlights({
                         className="mt-4 h-10 text-center inline-flex justify-center items-center w-full gap-3"
                       >
                         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-                        <span className="text-18">
+                        {/* <span className="text-18">
                           {t("dang_tai_them_chuyen_bay")}...
-                        </span>
+                        </span> */}
                       </div>
                     )}
                   </div>
@@ -662,9 +662,9 @@ export default function ListFlights({
                           className="mt-4 h-10 text-center inline-flex justify-center items-center w-full gap-3"
                         >
                           <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-                          <span className="text-18">
+                          {/* <span className="text-18">
                             {t("dang_tai_them_chuyen_bay")}...
-                          </span>
+                          </span> */}
                         </div>
                       )}
                     </div>

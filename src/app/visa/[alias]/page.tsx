@@ -45,9 +45,9 @@ export default async function CategoryPosts({
   }
   const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
     ?.data as any;
-  const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("visa", language))?.payload
-    ?.data as any;
+  // const language = await getServerLang();
+  // const contentPage = (await PageApi.getContent("visa", language))?.payload
+  //   ?.data as any;
   return (
     <SeoSchema
       article={category}
@@ -108,11 +108,9 @@ export default async function CategoryPosts({
       </div>
       <div className="px-3 lg:px-[80px] max__screen">
         {/* Blog */}
-        {contentPage?.content && (
+        {category?.content && (
           <div className="mt-8 rounded-2xl bg-gray-50 p-8">
-            <div className="mt-8 rounded-2xl bg-gray-50 p-8">
-              <ContentByPage data={contentPage} />
-            </div>
+            <ContentByPage data={category} />
           </div>
         )}
         {/* Faq */}

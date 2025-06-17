@@ -16,14 +16,14 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Fragment } from "react";
-import ImageGallery from "../../components/ImageGallery";
-import Tabs from "../../components/Tabs";
-import Hotel from "../../components/Hotel";
 import CompoItem from "@/components/product/components/CompoItem";
 import { ComboApi } from "@/api/Combo";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
+import ImageGallery from "../components/ImageGallery";
+import Tabs from "../components/Tabs";
+import Hotel from "../components/Hotel";
 
 export const metadata: Metadata = {
   title: "Combo 3N2Đ Vinpearl Resort Nha Trang 5 sao + Vé máy bay",
@@ -176,7 +176,7 @@ export default async function CompoDetail({
                 </div>
                 <div className="mt-6">
                   <Link
-                    href={`/combo/chi-tiet/${detail?.slug}/checkout`}
+                    href={`/combo/${detail?.slug}/checkout`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
                     <span

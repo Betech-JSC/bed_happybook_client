@@ -10,19 +10,19 @@ import {
 import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
-import ImageGallery from "../../components/ImageGallery";
 import { ProductTicket } from "@/api/ProductTicket";
 import { renderTextContent } from "@/utils/Helper";
 import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
-import Schedule from "../../components/Schedule";
 import "@/styles/ckeditor-content.scss";
 import { format, parse, parseISO } from "date-fns";
 import { isEmpty } from "lodash";
 import SmoothScrollLink from "@/components/base/SmoothScrollLink";
-import TicketOptionContent from "../../components/TicketOptionContent";
 import "@/styles/ckeditor-content.scss";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
+import ImageGallery from "../components/ImageGallery";
+import TicketOptionContent from "../components/TicketOptionContent";
+import Schedule from "../components/Schedule";
 
 export default async function EntertainmentTicketDetail({
   params,
@@ -186,7 +186,7 @@ export default async function EntertainmentTicketDetail({
                           ))}
                           <div className="text-end mt-6 mb-2">
                             <Link
-                              href={`/ve-vui-choi/chi-tiet/${
+                              href={`/ve-vui-choi/${
                                 detail?.slug
                               }/checkout?option=${option.id}&departDate=${
                                 searchParams.departDate ?? ""

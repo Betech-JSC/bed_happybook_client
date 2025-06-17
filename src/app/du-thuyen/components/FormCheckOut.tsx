@@ -21,6 +21,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { datePickerLocale } from "@/constants/language";
 import { isEmpty } from "lodash";
 import { format, parse } from "date-fns";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 interface Ticket {
   id: number;
@@ -303,9 +304,12 @@ export default function CheckOutForm({
                       </div>
                       <div className="flex items-start md:w-[30%] justify-between">
                         <div>
-                          <span className="text-base mr-4">
-                            {formatCurrency(ticket.price)}
-                          </span>
+                          <DisplayPrice
+                            className={`!text-base mr-4 text-black !font-normal`}
+                            price={ticket.price}
+                            currency={product?.currency}
+                          />
+
                           <p
                             className="text-sm text-gray-500 mt-1"
                             data-translate="true"
@@ -681,17 +685,20 @@ export default function CheckOutForm({
             {tickets?.map((item: any) => (
               <div key={item.id} className="mt-2 flex justify-between">
                 <span data-translate="true">{item.title}</span>
-                <span className="font-bold text-sm">
-                  {`${formatCurrency(item.price)} x ${item.quantity}`}
-                </span>
+                <div className="font-bold text-sm flex gap-1">
+                  <DisplayPrice
+                    className={`!font-bold !text-sm text-black`}
+                    price={item.price}
+                    currency={product?.currency}
+                  />
+                  <span>{` x ${item.quantity}`}</span>
+                </div>
               </div>
             ))}
           </div>
           <div className="mt-4 flex justify-between">
             <span data-translate="true">Tổng cộng</span>
-            <span className="font-bold text-base text-primary">
-              {formatCurrency(totalPrice)}
-            </span>
+            <DisplayPrice price={totalPrice} currency={product?.currency} />
           </div>
         </div>
       </div>

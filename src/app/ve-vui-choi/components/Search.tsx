@@ -46,25 +46,16 @@ export default function Search({
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
-    {}
-  );
-  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
   const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
 
-  const toggleExpand = (name: string) => {
-    setExpandedGroups((prev) => ({
-      ...prev,
-      [name]: !prev[name],
-    }));
-  };
   const loadData = useCallback(async () => {
     try {
       setTranslatedText(false);
       setLoadingLoadMore(true);
       setIsDisabled(true);
+      setIsLastPage(false);
+
       const search = buildSearch(query);
       const res = await ProductTicket.search(`${search}`);
       const result = res?.payload?.data;
@@ -108,12 +99,14 @@ export default function Search({
         return {
           ...prevFilters,
           [group]: groupFilters.filter((item: string) => item !== value),
+          page: 1,
           isFilter: true,
         };
       } else {
         return {
           ...prevFilters,
           [group]: [...groupFilters, value],
+          page: 1,
           isFilter: true,
         };
       }
@@ -122,7 +115,7 @@ export default function Search({
   const handleSortData = (value: string) => {
     setData([]);
     const [sort, order] = value.split("|");
-    setQuery({ ...query, sort: sort, order: order, isFilters: true });
+    setQuery({ ...query, page: 1, sort: sort, order: order, isFilters: true });
   };
 
   useEffect(() => {
@@ -191,7 +184,7 @@ export default function Search({
                       }`}
                     >
                       <Link
-                        href={`/ve-vui-choi/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/ve-vui-choi/${item.slug}?departDate=${query.departureDate}`}
                       >
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
@@ -206,7 +199,7 @@ export default function Search({
                     </div>
                     <div className="py-3 px-5 bg-white rounded-b-xl">
                       <Link
-                        href={`/ve-vui-choi/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/ve-vui-choi/${item.slug}?departDate=${query.departureDate}`}
                         className="text-base font-bold line-clamp-2 h-12"
                         data-translate="true"
                       >

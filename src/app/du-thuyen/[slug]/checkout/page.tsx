@@ -1,6 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
-import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import CheckOutForm from "@/app/du-thuyen/components/FormCheckOut";
