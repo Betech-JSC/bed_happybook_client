@@ -14,7 +14,7 @@ export default function CompoItem({ data }: any) {
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
-        <Link href={`/combo/chi-tiet/${data.slug}`}>
+        <Link href={`/combo/${data.slug}`}>
           <Image
             className="hover:scale-110 ease-in duration-300 cursor-pointer object-cover"
             src={`${data.image_url}/${data.image_location}`}
@@ -38,7 +38,7 @@ export default function CompoItem({ data }: any) {
       </div>
       <div className="py-3 px-4">
         <Link
-          href={`/combo/chi-tiet/${data.slug}`}
+          href={`/combo/${data.slug}`}
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
           <h3 data-translate="true">{data.name}</h3>

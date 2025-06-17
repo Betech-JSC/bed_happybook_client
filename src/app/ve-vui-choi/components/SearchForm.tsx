@@ -98,7 +98,7 @@ export default function SearchForm() {
       );
       const lastDashIndex = locationSelected.value.lastIndexOf("-");
       const slug = locationSelected.value.substring(0, lastDashIndex);
-      router.push(`/ve-vui-choi/chi-tiet/${slug}?departDate=${date}`);
+      router.push(`/ve-vui-choi/${slug}?departDate=${date}`);
     } else {
       toast.dismiss();
       toast.error("Vui lòng chọn đầy đủ thông tin");

@@ -180,7 +180,7 @@ export default function Search({
                       }`}
                     >
                       <Link
-                        href={`/du-thuyen/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/du-thuyen/${item.slug}?departDate=${query.departureDate}`}
                       >
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
@@ -195,7 +195,7 @@ export default function Search({
                     </div>
                     <div className="py-3 px-5 bg-white rounded-b-xl">
                       <Link
-                        href={`/du-thuyen/chi-tiet/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/du-thuyen/${item.slug}?departDate=${query.departureDate}`}
                         className="text-base font-bold line-clamp-2 h-12"
                         data-translate="true"
                       >
