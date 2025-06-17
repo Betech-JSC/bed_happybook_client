@@ -30,6 +30,7 @@ export const flightStaticText: string[] = [
   "Điều kiện vé",
   "Chi tiết chuyến bay",
   "Quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin cám ơn!",
+  "Đang tải thêm chuyến bay",
   "Tổng tiền thanh toán",
 ];
 
