@@ -10,7 +10,6 @@ export default function TourItem({ tour }: any) {
   } else if (tour?.transportation === 2) {
     vehicleIcon.splice(0, 1);
   }
-  console.log(tour);
   if (!tour) return;
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
