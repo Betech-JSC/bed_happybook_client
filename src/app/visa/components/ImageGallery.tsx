@@ -38,45 +38,47 @@ export default function ImageGallery({ detail }: any) {
           </SwiperSlide>
         ))}
       </Swiper>
-      <div className="mt-3">
-        <Swiper
-          onSwiper={setThumbsSwiper}
-          slidesPerView={3}
-          spaceBetween={10}
-          breakpoints={{
-            1024: {
-              slidesPerView: 6,
-              spaceBetween: 10,
-              loop: true,
-            },
-            768: {
-              slidesPerView: 5,
-              spaceBetween: 10,
-              loop: true,
-            },
-            640: {
-              slidesPerView: 3,
-              spaceBetween: 20,
-              loop: true,
-            },
-          }}
-          watchSlidesProgress={true}
-          modules={[Thumbs]}
-          className="thumbs-swiper"
-        >
-          {gallery.map((item: any, index: number) => (
-            <SwiperSlide key={index} className="overflow-hidden rounded-lg">
-              <Image
-                className="cursor-pointer h-24 md:h-[110px] rounded-lg hover:scale-110 ease-in duration-300"
-                src={`${item.image_url}/${item.image}`}
-                alt="Image"
-                width={135}
-                height={120}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+      {gallery?.length > 1 && (
+        <div className="mt-3">
+          <Swiper
+            onSwiper={setThumbsSwiper}
+            slidesPerView={3}
+            spaceBetween={10}
+            breakpoints={{
+              1024: {
+                slidesPerView: 6,
+                spaceBetween: 10,
+                loop: true,
+              },
+              768: {
+                slidesPerView: 5,
+                spaceBetween: 10,
+                loop: true,
+              },
+              640: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+                loop: true,
+              },
+            }}
+            watchSlidesProgress={true}
+            modules={[Thumbs]}
+            className="thumbs-swiper"
+          >
+            {gallery.map((item: any, index: number) => (
+              <SwiperSlide key={index} className="overflow-hidden rounded-lg">
+                <Image
+                  className="cursor-pointer h-24 md:h-[110px] rounded-lg hover:scale-110 ease-in duration-300"
+                  src={`${item.image_url}/${item.image}`}
+                  alt="Image"
+                  width={135}
+                  height={120}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      )}
     </div>
   );
 }

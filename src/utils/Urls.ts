@@ -35,7 +35,7 @@ export function blogUrl(
   slug: string,
   hasOrigin: boolean = false
 ) {
-  return pageUrl(`chi-tiet/${slug}`, type, hasOrigin);
+  return pageUrl(`${slug}`, type, hasOrigin);
 }
 
 export function productUrl(
@@ -43,5 +43,5 @@ export function productUrl(
   slug: string,
   hasOrigin: boolean = false
 ) {
-  return pageUrl(`chi-tiet/${slug}`, type, hasOrigin);
+  return pageUrl(`${slug}`, type, hasOrigin);
 }

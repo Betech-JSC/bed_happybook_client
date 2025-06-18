@@ -229,6 +229,21 @@ const displayProductPrice = (
   }
   return `${symbolLeft}${displayPrice} ${symbolRight}`;
 };
+
+const extractSlugAndId = (
+  alias: string
+): {
+  isDetail: boolean;
+  slug: string;
+} => {
+  const match = alias.match(/^(.*)-(\d+)$/);
+
+  return {
+    isDetail: match ? true : false,
+    slug: match ? match[1] : alias,
+  };
+};
+
 export {
   decodeHtml,
   buildSearch,
@@ -246,4 +261,5 @@ export {
   toSnakeCase,
   smoothScrollTo,
   displayProductPrice,
+  extractSlugAndId,
 };

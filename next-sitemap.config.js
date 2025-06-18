@@ -1,13 +1,13 @@
 /** @type {import('next-sitemap').IConfig} */
 
 module.exports = {
-  siteUrl: process.env.SITE_UR || "http://client.happybooktravel.com",
+  siteUrl: process.env.SITE_UR || "https://happybooktravel.com",
   changefreq: "daily",
   priority: 1,
   generateRobotsTxt: true,
   // alternateRefs: [
   //   {
-  //     href: process.env.SITE_URL || "http://client.happybooktravel.com",
+  //     href: process.env.SITE_URL || "https://happybooktravel.com",
   //     hreflang: "vi",
   //   },
   // ],
@@ -32,7 +32,7 @@ module.exports = {
     ],
     additionalSitemaps: [
       `${
-        process.env.SITE_URL || "http://client.happybooktravel.com"
+        process.env.SITE_URL || "https://happybooktravel.com"
       }/server-sitemap-index.xml`,
     ],
   },

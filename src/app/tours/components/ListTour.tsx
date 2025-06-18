@@ -225,7 +225,7 @@ export default function ListTour({
                 }`}
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                  <Link href={`/tours/chi-tiet/${tour.slug}`}>
+                  <Link href={`/tours/${tour.slug}-${tour.id}`}>
                     <Image
                       className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                       src={`${tour.image_url}/${tour.image_location}`}
@@ -250,7 +250,7 @@ export default function ListTour({
                 <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
                   <div>
                     <Link
-                      href={`/tours/chi-tiet/${tour.slug}`}
+                      href={`/tours/${tour.slug}-${tour.id}`}
                       className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                     >
                       <h2 data-translate="true">
@@ -315,7 +315,9 @@ export default function ListTour({
                           width={18}
                           height={18}
                         />
-                        <span data-translate="true">{`Chỗ trống: ${tour.remain ?? 'Liên hệ'}`}</span>
+                        <span data-translate="true">{`Chỗ trống: ${
+                          tour.remain ?? "Liên hệ"
+                        }`}</span>
                       </div>
                     )}
 

@@ -199,7 +199,7 @@ export default function ListVisa({
                   }`}
                 >
                   <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                    <Link href={`/visa/chi-tiet/${item.slug}`}>
+                    <Link href={`/visa/${item.slug}-${item.product_id}`}>
                       <Image
                         className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full"
                         src={`${item.image_url}/${item.image_location}`}
@@ -219,7 +219,7 @@ export default function ListVisa({
                   <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
                     <div>
                       <Link
-                        href={`/visa/chi-tiet/${item.slug}`}
+                        href={`/visa/${item.slug}-${item.product_id}`}
                         className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                       >
                         <h2>{item.name}</h2>
