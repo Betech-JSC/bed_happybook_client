@@ -69,9 +69,9 @@ export const toastMessages: Record<"vi" | "en", ToastMessages> = {
     error: "Có lỗi xảy ra. Vui lòng thử lại sau!",
     missingInfoSearchFlight: "Vui lòng chọn đầy đủ thông tin",
     notFoundFlight:
-      "Không có chuyến bay nào trong ngày hôm nay, quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin cám ơn!",
+      "Không có chuyến bay nào trong ngày hôm nay. Quý khách vui lòng chuyển sang ngày khác để đặt vé. Xin cám ơn!",
     errorConnectApiFlight:
-      "Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn",
+      "Hiện tại chúng tôi đang không kết nối được với hãng bay. Quý khách vui lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn!",
     tooManyRequests: "Bạn đã bấm quá nhanh, hãy thử lại sau vài giây!",
     transferSuccessful: "Chuyển khoản thành công",
     formNotValid: "Thông tin không hợp lệ. Vui lòng kiểm tra lại!",
@@ -84,9 +84,9 @@ export const toastMessages: Record<"vi" | "en", ToastMessages> = {
     sendFailed: "sendFailed",
     missingInfoSearchFlight: "Please select complete information",
     notFoundFlight:
-      "There are no flights today, please book another day. Thank you!",
+      "There are no flights today. Please book another day. Thank you!",
     errorConnectApiFlight:
-      "We are currently unable to connect with the airline. Please try searching for your flight again in a few minutes. Thank you.",
+      "We are currently unable to connect with the airline. Please try searching for your flight again in a few minutes. Thank you!",
     tooManyRequests: "You clicked too fast, try again in a few seconds!",
     transferSuccessful: "Transfer Successful",
     formNotValid: "Invalid information. Please check again!",

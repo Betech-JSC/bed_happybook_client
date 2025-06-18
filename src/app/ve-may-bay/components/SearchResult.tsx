@@ -458,9 +458,20 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
 
   // Error Connect api
   if (error) {
+    const partsErr = error.split(/\.(.+)/);
+    const lineErr1 = partsErr?.[0]?.trim() || "";
+    const lineErr2 = partsErr?.[1]?.trim() || "";
+
     return (
       <div ref={resultsRef} className="px-4 w-full mx-auto my-20 text-center">
-        <p className="text-18 font-semibold">{error}</p>
+        {lineErr1 && lineErr2 ? (
+          <>
+            <p className="text-18 font-semibold">{lineErr1}</p>
+            <p className="text-18 font-semibold mt-1">{lineErr2}</p>
+          </>
+        ) : (
+          <p className="text-18 font-semibold">{error}</p>
+        )}
       </div>
     );
   }
