@@ -48,6 +48,7 @@ export default function CheckOutForm({
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [errTicketOption, setErrTicketOption] = useState<string>("");
   const [schemaForm, setSchemaForm] = useState(() =>
     checkOutAmusementTicketSchema(messages, generateInvoice)
   );
@@ -92,7 +93,7 @@ export default function CheckOutForm({
           description: item?.type?.description || "",
           price: item?.day_price || 0,
           name: `number_${item.id}`,
-          minQty: index ? 0 : 1,
+          minQty: 0,
           quantity: index ? 0 : 1,
         }));
 
@@ -121,6 +122,16 @@ export default function CheckOutForm({
   });
 
   const onSubmit = async (data: checkOutAmusementTicketType) => {
+    const isSelectedTicketOption = tickets.find(
+      (item: any) => item.quantity > 0
+    );
+    if (isEmpty(isSelectedTicketOption)) {
+      setErrTicketOption("Vui lòng chọn ít nhất 1 loại vé");
+      toast.error(toaStrMsg.formNotValid);
+      return;
+    } else {
+      setErrTicketOption("");
+    }
     try {
       setLoading(true);
       const ticketsBooking = tickets.map((item: any, index: number) => ({
@@ -164,16 +175,8 @@ export default function CheckOutForm({
     }
   };
 
-  const [counts, setCounts] = useState<{ [key: number]: number }>({});
-  useEffect(() => {
-    const initialCounts: { [key: number]: number } = {};
-    tickets.forEach((ticket) => {
-      initialCounts[ticket.id] = ticket.minQty;
-    });
-    setCounts(initialCounts);
-  }, [tickets]);
-
   const updateCount = (id: number, delta: number) => {
+    setErrTicketOption("");
     setTickets((prev) =>
       prev.map((ticket) => {
         if (ticket.id === id) {
@@ -352,6 +355,9 @@ export default function CheckOutForm({
                       </div>
                     </div>
                   )
+              )}
+              {errTicketOption && (
+                <p className="text-red-600 mt-2">{errTicketOption}</p>
               )}
             </div>
           </div>
@@ -698,7 +704,9 @@ export default function CheckOutForm({
           </div>
           <div className="mt-4 flex justify-between">
             <span data-translate="true">Tổng cộng</span>
-            <DisplayPrice price={totalPrice} currency={product?.currency} />
+            {totalPrice > 0 && (
+              <DisplayPrice price={totalPrice} currency={product?.currency} />
+            )}
           </div>
         </div>
       </div>

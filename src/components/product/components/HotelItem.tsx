@@ -10,7 +10,7 @@ export default function HotelItem({ hotel }: any) {
       <div className="flex flex-col justify-between h-full">
         <div>
           <div className="overflow-hidden rounded-t-2xl relative h-52">
-            <Link href={`/khach-san/chi-tiet/${hotel.slug}`}>
+            <Link href={`/khach-san/${hotel.slug}`}>
               <Image
                 className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                 src={`${hotel.image_url}/${hotel.image_location}`}
@@ -35,7 +35,7 @@ export default function HotelItem({ hotel }: any) {
             )}
           </div>
           <Link
-            href={`/khach-san/chi-tiet/${hotel.slug}`}
+            href={`/khach-san/${hotel.slug}`}
             className="block text-base font-semibold line-clamp-2 text__default_hover mt-3 px-4"
           >
             <h3 data-translate>{hotel.name}</h3>
