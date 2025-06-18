@@ -8,7 +8,6 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import HotelDetailTabs from "../../components/HotalDetaiTabs";
 import SeoSchema from "@/components/schema";
 import { notFound } from "next/navigation";
 import { HotelApi } from "@/api/Hotel";
@@ -26,6 +25,7 @@ import ContentByPage from "@/components/content-page/ContentByPage";
 import { renderTextContent } from "@/utils/Helper";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
+import HotelDetailTabs from "../components/HotalDetaiTabs";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await HotelApi.detail("tesst1")) as any;

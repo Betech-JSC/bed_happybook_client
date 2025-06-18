@@ -57,6 +57,7 @@ interface ToastMessages {
   errorConnectApiFlight: string;
   tooManyRequests: string;
   transferSuccessful: string;
+  formNotValid: string;
 }
 
 export const toastMessages: Record<"vi" | "en", ToastMessages> = {
@@ -73,6 +74,7 @@ export const toastMessages: Record<"vi" | "en", ToastMessages> = {
       "Hiện tại chúng tôi đang không kết nối được với hãng bay, quý khách vui lòng thực hiện tìm lại chuyến bay sau ít phút nữa. Xin cám ơn",
     tooManyRequests: "Bạn đã bấm quá nhanh, hãy thử lại sau vài giây!",
     transferSuccessful: "Chuyển khoản thành công",
+    formNotValid: "Thông tin không hợp lệ. Vui lòng kiểm tra lại!",
   },
   en: {
     successRegister: "Registration successful!",
@@ -87,5 +89,6 @@ export const toastMessages: Record<"vi" | "en", ToastMessages> = {
       "We are currently unable to connect with the airline. Please try searching for your flight again in a few minutes. Thank you.",
     tooManyRequests: "You clicked too fast, try again in a few seconds!",
     transferSuccessful: "Transfer Successful",
+    formNotValid: "Invalid information. Please check again!",
   },
 };

@@ -171,7 +171,7 @@ export default function ListHotel({
                   }`}
                 >
                   <div className="w-full md:w-5/12 relative overflow-hidden md:rounded-l-2xl">
-                    <Link href={`/khach-san/chi-tiet/${item.slug}`}>
+                    <Link href={`/khach-san/${item.slug}`}>
                       <Image
                         className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-t-2xl md:rounded-none md:rounded-l-2xl object-cover"
                         src={`${item.image_url}/${item.image_location}`}
@@ -188,7 +188,7 @@ export default function ListHotel({
                       <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                         <Link
                           data-translate="true"
-                          href={`/khach-san/chi-tiet/${item.slug}`}
+                          href={`/khach-san/${item.slug}`}
                           className="w-full md:w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                         >
                           {renderTextContent(item.name)}
