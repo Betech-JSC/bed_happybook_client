@@ -1,7 +1,6 @@
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
-import { formatCurrency } from "@/lib/formatters";
 import DisplayPrice from "@/components/base/DisplayPrice";
 
 export default function TourItem({ tour }: any) {
@@ -11,11 +10,12 @@ export default function TourItem({ tour }: any) {
   } else if (tour?.transportation === 2) {
     vehicleIcon.splice(0, 1);
   }
+  console.log(tour);
   if (!tour) return;
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
-        <Link href={`/tours/chi-tiet/${tour.slug}`}>
+        <Link href={`/tours/${tour.slug}-${tour.id}`}>
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
             src={`${tour.image_url}/${tour.image_location}`}
@@ -41,7 +41,7 @@ export default function TourItem({ tour }: any) {
       </div>
       <div className="py-3 px-4">
         <Link
-          href={`/tours/chi-tiet/${tour.slug}`}
+          href={`/tours/${tour.slug}-${tour.id}`}
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
           <h3 data-translate>{tour.product_name ?? ""}</h3>

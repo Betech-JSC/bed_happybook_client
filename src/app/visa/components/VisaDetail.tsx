@@ -16,7 +16,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import QuestionAndAnswer from "@/components/product/QuestionAndAnswer";
-import Tabs from "../../components/Tabs";
 import VisaSteps from "@/components/home/visa-steps";
 import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
@@ -24,45 +23,16 @@ import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
 import { formatCurrency, formatMetadata, formatMoney } from "@/lib/formatters";
 import FAQ from "@/components/content-page/FAQ";
-import ImageGallery from "../../components/ImageGallery";
 import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import { displayProductPrice, renderTextContent } from "@/utils/Helper";
 import { getServerLang } from "@/lib/session";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import ImageGallery from "./ImageGallery";
+import Tabs from "./Tabs";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = await VisaApi.detail(params.alias);
-
-  const data = res?.payload.data;
-
-  return formatMetadata({
-    title: data?.meta_title ?? data?.title,
-    description: data?.meta_description,
-    robots: data?.meta_robots,
-    keywords: data?.keywords,
-    alternates: {
-      canonical: pageUrl(data?.slug, BlogTypes.VISA, true),
-    },
-    openGraph: {
-      images: [
-        {
-          url: data?.meta_image
-            ? data.meta_image
-            : `${data?.image_url}${data?.image_location}`,
-          alt: data?.meta_title,
-        },
-      ],
-    },
-  });
-}
-
-export default async function CategoryPosts({
-  params,
-}: {
-  params: { alias: string };
-}) {
-  const response = await VisaApi.detail(params.alias);
+export default async function VisaDetail({ alias }: { alias: string }) {
+  const response = await VisaApi.detail(alias);
   const detail = response?.payload.data;
   if (!detail) {
     notFound();

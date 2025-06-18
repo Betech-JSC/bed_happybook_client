@@ -12,7 +12,6 @@ import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
-import { formatMetadata } from "@/lib/formatters";
 import ListTour from "../components/ListTour";
 import { Suspense } from "react";
 import { PageApi } from "@/api/Page";
@@ -21,28 +20,10 @@ import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = (await TourApi.getCategory("tour")) as any;
-  const data = res?.payload.data;
-  return formatMetadata({
-    title: data?.meta_title ?? data?.title,
-    description: data?.meta_description,
-    robots: data?.meta_robots,
-    keywords: data?.keywords,
-    alternates: {
-      canonical: pageUrl(data?.alias, BlogTypes.TOURS, true),
-    },
-  });
-}
-
-export default async function CategoryPosts({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default async function CategoryTour({ alias }: { alias: string }) {
   let typeTour: number | undefined;
   let titlePage: string;
-  switch (params.category) {
+  switch (alias) {
     case "tour-noi-dia":
       typeTour = 0;
       titlePage = "Tour nội địa";
@@ -60,20 +41,19 @@ export default async function CategoryPosts({
       titlePage = "Tìm kiếm";
   }
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("tours", language))?.payload
+  const contentPage = (await PageApi.getContent(alias, language))?.payload
     ?.data as any;
-  const category: any = [];
   const optionsFilter = (await TourApi.getOptionsFilter(typeTour))?.payload
     ?.data as any;
   return (
     <SeoSchema
-      article={category}
+      article={contentPage}
       type={BlogTypes.TOURS}
       breadscrumbItems={[
         { url: pageUrl(BlogTypes.TOURS, true), name: "Tours" },
         {
-          url: pageUrl(category?.alias, BlogTypes.TOURS, true),
-          name: category?.name,
+          url: pageUrl(contentPage?.slug, BlogTypes.TOURS, true),
+          name: contentPage?.title,
         },
       ]}
     >

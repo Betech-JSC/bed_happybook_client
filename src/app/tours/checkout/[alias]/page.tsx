@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import CheckOutTourForm from "../../../components/FormCheckOut";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import { formatCurrency, formatMoney } from "@/lib/formatters";
-import { Span } from "next/dist/trace";
 import { renderTextContent } from "@/utils/Helper";
+import CheckOutTourForm from "../../components/FormCheckOut";
 export default async function TourCheckout({
   params,
 }: {
@@ -36,7 +35,11 @@ export default async function TourCheckout({
               </h3>
             </div>
             <div className="mt-4">
-              <CheckOutTourForm productId={detail.id} startDate={detail.start_date} depart_point={detail.depart_point} />
+              <CheckOutTourForm
+                productId={detail.id}
+                startDate={detail.start_date}
+                depart_point={detail.depart_point}
+              />
             </div>
           </div>
           <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl">

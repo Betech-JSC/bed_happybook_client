@@ -1,5 +1,4 @@
 import Image from "next/image";
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Breadcrumb,
@@ -16,50 +15,21 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Fragment } from "react";
-import ImageTour from "../../components/Image";
-import Tabs from "../../components/Tabs";
 import QuestionAndAnswer from "@/components/product/QuestionAndAnswer";
 import TourItem from "@/components/product/components/tour-item";
 import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { pageUrl, ProductTypes, productUrl } from "@/utils/Urls";
-import { formatCurrency, formatMetadata, formatMoney } from "@/lib/formatters";
+import { formatCurrency } from "@/lib/formatters";
 import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
 import { getServerLang } from "@/lib/session";
-import ImageGallery from "../../components/ImageGallery";
+import ImageGallery from "./ImageGallery";
+import Tabs from "./Tabs";
 
-// export async function generateMetadata({ params }: any): Promise<Metadata> {
-//   const res = (await TourApi.getDetailBySlug(params.slug)) as any;
-//   const data = res?.payload.data;
-//   return formatMetadata({
-//     title: data?.meta_title ?? data?.title,
-//     description: data?.meta_description,
-//     robots: data?.meta_robots,
-//     keywords: data?.keywords,
-//     alternates: {
-//       canonical: pageUrl(data?.slug, ProductTypes.TOURS, true),
-//     },
-//     openGraph: {
-//       images: [
-//         {
-//           url: data?.meta_image
-//             ? data.meta_image
-//             : `${data?.image_url}${data?.image_location}`,
-//           alt: data?.meta_title,
-//         },
-//       ],
-//     },
-//   });
-// }
-
-export default async function TourDetail({
-  params,
-}: {
-  params: { alias: string };
-}) {
+export default async function TourDetail({ alias }: { alias: string }) {
   const language = await getServerLang();
-  const res = (await TourApi.detail(params.alias, language)) as any;
+  const res = (await TourApi.detail(alias, language)) as any;
   const detail = res?.payload?.data;
   if (!detail) {
     notFound();
@@ -187,23 +157,25 @@ export default async function TourDetail({
                     />
                     <span>
                       <span data-translate>
-                        {`${
-                          detail.day ? `${detail.day} ngày` : ""
-                        } ${detail.night ? `${detail.night} đêm` : ""}`}
+                        {`${detail.day ? `${detail.day} ngày` : ""} ${
+                          detail.night ? `${detail.night} đêm` : ""
+                        }`}
                       </span>
                     </span>
                   </div>
                   <div>
-                  {detail.remain && (
-                    <p className="flex space-x-2 mt-2">
-                      <Image
-                        src="/icon/Ticket.svg"
-                        alt="Time"
-                        width={20}
-                        height={20}
-                      />
-                      <span data-translate>{`Chỗ trống: ${detail.remain ?? 'Liên hệ'}`}</span>
-                    </p>
+                    {detail.remain && (
+                      <p className="flex space-x-2 mt-2">
+                        <Image
+                          src="/icon/Ticket.svg"
+                          alt="Time"
+                          width={20}
+                          height={20}
+                        />
+                        <span data-translate>{`Chỗ trống: ${
+                          detail.remain ?? "Liên hệ"
+                        }`}</span>
+                      </p>
                     )}
                   </div>
                   <div className="flex space-x-2 mt-3 items-center">
@@ -228,9 +200,7 @@ export default async function TourDetail({
                       width={18}
                       height={18}
                     />
-                    <span data-translate>
-                      {detail.destination_point ?? ""}
-                    </span>
+                    <span data-translate>{detail.destination_point ?? ""}</span>
                   </div>
                 </div>
                 <div className="bg-gray-50 text-end p-2 rounded-lg mt-6">
@@ -253,12 +223,12 @@ export default async function TourDetail({
                 </div>
                 <div className="mt-6">
                   <Link
-                    href={`/tours/chi-tiet/${detail.slug}/checkout`}
+                    href={`/tours/checkout/${detail.slug}`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
                     <span
                       className="mx-auto text-base font-medium"
-                      data-translate
+                      data-translate="true"
                     >
                       Gửi yêu cầu
                     </span>
