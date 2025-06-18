@@ -205,7 +205,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                 {/* // )} */}
                 <div className="mt-6">
                   <Link
-                    href={`/visa/chi-tiet/${detail.slug}/checkout`}
+                    href={`/visa/checkout/${detail.slug}`}
                     className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
                   >
                     <button
