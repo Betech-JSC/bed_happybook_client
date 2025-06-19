@@ -4,6 +4,7 @@ import FormContact from "./form";
 import SeoSchema from "@/components/schema";
 import { pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
+import Link from "next/link";
 
 export const metadata: Metadata = formatMetadata({
   title: "Liên Hệ - Đại Lý Vé Máy Bay Giá Rẻ #1 Toàn Quốc | HAPPY BOOK",
@@ -80,10 +81,11 @@ export default function Contact() {
                         Hotline vé máy bay
                       </p>
                       <div className="text-base mt-2">
-                        <span>0983.488.937 </span>
-                        <span data-translate="true">(Nội địa)</span>
-                        <span>{" - 0367.008.027 "}</span>
-                        <span data-translate="true">(Quốc tế)</span>
+                        <a href="tel:1900633437" className="inline-block">
+                          1900.633.437
+                        </a>
+                        <span>{" -  "}</span>
+                        <p data-translate="true">Nhấn phím (1)</p>
                       </div>
                     </div>
                   </div>
@@ -104,9 +106,11 @@ export default function Contact() {
                       >
                         Hotline Visa - hộ chiếu
                       </p>
-                      <p className="text-base mt-2">
-                        0708.628.791 - 0904.221.293
-                      </p>
+                      <a href="tel:1900633437" className="inline-block">
+                        1900.633.437
+                      </a>
+                      <span>{" -  "}</span>
+                      <p data-translate="true">Nhấn phím (2)</p>
                     </div>
                   </div>
                   <div className="flex space-x-4">
@@ -126,7 +130,11 @@ export default function Contact() {
                       >
                         Hotline Tour du lịch
                       </p>
-                      <p className="text-base mt-2">0708.628.791</p>
+                      <a href="tel:1900633437" className="inline-block">
+                        1900.633.437
+                      </a>
+                      <span>{" -  "}</span>
+                      <p data-translate="true">Nhấn phím (3)</p>
                     </div>
                   </div>
                 </div>
@@ -148,7 +156,12 @@ export default function Contact() {
                       >
                         Email Chính thức
                       </p>
-                      <p className="text-base mt-2">info@happybook.com.vn</p>
+                      <a
+                        href="mailto:info@happybooktravel.com"
+                        className="text-base mt-2"
+                      >
+                        info@happybooktravel.com
+                      </a>
                     </div>
                   </div>
                   <div className="flex space-x-4">
@@ -168,12 +181,15 @@ export default function Contact() {
                       >
                         Email tuyển dụng - đăng ký CTV
                       </p>
-                      <p className="text-base mt-2 break-all">
-                        HR@happybook.com.vn
-                      </p>
+                      <a
+                        href="mailto:HR@happybooktravel.com"
+                        className="text-base mt-2 break-all"
+                      >
+                        HR@happybooktravel.com
+                      </a>
                     </div>
                   </div>
-                  <div className="flex space-x-4">
+                  {/* <div className="flex space-x-4">
                     <div>
                       <Image
                         src="/icon/contact/mail-01.svg"
@@ -194,7 +210,7 @@ export default function Contact() {
                         visaonline@happybook.com.vn
                       </p>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="col-span-2 flex space-x-3">
@@ -216,7 +232,7 @@ export default function Contact() {
                       </p>
                       <p className="text-gray-900">
                         <span className="font-medium" data-translate="true">
-                          Trụ sở chính:
+                          Trụ sở chính:{" "}
                         </span>
                         <span data-translate="true">
                           Tầng 1, Phong Phú Tower, 93/10 Quang Trung, KP.1,
@@ -238,39 +254,39 @@ export default function Contact() {
                       Theo dõi chúng tôi
                     </p>
                     <div className="flex space-x-3 mt-4">
-                      <button>
+                      <Link
+                        href="https://www.facebook.com/happybooktravel"
+                        target="_blank"
+                      >
                         <Image
                           src="/social/fb.svg"
                           alt="Icon"
                           width={32}
                           height={32}
-                          sizes="100vw"
                         />
-                      </button>
-                      <button>
+                      </Link>
+                      <Link
+                        href="https://www.tiktok.com/@happybook_visa"
+                        target="_blank"
+                      >
                         <Image
                           src="/social/tiktok.svg"
                           alt="Icon"
                           width={32}
                           height={32}
                         />
-                      </button>
-                      <button>
-                        <Image
-                          src="/social/zalo.svg"
-                          alt="Icon"
-                          width={32}
-                          height={32}
-                        />
-                      </button>
-                      <button>
+                      </Link>
+                      <Link
+                        href="https://zalo.me/2451421179976954585/"
+                        target="_blank"
+                      >
                         <Image
                           src="/social/ytb.svg"
                           alt="Icon"
                           width={32}
                           height={32}
                         />
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>

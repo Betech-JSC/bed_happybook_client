@@ -48,12 +48,17 @@ export default function Footer() {
                 1900.633.437 - Nhấn phím (3)
               </a>
             </div>
-            {/* <div className="mt-1">
+            <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Email Chính thức:
               </p>
-              <p className="inline-block">info@happybook.com.vn</p>
-            </div> */}
+              <a
+                className="inline-block"
+                href="mailto:info@happybooktravel.com"
+              >
+                info@happybooktravel.com
+              </a>
+            </div>
             <div className="mt-1">
               <p className="font-bold mr-1 inline-block" data-translate="true">
                 Email tuyển dụng - đăng ký CTV:
