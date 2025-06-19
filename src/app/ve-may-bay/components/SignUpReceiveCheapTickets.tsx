@@ -13,6 +13,7 @@ import {
 import { contactApi } from "@/api/contact";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
+import Link from "next/link";
 
 export default function SignUpReceiveCheapTickets() {
   const [loading, setLoading] = useState(false);
@@ -161,10 +162,13 @@ export default function SignUpReceiveCheapTickets() {
                 Hotline vé máy bay
               </p>
               <div className="text-base mt-2 text-primary">
-                <span>0983.488.937 </span>
-                <span data-translate>(Nội địa )</span>
-                <span>- 0367.008.027 </span>
-                <span data-translate>(Quốc tế)</span>
+                <a
+                  data-translate="true"
+                  href="tel:1900633437"
+                  className="inline-block"
+                >
+                  1900.633.437 - Nhấn phím (1)
+                </a>
               </div>
             </div>
           </div>
@@ -174,20 +178,28 @@ export default function SignUpReceiveCheapTickets() {
                 Chat với chúng tôi qua
               </p>
               <div className="flex space-x-4 mt-4">
-                <Image
-                  src="/social/fb.svg"
-                  alt="Icon"
-                  width={32}
-                  height={32}
-                  style={{ width: "32px", height: "32px" }}
-                />
-                <Image
-                  src="/social/ytb.svg"
-                  alt="Icon"
-                  width={32}
-                  height={32}
-                  style={{ width: "32px", height: "32px" }}
-                />
+                <Link
+                  href="https://www.facebook.com/happybooktravel"
+                  target="_blank"
+                >
+                  <Image
+                    src="/social/fb.svg"
+                    alt="Icon"
+                    width={32}
+                    height={32}
+                  />
+                </Link>
+                <Link
+                  href="https://zalo.me/2451421179976954585/"
+                  target="_blank"
+                >
+                  <Image
+                    src="/social/ytb.svg"
+                    alt="Icon"
+                    width={32}
+                    height={32}
+                  />
+                </Link>
               </div>
             </div>
           </div>
