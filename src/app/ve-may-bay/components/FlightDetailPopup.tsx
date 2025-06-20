@@ -5,6 +5,7 @@ import { differenceInSeconds, format, parseISO } from "date-fns";
 import {
   formatNumberToHoursAndMinutesFlight,
   formatTime,
+  formatTimeZone,
 } from "@/lib/formatters";
 import { FlightDetailPopupProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
@@ -210,7 +211,10 @@ export default function FlightDetailPopup({
                                   <div className="w-4/12 md:w-2/12 flex h-full justify-between flex-col items-end">
                                     <div className="text-center w-full">
                                       <p className="text-22 font-bold">
-                                        {formatTime(segment.departure.at)}
+                                        {formatTimeZone(
+                                          segment.departure.at,
+                                          segment.departure.timezone
+                                        )}
                                       </p>
                                       <p className="text-gray-500">
                                         {format(
@@ -235,7 +239,10 @@ export default function FlightDetailPopup({
                                     </div>
                                     <div className="text-center w-full">
                                       <p className="text-22 font-bold">
-                                        {formatTime(segment.arrival.at)}
+                                        {formatTimeZone(
+                                          segment.arrival.at,
+                                          segment.arrival.timezone
+                                        )}
                                       </p>
                                       <p className="text-gray-500">
                                         {format(

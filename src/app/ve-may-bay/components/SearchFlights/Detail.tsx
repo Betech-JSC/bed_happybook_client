@@ -11,6 +11,7 @@ import {
   formatCurrency,
   formatNumberToHoursAndMinutesFlight,
   formatTime,
+  formatTimeZone,
 } from "@/lib/formatters";
 import { FlightDetailProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
@@ -106,7 +107,10 @@ const FlightDomesticDetail = ({
               <div className="flex items-center justify-between gap-4 w-full pl-3 md:px-6">
                 <div className="flex flex-col items-center">
                   <span className="text-lg font-semibold">
-                    {formatTime(flight.departure.at)}
+                    {formatTimeZone(
+                      flight.departure.at,
+                      flight.departure.timezone
+                    )}
                   </span>
                   <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
                     {flight.departure.IATACode}
@@ -150,7 +154,7 @@ const FlightDomesticDetail = ({
 
                 <div className="flex flex-col items-center">
                   <span className="text-lg font-semibold">
-                    {formatTime(flight.arrival.at)}
+                    {formatTimeZone(flight.arrival.at, flight.arrival.timezone)}
                   </span>
                   <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
                     {flight.arrival.IATACode}

@@ -1,5 +1,5 @@
 "use client";
-import { formatCurrency, formatTime } from "@/lib/formatters";
+import { formatCurrency, formatTime, formatTimeZone } from "@/lib/formatters";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { differenceInSeconds, format, parse, parseISO } from "date-fns";
@@ -422,7 +422,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                               )}
                             </span>
                             <span className="mt-2 text-lg font-bold w-full">
-                              {formatTime(segment.departure.at)}
+                              {formatTimeZone(
+                                flight.departure.at,
+                                flight.departure.timezone
+                              )}
                             </span>
                             <span className="mt-2 text-sm text-gray-500 w-full">
                               {fromSegmenOption ? (
@@ -486,7 +489,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                               )}
                             </span>
                             <span className="mt-2 text-lg font-bold w-full">
-                              {formatTime(segment.arrival.at)}
+                              {formatTimeZone(
+                                flight.arrival.at,
+                                flight.arrival.timezone
+                              )}
                             </span>
                             <span className="mt-2 text-sm text-gray-500 w-full">
                               {toSegmentOption ? (

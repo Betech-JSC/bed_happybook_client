@@ -6,6 +6,7 @@ import {
   AlternateLinkDescriptor,
   Languages,
 } from "next/dist/lib/metadata/types/alternative-urls-types";
+import { toZonedTime, format as formatTimeZoneFns } from "date-fns-tz";
 
 const formatTimeFromHour = (h: number) => `${String(h).padStart(2, "0")}:00`;
 
@@ -28,6 +29,12 @@ const pareseDateFromString = (
 const formatTime = (isoString: string) => {
   const date = parseISO(isoString);
   return format(date, "HH:mm");
+};
+
+const formatTimeZone = (isoString: string, timeZone: string) => {
+  const date = parseISO(isoString);
+  const zonedDate = toZonedTime(date, timeZone);
+  return formatTimeZoneFns(zonedDate, "HH:mm", { timeZone });
 };
 
 const formatCurrency = (
@@ -100,4 +107,5 @@ export {
   pareseDateFromString,
   formatMetadata,
   formatTimeFromHour,
+  formatTimeZone,
 };
