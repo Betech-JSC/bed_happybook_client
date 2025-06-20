@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Happy Book",
     description: "Happy Book",
-    robots: "noindex, nofollow",
+    robots: "index, follow",
     metadataBase: new URL("https://happybooktravel.com"),
     openGraph: {
       type: "website",
