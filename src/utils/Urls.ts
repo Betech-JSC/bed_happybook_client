@@ -8,6 +8,7 @@ export enum BlogTypes {
   HOTEL = "khach-san",
   SETTLE = "dinh-cu",
   COMPO = "compo",
+  YACHT = "du-thuyen",
 }
 
 export enum ProductTypes {

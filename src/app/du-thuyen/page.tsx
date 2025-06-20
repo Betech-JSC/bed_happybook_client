@@ -11,6 +11,18 @@ import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import Search from "./components/Search";
+import { Metadata } from "next";
+import { formatMetadata } from "@/lib/formatters";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
+
+export const metadata: Metadata = formatMetadata({
+  title: "Đặt Du Thuyền | Du Thuyền Giá Rẻ 2024",
+  description:
+    "Mời các bạn đặt Du Thuyền, tạo kỷ niệm đáng nhớ với các hoạt động vui chơi thú vị, an toàn tại HappyBook Travel. Ưu đãi hấp dẫn, thanh toán tiện lơi, xác nhận tức thì.",
+  alternates: {
+    canonical: pageUrl(BlogTypes.YACHT, true),
+  },
+});
 
 export default async function ProductYacht() {
   const optionsFilter = (await ProductYachtApi.getOptionsFilter())?.payload
