@@ -6,6 +6,7 @@ import {
   formatCurrency,
   formatNumberToHoursAndMinutesFlight,
   formatTime,
+  formatTimeZone,
 } from "@/lib/formatters";
 import {
   FlightBookingInforBody,
@@ -1631,7 +1632,10 @@ export default function FlightBookForm({ airportsData }: any) {
                     <div className="flex items-center justify-between gap-4 w-full">
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
-                          {formatTime(flight.departure.at)}
+                          {formatTimeZone(
+                            flight.departure.at,
+                            flight.departure.timezone
+                          )}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
                           {flight.departure.IATACode}
@@ -1676,7 +1680,10 @@ export default function FlightBookForm({ airportsData }: any) {
 
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
-                          {formatTime(flight.arrival.at)}
+                          {formatTimeZone(
+                            flight.arrival.at,
+                            flight.arrival.timezone
+                          )}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
                           {flight.arrival.IATACode}
