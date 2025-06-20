@@ -26,8 +26,12 @@ export async function POST(req: Request) {
     session.isLoggedIn = true;
     session.access_token = data?.data?.token;
     session.userInfo = {
+      id: data?.data?.user_info?.id,
       name: data?.data?.user_info?.name,
       email: data?.data?.user_info?.email,
+      phone: data?.data?.user_info?.phone,
+      gender: data?.data?.user_info?.gender,
+      created_at: data?.data?.user_info?.created_at,
     };
     await session.save();
 

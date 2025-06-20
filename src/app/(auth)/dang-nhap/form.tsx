@@ -9,23 +9,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { AuthApi } from "@/api/Auth";
 import { useUser } from "@/app/contexts/UserContext";
+import { isEmpty } from "lodash";
 
 export default function FormLogin() {
   const { userInfo, setUserInfo } = useUser();
-
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { language } = useLanguage();
   const messages = validationMessages[language as "vi" | "en"];
   const schema = getAuthLoginSchema(messages);
   const toaStrMsg = toastMessages[language as "vi" | "en"];
-
+  const searchParams = useSearchParams();
   const {
     register,
     handleSubmit,
@@ -52,10 +52,12 @@ export default function FormLogin() {
       }
       reset();
       toast.success(resData.message);
+      const redirectUrl = searchParams.get("redirect") ?? "";
       setTimeout(() => {
         toast.dismiss();
         setUserInfo(resData.user_info);
-        router.push("/");
+        if (!isEmpty(redirectUrl)) router.push(redirectUrl);
+        else router.push("/");
       }, 1000);
     } catch (error: any) {
       toast.error(error.message);
