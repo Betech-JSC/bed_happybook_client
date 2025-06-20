@@ -305,23 +305,38 @@ export default function Header() {
                 </svg>
               </div>
               <div
-                className={`!block !max-h-24 ${styles.header__sub_menu_item}`}
+                className={`!max-h-40 w-fit ${styles.header__sub_menu_item} !flex-col gap-2 items-start`}
                 style={{
-                  display: "block",
+                  display: "flex",
                   top: 40,
-                  width: 140,
-                  padding: 10,
-                  textAlign: "center",
+                  padding: 12,
+                  textAlign: "left",
                   left: "50%",
                   transform: "translateX(-50%)",
                 }}
               >
+                <Link
+                  href="/thong-tin-tai-khoan"
+                  data-translate="true"
+                  style={{ margin: 0 }}
+                >
+                  Thông tin tài khoản
+                </Link>
+                <Link
+                  href="/lich-su-dat-ve"
+                  data-translate="true"
+                  style={{ margin: 0 }}
+                >
+                  Lịch sử đặt vé
+                </Link>
                 <button
+                  className="hover:text-primary duration-300"
                   type="button"
                   data-translate="true"
                   onClick={() => {
                     AuthApi.logout();
                   }}
+                  style={{ margin: 0 }}
                 >
                   Đăng xuất
                 </button>

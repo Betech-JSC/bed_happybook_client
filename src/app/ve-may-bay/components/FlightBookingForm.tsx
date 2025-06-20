@@ -32,6 +32,8 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import VoucherInput from "@/components/product/components/VoucherInput";
+import { useUser } from "@/app/contexts/UserContext";
+import { isEmpty, isNumber } from "lodash";
 
 export default function FlightBookForm({ airportsData }: any) {
   const router = useRouter();
@@ -57,6 +59,7 @@ export default function FlightBookForm({ airportsData }: any) {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
+  const { userInfo } = useUser();
 
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -94,6 +97,19 @@ export default function FlightBookForm({ airportsData }: any) {
           lastName: "",
         },
       ],
+      contact: {
+        full_name: userInfo?.name,
+        phone:
+          isNumber(userInfo?.phone) && !isEmpty(userInfo?.phone)
+            ? userInfo.phone.toString()
+            : undefined,
+        email: userInfo?.email,
+        gender: !isEmpty(userInfo?.gender)
+          ? userInfo?.gender === 1
+            ? "male"
+            : "female"
+          : "",
+      },
       checkBoxGenerateInvoice: false,
     },
   });
@@ -189,7 +205,9 @@ export default function FlightBookForm({ airportsData }: any) {
       total_tax: total_tax,
       total_fee_service: total_fee_service,
       total_price: total_price,
+      customer_id: userInfo?.id,
     };
+
     const bookFlight = async () => {
       try {
         setLoading(true);

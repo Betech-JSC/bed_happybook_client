@@ -20,7 +20,10 @@ const AuthApi = {
       if (!response.ok) {
         throw new Error(resData.message);
       }
-      location.reload();
+      toast.success("Đăng xuất thành công");
+      setTimeout(() => {
+        window.location.href = "/dang-nhap";
+      }, 1000);
     } catch (error: any) {
       toast.error(error.message);
     }
