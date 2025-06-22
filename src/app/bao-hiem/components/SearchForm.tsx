@@ -178,7 +178,13 @@ export default function SearchFormInsurance() {
       toast.error("Vui lòng chọn đầy đủ thông tin");
     }
   };
+  const filteredDeparture = departure.filter(
+    (opt) => opt.label !== formData.destinationPlace
+  );
 
+  const filteredDestination = destination.filter(
+    (opt) => opt.label !== formData.departurePlace
+  );
   return (
     <div className="flex flex-wrap lg:flex-nowrap gap-4 lg:gap-2">
       <div className="w-full xl:w-[40%] flex flex-wrap md:flex-nowrap gap-3">
@@ -202,7 +208,7 @@ export default function SearchFormInsurance() {
                 value={departure.find(
                   (opt) => opt.label === formData.departurePlace
                 )}
-                options={departure}
+                options={filteredDeparture}
                 placeholder={`${
                   language === "en" ? "Select insurance" : "Chọn địa điểm"
                 }`}
@@ -259,7 +265,7 @@ export default function SearchFormInsurance() {
                 value={destination.find(
                   (opt) => opt.label === formData.destinationPlace
                 )}
-                options={destination}
+                options={filteredDestination}
                 placeholder={`${
                   language === "en" ? "Select insurance" : "Chọn địa điểm"
                 }`}
