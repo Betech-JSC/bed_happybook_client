@@ -28,6 +28,17 @@ const AuthApi = {
       toast.error(error.message);
     }
   },
+  changePassword: async (data: any) => {
+    const response = await fetch("/api/auth/change-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    return response;
+  },
 };
 
 export { AuthApi };
