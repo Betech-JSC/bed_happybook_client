@@ -8,6 +8,7 @@ import { totalLanguages } from "@/constants/language";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import Image from "next/image";
 import clsx from "clsx";
+import AccountDropdownMobile from "./AccountDropdownMobile";
 export default function HeaderMobileMenu() {
   const pathname = usePathname();
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function HeaderMobileMenu() {
   }, [pathname]);
   return (
     <Fragment>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className={clsx(`relative !h-auto`, styles.header__menu_item)}>
           <button className="flex items-center space-x-1" type="button">
             <Image
@@ -89,6 +90,9 @@ export default function HeaderMobileMenu() {
                 )
             )}
           </div>
+        </div>
+        <div>
+          <AccountDropdownMobile />
         </div>
         <div
           className={`${styles.nav_icon} ${isMenuMbOpen ? styles.open : ""} `}

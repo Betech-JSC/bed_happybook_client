@@ -64,7 +64,7 @@ export default function ChangePassWord() {
             <h2 className="text-xl font-semibold mb-6">Thay đổi mật khẩu</h2>
             <div className="flex flex-wrap gap-4 text-base">
               <div className="w-full">
-                <div className="w-1/2 mx-auto ">
+                <div className="w-full md:w-1/2 mx-auto ">
                   <p data-translate="true">Mật khẩu hiện tại</p>
                   <div className="relative">
                     <input
@@ -89,7 +89,7 @@ export default function ChangePassWord() {
                 </div>
               </div>
               <div className="w-full">
-                <div className="w-1/2 mx-auto">
+                <div className="w-full md:w-1/2 mx-auto">
                   <p data-translate="true">Mật khẩu mới</p>
                   <input
                     type={showPassword ? "text" : "password"}
@@ -103,7 +103,7 @@ export default function ChangePassWord() {
                 </div>
               </div>
               <div className="w-full">
-                <div className="w-1/2 mx-auto">
+                <div className="w-full md:w-1/2 mx-auto">
                   <p data-translate="true">Nhập lại mật khẩu mới</p>
                   <input
                     type={showPassword ? "text" : "password"}

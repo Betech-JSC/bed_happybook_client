@@ -271,7 +271,7 @@ export default function Header() {
           {!userInfo ? (
             <Link
               href="/dang-nhap"
-              className={`bg-blue-600 min-w-[100px] justify-center font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
+              className={`bg-blue-600 min-w-[100px] justify-center font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] hover:bg-white border-blue-700 border cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
             >
               <span data-translate="true">Đăng nhập</span>
             </Link>
@@ -328,6 +328,13 @@ export default function Header() {
                   style={{ margin: 0 }}
                 >
                   Lịch sử đặt vé
+                </Link>
+                <Link
+                  href="/thay-doi-mat-khau"
+                  data-translate="true"
+                  style={{ margin: 0 }}
+                >
+                  Đổi mật khẩu
                 </Link>
                 <button
                   className="hover:text-primary duration-300"
