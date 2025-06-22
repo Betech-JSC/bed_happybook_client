@@ -193,8 +193,8 @@ export default function CheckOutForm({
     0
   );
   return (
-    <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
-      <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 rounded-2xl">
+    <div className="flex flex-col-reverse items-start lg:flex-row lg:space-x-8 lg:mt-4 pb-8">
+      <div className="w-full lg:w-8/12 mt-4 lg:mt-0 rounded-2xl">
         <div
           className="rounded-t-xl"
           style={{
@@ -395,24 +395,23 @@ export default function CheckOutForm({
                     <span data-translate="true">Giới tính</span>
                     <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    id="gender"
-                    {...register("gender")}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                  >
-                    <option value="" data-translate="true">
-                      Vui lòng chọn giới tính
-                    </option>
-                    <option value="male" data-translate="true">
-                      Nam
-                    </option>
-                    <option value="female" data-translate="true">
-                      Nữ
-                    </option>
-                    <option value="other" data-translate="true">
-                      Khác
-                    </option>
-                  </select>
+                  <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
+                    <select
+                      id="gender"
+                      className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                      {...register("gender")}
+                    >
+                      <option value="" data-translate="true">
+                        Vui lòng chọn giới tính
+                      </option>
+                      <option value="male" data-translate="true">
+                        Nam
+                      </option>
+                      <option value="female" data-translate="true">
+                        Nữ
+                      </option>
+                    </select>
+                  </div>
                   {errors.gender && (
                     <p className="text-red-600">{errors.gender.message}</p>
                   )}
@@ -655,7 +654,7 @@ export default function CheckOutForm({
           </div>
         </form>
       </div>
-      <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl">
+      <div className="w-full lg:w-4/12 bg-white rounded-2xl">
         <div className="py-4 px-3 lg:px-6">
           <div className="pb-4 border-b border-gray-200">
             <h1

@@ -41,7 +41,11 @@ const request = async <Response>(
     };
 
     if (!response.ok) {
-      throw new HttpError({ status: response.status, payload: payload });
+      if (data?.status === 401) {
+        return data;
+      } else {
+        throw new HttpError({ status: response.status, payload: payload });
+      }
     }
     return data;
   } catch (error) {

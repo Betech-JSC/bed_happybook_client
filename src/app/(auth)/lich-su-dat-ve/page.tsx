@@ -12,6 +12,9 @@ export default async function FlightBookingHistoryIndex() {
     redirect("/dang-nhap");
   }
   const response = await FlightApi.bookingHistory(token);
+  if (response?.status === 401) {
+    redirect("/dang-nhap");
+  }
   const data = response?.payload?.data ?? [];
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];

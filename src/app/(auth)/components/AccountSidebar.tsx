@@ -1,5 +1,5 @@
 "use client";
-import { User, Settings, ClipboardList } from "lucide-react";
+import { User, Settings, ClipboardList, Lock } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -48,12 +48,22 @@ export default function AccountSidebar({ userInfo }: any) {
               Lịch sử đặt vé
             </Link>
           </li>
-          {/* <li className="flex items-center space-x-2 text-gray-700 hover:text-primary duration-300 cursor-pointer">
+          <li
+            className={`flex items-center space-x-2 text-gray-700 hover:text-primary duration-300 cursor-pointer ${
+              pathname === "/thay-doi-mat-khau"
+                ? "text-primary"
+                : "text-gray-700"
+            }`}
+          >
             <Lock className="w-4 h-4" />
-            <span className="hover:text-primary duration-300">
-              Thay đổi mật khẩu
-            </span>
-          </li> */}
+            <Link
+              href="/thay-doi-mat-khau"
+              className="hover:text-primary duration-300"
+              data-translate="true"
+            >
+              Đổi mật khẩu
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

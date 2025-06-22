@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getSession } from "./lib/session";
 
-const protectedRoutes = ["/thong-tin-tai-khoan", "/lich-su-dat-ve"];
+const protectedRoutes = [
+  "/thong-tin-tai-khoan",
+  "/lich-su-dat-ve",
+  "/thay-doi-mat-khau",
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -25,5 +29,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/thong-tin-tai-khoan", "/lich-su-dat-ve"],
+  matcher: ["/thong-tin-tai-khoan", "/lich-su-dat-ve", "/thay-doi-mat-khau"],
 };
