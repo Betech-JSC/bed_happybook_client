@@ -58,7 +58,7 @@ export default function FormLogin() {
         setUserInfo(resData.user_info);
         if (!isEmpty(redirectUrl)) router.push(redirectUrl);
         else router.push("/");
-      }, 1000);
+      }, 500);
     } catch (error: any) {
       toast.error(error.message);
     } finally {

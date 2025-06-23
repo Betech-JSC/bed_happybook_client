@@ -1,6 +1,6 @@
 import { VoucherProgramApi } from "@/api/VoucherProgram";
 import { VoucherType } from "@/types/voucher";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface InvalidVoucher {
   id: number;
@@ -28,17 +28,20 @@ export function useVoucherManager() {
     setVoucherErrors([]);
   };
 
-  const handleApplyVoucher = ({
-    discountAmount,
-    programIds,
-  }: {
-    discountAmount: number;
-    programIds: number[];
-  }) => {
-    setTotalDiscount(discountAmount);
-    setVoucherProgramIds(programIds);
-    handleInvalidVouchers(voucherErrors);
-  };
+  const handleApplyVoucher = useCallback(
+    ({
+      discountAmount,
+      programIds,
+    }: {
+      discountAmount: number;
+      programIds: number[];
+    }) => {
+      setTotalDiscount(discountAmount);
+      setVoucherProgramIds(programIds);
+      handleInvalidVouchers(voucherErrors);
+    },
+    [voucherErrors]
+  );
 
   return {
     totalDiscount,

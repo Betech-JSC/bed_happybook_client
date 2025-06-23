@@ -2,16 +2,23 @@
 
 import { formatCurrency } from "@/lib/formatters";
 import { VoucherType } from "@/types/voucher";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Select, { MultiValue, ActionMeta } from "react-select";
 
 const CustomOption = (props: any) => {
-  const { data, innerRef, innerProps } = props;
+  const { data, innerRef, innerProps, isDisabled } = props;
   return (
     <div
       ref={innerRef}
       {...innerProps}
-      className="flex flex-col gap-2 p-2 hover:bg-gray-100 cursor-pointer border-b border-b-gray-300"
+      className={`flex flex-col gap-2 p-2 hover:bg-gray-100 border-b border-b-gray-300  ${
+        isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+      }`}
+      title={
+        isDisabled
+          ? `Áp dụng cho đơn hàng từ ${formatCurrency(data.min_order_amount)}`
+          : ""
+      }
     >
       <div className="font-medium">{data.label}</div>
       <div className="text-sm text-gray-500">{data.value}</div>
@@ -23,6 +30,12 @@ const CustomOption = (props: any) => {
             : `${data.discount_value}%`}
         </span>
       </div>
+      {data.min_order_amount > 0 && (
+        <div className="text-sm text-gray-500">
+          <span data-translate="true">Đơn tối thiểu: </span>
+          <span>{formatCurrency(data.min_order_amount)}</span>
+        </div>
+      )}
     </div>
   );
 };
@@ -43,35 +56,61 @@ export default function VoucherProgram({
 }) {
   const [mounted, setMounted] = useState(false);
   const [selectedVouchers, setSelectedVouchers] = useState<VoucherType[]>([]);
+  const prevPayload = useRef<{
+    discountAmount: number;
+    programIds: number[];
+  } | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleApplyVoucher = useCallback(
-    (
-      newValue: MultiValue<VoucherType>,
-      _actionMeta: ActionMeta<VoucherType>
-    ) => {
-      const voucherSelected = [...newValue];
-      setSelectedVouchers(voucherSelected);
-      const discount = voucherSelected.reduce((sum: number, v: any) => {
-        return (
-          sum +
-          (v.discount_type === "amount"
-            ? v.discount_value
-            : (totalPrice * v.discount_value) / 100)
-        );
-      }, 0);
-      const programIds = voucherSelected.map((v) => v.id);
-
-      onApplyVoucher({
-        discountAmount: Math.floor(discount),
-        programIds,
-      });
+  const handleSelectChange = useCallback(
+    (newValue: MultiValue<VoucherType>, _meta: ActionMeta<VoucherType>) => {
+      setSelectedVouchers([...newValue]);
     },
-    [totalPrice, onApplyVoucher]
+    []
   );
+
+  useEffect(() => {
+    const programIds = selectedVouchers.map((v) => v.id);
+    const discount = selectedVouchers.reduce((sum, v) => {
+      return (
+        sum +
+        (v.discount_type === "amount"
+          ? v.discount_value
+          : (totalPrice * v.discount_value) / 100)
+      );
+    }, 0);
+
+    const payload = {
+      discountAmount: Math.floor(discount),
+      programIds,
+    };
+
+    const isSame =
+      prevPayload.current &&
+      prevPayload.current.discountAmount === payload.discountAmount &&
+      JSON.stringify(prevPayload.current.programIds) ===
+        JSON.stringify(payload.programIds);
+
+    if (!isSame) {
+      prevPayload.current = payload;
+      onApplyVoucher(payload);
+    }
+  }, [selectedVouchers, totalPrice, onApplyVoucher]);
+
+  useEffect(() => {
+    if (!selectedVouchers.length) return;
+
+    const validVouchers = selectedVouchers.filter(
+      (v) => totalPrice >= v.min_order_amount
+    );
+
+    if (validVouchers.length !== selectedVouchers.length) {
+      setSelectedVouchers(validVouchers);
+    }
+  }, [totalPrice, setSelectedVouchers, selectedVouchers]);
 
   return (
     <div className="border rounded-lg p-4 shadow-sm">
@@ -90,10 +129,13 @@ export default function VoucherProgram({
                 IndicatorSeparator: () => null,
                 DropdownIndicator: () => null,
               }}
-              onChange={handleApplyVoucher}
+              onChange={handleSelectChange}
               placeholder="Chọn mã khuyến mãi..."
               className="w-full"
               noOptionsMessage={() => "Không tìm thấy mã khuyến mãi phù hợp"}
+              isOptionDisabled={(option) =>
+                totalPrice < option.min_order_amount
+              }
             />
           )}
         </div>

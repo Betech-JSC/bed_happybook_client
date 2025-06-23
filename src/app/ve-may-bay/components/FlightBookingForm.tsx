@@ -110,21 +110,13 @@ export default function FlightBookForm({ airportsData }: any) {
       ],
       contact: {
         full_name: userInfo?.name,
-        phone:
-          isNumber(userInfo?.phone) && !isEmpty(userInfo?.phone)
-            ? userInfo.phone.toString()
-            : undefined,
+        phone: userInfo?.phone?.toString(),
         email: userInfo?.email,
-        gender: !isEmpty(userInfo?.gender)
-          ? userInfo?.gender === 1
-            ? "male"
-            : "female"
-          : "",
+        gender: userInfo?.gender === 1 ? "male" : "female",
       },
       checkBoxGenerateInvoice: false,
     },
   });
-
   const onSubmit = (data: FlightBookingInforType) => {
     // setLoading(true);
     const adtArr = data.atd.map((item, index) => {
