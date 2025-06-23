@@ -952,12 +952,42 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 : "0đ"}
             </p>
           </div>
-          <div className="flex mt-4 pt-4 md:pb-6 justify-between border-t border-t-gray-200">
+          {data?.orderInfo?.total_discount > 0 && (
+            <div className="flex flex-col gap-2 mt-4 pt-3 border-t border-t-gray-200">
+              <div className="flex justify-between">
+                <span
+                  className="text-gray-700 font-semibold"
+                  data-translate="true"
+                >
+                  Giá gốc
+                </span>
+                <p className="font-semibold">
+                  {formatCurrency(totalPrice + totalBaggages.price)}
+                </p>
+              </div>
+              <div className="flex justify-between">
+                <span
+                  className="text-gray-700 font-semibold"
+                  data-translate="true"
+                >
+                  Giá giảm
+                </span>
+                <p className="font-semibold">
+                  {formatCurrency(data?.orderInfo?.total_discount)}
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="flex justify-between gap-2 mt-4 pt-4 md:pb-6 border-t border-t-gray-200">
             <span className="text-gray-700 font-bold" data-translate="true">
               Tổng cộng
             </span>
             <p className="font-bold text-primary">
-              {formatCurrency(totalPrice + totalBaggages.price)}
+              {formatCurrency(
+                totalPrice +
+                  totalBaggages.price -
+                  data?.orderInfo?.total_discount
+              )}
             </p>
           </div>
         </div>
