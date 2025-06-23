@@ -58,6 +58,7 @@ interface ToastMessages {
   tooManyRequests: string;
   transferSuccessful: string;
   formNotValid: string;
+  inValidVouchers: string;
 }
 
 export const toastMessages: Record<"vi" | "en", ToastMessages> = {
@@ -75,6 +76,7 @@ export const toastMessages: Record<"vi" | "en", ToastMessages> = {
     tooManyRequests: "Bạn đã bấm quá nhanh, hãy thử lại sau vài giây!",
     transferSuccessful: "Chuyển khoản thành công",
     formNotValid: "Thông tin không hợp lệ. Vui lòng kiểm tra lại!",
+    inValidVouchers: "Voucher không hợp lệ. Vui lòng kiểm tra lại",
   },
   en: {
     successRegister: "Registration successful!",
@@ -90,5 +92,6 @@ export const toastMessages: Record<"vi" | "en", ToastMessages> = {
     tooManyRequests: "You clicked too fast, try again in a few seconds!",
     transferSuccessful: "Transfer Successful",
     formNotValid: "Invalid information. Please check again!",
+    inValidVouchers: "Voucher is invalid. Please check again.",
   },
 };
