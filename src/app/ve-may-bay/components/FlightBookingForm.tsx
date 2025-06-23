@@ -31,9 +31,11 @@ import { formatTranslationMap, translatePage } from "@/utils/translateDom";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import VoucherInput from "@/components/product/components/VoucherInput";
 import { useUser } from "@/app/contexts/UserContext";
 import { isEmpty, isNumber } from "lodash";
+import VoucherProgram from "@/components/product/components/VoucherProgram";
+import { HttpError } from "@/lib/error";
+import { useVoucherManager } from "@/hooks/useVoucherManager";
 
 export default function FlightBookForm({ airportsData }: any) {
   const router = useRouter();
@@ -60,7 +62,16 @@ export default function FlightBookForm({ airportsData }: any) {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
   const { userInfo } = useUser();
-
+  // Handle Voucher
+  const {
+    totalDiscount,
+    voucherProgramIds,
+    voucherErrors,
+    vouchersData,
+    setVoucherErrors,
+    handleApplyVoucher,
+  } = useVoucherManager();
+  // End Voucher
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
@@ -206,6 +217,7 @@ export default function FlightBookForm({ airportsData }: any) {
       total_fee_service: total_fee_service,
       total_price: total_price,
       customer_id: userInfo?.id,
+      voucher_program_ids: voucherProgramIds,
     };
 
     const bookFlight = async () => {
@@ -234,7 +246,16 @@ export default function FlightBookForm({ airportsData }: any) {
           toast.error(toaStrMsg.sendFailed);
         }
       } catch (error: any) {
-        toast.error(toaStrMsg.error);
+        if (error instanceof HttpError) {
+          if (error?.payload?.errors) {
+            if (error?.payload?.errors?.["voucher_programs"]) {
+              setVoucherErrors(error?.payload?.errors["voucher_programs"]);
+            }
+          }
+          toast.error(error?.payload?.message ?? toaStrMsg.inValidVouchers);
+        } else {
+          toast.error(toaStrMsg.error);
+        }
       } finally {
         setLoading(false);
       }
@@ -1806,19 +1827,52 @@ export default function FlightBookForm({ airportsData }: any) {
                     : "0đ"}
                 </p>
               </div>
-              {/* <div className="pt-4 border-t">
-                <VoucherInput />
-              </div> */}
-              <div className="flex pt-4 justify-between border-t border-t-gray-200">
-                <span
-                  className=" text-gray-700 font-bold"
-                  data-translate="true"
-                >
-                  Tổng cộng
-                </span>
-                <p className="font-bold text-primary">
-                  {formatCurrency(finalPrice)}
-                </p>
+              <div className="pt-4 border-t">
+                <VoucherProgram
+                  totalPrice={finalPrice}
+                  onApplyVoucher={handleApplyVoucher}
+                  vouchersData={vouchersData}
+                  voucherErrors={voucherErrors}
+                />
+              </div>
+              <div className="border-t border-t-gray-200">
+                {totalDiscount > 0 && (
+                  <div>
+                    <div className="flex pt-4 justify-between">
+                      <span
+                        className=" text-gray-700 font-bold"
+                        data-translate="true"
+                      >
+                        Giá gốc
+                      </span>
+                      <p className="font-semibold">
+                        {formatCurrency(finalPrice)}
+                      </p>
+                    </div>
+                    <div className="flex py-4 justify-between">
+                      <span
+                        className=" text-gray-700 font-bold"
+                        data-translate="true"
+                      >
+                        Giảm giá
+                      </span>
+                      <p className="font-semibold">
+                        {formatCurrency(totalDiscount)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex pt-4 justify-between border-t border-t-gray-300 ">
+                  <span
+                    className=" text-gray-700 font-bold"
+                    data-translate="true"
+                  >
+                    Tổng cộng
+                  </span>
+                  <p className="font-bold text-primary">
+                    {formatCurrency(finalPrice - totalDiscount)}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
