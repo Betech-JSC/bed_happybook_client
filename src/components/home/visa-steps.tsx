@@ -23,11 +23,11 @@ export default function VisaSteps() {
       <div className="px-3 md:px-0 relative z-10 container mx-auto text-center text-white">
         <h2
           className={`${pacifico.className} ${styles.pacifico_font} text-3xl font-normal mb-5`}
-          data-translate
+          data-translate="true"
         >
-          Các bước làm visa tại Happy Book Travel
+          Các bước làm visa tại HappyBook Travel
         </h2>
-        <p className="mb-8 lg:w-[40%] mx-auto" data-translate>
+        <p className="mb-8 lg:w-[40%] mx-auto" data-translate="true">
           Làm visa đơn giản và nhanh chóng, với đội ngũ chuyên nghiệp hỗ trợ
           chuyên nghiệp từ khâu chuẩn bị hồ sơ đến khi nhận visa.
         </p>
@@ -40,13 +40,13 @@ export default function VisaSteps() {
             <div className="w-[240px] text-left ml-[86px] md:ml-0 md:text-center md:w-auto ">
               <p
                 className={` ${pacifico.className} ${styles.progressbar__step_title}`}
-                data-translate
+                data-translate="true"
               >
                 Đăng ký
               </p>
               <p
                 className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3"
-                data-translate
+                data-translate="true"
               >
                 Điền form thông tin đơn giản, nhanh chóng. Thông tin được bảo
                 mật.
@@ -59,18 +59,22 @@ export default function VisaSteps() {
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
               <p
                 className={` ${pacifico.className} ${styles.progressbar__step_title}`}
-                data-translate
+                data-translate="true"
               >
                 Liên hệ
               </p>
 
-              <p
+              <div
                 className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3"
-                data-translate
+                data-translate="true"
               >
                 Nhân viên sẽ liên hệ với bạn trong vòng 2h làm việc qua
-                zalo/call. Hoặc bạn liên hệ hotline 0708.628.791 (zalo/call).
-              </p>
+                zalo/call. Hoặc bạn liên hệ hotline{" "}
+                <a href="tel:1900633437" className="inline-block">
+                  1900.633.437 - Nhấn phím (2){" "}
+                </a>
+                (zalo/call).
+              </div>
             </div>
           </li>
           <li
@@ -79,14 +83,14 @@ export default function VisaSteps() {
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
               <p
                 className={` ${pacifico.className} ${styles.progressbar__step_title}`}
-                data-translate
+                data-translate="true"
               >
                 Tư vấn
               </p>
 
               <p
                 className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3"
-                data-translate
+                data-translate="true"
               >
                 Tư vấn hoàn thiện hồ sơ: nhân viên visa giàu kinh nghiệm của
                 Happy book sẽ đồng hành hướng dẫn, hỗ trợ bạn suốt quá trình
@@ -100,14 +104,14 @@ export default function VisaSteps() {
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
               <p
                 className={` ${pacifico.className} ${styles.progressbar__step_title}`}
-                data-translate
+                data-translate="true"
               >
                 Nộp hồ sơ
               </p>
 
               <p
                 className="text-sm font-normal max-w-1/2 lg:min-w-[200px] m-w-[220px] mt-3"
-                data-translate
+                data-translate="true"
               >
                 Sau khi hồ sơ đã hoàn chỉnh, nhân viên Happy book nộp hồ sơ visa
                 lên Lãnh sự quán các nước.
@@ -120,14 +124,14 @@ export default function VisaSteps() {
             <div className="w-[240px] md:w-auto text-left ml-[86px] md:ml-0 md:text-center">
               <p
                 className={` ${pacifico.className} ${styles.progressbar__step_title}`}
-                data-translate
+                data-translate="true"
               >
                 Đợi kết quả
               </p>
 
               <p
                 className="text-sm font-normal lg:min-w-[200px] m-w-[220px] mt-3"
-                data-translate
+                data-translate="true"
               >
                 Sau quá trình đợi LSQ xét duyệt hồ sơ, nhân viên Happybook sẽ
                 thông báo kết quả và chuyển phát hồ sơ cho khách hàng.

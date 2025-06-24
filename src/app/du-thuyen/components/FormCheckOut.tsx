@@ -22,6 +22,11 @@ import { datePickerLocale } from "@/constants/language";
 import { isEmpty } from "lodash";
 import { format, parse } from "date-fns";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import { useUser } from "@/app/contexts/UserContext";
+import { useVoucherManager } from "@/hooks/useVoucherManager";
+import VoucherProgram from "@/components/product/components/VoucherProgram";
+import { HttpError } from "@/lib/error";
+import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 
 interface Ticket {
   id: number;
@@ -40,6 +45,7 @@ export default function CheckOutForm({
   product: any;
   ticketOptionId: number;
 }) {
+  const { userInfo } = useUser();
   const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -49,6 +55,16 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
+  // Handle Voucher
+  const {
+    totalDiscount,
+    voucherProgramIds,
+    voucherErrors,
+    vouchersData,
+    setVoucherErrors,
+    handleApplyVoucher,
+  } = useVoucherManager();
+
   const [schemaForm, setSchemaForm] = useState(() =>
     checkOutAmusementTicketSchema(messages, generateInvoice)
   );
@@ -114,6 +130,10 @@ export default function CheckOutForm({
   } = useForm<checkOutAmusementTicketType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
+      full_name: userInfo?.name,
+      phone: userInfo?.phone?.toString(),
+      email: userInfo?.email,
+      gender: userInfo && userInfo?.gender === 0 ? "female" : "male",
       checkBoxGenerateInvoice: false,
       depart_date: searchParams.get("departDate")
         ? new Date(searchParams.get("departDate") ?? "")
@@ -154,6 +174,8 @@ export default function CheckOutForm({
           note: data.note ? data.note : "",
         },
         invoice: data.invoice,
+        customer_id: userInfo?.id,
+        voucher_program_ids: voucherProgramIds,
       };
       if (!generateInvoice) {
         delete formatData.invoice;
@@ -169,7 +191,16 @@ export default function CheckOutForm({
         toast.error(toaStrMsg.sendFailed);
       }
     } catch (error: any) {
-      toast.error(toaStrMsg.error);
+      if (error instanceof HttpError) {
+        if (error?.payload?.errors) {
+          if (error?.payload?.errors?.["voucher_programs"]) {
+            setVoucherErrors(error?.payload?.errors["voucher_programs"]);
+          }
+        }
+        toast.error(error?.payload?.message ?? toaStrMsg.inValidVouchers);
+      } else {
+        toast.error(toaStrMsg.error);
+      }
     } finally {
       setLoading(false);
     }
@@ -701,10 +732,32 @@ export default function CheckOutForm({
               </div>
             ))}
           </div>
-          <div className="mt-4 flex justify-between">
-            <span data-translate="true">Tổng cộng</span>
-            {totalPrice > 0 && (
-              <DisplayPrice price={totalPrice} currency={product?.currency} />
+          <div className="pt-4 border-t">
+            <VoucherProgram
+              totalPrice={totalPrice}
+              onApplyVoucher={handleApplyVoucher}
+              vouchersData={vouchersData}
+              voucherErrors={voucherErrors}
+            />
+          </div>
+          <div className="mt-4">
+            {totalDiscount > 0 ? (
+              <DisplayPriceWithDiscount
+                price={totalPrice}
+                totalDiscount={totalDiscount}
+                currency={product?.currency}
+              />
+            ) : (
+              totalPrice > 0 && (
+                <div className="w-full flex justify-between">
+                  <span className="font-medium">Tổng cộng</span>
+                  <DisplayPrice
+                    textPrefix={""}
+                    price={totalPrice}
+                    currency={product?.currency}
+                  />
+                </div>
+              )
             )}
           </div>
         </div>

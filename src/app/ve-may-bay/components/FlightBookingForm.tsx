@@ -112,7 +112,7 @@ export default function FlightBookForm({ airportsData }: any) {
         full_name: userInfo?.name,
         phone: userInfo?.phone?.toString(),
         email: userInfo?.email,
-        gender: userInfo?.gender === 1 ? "male" : "female",
+        gender: userInfo && userInfo?.gender === 0 ? "female" : "male",
       },
       checkBoxGenerateInvoice: false,
     },

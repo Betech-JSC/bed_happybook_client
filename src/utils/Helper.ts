@@ -214,7 +214,6 @@ const displayProductPrice = (
   fixed: boolean = false,
   digits: number = 2
 ) => {
-  if (!price) return "";
   const number = Number(price);
   let displayPrice = "";
   const symbolLeft = currency?.symbol_left ?? "";

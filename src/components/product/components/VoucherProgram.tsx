@@ -20,7 +20,9 @@ const CustomOption = (props: any) => {
           : ""
       }
     >
-      <div className="font-medium">{data.label}</div>
+      <div className="font-medium" data-traslate="true">
+        {data.label}
+      </div>
       <div className="text-sm text-gray-500">{data.value}</div>
       <div className="text-sm text-gray-500">
         <span data-translate="true">Giảm </span>
