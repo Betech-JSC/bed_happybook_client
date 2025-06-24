@@ -17,10 +17,15 @@ import {
   checkOutAmusementTicketType,
 } from "@/schemaValidations/checkOutAmusementTicket";
 import { renderTextContent } from "@/utils/Helper";
-import DatePicker, { registerLocale } from "react-datepicker";
-import { datePickerLocale } from "@/constants/language";
+import DatePicker from "react-datepicker";
 import { isEmpty } from "lodash";
 import { format, parse } from "date-fns";
+import { useVoucherManager } from "@/hooks/useVoucherManager";
+import VoucherProgram from "@/components/product/components/VoucherProgram";
+import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
+import DisplayPrice from "@/components/base/DisplayPrice";
+import { useUser } from "@/app/contexts/UserContext";
+import { HttpError } from "@/lib/error";
 
 interface Ticket {
   id: number;
@@ -39,6 +44,7 @@ export default function CheckOutForm({
   product: any;
   ticketOptionId: number;
 }) {
+  const { userInfo } = useUser();
   const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,6 +57,16 @@ export default function CheckOutForm({
   const [schemaForm, setSchemaForm] = useState(() =>
     checkOutAmusementTicketSchema(messages, generateInvoice)
   );
+  // Handle Voucher
+  const {
+    totalDiscount,
+    voucherProgramIds,
+    voucherErrors,
+    vouchersData,
+    setVoucherErrors,
+    handleApplyVoucher,
+  } = useVoucherManager();
+
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
     tuesday: "Ba",
@@ -113,6 +129,10 @@ export default function CheckOutForm({
   } = useForm<checkOutAmusementTicketType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
+      full_name: userInfo?.name,
+      phone: userInfo?.phone?.toString(),
+      email: userInfo?.email,
+      gender: userInfo && userInfo?.gender === 0 ? "female" : "male",
       checkBoxGenerateInvoice: false,
       depart_date: searchParams.get("departDate")
         ? new Date(searchParams.get("departDate") ?? "")
@@ -154,6 +174,8 @@ export default function CheckOutForm({
           note: data.note ? data.note : "",
         },
         invoice: data.invoice,
+        customer_id: userInfo?.id,
+        voucher_program_ids: voucherProgramIds,
       };
       if (!generateInvoice) {
         delete formatData.invoice;
@@ -169,7 +191,16 @@ export default function CheckOutForm({
         toast.error(toaStrMsg.sendFailed);
       }
     } catch (error: any) {
-      toast.error(toaStrMsg.error);
+      if (error instanceof HttpError) {
+        if (error?.payload?.errors) {
+          if (error?.payload?.errors?.["voucher_programs"]) {
+            setVoucherErrors(error?.payload?.errors["voucher_programs"]);
+          }
+        }
+        toast.error(error?.payload?.message ?? toaStrMsg.inValidVouchers);
+      } else {
+        toast.error(toaStrMsg.error);
+      }
     } finally {
       setLoading(false);
     }
@@ -693,11 +724,33 @@ export default function CheckOutForm({
               </div>
             ))}
           </div>
-          <div className="mt-4 flex justify-between">
-            <span data-translate="true">Tổng cộng</span>
-            <span className="font-bold text-base text-primary">
-              {formatCurrency(totalPrice)}
-            </span>
+          <div className="pt-4 border-t">
+            <VoucherProgram
+              totalPrice={totalPrice}
+              onApplyVoucher={handleApplyVoucher}
+              vouchersData={vouchersData}
+              voucherErrors={voucherErrors}
+            />
+          </div>
+          <div className="mt-4">
+            {totalDiscount > 0 ? (
+              <DisplayPriceWithDiscount
+                price={totalPrice}
+                totalDiscount={totalDiscount}
+                currency={product?.currency}
+              />
+            ) : (
+              totalPrice > 0 && (
+                <div className="w-full flex justify-between">
+                  <span className="font-medium">Tổng cộng</span>
+                  <DisplayPrice
+                    textPrefix={""}
+                    price={totalPrice}
+                    currency={product?.currency}
+                  />
+                </div>
+              )
+            )}
           </div>
         </div>
       </div>
