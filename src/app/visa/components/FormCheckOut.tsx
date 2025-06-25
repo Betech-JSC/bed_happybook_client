@@ -46,9 +46,11 @@ export default function FormCheckOut({
     voucherProgramIds,
     voucherErrors,
     vouchersData,
+    searchingVouchers,
     setVoucherErrors,
     handleApplyVoucher,
-  } = useVoucherManager();
+    handleSearch,
+  } = useVoucherManager("visa");
 
   useEffect(() => {
     setSchemaForm(CheckOutVisaSchema(messages, generateInvoice));
@@ -509,6 +511,9 @@ export default function FormCheckOut({
               onApplyVoucher={handleApplyVoucher}
               vouchersData={vouchersData}
               voucherErrors={voucherErrors}
+              currency={detail?.currency?.code ?? "VND"}
+              onSearch={handleSearch}
+              isSearching={searchingVouchers}
             />
           </div>
           <div className="bg-gray-50 text-end p-2 rounded-lg mt-2">

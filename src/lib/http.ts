@@ -55,7 +55,6 @@ const request = async <Response>(
       if (error.name === "AbortError") {
         throw new HttpError({ status: 408, payload: "Request timeout" });
       }
-      return null;
       throw new HttpError({ status: 500, payload: "Server Error" });
     } else {
       throw new HttpError({

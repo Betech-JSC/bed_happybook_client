@@ -61,9 +61,11 @@ export default function CheckOutForm({
     voucherProgramIds,
     voucherErrors,
     vouchersData,
+    searchingVouchers,
     setVoucherErrors,
     handleApplyVoucher,
-  } = useVoucherManager();
+    handleSearch,
+  } = useVoucherManager("yacht");
 
   const [schemaForm, setSchemaForm] = useState(() =>
     checkOutAmusementTicketSchema(messages, generateInvoice)
@@ -738,6 +740,9 @@ export default function CheckOutForm({
               onApplyVoucher={handleApplyVoucher}
               vouchersData={vouchersData}
               voucherErrors={voucherErrors}
+              currency={product?.currency?.code ?? "VND"}
+              onSearch={handleSearch}
+              isSearching={searchingVouchers}
             />
           </div>
           <div className="mt-4">

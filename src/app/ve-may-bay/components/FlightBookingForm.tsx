@@ -68,9 +68,11 @@ export default function FlightBookForm({ airportsData }: any) {
     voucherProgramIds,
     voucherErrors,
     vouchersData,
+    searchingVouchers,
     setVoucherErrors,
     handleApplyVoucher,
-  } = useVoucherManager();
+    handleSearch,
+  } = useVoucherManager("airline_ticket");
   // End Voucher
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -211,7 +213,6 @@ export default function FlightBookForm({ airportsData }: any) {
       customer_id: userInfo?.id,
       voucher_program_ids: voucherProgramIds,
     };
-
     const bookFlight = async () => {
       try {
         setLoading(true);
@@ -1825,6 +1826,9 @@ export default function FlightBookForm({ airportsData }: any) {
                   onApplyVoucher={handleApplyVoucher}
                   vouchersData={vouchersData}
                   voucherErrors={voucherErrors}
+                  currency={"VND"}
+                  onSearch={handleSearch}
+                  isSearching={searchingVouchers}
                 />
               </div>
               <div className="border-t border-t-gray-200">
@@ -1864,6 +1868,11 @@ export default function FlightBookForm({ airportsData }: any) {
                   <p className="font-bold text-primary">
                     {formatCurrency(finalPrice - totalDiscount)}
                   </p>
+                </div>
+                <div className="text-[#166987] font-semibold mt-1 text-sm leading-6 italic">
+                  Bạn được tặng {totalAdt + totalChd + totalInf} bảo hiểm du
+                  lịch.Sau khi đơn hàng được đặt sẽ có booker liên hệ để tư vấn
+                  gói bảo hiểm phù hợp với bạn.
                 </div>
               </div>
             </div>
