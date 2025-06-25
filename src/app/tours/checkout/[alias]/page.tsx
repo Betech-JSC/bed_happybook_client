@@ -108,8 +108,6 @@ export default async function TourCheckout({
                     <span data-translate="true">Liên hệ</span>
                   )}
                 </span>
-                {/* <span>/ khách</span> */}
-                {/* <p className="text-blue-700 mt-3">+ 40 điểm</p> */}
               </div>
             </div>
           </div>
