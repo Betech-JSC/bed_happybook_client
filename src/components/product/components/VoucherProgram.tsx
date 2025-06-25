@@ -1,61 +1,83 @@
 "use client";
 
+import { VoucherProgramApi } from "@/api/VoucherProgram";
 import { formatCurrency } from "@/lib/formatters";
 import { VoucherType } from "@/types/voucher";
+import { debounce, isEqual } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Select, { MultiValue, ActionMeta } from "react-select";
 
-const CustomOption = (props: any) => {
-  const { data, innerRef, innerProps, isDisabled } = props;
-  return (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      className={`flex flex-col gap-2 p-2 hover:bg-gray-100 border-b border-b-gray-300  ${
-        isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-      }`}
-      title={
-        isDisabled
-          ? `Áp dụng cho đơn hàng từ ${formatCurrency(data.min_order_amount)}`
-          : ""
-      }
-    >
-      <div className="font-medium" data-traslate="true">
-        {data.label}
-      </div>
-      <div className="text-sm text-gray-500">{data.value}</div>
-      <div className="text-sm text-gray-500">
-        <span data-translate="true">Giảm </span>
-        <span>
-          {data.discount_type === "amount"
-            ? formatCurrency(data.discount_value)
-            : `${data.discount_value}%`}
-        </span>
-      </div>
-      {data.min_order_amount > 0 && (
-        <div className="text-sm text-gray-500">
-          <span data-translate="true">Đơn tối thiểu: </span>
-          <span>{formatCurrency(data.min_order_amount)}</span>
+const CustomOption = (isCurrencyVnd: boolean) => {
+  const Component = (props: any) => {
+    const { data, innerRef, innerProps, isDisabled } = props;
+    const minOrderAmount = isCurrencyVnd
+      ? data.min_order_amount
+      : data.min_order_amount_dollar;
+    const discountValue = isCurrencyVnd
+      ? data.discount_value
+      : data.discount_value_dollar;
+    const lang = isCurrencyVnd ? "vi" : "en";
+    return (
+      <div
+        ref={innerRef}
+        {...innerProps}
+        className={`flex flex-col gap-2 p-2 hover:bg-gray-100 border-b border-b-gray-300  ${
+          isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+        }`}
+        title={
+          isDisabled
+            ? `Áp dụng cho đơn hàng từ ${formatCurrency(minOrderAmount, lang)}`
+            : ""
+        }
+      >
+        <div className="font-medium" data-traslate="true">
+          {data.label}
         </div>
-      )}
-    </div>
-  );
+        <div className="text-sm text-gray-500">{data.value}</div>
+        <div className="text-sm text-gray-500">
+          <span data-translate="true">Giảm </span>
+          <span>
+            {data.discount_type === "amount"
+              ? formatCurrency(discountValue, lang)
+              : `${discountValue}%`}
+          </span>
+        </div>
+        {minOrderAmount > 0 && (
+          <div className="text-sm text-gray-500">
+            <span data-translate="true">Đơn tối thiểu: </span>
+            <span>{formatCurrency(minOrderAmount, lang)}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+  Component.displayName = "CustomOptionWithCurrency";
+  return Component;
 };
 
 export default function VoucherProgram({
   totalPrice,
-  onApplyVoucher,
   voucherErrors,
   vouchersData,
+  currency,
+  isSearching,
+  onApplyVoucher,
+  onSearch,
 }: {
   totalPrice: number;
+  voucherErrors: any;
+  vouchersData: VoucherType[];
+  currency: string;
+  isSearching: boolean;
   onApplyVoucher: (payload: {
     discountAmount: number;
     programIds: number[];
   }) => void;
-  voucherErrors: any;
-  vouchersData: VoucherType[];
+  onSearch: (code: string) => void;
 }) {
+  const isCurrencyVnd = useMemo(() => {
+    return currency.toLowerCase() === "vnd";
+  }, [currency]);
   const [mounted, setMounted] = useState(false);
   const [selectedVouchers, setSelectedVouchers] = useState<VoucherType[]>([]);
   const prevPayload = useRef<{
@@ -77,12 +99,21 @@ export default function VoucherProgram({
   useEffect(() => {
     const programIds = selectedVouchers.map((v) => v.id);
     const discount = selectedVouchers.reduce((sum, v) => {
-      return (
-        sum +
-        (v.discount_type === "amount"
-          ? v.discount_value
-          : (totalPrice * v.discount_value) / 100)
-      );
+      if (isCurrencyVnd) {
+        return (
+          sum +
+          (v.discount_type === "amount"
+            ? v.discount_value
+            : (totalPrice * v.discount_value) / 100)
+        );
+      } else {
+        return (
+          sum +
+          (v.discount_type === "amount"
+            ? v.discount_value_dollar
+            : (totalPrice * v.discount_value_dollar) / 100)
+        );
+      }
     }, 0);
 
     const payload = {
@@ -93,27 +124,41 @@ export default function VoucherProgram({
     const isSame =
       prevPayload.current &&
       prevPayload.current.discountAmount === payload.discountAmount &&
-      JSON.stringify(prevPayload.current.programIds) ===
-        JSON.stringify(payload.programIds);
+      isEqual(prevPayload.current.programIds, payload.programIds);
 
     if (!isSame) {
       prevPayload.current = payload;
       onApplyVoucher(payload);
     }
-  }, [selectedVouchers, totalPrice, onApplyVoucher]);
+  }, [selectedVouchers, totalPrice, onApplyVoucher, isCurrencyVnd]);
 
   useEffect(() => {
     if (!selectedVouchers.length) return;
 
-    const validVouchers = selectedVouchers.filter(
-      (v) => totalPrice >= v.min_order_amount
-    );
+    const validVouchers = isCurrencyVnd
+      ? selectedVouchers.filter((v) => totalPrice >= v.min_order_amount)
+      : selectedVouchers.filter((v) => totalPrice >= v.min_order_amount_dollar);
 
-    if (validVouchers.length !== selectedVouchers.length) {
+    const sameIds =
+      validVouchers.length === selectedVouchers.length &&
+      validVouchers.every((v, i) => v.id === selectedVouchers[i].id);
+
+    if (!sameIds) {
       setSelectedVouchers(validVouchers);
     }
-  }, [totalPrice, setSelectedVouchers, selectedVouchers]);
+  }, [totalPrice, selectedVouchers, isCurrencyVnd]);
 
+  const filteredVouchers = vouchersData.filter((voucher) => {
+    if (isCurrencyVnd) {
+      return voucher.discount_value > 0;
+    } else {
+      return voucher.discount_value_dollar > 0;
+    }
+  });
+
+  const handleInputChange = (input: string) => {
+    onSearch(input);
+  };
   return (
     <div className="border rounded-lg p-4 shadow-sm">
       <h3 className="font-semibold mb-2" data-translate="true">
@@ -124,20 +169,30 @@ export default function VoucherProgram({
           {mounted && (
             <Select
               isMulti
-              options={vouchersData}
+              options={filteredVouchers}
               value={selectedVouchers}
               components={{
-                Option: CustomOption,
+                Option: CustomOption(isCurrencyVnd),
                 IndicatorSeparator: () => null,
                 DropdownIndicator: () => null,
               }}
+              formatOptionLabel={(option, { context }) => {
+                if (context === "menu") {
+                  return <div>{option.name}</div>;
+                }
+                return <span>{option.code}</span>;
+              }}
               onChange={handleSelectChange}
+              onInputChange={handleInputChange}
               placeholder="Chọn mã khuyến mãi..."
               className="w-full"
               noOptionsMessage={() => "Không tìm thấy mã khuyến mãi phù hợp"}
               isOptionDisabled={(option) =>
-                totalPrice < option.min_order_amount
+                isCurrencyVnd
+                  ? totalPrice < option.min_order_amount
+                  : totalPrice < option.min_order_amount_dollar
               }
+              isLoading={isSearching}
             />
           )}
         </div>

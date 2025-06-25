@@ -4,7 +4,9 @@ export interface VoucherType {
   code: string;
   discount_type: "amount" | "percent";
   discount_value: number;
+  discount_value_dollar: number;
   min_order_amount: number;
+  min_order_amount_dollar: number;
   quantity: number;
   start_date: Date;
   end_date: Date;

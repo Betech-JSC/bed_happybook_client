@@ -140,11 +140,11 @@ export default function SearchResults() {
       <div>
         <h2 className="text-2xl lg:text-32 font-bold !leading-tight">
           Bảo hiểm du lịch{" "}
-          {types.includes(areaType)
+          {/* {types.includes(areaType)
             ? areaType === "domestic"
               ? "nội địa"
               : "quốc tế"
-            : ""}
+            : ""} */}
         </h2>
         {departDate && returnDate && (
           <p className="text-base font-normal leading-normal text-gray-500 mt-2">
@@ -302,7 +302,7 @@ export default function SearchResults() {
                                     <p className="mb-1">
                                       {renderTextContent(benefit.description)}
                                     </p>
-                                    {benefit.parsed_price && (
+                                    {benefit.parsed_price > 0 && (
                                       <p className="text-primary text-base font-bold">
                                         {formatCurrency(
                                           benefit.parsed_price,
