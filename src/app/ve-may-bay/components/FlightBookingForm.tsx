@@ -213,7 +213,6 @@ export default function FlightBookForm({ airportsData }: any) {
       customer_id: userInfo?.id,
       voucher_program_ids: voucherProgramIds,
     };
-
     const bookFlight = async () => {
       try {
         setLoading(true);
