@@ -12,6 +12,8 @@ export const toastOptions: DefaultToastOptions = {
     padding: "16px 22px",
     marginTop: "120px",
     textAlign: "center",
+    width: "max-content",
+    maxWidth: "100%",
   },
   success: {
     duration: 3000,

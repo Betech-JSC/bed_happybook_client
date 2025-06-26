@@ -102,13 +102,12 @@ export default function FormCheckOut({
         toast.error(toaStrMsg.sendFailed);
       }
     } catch (error: any) {
-      if (error instanceof HttpError) {
-        if (error?.payload?.errors) {
-          if (error?.payload?.errors?.["voucher_programs"]) {
-            setVoucherErrors(error?.payload?.errors["voucher_programs"]);
-          }
-        }
-        toast.error(error?.payload?.message ?? toaStrMsg.inValidVouchers);
+      if (
+        error instanceof HttpError &&
+        error.payload?.errors?.voucher_programs
+      ) {
+        setVoucherErrors(error.payload.errors.voucher_programs);
+        toast.error(toaStrMsg.inValidVouchers);
       } else {
         toast.error(toaStrMsg.error);
       }

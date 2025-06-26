@@ -91,13 +91,17 @@ export default function VoucherProgram({
 
   const handleSelectChange = useCallback(
     (newValue: MultiValue<VoucherType>, _meta: ActionMeta<VoucherType>) => {
-      setSelectedVouchers([...newValue]);
+      if (Array.isArray(newValue) && newValue.length > 0) {
+        setSelectedVouchers([newValue[newValue.length - 1]]);
+      } else {
+        setSelectedVouchers([]);
+      }
     },
     []
   );
 
   useEffect(() => {
-    const programIds = selectedVouchers.map((v) => v.id);
+    const programIds = selectedVouchers.map((v) => v.voucher_id);
     const discount = selectedVouchers.reduce((sum, v) => {
       if (isCurrencyVnd) {
         return (
@@ -141,7 +145,9 @@ export default function VoucherProgram({
 
     const sameIds =
       validVouchers.length === selectedVouchers.length &&
-      validVouchers.every((v, i) => v.id === selectedVouchers[i].id);
+      validVouchers.every(
+        (v, i) => v.voucher_id === selectedVouchers[i].voucher_id
+      );
 
     if (!sameIds) {
       setSelectedVouchers(validVouchers);

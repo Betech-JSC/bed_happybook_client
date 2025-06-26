@@ -26,7 +26,9 @@ export function useVoucherManager(productType: string) {
 
   const handleInvalidVouchers = (invalidList: InvalidVoucher[]) => {
     const invalidIds = invalidList.map((v) => v.id);
-    setVouchersData((prev) => prev.filter((v) => !invalidIds.includes(v.id)));
+    setVouchersData((prev) =>
+      prev.filter((v) => !invalidIds.includes(v.voucher_id))
+    );
     setVoucherErrors([]);
   };
 
@@ -54,7 +56,9 @@ export function useVoucherManager(productType: string) {
         const newData = res?.payload?.data ?? [];
 
         const uniqueById = Array.from(
-          new Map([...newData, ...prev].map((item) => [item.id, item])).values()
+          new Map(
+            [...newData, ...prev].map((item) => [item.voucher_id, item])
+          ).values()
         );
         return uniqueById;
       });

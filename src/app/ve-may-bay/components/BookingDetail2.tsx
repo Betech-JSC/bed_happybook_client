@@ -416,15 +416,15 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                               data-translate="true"
                             >
                               {format(
-                                new Date(flight.departure.at),
+                                new Date(segment.departure.at),
                                 "EEEE, d 'tháng' M yyyy",
                                 { locale: vi }
                               )}
                             </span>
                             <span className="mt-2 text-lg font-bold w-full">
                               {formatTimeZone(
-                                flight.departure.at,
-                                flight.departure.timezone
+                                segment.departure.at,
+                                segment.departure.timezone
                               )}
                             </span>
                             <span className="mt-2 text-sm text-gray-500 w-full">
@@ -483,15 +483,15 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                               data-translate="true"
                             >
                               {format(
-                                new Date(flight.arrival.at),
+                                new Date(segment.arrival.at),
                                 "EEEE, d 'tháng' M yyyy",
                                 { locale: vi }
                               )}
                             </span>
                             <span className="mt-2 text-lg font-bold w-full">
                               {formatTimeZone(
-                                flight.arrival.at,
-                                flight.arrival.timezone
+                                segment.arrival.at,
+                                segment.arrival.timezone
                               )}
                             </span>
                             <span className="mt-2 text-sm text-gray-500 w-full">
