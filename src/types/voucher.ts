@@ -15,4 +15,5 @@ export interface VoucherType {
   label: string;
   created_at: Date;
   updated_at: Date;
+  voucher_id: number;
 }
