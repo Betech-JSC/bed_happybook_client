@@ -1,3 +1,4 @@
+import DisplayPrice from "@/components/base/DisplayPrice";
 import { formatCurrency } from "@/lib/formatters";
 import { calculatorDiscountPercent } from "@/utils/Helper";
 import Image from "next/image";
@@ -67,19 +68,15 @@ export default function HotelItem({ hotel }: any) {
               )}
             </>
           </div>
-          <div className={`text-right ${minPrice?.price > 0 ? "" : "pb-4"}`}>
-            {minPrice?.discount_price > 0 && (
-              <p className="line-through text-[#667085] font-semibold h-6">
-                {formatCurrency(minPrice.price)}
-              </p>
-            )}
-            {minPrice?.price > 0 && (
-              <p className="text-[#F27145] text-xl font-semibold">
-                {minPrice.discount_price > 0
-                  ? formatCurrency(minPrice.price - minPrice.discount_price)
-                  : formatCurrency(minPrice.price)}
-              </p>
-            )}
+          <div className={`text-right`}>
+            <DisplayPrice
+              price={
+                minPrice.discount_price < minPrice.price
+                  ? minPrice.price - minPrice.discount_price
+                  : minPrice.price
+              }
+              currency={hotel?.currency}
+            />
           </div>
         </div>
       </div>

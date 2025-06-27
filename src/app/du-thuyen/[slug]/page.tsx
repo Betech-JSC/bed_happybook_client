@@ -41,6 +41,16 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     alternates: {
       canonical: pageUrl(data?.alias ?? slug, BlogTypes.YACHT, true),
     },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
   });
 }
 

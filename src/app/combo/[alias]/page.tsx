@@ -19,16 +19,39 @@ import { Fragment } from "react";
 import CompoItem from "@/components/product/components/CompoItem";
 import { ComboApi } from "@/api/Combo";
 import { notFound } from "next/navigation";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
 import ImageGallery from "../components/ImageGallery";
 import Tabs from "../components/Tabs";
 import Hotel from "../components/Hotel";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
 
-export const metadata: Metadata = {
-  title: "Combo 3N2Đ Vinpearl Resort Nha Trang 5 sao + Vé máy bay",
-  description: "Happy Book",
-};
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const { alias } = params;
+
+  const res = (await ComboApi.detail(alias)) as any;
+  const data = res?.payload?.data;
+
+  return formatMetadata({
+    title: data?.meta_title ?? data?.name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: pageUrl(data?.alias ?? alias, BlogTypes.COMPO, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
 
 export default async function CompoDetail({
   params,

@@ -26,7 +26,7 @@ export default async function Visa() {
   const data = res?.payload?.data;
   const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
     ?.data as any;
-  const newsByPage = (await newsApi.getLastedNewsByPage())?.payload
+  const newsByPage = (await newsApi.getLastedNewsByPage("visa"))?.payload
     ?.data as any;
   return (
     <SeoSchema

@@ -2,6 +2,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { displayProductPrice } from "@/utils/Helper";
 import clsx from "clsx";
 import { isEmpty } from "lodash";
+import { Fragment } from "react";
 
 export default function DisplayPrice({
   price,
@@ -15,7 +16,7 @@ export default function DisplayPrice({
   currency?: any;
 }) {
   return (
-    <div>
+    <Fragment>
       {price > 0 ? (
         <>
           {!isEmpty(textPrefix) && (
@@ -47,6 +48,6 @@ export default function DisplayPrice({
           Liên hệ
         </span>
       )}
-    </div>
+    </Fragment>
   );
 }

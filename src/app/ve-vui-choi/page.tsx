@@ -12,6 +12,18 @@ import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { ProductTicket } from "@/api/ProductTicket";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import { formatMetadata } from "@/lib/formatters";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
+
+export const metadata: Metadata = formatMetadata({
+  title: "Đặt Vé Vui Chơi | Vé Vui Chơi Giá Rẻ 2024",
+  description:
+    "Mời các bạn đặt Vé Vui Chơi, tạo kỷ niệm đáng nhớ với các hoạt động vui chơi thú vị, an toàn tại HappyBook Travel. Ưu đãi hấp dẫn, thanh toán tiện lơi, xác nhận tức thì.",
+  alternates: {
+    canonical: pageUrl(BlogTypes.TICKET, true),
+  },
+});
 
 export default async function EntertainmentTickets() {
   const optionsFilter = (await ProductTicket.getOptionsFilter())?.payload
