@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Fragment } from "react";
 import { notFound } from "next/navigation";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { renderTextContent } from "@/utils/Helper";
 import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
@@ -24,6 +24,25 @@ import ImageGallery from "../components/ImageGallery";
 import TicketOptionContent from "../components/TicketOptionContent";
 import Schedule from "../components/Schedule";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import { Metadata } from "next";
+import { BlogTypes, pageUrl } from "@/utils/Urls";
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const { slug } = params;
+
+  const res = (await ProductYachtApi.detailBySlug(params.slug)) as any;
+  const data = res?.payload?.data;
+
+  return formatMetadata({
+    title: data?.meta_title ?? data?.name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: pageUrl(data?.alias ?? slug, BlogTypes.YACHT, true),
+    },
+  });
+}
 
 export default async function EntertainmentTicketDetail({
   params,
