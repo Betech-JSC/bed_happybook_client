@@ -781,7 +781,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                     </label>
                   </div>
-                  <div className="flex space-x-3 items-start mt-4">
+                  {/* <div className="flex space-x-3 items-start mt-4">
                     <input
                       type="radio"
                       value="international_card"
@@ -815,7 +815,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         </span>
                       </div>
                     </label>
-                  </div>
+                  </div> */}
                   {errors.payment_method && (
                     <p className="text-red-600">
                       {errors.payment_method.message}

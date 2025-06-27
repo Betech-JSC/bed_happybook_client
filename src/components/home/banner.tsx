@@ -8,6 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cloneItemsCarousel } from "@/utils/Helper";
+import Link from "next/link";
 
 export default function Banner({ data }: any) {
   const clonedItems =
@@ -30,14 +31,16 @@ export default function Banner({ data }: any) {
                 className="basis-full lg:basis-2/4 rounded-xl"
                 key={banner.id}
               >
-                <Image
-                  src={`${banner.image_url}/${banner.image_location}`}
-                  alt="Banner"
-                  width={628}
-                  height={210}
-                  sizes="100vw"
-                  className="h-[100px] md:h-[156px] rounded-xl w-full object-cover"
-                />
+                <Link href={banner?.url ?? "#"}>
+                  <Image
+                    src={`${banner.image_url}/${banner.image_location}`}
+                    alt="Banner"
+                    width={628}
+                    height={210}
+                    sizes="100vw"
+                    className="h-[100px] md:h-[156px] rounded-xl w-full object-cover"
+                  />
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>
