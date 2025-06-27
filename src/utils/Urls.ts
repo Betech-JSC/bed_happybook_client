@@ -9,6 +9,7 @@ export enum BlogTypes {
   SETTLE = "dinh-cu",
   COMPO = "compo",
   YACHT = "du-thuyen",
+  TICKET = "ve-vui-choi",
 }
 
 export enum ProductTypes {
