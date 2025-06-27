@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect, Fragment } from "react";
 import "@/styles/ckeditor-content.scss";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 export default function HotelDetailTabs({ data }: any) {
   const [activeTab, setActiveTab] = useState(0);
@@ -155,20 +156,30 @@ export default function HotelDetailTabs({ data }: any) {
                     <div className="mt-4 text-right">
                       <div className="text-gray-500 h-6 text-sm">
                         {item.discount_price > 0 && (
-                          <div>
+                          <div className="flex gap-1 items-end justify-end">
                             <span data-translate="true">Giảm giá: </span>
-                            <span>{formatCurrency(item.discount_price)}</span>
+                            <DisplayPrice
+                              price={item.discount_price}
+                              currency={data?.currency}
+                              className="!text-sm !text-gray-500 !font-normal"
+                            />
                           </div>
                         )}
                       </div>
-                      <p>
+                      <div className="flex gap-1 items-end justify-end">
                         <span className="text-gray-500" data-translate="true">
                           Tổng:
                         </span>{" "}
-                        <span className="mt-2 text-22 font-semibold text-primary">
-                          {formatCurrency(item.price - item.discount_price)}
-                        </span>
-                      </p>
+                        <DisplayPrice
+                          price={
+                            item.discount_price < item.price
+                              ? item.price - item.discount_price
+                              : item.price
+                          }
+                          currency={data?.currency}
+                          className="text-22"
+                        />
+                      </div>
                       <p
                         className="mt-2 text-sm text-gray-500"
                         data-translate="true"

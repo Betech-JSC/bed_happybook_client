@@ -28,10 +28,10 @@ import { getServerLang } from "@/lib/session";
 import HotelDetailTabs from "../components/HotalDetaiTabs";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = (await HotelApi.detail("tesst1")) as any;
+  const res = (await HotelApi.detail(params?.alias)) as any;
   const data = res?.payload.data;
   return formatMetadata({
-    title: data?.meta_title ?? data?.title,
+    title: data?.meta_title ?? data?.name,
     description: data?.meta_description,
     robots: data?.meta_robots,
     keywords: data?.keywords,

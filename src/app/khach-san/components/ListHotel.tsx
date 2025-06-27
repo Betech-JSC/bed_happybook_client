@@ -1,5 +1,6 @@
 "use client";
 import { HotelApi } from "@/api/Hotel";
+import DisplayPrice from "@/components/base/DisplayPrice";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import { formatCurrency } from "@/lib/formatters";
 import TourStyle from "@/styles/tour.module.scss";
@@ -282,7 +283,7 @@ export default function ListHotel({
                       <div className="flex flex-col space-y-2">
                         <div>
                           {minPrice?.discount_price > 0 && (
-                            <div className="text-sm mr-2 inline-flex py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
+                            <div className="text-sm mr-2 inline-flex gap-1 py-[2px] px-[6px] rounded-sm text-white bg-blue-700">
                               <span data-translate="true">Giảm </span>
                               <span>
                                 {calculatorDiscountPercent(
@@ -293,9 +294,11 @@ export default function ListHotel({
                             </div>
                           )}
                           {minPrice?.discount_price > 0 && (
-                            <span className="text-gray-500 line-through ">
-                              {formatCurrency(minPrice.price)}
-                            </span>
+                            <DisplayPrice
+                              price={minPrice.discount_price}
+                              currency={item?.currency}
+                              className="!text-gray-500 !line-through !font-normal !text-base"
+                            />
                           )}
                         </div>
                         <div className="text-base md:text-xl text-primary font-semibold text-end">
@@ -307,11 +310,15 @@ export default function ListHotel({
                               >
                                 chỉ từ
                               </span>
-                              {minPrice.discount_price
-                                ? formatCurrency(
-                                    minPrice.price - minPrice.discount_price
-                                  )
-                                : formatCurrency(minPrice.price)}
+                              <DisplayPrice
+                                price={
+                                  minPrice.discount_price < minPrice.price
+                                    ? minPrice.price - minPrice.discount_price
+                                    : minPrice.price
+                                }
+                                currency={item?.currency}
+                                className="text-22"
+                              />
                             </>
                           )}
                         </div>
