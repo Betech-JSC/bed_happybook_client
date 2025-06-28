@@ -31,7 +31,7 @@ export default function HeaderMobileMenu() {
   }, [pathname]);
   return (
     <Fragment>
-      <div className="flex items-center gap-3">
+      <div className="w-[67%] justify-end flex items-center gap-3">
         <div className={clsx(`relative !h-auto`, styles.header__menu_item)}>
           <button className="flex items-center space-x-1" type="button">
             <Image
