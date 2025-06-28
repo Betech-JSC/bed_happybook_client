@@ -48,7 +48,7 @@ export default async function EntertainmentTickets() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-blue-700" data-translate="true">
+                  <p className="text-gray-700" data-translate="true">
                     Vé vui chơi
                   </p>
                 </BreadcrumbLink>

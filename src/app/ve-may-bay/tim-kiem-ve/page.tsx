@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import Image from "next/image";
 import Link from "next/link";
-import Partner from "../components/Partner";
 import Search from "../components/Search";
 import { FlightApi } from "@/api/Flight";
 import { pageUrl } from "@/utils/Urls";
@@ -21,6 +20,7 @@ import ContentByPage from "@/components/content-page/ContentByPage";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 import SearchFlightsResult from "../components/SearchResult";
+import PartnerAirlines from "../components/Partner";
 
 export const metadata: Metadata = formatMetadata({
   robots: "index, follow",
@@ -103,7 +103,7 @@ export default async function SearchTicket() {
               <SearchFlightsResult airportsData={airportsData} />
             </div>
           </div>
-          <Partner />
+          <PartnerAirlines />
         </main>
         <div>
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">

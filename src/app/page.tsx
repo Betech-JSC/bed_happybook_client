@@ -28,6 +28,7 @@ import NewsByPage from "@/components/content-page/NewsByPage";
 import { newsApi } from "@/api/news";
 import { ProductLocation } from "@/api/ProductLocation";
 import { getServerLang } from "@/lib/session";
+import PartnerAirlines from "./ve-may-bay/components/Partner";
 
 export const metadata: Metadata = formatMetadata({
   robots: "index, follow",
@@ -40,7 +41,7 @@ export const metadata: Metadata = formatMetadata({
 });
 
 export default async function Home() {
-  const language = await getServerLang();
+  // const language = await getServerLang();
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   const homeApiReponse = await HomeApi.index();
@@ -54,8 +55,8 @@ export default async function Home() {
   }
   const membersData = (await BannerApi.getBannerPage("home-doingu"))?.payload
     ?.data as any;
-  const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
-    ?.data as any;
+  // const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
+  //   ?.data as any;
   const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
     ?.data as any;
   const lastestNews =
@@ -168,11 +169,7 @@ export default async function Home() {
           </AosAnimate>
         )}
 
-        {partners?.length > 0 && (
-          <AosAnimate>
-            <Partner data={partners}></Partner>
-          </AosAnimate>
-        )}
+        <PartnerAirlines />
 
         <AosAnimate>
           <FooterMenu page={"home"}></FooterMenu>

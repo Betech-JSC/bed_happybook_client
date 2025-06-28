@@ -14,7 +14,10 @@ const request = async <Response>(
     "Content-type": "application/json",
   };
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
+  const baseUrl =
+    typeof window === "undefined"
+      ? process.env.NEXT_PUBLIC_API_INTERNAL_ENDPOINT
+      : process.env.NEXT_PUBLIC_API_ENDPOINT;
   const fullUrl = url.startsWith("/")
     ? `${baseUrl}${url}`
     : `${baseUrl}/${url}`;
