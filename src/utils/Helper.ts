@@ -242,7 +242,10 @@ const extractSlugAndId = (
     slug: match ? match[1] : alias,
   };
 };
-
+const CheckIsMobileDevice = () => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(max-width: 767px)").matches;
+};
 export {
   decodeHtml,
   buildSearch,
@@ -261,4 +264,5 @@ export {
   smoothScrollTo,
   displayProductPrice,
   extractSlugAndId,
+  CheckIsMobileDevice,
 };

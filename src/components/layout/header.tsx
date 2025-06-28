@@ -122,7 +122,7 @@ export default function Header() {
             onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
               if (pathname !== "/tours/tim-kiem") {
                 e.preventDefault();
-                router.push(`tours/tim-kiem?text=${querySeach}`);
+                router.push(`tim-kiem?keyword=${querySeach}`);
                 setQuerySeach("");
                 if (inputSearchTourRef.current) {
                   inputSearchTourRef.current.blur();

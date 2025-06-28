@@ -7,24 +7,25 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Suspense } from "react";
-import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { ProductYachtApi } from "@/api/ProductYacht";
-import Search from "./components/Search";
 import { Metadata } from "next";
 import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
+import SearchAllResult from "./components/SearchResult";
 
 export const metadata: Metadata = formatMetadata({
-  title: "Đặt Du Thuyền | Du Thuyền Giá Rẻ 2024",
+  robots: "index, follow",
+  title:
+    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   description:
-    "Mời các bạn đặt Du Thuyền, tạo kỷ niệm đáng nhớ với các hoạt động vui chơi thú vị, an toàn tại HappyBook Travel. Ưu đãi hấp dẫn, thanh toán tiện lơi, xác nhận tức thì.",
+    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
   alternates: {
-    canonical: pageUrl(BlogTypes.YACHT, true),
+    canonical: pageUrl("tim-kiem"),
   },
 });
 
-export default async function ProductYacht() {
+export default async function SearchAll() {
   const optionsFilter = (await ProductYachtApi.getOptionsFilter())?.payload
     ?.data as any;
   return (
@@ -48,27 +49,24 @@ export default async function ProductYacht() {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <p className="text-gray-700" data-translate="true">
-                    Du thuyền
+                    Tìm kiếm
                   </p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <Suspense>
-            <Search optionsFilter={optionsFilter} />
+            <SearchAllResult optionsFilter={optionsFilter} />
           </Suspense>
         </div>
       </div>
-      <div className="bg-white">
+      {/* <div className="bg-[#F9FAFB]">
         <div className="lg:px-[80px] max__screen">
-          <div className="my-8 bg-gray-50 rounded-3xl">
-            <FAQ />
-          </div>
-          <div className="my-8 p-8 bg-gray-50 rounded-3xl">
+          <div className="mb-8 p-8 bg-gray-50 rounded-3xl">
             <WhyChooseHappyBook />
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
