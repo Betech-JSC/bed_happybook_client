@@ -18,7 +18,7 @@ export default function Header() {
   const pathname: string = usePathname();
   const { language, setLanguage } = useLanguage();
   const router = useRouter();
-  const [querySeach, setQuerySeach] = useState<string>();
+  const [querySeach, setQuerySeach] = useState<string>("");
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);

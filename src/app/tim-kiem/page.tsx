@@ -26,8 +26,6 @@ export const metadata: Metadata = formatMetadata({
 });
 
 export default async function SearchAll() {
-  const optionsFilter = (await ProductYachtApi.getOptionsFilter())?.payload
-    ?.data as any;
   return (
     <>
       <div className="bg-gray-100">
@@ -56,7 +54,7 @@ export default async function SearchAll() {
             </BreadcrumbList>
           </Breadcrumb>
           <Suspense>
-            <SearchAllResult optionsFilter={optionsFilter} />
+            <SearchAllResult />
           </Suspense>
         </div>
       </div>

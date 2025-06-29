@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { formatCurrency } from "@/lib/formatters";
 import FormCheckOut from "../../components/FormCheckout";
 import { ProductInsurance } from "@/api/ProductInsurance";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { isEmpty } from "lodash";
 import { differenceInDays, parse, format } from "date-fns";
 import DisplayImage from "@/components/base/DisplayImage";
@@ -20,8 +20,17 @@ export default async function InsuranceCheckout({
   Object.entries(searchParams).forEach(([key, value]) => {
     safeParams[key] = Array.isArray(value) ? value[0] : value;
   });
+  if (
+    isEmpty(safeParams) ||
+    isEmpty(safeParams.departDate) ||
+    isEmpty(safeParams.returnDate) ||
+    isEmpty(safeParams.departure) ||
+    isEmpty(safeParams.destination) ||
+    isEmpty(safeParams.guests)
+  ) {
+    redirect("/bao-hiem");
+  }
   const queryString = new URLSearchParams(safeParams).toString();
-
   const startDate = parse(safeParams.departDate, "ddMMyyyy", new Date());
   const endDate = parse(safeParams.returnDate, "ddMMyyyy", new Date());
 
