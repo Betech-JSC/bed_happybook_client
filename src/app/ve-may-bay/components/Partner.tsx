@@ -28,9 +28,9 @@ export default function PartnerAirlines() {
 
         if (data.length > 0 && data.length < 6) {
           data = cloneItemsCarousel(data, 12);
-          setPartnerSlide1(data);
-          setPartnerSlide2([...data].reverse());
         }
+        setPartnerSlide1(data);
+        setPartnerSlide2([...data].reverse());
       };
       fetchData();
     }
@@ -73,7 +73,7 @@ export default function PartnerAirlines() {
       swiperRef2.current.wrapperEl.style.transform = transformValue2;
     }
   };
-
+  if (!partnerSlide1?.length) return;
   return (
     <AosAnimate>
       <div className="py-12 bg-white hidden lg:block">
