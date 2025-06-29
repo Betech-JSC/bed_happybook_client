@@ -2,90 +2,49 @@
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useCallback, useEffect, useRef, useState } from "react";
-import TourStyle from "@/styles/tour.module.scss";
-import Image from "next/image";
-import Link from "next/link";
-import { buildSearch, renderTextContent } from "@/utils/Helper";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { translatePage } from "@/utils/translateDom";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import { format, isValid } from "date-fns";
-import { ProductYachtApi } from "@/api/ProductYacht";
-import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
-import DisplayPrice from "@/components/base/DisplayPrice";
+import { KeywordSearchApi } from "@/api/KeywordSearch";
+import SearchHotelList from "./SearchHotelList";
+import SearchVisaList from "./SearchVisaList";
+import SearchTourList from "./SearchTourList";
+import SearchYachtList from "./SearchYachtList";
+import SearchTicketList from "./SearchTicketList";
+import SearchInsuranceList from "./SearchInsurancelList";
+import { isEmpty } from "lodash";
 
-type optionFilterType = {
-  label: string;
-  name: string;
-  option: {
-    value?: number;
-    label?: string;
-  }[];
-};
-
-export default function SearchAllResult({
-  optionsFilter,
-}: {
-  optionsFilter: optionFilterType[];
-}) {
+export default function SearchAllResult() {
   const { language } = useLanguage();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState<{
-    [key: string]: string | number | boolean | undefined | any;
-  }>({
-    keyword: searchParams.get("keyword") ?? "",
-  });
-  const [firstLoad, setFirstLoad] = useState<boolean>(true);
-  const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  const keyword = searchParams.get("keyword") ?? "";
+  const [loading, setLoading] = useState<boolean>(false);
   const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
 
   const loadData = useCallback(async () => {
     try {
+      setLoading(true);
       setTranslatedText(false);
-      setLoadingLoadMore(true);
-      setIsDisabled(true);
-      setIsLastPage(false);
-      const search = buildSearch(query);
-      const res = await ProductYachtApi.search(`${search}`);
+      const res = await KeywordSearchApi.products(`${keyword}`);
       const result = res?.payload?.data;
-
-      setData((prevData: any[]) => {
-        const combined =
-          result?.items.length > 0 && !query.isFilters
-            ? [...prevData, ...result.items]
-            : result.items;
-
-        const uniqueById = Array.from(
-          new Map(combined.map((item: any) => [item.id, item])).values()
-        );
-
-        return uniqueById;
-      });
-
-      if (result?.last_page === query.page) {
-        setIsLastPage(true);
-      }
-      translatePage("#wrapper-search-amusement-ticket", 10).then(() =>
-        setTranslatedText(true)
+      const isAllEmpty = Object.values(result).every(
+        (arr) => Array.isArray(arr) && arr.length === 0
       );
+      setData(isAllEmpty ? [] : result);
     } catch (error) {
       console.log("Error search: " + error);
     } finally {
-      setFirstLoad(false);
-      setLoadingLoadMore(false);
-      setIsDisabled(false);
+      setLoading(false);
     }
-  }, [query]);
+  }, [keyword]);
 
   useEffect(() => {
     loadData();
-  }, [query, loadData]);
+  }, [keyword, loadData]);
 
-  if (firstLoad) {
+  if (loading) {
     return (
       <div
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
@@ -98,12 +57,34 @@ export default function SearchAllResult({
     );
   }
   return (
-    <div
-      className={`flex mt-6 pt-12 pb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
-    >
-      <span className="text-18" data-translate="true">
-        Không tìm thấy dữ liệu phù hợp...
-      </span>
-    </div>
+    <Fragment>
+      {!loading && !isEmpty(data) ? (
+        <div className="pt-4 pb-12">
+          {data?.hotels?.length > 0 && (
+            <SearchHotelList hotels={data?.hotels} />
+          )}
+          {data?.visa?.length > 0 && <SearchVisaList visa={data?.visa} />}
+          {data?.tours?.length > 0 && <SearchTourList tours={data?.tours} />}
+          {data?.yachts?.length > 0 && (
+            <SearchYachtList yachts={data?.yachts} />
+          )}
+          {data?.tickets?.length > 0 && (
+            <SearchTicketList tickets={data?.tickets} />
+          )}
+          {data?.insurances?.length > 0 && (
+            <SearchInsuranceList insurances={data?.insurances} />
+          )}
+        </div>
+      ) : (
+        <div
+          className={`flex mt-6 pt-12 pb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
+        >
+          <span className="text-18" data-translate="true">
+            Không tìm thấy kết quả phù hợp với từ khóa:{" "}
+            <span className="font-semibold">{keyword}</span>
+          </span>
+        </div>
+      )}
+    </Fragment>
   );
 }

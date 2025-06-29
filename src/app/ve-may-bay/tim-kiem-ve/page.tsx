@@ -21,6 +21,8 @@ import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 import SearchFlightsResult from "../components/SearchResult";
 import PartnerAirlines from "../components/Partner";
+import { redirect } from "next/navigation";
+import { format } from "date-fns";
 
 export const metadata: Metadata = formatMetadata({
   robots: "index, follow",
@@ -32,7 +34,34 @@ export const metadata: Metadata = formatMetadata({
   },
 });
 
-export default async function SearchTicket() {
+export default async function SearchTicket({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
+  const defaultParams = {
+    tripType: "oneWay",
+    cheapest: "0",
+    StartPoint: "SGN",
+    EndPoint: "HAN",
+    DepartDate: format(new Date(), "ddMMyyyy"),
+    ReturnDate: "",
+    Adt: "1",
+    Chd: "0",
+    Inf: "0",
+    from: "Hồ Chí Minh (SGN)",
+    to: "Hà Nội (HAN)",
+  };
+  const mergedParams = { ...defaultParams, ...searchParams };
+
+  const hasMissingParams = Object.keys(defaultParams).some(
+    (key) => searchParams[key] === undefined
+  );
+
+  if (hasMissingParams) {
+    const queryString = new URLSearchParams(mergedParams).toString();
+    redirect(`/ve-may-bay/tim-kiem-ve?${queryString}`);
+  }
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   const language = await getServerLang();

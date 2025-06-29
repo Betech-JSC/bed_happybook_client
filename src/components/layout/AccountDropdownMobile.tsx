@@ -43,7 +43,7 @@ export default function AccountDropdownMobile() {
           href="/dang-nhap"
           className={`bg-blue-600 w-fit justify-center font-medium transition-all duration-300 cursor-pointer flex items-center p-2 rounded-3xl outline-none`}
         >
-          <span data-translate="true" className="text-sm">
+          <span data-translate="true" className="text-xs">
             Đăng nhập
           </span>
         </Link>
