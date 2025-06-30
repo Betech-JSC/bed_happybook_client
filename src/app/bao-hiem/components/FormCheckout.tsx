@@ -175,6 +175,9 @@ export default function FormCheckOut({
         contactByBuyer: contactByBuyer,
         customer_id: userInfo?.id,
         voucher_program_ids: voucherProgramIds,
+        insurance_package_price_id: matchedInsurance?.id,
+        depart_date: format(startDate, "yyyy-MM-dd"),
+        return_date: format(endDate, "yyyy-MM-dd"),
       };
       const respon = await ProductInsurance.booking(finalData);
       if (respon?.status === 200) {

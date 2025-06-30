@@ -13,6 +13,7 @@ import { getSession } from "@/lib/session";
 import { UserProvider } from "./contexts/UserContext";
 import { LoadingProvider } from "./contexts/LoadingContext";
 import SupportFloatingIcons from "@/components/layout/support-floating-icons";
+import Script from "next/script";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -41,9 +42,21 @@ export default async function RootLayout({
   const session = await getSession();
   return (
     <html lang={session.language}>
-      {/* <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </head> */}
+      <head>
+        {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-VP8TTY9L0E`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-VP8TTY9L0E');
+          `}
+        </Script>
+      </head>
       <body className={OpenSans.className}>
         <LanguageProvider serverLang={session.language}>
           <UserProvider initialUser={session.userInfo}>
