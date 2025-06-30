@@ -14,15 +14,27 @@ import FAQ from "@/components/content-page/FAQ";
 import { BannerApi } from "@/api/Banner";
 import Link from "next/link";
 import { getServerLang } from "@/lib/session";
+import { settingApi } from "@/api/Setting";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Khách Sạn | Happy Book ????️ Đại Lý Đặt Vé Máy Bay Giá Rẻ #1",
-  description:
-    "Khi đặt khách sạn tại HappyBook Travel với hơn 2.000 khách sạn và hơn 30.000 khách sạn Quốc tế. Quý khách liên hệ đặc online hoặc gọi Hotline 0904.221.293. XÁC NHẬN qua Gmail và SMS.k",
-  alternates: {
-    canonical: pageUrl(BlogTypes.HOTEL, true),
-  },
-});
+async function getMetadata() {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
+  return formatMetadata({
+    robots: "index, follow",
+    title: `Khách Sạn | ${seo.seo_title}`,
+    description:
+      "Khi đặt khách sạn tại HappyBook Travel với hơn 2.000 khách sạn và hơn 30.000 khách sạn Quốc tế. Quý khách liên hệ đặc online hoặc gọi Hotline 0904.221.293. XÁC NHẬN qua Gmail và SMS.k",
+    alternates: {
+      canonical: pageUrl(BlogTypes.HOTEL, true),
+    }
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const metadata = await getMetadata();
+  return metadata;
+}
 
 export default async function Hotel() {
   // const locations = (await HotelApi.getLocations())?.payload?.data as any;
@@ -60,6 +72,9 @@ export default async function Hotel() {
   const provincePopular =
     ((await BannerApi.getBannerPage("hotel-tpphobien"))?.payload
       ?.data as any) ?? [];
+
+  const metadata = await getMetadata();
+
   return (
     <SeoSchema
       metadata={metadata}

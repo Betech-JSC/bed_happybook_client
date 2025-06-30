@@ -13,17 +13,26 @@ import { Metadata } from "next";
 import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import SearchAllResult from "./components/SearchResult";
+import { settingApi } from "@/api/Setting";
 
-export const metadata: Metadata = formatMetadata({
-  robots: "index, follow",
-  title:
-    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  description:
-    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  alternates: {
-    canonical: pageUrl("tim-kiem"),
-  },
-});
+async function getMetadata() {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
+  return formatMetadata({
+    robots: "index, follow",
+    title: `Vé Máy Bay | ${seo.seo_title}`,
+    description: `Vé Máy Bay | ${seo.seo_title}`,
+    alternates: {
+      canonical: pageUrl("tim-kiem"),
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const metadata = await getMetadata();
+  return metadata;
+}
 
 export default async function SearchAll() {
   return (

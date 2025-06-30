@@ -29,16 +29,30 @@ import { newsApi } from "@/api/news";
 import { ProductLocation } from "@/api/ProductLocation";
 import { getServerLang } from "@/lib/session";
 import PartnerAirlines from "./ve-may-bay/components/Partner";
+import { settingApi } from "@/api/Setting";
 
-export const metadata: Metadata = formatMetadata({
-  robots: "index, follow",
-  title: "HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  description:
-    "HappyBook Travel - Hỗ trợ đặt vé máy bay, tour du lịch, khách sạn và tư vấn visa nhanh chóng. Là đại lý CẤP #1 uy tín với hơn >100.000 Quý khách tin tưởng 2024.",
-  alternates: {
-    canonical: siteUrl,
-  },
-});
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
+  return formatMetadata({
+    robots: "index, follow",
+    title: seo?.seo_title,
+    description: seo?.seo_description,
+    keywords: seo?.seo_keywords,
+    alternates: {
+      canonical: siteUrl,
+    },
+    openGraph: {
+      images: [
+        {
+          url: seo?.image,
+          alt: seo?.seo_title,
+        },
+      ],
+    },
+  });
+}
 
 export default async function Home() {
   // const language = await getServerLang();
@@ -63,7 +77,7 @@ export default async function Home() {
     ((await newsApi.getLastedNewsByPage())?.payload?.data as any) ?? [];
   return (
     <Fragment>
-      <WebsiteSchema {...(metadata as any)} url={siteUrl} />
+      <WebsiteSchema />
 
       <Suspense>
         <Search airportsData={airportsData} />
