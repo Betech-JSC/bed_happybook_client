@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Fragment } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { ProductTicket } from "@/api/ProductTicket";
 import { renderTextContent } from "@/utils/Helper";
@@ -60,6 +60,15 @@ export default async function EntertainmentTicketDetail({
   params: { slug: string };
   searchParams: { [key: string]: string | undefined };
 }) {
+  if (isEmpty(searchParams?.departDate)) {
+    redirect(
+      `/ve-vui-choi/${params.slug}?departDate=${format(
+        new Date(),
+        "yyyy-MM-dd"
+      )}`
+    );
+  }
+
   const res = (await ProductTicket.detail(
     params.slug,
     searchParams.departDate ?? ""

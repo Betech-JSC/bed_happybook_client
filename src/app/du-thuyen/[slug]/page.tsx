@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Fragment } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { renderTextContent } from "@/utils/Helper";
 import FAQ from "@/components/content-page/FAQ";
@@ -61,6 +61,11 @@ export default async function EntertainmentTicketDetail({
   params: { slug: string };
   searchParams: { [key: string]: string | undefined };
 }) {
+  if (isEmpty(searchParams?.departDate)) {
+    redirect(
+      `/du-thuyen/${params.slug}?departDate=${format(new Date(), "yyyy-MM-dd")}`
+    );
+  }
   const res = (await ProductYachtApi.detail(
     params.slug,
     searchParams.departDate ?? ""
