@@ -117,7 +117,8 @@ export default async function SeoSchema({
           "@type": "AggregateRating",
           ratingValue: "5",
           bestRating: "5",
-          // ratingCount: "10",
+          ratingCount: "10",
+          reviewCount: "10",
         },
         // paymentAccepted: "Credit Card, Cash",
         sameAs: [
@@ -298,7 +299,7 @@ export default async function SeoSchema({
         "@type": "ItemPage",
         "@id": `${url}#webpage`,
         url: url,
-        name: product?.meta_title,
+        name: product?.meta_title || product?.name,
         datePublished: product?.created_at,
         dateModified: product?.updated_at,
         isPartOf: { "@id": `${siteUrl}#website` },
@@ -313,8 +314,8 @@ export default async function SeoSchema({
       persionJson,
       {
         "@type": "Product",
-        name: product?.meta_title,
-        description: product?.meta_description,
+        name: product?.meta_title || product?.name,
+        description: product?.meta_description || product?.meta_title || product?.name,
         category: "Tour",
         mainEntityOfPage: {
           "@id": `${url}#webpage`,

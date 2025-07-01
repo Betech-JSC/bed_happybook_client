@@ -76,7 +76,7 @@ export default async function HotelDetail({
         },
         {
           url: productUrl(ProductTypes.HOTEL, detail?.slug, true),
-          name: detail?.title as string,
+          name: detail?.name as string,
         },
       ]}
     >
