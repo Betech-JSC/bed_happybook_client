@@ -20,16 +20,26 @@ import { BannerApi } from "@/api/Banner";
 import { Suspense } from "react";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
+import { settingApi } from "@/api/Setting";
 
-export const metadata: Metadata = formatMetadata({
-  title:
-    "Combo Archives - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  description:
-    "Combo Archives - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  alternates: {
-    canonical: pageUrl(BlogTypes.COMPO, true),
-  },
-});
+async function getMetadata() {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
+  return formatMetadata({
+    robots: "index, follow",
+    title: `Combo Archives | ${seo.seo_title}`,
+    description: `Combo Archives | ${seo.seo_title}`,
+    alternates: {
+      canonical: pageUrl(BlogTypes.COMPO, true),
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const metadata = await getMetadata();
+  return metadata;
+}
 
 export default async function CompoTour() {
   const language = await getServerLang();
@@ -46,6 +56,9 @@ export default async function CompoTour() {
   const hotDestination =
     ((await BannerApi.getBannerPage("combo-diemdenhot"))?.payload
       ?.data as any) ?? [];
+
+  const metadata = await getMetadata();
+
   return (
     <SeoSchema
       metadata={metadata}

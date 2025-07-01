@@ -7,25 +7,36 @@ import SeoSchema from "@/components/schema";
 import SearchFormInsurance from "./components/SearchForm";
 import SearchResults from "./components/SearchResults";
 import { SearchProps } from "@/types/insurance";
-import { format, parse, isValid, addDays, isBefore, isEqual } from "date-fns";
-import { redirect } from "next/navigation";
 import { getServerLang } from "@/lib/session";
 import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
+import { settingApi } from "@/api/Setting";
 
-export const metadata: Metadata = formatMetadata({
-  title:
-    "Bảo hiểm - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  description:
-    "Bảo hiểm  - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  alternates: {
-    canonical: pageUrl("bao-hiem"),
-  },
-});
+async function getMetadata() {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
+  return formatMetadata({
+    robots: "index, follow",
+    title: `Bảo hiểm | ${seo.seo_title}`,
+    description: `Bảo hiểm | ${seo.seo_title}`,
+    alternates: {
+      canonical: pageUrl("bao-hiem"),
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const metadata = await getMetadata();
+  return metadata;
+}
+
 export default async function Insurance({ searchParams }: SearchProps) {
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("bao-hiem", language))?.payload
     ?.data as any;
+
+  const metadata = await getMetadata();
 
   return (
     <SeoSchema

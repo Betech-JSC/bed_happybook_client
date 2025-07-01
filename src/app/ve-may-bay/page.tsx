@@ -22,17 +22,26 @@ import FooterMenu from "@/components/content-page/footer-menu";
 import FAQ from "@/components/content-page/FAQ";
 import { getServerLang } from "@/lib/session";
 import { format, isValid } from "date-fns";
+import { settingApi } from "@/api/Setting";
 
-export const metadata: Metadata = formatMetadata({
-  robots: "index, follow",
-  title:
-    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  description:
-    "Vé Máy Bay - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  alternates: {
-    canonical: pageUrl("ve-may-bay"),
-  },
-});
+async function getMetadata() {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
+  return formatMetadata({
+    robots: "index, follow",
+    title: `Vé Máy Bay | ${seo.seo_title}`,
+    description: `Vé Máy Bay | ${seo.seo_title}`,
+    alternates: {
+      canonical: pageUrl("ve-may-bay"),
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const metadata = await getMetadata();
+  return metadata;
+}
 
 export default async function AirlineTicket() {
   const airportsReponse: any = await FlightApi.airPorts();
@@ -45,6 +54,8 @@ export default async function AirlineTicket() {
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("ve-may-bay", language))
     ?.payload?.data as any;
+  const metadata = await getMetadata();
+
   return (
     <SeoSchema
       metadata={metadata}

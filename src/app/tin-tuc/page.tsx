@@ -9,22 +9,35 @@ import { CategoryPostsType, PostType } from "@/types/post";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { renderTextContent } from "@/utils/Helper";
+import { settingApi } from "@/api/Setting";
 
-export const metadata: Metadata = formatMetadata({
-  robots: "index, follow",
-  title: "Blog - HappyBook Travel: Đặt vé máy bay, Tour, Khách sạn giá rẻ #1",
-  description:
-    "Happy Book là đại lý cung cấp dịch vụ làm visa lớn và uy tín hàng đầu Việt Nam",
-  alternates: {
-    canonical: pageUrl("", BlogTypes.NEWS, true),
-  },
-});
+async function getMetadata() {
+  const res = await settingApi.getMetaSeo();
+  const seo = res?.payload?.data;
+
+  return formatMetadata({
+    robots: "index, follow",
+    title: `Blog | ${seo.seo_title}`,
+    description:
+      "Happy Book là đại lý cung cấp dịch vụ làm visa lớn và uy tín hàng đầu Việt Nam",
+    alternates: {
+      canonical: pageUrl("", BlogTypes.NEWS, true),
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const metadata = await getMetadata();
+  return metadata;
+}
 
 export default async function Posts() {
   const response = await newsApi.fetchNewsIndex();
   const lastestPosts: PostType[] = response?.payload.data.lastestPosts ?? [];
   const categoriesWithPosts: CategoryPostsType[] =
     response?.payload.data.categoriesWithPosts ?? [];
+
+  const metadata = await getMetadata();
 
   return (
     <SeoSchema
