@@ -1,4 +1,5 @@
 "use client";
+import { smoothScrollTo } from "@/utils/Helper";
 import { isEmpty } from "lodash";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -13,10 +14,29 @@ const TableOfContents = ({ toc }: Props) => {
     setIsOpen(!isOpen);
   };
   useEffect(() => {
-    const htmlElement = document.documentElement;
-    htmlElement.style.scrollBehavior = "smooth";
+    const tocContainer = document.getElementById("toc-content-wrapper");
+    if (!tocContainer) return;
+
+    const offset = 140;
+    const links = tocContainer.querySelectorAll("a[href^='#']");
+    const handleClick = (e: Event) => {
+      e.preventDefault();
+      const targetId = (e.currentTarget as HTMLAnchorElement)
+        .getAttribute("href")
+        ?.substring(1);
+      if (!targetId) return;
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        const topPos =
+          targetElement.getBoundingClientRect().top + window.scrollY - offset;
+        smoothScrollTo(topPos, 1000);
+      }
+    };
+
+    links.forEach((link) => link.addEventListener("click", handleClick));
+
     return () => {
-      htmlElement.style.scrollBehavior = "";
+      links.forEach((link) => link.removeEventListener("click", handleClick));
     };
   }, []);
   return (
@@ -65,6 +85,7 @@ const TableOfContents = ({ toc }: Props) => {
       </div>
       {!isEmpty(toc) && (
         <div
+          id="toc-content-wrapper"
           dangerouslySetInnerHTML={{
             __html: toc,
           }}
