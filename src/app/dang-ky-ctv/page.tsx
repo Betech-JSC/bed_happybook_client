@@ -4,17 +4,44 @@ import FormCtv from "./form";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
+import { PageApi } from "@/api/Page";
+import { getServerLang } from "@/lib/session";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Đăng Ký CTV Tại HappyBook Travel ✈️",
-  description:
-    "Form đăng ký làm CTV bán vé máy bay. Quý khách vui lòng điền đầy đủ thông tin bên dưới. Nhân viên của chúng tôi sẽ liên hệ lại ngay sau khi nhận được thông tin",
-  alternates: {
-    canonical: pageUrl("dang-ky-ctv", true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl("dang-ky-ctv", true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
 
-export default function SignUpCollaborator() {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("dang-ky-ctv"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
+}
+
+export default async function SignUpCollaborator() {
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("dang-ky-ctv", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(contentPage);
+
   return (
     <SeoSchema
       metadata={metadata}

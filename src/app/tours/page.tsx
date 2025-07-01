@@ -21,14 +21,33 @@ import { PageApi } from "@/api/Page";
 import FAQ from "@/components/content-page/FAQ";
 import { getServerLang } from "@/lib/session";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Đặt Tour Du Lịch Gia Đình, Bạn Bè | Tour Giá Rẻ 2024",
-  description:
-    "Mời các bạn đặt tour du lịch gia đình, bạn bè, người thân trọn gói, tạo kỷ niệm đáng nhớ với các hoạt động vui chơi thú vị, an toàn tại HappyBook Travel. Ưu đãi hấp dẫn, thanh toán tiện lơi, xác nhận tức thì.",
-  alternates: {
-    canonical: pageUrl(BlogTypes.TOURS, true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl(BlogTypes.TOURS, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("tours"))?.payload?.data as any;
+
+  return getMetadata(contentPage);
+}
 
 const tourist: string[] = [];
 for (let i = 1; i <= 8; i++) {
@@ -43,6 +62,8 @@ export default async function Tours() {
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("tours", language))?.payload
     ?.data as any;
+  const metadata = getMetadata(contentPage);
+
   return (
     <SeoSchema
       metadata={metadata}

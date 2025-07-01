@@ -7,20 +7,49 @@ import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 import { BannerApi } from "@/api/Banner";
 import Partner from "@/components/home/partner";
+import { PageApi } from "@/api/Page";
+import { getServerLang } from "@/lib/session";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Về chúng tôi - Tầm Nhìn Sứ Mệnh HappyBook Travel ✈️",
-  description:
-    "Giới thiệu về Happy Book là một trong những đại lý cung cấp nhiều dịch vụ vé máy bay nội địa, vé máy bay quốc tế, dịch vụ làm visa trọn gói giá rẻ và tour du lịch trên khắp thế giời và định cư nước ngoài. Khi bạn có nhu cầu trông 4 dịch vụ trên có thể liên hệ với Happy Book ngay để được hỗ trợ nhé!",
-  alternates: {
-    canonical: pageUrl("ve-chung-toi", true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl("ve-chung-toi", true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("ve-chung-toi"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
+}
+
 export default async function AboutUs() {
   const members = (await BannerApi.getBannerPage("home-doingu"))?.payload
     ?.data as any;
   const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
     ?.data as any;
+
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("ve-chung-toi", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(contentPage);
+
   return (
     <SeoSchema
       metadata={metadata}

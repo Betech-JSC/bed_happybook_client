@@ -5,17 +5,44 @@ import SeoSchema from "@/components/schema";
 import { pageUrl } from "@/utils/Urls";
 import { formatMetadata } from "@/lib/formatters";
 import Link from "next/link";
+import { PageApi } from "@/api/Page";
+import { getServerLang } from "@/lib/session";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Liên Hệ - Đại Lý Vé Máy Bay Giá Rẻ #1 Toàn Quốc | HAPPY BOOK",
-  description:
-    "Liên hệ ngay đến Đại lý đặt vé máy bay trong và ngoài nước với giá cả phải chăng. Phù hợp cho mọi nhóm khách hàng. Gọi ngay ???? Hotline: 0983.488.937 nếu bạn chưa biết thông tin về chúng tôi. Happy Book luôn sẵng sàng hỗ trợ bạn nhé!",
-  alternates: {
-    canonical: pageUrl("lien-he", true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl("lien-he", true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
 
-export default function Contact() {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("lien-he"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
+}
+
+export default async function Contact() {
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("lien-he", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(contentPage);
+
   return (
     <SeoSchema
       metadata={metadata}

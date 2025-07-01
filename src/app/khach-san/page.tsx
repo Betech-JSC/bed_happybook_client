@@ -16,24 +16,33 @@ import Link from "next/link";
 import { getServerLang } from "@/lib/session";
 import { settingApi } from "@/api/Setting";
 
-async function getMetadata() {
-  const res = await settingApi.getMetaSeo();
-  const seo = res?.payload?.data;
-
+function getMetadata(data: any) {
   return formatMetadata({
-    robots: "index, follow",
-    title: `Khách Sạn | ${seo.seo_title}`,
-    description:
-      "Khi đặt khách sạn tại HappyBook Travel với hơn 2.000 khách sạn và hơn 30.000 khách sạn Quốc tế. Quý khách liên hệ đặc online hoặc gọi Hotline 0904.221.293. XÁC NHẬN qua Gmail và SMS.k",
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl(BlogTypes.HOTEL, true),
-    }
+      canonical: data?.canonical_link || pageUrl(BlogTypes.HOTEL, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
   });
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const metadata = await getMetadata();
-  return metadata;
+  const contentPage = (await PageApi.getContent("khach-san"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
 }
 
 export default async function Hotel() {
@@ -73,7 +82,7 @@ export default async function Hotel() {
     ((await BannerApi.getBannerPage("hotel-tpphobien"))?.payload
       ?.data as any) ?? [];
 
-  const metadata = await getMetadata();
+  const metadata = getMetadata(contentPage);
 
   return (
     <SeoSchema

@@ -10,25 +10,36 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { renderTextContent } from "@/utils/Helper";
 import { settingApi } from "@/api/Setting";
+import { PageApi } from "@/api/Page";
+import { getServerLang } from "@/lib/session";
 
-async function getMetadata() {
-  const res = await settingApi.getMetaSeo();
-  const seo = res?.payload?.data;
-
+function getMetadata(data: any) {
   return formatMetadata({
-    robots: "index, follow",
-    title: `Blog | ${seo.seo_title}`,
-    description:
-      "Happy Book là đại lý cung cấp dịch vụ làm visa lớn và uy tín hàng đầu Việt Nam",
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl("", BlogTypes.NEWS, true),
+      canonical: data?.canonical_link || pageUrl("", BlogTypes.NEWS, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
     },
   });
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const metadata = await getMetadata();
-  return metadata;
+  const contentPage = (await PageApi.getContent("tin-tuc"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
 }
 
 export default async function Posts() {
@@ -37,7 +48,10 @@ export default async function Posts() {
   const categoriesWithPosts: CategoryPostsType[] =
     response?.payload.data.categoriesWithPosts ?? [];
 
-  const metadata = await getMetadata();
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("tin-tuc", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(contentPage);
 
   return (
     <SeoSchema

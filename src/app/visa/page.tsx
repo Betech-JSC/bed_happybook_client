@@ -11,15 +11,37 @@ import SearchForm from "./components/SeachForm";
 import NewsByPage from "@/components/content-page/NewsByPage";
 import { newsApi } from "@/api/news";
 import FooterMenu from "@/components/content-page/footer-menu";
+import { PageApi } from "@/api/Page";
+import { getServerLang } from "@/lib/session";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Dịch Vụ Làm Visa Trọn Gói Giá Rẻ Tại TPHCM | Tỷ Lệ Đậu 90%",
-  description:
-    "Dịch vụ làm visa trọn gói giá rẻ và uy tín tại TPHCM của đơn vị Happy Book Travel. Chúng tôi hỗ trợ làm visa ĐẬU CAO cho tất cả các quốc gia trên thế giới với thời gian nhanh nhất và chi phí rẻ nhất. Đảm bảo giúp bạn có được visa một cách nhanh chóng và dễ dàng. Liên hệ với chúng tôi để được tư vấn miễn phí!",
-  alternates: {
-    canonical: pageUrl(BlogTypes.VISA, true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl(BlogTypes.VISA, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("visa"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
+}
 
 export default async function Visa() {
   const res = (await VisaApi.getAll()) as any;
@@ -28,6 +50,12 @@ export default async function Visa() {
     ?.data as any;
   const newsByPage = (await newsApi.getLastedNewsByPage("visa"))?.payload
     ?.data as any;
+
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("visa", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(contentPage);
+
   return (
     <SeoSchema
       metadata={metadata}

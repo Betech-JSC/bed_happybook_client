@@ -27,14 +27,36 @@ import ContentByPage from "@/components/content-page/ContentByPage";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Vé máy bay giá rẻ",
-  description: "Happy Book | Vé máy bay giá rẻ",
-  keywords: "Vé máy bay giá rẻ",
-  alternates: {
-    canonical: pageUrl("/ve-may-bay/ve-may-bay-gia-re", true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical:
+        data?.canonical_link || pageUrl("ve-may-bay/ve-may-bay-gia-re", true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("ve-may-bay-gia-re"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
+}
+
 export default async function SearchTicketCheap({
   searchParams,
 }: {
@@ -60,6 +82,9 @@ export default async function SearchTicketCheap({
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("ve-may-bay", language))
     ?.payload?.data as any;
+  const content = (await PageApi.getContent("ve-may-bay-gia-re", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(content);
 
   return (
     <SeoSchema

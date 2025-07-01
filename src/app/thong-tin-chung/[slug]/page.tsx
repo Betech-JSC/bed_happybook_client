@@ -13,23 +13,50 @@ import { formatMetadata } from "@/lib/formatters";
 import { PageApi } from "@/api/Page";
 import { notFound } from "next/navigation";
 import { GeneralInforPaths } from "@/constants/paths";
+import { getServerLang } from "@/lib/session";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Chính sách bảo mật tại HappyBook Travel ✈️",
-  description:
-    "Những chính sách bảo mật tại Happy Book đảm bảo bạn sẽ được bảo mật thông tin khi thực hiện các giao dịch với chúng tôi. Liên hệ: ???? Hotline: 0904.221.293 (Làm Visa) ???? Hotline: 0983.488.937 (Nội địa) ???? Hotline: 0367.008.027 (Quốc tế)",
-  alternates: {
-    canonical: pageUrl("chinh-sach-bao-mat", true),
-  },
-});
+function getMetadata(data: any, slug: string) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl(slug, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent(params?.slug))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage, `thong-tin-chung/${params?.slug}`);
+}
 
 export default async function GeneralInfor({
   params,
 }: {
   params: { slug: string };
 }) {
-  const contentPage = (await PageApi.getContent(params.slug))?.payload
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent(params.slug, language))?.payload
     ?.data as any;
+
+  if (!contentPage) redirect("/not-found");
+  const metadata = getMetadata(contentPage, `thong-tin-chung/${params?.slug}`);
+
   return (
     <SeoSchema
       metadata={metadata}

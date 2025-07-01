@@ -9,15 +9,36 @@ import NewsByPage from "@/components/content-page/NewsByPage";
 import ListItem from "./components/ListItem";
 import { ProductCategoryApi } from "@/api/ProductCategory";
 import { getServerLang } from "@/lib/session";
+import { PageApi } from "@/api/Page";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Định Cư Lao Động, Di Trú Nước Ngoài | HappyBook Travel",
-  description:
-    "Định cư lao động, di trú nước ngoài là quá trình di cư và định cư tại một quốc gia khác với định hướng, mục tiêu sống và làm việc lâu dài. Khi làm việc ở nước ngoài, người lao động (NLĐ) thường không có quyền cư trí lâu dài và chỉ được hưởng các quyền lợi lao động Căn bản tại nước sở tại.",
-  alternates: {
-    canonical: pageUrl(BlogTypes.SETTLE, true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl(BlogTypes.SETTLE, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("dinh-cu"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
+}
 
 export default async function DinhCu() {
   const newsByPage = (await newsApi.getLastedNewsByPage())?.payload
@@ -25,6 +46,10 @@ export default async function DinhCu() {
   const language = await getServerLang();
   const categories = (await ProductCategoryApi.listByType("dinhcu", language))
     ?.payload?.data as any;
+  const contentPage = (await PageApi.getContent("dinh-cu", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(contentPage);
+
   return (
     <SeoSchema
       metadata={metadata}

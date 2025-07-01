@@ -5,17 +5,44 @@ import VisaApplicationForm from "./form";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
+import { PageApi } from "@/api/Page";
+import { getServerLang } from "@/lib/session";
 
-export const metadata: Metadata = formatMetadata({
-  title: "Phiếu Tiếp Nhận Thông Tin Xin Thị Thực (Visa) | Happy Book",
-  description:
-    "Đây là phiếu tiếp nhận thông tin xin thị thực visa tại Happy Book! Mọi vấn đề liên hệ với Hotline 0904.221.293 (Làm visa) để biết thêm chi tiết! Happy Book là đơn vị làm visa UY TÍN hàng đầu tại Việt Nam với tỷ lệ đậu lên đến 100%.",
-  alternates: {
-    canonical: pageUrl("tu-van-nhan-visa", true),
-  },
-});
+function getMetadata(data: any) {
+  return formatMetadata({
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
+    alternates: {
+      canonical: data?.canonical_link || pageUrl("tu-van-nhan-visa", true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
+    },
+  });
+}
 
-export default function VisaConsulting() {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const contentPage = (await PageApi.getContent("tu-van-nhan-visa"))?.payload
+    ?.data as any;
+
+  return getMetadata(contentPage);
+}
+
+export default async function VisaConsulting() {
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("tu-van-nhan-visa", language))
+    ?.payload?.data as any;
+  const metadata = getMetadata(contentPage);
+
   return (
     <SeoSchema
       metadata={metadata}

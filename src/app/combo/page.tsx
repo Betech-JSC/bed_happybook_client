@@ -21,24 +21,34 @@ import { Suspense } from "react";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 import { settingApi } from "@/api/Setting";
+import { PageApi } from "@/api/Page";
 
-async function getMetadata() {
-  const res = await settingApi.getMetaSeo();
-  const seo = res?.payload?.data;
-
+function getMetadata(data: any) {
   return formatMetadata({
-    robots: "index, follow",
-    title: `Combo Archives | ${seo.seo_title}`,
-    description: `Combo Archives | ${seo.seo_title}`,
+    title: data?.meta_title || data?.page_name,
+    description: data?.meta_description,
+    robots: data?.meta_robots,
+    keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl(BlogTypes.COMPO, true),
+      canonical: data?.canonical_link || pageUrl(BlogTypes.COMPO, true),
+    },
+    openGraph: {
+      images: [
+        {
+          url: data?.meta_image
+            ? data.meta_image
+            : `${data?.image_url}/${data?.image_location}`,
+          alt: data?.meta_title,
+        },
+      ],
     },
   });
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const metadata = await getMetadata();
-  return metadata;
+  const contentPage = (await PageApi.getContent("combo"))?.payload?.data as any;
+
+  return getMetadata(contentPage);
 }
 
 export default async function CompoTour() {
@@ -57,7 +67,10 @@ export default async function CompoTour() {
     ((await BannerApi.getBannerPage("combo-diemdenhot"))?.payload
       ?.data as any) ?? [];
 
-  const metadata = await getMetadata();
+  const contentPage = (await PageApi.getContent("combo", language))?.payload
+    ?.data as any;
+
+  const metadata = getMetadata(contentPage);
 
   return (
     <SeoSchema
