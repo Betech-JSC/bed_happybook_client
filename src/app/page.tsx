@@ -67,10 +67,6 @@ export default async function Home() {
   if (popularFlights?.length > 0 && popularFlights?.length < 5) {
     popularFlights = cloneItemsCarousel(popularFlights, 8);
   }
-  const membersData = (await BannerApi.getBannerPage("home-doingu"))?.payload
-    ?.data as any;
-  // const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
-  //   ?.data as any;
   const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
     ?.data as any;
   const lastestNews =
@@ -169,16 +165,14 @@ export default async function Home() {
           </AosAnimate>
         )}
 
-        {membersData?.length > 0 && (
-          <AosAnimate>
-            <OurTeam data={membersData}></OurTeam>
-          </AosAnimate>
-        )}
-
         {lastestNews?.length > 0 && (
           <AosAnimate>
             <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-              <NewsByPage title={"Cẩm nang du lịch"} data={lastestNews} />
+              <NewsByPage
+                title={"Cẩm nang du lịch"}
+                data={lastestNews}
+                wrapperStyle={"pt-8 pb-12 lg:mt-4"}
+              />
             </div>
           </AosAnimate>
         )}
