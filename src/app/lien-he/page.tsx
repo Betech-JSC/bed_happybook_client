@@ -39,8 +39,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
 export default async function Contact() {
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("lien-he", language))
-    ?.payload?.data as any;
+  const contentPage = (await PageApi.getContent("lien-he", language))?.payload
+    ?.data as any;
   const metadata = getMetadata(contentPage);
 
   return (
@@ -262,8 +262,8 @@ export default async function Contact() {
                           Trụ sở chính:{" "}
                         </span>
                         <span data-translate="true">
-                          Tầng 1, Phong Phú Tower, 93/10 Quang Trung, KP.1,
-                          P.Hiệp Phú, TP.Thủ Đức, TP.HCM
+                          Tầng 1, Phong Phú Tower, 93/10 Quang Trung, Khu phố 1,
+                          Phường Tăng Nhơn Phú, Thành phố Hồ Chí Minh, Việt Nam
                         </span>
                       </p>
                       <p className="text-gray-900">

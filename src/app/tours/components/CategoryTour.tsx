@@ -32,14 +32,17 @@ export default async function CategoryTour({ alias }: { alias: string }) {
       typeTour = 1;
       titlePage = "Tour quốc tế";
       break;
-    case "tour-du-thuyen":
-      typeTour = 2;
-      titlePage = "Tour du thuyền";
-      break;
+    // case "tour-du-thuyen":
+    //   typeTour = 2;
+    //   titlePage = "Tour du thuyền";
+    //   break;
     default:
       typeTour = undefined;
       titlePage = "Tìm kiếm";
   }
+
+  if (!["tour-noi-dia", "tour-quoc-te"].includes(alias)) notFound();
+
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent(alias, language))?.payload
     ?.data as any;
