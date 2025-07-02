@@ -81,8 +81,8 @@ export default function Footer() {
                 Trụ sở chính:
               </p>
               <p className="inline" data-translate="true">
-                Tầng 1, Phong Phú Tower, 93/10 Quang Trung, KP.1, P.Hiệp Phú,
-                TP.Thủ Đức, TP.HCM
+                Tầng 1, Phong Phú Tower, 93/10 Quang Trung, Khu phố 1, Phường
+                Tăng Nhơn Phú, Thành phố Hồ Chí Minh, Việt Nam
               </p>
             </div>
             <div className="mt-1">

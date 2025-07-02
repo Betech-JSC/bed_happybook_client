@@ -31,7 +31,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
   const language = await getServerLang();
   const res = (await TourApi.detail(alias, language)) as any;
   const detail = res?.payload?.data;
-  if (!detail) {
+  if (!detail?.id) {
     notFound();
   }
   let typeTourText: string = "Tour nội địa";
