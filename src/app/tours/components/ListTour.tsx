@@ -13,6 +13,7 @@ import { TourApi } from "@/api/Tour";
 import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
 import { translatePage } from "@/utils/translateDom";
+import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 
 type optionFilterType = {
   label: string;
@@ -49,17 +50,30 @@ export default function ListTour({
   const [data, setData] = useState<any>([]);
   const loadData = useCallback(async () => {
     try {
+      setTranslatedText(false);
       setLoadingLoadMore(true);
+      setIsDisabled(true);
+      setIsLastPage(false);
       setTranslatedText(false);
       setIsDisabled(true);
       const search = buildSearch(query);
       const res = await TourApi.search(`/product/tours/search${search}`);
       const result = res?.payload?.data;
-      setData((prevData: any) =>
-        result.items.length > 0 && !query.isFilters
-          ? [...prevData, ...result.items]
-          : result.items
-      );
+
+      setData((prevData: any[]) => {
+        const map = new Map();
+
+        [...prevData, ...result.items].forEach((item) => {
+          map.set(item.id, item);
+        });
+
+        const unique = Array.from(map.values());
+
+        return result.items.length > 0 && !query.isFilters
+          ? unique
+          : result.items;
+      });
+
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
@@ -92,6 +106,7 @@ export default function ListTour({
         return {
           ...prevFilters,
           [group]: [...groupFilters, value],
+          page: 1,
           isFilter: true,
         };
       }
@@ -100,7 +115,7 @@ export default function ListTour({
   const handleSortData = (value: string) => {
     setData([]);
     const [sort, order] = value.split("|");
-    setQuery({ ...query, sort: sort, order: order, isFilters: true });
+    setQuery({ ...query, page: 1, sort: sort, order: order, isFilter: true });
   };
 
   useEffect(() => {
@@ -122,80 +137,24 @@ export default function ListTour({
   return (
     <div
       id="wrapper-search-tours"
-      className="flex mt-6 md:space-x-4 items-start pb-8"
+      className="block lg:flex mt-6 lg:space-x-4 items-start pb-8"
     >
-      <div className="hidden md:block md:w-4/12 lg:w-3/12 p-4 bg-white rounded-2xl">
-        {optionsFilter?.length > 0 &&
-          optionsFilter.map((item: optionFilterType, index: number) => (
-            <div
-              key={index}
-              className="pb-3 mb-3 border-b border-gray-200 last-of-type:mb-0 last-of-type:pb-0 last-of-type:border-none"
-            >
-              <p className="font-semibold" data-translate="true">
-                {item.label}
-              </p>
-              {item?.option?.length > 0 ? (
-                item.option.map((option, index) => {
-                  return (
-                    index < 20 && (
-                      <div
-                        key={option.value}
-                        className="mt-3 flex space-x-2 items-center"
-                      >
-                        <input
-                          id={item.name + index}
-                          type="checkbox"
-                          value={option.value}
-                          disabled={isDisabled}
-                          className={TourStyle.custom_checkbox}
-                          onChange={(e) =>
-                            handleFilterChange(`${item.name}[]`, e.target.value)
-                          }
-                        />
-                        <label
-                          htmlFor={item.name + index}
-                          data-translate="true"
-                        >
-                          {option.label}
-                        </label>
-                      </div>
-                    )
-                  );
-                })
-              ) : (
-                <p
-                  className="mt-1 text-base text-gray-700"
-                  data-translate="true"
-                >
-                  Dữ liệu đang cập nhật...
-                </p>
-              )}
-              {item.option.length > 20 && (
-                <button className="mt-3 flex items-center rounded-lg space-x-3 ">
-                  <span
-                    className="text-[#175CD3] font-medium"
-                    data-translate="true"
-                  >
-                    Xem thêm
-                  </span>
-                  <Image
-                    className="hover:scale-110 ease-in duration-300 rotate-90"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </button>
-              )}
-            </div>
-          ))}
+      <div className="lg:block w-full lg:w-3/12">
+        <SideBarFilterProduct
+          setQuery={setQuery}
+          query={query}
+          isDisabled={isDisabled}
+          options={optionsFilter}
+          handleFilterChange={handleFilterChange}
+          handleSortData={handleSortData}
+        />
       </div>
-      <div className="md:w-8/12 lg:w-9/12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="w-full lg:w-9/12">
+        <div className="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center">
           <h1 className="text-32 font-bold" data-translate="true">
             {titlePage}
           </h1>
-          <div className="flex my-4 md:my-0 space-x-3 items-center">
+          <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span data-translate="true">Sắp xếp</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
               <select
@@ -215,6 +174,7 @@ export default function ListTour({
             </div>
           </div>
         </div>
+
         <div className="mb-4">
           {data.length > 0 ? (
             data.map((tour: any, index: number) => (
@@ -227,7 +187,7 @@ export default function ListTour({
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                   <Link href={`/tours/${tour.slug}-${tour.id}`}>
                     <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
+                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full min-h-40 object-cover"
                       src={`${tour.image_url}/${tour.image_location}`}
                       alt="Image"
                       width={360}
