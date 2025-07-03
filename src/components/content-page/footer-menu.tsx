@@ -83,7 +83,7 @@ export default async function FooterMenu({ page }: { page: string }) {
           </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
             {data.hotel.map((hotel: any) => (
-              <Link href={`/khach-san/chi-tiet/${hotel.slug}`} key={hotel.id}>
+              <Link href={`/khach-san/${hotel.slug}`} key={hotel.id}>
                 <h3
                   data-translate
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}
@@ -106,7 +106,7 @@ export default async function FooterMenu({ page }: { page: string }) {
           </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
             {data.visa.map((visa: any) => (
-              <Link href={`/visa/chi-tiet/${visa.slug}`} key={visa.id}>
+              <Link href={`/visa/${visa.slug}-${visa.id}`} key={visa.id}>
                 <h3
                   data-translate
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}

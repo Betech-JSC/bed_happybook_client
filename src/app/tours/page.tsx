@@ -167,7 +167,7 @@ export default async function Tours() {
                     </h2>
                   </div>
                   <Link
-                    href="/tours/noi-dia"
+                    href="/tours/tour-noi-dia"
                     className="hidden lg:flex items-center bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3 ease-in duration-300"
                   >
                     <span className="text-[#175CD3] font-medium" data-translate>
@@ -186,7 +186,7 @@ export default async function Tours() {
                   Chơi Hè Thả Ga, Không Lo Về Giá
                 </p>
                 <Link
-                  href="/tours/noi-dia"
+                  href="/tours/tour-noi-dia"
                   className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
                 >
                   <span className="text-[#175CD3] font-medium" data-translate>
@@ -301,7 +301,7 @@ export default async function Tours() {
               </div>
             )}
             {/* Tour du thuyền */}
-            {data?.tourYacht?.length > 0 && (
+            {/* {data?.tourYacht?.length > 0 && (
               <div className="mt-12">
                 <div className="flex justify-between">
                   <div>
@@ -368,7 +368,7 @@ export default async function Tours() {
                   </Carousel>
                 </div>
               </div>
-            )}
+            )} */}
             {/* Blog */}
             {contentPage?.content && (
               <div className="mt-8 rounded-2xl bg-gray-50 p-8">
