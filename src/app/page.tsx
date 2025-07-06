@@ -62,11 +62,6 @@ export default async function Home() {
   const homeData = homeApiReponse?.payload.data ?? [];
   const bannerData = (await BannerApi.getBannerPage("home"))?.payload
     ?.data as any;
-  let popularFlights = (await FlightApi.getPopularFlights())?.payload
-    ?.data as any;
-  if (popularFlights?.length > 0 && popularFlights?.length < 5) {
-    popularFlights = cloneItemsCarousel(popularFlights, 8);
-  }
   const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
     ?.data as any;
   const lastestNews =
@@ -135,11 +130,9 @@ export default async function Home() {
           </AosAnimate>
         )}
 
-        {popularFlights?.length > 0 && (
-          <AosAnimate>
-            <Flight data={popularFlights}></Flight>
-          </AosAnimate>
-        )}
+        <AosAnimate>
+          <Flight></Flight>
+        </AosAnimate>
 
         {homeData?.visa?.length > 0 && (
           <AosAnimate>

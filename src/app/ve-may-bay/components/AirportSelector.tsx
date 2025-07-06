@@ -20,6 +20,7 @@ export default function AirportPopupSelector({
   initialToPlace,
   airportsData,
 }: AirportPopupSelectorProps) {
+  const isFirstRender = useRef(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [departureDisplayText, setDepartureDisplayText] = useState<
     string | null
@@ -80,6 +81,11 @@ export default function AirportPopupSelector({
   }, [popupRef]);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     if (selectedDeparture || selectedDestination) {
       if (!selectedDeparture) {
         fromRef.current?.click();

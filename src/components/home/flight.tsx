@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import {
   Carousel,
@@ -8,9 +9,23 @@ import {
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
 import FlightItem from "@/components/product/components/flight-item";
+import { useCallback, useEffect, useState } from "react";
+import { ProductFlightApi } from "@/api/ProductFlight";
 
-export default function Flight({ data }: any) {
-  if (!data) return;
+export default function Flight() {
+  const [data, setData] = useState<any>([]);
+  const fetchData = async () => {
+    const reponse = (await ProductFlightApi.getFlights("popular"))?.payload
+      ?.data as any;
+    const flightPopular = reponse?.popular ?? [];
+    setData(flightPopular);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (!data?.length) return;
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen ">
       <div className="relative lg:mt-12 lg:px-6 py-6 lg:py-8 hidden lg:block">
@@ -65,7 +80,7 @@ export default function Flight({ data }: any) {
               </div> */}
             </div>
             <p className="text-16 font-medium mt-3" data-translate>
-              Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
+              {/* Trải nghiệm sắc vàng và khám phá văn hóa mùa thu! */}
             </p>
             {/* <div className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3">
               <button className="text-[#175CD3] font-medium">
