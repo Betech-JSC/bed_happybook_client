@@ -72,6 +72,10 @@ export interface ListFilghtProps {
 }
 export interface SearchFilghtProps {
   airportsData: AirportsCountry[];
+  airportDefault?: {
+    from: { city: string; code: string; type: string } | null;
+    to: { city: string; code: string; type: string } | null;
+  };
 }
 
 export interface FlightSearchPopupProps {

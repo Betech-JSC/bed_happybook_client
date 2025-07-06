@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -12,13 +12,19 @@ import { Suspense } from "react";
 import { FormData, SearchFilghtProps } from "@/types/flight";
 import AirportSelector from "./AirportSelector";
 import { translatePage } from "@/utils/translateDom";
-import { getCurrentLanguage } from "@/utils/Helper";
+import {
+  getCurrentLanguage,
+  getDefaultFormDataSearchFlights,
+} from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
 import { datePickerLocale } from "@/constants/language";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { vi, enUS } from "date-fns/locale";
 
-export default function Search({ airportsData }: SearchFilghtProps) {
+export default function Search({
+  airportsData,
+  airportDefault,
+}: SearchFilghtProps) {
   const today = new Date();
   const { language } = useLanguage();
   const pathname: string = usePathname();
@@ -27,26 +33,20 @@ export default function Search({ airportsData }: SearchFilghtProps) {
   const [totalGuests, setTotalGuests] = useState<number>(1);
   const [translatedAirportsData, setTranslatedAirportsData] =
     useState(airportsData);
-  const [formData, setFormData] = useState<FormData>({
-    from: null,
-    fromPlace: null,
-    toPlace: null,
-    to: null,
-    departureDate: today,
-    returnDate: null,
-    Adt: 1,
-    Chd: 0,
-    Inf: 0,
-    tripType: "oneway",
-    cheapest: 0,
-  });
+
+  const [formData, setFormData] = useState(() =>
+    getDefaultFormDataSearchFlights(searchParams, airportDefault)
+  );
+
+  useEffect(() => {
+    setFormData(getDefaultFormDataSearchFlights(searchParams, airportDefault));
+  }, [searchParams, airportDefault]);
 
   useEffect(() => {
     if (pathname !== "/") {
       translatePage("#wrapper-search-ticket-flight", 50);
     }
   }, [searchParams, pathname]);
-
   // useEffect(() => {
   //   if (datePickerLocale[language]) {
   //     registerLocale(language, datePickerLocale[language]);
@@ -87,41 +87,6 @@ export default function Search({ airportsData }: SearchFilghtProps) {
       });
     }
   }, [airportsData]);
-
-  useEffect(() => {
-    const from = searchParams.get("StartPoint");
-    const to = searchParams.get("EndPoint");
-    const fromPlace = searchParams.get("from");
-    const toPlace = searchParams.get("to");
-    const departDate = parse(
-      searchParams.get("DepartDate") ?? "",
-      "ddMMyyyy",
-      new Date()
-    );
-    const returnDate = parse(
-      searchParams.get("ReturnDate") ?? "",
-      "ddMMyyyy",
-      new Date()
-    );
-    const passengerAdt = parseInt(searchParams.get("Adt") ?? "1");
-    const passengerChd = parseInt(searchParams.get("Chd") ?? "0");
-    const passengerInf = parseInt(searchParams.get("Inf") ?? "0");
-    const cheapest = parseInt(searchParams.get("cheapest") ?? "0");
-    const tripType = searchParams.get("tripType") || "oneWay";
-    setFormData({
-      from: from || null,
-      to: to || null,
-      fromPlace: fromPlace || null,
-      toPlace: toPlace || null,
-      departureDate: isValid(departDate) ? departDate : new Date(),
-      returnDate: isValid(returnDate) ? returnDate : null,
-      Adt: passengerAdt,
-      Chd: passengerChd,
-      Inf: passengerInf,
-      tripType: tripType,
-      cheapest: cheapest,
-    });
-  }, [searchParams]);
 
   const [cheapest, setCheapest] = useState<string>(
     searchParams.get("cheapest") || "0"
@@ -196,13 +161,19 @@ export default function Search({ airportsData }: SearchFilghtProps) {
     if (!formData.returnDate) {
       handleFocusNextDate(returnDateRef);
     }
-    if (formData.returnDate && date && date > formData.returnDate) {
-      formData.returnDate = date;
-    }
-    setFormData((prev) => ({
-      ...prev,
-      departureDate: date,
-    }));
+
+    setFormData((prev: any) => {
+      const shouldUpdateReturnDate =
+        prev.returnDate && date && date > prev.returnDate
+          ? date
+          : prev.returnDate;
+
+      return {
+        ...prev,
+        departureDate: date,
+        returnDate: shouldUpdateReturnDate,
+      };
+    });
   };
 
   const handleReturnDateChange = (date: Date | null) => {

@@ -22,7 +22,7 @@ import { getServerLang } from "@/lib/session";
 import SearchFlightsResult from "../components/SearchResult";
 import PartnerAirlines from "../components/Partner";
 import { redirect } from "next/navigation";
-import { format } from "date-fns";
+import { format, parse, isValid, isBefore, startOfDay } from "date-fns";
 
 export const metadata: Metadata = formatMetadata({
   robots: "index, follow",
@@ -45,7 +45,7 @@ export default async function SearchTicket({
     StartPoint: "SGN",
     EndPoint: "HAN",
     DepartDate: format(new Date(), "ddMMyyyy"),
-    ReturnDate: "",
+    ReturnDate: format(new Date(), "ddMMyyyy"),
     Adt: "1",
     Chd: "0",
     Inf: "0",
@@ -54,14 +54,53 @@ export default async function SearchTicket({
   };
   const mergedParams = { ...defaultParams, ...searchParams };
 
+  const parseDDMMYYYY = (dateStr: string) =>
+    parse(dateStr, "ddMMyyyy", new Date());
+  const isValidDDMMYYYY = (dateStr: string) => isValid(parseDDMMYYYY(dateStr));
+  const isValidDDMMYYYYAndNotPast = (dateStr: string) => {
+    const parsedDate = parseDDMMYYYY(dateStr);
+    return (
+      isValid(parsedDate) &&
+      !isBefore(startOfDay(parsedDate), startOfDay(new Date()))
+    );
+  };
+
+  const departDateParsed = parseDDMMYYYY(searchParams.DepartDate ?? "");
+  const returnDateParsed = parseDDMMYYYY(searchParams.ReturnDate ?? "");
+
   const hasMissingParams = Object.keys(defaultParams).some(
     (key) => searchParams[key] === undefined
   );
 
-  if (hasMissingParams) {
+  const departDateInvalid = !isValidDDMMYYYYAndNotPast(
+    searchParams.DepartDate ?? ""
+  );
+  const returnDateInvalid = !isValidDDMMYYYY(searchParams.ReturnDate ?? "");
+
+  const returnDateBeforeDepartDate =
+    mergedParams.tripType === "roundTrip" &&
+    isValid(departDateParsed) &&
+    isValid(returnDateParsed) &&
+    isBefore(returnDateParsed, departDateParsed);
+
+  const hasInvalidDates =
+    departDateInvalid || returnDateInvalid || returnDateBeforeDepartDate;
+
+  const shouldRedirect = hasMissingParams || hasInvalidDates;
+
+  if (shouldRedirect) {
+    if (departDateInvalid) {
+      mergedParams.DepartDate = defaultParams.DepartDate;
+    }
+
+    if (returnDateInvalid || returnDateBeforeDepartDate) {
+      mergedParams.ReturnDate = mergedParams.DepartDate;
+    }
+
     const queryString = new URLSearchParams(mergedParams).toString();
     redirect(`/ve-may-bay/tim-kiem-ve?${queryString}`);
   }
+
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
   const language = await getServerLang();

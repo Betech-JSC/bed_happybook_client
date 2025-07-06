@@ -1,5 +1,6 @@
 import { arrLanguages } from "@/constants/language";
 import { labelsRating } from "@/constants/product";
+import { parse, isValid } from "date-fns";
 import _ from "lodash";
 
 const handleSessionStorage = (
@@ -246,6 +247,60 @@ const CheckIsMobileDevice = () => {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(max-width: 767px)").matches;
 };
+
+const getDefaultFormDataSearchFlights = (
+  searchParams: URLSearchParams,
+  airportDefault?: {
+    from: { city: string; code: string; type: string } | null;
+    to: { city: string; code: string; type: string } | null;
+  }
+) => {
+  const from =
+    searchParams.get("StartPoint") ?? airportDefault?.from?.code ?? null;
+  const to = searchParams.get("EndPoint") ?? airportDefault?.to?.code ?? null;
+
+  const fromPlace =
+    searchParams.get("from") ??
+    (airportDefault?.from
+      ? `${airportDefault.from.city} (${airportDefault.from.code})`
+      : null);
+
+  const toPlace =
+    searchParams.get("to") ??
+    (airportDefault?.to
+      ? `${airportDefault.to.city} (${airportDefault.to.code})`
+      : null);
+
+  const departDate = parse(
+    searchParams.get("DepartDate") ?? "",
+    "ddMMyyyy",
+    new Date()
+  );
+  const returnDate = parse(
+    searchParams.get("ReturnDate") ?? "",
+    "ddMMyyyy",
+    new Date()
+  );
+  const Adt = parseInt(searchParams.get("Adt") ?? "1");
+  const Chd = parseInt(searchParams.get("Chd") ?? "0");
+  const Inf = parseInt(searchParams.get("Inf") ?? "0");
+  const cheapest = parseInt(searchParams.get("cheapest") ?? "0");
+  const tripType = searchParams.get("tripType") || "oneWay";
+
+  return {
+    from,
+    to,
+    fromPlace,
+    toPlace,
+    departureDate: isValid(departDate) ? departDate : new Date(),
+    returnDate: isValid(returnDate) ? returnDate : null,
+    Adt,
+    Chd,
+    Inf,
+    tripType,
+    cheapest,
+  };
+};
 export {
   decodeHtml,
   buildSearch,
@@ -265,4 +320,5 @@ export {
   displayProductPrice,
   extractSlugAndId,
   CheckIsMobileDevice,
+  getDefaultFormDataSearchFlights,
 };

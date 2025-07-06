@@ -9,7 +9,6 @@ import {
 import FlightItem from "@/components/product/components/flight-item";
 import Image from "next/image";
 import Link from "next/link";
-import Search from "./components/Search";
 import { Suspense } from "react";
 import { FlightApi } from "@/api/Flight";
 import { formatCurrency, formatDate, formatMetadata } from "@/lib/formatters";
@@ -22,25 +21,26 @@ import FooterMenu from "@/components/content-page/footer-menu";
 import FAQ from "@/components/content-page/FAQ";
 import { getServerLang } from "@/lib/session";
 import { format, isValid } from "date-fns";
-import styles from "@/styles/styles.module.scss";
+import Search from "../components/Search";
+import { notFound } from "next/navigation";
 import { ProductFlightApi } from "@/api/ProductFlight";
+import styles from "@/styles/styles.module.scss";
 import { isEmpty } from "lodash";
 
 function getMetadata(data: any) {
   return formatMetadata({
-    title: data?.meta_title || data?.page_name,
+    title: data?.meta_title || data?.name,
     description: data?.meta_description,
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: data?.canonical_link || pageUrl("ve-may-bay", true),
+      canonical:
+        data?.canonical_link || pageUrl(`ve-may-bay/${data?.alias}`, true),
     },
     openGraph: {
       images: [
         {
-          url: data?.meta_image
-            ? data.meta_image
-            : `${data?.image_url}/${data?.image_location}`,
+          url: data?.meta_image ? data.meta_image : null,
           alt: data?.meta_title,
         },
       ],
@@ -49,22 +49,25 @@ function getMetadata(data: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const contentPage = (await PageApi.getContent("ve-may-bay"))?.payload
-    ?.data as any;
+  const category = (await ProductFlightApi.categoryDetail(params.alias))
+    ?.payload?.data as any;
 
-  return getMetadata(contentPage);
+  return getMetadata(category);
 }
 
-export default async function AirlineTicket() {
-  const airportsReponse: any = await FlightApi.airPorts();
-  const airportsData = airportsReponse?.payload.data ?? [];
+export default async function AirlineTicketCategory({ params }: any) {
+  const detail = (await ProductFlightApi.categoryDetail(params.alias))?.payload
+    ?.data as any;
+
+  if (!detail) notFound();
+
+  const airportsData = (await FlightApi.airPorts())?.payload?.data as any;
   const productFlights = (await ProductFlightApi.getFlights("all"))?.payload
     ?.data as any;
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("ve-may-bay", language))
     ?.payload?.data as any;
   const metadata = getMetadata(contentPage);
-  const footerData = (await PageApi.footerMenu("flight"))?.payload as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -94,10 +97,21 @@ export default async function AirlineTicket() {
           }}
         ></div>
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[100px] lg:pt-[132px] max__screen">
-          <div className="mt-0 lg:mt-24 lg:mb-4 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-            <Suspense>
-              <Search airportsData={airportsData} />
-            </Suspense>
+          <div className="mt-0 lg:mt-24 lg:mb-4 mx-auto">
+            <h1 className="text-2xl lg:text-3xl font-bold text-center relative text-white mb-8">
+              {detail?.name}
+            </h1>
+            <div className="p-6 bg-white rounded-lg shadow-lg relative">
+              <Suspense>
+                <Search
+                  airportsData={airportsData}
+                  airportDefault={{
+                    from: detail.from_location,
+                    to: detail.to_location,
+                  }}
+                />
+              </Suspense>
+            </div>
           </div>
         </div>
       </div>
@@ -209,9 +223,9 @@ export default async function AirlineTicket() {
               }
             )}
           {/* Blog */}
-          {contentPage?.content && (
+          {detail?.content && (
             <div className="mt-8 rounded-2xl bg-gray-50 p-8">
-              <ContentByPage data={contentPage} />
+              <ContentByPage data={detail} />
             </div>
           )}
           {/* Faq */}
@@ -219,52 +233,30 @@ export default async function AirlineTicket() {
             <FAQ />
           </div>
         </div>
-        <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-          {footerData.flight?.domestic?.length > 0 && (
+        {detail.children?.length > 0 && (
+          <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <div className="mb-8">
               <h2
                 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]"
                 data-translate="true"
               >
-                Điểm đến nội địa
+                Hành trình
               </h2>
               <div className="grid grid-cols-5 gap-4 mt-3">
-                {footerData.flight?.domestic.map((item: any) => (
+                {detail.children.map((item: any) => (
                   <Link key={item.id} href={`/ve-may-bay/${item.alias}`}>
                     <h3
                       className={`text-gray-700 font-medium ${styles.text_hover_default}`}
                       data-translate="true"
                     >
-                      {item.location.city}
+                      {`${item?.from_location?.city} - ${detail?.to_location?.city}`}
                     </h3>
                   </Link>
                 ))}
               </div>
             </div>
-          )}
-          {footerData.flight?.international?.length > 0 && (
-            <div className="mb-8">
-              <h2
-                className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]"
-                data-translate="true"
-              >
-                Điểm đến quốc tế
-              </h2>
-              <div className="grid grid-cols-5 gap-4 mt-3">
-                {footerData.flight?.international.map((item: any) => (
-                  <Link key={item.id} href={`/ve-may-bay/${item.alias}`}>
-                    <h3
-                      className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                      data-translate="true"
-                    >
-                      {item.location.city}
-                    </h3>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
     </SeoSchema>
   );
