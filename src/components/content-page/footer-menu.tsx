@@ -87,7 +87,7 @@ export default async function FooterMenu({ page }: { page: string }) {
           </h2>
           <div className="grid grid-cols-5 gap-4 mt-3">
             {data.visa.map((visa: any) => (
-              <Link href={`/visa/${visa.slug}-${visa.id}`} key={visa.id}>
+              <Link href={`/visa/${visa.slug}`} key={visa.id}>
                 <h3
                   data-translate="true"
                   className={`text-gray-700 font-medium ${styles.text_hover_default}`}

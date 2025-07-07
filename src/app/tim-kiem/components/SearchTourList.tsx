@@ -63,7 +63,7 @@ export default function SearchTourList({ tours }: any) {
               >
                 <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
                   <div className="relative overflow-hidden rounded-t-2xl">
-                    <Link href={`/tours/${product.slug}-${product.id}`}>
+                    <Link href={`/tours/${product.slug}`}>
                       <Image
                         className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
                         src={`${product.image_url}/${product.image_location}`}
@@ -89,7 +89,7 @@ export default function SearchTourList({ tours }: any) {
                   </div>
                   <div className="py-3 px-4">
                     <Link
-                      href={`/tours/${product.slug}-${product.id}`}
+                      href={`/tours/${product.slug}`}
                       className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
                     >
                       <h3 data-translate>{product.name ?? ""}</h3>

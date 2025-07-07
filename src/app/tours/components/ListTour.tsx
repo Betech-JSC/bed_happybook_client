@@ -185,7 +185,7 @@ export default function ListTour({
                 }`}
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                  <Link href={`/tours/${tour.slug}-${tour.id}`}>
+                  <Link href={`/tours/${tour.slug}`}>
                     <Image
                       className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full min-h-40 object-cover"
                       src={`${tour.image_url}/${tour.image_location}`}
@@ -210,7 +210,7 @@ export default function ListTour({
                 <div className="w-full lg:w-7/12 mt-4 lg:mt-0 flex flex-col justify-between">
                   <div>
                     <Link
-                      href={`/tours/${tour.slug}-${tour.id}`}
+                      href={`/tours/${tour.slug}`}
                       className="text-18 font-semibold hover:text-primary duration-300 transition-colors"
                     >
                       <h2 data-translate="true">

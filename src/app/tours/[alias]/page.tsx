@@ -8,14 +8,16 @@ import TourDetail from "../components/TourDetail";
 import CategoryTour from "../components/CategoryTour";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const { slug, isDetail } = extractSlugAndId(params.alias);
+  const { alias } = params;
+  const isDetail = !["tour-noi-dia", "tour-quoc-te"].includes(alias);
   let data = null;
 
   if (isDetail) {
-    const res = (await TourApi.detail(slug)) as any;
+    const res = (await TourApi.detail(alias)) as any;
     data = res?.payload.data;
+    data.alias = data.slug;
   } else {
-    const res = (await PageApi.getContent(slug)) as any;
+    const res = (await PageApi.getContent(alias)) as any;
     data = res?.payload.data;
   }
   return formatMetadata({
@@ -26,14 +28,16 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl(data?.alias ?? slug, BlogTypes.TOURS, true),
+      canonical: pageUrl(data?.alias ?? alias, BlogTypes.TOURS, true),
     },
     openGraph: {
       images: [
         {
           url: data?.meta_image
             ? data.meta_image
-            : `${data?.image_url}/${data?.image_location}`,
+            : data?.image_url && data?.image_location
+            ? `${data?.image_url}${data?.image_location}`
+            : null,
           alt: data?.meta_title,
         },
       ],
@@ -46,6 +50,11 @@ export default async function TourAliasPage({
 }: {
   params: { alias: string };
 }) {
-  const { slug, isDetail } = extractSlugAndId(params.alias);
-  return isDetail ? <TourDetail alias={slug} /> : <CategoryTour alias={slug} />;
+  const { alias } = params;
+  const isDetail = !["tour-noi-dia", "tour-quoc-te"].includes(alias);
+  return isDetail ? (
+    <TourDetail alias={alias} />
+  ) : (
+    <CategoryTour alias={alias} />
+  );
 }

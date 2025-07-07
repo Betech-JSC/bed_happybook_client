@@ -8,15 +8,14 @@ import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const { slug, isDetail } = extractSlugAndId(params.alias);
+  const { alias } = params;
   let data = null;
-
-  if (isDetail) {
-    const res = await VisaApi.detail(slug);
-    data = res?.payload.data;
-  } else {
-    const res = (await VisaApi.getCategory(slug)) as any;
-    data = res?.payload.data;
+  const resCategory = (await VisaApi.getCategory(alias)) as any;
+  data = resCategory?.payload.data;
+  if (!data) {
+    const resDetail = await VisaApi.detail(alias);
+    data = resDetail?.payload.data;
+    data.alias = data.slug;
   }
   return formatMetadata({
     title: data?.meta_title ?? data?.name,
@@ -24,14 +23,16 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: pageUrl(data?.alias ?? slug, BlogTypes.VISA, true),
+      canonical: pageUrl(data?.alias ?? alias, BlogTypes.VISA, true),
     },
     openGraph: {
       images: [
         {
           url: data?.meta_image
             ? data.meta_image
-            : `${data?.image_url}${data?.image_location}`,
+            : data?.image_url && data?.image_location
+            ? `${data?.image_url}${data?.image_location}`
+            : null,
           alt: data?.meta_title,
         },
       ],
@@ -44,6 +45,12 @@ export default async function VisaAliasPage({
 }: {
   params: { alias: string };
 }) {
-  const { slug, isDetail } = extractSlugAndId(params.alias);
-  return isDetail ? <VisaDetail alias={slug} /> : <VisaCategory alias={slug} />;
+  const { alias } = params;
+  const resCategory = (await VisaApi.getCategory(alias)) as any;
+  const detailCate = resCategory?.payload.data;
+  return !detailCate ? (
+    <VisaDetail alias={alias} />
+  ) : (
+    <VisaCategory alias={alias} />
+  );
 }

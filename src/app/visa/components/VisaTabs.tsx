@@ -70,7 +70,7 @@ export default function VisaTabs({ data }: any) {
                     >
                       <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
                         <div className="overflow-hidden rounded-t-2xl	">
-                          <Link href={`/visa/${visa.slug}-${visa.product_id}`}>
+                          <Link href={`/visa/${visa.slug}`}>
                             <Image
                               className="hover:scale-110 ease-in duration-300 cursor-pointer"
                               src={`${visa.image_url}/${visa.image_location}`}
@@ -84,7 +84,7 @@ export default function VisaTabs({ data }: any) {
                         </div>
                         <div className="py-3 px-4 h-fit ">
                           <Link
-                            href={`/visa/${visa.slug}-${visa.id}`}
+                            href={`/visa/${visa.slug}`}
                             className={`text-base font-semibold ${styles.text_hover_default}`}
                           >
                             <h3
