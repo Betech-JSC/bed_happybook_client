@@ -15,6 +15,7 @@ import { notFound } from "next/navigation";
 import { GeneralInforPaths } from "@/constants/paths";
 import { getServerLang } from "@/lib/session";
 import { redirect } from "next/navigation";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 function getMetadata(data: any, slug: string) {
   return formatMetadata({
@@ -98,23 +99,8 @@ export default async function GeneralInfor({
               >
                 {contentPage?.title ? contentPage?.title : ""}
               </h3>
-              <div className="mt-4 text-base">
-                {contentPage?.content ? (
-                  <div
-                    data-translate
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        contentPage?.content ?? "Nội dung đang cập nhật...",
-                    }}
-                  ></div>
-                ) : (
-                  <p
-                    className="text-2xl font-semibold text-center"
-                    data-translate
-                  >
-                    Nội dung đang cập nhật...
-                  </p>
-                )}
+              <div className="mt-4">
+                <DisplayContentEditor content={contentPage?.content} />
               </div>
             </div>
             <div className="md:w-2/5 lg:w-[24%] max-h-[260px] bg-white rounded-2xl p-6 ">
