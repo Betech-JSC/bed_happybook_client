@@ -14,7 +14,7 @@ export default function TourItem({ tour }: any) {
   return (
     <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
       <div className="relative overflow-hidden rounded-t-2xl">
-        <Link href={`/tours/${tour.slug}-${tour.id}`}>
+        <Link href={`/tours/${tour.slug}`}>
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
             src={`${tour.image_url}/${tour.image_location}`}
@@ -40,7 +40,7 @@ export default function TourItem({ tour }: any) {
       </div>
       <div className="py-3 px-4">
         <Link
-          href={`/tours/${tour.slug}-${tour.id}`}
+          href={`/tours/${tour.slug}`}
           className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
           <h3 data-translate>{tour.product_name ?? ""}</h3>

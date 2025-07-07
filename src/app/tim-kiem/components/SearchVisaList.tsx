@@ -55,7 +55,7 @@ export default function SearchVisaList({ visa }: any) {
             >
               <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
                 <div className="overflow-hidden rounded-t-2xl	">
-                  <Link href={`/visa/${item.slug}-${item.product_id}`}>
+                  <Link href={`/visa/${item.slug}`}>
                     <Image
                       className="hover:scale-110 ease-in duration-300 cursor-pointer"
                       src={`${item.image_url}/${item.image_location}`}
@@ -69,7 +69,7 @@ export default function SearchVisaList({ visa }: any) {
                 </div>
                 <div className="py-3 px-4 h-fit ">
                   <Link
-                    href={`/visa/${item.slug}-${item.product_id}`}
+                    href={`/visa/${item.slug}`}
                     className={`text-base font-semibold ${styles.text_hover_default}`}
                   >
                     <h3 data-translate="true" className="h-12 line-clamp-2">

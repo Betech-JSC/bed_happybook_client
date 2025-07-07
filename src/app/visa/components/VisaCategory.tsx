@@ -17,24 +17,10 @@ import ListVisa from "../components/ListVisa";
 import FAQ from "@/components/content-page/FAQ";
 import ContentByPage from "@/components/content-page/ContentByPage";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = (await VisaApi.getCategory(params.alias)) as any;
-  const data = res?.payload.data;
-  return formatMetadata({
-    title: data?.meta_title ?? data?.title,
-    description: data?.meta_description,
-    robots: data?.meta_robots,
-    keywords: data?.keywords,
-    alternates: {
-      canonical: pageUrl(data?.alias, BlogTypes.VISA, true),
-    },
-  });
-}
-
 export default async function VisaCategory({ alias }: { alias: string }) {
   const res = (await VisaApi.getCategory(alias)) as any;
   const category = res?.payload?.data;
-  if (!category) {
+  if (!category.id) {
     notFound();
   }
   const optionsFilter = (await VisaApi.getOptionsFilter())?.payload

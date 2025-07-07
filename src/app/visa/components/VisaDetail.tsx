@@ -34,7 +34,7 @@ import Tabs from "./Tabs";
 export default async function VisaDetail({ alias }: { alias: string }) {
   const response = await VisaApi.detail(alias);
   const detail = response?.payload.data;
-  if (!detail) {
+  if (!detail.id) {
     notFound();
   }
   const language = await getServerLang();

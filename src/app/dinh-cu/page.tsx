@@ -41,13 +41,13 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function DinhCu() {
-  const newsByPage = (await newsApi.getLastedNewsByPage())?.payload
+  const newsByPage = (await newsApi.getLastedNewsByPage("dinh cu"))?.payload
     ?.data as any;
   const language = await getServerLang();
   const categories = (await ProductCategoryApi.listByType("dinhcu", language))
     ?.payload?.data as any;
-  const contentPage = (await PageApi.getContent("dinh-cu", language))
-    ?.payload?.data as any;
+  const contentPage = (await PageApi.getContent("dinh-cu", language))?.payload
+    ?.data as any;
   const metadata = getMetadata(contentPage);
 
   return (
