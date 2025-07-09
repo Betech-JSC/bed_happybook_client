@@ -9,7 +9,7 @@ import { formatTranslationMap, translatePage } from "@/utils/translateDom";
 import { translateText } from "@/utils/translateApi";
 import { visaStaticText } from "@/constants/staticText";
 import { useTranslation } from "@/app/hooks/useTranslation";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import SearchFilters from "./SearchFilters";
 import { debounce } from "lodash";
 import { formatCurrency } from "@/lib/formatters";
@@ -84,8 +84,9 @@ export default function ListVisa({
         setIsLastPage(true);
       }
 
-      await translatePage("#wrapper-search-visa", 10);
-      setTranslatedText(true);
+      translatePage("#wrapper-search-visa", 10).then(() =>
+        setTranslatedText(true)
+      );
     } catch (error) {
       console.log("Error search: " + error);
     } finally {

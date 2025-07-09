@@ -10,6 +10,7 @@ import { highlightTextSearchAirport } from "@/utils/jsxUtils";
 import Image from "next/image";
 import React, { useState, useRef, useEffect, Fragment } from "react";
 import debounce from "lodash.debounce";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AirportPopupSelector({
   handleLocationChange,
@@ -20,6 +21,7 @@ export default function AirportPopupSelector({
   initialToPlace,
   airportsData,
 }: AirportPopupSelectorProps) {
+  const { t } = useTranslation();
   const isFirstRender = useRef(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [departureDisplayText, setDepartureDisplayText] = useState<
@@ -206,7 +208,7 @@ export default function AirportPopupSelector({
       <div className="w-full md:w-1/2 mr-1">
         <label htmlFor="departure-input" className="block text-gray-700 mb-1">
           <i className="fas fa-plane-departure"></i>
-          <span data-translate="true">Từ</span>
+          <span>{t("tu")}</span>
         </label>
         <div className="flex h-12 items-center border rounded-lg px-2">
           <Image
@@ -220,7 +222,7 @@ export default function AirportPopupSelector({
             <input
               id="departure-input"
               type="text"
-              placeholder="Chọn điểm đi"
+              placeholder={t("chon_diem_di")}
               value={departureDisplayText ?? ""}
               onClick={() => handleInputClick("departure")}
               readOnly
@@ -246,7 +248,7 @@ export default function AirportPopupSelector({
       </div>
       <div className="w-full md:w-1/2">
         <label htmlFor="destination-input" className="block text-gray-700 mb-1">
-          <span data-translate="true">Đến</span>
+          <span>{t("den")}</span>
         </label>
         <div className="flex h-12 items-center border rounded-lg px-2  md:pl-6">
           <Image
@@ -260,7 +262,7 @@ export default function AirportPopupSelector({
             <input
               id="destination-input"
               type="text"
-              placeholder="Chọn điểm đến"
+              placeholder={t("chon_diem_den")}
               value={destinationDisplayText ?? ""}
               onClick={() => handleInputClick("destination")}
               readOnly
@@ -277,11 +279,8 @@ export default function AirportPopupSelector({
             ${isPopupVisible ? "visible z-[9999]" : "invisible z-[-1]"}`}
       >
         <div className="flex items-center justify-between px-4 py-2 border-b">
-          <h2
-            className="text-lg font-semibold text-orange-500"
-            data-translate="true"
-          >
-            Chọn {activeInput === "departure" ? "điểm đi" : "điểm đến"}
+          <h2 className="text-lg font-semibold text-orange-500">
+            {t(`chon_${activeInput === "departure" ? "diem_di" : "diem_den"}`)}
           </h2>
           <button
             onClick={() => setIsPopupVisible(false)}
@@ -339,7 +338,6 @@ export default function AirportPopupSelector({
                         : "text-gray-600 border-gray-300"
                     }`}
                     onClick={() => setSelectedTab(country.id)}
-                    data-translate="true"
                   >
                     {country.country}
                   </button>
@@ -353,7 +351,6 @@ export default function AirportPopupSelector({
                 key={airport.code}
                 className="font-normal px-3 py-2 text-left rounded-lg text__default_hover cursor-pointer"
                 onClick={() => handleAirportSelect(airport)}
-                data-translate="true"
               >
                 {highlightTextSearchAirport(
                   `${airport.city} (${airport.code})`,
@@ -363,7 +360,7 @@ export default function AirportPopupSelector({
             ))}
           </div>
         ) : (
-          <div className="text-center my-4 text-gray-500" data-translate="true">
+          <div className="text-center my-4 text-gray-500">
             Không tìm thấy{" "}
             {activeInput === "departure" ? "điểm đi" : "điểm đến"} phù hợp
           </div>

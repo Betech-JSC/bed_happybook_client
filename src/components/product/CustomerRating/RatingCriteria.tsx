@@ -1,5 +1,5 @@
 "use client";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { labelRatingStaticText } from "@/constants/staticText";
 import { toSnakeCase } from "@/utils/Helper";

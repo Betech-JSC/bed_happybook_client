@@ -22,7 +22,7 @@ import QRCodeDisplay from "@/components/Payment/QRCodeDisplay";
 import { isEmpty } from "lodash";
 import { PaymentApi } from "@/api/Payment";
 import { PageApi } from "@/api/Page";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { translateText } from "@/utils/translateApi";
 

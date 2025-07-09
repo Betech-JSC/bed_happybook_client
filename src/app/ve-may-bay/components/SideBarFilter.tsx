@@ -47,10 +47,10 @@ export default function SideBarFilterFlights({
         )}
 
         <div className="mt-3 pb-3 border-b border-gray-200">
-          <h2 className="font-semibold">Thời gian</h2>
+          <h2 className="font-semibold">{t("thoi_gian")}</h2>
           <div className="flex flex-col gap-2 mt-3">
             <div className="flex gap-2">
-              <p>Giờ cất cánh</p>
+              <p>{t("gio_cat_canh")}</p>
               <div className="flex gap-2">
                 <span>{formatTimeFromHour(filters.departureTime[0])}</span>
                 <span>-</span>
@@ -72,7 +72,7 @@ export default function SideBarFilterFlights({
           </div>
           <div className="flex flex-col gap-2 mt-2">
             <div className="flex gap-2">
-              <p>Giờ hạ cánh</p>
+              <p>{t("gio_ha_canh")}</p>
               <div className="flex gap-2">
                 <span>{formatTimeFromHour(filters.arrivalTime[0])}</span>
                 <span>-</span>
@@ -240,10 +240,10 @@ export default function SideBarFilterFlights({
                 )}
               </div>
               <div className="mb-4">
-                <h2 className="font-semibold">Thời gian</h2>
+                <h2 className="font-semibold">{t("thoi_gian")}</h2>
                 <div className="flex flex-col gap-2 mt-3">
                   <div className="flex gap-2">
-                    <p>Giờ cất cánh</p>
+                    <p>{t("gio_cat_canh")}</p>
                     <div className="flex gap-2">
                       <span>
                         {formatTimeFromHour(filters.departureTime[0])}
@@ -269,7 +269,7 @@ export default function SideBarFilterFlights({
                 </div>
                 <div className="flex flex-col gap-2 mt-2">
                   <div className="flex gap-2">
-                    <p>Giờ hạ cánh</p>
+                    <p>{t("gio_ha_canh")}</p>
                     <div className="flex gap-2">
                       <span>{formatTimeFromHour(filters.arrivalTime[0])}</span>
                       <span>-</span>

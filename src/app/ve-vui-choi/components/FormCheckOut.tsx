@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 import { BookingProductApi } from "@/api/BookingProduct";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import {
   checkOutAmusementTicketSchema,
@@ -24,7 +24,7 @@ import { useVoucherManager } from "@/hooks/useVoucherManager";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import DisplayPrice from "@/components/base/DisplayPrice";
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import { HttpError } from "@/lib/error";
 
 interface Ticket {

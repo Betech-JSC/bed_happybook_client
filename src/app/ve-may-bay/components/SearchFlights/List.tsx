@@ -15,7 +15,7 @@ import FlightDetailPopup from "../FlightDetailPopup";
 import { FlightApi } from "@/api/Flight";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { translateText } from "@/utils/translateApi";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import FlightDomesticDetail from "./Detail";
 import AOS from "aos";
 import "aos/dist/aos.css";

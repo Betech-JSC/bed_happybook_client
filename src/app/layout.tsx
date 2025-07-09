@@ -8,13 +8,15 @@ import BackToTopButton from "@/components/layout/back-top-btn";
 import { Toaster } from "react-hot-toast";
 import { toastOptions } from "@/lib/toastConfig";
 import AppLoader from "@/components/layout/AppLoader";
-import { LanguageProvider } from "./contexts/LanguageContext";
+import { LanguageProvider } from "../contexts/LanguageContext";
 import { getSession } from "@/lib/session";
-import { UserProvider } from "./contexts/UserContext";
-import { LoadingProvider } from "./contexts/LoadingContext";
+import { UserProvider } from "../contexts/UserContext";
+import { LoadingProvider } from "../contexts/LoadingContext";
 import SupportFloatingIcons from "@/components/layout/support-floating-icons";
 import Script from "next/script";
 import GTMNoScript from "@/components/base/GTMNoScript";
+import { getServerTranslations } from "@/lib/i18n/serverTranslations";
+import { TranslationProvider } from "../contexts/TranslationContext";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -41,6 +43,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getSession();
+  const translations = await getServerTranslations(session.language);
   return (
     <html lang={session.language}>
       <head>
@@ -60,19 +63,21 @@ export default async function RootLayout({
       <body className={OpenSans.className}>
         <GTMNoScript />
         <LanguageProvider serverLang={session.language}>
-          <UserProvider initialUser={session.userInfo}>
-            <Header></Header>
-            <HeaderMobile></HeaderMobile>
-            {children}
-            <Toaster toastOptions={toastOptions} />
-            <div id="datepicker-portal"></div>
-            <SupportFloatingIcons />
-            <BackToTopButton></BackToTopButton>
-            <Footer></Footer>
-            <LoadingProvider>
-              <AppLoader />
-            </LoadingProvider>
-          </UserProvider>
+          <TranslationProvider translations={translations}>
+            <UserProvider initialUser={session.userInfo}>
+              <Header></Header>
+              <HeaderMobile></HeaderMobile>
+              {children}
+              <Toaster toastOptions={toastOptions} />
+              <div id="datepicker-portal"></div>
+              <SupportFloatingIcons />
+              <BackToTopButton></BackToTopButton>
+              <Footer></Footer>
+              <LoadingProvider>
+                <AppLoader />
+              </LoadingProvider>
+            </UserProvider>
+          </TranslationProvider>
         </LanguageProvider>
       </body>
     </html>

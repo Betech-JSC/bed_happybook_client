@@ -3,8 +3,10 @@ import Image from "next/image";
 import TourStyle from "@/styles/tour.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SearchTour() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [queryText, setQueryText] = useState<string>("");
   const handleSubmit = (e: React.FormEvent) => {
@@ -17,8 +19,8 @@ export default function SearchTour() {
       className="base__content h-full relative place-content-center"
       onSubmit={handleSubmit}
     >
-      <h1 className="text-32 font-bold text-white mb-6 block" data-translate>
-        Tour & Trải nghiệm
+      <h1 className="text-32 font-bold text-white mb-6 block">
+        {t("tour_trai_nghiem")}
       </h1>
       <div className="flex items-center w-full lg:w-1/2 relative">
         <div className="absolute left-4">
@@ -33,7 +35,7 @@ export default function SearchTour() {
         </div>
         <input
           type="text"
-          placeholder="Tìm theo điểm đến, hoạt động"
+          placeholder={t("tim_theo_diem_den_hoat_dong")}
           name="text"
           className={TourStyle.search_input}
           onChange={(e) => {

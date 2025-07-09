@@ -4,12 +4,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import styles from "@/styles/styles.module.scss";
-import Link from "next/link";
-import { formatCurrency } from "@/lib/formatters";
 import CompoItem from "../product/components/CompoItem";
+import { getServerT } from "@/lib/i18n/getServerT";
 
-export default function CompoHot({ data }: any) {
+export default async function CompoHot({ data }: any) {
+  const t = await getServerT();
   return (
     <div
       className="mt-6 px-3 py-6 lg:py-8 rounded-3xl"
@@ -24,14 +23,11 @@ export default function CompoHot({ data }: any) {
         <div className="mt-0 lg:mt-4 lg:flex">
           <div className="flex lg:w-1/4 flex-col justify-between lg:items-center">
             <div>
-              <h2
-                className="text-2xl lg:text-[32px] leading-9 font-bold text-white"
-                data-translate
-              >
-                Combo siêu hot hôm nay
+              <h2 className="text-2xl lg:text-[32px] leading-9 font-bold text-white">
+                {t("combo_sieu_hot_hom_nay")}
               </h2>
-              <p className="text-16 font-medium text-white mt-3" data-translate>
-                Đặt ngay hôm nay, kẻo lỡ cơ hội!
+              <p className="text-16 font-medium text-white mt-3">
+                {t("dat_ngay_hom_nay_keo_lo_co_hoi")}
               </p>
             </div>
             <Image

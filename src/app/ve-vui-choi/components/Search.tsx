@@ -11,10 +11,11 @@ import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
 import { ProductTicket } from "@/api/ProductTicket";
 import { translatePage } from "@/utils/translateDom";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { vi, enUS } from "date-fns/locale";
 import { format, isValid } from "date-fns";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type optionFilterType = {
   label: string;
@@ -30,6 +31,7 @@ export default function Search({
 }: {
   optionsFilter: optionFilterType[];
 }) {
+  const { t } = useTranslation();
   const today = new Date();
   const { language } = useLanguage();
 
@@ -128,9 +130,7 @@ export default function Search({
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18" data-translate="true">
-          Loading...
-        </span>
+        <span className="text-18">Loading...</span>
       </div>
     );
   }
@@ -149,11 +149,9 @@ export default function Search({
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold" data-translate="true">
-            Vé vui chơi
-          </h1>
+          <h1 className="text-32 font-bold">{t("ve_vui_choi")}</h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
-            <span data-translate="true">Sắp xếp</span>
+            <span>{t("sap_xep")}</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
@@ -162,12 +160,8 @@ export default function Search({
                 }}
                 defaultValue={"id|desc"}
               >
-                <option value="id|desc" data-translate="true">
-                  Mới nhất
-                </option>
-                <option value="id|asc" data-translate="true">
-                  Cũ nhất
-                </option>
+                <option value="id|desc">{t("moi_nhat")}</option>
+                <option value="id|asc">{t("cu_nhat")}</option>
               </select>
             </div>
           </div>
@@ -227,8 +221,8 @@ export default function Search({
                   <span className="text-18">Loading...</span>
                 </>
               ) : (
-                <span className="text-18" data-translate="true">
-                  Không tìm thấy dữ liệu phù hợp...
+                <span className="text-18">
+                  {t("khong_tim_thay_du_lieu_phu_hop")}
                 </span>
               )}
             </div>

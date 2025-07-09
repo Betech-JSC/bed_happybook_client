@@ -13,6 +13,7 @@ import { newsApi } from "@/api/news";
 import FooterMenu from "@/components/content-page/footer-menu";
 import { PageApi } from "@/api/Page";
 import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -37,8 +38,7 @@ function getMetadata(data: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const contentPage = (await PageApi.getContent("visa"))?.payload
-    ?.data as any;
+  const contentPage = (await PageApi.getContent("visa"))?.payload?.data as any;
 
   return getMetadata(contentPage);
 }
@@ -52,10 +52,10 @@ export default async function Visa() {
     ?.data as any;
 
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("visa", language))
-    ?.payload?.data as any;
+  const contentPage = (await PageApi.getContent("visa", language))?.payload
+    ?.data as any;
   const metadata = getMetadata(contentPage);
-
+  const t = await getServerT();
   return (
     <SeoSchema
       metadata={metadata}
@@ -88,8 +88,8 @@ export default async function Visa() {
           {/* Search */}
           <div className="base__content h-full relative place-content-center">
             <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-3/5">
-              <h1 className="text-18 font-semibold" data-translate>
-                Tìm Visa theo địa danh, điểm đến
+              <h1 className="text-18 font-semibold">
+                {t("tim_visa_theo_dia_danh_diem_den")}
               </h1>
               <SearchForm optionsFilter={optionsFilter} />
             </div>
@@ -101,11 +101,8 @@ export default async function Visa() {
               <div className="">
                 <div className="flex justify-between">
                   <div>
-                    <h2
-                      className="text-[24px] lg:text-[32px] font-bold"
-                      data-translate
-                    >
-                      Dịch vụ Visa nổi bật
+                    <h2 className="text-[24px] lg:text-[32px] font-bold">
+                      {t("dich_vu_visa_noi_bat")}
                     </h2>
                   </div>
                   <Link
@@ -114,7 +111,7 @@ export default async function Visa() {
                     style={{ transition: "0.3s" }}
                   >
                     <button className="text-[#175CD3] font-medium">
-                      Xem tất cả
+                      {t("xem_tat_ca")}
                     </button>
                     <Image
                       className=" hover:scale-110 ease-in duration-300"
@@ -125,12 +122,10 @@ export default async function Visa() {
                     />
                   </Link>
                 </div>
-                <p
-                  className="text-sm lg:text-16 font-medium mt-3"
-                  data-translate
-                >
-                  Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu
-                  cao!
+                <p className="text-sm lg:text-16 font-medium mt-3">
+                  {t(
+                    "dich_vu_lam_visa_nhanh_chong_uy_tin_ho_tro_247_ty_le_dau_cao"
+                  )}
                 </p>
                 <Link
                   href="/visa/tim-kiem?text=tat-ca-visa-noi-bat"
@@ -138,7 +133,7 @@ export default async function Visa() {
                 >
                   <button className="text-[#175CD3] font-medium">
                     {" "}
-                    Xem tất cả
+                    {t("xem_tat_ca")}
                   </button>
                   <Image
                     className=" hover:scale-110 ease-in duration-300"
@@ -177,7 +172,7 @@ export default async function Visa() {
                         className="text-[#175CD3] font-medium"
                         data-translate
                       >
-                        Xem tất cả
+                        {t("xem_tat_ca")}
                       </button>
                       <Image
                         className=" hover:scale-110 ease-in duration-300"
@@ -196,7 +191,7 @@ export default async function Visa() {
                       className="text-[#175CD3] font-medium"
                       data-translate
                     >
-                      Xem tất cả
+                      {t("xem_tat_ca")}
                     </button>
                     <Image
                       className=" hover:scale-110 ease-in duration-300"

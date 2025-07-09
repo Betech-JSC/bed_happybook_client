@@ -22,6 +22,7 @@ import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 import { settingApi } from "@/api/Setting";
 import { PageApi } from "@/api/Page";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -71,6 +72,7 @@ export default async function CompoTour() {
     ?.data as any;
 
   const metadata = getMetadata(contentPage);
+  const t = await getServerT();
 
   return (
     <SeoSchema
@@ -113,8 +115,8 @@ export default async function CompoTour() {
             {/* Tours */}
             {comboData?.comboHot?.length > 0 && (
               <div className="w-full">
-                <h2 className="text-32 font-bold" data-translate="true">
-                  Khám phá các điểm đến HOT
+                <h2 className="text-32 font-bold">
+                  {t("kham_pha_cac_diem_den_hot")}
                 </h2>
                 <div className="mt-8 overflow-hidden">
                   <Carousel
@@ -162,8 +164,8 @@ export default async function CompoTour() {
             )}
 
             <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center">
-              <h2 className="text-32 font-bold" data-translate="true">
-                Các combo du lịch ưu đãi
+              <h2 className="text-32 font-bold">
+                {t("cac_combo_du_lich_uu_dai")}
               </h2>
             </div>
             {comboData?.comboDomestic?.length > 0 ? (
@@ -176,7 +178,7 @@ export default async function CompoTour() {
               </div>
             ) : (
               <p className="text-base md:text-xl font-semibold my-4 text-center">
-                Thông tin đang cập nhật...
+                {t("thong_tin_dang_cap_nhat")}
               </p>
             )}
             {/* Faq */}

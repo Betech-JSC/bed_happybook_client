@@ -2,13 +2,15 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import FormRegister from "./form";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 export const metadata: Metadata = {
   title: "Đăng ký",
   description: "Happy Book",
 };
 
-export default function Login() {
+export default async function Login() {
+  const t = await getServerT();
   return (
     <main className="relative h-max pb-10">
       <div className="absolute h-full w-full -z-[1]">
@@ -24,29 +26,22 @@ export default function Login() {
       </div>
       <div className="base__content">
         <div className="mx-auto mt-[74px] px-4 md:px-12 py-6 md:w-[520px] h-full bg-white rounded-2xl  ">
-          <h1
-            className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate
-          >
-            Đăng ký
+          <h1 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            {t("dang_ky")}
           </h1>
           <div>
             <FormRegister />
           </div>
           <div className="mt-3">
-            <p
-              className="text-center text-18 text-gray-900 font-semibold"
-              data-translate
-            >
-              Bạn đã có tài khoản?
+            <p className="text-center text-18 text-gray-900 font-semibold">
+              {t("ban_da_co_tai_khoan")}
             </p>
             <div className="bg-primary border-primary border-[1px] text__default_hover hover:bg-inherit text-white rounded-lg h-11 mt-6 inline-flex w-full items-center">
               <Link
                 href="/dang-nhap"
                 className="text-center w-full text-base font-medium"
-                data-translate
               >
-                Đăng nhập
+                {t("dang_nhap")}
               </Link>
             </div>
           </div>

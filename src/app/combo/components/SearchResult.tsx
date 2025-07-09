@@ -13,7 +13,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import { translatePage } from "@/utils/translateDom";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 

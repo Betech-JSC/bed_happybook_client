@@ -2,8 +2,11 @@ import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { GeneralInforPaths } from "@/constants/paths";
+import { getServerT } from "@/lib/i18n/getServerT";
+import { toSnakeCase } from "@/utils/Helper";
 
-export default function Footer() {
+export default async function Footer() {
+  const t = await getServerT();
   return (
     <footer className="bg-[#F9FAFB]">
       <div className="max__screen px-3 lg:px-[50px] xl:px-[80px] lg:mt-0  pt-12 pb-6">
@@ -18,39 +21,39 @@ export default function Footer() {
               />
             </div>
             <div>
-              <p className="font-bold mr-1 inline-block" data-translate="true">
-                Hotline vé máy bay:
+              <p className="font-bold mr-1 inline-block">
+                {t("hotline_ve_may_bay")}
               </p>
               <a href="tel:1900633437" className="inline-block mr-1">
-                1900.633.437 - Nhấn phím (1)
+                1900.633.437 - {t("nhan_phim_1")}
               </a>
-              {/* <p className="inline-block mr-1" data-translate="true">
+              {/* <p className="inline-block mr-1">
                 (Nội địa)
               </p>
               <p className="inline-block mr-1"> - 1900.633.437 </p>
-              <p className="inline-block" data-translate="true">
+              <p className="inline-block">
                 (Quốc tế)
               </p> */}
             </div>
             <div className="mt-1">
-              <p className="font-bold mr-1 inline-block" data-translate="true">
-                Hotline Visa - hộ chiếu:
+              <p className="font-bold mr-1 inline-block">
+                {t("hotline_visa_ho_chieu")}
               </p>
               <a href="tel:1900633437" className="inline-block">
-                1900.633.437 - Nhấn phím (2)
+                1900.633.437 - {t("nhan_phim_2")}
               </a>
             </div>
             <div className="mt-1">
-              <p className="font-bold mr-1 inline-block" data-translate="true">
-                Hotline Tour du lịch:
+              <p className="font-bold mr-1 inline-block">
+                {t("hotline_tour_du_lich")}
               </p>
               <a href="tel:1900633437" className="inline-block">
-                1900.633.437 - Nhấn phím (3)
+                1900.633.437 - {t("nhan_phim_3")}
               </a>
             </div>
             <div className="mt-1">
-              <p className="font-bold mr-1 inline-block" data-translate="true">
-                Email Chính thức:
+              <p className="font-bold mr-1 inline-block">
+                {t("email_chinh_thuc")}
               </p>
               <a
                 className="inline-block"
@@ -60,8 +63,8 @@ export default function Footer() {
               </a>
             </div>
             <div className="mt-1">
-              <p className="font-bold mr-1 inline-block" data-translate="true">
-                Email tuyển dụng - đăng ký CTV:
+              <p className="font-bold mr-1 inline-block">
+                {t("email_tuyen_dung_dang_ky_ctv")}
               </p>
               <a
                 href="mailto:HR@happybooktravel.com.vn"
@@ -71,59 +74,46 @@ export default function Footer() {
               </a>
             </div>
             {/* <div className="mt-1">
-              <p className="font-bold mr-1 inline-block" data-translate="true">
+              <p className="font-bold mr-1 inline-block">
                 Email visa - hộ chiếu:
               </p>
               <p className="inline-block"> visaonline@happybook.com.vn</p>
             </div> */}
             <div className="mt-1">
-              <p className="font-bold mr-1 inline-block" data-translate="true">
-                Trụ sở chính:
-              </p>
-              <p className="inline" data-translate="true">
-                Tầng 1, Phong Phú Tower, 93/10 Quang Trung, Khu phố 1, Phường
-                Tăng Nhơn Phú, Thành phố Hồ Chí Minh, Việt Nam
+              <p className="font-bold mr-1 inline-block">{t("tru_so_chinh")}</p>
+              <p className="inline">
+                {t(
+                  "tang_1_phong_phu_tower_9310_quang_trung_khu_pho_1_phuong_tang_nhon_phu_thanh_pho_ho_chi_minh_viet_nam"
+                )}
               </p>
             </div>
             <div className="mt-1">
-              <p className="font-bold mr-1 inline-block" data-translate="true">
-                Chi nhánh 1:
-              </p>
-              <p className="inline-block" data-translate="true">
-                124 Lê Quang Định, P.14, Q.Bình Thạnh, TP.HCM
+              <p className="font-bold mr-1 inline-block">{t("chi_nhanh_1")}</p>
+              <p className="inline-block">
+                {t("124_le_quang_dinh_p_14_q_binh_thanh_tphcm")}
               </p>
             </div>
           </div>
           <div className="mt-12 lg:mt-0 basis-1/2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 md:gap-12">
             <div>
-              <p className="font-bold" data-translate="true">
-                Về Happy Book
-              </p>
+              <p className="font-bold">{t("ve_happy_book")}</p>
               <div className="grid grid-cols-2 md:grid-cols-1">
                 <p className={`mt-4 ${styles.text_hover_default}`}>
-                  <Link href="/ve-chung-toi" data-translate="true">
-                    Về chúng tôi
-                  </Link>
+                  <Link href="/ve-chung-toi">{t("ve_chung_toi")}</Link>
                 </p>
                 <p className={`mt-3 ${styles.text_hover_default}`}>
-                  <Link href="/tin-tuc" data-translate="true">
-                    Tin tức
-                  </Link>
+                  <Link href="/tin-tuc">{t("tin_tuc")}</Link>
                 </p>
                 <p className={`mt-3 ${styles.text_hover_default}`}>
-                  <Link href="/lien-he" data-translate="true">
-                    Liên hệ chúng tôi
-                  </Link>
+                  <Link href="/lien-he">{t("lien_he_chung_toi")}</Link>
                 </p>
                 <p className={`mt-3 ${styles.text_hover_default}`}>
-                  <Link href="/dang-ky-ctv" data-translate="true">
-                    Đăng ký CTV
-                  </Link>
+                  <Link href="/dang-ky-ctv">{t("dang_ky_ctv")}</Link>
                 </p>
               </div>
               <div className="hidden md:block">
-                <p className="mt-8" data-translate="true">
-                  <strong>Theo dõi chúng tôi</strong>
+                <p className="mt-8">
+                  <strong>{t("theo_doi_chung_toi")}</strong>
                 </p>
                 <div className="flex gap-4 mt-4">
                   <Link
@@ -171,75 +161,62 @@ export default function Footer() {
               </div>
             </div>
             <div>
-              <p className="font-bold" data-translate="true">
-                Dịch vụ
-              </p>
+              <p className="font-bold">{t("dich_vu")}</p>
               <div className="grid grid-cols-2 md:grid-cols-1">
                 <Link
                   href="/tours/tour-noi-dia"
                   className={`block mt-4 ${styles.text_hover_default}`}
-                  data-translate="true"
                 >
-                  Tour nội địa
+                  {t("tour_noi_dia")}
                 </Link>
                 <Link
                   href="/tours/tour-quoc-te"
                   className={`block mt-3 ${styles.text_hover_default}`}
-                  data-translate="true"
                 >
-                  Tour quốc tế
+                  {t("tour_quoc_te")}
                 </Link>
-                <Link
+                {/* <Link
                   href="/tours/tour-du-thuyen"
                   className={`block mt-3 ${styles.text_hover_default}`}
-                  data-translate="true"
                 >
                   Tour du thuyền
-                </Link>
+                </Link> */}
                 <Link
                   href="/ve-may-bay"
                   className={`block mt-3 ${styles.text_hover_default}`}
-                  data-translate="true"
                 >
-                  Vé máy bay
+                  {t("ve_may_bay")}
                 </Link>
                 <Link
                   href="/visa"
                   className={`block mt-3 ${styles.text_hover_default}`}
-                  data-translate="true"
                 >
-                  Dịch vụ làm Visa
+                  {t("dich_vu_lam_visa")}
                 </Link>
                 <Link
                   href="/dinh-cu"
                   className={`block mt-3 ${styles.text_hover_default}`}
-                  data-translate="true"
                 >
-                  Định cư
+                  {t("dinh_cu")}
                 </Link>
                 <Link
                   href="/khach-san"
                   className={`block mt-3 ${styles.text_hover_default}`}
-                  data-translate="true"
                 >
-                  Khách sạn
+                  {t("khach_san")}
                 </Link>
                 <Link
                   href="/combo"
                   className={`block mt-3 ${styles.text_hover_default}`}
                 >
-                  Combo
+                  {t("combo")}
                 </Link>
               </div>
             </div>
             <div>
-              <p className="font-bold" data-translate="true">
-                Khác
-              </p>
+              <p className="font-bold">{t("khac")}</p>
               <p className={`mt-4 ${styles.text_hover_default} `}>
-                <Link href="/tu-van-nhan-visa" data-translate="true">
-                  Tư vấn visa
-                </Link>
+                <Link href="/tu-van-nhan-visa">{t("tu_van_visa")}</Link>
               </p>
               {GeneralInforPaths.map(
                 (
@@ -250,15 +227,13 @@ export default function Footer() {
                     key={index}
                     className={`mt-3 ${styles.text_hover_default} `}
                   >
-                    <Link href={item.url} data-translate="true">
-                      {item.title}
-                    </Link>
+                    <Link href={item.url}>{t(toSnakeCase(item.title))}</Link>
                   </div>
                 )
               )}
               <div className="block md:hidden">
-                <p className="mt-8" data-translate="true">
-                  <strong>Theo dõi chúng tôi</strong>
+                <p className="mt-8">
+                  <strong>{t("theo_doi_chung_toi")}</strong>
                 </p>
                 <div className="flex gap-4 mt-4">
                   <Link
@@ -304,9 +279,7 @@ export default function Footer() {
                   </Link>
                 </div>
               </div>
-              <p className="mt-8 font-bold" data-translate="true">
-                Hình thức thanh toán
-              </p>
+              <p className="mt-8 font-bold">{t("hinh_thuc_thanh_toan")}</p>
               <div className="grid grid-cols-4 md:grid-cols-3 gap-3 mt-4">
                 <button>
                   <Image
@@ -352,12 +325,13 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 text-center">
-          <p className="font-bold" data-translate="true">
-            CÔNG TY TNHH TMDV DU LỊCH HAPPYBOOK
+          <p className="font-bold">
+            {t("cong_ty_tnhh_tmdv_du_lich_happybook")}
           </p>
-          <p className="text-[12px]" data-translate="true">
-            Mã số doanh nghiệp: 0314012158 do Sở Kế hoạch & Đầu tư TP HCM cấp
-            ngày 15/09/2016 - Cấp thay đổi ngày 26/03/2024
+          <p className="text-[12px]">
+            {t(
+              "ma_so_doanh_nghiep_0314012158_do_so_ke_hoach_dau_tu_tp_hcm_cap_ngay_15092016_cap_thay_doi_ngay_26032024"
+            )}
           </p>
         </div>
       </div>

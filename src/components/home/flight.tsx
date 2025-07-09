@@ -11,8 +11,10 @@ import styles from "@/styles/styles.module.scss";
 import FlightItem from "@/components/product/components/flight-item";
 import { useCallback, useEffect, useState } from "react";
 import { ProductFlightApi } from "@/api/ProductFlight";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Flight() {
+  const { t } = useTranslation();
   const [data, setData] = useState<any>([]);
   const fetchData = async () => {
     const reponse = (await ProductFlightApi.getFlights("popular"))?.payload
@@ -55,11 +57,8 @@ export default function Flight() {
           <div>
             <div className="flex justify-between">
               <div>
-                <h2
-                  className="text-[24px] lg:text-[32px] font-bold"
-                  data-translate
-                >
-                  Những chuyến bay phổ biến
+                <h2 className="text-[24px] lg:text-[32px] font-bold">
+                  {t("nhung_chuyen_bay_pho_bien")}
                 </h2>
               </div>
               {/* <div

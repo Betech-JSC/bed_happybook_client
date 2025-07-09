@@ -1,7 +1,7 @@
 // components/UserProfile.tsx
 "use client";
 
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import AccountSidebar from "../components/AccountSidebar";
 import { notFound } from "next/navigation";
 import { parseISO, format } from "date-fns";

@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/carousel";
 import Link from "next/link";
 import TourItem from "@/components/product/components/tour-item";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function TourNoiDia({ data }: any) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="hidden lg:block px-3 lg:px-[50px] xl:px-[80px] max__screen">
@@ -41,18 +43,16 @@ export default function TourNoiDia({ data }: any) {
         <div className="relative z-10">
           <div className="flex justify-between">
             <div>
-              <h2 className="text-[32px] font-bold" data-translate>
-                Tour Nội địa
-              </h2>
+              <h2 className="text-[32px] font-bold">{t("tour_noi_dia")}</h2>
             </div>
             <Link
               href="/tours/tour-noi-dia"
               className="flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
-              <button className="text-[#175CD3] font-medium" data-translate>
+              <button className="text-[#175CD3] font-medium">
                 {" "}
-                Xem tất cả
+                {t("xem_tat_ca")}
               </button>
               <Image
                 className=" hover:scale-110 ease-in duration-300"
@@ -63,8 +63,8 @@ export default function TourNoiDia({ data }: any) {
               />
             </Link>
           </div>
-          <p className="text-16 font-medium mt-3" data-translate>
-            Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
+          <p className="text-16 font-medium mt-3">
+            {t("trai_nghiem_sac_vang_va_kham_pha_van_hoa_mua_thu")}
           </p>
           {/* Tabs */}
           <div className="w-full mt-6">

@@ -15,6 +15,7 @@ import { BannerApi } from "@/api/Banner";
 import Link from "next/link";
 import { getServerLang } from "@/lib/session";
 import { settingApi } from "@/api/Setting";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -51,6 +52,7 @@ export default async function Hotel() {
   const hotelData = (await HotelApi.getAll())?.payload?.data ?? ([] as any);
   const hotelFeatured: any[] = [];
   const hotelPopular: any[] = [];
+  const t = await getServerT();
 
   if (hotelData?.length) {
     hotelData.forEach((group: any) => {
@@ -132,13 +134,10 @@ export default async function Hotel() {
                 height={44}
               ></Image>
               <div>
-                <p
-                  className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate="true"
-                >
-                  Lựa Chọn Không Giới Hạn
+                <p className="text-18 text-gray-700 font-semibold mb-1">
+                  {t("lua_chon_khong_gioi_han")}
                 </p>
-                <p data-translate="true">Vô vàn hành trình, triệu cảm hứng</p>
+                <p>{t("vo_van_hanh_trinh_trieu_cam_hung")}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -150,15 +149,10 @@ export default async function Hotel() {
                 height={44}
               ></Image>
               <div>
-                <p
-                  className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate="true"
-                >
-                  Dịch Vụ Cá Nhân Hóa
+                <p className="text-18 text-gray-700 font-semibold mb-1">
+                  {t("dich_vu_ca_nhan_hoa")}
                 </p>
-                <p data-translate="true">
-                  Chăm sóc đặc biệt, trải nghiệm độc đáo
-                </p>
+                <p>{t("cham_soc_dac_biet_trai_nghiem_doc_dao")}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -170,15 +164,10 @@ export default async function Hotel() {
                 height={44}
               ></Image>
               <div>
-                <p
-                  className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate="true"
-                >
-                  Giá Trị Vượt Trội
+                <p className="text-18 text-gray-700 font-semibold mb-1">
+                  {t("gia_tri_vuot_troi")}
                 </p>
-                <p data-translate="true">
-                  Chất lượng đỉnh, đảm bảo giá tốt nhất
-                </p>
+                <p>{t("chat_luong_dinh_dam_bao_gia_tot_nhat")}</p>
               </div>
             </div>
           </div>
@@ -188,11 +177,8 @@ export default async function Hotel() {
               <div>
                 <div className="flex justify-between">
                   <div>
-                    <h2
-                      className="text-[24px] lg:text-32 font-bold"
-                      data-translate="true"
-                    >
-                      Khách Sạn Nổi Bật
+                    <h2 className="text-[24px] lg:text-32 font-bold">
+                      {t("khach_san_noi_bat")}
                     </h2>
                   </div>
                 </div>
@@ -208,11 +194,8 @@ export default async function Hotel() {
               <div>
                 <div className="flex justify-between">
                   <div>
-                    <h2
-                      className="text-[24px] lg:text-32 font-bold"
-                      data-translate="true"
-                    >
-                      Khách Sạn Phổ Biến tại Việt Nam
+                    <h2 className="text-[24px] lg:text-32 font-bold">
+                      {t("khach_san_pho_bien_tai_viet_nam")}
                     </h2>
                   </div>
                 </div>
@@ -224,11 +207,8 @@ export default async function Hotel() {
           )}
           {/* Province */}
           <div className="mt-6 ">
-            <h2
-              className="text-[24px] lg:text-32 font-bold"
-              data-translate="true"
-            >
-              Thành Phố Phổ Biến tại Việt Nam
+            <h2 className="text-[24px] lg:text-32 font-bold">
+              {t("thanh_pho_pho_bien_tai_viet_nam")}
             </h2>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {provincePopular.map((item: any) => (

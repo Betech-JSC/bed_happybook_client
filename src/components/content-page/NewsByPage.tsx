@@ -6,20 +6,23 @@ import {
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/getServerT";
+import { toSnakeCase } from "@/utils/Helper";
 
-export default function NewsByPage({
+export default async function NewsByPage({
   title,
   wrapperStyle = "pt-8 pb-12 bg-[#FCFCFD]",
   data,
 }: any) {
   if (!data?.length) return;
   const [firstItem, ...news] = data;
+  const t = await getServerT();
   return (
     <div className={wrapperStyle}>
       <div className="flex justify-between">
         <div>
           <h2 className="text-[32px] font-bold" data-translate="true">
-            {title}
+            {t(toSnakeCase(title))}
           </h2>
         </div>
         <Link
@@ -27,9 +30,9 @@ export default function NewsByPage({
           className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
           style={{ transition: "0.3s" }}
         >
-          <button className="text-[#175CD3] font-medium" data-translate="true">
+          <button className="text-[#175CD3] font-medium">
             {" "}
-            Xem tất cả
+            {t("xem_tat_ca")}
           </button>
           <Image
             className="ease-in duration-300"
@@ -44,9 +47,9 @@ export default function NewsByPage({
         href="/tin-tuc"
         className="lg:hidden inline-flex bg-[#EFF8FF] mt-2 py-3 px-4 rounded-lg space-x-3"
       >
-        <button className="text-[#175CD3] font-medium" data-translate>
+        <button className="text-[#175CD3] font-medium">
           {" "}
-          Xem tất cả
+          {t("xem_tat_ca")}
         </button>
         <Image
           className="ease-in duration-300"

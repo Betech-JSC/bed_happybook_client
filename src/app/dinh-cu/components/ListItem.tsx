@@ -7,7 +7,7 @@ import { buildSearch, renderTextContent } from "@/utils/Helper";
 import DynamicTag from "@/components/base/DynamicTag";
 import PostStyle from "@/styles/posts.module.scss";
 import { DinhCuApi } from "@/api/DinhCu";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { translateText } from "@/utils/translateApi";
 import { dinhCuStaticText } from "@/constants/staticText";
 import { formatTranslationMap } from "@/utils/translateDom";

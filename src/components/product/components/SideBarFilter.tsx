@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import TourStyle from "@/styles/tour.module.scss";
 import Image from "next/image";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { translateText } from "@/utils/translateApi";
 import { ProductFilterStaticText } from "@/constants/staticText";
 import { formatTranslationMap } from "@/utils/translateDom";

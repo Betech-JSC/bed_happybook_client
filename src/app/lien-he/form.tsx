@@ -11,9 +11,11 @@ import { Fragment } from "react";
 import LoadingButton from "@/components/base/LoadingButton";
 import { contactApi } from "@/api/contact";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import { useLanguage } from "../contexts/LanguageContext";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function FormContact() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const { language } = useLanguage();
   const messages = validationMessages[language as "vi" | "en"];
@@ -50,14 +52,14 @@ export default function FormContact() {
             htmlFor="service"
             className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
           >
-            <span data-translate>Tên dịch vụ</span>
+            <span>{t("ten_dich_vu")}</span>
             <span className="text-red-500">*</span>
           </label>
           <input
             id="service"
             type="text"
-            placeholder="Nhập tên dịch vụ"
-            title="Nhập tên dịch vụ"
+            placeholder={`${t("nhap")} ${t("ten_dich_vu")}`}
+            title={`${t("nhap")} ${t("ten_dich_vu")}`}
             {...register("service")}
             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
           />
@@ -70,14 +72,14 @@ export default function FormContact() {
             htmlFor="fullName"
             className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
           >
-            <span data-translate>Họ và tên</span>
+            <span>{t("ho_va_ten")}</span>
             <span className="text-red-500">*</span>
           </label>
           <input
             id="fullName"
             type="text"
-            placeholder="Nhập họ và tên"
-            title="Nhập họ và tên"
+            placeholder={`${t("nhap")} ${t("ho_va_ten")}`}
+            title={`${t("nhap")} ${t("ho_va_ten")}`}
             {...register("full_name")}
             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
           />
@@ -92,15 +94,15 @@ export default function FormContact() {
                 htmlFor="phone"
                 className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
               >
-                <span data-translate>Số điện thoại</span>
+                <span>{t("so_dien_thoai")}</span>
                 <span className="text-red-500">*</span>
               </label>
               <input
                 id="phone"
                 type="text"
                 {...register("phone")}
-                title="Nhập số điện thoại"
-                placeholder="Nhập số điện thoại"
+                title={`${t("nhap")} ${t("so_dien_thoai")}`}
+                placeholder={`${t("nhap")} ${t("so_dien_thoai")}`}
                 className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
               />
               {errors.phone && (
@@ -112,14 +114,14 @@ export default function FormContact() {
                 htmlFor="email"
                 className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
               >
-                Email <span className="text-red-500">*</span>
+                {t("email")} <span className="text-red-500">*</span>
               </label>
               <input
                 id="email"
                 type="text"
                 {...register("email")}
-                title="Nhập email"
-                placeholder="Nhập email"
+                title={`${t("nhap")} ${t("email")}`}
+                placeholder={`${t("nhap")} ${t("email")}`}
                 className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
               />
               {errors.email && (
@@ -131,11 +133,11 @@ export default function FormContact() {
         <div className="mt-4">
           <textarea
             {...register("note")}
-            placeholder="Hãy chia sẻ nhu cầu của bạn"
+            placeholder={t("hay_chia_se_nhu_cau_cua_ban")}
             className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
           ></textarea>
         </div>
-        <LoadingButton isLoading={loading} text="Gửi" disabled={false} />
+        <LoadingButton isLoading={loading} text={t("gui")} disabled={false} />
       </form>
     </Fragment>
   );

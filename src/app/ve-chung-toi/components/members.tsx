@@ -5,14 +5,16 @@ import { Pagination } from "swiper/modules";
 import "swiper/css";
 import AboutUs from "@/styles/aboutUs.module.scss";
 import "@/styles/custom.scss";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Members({ data }: any) {
+  const { t } = useTranslation();
   return (
     <div className="pt-8 pb-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="flex justify-between">
         <div>
-          <h2 className="text-[32px] font-bold" data-translate>
-            Đội ngũ của chúng tôi
+          <h2 className="text-[32px] font-bold">
+            {t("doi_ngu_cua_chung_toi")}
           </h2>
         </div>
       </div>

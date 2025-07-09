@@ -6,10 +6,11 @@ import { SearchFilghtProps } from "@/types/flight";
 import SearchHotel from "@/app/khach-san/components/Search";
 import SearchFormInsurance from "@/app/bao-hiem/components/SearchForm";
 import { default as TicketSearchForm } from "@/app/ve-vui-choi/components/SearchForm";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Search({ airportsData }: any) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-
   return (
     <div className="relative z-[1] hidden lg:block">
       <div className="absolute inset-0">
@@ -30,11 +31,8 @@ export default function Search({ airportsData }: any) {
         }}
       ></div>
       <div className="lg:h-[694px] lg:px-[50px] xl:px-[80px] sm:px-3 content-center pt-[132px] max__screen">
-        <h3
-          className="text-2xl text-white font-bold text-center mb-12 relative"
-          data-translate="true"
-        >
-          Bắt đầu hành trình với HappyBook
+        <h3 className="text-2xl text-white font-bold text-center mb-12 relative">
+          {t("bat_dau_hanh_trinh_voi_happy_book")}
         </h3>
         <div className="h-[192px] pt-11 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
           <div className="min-w-[600px] w-max grid grid-cols-4 gap-2 mb-4 absolute top-[-12%] left-[50%] translate-x-[-50%] bg-[#000000] py-2 px-3 rounded-3xl">
@@ -51,9 +49,7 @@ export default function Search({ airportsData }: any) {
                 height={18}
                 style={{ width: 18, height: 18 }}
               ></Image>
-              <span className="ml-2" data-translate="true">
-                Vé máy bay
-              </span>
+              <span className="ml-2">{t("ve_may_bay")}</span>
             </button>
             <button
               onClick={() => setActiveTab(1)}
@@ -68,9 +64,7 @@ export default function Search({ airportsData }: any) {
                 height={18}
                 style={{ width: 18, height: 18 }}
               ></Image>
-              <span className="ml-2" data-translate="true">
-                Khách sạn
-              </span>
+              <span className="ml-2">{t("khach_san")}</span>
             </button>
             <button
               onClick={() => setActiveTab(2)}
@@ -84,9 +78,7 @@ export default function Search({ airportsData }: any) {
                 width={18}
                 height={18}
               ></Image>
-              <span className="ml-2" data-translate="true">
-                Bảo hiểm
-              </span>
+              <span className="ml-2">{t("bao_hiem")}</span>
             </button>
             <button
               onClick={() => setActiveTab(3)}
@@ -100,9 +92,7 @@ export default function Search({ airportsData }: any) {
                 width={18}
                 height={18}
               ></Image>
-              <span className="ml-2" data-translate="true">
-                Vé vui chơi
-              </span>
+              <span className="ml-2">{t("ve_vui_choi")}</span>
             </button>
           </div>
           {/* Tabs 0 */}

@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { User } from "lucide-react";
 import { AuthApi } from "@/api/Auth";
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 
 export default function AccountDropdownMobile() {
   const { userInfo } = useUser();

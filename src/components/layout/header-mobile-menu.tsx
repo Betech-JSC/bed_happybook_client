@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GeneralInforPaths } from "@/constants/paths";
 import { totalLanguages } from "@/constants/language";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import Image from "next/image";
 import clsx from "clsx";
 import AccountDropdownMobile from "./AccountDropdownMobile";

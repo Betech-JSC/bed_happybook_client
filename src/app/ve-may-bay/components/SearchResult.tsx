@@ -22,7 +22,7 @@ import { formatTranslationMap, translatePage } from "@/utils/translateDom";
 import { flightStaticText } from "@/constants/staticText";
 import { translateText } from "@/utils/translateApi";
 import { toastMessages } from "@/lib/messages";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/app/hooks/useTranslation";
 import ListFlights from "./SearchFlights/List";
 
@@ -150,7 +150,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         const isDisabled =
           isBefore(date, new Date()) && !isSameDay(date, new Date());
         newDays.push({
-          label: getDayLabel(date.getDay(), displayType),
+          label: getDayLabel(date.getDay(), displayType, language),
           date,
           disabled: isDisabled,
         });
@@ -158,7 +158,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
       if (type === "depart") setDays(newDays);
       else setReturnDays(newDays);
     },
-    []
+    [language]
   );
 
   useEffect(() => {

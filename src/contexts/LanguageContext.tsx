@@ -18,6 +18,16 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
   undefined
 );
 
+function setLocaleCookie(lang: string) {
+  document.cookie = `locale=${encodeURIComponent(lang)}; path=/; max-age=${
+    60 * 60 * 24 * 7
+  }`;
+}
+function getLocaleFromCookie(): string {
+  const match = document.cookie.match(/(^| )locale=([^;]+)/);
+  return match ? decodeURIComponent(match[2]) : "vi";
+}
+
 export const useLanguage = () => {
   return (
     useContext(LanguageContext) ?? { language: "vi", setLanguage: () => {} }
@@ -42,8 +52,7 @@ export const LanguageProvider = ({
     async (lang: string) => {
       if (language !== lang) {
         setLanguage(lang);
-        localStorage.setItem("language", lang);
-
+        setLocaleCookie(lang);
         await fetch("/api/set-language", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

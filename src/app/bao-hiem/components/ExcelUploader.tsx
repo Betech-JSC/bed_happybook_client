@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductInsurance } from "@/api/ProductInsurance";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages } from "@/lib/messages";
 import { isEmpty } from "lodash";
 import Image from "next/image";
