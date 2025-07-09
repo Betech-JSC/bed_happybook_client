@@ -3,8 +3,11 @@ import Image from "next/image";
 import VisaStyle from "@/styles/visaService.module.scss";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SearchForm({ optionsFilter }: any) {
+  const { t } = useTranslation();
+
   const router = useRouter();
 
   const [formData, setFormData] = useState<any>([]);
@@ -36,12 +39,8 @@ export default function SearchForm({ optionsFilter }: any) {
             style={{ width: 20, height: 20 }}
           ></Image>
         </div>
-        <label
-          htmlFor="searchInput"
-          className="font-medium block"
-          data-translate
-        >
-          Theo địa danh, điểm đến
+        <label htmlFor="searchInput" className="font-medium block">
+          {t("theo_dia_danh_diem_den")}
         </label>
         <input
           type="text"
@@ -49,13 +48,13 @@ export default function SearchForm({ optionsFilter }: any) {
           defaultValue={formData.text ? formData.text : ""}
           onChange={handleChange}
           name="text"
-          placeholder="Tìm theo điểm đến, hoạt động"
+          placeholder={t("tim_theo_diem_den_hoat_dong")}
           className={`mt-2 w-full ${VisaStyle.input} h-12 indent-10`}
         />
       </div>
       <div className="w-full md:w-[30%]">
-        <label htmlFor="typeVisa" className="font-medium block" data-translate>
-          Loại Visa
+        <label htmlFor="typeVisa" className="font-medium block">
+          {t("loai_visa")}
         </label>
         <div
           className="mt-2 border border-gray-300 rounded-lg h-12"
@@ -70,18 +69,14 @@ export default function SearchForm({ optionsFilter }: any) {
             onChange={handleChange}
             defaultValue={""}
           >
-            <option value="" hidden data-translate="true">
-              Chọn loại Visa
+            <option value="" hidden>
+              {t("chon_loai_visa")}
             </option>
             {optionsFilter[0]?.option?.length > 0 &&
               optionsFilter[0]?.option?.map((option: any, index: number) => {
                 if (option) {
                   return (
-                    <option
-                      key={index}
-                      value={option.value}
-                      data-translate="true"
-                    >
+                    <option key={index} value={option.value}>
                       {option.label}
                     </option>
                   );
@@ -100,7 +95,7 @@ export default function SearchForm({ optionsFilter }: any) {
             height={20}
             style={{ width: 20, height: 20 }}
           ></Image>
-          <span data-translate>Tìm kiếm</span>
+          <span>{t("tim_kiem")}</span>
         </button>
       </div>
     </form>

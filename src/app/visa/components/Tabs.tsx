@@ -4,7 +4,7 @@ import "swiper/css";
 import CustomerRating from "@/components/product/CustomerRating";
 import { renderTextContent } from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import "@/styles/ckeditor-content.scss";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 

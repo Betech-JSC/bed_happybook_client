@@ -11,7 +11,7 @@ import {
   SignUpReceiveCheapTicketType,
 } from "@/schemaValidations/signUpReceiveCheapTickets.schema";
 import { contactApi } from "@/api/contact";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import Link from "next/link";
 

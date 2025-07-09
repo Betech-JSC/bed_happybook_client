@@ -11,11 +11,13 @@ import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
 import { useRouter } from "next/navigation";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AuthApi } from "@/api/Auth";
 import { HttpError } from "@/lib/error";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function FormRegister() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { language } = useLanguage();
@@ -57,21 +59,21 @@ export default function FormRegister() {
     <form onSubmit={handleSubmit(onSubmit)} className="mt-3 rounded-xl ">
       <div className="mt-6 pb-6 border-b-[1px] border-gray-300">
         <div className="mt-3">
-          <p data-translate="true">Họ & Tên</p>
+          <p data-translate="true">{t("ho_va_ten")}</p>
           <input
             type="text"
             {...register("name")}
-            placeholder="Nhập họ & tên"
+            placeholder={`${t("nhap")} ${t("ho_va_ten")}`}
             className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.name && <p className="text-red-600">{errors.name.message}</p>}
         </div>
         <div className="mt-3">
-          <p data-translate="true">Email</p>
+          <p data-translate="true">{t("email")}</p>
           <input
             type="text"
             {...register("email")}
-            placeholder="Nhập địa chỉ email"
+            placeholder={`${t("nhap")} ${t("email")}`}
             className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.email && (
@@ -79,11 +81,11 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-3">
-          <p data-translate="true">Mật khẩu</p>
+          <p data-translate="true">{t("mat_khau")}</p>
           <input
             type="password"
-            placeholder="Nhập mật khẩu"
             {...register("password")}
+            placeholder={`${t("nhap")} ${t("mat_khau")}`}
             className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
           {errors.password && (
@@ -91,10 +93,10 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-3">
-          <p data-translate="true">Nhập lại mật khẩu</p>
+          <p data-translate="true">{t("nhap_lai_mat_khau")}</p>
           <input
             type="password"
-            placeholder="Nhập lại mật khẩu"
+            placeholder={t("nhap_lai_mat_khau")}
             {...register("password_confirmation")}
             className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
@@ -105,7 +107,11 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-6">
-          <LoadingButton isLoading={loading} text="Đăng ký" disabled={false} />
+          <LoadingButton
+            isLoading={loading}
+            text={t("dang_ky")}
+            disabled={false}
+          />
         </div>
       </div>
     </form>

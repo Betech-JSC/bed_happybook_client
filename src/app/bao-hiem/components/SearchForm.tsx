@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse, isValid } from "date-fns";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Select from "react-select";
@@ -12,8 +12,10 @@ import { isNumber } from "lodash";
 import { Location as InsuranceLocation, SearchForm } from "@/types/insurance";
 import { ProductInsurance } from "@/api/ProductInsurance";
 import { vi, enUS } from "date-fns/locale";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SearchFormInsurance() {
+  const { t } = useTranslation();
   const today = new Date();
   const router = useRouter();
   const pathname: string = usePathname();
@@ -189,11 +191,8 @@ export default function SearchFormInsurance() {
     <div className="flex flex-wrap lg:flex-nowrap gap-4 lg:gap-2">
       <div className="w-full xl:w-[40%] flex flex-wrap md:flex-nowrap gap-3">
         <div className="w-full md:w-1/2">
-          <label
-            className="block text-gray-700 mb-2 lg:mb-1"
-            data-translate="true"
-          >
-            Điểm đi
+          <label className="block text-gray-700 mb-2 lg:mb-1">
+            {t("diem_di")}
           </label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
@@ -246,11 +245,8 @@ export default function SearchFormInsurance() {
           </div>
         </div>
         <div className="w-full md:w-1/2">
-          <label
-            className="block text-gray-700 mb-2 lg:mb-1"
-            data-translate="true"
-          >
-            Điểm đến
+          <label className="block text-gray-700 mb-2 lg:mb-1">
+            {t("diem_den")}
           </label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
@@ -317,11 +313,8 @@ export default function SearchFormInsurance() {
 
       <div className="w-full xl:w-[50%] flex flex-wrap md:flex-nowrap gap-2 md:gap-3">
         <div className="w-full md:w-1/2 lg:w-[55%]">
-          <label
-            className="block text-gray-700 mb-2 lg:mb-1"
-            data-translate="true"
-          >
-            Ngày đi - Ngày về
+          <label className="block text-gray-700 mb-2 lg:mb-1">
+            {t("ngay_di")} - {t("ngay_ve")}
           </label>
           <div className="flex gap-3 h-12 items-center border rounded-lg px-2 text-black">
             <div className="w-[45%] flex justify-between items-center	">
@@ -339,7 +332,7 @@ export default function SearchFormInsurance() {
                   selected={formData.departureDate}
                   onChange={handleDepartDateChange}
                   dateFormat="dd/MM/yyyy"
-                  placeholderText="Ngày đi"
+                  placeholderText={t("ngay_di")}
                   popperPlacement="bottom-start"
                   minDate={today}
                   locale={language === "vi" ? vi : enUS}
@@ -367,7 +360,7 @@ export default function SearchFormInsurance() {
                 selected={formData.returnDate}
                 onChange={handleReturnDateChange}
                 dateFormat="dd/MM/yyyy"
-                placeholderText="Ngày về"
+                placeholderText={t("ngay_ve")}
                 popperPlacement="bottom-start"
                 locale={language === "vi" ? vi : enUS}
                 autoComplete="off"
@@ -391,11 +384,8 @@ export default function SearchFormInsurance() {
           </div>
         </div>
         <div className="w-full md:w-1/2 lg:w-[45%]">
-          <label
-            className="block text-gray-700 mb-2 lg:mb-1"
-            data-translate="true"
-          >
-            Số lượng khách
+          <label className="block text-gray-700 mb-2 lg:mb-1">
+            {t("so_luong_khach")}
           </label>
           <div className="flex items-center border rounded-lg px-2 h-12">
             <Image
@@ -412,7 +402,9 @@ export default function SearchFormInsurance() {
               >
                 <span>-</span>
               </button>
-              <span className="text-base">{totalGuests} hành khách</span>
+              <span className="text-base">
+                {totalGuests} {t("hanh_khach")}
+              </span>
               <button
                 onClick={() => handleIncrement()}
                 className={`w-8 h-8 md:w-6 md:h-6 rounded-full bg-blue-500 text-white flex items-center justify-center `}
@@ -435,11 +427,8 @@ export default function SearchFormInsurance() {
             height={18}
             style={{ width: 18, height: 18 }}
           ></Image>
-          <button
-            className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
-            data-translate="true"
-          >
-            Tra cứu
+          <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
+            {t("tim_kiem")}
           </button>
         </div>
       </div>

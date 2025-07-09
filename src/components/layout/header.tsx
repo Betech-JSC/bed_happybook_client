@@ -6,12 +6,15 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import clsx from "clsx";
 import { GeneralInforPaths } from "@/constants/paths";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { totalLanguages } from "@/constants/language";
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import { AuthApi } from "@/api/Auth";
+import { useTranslation } from "@/hooks/useTranslation";
+import { toSnakeCase } from "@/utils/Helper";
 
 export default function Header() {
+  const { t } = useTranslation();
   let headerClass = "";
   const { userInfo } = useUser();
   const inputSearchTourRef = useRef<HTMLInputElement>(null);
@@ -133,7 +136,7 @@ export default function Header() {
             <input
               type="text"
               ref={inputSearchTourRef}
-              placeholder="Tìm theo điểm đến, hoạt động"
+              placeholder={t("tim_theo_diem_den_hoat_dong")}
               onChange={(e) => {
                 setQuerySeach(e.target.value);
               }}
@@ -159,9 +162,8 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname == "/ve-chung-toi",
               })}
-              data-translate="true"
             >
-              Về chúng tôi
+              {t("ve_chung_toi")}
             </Link>
           </div>
           <div>
@@ -170,9 +172,8 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname == "/lien-he",
               })}
-              data-translate="true"
             >
-              Liên hệ
+              {t("lien_he")}
             </Link>
           </div>
           <div>
@@ -181,9 +182,8 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/tin-tuc"),
               })}
-              data-translate="true"
             >
-              Tin tức
+              {t("tin_tuc")}
             </Link>
           </div>
 
@@ -239,7 +239,7 @@ export default function Header() {
                             style={{ width: 20, height: 20 }}
                           ></Image>
                         </div>
-                        <span data-translate="true">{item.label}</span>
+                        <span>{item.label}</span>
                       </button>
                     </div>
                   )
@@ -273,7 +273,7 @@ export default function Header() {
               href="/dang-nhap"
               className={`bg-blue-600 min-w-[100px] justify-center font-medium lg:max-h-10 transition-all duration-300 hover:text-[#f27145] hover:bg-white border-blue-700 border cursor-pointer flex items-center space-x-2 py-2 px-4 rounded-3xl outline-none`}
             >
-              <span data-translate="true">Đăng nhập</span>
+              <span> {t("dang_nhap")}</span>
             </Link>
           ) : (
             <div
@@ -315,37 +315,24 @@ export default function Header() {
                   transform: "translateX(-50%)",
                 }}
               >
-                <Link
-                  href="/thong-tin-tai-khoan"
-                  data-translate="true"
-                  style={{ margin: 0 }}
-                >
-                  Thông tin tài khoản
+                <Link href="/thong-tin-tai-khoan" style={{ margin: 0 }}>
+                  {t("thong_tin_tai_khoan")}
                 </Link>
-                <Link
-                  href="/lich-su-dat-ve"
-                  data-translate="true"
-                  style={{ margin: 0 }}
-                >
-                  Lịch sử đặt vé
+                <Link href="/lich-su-dat-ve" style={{ margin: 0 }}>
+                  {t("lich_su_dat_ve")}
                 </Link>
-                <Link
-                  href="/thay-doi-mat-khau"
-                  data-translate="true"
-                  style={{ margin: 0 }}
-                >
-                  Đổi mật khẩu
+                <Link href="/thay-doi-mat-khau" style={{ margin: 0 }}>
+                  {t("doi_mat_khau")}
                 </Link>
                 <button
                   className="hover:text-primary duration-300"
                   type="button"
-                  data-translate="true"
                   onClick={() => {
                     AuthApi.logout();
                   }}
                   style={{ margin: 0 }}
                 >
-                  Đăng xuất
+                  {t("dang_xuat")}
                 </button>
               </div>
             </div>
@@ -370,18 +357,11 @@ export default function Header() {
               })}
             >
               <Link href="/tours" className="py-4">
-                Tours
+                {t("Tours")}
               </Link>
               <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/tours/tour-noi-dia" data-translate="true">
-                  Tour Nội Địa
-                </Link>
-                <Link href="/tours/tour-quoc-te" data-translate="true">
-                  Tour Quốc Tế
-                </Link>
-                {/* <Link href="/tours/tour-du-thuyen" data-translate="true">
-                  Tour Du Thuyền
-                </Link> */}
+                <Link href="/tours/tour-noi-dia">{t("tour_noi_dia")}</Link>
+                <Link href="/tours/tour-quoc-te">{t("tour_quoc_te")}</Link>
               </div>
             </div>
 
@@ -390,9 +370,8 @@ export default function Header() {
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/ve-may-bay"),
               })}
-              data-translate="true"
             >
-              Vé máy bay
+              {t("ve_may_bay")}
             </Link>
             <Link
               href="/visa"
@@ -400,43 +379,39 @@ export default function Header() {
                 [styles.active]: pathname.startsWith("/visa"),
               })}
             >
-              Visa
+              {t("visa")}
             </Link>
             <Link
               href="/du-thuyen"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/du-thuyen"),
               })}
-              data-translate="true"
             >
-              Du thuyền
+              {t("du_thuyen")}
             </Link>
             <Link
               href="/khach-san"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/khach-san"),
               })}
-              data-translate="true"
             >
-              Khách sạn
+              {t("khach_san")}
             </Link>
             <Link
               href="/bao-hiem"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/bao-hiem"),
               })}
-              data-translate="true"
             >
-              Bảo hiểm
+              {t("bao_hiem")}
             </Link>
             <Link
               href="/ve-vui-choi"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/ve-vui-choi"),
               })}
-              data-translate="true"
             >
-              Vé vui chơi
+              {t("ve_vui_choi")}
             </Link>
             <Link
               href="/combo"
@@ -444,7 +419,7 @@ export default function Header() {
                 [styles.active]: pathname.startsWith("/combo"),
               })}
             >
-              Combo
+              {t("combo")}
             </Link>
             <div
               ref={subMenuRef}
@@ -454,9 +429,7 @@ export default function Header() {
               }}
               className={`relative flex cursor-pointer ${styles.header__menu_item}`}
             >
-              <span data-translate="true" className="mr-1">
-                Khác
-              </span>
+              <span className="mr-1">{t("khac")}</span>
               <div className="h-5 self-center">
                 <svg
                   width="16"
@@ -494,25 +467,22 @@ export default function Header() {
                   href="/dinh-cu"
                   className={styles.text_hover_default}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  data-translate="true"
                 >
-                  Định cư
+                  {t("dinh_cu")}
                 </Link>
                 <Link
                   href="/dang-ky-ctv"
                   className={styles.text_hover_default}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  data-translate="true"
                 >
-                  Đăng ký CTV
+                  {t("dang_ky_ctv")}
                 </Link>
                 <Link
                   href="/tu-van-nhan-visa"
                   className={styles.text_hover_default}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  data-translate="true"
                 >
-                  Tư vấn visa
+                  {t("tu_van_visa")}
                 </Link>
                 {GeneralInforPaths.map(
                   (
@@ -524,9 +494,8 @@ export default function Header() {
                       href={item.url}
                       className={styles.text_hover_default}
                       onClick={() => setIsMenuOpen(!isMenuOpen)}
-                      data-translate="true"
                     >
-                      {item.title}
+                      {t(toSnakeCase(item.title))}
                     </Link>
                   )
                 )}

@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { buildSearch } from "@/utils/Helper";
 import { format } from "date-fns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type LocationType = {
   id: number;
@@ -17,6 +18,7 @@ type PropsType = {
   locations: LocationType[];
 };
 export default function Search() {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname: string = usePathname();
 
@@ -69,8 +71,8 @@ export default function Search() {
       <form onSubmit={handleSubmit}>
         <div className="w-full flex flex-wrap md:flex-nowrap lg:space-x-2 relative">
           <div className="w-full md:w-9/12">
-            <label className="block text-gray-700 mb-1" data-translate>
-              Thành phố, địa điểm hoặc tên khách sạn:
+            <label className="block text-gray-700 mb-1">
+              {t("thanh_pho_dia_diem_hoac_ten_khach_san")}
             </label>
             <div className="mt-3 flex h-12 items-center border rounded-lg px-2">
               <Image
@@ -84,7 +86,7 @@ export default function Search() {
                 className="pl-3 flex-1 focus:outline-none text-black appearance-none"
                 name="text"
                 // required
-                placeholder="Tìm kiếm..."
+                placeholder={`${t("tim_kiem")}...`}
                 defaultValue={searchParams.get("text") ?? ""}
                 onChange={(e) => {
                   setQueryText(e.target.value);
@@ -99,56 +101,6 @@ export default function Search() {
               </input>
             </div>
           </div>
-          {/* <div className="w-full lg:w-[22.5%]">
-            <label className="block text-gray-700 mb-1">
-              Ngày nhận phòng và trả phòng
-            </label>
-            <div className="flex justify-between h-12 space-x-2 items-center border rounded-lg px-2 text-black ">
-              <div className="flex items-center	w-full">
-                <Image
-                  src="/icon/calendar.svg"
-                  alt="Icon"
-                  className="h-10"
-                  width={18}
-                  height={18}
-                ></Image>
-                <div className="w-full pl-3">
-                  <DatePicker
-                    selected={startDate}
-                    onChange={handleDateChange}
-                    startDate={startDate}
-                    endDate={endDate}
-                    selectsRange
-                    locale={vi}
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="Chọn ngày"
-                    minDate={new Date()}
-                    className="w-full outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-          </div> */}
-
-          {/* <div className="w-full lg:w-[20%]">
-            <label className="block text-gray-700 mb-1">Khách</label>
-            <div className="flex items-center border rounded-lg px-2 h-12">
-              <Image
-                src="/icon/user-circle.svg"
-                alt="Icon"
-                className="h-10"
-                width={18}
-                height={18}
-              ></Image>
-              <SelectMenu
-                formData={formData}
-                totalGuests={totalGuests}
-                totalRooms={totalRooms}
-                onRoomsChange={handleRoomChange}
-                onGuestsChange={handleGuestChange}
-              />
-            </div>
-          </div> */}
 
           <div className="mt-3 w-full md:w-3/12">
             <label className="block text-gray-700  h-6"></label>
@@ -161,11 +113,8 @@ export default function Search() {
                 height={18}
                 style={{ width: 18, height: 18 }}
               />
-              <button
-                className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
-                data-translate
-              >
-                Tìm kiếm
+              <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
+                {t("tim_kiem")}
               </button>
             </div>
           </div>

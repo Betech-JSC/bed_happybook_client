@@ -15,7 +15,7 @@ import { ProductRating } from "@/api/ProductRating";
 import { buildSearch, getLabelRatingProduct } from "@/utils/Helper";
 import { format, isValid } from "date-fns";
 import { HttpError } from "@/lib/error";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { translateText } from "@/utils/translateApi";
 import { labelRatingStaticText } from "@/constants/staticText";
 import { formatTranslationMap } from "@/utils/translateDom";

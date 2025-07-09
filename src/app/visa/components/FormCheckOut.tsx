@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { BookingProductApi } from "@/api/BookingProduct";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { renderTextContent } from "@/utils/Helper";
 import Image from "next/image";
@@ -20,7 +20,7 @@ import { isEmpty } from "lodash";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { useVoucherManager } from "@/hooks/useVoucherManager";
 import { HttpError } from "@/lib/error";
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 
 export default function FormCheckOut({

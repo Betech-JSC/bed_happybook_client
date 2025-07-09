@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Fragment, use, useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter } from "next/navigation";
 import { vi, enUS } from "date-fns/locale";
 import DatePicker from "react-datepicker";
@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { ProductTicket } from "@/api/ProductTicket";
 import { format, isValid } from "date-fns";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Option = {
   label: string;
@@ -16,6 +17,7 @@ type Option = {
 };
 
 export default function SearchForm() {
+  const { t } = useTranslation();
   const router = useRouter();
   const today = new Date();
   const { language } = useLanguage();
@@ -108,20 +110,15 @@ export default function SearchForm() {
     <Fragment>
       <div className="flex space-x-12 mb-3 mt-2">
         <label className="flex items-center space-x-2">
-          <span
-            className="text-[18px] font-semibold text-black"
-            data-translate="true"
-          >
-            Tìm vé vui chơi
+          <span className="text-[18px] font-semibold text-black">
+            {t("tim_ve_vui_choi")}
           </span>
         </label>
       </div>
 
       <div className="flex flex-wrap lg:flex-nowrap gap-2">
         <div className="w-full lg:w-5/12">
-          <label className="block text-gray-700 mb-1" data-translate="true">
-            Nơi đi
-          </label>
+          <label className="block text-gray-700 mb-1">{t("diem_di")}</label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
               src="/icon/place.svg"
@@ -165,9 +162,7 @@ export default function SearchForm() {
           </div>
         </div>
         <div className="w-full lg:w-5/12">
-          <label className="block text-gray-700 mb-1" data-translate="true">
-            Ngày đi
-          </label>
+          <label className="block text-gray-700 mb-1">{t("ngay_di")}</label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
               src="/icon/calendar.svg"
@@ -212,10 +207,9 @@ export default function SearchForm() {
             <button
               type="button"
               className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none"
-              data-translate="true"
               disabled={isLoading}
             >
-              Tìm kiếm
+              {t("tim_kiem")}
             </button>
           </div>
         </div>

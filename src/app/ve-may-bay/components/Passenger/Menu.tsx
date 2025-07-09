@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import CounterGroup from "./CounterGroup";
+import { useTranslation } from "@/hooks/useTranslation";
 interface SelectMenuProps {
   formData: {
     from: string | null;
@@ -20,6 +21,7 @@ const SelectMenu = ({
   totalGuests,
   onGuestsChange,
 }: SelectMenuProps) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +46,7 @@ const SelectMenu = ({
         className="p-3 rounded-md flex items-center gap-2 cursor-pointer"
       >
         <span>{totalGuests} </span>
-        <span data-translate> hành khách</span>
+        <span>{t("hanh_khach")}</span>
       </div>
 
       <div

@@ -1,6 +1,25 @@
+import { arrLanguages } from "@/constants/language";
 import { HttpError } from "./error";
 
 type httpMethod = "GET" | "POST" | "PUT" | "DELETE";
+
+async function getLocaleForHttp(): Promise<string> {
+  let locale: string | undefined;
+
+  if (typeof window === "undefined") {
+    const { cookies } = await import("next/headers");
+    locale = cookies().get("locale")?.value;
+  } else {
+    const match = document.cookie.match(/(^| )locale=([^;]+)/);
+    locale = match ? decodeURIComponent(match[2]) : undefined;
+  }
+
+  if (locale && arrLanguages.includes(locale)) {
+    return locale;
+  }
+
+  return "vi";
+}
 
 const request = async <Response>(
   method: httpMethod,
@@ -13,6 +32,7 @@ const request = async <Response>(
   const baseHeader = {
     "Content-type": "application/json",
   };
+  // const locale = await getLocaleForHttp();
 
   const baseUrl =
     typeof window === "undefined"
@@ -30,6 +50,7 @@ const request = async <Response>(
       headers: {
         ...baseHeader,
         ...options?.headers,
+        // language: locale,
       },
       body,
       method,

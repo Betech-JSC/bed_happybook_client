@@ -8,8 +8,10 @@ import "swiper/css";
 import { BannerApi } from "@/api/Banner";
 import { CheckIsMobileDevice, cloneItemsCarousel } from "@/utils/Helper";
 import AosAnimate from "@/components/layout/aos-animate";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function PartnerAirlines() {
+  const { t } = useTranslation();
   const swiperRef = useRef<SwiperType | null>(null);
   const swiperRef2 = useRef<SwiperType | null>(null);
   const [partnerSlide1, setPartnerSlide1] = useState<any>([]);
@@ -79,12 +81,11 @@ export default function PartnerAirlines() {
       <div className="py-12 bg-white hidden lg:block">
         <div className="flex justify-between px-3 lg:px-[80px] max__screen">
           <div>
-            <h3 className="text-32 font-bold" data-translate>
-              Đối Tác Hàng Không
-            </h3>
-            <p className="mt-3" data-translate>
-              Chúng tôi tự hào là đại lý cấp 1 của các hãng hàng không uy tín
-              tại Việt Nam như:
+            <h3 className="text-32 font-bold">{t("doi_tac_hang_khong")}</h3>
+            <p className="mt-3">
+              {t(
+                "chung_toi_tu_hao_la_dai_ly_cap_1_cua_cac_hang_hang_khong_uy_tin_tai_viet_nam_nhu"
+              )}
             </p>
           </div>
         </div>

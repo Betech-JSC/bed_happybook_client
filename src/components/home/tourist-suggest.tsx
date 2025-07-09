@@ -7,19 +7,19 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 const tourist: string[] = [];
 for (let i = 1; i <= 8; i++) {
   tourist.push(`/tourist-suggest/${i}.png`);
 }
-export default function TouristSuggest({ data }: any) {
+export default async function TouristSuggest({ data }: any) {
+  const t = await getServerT();
   return (
     <div className="py-8 bg-[#FCFCFD] hidden lg:block">
       <div className="flex justify-between">
         <div>
-          <h2 className="text-[32px] font-bold" data-translate>
-            Bạn muốn đi đâu chơi?
-          </h2>
+          <h2 className="text-[32px] font-bold">{t("ban_muon_di_dau_choi")}</h2>
         </div>
       </div>
       <div className="mt-4 w-full">

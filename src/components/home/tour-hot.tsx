@@ -8,8 +8,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/getServerT";
 
-export default function TourHot({ data }: any) {
+export default async function TourHot({ data }: any) {
+  const t = await getServerT();
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="relative lg:mt-12 py-6 lg:px-6 lg:py-8 rounded-3xl">
@@ -38,11 +40,8 @@ export default function TourHot({ data }: any) {
         <div className="relative z-10">
           <div className="flex justify-between">
             <div>
-              <h2
-                className="text-[24px] lg:text-[32px] font-bold"
-                data-translate="true"
-              >
-                Tour HOT
+              <h2 className="text-[24px] lg:text-[32px] font-bold">
+                {t("tour_hot")}
               </h2>
             </div>
             <Link
@@ -50,12 +49,9 @@ export default function TourHot({ data }: any) {
               className="hidden lg:flex bg-[#EFF8FF] hover:bg-blue-200 py-1 px-4 rounded-lg space-x-3"
               style={{ transition: "0.3s" }}
             >
-              <button
-                className="text-[#175CD3] font-medium"
-                data-translate="true"
-              >
+              <button className="text-[#175CD3] font-medium">
                 {" "}
-                Xem tất cả
+                {t("xem_tat_ca")}
               </button>
               <Image
                 className=" hover:scale-110 ease-in duration-300"
@@ -66,19 +62,16 @@ export default function TourHot({ data }: any) {
               />
             </Link>
           </div>
-          <p className="text-16 font-medium mt-3" data-translate="true">
-            Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!
+          <p className="text-16 font-medium mt-3">
+            {t("trai_nghiem_sac_vang_va_kham_pha_van_hoa_mua_thu")}
           </p>
           <Link
             href="/tours"
             className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
           >
-            <button
-              className="text-[#175CD3] font-medium"
-              data-translate="true"
-            >
+            <button className="text-[#175CD3] font-medium">
               {" "}
-              Xem tất cả
+              {t("xem_tat_ca")}
             </button>
             <Image
               className=" hover:scale-110 ease-in duration-300"

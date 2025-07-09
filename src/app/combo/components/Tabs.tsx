@@ -4,7 +4,7 @@ import { renderTextContent } from "@/utils/Helper";
 import "@/styles/ckeditor-content.scss";
 import { useEffect, useState } from "react";
 import { translateText } from "@/utils/translateApi";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 
 export default function Tabs({ data }: any) {

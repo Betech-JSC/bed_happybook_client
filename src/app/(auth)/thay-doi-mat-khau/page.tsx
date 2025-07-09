@@ -1,11 +1,11 @@
 // components/UserProfile.tsx
 "use client";
 
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import AccountSidebar from "../components/AccountSidebar";
 import { notFound } from "next/navigation";
 import { useState } from "react";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { validationMessages } from "@/lib/messages";
 import {
   AuthChangePasswordSchema,

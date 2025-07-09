@@ -62,11 +62,20 @@ export async function translatePage(containerSelector?: string, delay = 200) {
     });
   }
 }
+function decodeHTMLEntities(text: string): string {
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
 
 export function formatTranslationMap(staticText: string[], data?: string[]) {
   const translationMap = staticText.reduce((acc, viText, index) => {
     const key = toSnakeCase(viText);
-    acc[key] = data?.[index] || viText;
+    const translated = data?.[index] || viText;
+    acc[key] = decodeHTMLEntities(translated);
     return acc;
   }, {} as Record<string, string>);
   return translationMap;

@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { translatePage } from "@/utils/translateDom";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { KeywordSearchApi } from "@/api/KeywordSearch";
 import SearchHotelList from "./SearchHotelList";
 import SearchVisaList from "./SearchVisaList";

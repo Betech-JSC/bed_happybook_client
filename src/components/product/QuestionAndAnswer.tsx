@@ -13,7 +13,7 @@ import { buildSearch } from "@/utils/Helper";
 import { format, isValid } from "date-fns";
 import { HttpError } from "@/lib/error";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function QuestionAndAnswer({
   productId,

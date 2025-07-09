@@ -126,11 +126,32 @@ const cloneItemsCarousel = (items: any[], minItems: number) => {
   ];
 };
 
-const getDayLabel = (dayIndex: number, displayType: "desktop" | "mobile") => {
-  const daysOfWeek =
-    displayType === "desktop"
-      ? ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"]
-      : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+const getDayLabel = (
+  dayIndex: number,
+  displayType: "desktop" | "mobile",
+  language?: string
+) => {
+  let daysOfWeek = [];
+  const isDesktop = displayType === "desktop";
+  switch (language) {
+    case "en":
+      daysOfWeek = isDesktop
+        ? [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ]
+        : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      break;
+    default:
+      daysOfWeek = isDesktop
+        ? ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"]
+        : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+  }
 
   return daysOfWeek[dayIndex] || "Không xác định";
 };

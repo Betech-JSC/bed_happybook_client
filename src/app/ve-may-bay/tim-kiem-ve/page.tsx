@@ -152,7 +152,11 @@ export default async function SearchTicket({
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/" className="text-blue-700" data-translate>
+                    <Link
+                      href="/"
+                      className="text-blue-700"
+                      data-translate="true"
+                    >
                       Trang chủ
                     </Link>
                   </BreadcrumbLink>
@@ -160,7 +164,11 @@ export default async function SearchTicket({
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="#" className="text-gray-700" data-translate>
+                    <Link
+                      href="#"
+                      className="text-gray-700"
+                      data-translate="true"
+                    >
                       Vé máy bay
                     </Link>
                   </BreadcrumbLink>

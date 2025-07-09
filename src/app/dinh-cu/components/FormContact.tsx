@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 import { contactApi } from "@/api/contact";
 import LoadingButton from "@/components/base/LoadingButton";
 import Image from "next/image";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { validationMessages } from "@/lib/messages";
 
 export default function FormContact() {

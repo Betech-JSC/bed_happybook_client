@@ -9,6 +9,8 @@ import { BannerApi } from "@/api/Banner";
 import Partner from "@/components/home/partner";
 import { PageApi } from "@/api/Page";
 import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
+import PartnerAirlines from "../ve-may-bay/components/Partner";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -49,6 +51,7 @@ export default async function AboutUs() {
   const contentPage = (await PageApi.getContent("ve-chung-toi", language))
     ?.payload?.data as any;
   const metadata = getMetadata(contentPage);
+  const t = await getServerT();
 
   return (
     <SeoSchema
@@ -75,20 +78,13 @@ export default async function AboutUs() {
         {/* <AosAnimate> */}
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
           <div className="mt-8">
-            <h1
-              className="text-black text-center font-bold text-2xl"
-              data-translate
-            >
-              HappyBook tự hào là đối tác tin cậy
+            <h1 className="text-black text-center font-bold text-2xl">
+              {t("happy_book_tu_hao_la_doi_tac_tin_cay")}
             </h1>
-            <p
-              className="font-medium text-black-700 text-center w-[836px] mx-auto mt-3  max-w-full"
-              data-translate
-            >
-              HappyBook luôn đặt chữ TÍN lên hàng đầu. Với sự phát triển không
-              ngừng, chúng tôi đã xây dựng một đội ngũ chuyên viên năng động,
-              giàu kinh nghiệm và luôn tận tâm phục vụ quý khách. Sự hài lòng
-              của khách hàng là kim chỉ nam cho mọi hoạt động của chúng tôi.
+            <p className="font-medium text-black-700 text-center w-[836px] mx-auto mt-3  max-w-full">
+              {t(
+                "happy_book_luon_dat_chu_tin_len_hang_dau_voi_su_phat_trien_khong_ngung_chung_toi_da_xay_dung_mot_doi_ngu_chuyen_vien_nang_dong_giau_kinh_nghiem_va_luon_tan_tam_phuc_vu_quy_khach_su_hai_long_cua_khach_hang_la_kim_chi_nam_cho_moi_hoat_dong_cua_chung_toi"
+              )}
             </p>
           </div>
           <div className="mt-12">
@@ -104,15 +100,13 @@ export default async function AboutUs() {
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-16 items-center ">
             <div>
-              <h2 className="text-black font-bold text-2xl" data-translate>
-                10 năm hình thành và phát triển
+              <h2 className="text-black font-bold text-2xl">
+                {t("10_nam_hinh_thanh_va_phat_trien")}
               </h2>
-              <p className="font-medium" data-translate>
-                HappyBook đã khẳng định vị thế của mình là đại lý cấp 1 chuyên
-                cung cấp vé máy bay trong nước và quốc tế. Chúng tôi hiện là đối
-                tác uy tín của nhiều hãng hàng không lớn tại Việt Nam và trên
-                thế giới, mang đến cho khách hàng những lựa chọn đa dạng và phù
-                hợp nhất.
+              <p className="font-medium">
+                {t(
+                  "happy_book_da_khang_dinh_vi_the_cua_minh_la_dai_ly_cap_1_chuyen_cung_cap_ve_may_bay_trong_nuoc_va_quoc_te_chung_toi_hien_la_doi_tac_uy_tin_cua_nhieu_hang_hang_khong_lon_tai_viet_nam_va_tren_the_gioi_mang_den_cho_khach_hang_nhung_lua_chon_da_dang_va_phu_hop_nhat"
+                )}
               </p>
             </div>
             <div>
@@ -128,17 +122,14 @@ export default async function AboutUs() {
             </div>
           </div>
         </div>
-        {partners?.length > 0 && <Partner data={partners}></Partner>}
+        <PartnerAirlines />
         {members?.length > 0 && <Members data={members}></Members>}
         <Service></Service>
 
         <div className="bg-[#F9FAFB]">
           <div className="py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <p
-              className="text-[32px] leading-[38.4px] font-bold text-center"
-              data-translate
-            >
-              Cam Kết Của Chúng Tôi
+            <p className="text-[32px] leading-[38.4px] font-bold text-center">
+              {t("cam_ket_cua_chung_toi")}
             </p>
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
               <div className="px-3 py-8 bg-white rounded-xl text__default_hover">
@@ -151,11 +142,8 @@ export default async function AboutUs() {
                     className="mx-auto"
                   />
                 </div>
-                <p
-                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
-                  data-translate
-                >
-                  Tư vấn chuyên nghiệp về các thủ tục và dịch vụ.
+                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                  {t("tu_van_chuyen_nghiep_ve_cac_thu_tuc_va_dich_vu")}
                 </p>
               </div>
               <div className="px-3 py-8 bg-white rounded-xl text__default_hover">
@@ -169,11 +157,8 @@ export default async function AboutUs() {
                     style={{ height: "48px", width: "48px" }}
                   />
                 </div>
-                <p
-                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
-                  data-translate
-                >
-                  Giao vé theo yêu cầu, đảm bảo đúng hạn.
+                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                  {t("giao_ve_theo_yeu_cau_dam_bao_dung_han")}
                 </p>
               </div>
               <div className="px-3 py-8 bg-white rounded-xl text__default_hover">
@@ -186,11 +171,8 @@ export default async function AboutUs() {
                     className="mx-auto"
                   />
                 </div>
-                <p
-                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
-                  data-translate
-                >
-                  Phương thức thanh toán đơn giản, nhanh chóng và tiện lợi.
+                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                  {t("phuong_thuc_thanh_toan_don_gian_nhanh_chong_va_tien_loi")}
                 </p>
               </div>
               <div className="px-3 py-8 bg-white rounded-xl text__default_hover">
@@ -203,11 +185,8 @@ export default async function AboutUs() {
                     className="mx-auto"
                   />
                 </div>
-                <p
-                  className="text-[18px] leading-[26.1px] text-center font-semibold mt-6"
-                  data-translate
-                >
-                  Mang đến sự hài lòng tối đa cho khách hàng.
+                <p className="text-[18px] leading-[26.1px] text-center font-semibold mt-6">
+                  {t("mang_den_su_hai_long_toi_da_cho_khach_hang")}
                 </p>
               </div>
             </div>

@@ -6,9 +6,11 @@ import { LocationType } from "@/types/location";
 import "react-datepicker/dist/react-datepicker.css";
 import { buildSearch } from "@/utils/Helper";
 import Select from "react-select";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Search({ locations }: { locations: any }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [query, setQuery] = useState<{
     from: string;
@@ -29,9 +31,7 @@ export default function Search({ locations }: { locations: any }) {
     <Fragment>
       <div className="base__content h-full relative place-content-center my-12 lg:my-16">
         <div className="bg-white rounded-2xl p-3 md:p-6 w-full lg:w-[850px]">
-          <h1 className="text-18 font-semibold" data-translate="true">
-            Tìm Combo du lịch
-          </h1>
+          <h1 className="text-18 font-semibold">{t("tim_combo_du_lich")}</h1>
           <div className="mt-4 md:mt-6 h-fit lg:h-20 flex flex-col lg:flex-row lg:space-x-2 space-y-3 items-end justify-between">
             <div className="relative w-full lg:w-[40%]">
               <div className="absolute left-4 top-1/2 translate-y-1/4">
@@ -44,23 +44,14 @@ export default function Search({ locations }: { locations: any }) {
                   style={{ width: 20, height: 20 }}
                 ></Image>
               </div>
-              <label
-                htmlFor="from"
-                className="font-medium block"
-                data-translate="true"
-              >
-                Khởi hành từ
+              <label htmlFor="from" className="font-medium block">
+                {t("diem_di")}
               </label>
               <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
                 <Select
                   id="from"
                   options={fromOptions}
-                  data-translate="true"
-                  placeholder={`${
-                    language === "en"
-                      ? "Select departure point"
-                      : "Chọn điểm đi"
-                  }`}
+                  placeholder={t("chon_diem_di")}
                   className="w-full pl-[10%]"
                   styles={{
                     control: (base) => ({
@@ -94,20 +85,14 @@ export default function Search({ locations }: { locations: any }) {
                   style={{ width: 20, height: 20 }}
                 ></Image>
               </div>
-              <label
-                htmlFor="to"
-                className="font-medium block"
-                data-translate="true"
-              >
-                Điểm đến
+              <label htmlFor="to" className="font-medium block">
+                {t("diem_den")}
               </label>
               <div className="w-full border border-gray-300 rounded-lg p-2 mt-2 h-12 inline-flex items-center">
                 <Select
                   id="to"
                   options={toOptions}
-                  placeholder={`${
-                    language === "en" ? "Select destination" : "Chọn điểm đến"
-                  }`}
+                  placeholder={t("chon_diem_den")}
                   className="w-full pl-[10%]"
                   styles={{
                     control: (base) => ({
@@ -145,7 +130,7 @@ export default function Search({ locations }: { locations: any }) {
                   height={20}
                   style={{ width: 20, height: 20 }}
                 ></Image>
-                Tìm kiếm
+                {t("tim_kiem")}
               </button>
             </div>
           </div>

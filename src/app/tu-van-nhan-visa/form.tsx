@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 import { Fragment } from "react";
 import LoadingButton from "@/components/base/LoadingButton";
 import http from "@/lib/http";
-import { useLanguage } from "../contexts/LanguageContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 
 type FormData = VisaApplicationType;

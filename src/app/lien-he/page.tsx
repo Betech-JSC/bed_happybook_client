@@ -7,6 +7,7 @@ import { formatMetadata } from "@/lib/formatters";
 import Link from "next/link";
 import { PageApi } from "@/api/Page";
 import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -42,6 +43,7 @@ export default async function Contact() {
   const contentPage = (await PageApi.getContent("lien-he", language))?.payload
     ?.data as any;
   const metadata = getMetadata(contentPage);
+  const t = await getServerT();
 
   return (
     <SeoSchema
@@ -65,8 +67,8 @@ export default async function Contact() {
         ></div>
         <div className="base__content h-80 md:h-[405px] lg:pr-[200px]">
           <div className="flex justify-between items-center h-full">
-            <h1 className="text-32 text-white font-bold" data-translate="true">
-              Liên Hệ Với HappyBook
+            <h1 className="text-32 text-white font-bold">
+              {t("lien_he_voi_happy_book")}
             </h1>
             <div>
               <Image
@@ -83,10 +85,10 @@ export default async function Contact() {
         <div className="h-auto pb-6 w-full bg-gray-100 rounded-2xl top-[-12px]">
           <div className="px-3 pt-10 lg:px-[80px] lg:pt-16">
             <div className="mx-auto p-8 lg:w-[980px] h-auto bg-white rounded-2xl  ">
-              <h3 className="text-18 font-semibold" data-translate="true">
-                Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Nếu có bất kỳ
-                câu hỏi nào hoặc cần trợ giúp, đừng ngần ngại liên hệ với chúng
-                tôi qua các kênh dưới đây:
+              <h3 className="text-18 font-semibold">
+                {t(
+                  "chung_toi_luon_san_sang_lang_nghe_va_ho_tro_ban_neu_co_bat_ky_cau_hoi_nao_hoac_can_tro_giup_dung_ngan_ngai_lien_he_voi_chung_toi_qua_cac_kenh_duoi_day"
+                )}
               </h3>
               <div className="mt-3 p-[28px] border border-gray-200 rounded-xl">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-4 border-b-[1px] border-gray-200">
@@ -101,18 +103,15 @@ export default async function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p
-                        className="text-sm font-semibold"
-                        data-translate="true"
-                      >
-                        Hotline vé máy bay
+                      <p className="text-sm font-semibold">
+                        {t("hotline_ve_may_bay")}
                       </p>
-                      <div className="text-base mt-2">
+                      <div className="text-base">
                         <a href="tel:1900633437" className="inline-block">
                           1900.633.437
                         </a>
                         <span>{" -  "}</span>
-                        <p data-translate="true">Nhấn phím (1)</p>
+                        <p>{t("nhan_phim_1")}</p>
                       </div>
                     </div>
                   </div>
@@ -127,17 +126,14 @@ export default async function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p
-                        className="text-sm font-semibold"
-                        data-translate="true"
-                      >
-                        Hotline Visa - hộ chiếu
+                      <p className="text-sm font-semibold">
+                        {t("hotline_visa_ho_chieu")}
                       </p>
                       <a href="tel:1900633437" className="inline-block">
                         1900.633.437
                       </a>
                       <span>{" -  "}</span>
-                      <p data-translate="true">Nhấn phím (2)</p>
+                      <p data-translate="true">{t("nhan_phim_2")}</p>
                     </div>
                   </div>
                   <div className="flex space-x-4">
@@ -151,17 +147,14 @@ export default async function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p
-                        className="text-sm font-semibold"
-                        data-translate="true"
-                      >
-                        Hotline Tour du lịch
+                      <p className="text-sm font-semibold">
+                        {t("hotline_tour_du_lich")}
                       </p>
                       <a href="tel:1900633437" className="inline-block">
                         1900.633.437
                       </a>
                       <span>{" -  "}</span>
-                      <p data-translate="true">Nhấn phím (3)</p>
+                      <p data-translate="true">{t("nhan_phim_3")}</p>
                     </div>
                   </div>
                 </div>
@@ -177,11 +170,8 @@ export default async function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p
-                        className="text-sm font-semibold"
-                        data-translate="true"
-                      >
-                        Email Chính thức
+                      <p className="text-sm font-semibold">
+                        {t("email_chinh_thuc")}
                       </p>
                       <a
                         href="mailto:info@happybooktravel.com"
@@ -202,11 +192,8 @@ export default async function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p
-                        className="text-sm font-semibold"
-                        data-translate="true"
-                      >
-                        Email tuyển dụng - đăng ký CTV
+                      <p className="text-sm font-semibold">
+                        {t("email_tuyen_dung_dang_ky_ctv")}
                       </p>
                       <a
                         href="mailto:HR@happybooktravel.com"
@@ -251,34 +238,28 @@ export default async function Contact() {
                       />
                     </div>
                     <div className="w-3/4">
-                      <p
-                        className="text-sm font-semibold"
-                        data-translate="true"
-                      >
-                        Địa chỉ
-                      </p>
+                      <p className="text-sm font-semibold">{t("dia_chi")}</p>
                       <p className="text-gray-900">
-                        <span className="font-medium" data-translate="true">
-                          Trụ sở chính:{" "}
+                        <span className="font-medium">
+                          {t("tru_so_chinh")}{" "}
                         </span>
-                        <span data-translate="true">
-                          Tầng 1, Phong Phú Tower, 93/10 Quang Trung, Khu phố 1,
-                          Phường Tăng Nhơn Phú, Thành phố Hồ Chí Minh, Việt Nam
+                        <span>
+                          {t(
+                            "tang_1_phong_phu_tower_9310_quang_trung_khu_pho_1_phuong_tang_nhon_phu_thanh_pho_ho_chi_minh_viet_nam"
+                          )}
                         </span>
                       </p>
                       <p className="text-gray-900">
-                        <span className="font-medium" data-translate="true">
-                          Chi nhánh 1:
-                        </span>{" "}
-                        <span data-translate="true">
-                          124 Lê Quang Định, P.14, Q.Bình Thạnh, TP.HCM
+                        <span className="font-medium">{t("chi_nhanh_1")}</span>{" "}
+                        <span>
+                          {t("124_le_quang_dinh_p_14_q_binh_thanh_tphcm")}
                         </span>
                       </p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold" data-translate="true">
-                      Theo dõi chúng tôi
+                    <p className="text-sm font-semibold">
+                      {t("theo_doi_chung_toi")}
                     </p>
                     <div className="flex space-x-3 mt-4">
                       <Link
@@ -320,9 +301,10 @@ export default async function Contact() {
               </div>
             </div>
             <div className="mx-auto p-8 mt-8 lg:w-[920px] h-auto bg-white rounded-2xl  ">
-              <h3 className="text-18 font-semibold" data-translate="true">
-                Bạn có thể gửi thông tin yêu cầu của mình qua mẫu liên hệ dưới
-                đây, và chúng tôi sẽ phản hồi trong thời gian sớm nhất.
+              <h3 className="text-18 font-semibold">
+                {t(
+                  "ban_co_the_gui_thong_tin_yeu_cau_cua_minh_qua_mau_lien_he_duoi_day_va_chung_toi_se_phan_hoi_trong_thoi_gian_som_nhat"
+                )}
               </h3>
               <FormContact />
             </div>

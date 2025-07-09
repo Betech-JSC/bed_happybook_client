@@ -16,7 +16,7 @@ import "@/styles/datePicker.scss";
 import { vi } from "date-fns/locale";
 import Select, { SingleValue } from "react-select";
 import { toastMessages } from "@/lib/messages";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function FlightSearchPopup({
   isOpen,

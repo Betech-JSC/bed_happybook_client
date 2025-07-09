@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import VisaTabs from "@/app/visa/components/VisaTabs";
+import { getServerT } from "@/lib/i18n/getServerT";
 
-export default function VisaService({ data }: any) {
+export default async function VisaService({ data }: any) {
+  const t = await getServerT();
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="relative py-6 lg:mt-12 lg:px-6 lg:py-8 rounded-3xl">
@@ -31,11 +33,8 @@ export default function VisaService({ data }: any) {
         <div className="relative z-10">
           <div className="flex justify-between">
             <div>
-              <h2
-                className="text-[24px] lg:text-[32px] font-bold"
-                data-translate
-              >
-                Dịch vụ Visa nổi bật
+              <h2 className="text-[24px] lg:text-[32px] font-bold">
+                {t("dich_vu_visa_noi_bat")}
               </h2>
             </div>
             <Link
@@ -43,9 +42,9 @@ export default function VisaService({ data }: any) {
               className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
               style={{ transition: "0.3s" }}
             >
-              <button className="text-[#175CD3] font-medium" data-translate>
+              <button className="text-[#175CD3] font-medium">
                 {" "}
-                Xem tất cả
+                {t("xem_tat_ca")}
               </button>
               <Image
                 className=" hover:scale-110 ease-in duration-300"
@@ -56,16 +55,16 @@ export default function VisaService({ data }: any) {
               />
             </Link>
           </div>
-          <p className="text-sm lg:text-16 font-medium mt-3" data-translate>
-            Dịch vụ làm visa nhanh chóng, uy tín, hỗ trợ 24/7. Tỷ lệ đậu cao!
+          <p className="text-sm lg:text-16 font-medium mt-3">
+            {t("dich_vu_lam_visa_nhanh_chong_uy_tin_ho_tro_247_ty_le_dau_cao")}
           </p>
           <Link
             href="visa/tim-kiem?text=tat-ca-visa-noi-bat"
             className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
           >
-            <button className="text-[#175CD3] font-medium" data-translate>
+            <button className="text-[#175CD3] font-medium">
               {" "}
-              Xem tất cả
+              {t("xem_tat_ca")}
             </button>
             <Image
               className=" hover:scale-110 ease-in duration-300"

@@ -17,13 +17,13 @@ import { BookingProductApi } from "@/api/BookingProduct";
 import { useRouter } from "next/navigation";
 import { decodeHtml, renderTextContent } from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import { useVoucherManager } from "@/hooks/useVoucherManager";
 import { HttpError } from "@/lib/error";
 

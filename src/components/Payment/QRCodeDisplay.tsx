@@ -1,5 +1,5 @@
 import { PaymentApi } from "@/api/Payment";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages } from "@/lib/messages";
 import { translatePage } from "@/utils/translateDom";
 import Image from "next/image";

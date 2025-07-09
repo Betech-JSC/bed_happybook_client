@@ -2,16 +2,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { FaqApi } from "@/api/Faq";
 import FAQSchema from "../schema/FAQSchema";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function FAQ() {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const toggleDropdown = (id: number) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
   const [data, setData] = useState<any[]>([]);
-  const { language } = useLanguage();
-
   const loadData = useCallback(async () => {
     const faqData = (await FaqApi.list(2, language))?.payload?.data as any;
     setData(faqData);
@@ -25,9 +26,7 @@ export default function FAQ() {
   return (
     <FAQSchema data={data}>
       <div className="rounded-2xl bg-gray-50 p-8">
-        <h2 className="text-32 font-bold mb-10" data-translate>
-          Câu Hỏi Thường Gặp
-        </h2>
+        <h2 className="text-32 font-bold mb-10">{t("cau_hoi_thuong_gap")}</h2>
         {data.map((item) => (
           <div
             key={item.id}

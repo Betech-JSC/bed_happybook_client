@@ -12,12 +12,14 @@ import http from "@/lib/http";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AuthApi } from "@/api/Auth";
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import { isEmpty } from "lodash";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function FormLogin() {
+  const { t } = useTranslation();
   const { userInfo, setUserInfo } = useUser();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -69,10 +71,10 @@ export default function FormLogin() {
     <form onSubmit={handleSubmit(onSubmit)} className="mt-3 rounded-xl ">
       <div className="mt-6 pb-6 border-b-[1px] border-gray-300">
         <div>
-          <p data-translate>Tên tài khoản hoặc địa chỉ email</p>
+          <p>{t("ten_tai_khoan_hoac_dia_chi_email")}</p>
           <input
             type="text"
-            placeholder="Tên tài khoản hoặc địa chỉ email"
+            placeholder={t("ten_tai_khoan_hoac_dia_chi_email")}
             {...register("email")}
             className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
@@ -81,10 +83,10 @@ export default function FormLogin() {
           )}
         </div>
         <div className="mt-3">
-          <p data-translate>Mật khẩu</p>
+          <p>{t("mat_khau")}</p>
           <input
             type="password"
-            placeholder="Mật khẩu"
+            placeholder={t("mat_khau")}
             {...register("password")}
             className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
           />
@@ -95,12 +97,12 @@ export default function FormLogin() {
         <div className="mt-6">
           <LoadingButton
             isLoading={loading}
-            text="Đăng nhập"
+            text={t("dang_nhap")}
             disabled={false}
           />
         </div>
         {/* <div className="mt-3 text-right text-base text-blue-700 font-medium">
-          <Link href="#" data-translate>
+          <Link href="#" >
             Quên mật khẩu ?
           </Link>
         </div> */}
