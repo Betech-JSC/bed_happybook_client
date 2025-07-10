@@ -214,6 +214,8 @@ const generalStaticText: string[] = [
   "Thông tin đang cập nhật...",
   "Câu hỏi thường gặp",
   "Địa chỉ",
+  "Tiếng Anh",
+  "Tiếng Việt",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",

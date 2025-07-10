@@ -5,8 +5,10 @@ import Link from "next/link";
 import { User } from "lucide-react";
 import { AuthApi } from "@/api/Auth";
 import { useUser } from "@/contexts/UserContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AccountDropdownMobile() {
+  const { t } = useTranslation();
   const { userInfo } = useUser();
   const [isMobile, setIsMobile] = useState(false);
   const [open, setOpen] = useState(false);
@@ -43,9 +45,7 @@ export default function AccountDropdownMobile() {
           href="/dang-nhap"
           className={`bg-blue-600 w-fit justify-center font-medium transition-all duration-300 cursor-pointer flex items-center p-2 rounded-3xl outline-none`}
         >
-          <span data-translate="true" className="text-xs">
-            Đăng nhập
-          </span>
+          <span className="text-xs min-w-16 text-center">{t("dang_nhap")}</span>
         </Link>
       ) : (
         <div ref={dropdownRef} className="relative">
@@ -84,26 +84,14 @@ export default function AccountDropdownMobile() {
               minWidth: 200,
             }}
           >
-            <Link
-              href="/thong-tin-tai-khoan"
-              data-translate="true"
-              onClick={() => setOpen(false)}
-            >
-              Thông tin tài khoản
+            <Link href="/thong-tin-tai-khoan" onClick={() => setOpen(false)}>
+              {t("thong_tin_tai_khoan")}
             </Link>
-            <Link
-              href="/lich-su-dat-ve"
-              data-translate="true"
-              onClick={() => setOpen(false)}
-            >
-              Lịch sử đặt vé
+            <Link href="/lich-su-dat-ve" onClick={() => setOpen(false)}>
+              {t("lich_su_dat_ve")}
             </Link>
-            <Link
-              href="/thay-doi-mat-khau"
-              data-translate="true"
-              onClick={() => setOpen(false)}
-            >
-              Đổi mật khẩu
+            <Link href="/thay-doi-mat-khau" onClick={() => setOpen(false)}>
+              {t("doi_mat_khau")}
             </Link>
             <button
               type="button"
@@ -111,9 +99,8 @@ export default function AccountDropdownMobile() {
                 setOpen(false);
                 AuthApi.logout();
               }}
-              data-translate="true"
             >
-              Đăng xuất
+              {t("dang_xuat")}
             </button>
           </div>
         </div>
