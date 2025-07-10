@@ -26,6 +26,7 @@ import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useUser } from "@/contexts/UserContext";
 import { HttpError } from "@/lib/error";
+import { vi, enUS } from "date-fns/locale";
 
 interface Ticket {
   id: number;
@@ -279,19 +280,18 @@ export default function CheckOutForm({
                         <DatePicker
                           id={`depart_date`}
                           selected={field.value || null}
-                          onChange={() => {}}
-                          // onChange={(date: Date | null) => field.onChange(date)}
-                          // onChangeRaw={(event) => {
-                          //   if (event) {
-                          //     const target = event.target as HTMLInputElement;
-                          //     if (target.value) {
-                          //       target.value = target.value
-                          //         .trim()
-                          //         .replace(/\//g, "-");
-                          //     }
-                          //   }
-                          // }}
-                          readOnly
+                          onChange={(date: Date | null) => field.onChange(date)}
+                          onChangeRaw={(event) => {
+                            if (event) {
+                              const target = event.target as HTMLInputElement;
+                              if (target.value) {
+                                target.value = target.value
+                                  .trim()
+                                  .replace(/\//g, "-");
+                              }
+                            }
+                          }}
+                          locale={language === "vi" ? vi : enUS}
                           placeholderText="Chọn ngày khởi hành"
                           dateFormat="dd-MM-yyyy"
                           dropdownMode="select"
