@@ -27,6 +27,7 @@ import { useVoucherManager } from "@/hooks/useVoucherManager";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
+import { vi, enUS } from "date-fns/locale";
 
 interface Ticket {
   id: number;
@@ -290,6 +291,7 @@ export default function CheckOutForm({
                               }
                             }
                           }}
+                          locale={language === "vi" ? vi : enUS}
                           placeholderText="Chọn ngày khởi hành"
                           dateFormat="dd-MM-yyyy"
                           dropdownMode="select"
