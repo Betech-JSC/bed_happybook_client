@@ -239,7 +239,7 @@ export default function Header() {
                             style={{ width: 20, height: 20 }}
                           ></Image>
                         </div>
-                        <span>{item.label}</span>
+                        <span>{t(toSnakeCase(item.label))}</span>
                       </button>
                     </div>
                   )

@@ -9,7 +9,10 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Image from "next/image";
 import clsx from "clsx";
 import AccountDropdownMobile from "./AccountDropdownMobile";
+import { useTranslation } from "@/hooks/useTranslation";
+import { toSnakeCase } from "@/utils/Helper";
 export default function HeaderMobileMenu() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
   const [menuHeight, setMenuHeight] = useState("0px");
@@ -84,7 +87,7 @@ export default function HeaderMobileMenu() {
                           style={{ width: 20, height: 20 }}
                         ></Image>
                       </div>
-                      <span data-translate="true">{item.label}</span>
+                      <span>{t(toSnakeCase(item.label))}</span>
                     </button>
                   </div>
                 )
@@ -119,31 +122,31 @@ export default function HeaderMobileMenu() {
         >
           <div>
             <p className="mt-3">
-              <strong>Dịch vụ</strong>
+              <strong>{t("dich_vu")}</strong>
             </p>
             <Link
               href="/ve-may-bay"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Vé máy bay
+              {t("ve_may_bay")}
             </Link>
             <Link
               href="/tours/tour-noi-dia"
               className="block mt-4 cursor-pointer hover:text-[#F27145]"
             >
-              Tour nội địa
+              {t("tour_noi_dia")}
             </Link>
             <Link
               href="/tours/tour-quoc-te"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Tour quốc tế
+              {t("tour_quoc_te")}
             </Link>
             <Link
               href="/du-thuyen"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Du thuyền
+              {t("du_thuyen")}
             </Link>
             {/* <p className="mt-3 hover:text-[#F27145] cursor-pointer">
               Vé máy bay quốc tế
@@ -152,50 +155,50 @@ export default function HeaderMobileMenu() {
               href="/visa"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Dịch vụ làm Visa
+              {t("dich_vu_lam_visa")}
             </Link>
-            <Link
+            {/* <Link
               href="/dinh-cu"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Định cư
-            </Link>
+              {t("dinh_cu")}
+            </Link> */}
             <Link
               href="/khach-san"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Khách sạn
+              {t("khach_san")}
             </Link>
             <Link
               href="/combo"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              Combo
+              {t("combo")}
             </Link>
           </div>
           <div className="mt-6">
             <p>
-              <strong>Về Happy Book</strong>
+              <strong> {t("ve_happy_book")}</strong>
             </p>
             <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link href="/ve-chung-toi">Về chúng tôi</Link>
+              <Link href="/ve-chung-toi"> {t("ve_chung_toi")}</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/tin-tuc">Tin tức</Link>
+              <Link href="/tin-tuc"> {t("tin_tuc")}</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/lien-he">Liên hệ chúng tôi</Link>
+              <Link href="/lien-he"> {t("lien_he_chung_toi")}</Link>
             </p>
             <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/dang-ky-ctv">Đăng ký CTV</Link>
+              <Link href="/dang-ky-ctv"> {t("dang_ky_ctv")}</Link>
             </p>
           </div>
           <div className="my-6">
             <p>
-              <strong>Khác</strong>
+              <strong> {t("khac")}</strong>
             </p>
             <div className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link href="/tu-van-nhan-visa">Tư vấn Visa</Link>
+              <Link href="/tu-van-nhan-visa"> {t("tu_van_visa")}</Link>
             </div>
             {GeneralInforPaths.map(
               (
@@ -206,7 +209,7 @@ export default function HeaderMobileMenu() {
                   key={index}
                   className="mt-4 hover:text-[#F27145] cursor-pointer"
                 >
-                  <Link href={item.url}>{item.title}</Link>
+                  <Link href={item.url}>{t(toSnakeCase(item.title))}</Link>
                 </div>
               )
             )}
