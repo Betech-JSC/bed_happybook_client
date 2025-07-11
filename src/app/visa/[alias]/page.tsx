@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   if (!data) {
     const resDetail = await VisaApi.detail(alias);
     data = resDetail?.payload.data;
-    data.alias = data.slug;
+    if (data) data.alias = data?.slug;
   }
   return formatMetadata({
     title: data?.meta_title ?? data?.name,
