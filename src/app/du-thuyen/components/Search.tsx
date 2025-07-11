@@ -26,8 +26,10 @@ type optionFilterType = {
 
 export default function Search({
   optionsFilter,
+  categoryDefault,
 }: {
   optionsFilter: optionFilterType[];
+  categoryDefault?: number;
 }) {
   const today = new Date();
   const { language } = useLanguage();
@@ -40,6 +42,7 @@ export default function Search({
     page: 1,
     location: searchParams.get("location") ?? "",
     departureDate: format(today, "yyyy-MM-dd"),
+    "category[]": categoryDefault ? [categoryDefault] : "",
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
