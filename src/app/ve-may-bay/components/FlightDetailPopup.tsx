@@ -9,9 +9,9 @@ import {
 } from "@/lib/formatters";
 import { FlightDetailPopupProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
-import { useTranslation } from "@/app/hooks/useTranslation";
 import { toSnakeCase } from "@/utils/Helper";
 import { isEmpty } from "lodash";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function FlightDetailPopup({
   isOpen,
@@ -22,10 +22,9 @@ export default function FlightDetailPopup({
   airports,
   flights,
   onClose,
-  translatedStaticText,
   isLoadingFareRules,
 }: FlightDetailPopupProps) {
-  const { t } = useTranslation(translatedStaticText);
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<number>(0);
   useEffect(() => {
     if (tabs.length) {
@@ -38,17 +37,7 @@ export default function FlightDetailPopup({
       }
     }
   }, [tabs, activeTab]);
-  let isFareRulesOfStrings = false;
   const flightDetail = flights?.[0];
-  // const flightFareRules =
-  //   flights[0]?.listFareRules && flights[0]?.listFareRules?.length > 0
-  //     ? flights[0]?.listFareRules
-  //     : null;
-  // if (flightFareRules) {
-  //   isFareRulesOfStrings =
-  //     Array.isArray(flightFareRules) && typeof flightFareRules[0] === "string";
-  // }
-  // console.log(flightDetail);
   return (
     <div
       id="flight-detail-popup-wrapper"
@@ -66,9 +55,7 @@ export default function FlightDetailPopup({
           <div className="relative bg-white max-h-[90vh] overflow-y-auto custom-scrollbar py-6 px-4 md:px-8 pb-8 w-full md:max-w-[680px] md:min-w-[680px] rounded-lg">
             {tabs.length > 1 && (
               <div className="flex justify-between items-end sticky top-[-25px] bg-white z-[999]">
-                <p className="text-22 font-bold" data-translate="true">
-                  {t("chi_tiet")}
-                </p>
+                <p className="text-22 font-bold">{t("chi_tiet")}</p>
                 <button
                   type="button"
                   className="text-xl"
@@ -108,7 +95,6 @@ export default function FlightDetailPopup({
                         ? "text-22 px-0"
                         : "px-4"
                     }`}
-                    // data-translate="true"
                   >
                     {t(`${toSnakeCase(tab.name)}`)}
                   </button>
@@ -150,7 +136,6 @@ export default function FlightDetailPopup({
                           background:
                             "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
                         }}
-                        data-translate="true"
                       >
                         {flight.flightLeg ? t("chieu_ve") : t("chieu_di")}
                       </h2>
@@ -259,10 +244,7 @@ export default function FlightDetailPopup({
                                   </div>
                                   <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                                     <div>
-                                      <div
-                                        className="text-22 font-bold"
-                                        data-translate="true"
-                                      >
+                                      <div className="text-22 font-bold">
                                         {airPortStartPoint
                                           ? `${
                                               airPortStartPoint?.city ?? ""
@@ -288,12 +270,7 @@ export default function FlightDetailPopup({
                                       </div>
                                       <div className="mt-3 flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0 text-sm font-medium">
                                         <p>{segment.flightNumber}</p>
-                                        <p
-                                          className="hidden md:block"
-                                          data-translate="true"
-                                        >
-                                          -
-                                        </p>
+                                        <p className="hidden md:block">-</p>
                                         <p>
                                           {t("hang")}{" "}
                                           {flight.selectedTicketClass
@@ -308,7 +285,7 @@ export default function FlightDetailPopup({
                                           !isEmpty(
                                             flightCarryOnBaggage.trim()
                                           ) && (
-                                            <p data-translate="true">{`${t(
+                                            <p>{`${t(
                                               "hanh_ly_xach_tay"
                                             )}: ${flightCarryOnBaggage}`}</p>
                                           )}
@@ -316,7 +293,7 @@ export default function FlightDetailPopup({
                                           !isEmpty(
                                             flightCheckedBagge.trim()
                                           ) && (
-                                            <p data-translate="true">{`${t(
+                                            <p>{`${t(
                                               "hanh_ly_ky_gui"
                                             )}: ${flightCheckedBagge}`}</p>
                                           )}
@@ -324,10 +301,7 @@ export default function FlightDetailPopup({
                                     </div>
                                     <div>
                                       <p className="text-gray-500 mt-1 h-6"></p>
-                                      <p
-                                        className="text-22 font-bold"
-                                        data-translate="true"
-                                      >
+                                      <p className="text-22 font-bold">
                                         {airPortEndPoint
                                           ? `${airPortEndPoint?.city ?? ""} (${
                                               airPortEndPoint.code
@@ -345,7 +319,7 @@ export default function FlightDetailPopup({
                                     <div className="w-0 md:w-1/12 h-full py-5 flex flex-col items-center"></div>
                                     <div className="w-full md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                                       <div className="bg-gray-50 rounded-lg p-4 flex space-x-4 lg:space-x-8 items-center text-sm">
-                                        <p data-translate="true">
+                                        <p>
                                           Transfer in{" "}
                                           {`${airPortEndPoint?.city ?? ""} (${
                                             airPortEndPoint.code
@@ -399,7 +373,7 @@ export default function FlightDetailPopup({
                             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                           </svg>
                           <p>
-                            Hành lý xách tay:{" "}
+                            {t("hanh_ly_xach_tay")}:{" "}
                             {flightDetail?.fareOptSelected?.carryOnBaggage}
                           </p>
                         </div>
@@ -430,7 +404,7 @@ export default function FlightDetailPopup({
                                 : ""
                             }`}
                           >
-                            Hành lý ký gửi:{" "}
+                            {t("hanh_ly_ky_gui")}:{" "}
                             {!isEmpty(
                               flightDetail?.fareOptSelected?.checkedBaggae
                             )
@@ -449,11 +423,11 @@ export default function FlightDetailPopup({
                               alt="Icon"
                               className="w-6 h-6"
                             />
-                            <span data-translate="true">Hoàn vé: </span>
-                            <p data-translate="true">Được phép</p>
+                            <span>{t("hoan_ve")}: </span>
+                            <p>{t("duoc_phep")}</p>
                           </div>
                           <p className="text-[#166987] font-semibold text-end">
-                            (Phí vui lòng liên hệ booker).
+                            ({t("phi_vui_long_lien_he_booker")}).
                           </p>
                         </div>
                       )}
@@ -468,11 +442,11 @@ export default function FlightDetailPopup({
                               alt="Icon"
                               className="w-6 h-6"
                             />
-                            <span data-translate="true">Đổi vé:</span>
-                            <p data-translate="true">Được phép</p>
+                            <span>{t("doi_ve")}:</span>
+                            <p>{t("duoc_phep")}</p>
                           </div>
                           <p className="text-[#166987] font-semibold text-end">
-                            (Phí vui lòng liên hệ booker).
+                            ({t("phi_vui_long_lien_he_booker")}).
                           </p>
                         </div>
                       )}
@@ -573,7 +547,9 @@ export default function FlightDetailPopup({
                         </div>
                       ) : (
                         <div>
-                          Xin vui lòng liên hệ HappyBook để biết thêm chi tiết.
+                          {t(
+                            "xin_vui_long_lien_he_happy_book_de_biet_them_chi_tiet"
+                          )}
                         </div>
                       )}
                     </div>

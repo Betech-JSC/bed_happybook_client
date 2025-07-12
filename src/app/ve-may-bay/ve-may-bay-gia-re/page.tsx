@@ -26,6 +26,7 @@ import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -85,6 +86,7 @@ export default async function SearchTicketCheap({
   const content = (await PageApi.getContent("ve-may-bay-gia-re", language))
     ?.payload?.data as any;
   const metadata = getMetadata(content);
+  const t = await getServerT();
 
   return (
     <SeoSchema
@@ -132,20 +134,16 @@ export default async function SearchTicketCheap({
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/" className="text-blue-700" data-translate>
-                      Trang chủ
+                    <Link href="/" className="text-blue-700">
+                      {t("trang_chu")}
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link
-                      href="/ve-may-bay"
-                      className="text-blue-700"
-                      data-translate
-                    >
-                      Vé máy bay
+                    <Link href="/ve-may-bay" className="text-blue-700">
+                      {t("ve_may_bay")}
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>

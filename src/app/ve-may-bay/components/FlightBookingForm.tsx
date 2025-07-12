@@ -1885,7 +1885,6 @@ export default function FlightBookForm({ airportsData }: any) {
           flights={flightsDetail}
           isOpen={showFlightDetail}
           onClose={handleClosePopupFlightDetail}
-          translatedStaticText={translatedStaticText}
           isLoadingFareRules={false}
         />
       )}

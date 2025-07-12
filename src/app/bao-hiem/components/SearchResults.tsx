@@ -170,9 +170,9 @@ export default function SearchResults() {
               const currencyFormatDisplay =
                 item?.currency.toLowerCase() === "usd" ? "en" : "vi";
               return (
-                <>
+                <div key={index}>
                   {totalFee > 0 && (
-                    <div className="mb-6 last:mb-0  h-fit" key={index}>
+                    <div className="mb-6 last:mb-0  h-fit">
                       <div className="grid gap-1 grid-cols-8 items-start justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
                         <div className="col-span-8 lg:col-span-3">
                           <div className="flex flex-col md:flex-row items-start gap-4 text-center md:text-left mb-3">
@@ -321,7 +321,7 @@ export default function SearchResults() {
                       </div>
                     </div>
                   )}
-                </>
+                </div>
               );
             })
           ) : (

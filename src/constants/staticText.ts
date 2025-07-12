@@ -35,6 +35,14 @@ export const flightStaticText: string[] = [
   "Thời gian",
   "Giờ cất cánh",
   "Giờ hạ cánh",
+  "Đăng ký nhân vé giá rẻ",
+  "Đặt vé nhanh tại HappyBook",
+  "Hành lý xách tay",
+  "Hành lý ký gửi",
+  "Hoàn vé",
+  "Đổi vé",
+  "Được phép",
+  "Phí vui lòng liên hệ booker",
 ];
 
 export const visaStaticText: string[] = [
@@ -216,6 +224,13 @@ const generalStaticText: string[] = [
   "Địa chỉ",
   "Tiếng Anh",
   "Tiếng Việt",
+  "Người lớn",
+  "Trẻ em",
+  "Em bé",
+  "tuổi",
+  "Chọn ngày",
+  "Chat với chúng tôi qua",
+  "Xin vui lòng liên hệ HappyBook để biết thêm chi tiết.",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
@@ -314,4 +329,5 @@ export const unifiedStaticText: string[] = [
   ...formStaticText,
   ...authStaticText,
   ...aboutUsStaticText,
+  ...flightStaticText,
 ];

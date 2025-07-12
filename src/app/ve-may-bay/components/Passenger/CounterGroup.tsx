@@ -1,6 +1,8 @@
 // components/CounterGroup.tsx
 "use client";
 
+import { useTranslation } from "@/hooks/useTranslation";
+import { toSnakeCase } from "@/utils/Helper";
 import { useState, useEffect } from "react";
 
 interface Counter {
@@ -51,17 +53,17 @@ const CounterGroup: React.FC<CounterGroupProps> = ({
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <div>
       {counters.map((counter, index) => (
         <div key={index} className="flex items-center justify-between mb-3">
           <div>
-            <div className="font-medium" data-translate>
-              {counter.label}
-            </div>
+            <div className="font-medium">{t(toSnakeCase(counter.label))}</div>
             <div className="text-sm text-gray-500">
               <span>{counter.ageRange} </span>
-              <span data-translate>tuổi</span>
+              <span>{t("tuoi")}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">

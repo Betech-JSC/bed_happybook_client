@@ -23,16 +23,15 @@ import { flightStaticText } from "@/constants/staticText";
 import { translateText } from "@/utils/translateApi";
 import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from "@/app/hooks/useTranslation";
 import ListFlights from "./SearchFlights/List";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { language } = useLanguage();
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const pathName: string = usePathname();
-  const [translatedStaticText, setTranslatedStaticText] = useState<{}>({});
-  const { t } = useTranslation(translatedStaticText);
   const [isRoundTrip, setIsRoundTrip] = useState<boolean>(false);
   const [displayType, setDisplayType] = useState<"desktop" | "mobile">(
     "desktop"
@@ -111,12 +110,12 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     }
   };
 
-  useEffect(() => {
-    translateText(flightStaticText, getCurrentLanguage()).then((data) => {
-      const translationMap = formatTranslationMap(flightStaticText, data);
-      setTranslatedStaticText(translationMap);
-    });
-  }, []);
+  // useEffect(() => {
+  //   translateText(flightStaticText, getCurrentLanguage()).then((data) => {
+  //     const translationMap = formatTranslationMap(flightStaticText, data);
+  //     setTranslatedStaticText(translationMap);
+  //   });
+  // }, []);
   // Handle Tabs Days
   const today = useMemo(() => {
     const departDate = searchParams.get("DepartDate");
@@ -497,7 +496,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
           totalPassengers={totalPassengers}
           flightType={flightType}
           flightStopNum={stopNumFilters.filter((item) => item > 0)}
-          translatedStaticText={translatedStaticText}
+          translatedStaticText={[]}
           isReady={isReady}
         />
       </div>
