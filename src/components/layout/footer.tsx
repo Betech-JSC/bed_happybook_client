@@ -319,9 +319,9 @@ export default async function Footer() {
         </div>
         <div className="mt-8">
           <div className="flex justify-between xl:justify-center xl:space-x-[66px]">
-            <Image src="/certifi/1.png" alt="Icon" width={100} height={32} />
-            <Image src="/certifi/2.png" alt="Icon" width={100} height={32} />
-            <Image src="/certifi/3.png" alt="Icon" width={100} height={32} />
+            <Image src="/certifi/1.svg" alt="Icon" width={100} height={32} />
+            <Image src="/certifi/2.svg" alt="Icon" width={100} height={32} />
+            <Image src="/certifi/3.svg" alt="Icon" width={100} height={32} />
           </div>
         </div>
         <div className="mt-8 text-center">

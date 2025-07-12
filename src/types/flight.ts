@@ -148,7 +148,6 @@ export interface FlightDetailPopupProps {
   airports: AirportsCountry[];
   flights: any;
   onClose: () => void;
-  translatedStaticText: any;
   isLoadingFareRules: boolean;
 }
 

@@ -14,8 +14,10 @@ import { contactApi } from "@/api/contact";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import Link from "next/link";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SignUpReceiveCheapTickets() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const { language } = useLanguage();
   const toaStrMsg = toastMessages[language as "vi" | "en"];
@@ -55,11 +57,8 @@ export default function SignUpReceiveCheapTickets() {
     <div className="flex flex-col md:flex-row mt-8 space-y-4 md:space-x-6 md:space-y-0 p-4 md:p-8 bg-white rounded-3xl">
       <div className="w-full md:w-[60%] pr-0 md:pr-8">
         <div className="bg-white">
-          <h2
-            className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-            data-translate
-          >
-            Đăng ký nhận vé giá rẻ
+          <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
+            {t("dang_ky_nhan_ve_gia_re")}
           </h2>
           <div className="mt-4 rounded-xl">
             <form
@@ -71,14 +70,14 @@ export default function SignUpReceiveCheapTickets() {
                   htmlFor="fullName"
                   className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                 >
-                  <span data-translate>Họ và tên </span>
+                  <span>{t("ho_va_ten")}</span>
                   <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="fullName"
                   type="text"
-                  placeholder="Nhập họ và tên"
-                  title="Nhập họ và tên"
+                  placeholder={t("ho_va_ten")}
+                  title={t("ho_va_ten")}
                   {...register("full_name")}
                   className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                 />
@@ -93,15 +92,15 @@ export default function SignUpReceiveCheapTickets() {
                       htmlFor="phone"
                       className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      <span data-translate>Số điện thoại </span>
+                      <span>{t("so_dien_thoai")}</span>
                       <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="phone"
                       type="text"
                       {...register("phone")}
-                      title="Nhập số điện thoại"
-                      placeholder="Nhập số điện thoại"
+                      title={t("so_dien_thoai")}
+                      placeholder={t("so_dien_thoai")}
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                     />
                     {errors.phone && (
@@ -113,14 +112,14 @@ export default function SignUpReceiveCheapTickets() {
                       htmlFor="email"
                       className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
                     >
-                      Email <span className="text-red-500">*</span>
+                      {t("email")} <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="email"
                       type="text"
                       {...register("email")}
-                      title="Nhập email"
-                      placeholder="Nhập email"
+                      title={t("email")}
+                      placeholder={t("email")}
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                     />
                     {errors.email && (
@@ -132,7 +131,7 @@ export default function SignUpReceiveCheapTickets() {
               <div className="mt-4">
                 <LoadingButton
                   isLoading={loading}
-                  text="Gửi"
+                  text={t("gui")}
                   disabled={false}
                 />
               </div>
@@ -142,8 +141,9 @@ export default function SignUpReceiveCheapTickets() {
       </div>
       <div className="w-full md:w-[40%] pl-0 md:pl-12 border-l-none md:border-l border-l-gray-300">
         <div className="bg-white rounded-xl">
-          <h3 className="text-18 font-semibold" data-translate>
-            Đặt vé nhanh tại Happy Book
+          <h3 className="text-18 font-semibold">
+            {/* Đặt vé nhanh tại Happy Book */}
+            {t("dat_ve_nhanh_tai_happy_book")}
           </h3>
         </div>
         <div className="mt-4">
@@ -158,24 +158,18 @@ export default function SignUpReceiveCheapTickets() {
               />
             </div>
             <div className="w-3/4">
-              <p className="text-sm font-semibold" data-translate>
-                Hotline vé máy bay
-              </p>
+              <p className="text-sm font-semibold">{t("hotline_ve_may_bay")}</p>
               <div className="text-base mt-2 text-primary">
-                <a
-                  data-translate="true"
-                  href="tel:1900633437"
-                  className="inline-block"
-                >
-                  1900.633.437 - Nhấn phím (1)
+                <a href="tel:1900633437" className="inline-block">
+                  1900.633.437 - {t("nhan_phim_1")}
                 </a>
               </div>
             </div>
           </div>
           <div className="mt-6">
             <div className="w-3/4">
-              <p className="text-sm font-semibold" data-translate>
-                Chat với chúng tôi qua
+              <p className="text-sm font-semibold">
+                {t("chat_voi_chung_toi_qua")}
               </p>
               <div className="flex space-x-4 mt-4">
                 <Link

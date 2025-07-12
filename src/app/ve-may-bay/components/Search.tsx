@@ -293,7 +293,7 @@ export default function Search({
                     selected={formData.departureDate}
                     onChange={handleDepartDateChange}
                     dateFormat="dd/MM/yyyy"
-                    placeholderText="Chọn ngày"
+                    placeholderText={t("chon_ngay")}
                     locale={language === "vi" ? vi : enUS}
                     popperPlacement="bottom-start"
                     portalId="datepicker-search-flight"
@@ -332,7 +332,7 @@ export default function Search({
                     selected={formData.returnDate}
                     onChange={handleReturnDateChange}
                     dateFormat="dd/MM/yyyy"
-                    placeholderText="Chọn ngày"
+                    placeholderText={t("chon_ngay")}
                     locale={language === "vi" ? vi : enUS}
                     popperPlacement="bottom-start"
                     portalId="datepicker-search-flight"

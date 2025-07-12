@@ -23,6 +23,7 @@ import SearchFlightsResult from "../components/SearchResult";
 import PartnerAirlines from "../components/Partner";
 import { redirect } from "next/navigation";
 import { format, parse, isValid, isBefore, startOfDay } from "date-fns";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 export const metadata: Metadata = formatMetadata({
   robots: "index, follow",
@@ -106,6 +107,8 @@ export default async function SearchTicket({
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("ve-may-bay", language))
     ?.payload?.data as any;
+  const t = await getServerT();
+
   return (
     <SeoSchema
       metadata={metadata}
@@ -152,24 +155,16 @@ export default async function SearchTicket({
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link
-                      href="/"
-                      className="text-blue-700"
-                      data-translate="true"
-                    >
-                      Trang chủ
+                    <Link href="/" className="text-blue-700">
+                      {t("trang_chu")}
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link
-                      href="#"
-                      className="text-gray-700"
-                      data-translate="true"
-                    >
-                      Vé máy bay
+                    <Link href="#" className="text-gray-700">
+                      {t("ve_may_bay")}
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>

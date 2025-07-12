@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import SignUpReceiveCheapTickets from "../SignUpReceiveCheapTickets";
 import FlightDetailPopup from "../FlightDetailPopup";
 import { FlightApi } from "@/api/Flight";
-import { useTranslation } from "@/app/hooks/useTranslation";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FlightDomesticDetail from "./Detail";
@@ -21,6 +20,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import TimeRangeSlider from "@/components/base/TimeRangeSlider";
 import SideBarFilterFlights from "../SideBarFilter";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -57,7 +57,7 @@ export default function ListFlights({
   isReady,
 }: ListFlight) {
   const router = useRouter();
-  const { t } = useTranslation(translatedStaticText);
+  const { t } = useTranslation();
   const { language } = useLanguage();
   const departFlightRef = useRef<HTMLDivElement>(null);
   const returnFlightRef = useRef<HTMLDivElement>(null);
@@ -89,13 +89,7 @@ export default function ListFlights({
   const resetFilters = () => {
     setFilters(defaultFilers);
   };
-  const handleLoadMoreDepart = () => {
-    setDepartLimit((prev) => prev + INITIAL_LIMIT);
-  };
 
-  const handleLoadMoreReturn = () => {
-    setReturnLimit((prev) => prev + INITIAL_LIMIT);
-  };
   // Filter data
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = event.target;
@@ -141,42 +135,17 @@ export default function ListFlights({
     }
   };
 
-  const fetchFareRules = useCallback(
-    async (flight: any, indexFareOption: any) => {
-      try {
-        setIsLoadingFareRules(true);
-        const params = {
-          source: flight.source,
-          clientId: flight.clientId,
-          itinerary: {
-            airline: flight.airline,
-            departDate: format(parseISO(flight.departure.at), "yyyy-MM-dd"),
-            departure: flight.departure.IATACode,
-            arrival: flight.arrival.IATACode,
-            fareBasisCode: flight.fareOptions[indexFareOption].fareBasisCode,
-          },
-          fareValue: flight.fareOptions[indexFareOption].fareValue,
-        };
-        const response = await FlightApi.getFareRules(params);
-        return response?.payload?.data ?? [];
-      } catch (error: any) {
-        const fareRules = await translateText(
-          ["Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết."],
-          language
-        );
-        return fareRules;
-      } finally {
-        setIsLoadingFareRules(false);
-      }
+  const toggleShowRuleTicket = useCallback(
+    async (flight: any) => {
+      // const response = await fetchFareRules(flight, indexFareOption);
+      const response = await FlightApi.getFareRules({
+        ...flight,
+        language: language,
+      });
+      return response?.payload?.data ?? [];
     },
     [language]
   );
-
-  const toggleShowRuleTicket = useCallback(async (flight: any) => {
-    // const response = await fetchFareRules(flight, indexFareOption);
-    const response = await FlightApi.getFareRules(flight);
-    return response?.payload?.data ?? [];
-  }, []);
 
   const handleShowPopupFlightDetail = (
     flight: any,
@@ -692,7 +661,6 @@ export default function ListFlights({
           flights={flightDetail}
           isOpen={showDetail}
           onClose={handleClosePopupFlightDetail}
-          translatedStaticText={translatedStaticText}
           isLoadingFareRules={isLoadingFareRules}
         />
       </div>

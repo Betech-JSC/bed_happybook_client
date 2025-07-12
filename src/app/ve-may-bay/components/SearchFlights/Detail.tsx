@@ -15,8 +15,8 @@ import {
 } from "@/lib/formatters";
 import { FlightDetailProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
-import { useTranslation } from "@/app/hooks/useTranslation";
 import { isEmpty } from "lodash";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const FlightDomesticDetail = ({
   FareData,
@@ -27,7 +27,7 @@ const FlightDomesticDetail = ({
   totalPassengers,
   translatedStaticText,
 }: FlightDetailProps) => {
-  const { t } = useTranslation(translatedStaticText);
+  const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | string>(0);
