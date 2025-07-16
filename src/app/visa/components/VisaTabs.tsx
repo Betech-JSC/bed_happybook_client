@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Image from "next/image";
 import {
   Carousel,
@@ -11,121 +11,183 @@ import {
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import { useTranslation } from "@/hooks/useTranslation";
 
-export default function VisaTabs({ data }: any) {
+export default function VisaTabs({
+  title,
+  defaultCategoryAlias,
+  showDescription = true,
+  data,
+}: {
+  title: string;
+  defaultCategoryAlias?: string;
+  showDescription?: boolean;
+  data: any;
+}) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
+  const [linkCategory, setLinkCategory] = useState<string>(
+    `/visa/${defaultCategoryAlias}`
+  );
   return (
-    <div className="w-full mt-6">
-      <div className="lg:space-x-3 mb-6 lg:mb-8">
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
+    <Fragment>
+      <div className="flex justify-between">
+        <div>
+          <h2 className="text-[24px] lg:text-[32px] font-bold">{t(title)}</h2>
+        </div>
+        <Link
+          href={linkCategory}
+          className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
+          style={{ transition: "0.3s" }}
         >
-          <CarouselContent>
-            {data.map(
-              (tab: any, index: number) =>
-                tab.name && (
-                  <CarouselItem key={index} className="basis-1/8">
-                    <button
-                      className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
+          <button className="text-[#175CD3] font-medium">
+            {t("xem_tat_ca")}
+          </button>
+          <Image
+            className=" hover:scale-110 ease-in duration-300"
+            src="/icon/chevron-right.svg"
+            alt="Icon"
+            width={20}
+            height={20}
+          />
+        </Link>
+      </div>
+      {showDescription && (
+        <p className="text-sm lg:text-16 font-medium mt-3">
+          {t("dich_vu_lam_visa_nhanh_chong_uy_tin_ho_tro_247_ty_le_dau_cao")}
+        </p>
+      )}
+      <Link
+        href={linkCategory}
+        className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
+      >
+        <button className="text-[#175CD3] font-medium">
+          {" "}
+          {t("xem_tat_ca")}
+        </button>
+        <Image
+          className=" hover:scale-110 ease-in duration-300"
+          src="/icon/chevron-right.svg"
+          alt="Icon"
+          width={20}
+          height={20}
+        />
+      </Link>
+      <div className="w-full mt-6">
+        <div className="lg:space-x-3 mb-6 lg:mb-8">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+          >
+            <CarouselContent>
+              {data.map(
+                (tab: any, index: number) =>
+                  tab.name && (
+                    <CarouselItem key={index} className="basis-1/8">
+                      <button
+                        className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
                      ${
                        activeTab === index
                          ? "bg-[#1570EF] hover:bg-blue-700 text-white"
                          : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
                      }`}
-                      onClick={() => setActiveTab(index)}
-                      data-translate="true"
-                    >
-                      {tab.name}
-                    </button>
-                  </CarouselItem>
-                )
-            )}
-          </CarouselContent>
-        </Carousel>
-      </div>
-      <div>
-        {data.map((category: any, index: number) => {
-          if (index !== activeTab) return null;
-          return (
-            <div key={index}>
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                className={`${
-                  category.products.length > 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                }`}
-              >
-                <CarouselContent>
-                  {category.products.map((visa: any, subIndex: number) => (
-                    <CarouselItem
-                      key={subIndex}
-                      className="basis-10/12 md:basis-5/12 lg:basis-1/4"
-                    >
-                      <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                        <div className="overflow-hidden rounded-t-2xl	">
-                          <Link href={`/visa/${visa.slug}`}>
-                            <Image
-                              className="hover:scale-110 ease-in duration-300 cursor-pointer"
-                              src={`${visa.image_url}/${visa.image_location}`}
-                              alt="Visa Image"
-                              width={320}
-                              height={320}
-                              sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                              style={{ height: 200, width: "100%" }}
-                            />
-                          </Link>
-                        </div>
-                        <div className="py-3 px-4 h-fit ">
-                          <Link
-                            href={`/visa/${visa.slug}`}
-                            className={`text-base font-semibold ${styles.text_hover_default}`}
-                          >
-                            <h3
-                              data-translate="true"
-                              className="h-12 line-clamp-2"
+                        onClick={() => {
+                          setActiveTab(index);
+                          setLinkCategory(`/visa/${tab.alias}`);
+                        }}
+                        data-translate="true"
+                      >
+                        {tab.name}
+                      </button>
+                    </CarouselItem>
+                  )
+              )}
+            </CarouselContent>
+          </Carousel>
+        </div>
+        <div>
+          {data.map((category: any, index: number) => {
+            if (index !== activeTab) return null;
+            return (
+              <div key={index}>
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className={`${
+                    category.products.length > 0 && activeTab === index
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
+                >
+                  <CarouselContent>
+                    {category.products.map((visa: any, subIndex: number) => (
+                      <CarouselItem
+                        key={subIndex}
+                        className="basis-10/12 md:basis-5/12 lg:basis-1/4"
+                      >
+                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                          <div className="overflow-hidden rounded-t-2xl	">
+                            <Link href={`/visa/${visa.slug}`}>
+                              <Image
+                                className="hover:scale-110 ease-in duration-300 cursor-pointer"
+                                src={`${visa.image_url}/${visa.image_location}`}
+                                alt="Visa Image"
+                                width={320}
+                                height={320}
+                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                                style={{ height: 200, width: "100%" }}
+                              />
+                            </Link>
+                          </div>
+                          <div className="py-3 px-4 h-fit ">
+                            <Link
+                              href={`/visa/${visa.slug}`}
+                              className={`text-base font-semibold ${styles.text_hover_default}`}
                             >
-                              {visa.name}
-                            </h3>
-                          </Link>
-                          <div className="mt-2 text-end">
-                            <DisplayPrice
-                              textPrefix={
-                                visa.discount_price > 0 ? "Giá ưu đãi" : "Giá"
-                              }
-                              price={visa.price - visa.discount_price}
-                              currency={visa?.currency}
-                            />
+                              <h3
+                                data-translate="true"
+                                className="h-12 line-clamp-2"
+                              >
+                                {visa.name}
+                              </h3>
+                            </Link>
+                            <div className="mt-2 text-end">
+                              <DisplayPrice
+                                textPrefix={
+                                  visa.discount_price > 0 ? "Giá ưu đãi" : "Giá"
+                                }
+                                price={visa.price - visa.discount_price}
+                                currency={visa?.currency}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="hidden lg:inline-flex" />
-                <CarouselNext className="hidden lg:inline-flex" />
-              </Carousel>
-              <div
-                className={`min-h-[100px] content-center text-center ${
-                  category.products.length <= 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                }`}
-              >
-                <p className="font-bold text-xl" data-translate="true">
-                  Thông tin đang được cập nhật.....
-                </p>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden lg:inline-flex" />
+                  <CarouselNext className="hidden lg:inline-flex" />
+                </Carousel>
+                <div
+                  className={`min-h-[100px] content-center text-center ${
+                    category.products.length <= 0 && activeTab === index
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
+                >
+                  <p className="font-bold text-xl" data-translate="true">
+                    Thông tin đang được cập nhật.....
+                  </p>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </Fragment>
   );
 }
