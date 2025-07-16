@@ -31,7 +31,7 @@ export default async function VisaService({ data }: any) {
         </div>
         {/* Content */}
         <div className="relative z-10">
-          <div className="flex justify-between">
+          {/* <div className="flex justify-between">
             <div>
               <h2 className="text-[24px] lg:text-[32px] font-bold">
                 {t("dich_vu_visa_noi_bat")}
@@ -73,9 +73,13 @@ export default async function VisaService({ data }: any) {
               width={20}
               height={20}
             />
-          </Link>
+          </Link> */}
           {/* Tabs */}
-          <VisaTabs data={data} />
+          <VisaTabs
+            title="dich_vu_visa_noi_bat"
+            defaultCategoryAlias="tim-kiem?text=tat-ca-visa-noi-bat"
+            data={data}
+          />
         </div>
         {/* End */}
       </div>

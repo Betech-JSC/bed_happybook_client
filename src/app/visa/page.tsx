@@ -99,51 +99,11 @@ export default async function Visa() {
           <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
             {data?.visaOutstanding?.length > 0 && (
               <div className="">
-                <div className="flex justify-between">
-                  <div>
-                    <h2 className="text-[24px] lg:text-[32px] font-bold">
-                      {t("dich_vu_visa_noi_bat")}
-                    </h2>
-                  </div>
-                  <Link
-                    href="/visa/tim-kiem?text=tat-ca-visa-noi-bat"
-                    className="hidden lg:flex bg-[#EFF8FF] py-1 px-4 rounded-lg space-x-3 hover:bg-blue-200"
-                    style={{ transition: "0.3s" }}
-                  >
-                    <button className="text-[#175CD3] font-medium">
-                      {t("xem_tat_ca")}
-                    </button>
-                    <Image
-                      className=" hover:scale-110 ease-in duration-300"
-                      src="/icon/chevron-right.svg"
-                      alt="Icon"
-                      width={20}
-                      height={20}
-                    />
-                  </Link>
-                </div>
-                <p className="text-sm lg:text-16 font-medium mt-3">
-                  {t(
-                    "dich_vu_lam_visa_nhanh_chong_uy_tin_ho_tro_247_ty_le_dau_cao"
-                  )}
-                </p>
-                <Link
-                  href="/visa/tim-kiem?text=tat-ca-visa-noi-bat"
-                  className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
-                >
-                  <button className="text-[#175CD3] font-medium">
-                    {" "}
-                    {t("xem_tat_ca")}
-                  </button>
-                  <Image
-                    className=" hover:scale-110 ease-in duration-300"
-                    src="/icon/chevron-right.svg"
-                    alt="Icon"
-                    width={20}
-                    height={20}
-                  />
-                </Link>
-                <VisaTabs data={data.visaOutstanding} />
+                <VisaTabs
+                  title="dich_vu_visa_noi_bat"
+                  defaultCategoryAlias="tim-kiem?text=tat-ca-visa-noi-bat"
+                  data={data.visaOutstanding}
+                />
               </div>
             )}
             {newsByPage.length > 0 && (
@@ -154,7 +114,7 @@ export default async function Visa() {
             {data?.visaByCategory?.length > 0 &&
               data.visaByCategory.map((parentCategory: any, index: number) => (
                 <div className="mt-6" key={index}>
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <div>
                       <h2
                         className="text-[24px] lg:text-[32px] font-bold"
@@ -200,8 +160,13 @@ export default async function Visa() {
                       width={20}
                       height={20}
                     />
-                  </Link>
-                  <VisaTabs data={parentCategory.children} />
+                  </Link> */}
+                  <VisaTabs
+                    title={parentCategory?.name}
+                    defaultCategoryAlias={parentCategory.alias}
+                    showDescription={false}
+                    data={parentCategory.children}
+                  />
                 </div>
               ))}
           </div>
