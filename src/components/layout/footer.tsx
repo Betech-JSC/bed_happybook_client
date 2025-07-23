@@ -194,11 +194,23 @@ export default async function Footer() {
                   {t("dich_vu_lam_visa")}
                 </Link>
                 <Link
+                  href="/du-thuyen"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                >
+                  {t("du_thuyen")}
+                </Link>
+                <Link
+                  href="/ve-vui-choi"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                >
+                  {t("ve_vui_choi")}
+                </Link>
+                {/* <Link
                   href="/dinh-cu"
                   className={`block mt-3 ${styles.text_hover_default}`}
                 >
                   {t("dinh_cu")}
-                </Link>
+                </Link> */}
                 <Link
                   href="/khach-san"
                   className={`block mt-3 ${styles.text_hover_default}`}

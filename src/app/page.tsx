@@ -7,8 +7,6 @@ import VisaService from "@/components/home/visa-service";
 import Hotel from "@/components/home/hotel";
 import CompoHot from "@/components/home/compo-hot";
 import VisaSteps from "@/components/home/visa-steps";
-import Partner from "@/components/home/partner";
-import OurTeam from "@/components/home/our-team";
 import TouristSuggest from "@/components/home/tourist-suggest";
 import Flight from "@/components/home/flight";
 import AosAnimate from "@/components/layout/aos-animate";
@@ -18,22 +16,19 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import SearchMobile from "@/components/home/search-mobile";
 import { FlightApi } from "@/api/Flight";
-import { HomeApi } from "@/api/Home";
 import { siteUrl } from "@/constants";
 import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 import { formatMetadata } from "@/lib/formatters";
 import { BannerApi } from "@/api/Banner";
-import { cloneItemsCarousel } from "@/utils/Helper";
-import NewsByPage from "@/components/content-page/NewsByPage";
-import { newsApi } from "@/api/news";
-import { ProductLocation } from "@/api/ProductLocation";
-import { getServerLang } from "@/lib/session";
 import PartnerAirlines from "./ve-may-bay/components/Partner";
 import { settingApi } from "@/api/Setting";
+import HomeYacht from "@/components/home/Yacht";
+import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
+import NewsByPage from "@/components/content-page/NewsByPage";
+import HomeAmusementTicket from "@/components/home/AmusementTicket";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const res = await settingApi.getMetaSeo();
-  const seo = res?.payload?.data;
+  const seo = await settingApi.getCachedMetaSeo();
 
   return formatMetadata({
     robots: "index, follow",
@@ -55,17 +50,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Home() {
-  // const language = await getServerLang();
-  const airportsReponse = await FlightApi.airPorts();
-  const airportsData = airportsReponse?.payload.data ?? [];
-  const homeApiReponse = await HomeApi.index();
-  const homeData = homeApiReponse?.payload.data ?? [];
-  const bannerData = (await BannerApi.getBannerPage("home"))?.payload
-    ?.data as any;
-  const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
-    ?.data as any;
-  const lastestNews =
-    ((await newsApi.getLastedNewsByPage())?.payload?.data as any) ?? [];
+  const airportsData = await FlightApi.getCachedAirports();
   return (
     <Fragment>
       <WebsiteSchema />
@@ -99,76 +84,92 @@ export default async function Home() {
         </div>
       </div>
       <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
-        {bannerData?.length > 0 && (
+        <Suspense fallback={<SkeletonProductTabs />}>
           <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <Banner data={bannerData}></Banner>
+            <Banner></Banner>
           </div>
-        )}
-        {homeData?.compoHot?.length > 0 && (
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-              <CompoHot data={homeData?.compoHot}></CompoHot>
+              <CompoHot></CompoHot>
             </div>
           </AosAnimate>
-        )}
+        </Suspense>
 
-        {homeData?.tours?.hot.length > 0 && (
+        <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
-            <TourHot data={homeData.tours.hot}></TourHot>
+            <TourHot />
           </AosAnimate>
-        )}
+        </Suspense>
 
-        {homeData?.tours?.domestic.length > 0 && (
+        <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
-            <TourNoiDia data={homeData.tours.domestic}></TourNoiDia>
+            <TourNoiDia></TourNoiDia>
           </AosAnimate>
-        )}
+        </Suspense>
 
-        {homeData?.tours?.international.length > 0 && (
+        <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
-            <TourQuocTe data={homeData.tours.international}></TourQuocTe>
+            <TourQuocTe></TourQuocTe>
           </AosAnimate>
-        )}
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <Flight />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <VisaService />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <Hotel />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <HomeYacht />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <HomeAmusementTicket />
+          </AosAnimate>
+        </Suspense>
 
         <AosAnimate>
-          <Flight></Flight>
+          <div className="mt-4 lg:mt-6">
+            <VisaSteps />
+          </div>
         </AosAnimate>
 
-        {homeData?.visa?.length > 0 && (
-          <AosAnimate>
-            <VisaService data={homeData.visa}></VisaService>
-          </AosAnimate>
-        )}
-
-        {homeData?.hotels?.length > 0 && (
-          <AosAnimate>
-            <Hotel data={homeData.hotels}></Hotel>
-          </AosAnimate>
-        )}
-
-        <AosAnimate>
-          <VisaSteps></VisaSteps>
-        </AosAnimate>
-
-        {touristSuggest?.length > 0 && (
+        <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-              <TouristSuggest data={touristSuggest}></TouristSuggest>
+              <TouristSuggest></TouristSuggest>
             </div>
           </AosAnimate>
-        )}
+        </Suspense>
 
-        {lastestNews?.length > 0 && (
+        <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
               <NewsByPage
                 title={"Cẩm nang du lịch"}
-                data={lastestNews}
                 wrapperStyle={"pt-8 pb-12 lg:mt-4"}
               />
             </div>
           </AosAnimate>
-        )}
+        </Suspense>
 
         <PartnerAirlines />
 

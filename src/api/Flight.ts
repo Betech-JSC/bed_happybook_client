@@ -1,7 +1,19 @@
 import http from "@/lib/http";
 import { buildSearch } from "@/utils/Helper";
+import { unstable_cache } from "next/cache";
 
 const path = "/flights-v2";
+
+const getCachedAirports = unstable_cache(
+  async () => {
+    const response = await http.get<any>("danh-sach-diem-di-den-ve-may-bay");
+    return response?.payload?.data ?? [];
+  },
+  ["cached-flight-airports"],
+  {
+    revalidate: 60 * 60,
+  }
+);
 
 const FlightApi = {
   search: (data: any) => http.post<any>(`${path}/search`, data),
@@ -18,6 +30,7 @@ const FlightApi = {
   getAirlines: (data: any) => http.post<any>(`${path}/airlines`, data),
   bookFlight: (url: string, data: any) => http.post<any>(url, data),
   airPorts: () => http.get<any>("danh-sach-diem-di-den-ve-may-bay"),
+  getCachedAirports: getCachedAirports,
   searchAirPorts: (searchParams: string) =>
     http.get<any>(`airport/search?keyword=${searchParams}`),
   updatePaymentMethod: (data: any) =>

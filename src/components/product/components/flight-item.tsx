@@ -56,7 +56,7 @@ export default function FlightItem({ data }: any) {
         </div>
       )}
       <div className="py-3 px-4">
-        <div className="flex text-sm h-5">
+        {/* <div className="flex text-sm h-5">
           <Image
             src={`${data.image_url}/${data.flight.data_hang_bay?.logo}`}
             alt={data.flight.data_hang_bay.name}
@@ -67,10 +67,10 @@ export default function FlightItem({ data }: any) {
           <p className="ml-2" data-translate="true">
             {data.flight.data_hang_bay.name}
           </p>
-        </div>
+        </div> */}
         <Link
           href={querySerach}
-          className={`text-base min-h-6 font-semibold line-clamp-1 mt-2 ${styles.text_hover_default}`}
+          className={`text-base min-h-6 font-semibold line-clamp-1 ${styles.text_hover_default}`}
         >
           <h3 data-translate="true">{data?.name}</h3>
         </Link>

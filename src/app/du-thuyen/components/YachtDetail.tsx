@@ -94,11 +94,11 @@ export default async function YachtDetail({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link
-                    href={`/du-thuyen`}
+                    href={`/du-thuyen/${detail?.category?.alias}`}
                     className="text-blue-700"
                     data-translate="true"
                   >
-                    Du thuyền
+                    {detail?.category?.name}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>

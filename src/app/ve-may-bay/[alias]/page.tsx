@@ -62,8 +62,8 @@ export default async function AirlineTicketCategory({ params }: any) {
   if (!detail) notFound();
 
   const airportsData = (await FlightApi.airPorts())?.payload?.data as any;
-  const productFlights = (await ProductFlightApi.getFlights("all"))?.payload
-    ?.data as any;
+  const productFlights = (await ProductFlightApi.getFlights("all", detail.id))
+    ?.payload?.data as any;
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("ve-may-bay", language))
     ?.payload?.data as any;

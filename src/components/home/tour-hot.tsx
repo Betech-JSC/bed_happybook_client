@@ -9,8 +9,11 @@ import {
 } from "@/components/ui/carousel";
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { HomeApi } from "@/api/Home";
 
-export default async function TourHot({ data }: any) {
+export default async function TourHot() {
+  const data = ((await HomeApi.index("tour-hot"))?.payload?.data as any) ?? [];
+  if (!data?.length) return;
   const t = await getServerT();
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">

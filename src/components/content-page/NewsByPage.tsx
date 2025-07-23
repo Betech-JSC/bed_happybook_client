@@ -8,17 +8,25 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/getServerT";
 import { toSnakeCase } from "@/utils/Helper";
+import { newsApi } from "@/api/news";
+import clsx from "clsx";
 
 export default async function NewsByPage({
   title,
   wrapperStyle = "pt-8 pb-12 bg-[#FCFCFD]",
-  data,
-}: any) {
+  page,
+}: {
+  title: string;
+  wrapperStyle?: string;
+  page?: string;
+}) {
+  const data =
+    ((await newsApi.getLastedNewsByPage(page))?.payload?.data as any) ?? [];
   if (!data?.length) return;
   const [firstItem, ...news] = data;
   const t = await getServerT();
   return (
-    <div className={wrapperStyle}>
+    <div className={clsx("pt-8 pb-12 bg-[#FCFCFD]", wrapperStyle)}>
       <div className="flex justify-between">
         <div>
           <h2 className="text-[32px] font-bold" data-translate="true">
@@ -60,7 +68,7 @@ export default async function NewsByPage({
         />
       </Link>
       <div className="mt-8 w-full flex flex-col lg:flex-row lg:space-x-4 space-y-6 lg:space-y-0">
-        <div className={`basis-1/2 cursor-pointer ${styles.travel_guide_item}`}>
+        <div className={`basis-1/2 cursor-pointer`}>
           <Link
             href={`/${firstItem.alias}`}
             className="block relative group overflow-hidden rounded-xl w-full h-[360px] lg:h-[584px]"

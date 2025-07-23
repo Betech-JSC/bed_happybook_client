@@ -143,6 +143,8 @@ const headerStaticText: string[] = [
   "Vé máy bay",
   "Visa",
   "Du thuyền",
+  "Du thuyền Sài Gòn",
+  "Du thuyền Hạ Long",
   "Khách sạn",
   "Bảo hiểm",
   "Vé vui chơi",

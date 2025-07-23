@@ -1,10 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
 import VisaTabs from "@/app/visa/components/VisaTabs";
-import { getServerT } from "@/lib/i18n/getServerT";
+import { HomeApi } from "@/api/Home";
 
-export default async function VisaService({ data }: any) {
-  const t = await getServerT();
+export default async function VisaService() {
+  const data = ((await HomeApi.index("visa"))?.payload?.data as any) ?? [];
+  if (!data?.length) return;
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="relative py-6 lg:mt-12 lg:px-6 lg:py-8 rounded-3xl">
