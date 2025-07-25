@@ -1,4 +1,3 @@
-"use client";
 import Image from "next/image";
 import {
   Carousel,
@@ -9,23 +8,14 @@ import {
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
 import FlightItem from "@/components/product/components/flight-item";
-import { useCallback, useEffect, useState } from "react";
 import { ProductFlightApi } from "@/api/ProductFlight";
-import { useTranslation } from "@/hooks/useTranslation";
+import { getServerT } from "@/lib/i18n/getServerT";
 
-export default function Flight() {
-  const { t } = useTranslation();
-  const [data, setData] = useState<any>([]);
-  const fetchData = async () => {
-    const reponse = (await ProductFlightApi.getFlights("popular"))?.payload
-      ?.data as any;
-    const flightPopular = reponse?.popular ?? [];
-    setData(flightPopular);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+export default async function Flight() {
+  const t = await getServerT();
+  const data =
+    (await ProductFlightApi.getFlights("popular"))?.payload?.data?.popular ??
+    ([] as any);
 
   if (!data?.length) return;
   return (

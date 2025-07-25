@@ -53,8 +53,9 @@ export default async function Home() {
   const airportsData = await FlightApi.getCachedAirports();
   return (
     <Fragment>
-      <WebsiteSchema />
-
+      <Suspense fallback={null}>
+        <WebsiteSchema />
+      </Suspense>
       <Suspense>
         <Search airportsData={airportsData} />
       </Suspense>
@@ -146,11 +147,13 @@ export default async function Home() {
           </AosAnimate>
         </Suspense>
 
-        <AosAnimate>
-          <div className="mt-4 lg:mt-6">
-            <VisaSteps />
-          </div>
-        </AosAnimate>
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <div className="mt-4 lg:mt-6">
+              <VisaSteps />
+            </div>
+          </AosAnimate>
+        </Suspense>
 
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
@@ -171,11 +174,15 @@ export default async function Home() {
           </AosAnimate>
         </Suspense>
 
-        <PartnerAirlines />
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <PartnerAirlines />
+        </Suspense>
 
-        <AosAnimate>
-          <FooterMenu page={"home"}></FooterMenu>
-        </AosAnimate>
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <FooterMenu page={"home"}></FooterMenu>
+          </AosAnimate>
+        </Suspense>
       </main>
     </Fragment>
   );
