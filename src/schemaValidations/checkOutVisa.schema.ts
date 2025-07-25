@@ -39,14 +39,8 @@ export const CheckOutVisaSchema = (
 
     invoice: checkBoxGenerateInvoice
       ? z.object({
-          company_name: z
-            .string()
-            .min(3, { message: messages.required })
-            .max(255, {
-              message: messages.inValid,
-            }),
+          contact_name: z.string().min(3, { message: messages.required }),
           address: z.string().min(3, { message: messages.required }),
-          city: z.string().min(3, { message: messages.required }),
           mst: z
             .string()
             .min(1, {
@@ -55,28 +49,12 @@ export const CheckOutVisaSchema = (
             .regex(/^\d{10,13}$/, {
               message: messages.inValid,
             }),
-          contact_name: z.string().min(3, { message: messages.required }),
-          phone: z
-            .string()
-            .min(1, {
-              message: messages.required,
-            })
-            .regex(/^0\d{9}$/, {
-              message: messages.inValid,
-            }),
-          email: z.string().min(1, { message: messages.required }).email({
-            message: messages.inValid,
-          }),
         })
       : z
           .object({
-            company_name: z.string().optional(),
-            address: z.string().optional(),
-            city: z.string().optional(),
-            mst: z.string().optional(),
             contact_name: z.string().optional(),
-            phone: z.string().optional(),
-            email: z.string().optional(),
+            mst: z.string().optional(),
+            address: z.string().optional(),
           })
           .optional(),
 

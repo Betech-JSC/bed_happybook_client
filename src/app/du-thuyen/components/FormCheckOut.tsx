@@ -12,10 +12,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import {
-  checkOutAmusementTicketSchema,
-  checkOutAmusementTicketType,
-} from "@/schemaValidations/checkOutAmusementTicket";
 import { renderTextContent } from "@/utils/Helper";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { datePickerLocale } from "@/constants/language";
@@ -29,6 +25,11 @@ import { HttpError } from "@/lib/error";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import { vi, enUS } from "date-fns/locale";
 import { useTranslation } from "@/hooks/useTranslation";
+import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
+import {
+  CheckOutYachtSchema,
+  CheckOutYachtType,
+} from "@/schemaValidations/checkOutYacht";
 
 interface Ticket {
   id: number;
@@ -76,7 +77,7 @@ export default function CheckOutForm({
   }, [product, ticketOptionId]);
 
   const [schemaForm, setSchemaForm] = useState(() =>
-    checkOutAmusementTicketSchema(messages, generateInvoice)
+    CheckOutYachtSchema(messages, generateInvoice)
   );
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
@@ -128,7 +129,7 @@ export default function CheckOutForm({
   }, [product?.ticket_prices]);
 
   useEffect(() => {
-    setSchemaForm(checkOutAmusementTicketSchema(messages, generateInvoice));
+    setSchemaForm(CheckOutYachtSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
 
   const {
@@ -137,7 +138,7 @@ export default function CheckOutForm({
     reset,
     control,
     formState: { errors },
-  } = useForm<checkOutAmusementTicketType>({
+  } = useForm<CheckOutYachtType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
       full_name: userInfo?.name,
@@ -151,7 +152,7 @@ export default function CheckOutForm({
     },
   });
 
-  const onSubmit = async (data: checkOutAmusementTicketType) => {
+  const onSubmit = async (data: CheckOutYachtType) => {
     const isSelectedTicketOption = tickets.find(
       (item: any) => item.quantity > 0
     );
@@ -499,8 +500,13 @@ export default function CheckOutForm({
                   className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
                 ></textarea>
               </div>
-
-              <div className="mt-2 flex items-center space-x-2 cursor-pointer">
+              <GenerateInvoiceForm
+                register={register}
+                errors={errors}
+                generateInvoice={generateInvoice}
+                setGenerateInvoice={setGenerateInvoice}
+              />
+              {/* <div className="mt-2 flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"
                   {...register("checkBoxGenerateInvoice")}
@@ -519,9 +525,9 @@ export default function CheckOutForm({
                 >
                   Tôi muốn xuất hóa đơn
                 </span>
-              </div>
+              </div> */}
               {/* generateInvoice */}
-              <div
+              {/* <div
                 className={`mt-4   ${
                   generateInvoice ? "visible" : "invisible hidden"
                 }`}
@@ -674,7 +680,7 @@ export default function CheckOutForm({
                     )}
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
             <LoadingButton
               style="mt-6"

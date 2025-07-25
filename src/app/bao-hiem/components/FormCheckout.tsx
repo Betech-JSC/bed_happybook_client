@@ -670,22 +670,22 @@ export default function FormCheckOut({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="relative">
                         <label
-                          htmlFor="GenerateInvoice_company_name"
+                          htmlFor="GenerateInvoice_recipient_name"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                         >
-                          <span data-translate="true">Tên công ty </span>
+                          <span data-translate="true">Người nhận hóa đơn </span>
                           <span className="text-red-500">*</span>
                         </label>
                         <input
-                          id="GenerateInvoice_company_name"
+                          id="GenerateInvoice_recipient_name"
                           type="text"
-                          {...register(`invoice.company_name`)}
-                          placeholder="Nhập tên công ty"
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                          placeholder="Nhập họ và tên người nhận"
+                          {...register(`invoice.contact_name`)}
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                         />
-                        {errors.invoice?.company_name && (
+                        {errors.invoice?.contact_name && (
                           <p className="text-red-600">
-                            {errors.invoice?.company_name?.message}
+                            {errors.invoice?.contact_name?.message}
                           </p>
                         )}
                       </div>
@@ -710,7 +710,7 @@ export default function FormCheckOut({
                           </p>
                         )}
                       </div>
-                      <div className="relative">
+                      <div className="relative md:col-span-2">
                         <label
                           htmlFor="GenerateInvoice_company_address"
                           className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
@@ -728,91 +728,6 @@ export default function FormCheckOut({
                         {errors.invoice?.address && (
                           <p className="text-red-600">
                             {errors.invoice?.address?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_city"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          <span data-translate="true">Thành phố </span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_city"
-                          type="text"
-                          placeholder="Nhập thành phố"
-                          {...register(`invoice.city`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.city && (
-                          <p className="text-red-600">
-                            {errors.invoice?.city?.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="grid lg:grid-cols-3 mt-4 gap-4">
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_recipient_name"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          <span data-translate="true">Người nhận hóa đơn </span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_recipient_name"
-                          type="text"
-                          placeholder="Nhập họ và tên người nhận"
-                          {...register(`invoice.contact_name`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.contact_name && (
-                          <p className="text-red-600">
-                            {errors.invoice?.contact_name?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_phone"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          <span data-translate="true">Số điện thoại </span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_phone"
-                          type="text"
-                          placeholder="Nhập số điện thoại người nhận"
-                          {...register(`invoice.phone`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.phone && (
-                          <p className="text-red-600">
-                            {errors.invoice?.phone?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <label
-                          htmlFor="GenerateInvoice_email"
-                          className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                        >
-                          Email <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="GenerateInvoice_email"
-                          type="text"
-                          placeholder="Nhập Email"
-                          {...register(`invoice.email`)}
-                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                        />
-                        {errors.invoice?.email && (
-                          <p className="text-red-600">
-                            {errors.invoice?.email?.message}
                           </p>
                         )}
                       </div>

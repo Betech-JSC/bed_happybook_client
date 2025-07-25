@@ -248,6 +248,7 @@ const generalStaticText: string[] = [
   "Tổng cộng",
   "Chỉ từ",
   "Thông tin đơn hàng",
+  "Tôi muốn xuất hóa đơn",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
