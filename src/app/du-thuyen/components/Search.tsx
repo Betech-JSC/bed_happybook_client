@@ -14,6 +14,7 @@ import { format, isValid } from "date-fns";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type optionFilterType = {
   label: string;
@@ -31,7 +32,7 @@ export default function Search({
   optionsFilter: optionFilterType[];
   categoryDefault?: number;
 }) {
-  const today = new Date();
+  const { t } = useTranslation();
   const { language } = useLanguage();
 
   const searchParams = useSearchParams();
@@ -41,7 +42,6 @@ export default function Search({
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
-    departureDate: format(today, "yyyy-MM-dd"),
     "category[]": categoryDefault ? [categoryDefault] : "",
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
@@ -130,9 +130,7 @@ export default function Search({
         className={`flex mt-6 py-12 mb-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18" data-translate="true">
-          Loading...
-        </span>
+        <span className="text-18">Loading...</span>
       </div>
     );
   }
@@ -146,16 +144,14 @@ export default function Search({
           options={optionsFilter}
           handleFilterChange={handleFilterChange}
           handleSortData={handleSortData}
-          showFilterDate={true}
+          showFilterDate={false}
         />
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold" data-translate="true">
-            Du thuyền
-          </h1>
+          <h1 className="text-32 font-bold">{t("du_thuyen")}</h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
-            <span data-translate="true">Sắp xếp</span>
+            <span>{t("sap_xep")}</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
@@ -164,12 +160,8 @@ export default function Search({
                 }}
                 defaultValue={"id|desc"}
               >
-                <option value="id|desc" data-translate="true">
-                  Mới nhất
-                </option>
-                <option value="id|asc" data-translate="true">
-                  Cũ nhất
-                </option>
+                <option value="id|desc">{t("moi_nhat")}</option>
+                <option value="id|asc">{t("cu_nhat")}</option>
               </select>
             </div>
           </div>
@@ -185,9 +177,7 @@ export default function Search({
                         translatedText ? "opacity-100" : "opacity-0"
                       }`}
                     >
-                      <Link
-                        href={`/du-thuyen/${item.slug}?departDate=${query.departureDate}`}
-                      >
+                      <Link href={`/du-thuyen/${item.slug}`}>
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}
@@ -201,7 +191,7 @@ export default function Search({
                     </div>
                     <div className="py-3 px-5 bg-white rounded-b-xl">
                       <Link
-                        href={`/du-thuyen/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/du-thuyen/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
                         data-translate="true"
                       >
@@ -209,8 +199,8 @@ export default function Search({
                       </Link>
                       <div className="mt-1 text-end">
                         <DisplayPrice
-                          price={item.minPrice}
-                          textPrefix="Giá từ"
+                          price={item.min_price}
+                          textPrefix={t("gia_tu")}
                           currency={item?.currency}
                         />
                       </div>
@@ -230,8 +220,8 @@ export default function Search({
                   <span className="text-18">Loading...</span>
                 </>
               ) : (
-                <span className="text-18" data-translate="true">
-                  Không tìm thấy dữ liệu phù hợp...
+                <span className="text-18">
+                  {t("khong_tim_thay_du_lieu_phu_hop")}
                 </span>
               )}
             </div>
@@ -254,7 +244,7 @@ export default function Search({
                 <span className="loader_spiner"></span>
               ) : (
                 <>
-                  <span>{language === "vi" ? "Xem thêm" : "See more"}</span>
+                  <span>{t("xem_them")}</span>
                   <svg
                     className="group-hover:stroke-primary stroke-gray-700 duration-300"
                     width="20"

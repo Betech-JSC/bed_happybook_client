@@ -24,7 +24,9 @@ export default function YachtTabs({
 }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-  const [linkCategory, setLinkCategory] = useState<string>(`/du-thuyen`);
+  const [linkCategory, setLinkCategory] = useState<string>(
+    data?.[0]?.alias ? `/du-thuyen/${data?.[0]?.alias}` : "/du-thuyen"
+  );
   return (
     <Fragment>
       <div className="flex justify-between">
@@ -87,7 +89,7 @@ export default function YachtTabs({
                      }`}
                         onClick={() => {
                           setActiveTab(index);
-                          //   setLinkCategory(`/visa/${tab.alias}`);
+                          setLinkCategory(`/du-thuyen/${tab.alias}`);
                         }}
                         data-translate="true"
                       >

@@ -214,26 +214,26 @@ export default async function AirlineTicket() {
           </div>
         </div>
         <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-          {footerData.flight?.domestic?.length > 0 && (
+          {footerData.flight?.length > 0 && (
             <div className="mb-8">
               <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-                {t("diem_den_noi_dia")}
+                {t("diem_den")}
               </h2>
               <div className="grid grid-cols-5 gap-4 mt-3">
-                {footerData.flight?.domestic.map((item: any) => (
+                {footerData.flight?.map((item: any) => (
                   <Link key={item.id} href={`/ve-may-bay/${item.alias}`}>
                     <h3
                       className={`text-gray-700 font-medium ${styles.text_hover_default}`}
                       data-translate="true"
                     >
-                      {item.location.city}
+                      {item.name}
                     </h3>
                   </Link>
                 ))}
               </div>
             </div>
           )}
-          {footerData.flight?.international?.length > 0 && (
+          {/* {footerData.flight?.international?.length > 0 && (
             <div className="mb-8">
               <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
                 {t("diem_den_quoc_te")}
@@ -251,7 +251,7 @@ export default async function AirlineTicket() {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </main>
     </SeoSchema>

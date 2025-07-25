@@ -233,6 +233,14 @@ const generalStaticText: string[] = [
   "Chọn ngày",
   "Chat với chúng tôi qua",
   "Xin vui lòng liên hệ HappyBook để biết thêm chi tiết.",
+  "Các gói dịch vụ",
+  "Chọn các gói dịch vụ",
+  "Chi tiết địa điểm",
+  "Lưu ý",
+  "Giá từ",
+  "Xem thêm",
+  "Giá",
+  "Hành trình",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",

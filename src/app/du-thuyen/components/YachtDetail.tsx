@@ -17,10 +17,11 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { notFound, redirect } from "next/navigation";
-import { format, parse, parseISO } from "date-fns";
+import { notFound } from "next/navigation";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import { Fragment } from "react";
+import YachtDetailInfor from "./YachtDetailInfor";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 export default async function YachtDetail({
   alias,
@@ -29,50 +30,12 @@ export default async function YachtDetail({
   alias: string;
   searchParams: { [key: string]: string | undefined };
 }) {
-  if (isEmpty(searchParams?.departDate)) {
-    redirect(
-      `/du-thuyen/${alias}?departDate=${format(new Date(), "yyyy-MM-dd")}`
-    );
-  }
-  const res = (await ProductYachtApi.detail(
-    alias,
-    searchParams.departDate ?? ""
-  )) as any;
+  const t = await getServerT();
+  const res = (await ProductYachtApi.detail(alias)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();
 
-  const dayMap: Record<string, string> = {
-    monday: "Thứ Hai",
-    tuesday: "Ba",
-    wednesday: "Tư",
-    thursday: "Năm",
-    friday: "Sáu",
-    saturday: "Bảy",
-    sunday: "Chủ nhật",
-  };
-  const daysOpeningRaw = detail?.yacht?.opening_days;
-  const daysOpening = Array.isArray(daysOpeningRaw)
-    ? daysOpeningRaw
-    : typeof daysOpeningRaw === "string"
-    ? JSON.parse(daysOpeningRaw)
-    : [];
-  const isFullWeek = daysOpening.length === 7;
-  const displayDaysOpening = isFullWeek
-    ? "Mỗi ngày"
-    : daysOpening
-        .map((day: any) => dayMap[day])
-        .filter(Boolean)
-        .join(", ");
-  const parsedTimeOpening = parse(
-    detail?.yacht?.opening_time,
-    "HH:mm:ss",
-    new Date()
-  );
-  const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
-  const departDate = searchParams.departDate
-    ? format(parseISO(searchParams.departDate), "dd/MM/yyyy")
-    : null;
   return (
     <Fragment>
       <div className="bg-gray-100">
@@ -81,12 +44,8 @@ export default async function YachtDetail({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link
-                    href="/"
-                    className="text-blue-700"
-                    data-translate="true"
-                  >
-                    Trang chủ
+                  <Link href="/" className="text-blue-700">
+                    {t("trang_chu")}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -112,190 +71,7 @@ export default async function YachtDetail({
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
-            <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery detail={detail} />
-              <div id="cac-goi-dich-vu" className="mt-4">
-                <div className={`bg-white rounded-2xl p-6`}>
-                  <h2
-                    className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-                    data-translate="true"
-                  >
-                    Các gói dịch vụ
-                  </h2>
-                  <div className="mt-6">
-                    {detail?.yacht?.options?.length > 0 &&
-                      detail?.yacht?.options.map((option: any) => (
-                        <div
-                          key={option.id}
-                          className="mb-6 last:mb-0 py-2 px-4 border border-gray-300 rounded-2xl"
-                        >
-                          <div className="border-b py-5">
-                            <div className="flex gap-2 md:gap-3 flex-col md:flex-row justify-between items-start">
-                              <p
-                                className="text-blue-700 text-18 font-semibold"
-                                data-translate="true"
-                              >
-                                {option?.name}
-                              </p>
-                              {departDate && (
-                                <div className="w-32 flex-shrink-0">
-                                  <span>Ngày </span>
-                                  <span>{departDate}</span>
-                                </div>
-                              )}
-                            </div>
-                            <TicketOptionContent
-                              content={option?.description}
-                            />
-                          </div>
-                          {option.prices.map((ticket: any) => (
-                            <div
-                              key={ticket.id}
-                              className="flex space-x-2 justify-between items-start py-4 border-b last:border-none"
-                            >
-                              <div>
-                                <div
-                                  className="font-semibold text-base"
-                                  data-translate="true"
-                                >
-                                  {renderTextContent(ticket?.type?.name)}
-                                </div>
-                                <div
-                                  className="text-sm text-gray-500 mt-1"
-                                  data-translate="true"
-                                >
-                                  {!isEmpty(ticket?.type?.description)
-                                    ? renderTextContent(
-                                        ticket?.type?.description
-                                      )
-                                    : ""}
-                                </div>
-                              </div>
-                              <div className="flex items-start justify-between">
-                                <div>
-                                  <DisplayPrice
-                                    className={`!text-base mr-4 text-black !font-normal`}
-                                    price={ticket.day_price}
-                                    currency={detail?.currency}
-                                  />
-
-                                  <p
-                                    className="text-sm text-gray-500 mt-1"
-                                    data-translate="true"
-                                  >
-                                    Giá / Khách
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                          <div className="text-end mt-6 mb-2">
-                            <Link
-                              href={`/du-thuyen/checkout/${
-                                detail?.slug
-                              }?option=${option.id}&departDate=${
-                                searchParams.departDate ?? ""
-                              }`}
-                              className="bg-blue-600 w-[110px] text__default_hover p-[10px] text-white rounded-lg inline-flex items-center justify-center"
-                              data-translate="true"
-                            >
-                              Chọn
-                            </Link>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className={`bg-white rounded-2xl p-6`}>
-                  <h2
-                    className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
-                    data-translate="true"
-                  >
-                    Chi tiết địa điểm
-                  </h2>
-                  <div className="ckeditor_container">
-                    <div
-                      data-translate="true"
-                      className="cke_editable"
-                      dangerouslySetInnerHTML={{
-                        __html: renderTextContent(detail?.yacht?.description),
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-full lg:w-4/12">
-              <div className="mt-4 p-6 lg:mt-0 flex flex-col justify-between rounded-2xl bg-white">
-                <div>
-                  <h1
-                    className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-                    data-translate="true"
-                  >
-                    {renderTextContent(detail?.name)}
-                  </h1>
-
-                  <div className="flex space-x-2 mt-6 items-center">
-                    <Image
-                      className="w-4 h-4"
-                      src="/icon/clock.svg"
-                      alt="Icon"
-                      width={18}
-                      height={18}
-                    />
-                    <span data-translate="true">
-                      Mở {displayTimeOpening ?? ""} | {displayDaysOpening ?? ""}
-                    </span>
-                  </div>
-
-                  <div className="flex space-x-2 mt-3 items-center">
-                    <Image
-                      className="w-4 h-4"
-                      src="/icon/marker-pin-01.svg"
-                      alt="Icon"
-                      width={18}
-                      height={18}
-                    />
-                    <span data-translate="true">
-                      {renderTextContent(detail?.yacht?.address)}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-6">
-                  <SmoothScrollLink targetId="cac-goi-dich-vu" offset={-100}>
-                    <button
-                      type="button"
-                      className="bg-blue-600 text__default_hover p-[10px] text-white rounded-lg inline-flex w-full items-center"
-                    >
-                      <span
-                        className="mx-auto text-base font-medium"
-                        data-translate="true"
-                      >
-                        Chọn các gói dịch vụ
-                      </span>
-                    </button>
-                  </SmoothScrollLink>
-                </div>
-              </div>
-              <div className="mt-3">
-                <Schedule schedule={detail?.schedule ?? []} />
-              </div>
-              <div className="mt-3 bg-white rounded-2xl p-6">
-                <h2
-                  className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
-                  data-translate="true"
-                >
-                  Lưu ý
-                </h2>
-                <div className="mt-4">
-                  <DisplayContentEditor content={detail?.yacht?.note} />
-                </div>
-              </div>
-            </div>
-          </div>
+          <YachtDetailInfor product={detail} />
         </div>
       </div>
       <div className="bg-white">
