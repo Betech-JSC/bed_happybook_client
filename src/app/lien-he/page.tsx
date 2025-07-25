@@ -251,9 +251,7 @@ export default async function Contact() {
                       </p>
                       <p className="text-gray-900">
                         <span className="font-medium">{t("chi_nhanh_1")}</span>{" "}
-                        <span>
-                          {t("124_le_quang_dinh_p_14_q_binh_thanh_tphcm")}
-                        </span>
+                        <span>{t("124_le_quang_dinh_p_binh_thanh_tphcm")}</span>
                       </p>
                     </div>
                   </div>

@@ -173,7 +173,7 @@ const footerStaticText: string[] = [
   "Trụ sở chính:",
   "Tầng 1, Phong Phú Tower, 93/10 Quang Trung, Khu phố 1, Phường Tăng Nhơn Phú, Thành phố Hồ Chí Minh, Việt Nam",
   "Chi nhánh 1:",
-  "124 Lê Quang Định, P.14, Q.Bình Thạnh, TP.HCM",
+  "124 Lê Quang Định, P.Bình Thạnh, TP.HCM",
   "Về HappyBook",
   "Về chúng tôi",
   "Liên hệ chúng tôi",
