@@ -1,6 +1,7 @@
 "use client";
 
 import { VoucherProgramApi } from "@/api/VoucherProgram";
+import { useTranslation } from "@/hooks/useTranslation";
 import { formatCurrency } from "@/lib/formatters";
 import { VoucherType } from "@/types/voucher";
 import { debounce, isEqual } from "lodash";
@@ -75,6 +76,7 @@ export default function VoucherProgram({
   }) => void;
   onSearch: (code: string) => void;
 }) {
+  const { t } = useTranslation();
   const isCurrencyVnd = useMemo(() => {
     return currency.toLowerCase() === "vnd";
   }, [currency]);
@@ -167,9 +169,7 @@ export default function VoucherProgram({
   };
   return (
     <div className="border rounded-lg p-4 shadow-sm">
-      <h3 className="font-semibold mb-2" data-translate="true">
-        Mã khuyến mãi
-      </h3>
+      <h3 className="font-semibold mb-2">{t("ma_khuyen_mai")}</h3>
       <div className="flex flex-col gap-2">
         <div className="flex-1 rounded outline-primary w-full">
           {mounted && (
@@ -190,9 +190,9 @@ export default function VoucherProgram({
               }}
               onChange={handleSelectChange}
               onInputChange={handleInputChange}
-              placeholder="Chọn mã khuyến mãi..."
+              placeholder={t("chon_ma_khuyen_mai")}
               className="w-full"
-              noOptionsMessage={() => "Không tìm thấy mã khuyến mãi phù hợp"}
+              noOptionsMessage={() => t("khong_tim_thay_ma_khuyen_mai_phu_hop")}
               isOptionDisabled={(option) =>
                 isCurrencyVnd
                   ? totalPrice < option.min_order_amount

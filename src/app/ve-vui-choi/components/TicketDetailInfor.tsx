@@ -1,23 +1,24 @@
 "use client";
-import DisplayContentEditor from "@/components/base/DisplayContentEditor";
-import Schedule from "./Schedule";
-import Image from "next/image";
-import { renderTextContent } from "@/utils/Helper";
-import Link from "next/link";
-import DisplayPrice from "@/components/base/DisplayPrice";
-import { cloneDeep, isEmpty } from "lodash";
-import ImageGallery from "./ImageGallery";
-import TicketOptionContent from "./TicketOptionContent";
-import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useCallback, useEffect, useState } from "react";
 import { format, parse } from "date-fns";
 import SmoothScrollLink from "@/components/base/SmoothScrollLink";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { cloneDeep, isEmpty } from "lodash";
+import ImageGallery from "./ImageGallery";
+import TicketOptionContent from "./TicketOptionContent";
+import { renderTextContent } from "@/utils/Helper";
+import { formatCurrency } from "@/lib/formatters";
+import Link from "next/link";
+import Image from "next/image";
+import Schedule from "./Schedule";
+import DisplayContentEditor from "@/components/base/DisplayContentEditor";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
-export default function YachtDetailInfor({ product }: any) {
+export default function TicketDetailInfor({ product }: any) {
   const today = new Date();
   const { t } = useTranslation();
   const { language } = useLanguage();
@@ -33,7 +34,7 @@ export default function YachtDetailInfor({ product }: any) {
     saturday: "Bảy",
     sunday: "Chủ nhật",
   };
-  const daysOpeningRaw = product?.yacht?.opening_days;
+  const daysOpeningRaw = product?.ticket?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
@@ -47,7 +48,7 @@ export default function YachtDetailInfor({ product }: any) {
         .filter(Boolean)
         .join(", ");
   const parsedTimeOpening = parse(
-    product?.yacht?.opening_time,
+    product?.ticket?.opening_time,
     "HH:mm:ss",
     new Date()
   );
@@ -57,7 +58,7 @@ export default function YachtDetailInfor({ product }: any) {
     const dayName = format(departDate, "EEEE").toLowerCase();
     const clonedProduct = cloneDeep(product);
 
-    clonedProduct.yacht?.options.forEach((option: any) => {
+    clonedProduct.ticket_options?.forEach((option: any) => {
       const validPrices = option.prices.filter(
         (p: any) => Array.isArray(p.days) && p.days.includes(dayName)
       );
@@ -65,7 +66,7 @@ export default function YachtDetailInfor({ product }: any) {
       const grouped: Record<number, any[]> = {};
 
       validPrices.forEach((p: any) => {
-        const typeId = p.product_yacht_type_id;
+        const typeId = p.product_ticket_type_id;
         if (!grouped[typeId]) grouped[typeId] = [];
         grouped[typeId].push(p);
       });
@@ -88,7 +89,6 @@ export default function YachtDetailInfor({ product }: any) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
   return (
     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
@@ -99,8 +99,8 @@ export default function YachtDetailInfor({ product }: any) {
               {t("cac_goi_dich_vu")}
             </h2>
             <div className="mt-6">
-              {detail?.yacht?.options?.length > 0 &&
-                detail?.yacht?.options.map((option: any) => (
+              {detail?.ticket_options?.length > 0 &&
+                detail?.ticket_options.map((option: any) => (
                   <div
                     key={option.id}
                     className="mb-6 last:mb-0 py-2 px-4 border border-gray-300 rounded-2xl"
@@ -147,11 +147,10 @@ export default function YachtDetailInfor({ product }: any) {
                           <div className="flex items-start justify-between">
                             <div>
                               <DisplayPrice
-                                className={`!text-base mr-4 text-black !font-normal`}
+                                className={`!text-base mr-4 text-black font-normal`}
                                 price={ticket.price}
                                 currency={detail?.currency}
                               />
-
                               <p className="text-sm text-gray-500 mt-1">
                                 {t("gia")} / {t("khach")}
                               </p>
@@ -159,18 +158,16 @@ export default function YachtDetailInfor({ product }: any) {
                           </div>
                         </div>
                       ))}
-                    {option.prices?.length > 0 && (
-                      <div className="text-end mt-6 mb-2">
-                        <Link
-                          href={`/du-thuyen/checkout/${detail?.slug}?option=${
-                            option.id
-                          }&departDate=${format(departDate, "yyyy-MM-dd")}`}
-                          className="bg-blue-600 w-[110px] text__default_hover p-[10px] text-white rounded-lg inline-flex items-center justify-center"
-                        >
-                          {t("chon")}
-                        </Link>
-                      </div>
-                    )}
+                    <div className="text-end mt-6 mb-2">
+                      <Link
+                        href={`/ve-vui-choi/${detail?.slug}/checkout?option=${
+                          option.id
+                        }&departDate=${format(departDate, "yyyy-MM-dd")}`}
+                        className="bg-blue-600 w-[110px] text__default_hover p-[10px] text-white rounded-lg inline-flex items-center justify-center"
+                      >
+                        {t("chon")}
+                      </Link>
+                    </div>
                   </div>
                 ))}
             </div>
@@ -186,7 +183,7 @@ export default function YachtDetailInfor({ product }: any) {
                 data-translate="true"
                 className="cke_editable"
                 dangerouslySetInnerHTML={{
-                  __html: renderTextContent(product?.yacht?.description),
+                  __html: renderTextContent(detail?.ticket?.description),
                 }}
               ></div>
             </div>
@@ -200,7 +197,7 @@ export default function YachtDetailInfor({ product }: any) {
               className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
               data-translate="true"
             >
-              {renderTextContent(product?.name)}
+              {renderTextContent(detail?.name)}
             </h1>
 
             <div className="flex space-x-2 mt-6 items-center">
@@ -212,7 +209,7 @@ export default function YachtDetailInfor({ product }: any) {
                 height={18}
               />
               <span data-translate="true">
-                Mở {displayTimeOpening ?? ""} | {displayDaysOpening ?? ""}
+                Mở {displayTimeOpening} | {displayDaysOpening}
               </span>
             </div>
 
@@ -224,11 +221,10 @@ export default function YachtDetailInfor({ product }: any) {
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
-                {renderTextContent(product?.yacht?.address)}
-              </span>
+              <span>{renderTextContent(detail?.ticket?.address)}</span>
             </div>
           </div>
+
           <div className="mt-6">
             <SmoothScrollLink targetId="cac-goi-dich-vu" offset={-100}>
               <button
@@ -278,7 +274,7 @@ export default function YachtDetailInfor({ product }: any) {
             {t("luu_y")}
           </h2>
           <div className="mt-4">
-            <DisplayContentEditor content={detail?.yacht?.note} />
+            <DisplayContentEditor content={detail?.ticket?.note} />
           </div>
         </div>
       </div>

@@ -28,6 +28,7 @@ import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import { vi, enUS } from "date-fns/locale";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Ticket {
   id: number;
@@ -46,6 +47,7 @@ export default function CheckOutForm({
   product: any;
   ticketOptionId: number;
 }) {
+  const { t } = useTranslation();
   const { userInfo } = useUser();
   const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
@@ -67,6 +69,11 @@ export default function CheckOutForm({
     handleApplyVoucher,
     handleSearch,
   } = useVoucherManager("yacht");
+  const yachtOptionSelected = useMemo(() => {
+    return product?.yacht?.options.find(
+      (item: any) => item.id === ticketOptionId
+    );
+  }, [product, ticketOptionId]);
 
   const [schemaForm, setSchemaForm] = useState(() =>
     checkOutAmusementTicketSchema(messages, generateInvoice)
@@ -235,11 +242,8 @@ export default function CheckOutForm({
               "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
           }}
         >
-          <h3
-            className="text-22 py-4 px-8 font-semibold text-white"
-            data-translate="true"
-          >
-            Thông tin đơn hàng
+          <h3 className="text-22 py-4 px-8 font-semibold text-white">
+            {t("thong_tin_don_hang")}
           </h3>
         </div>
 
@@ -311,7 +315,7 @@ export default function CheckOutForm({
               className="text-blue-700 text-base font-medium"
               data-translate="true"
             >
-              {product?.name}
+              {yachtOptionSelected?.name}
             </p>
             <div className="mt-1">
               {tickets.map(
@@ -345,11 +349,8 @@ export default function CheckOutForm({
                             currency={product?.currency}
                           />
 
-                          <p
-                            className="text-sm text-gray-500 mt-1"
-                            data-translate="true"
-                          >
-                            Giá / Khách
+                          <p className="text-sm text-gray-500 mt-1">
+                            {t("gia")} / {t("khach")}
                           </p>
                         </div>
                         <div className="flex items-center">
@@ -394,9 +395,7 @@ export default function CheckOutForm({
             </div>
           </div>
           <div className="mt-6">
-            <p className="text-18 font-bold" data-translate="true">
-              Thông tin liên hệ
-            </p>
+            <p className="text-18 font-bold">{t("thong_tin_lien_he")}</p>
             <div className="mt-4 bg-white py-4 px-6 rounded-xl">
               <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="relative">
@@ -754,9 +753,8 @@ export default function CheckOutForm({
             ) : (
               totalPrice > 0 && (
                 <div className="w-full flex justify-between">
-                  <span className="font-medium">Tổng cộng</span>
                   <DisplayPrice
-                    textPrefix={""}
+                    textPrefix={"Tổng cộng"}
                     price={totalPrice}
                     currency={product?.currency}
                   />

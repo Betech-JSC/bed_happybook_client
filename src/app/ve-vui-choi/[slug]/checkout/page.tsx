@@ -4,6 +4,7 @@ import { TourApi } from "@/api/Tour";
 import { notFound } from "next/navigation";
 import CheckOutForm from "@/app/ve-vui-choi/components/FormCheckOut";
 import { ProductTicket } from "@/api/ProductTicket";
+import { isMatch, parse, isBefore, startOfDay } from "date-fns";
 
 export default async function TourCheckout({
   params,
@@ -12,10 +13,18 @@ export default async function TourCheckout({
   params: { slug: string };
   searchParams: { [key: string]: string | undefined };
 }) {
-  const res = (await ProductTicket.detail(
-    params.slug,
-    searchParams.departDate ?? ""
-  )) as any;
+  const departDate = searchParams.departDate ?? "";
+  if (
+    !departDate ||
+    !isMatch(departDate, "yyyy-MM-dd") ||
+    isBefore(
+      parse(departDate, "yyyy-MM-dd", new Date()),
+      startOfDay(new Date())
+    )
+  ) {
+    notFound();
+  }
+  const res = (await ProductTicket.detail(params.slug, departDate)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();

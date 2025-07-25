@@ -202,7 +202,7 @@ const generalStaticText: string[] = [
   "Nộp hồ sơ",
   "Đợi kết quả",
   "Điểm đến được yêu thích",
-  "Diểm đi",
+  "Điểm đi",
   "Điểm đến",
   "Sắp xếp",
   "Mới nhất",
@@ -241,6 +241,13 @@ const generalStaticText: string[] = [
   "Xem thêm",
   "Giá",
   "Hành trình",
+  "Thông tin liên hệ",
+  "Mã khuyến mãi",
+  "Chọn mã khuyến mãi...",
+  "Không tìm thấy mã khuyến mãi phù hợp",
+  "Tổng cộng",
+  "Chỉ từ",
+  "Thông tin đơn hàng",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
