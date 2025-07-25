@@ -12,22 +12,56 @@ export default function ContentByPage({ data }: any) {
 
   useEffect(() => {
     const el = contentRef.current;
-    if (el) {
-      const style = window.getComputedStyle(el);
-      const line = parseFloat(style.lineHeight || "24") + 12;
-      const fullHeight = el.scrollHeight;
+    if (!el) return;
 
-      setLineHeight(line);
-      setContentHeight(fullHeight);
+    const style = window.getComputedStyle(el);
+    const line = parseFloat(style.lineHeight || "24") + 12;
+    setLineHeight(line);
 
-      const timeout = setTimeout(() => {
-        const updatedHeight = el.scrollHeight;
-        setContentHeight(updatedHeight);
-        setShowToggleButton(updatedHeight > line * 3);
+    let debounceTimer: NodeJS.Timeout;
+    let forceStopTimer: NodeJS.Timeout;
+    let checkStableTimer: NodeJS.Timeout;
+    let lastUpdate = performance.now();
+
+    const measureHeight = () => {
+      const updatedHeight = el.scrollHeight;
+      setContentHeight(updatedHeight);
+      setShowToggleButton(updatedHeight > line * 3);
+    };
+
+    const observer = new MutationObserver(() => {
+      lastUpdate = performance.now();
+      clearTimeout(debounceTimer);
+
+      debounceTimer = setTimeout(() => {
+        measureHeight();
       }, 100);
+    });
 
-      return () => clearTimeout(timeout);
-    }
+    observer.observe(el, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    checkStableTimer = setInterval(() => {
+      if (performance.now() - lastUpdate > 2000) {
+        observer.disconnect();
+        clearInterval(checkStableTimer);
+      }
+    }, 500);
+
+    forceStopTimer = setTimeout(() => {
+      observer.disconnect();
+      clearInterval(checkStableTimer);
+    }, 10000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(debounceTimer);
+      clearTimeout(forceStopTimer);
+      clearInterval(checkStableTimer);
+    };
   }, [data?.content]);
 
   return (
