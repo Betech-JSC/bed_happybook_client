@@ -1,20 +1,14 @@
-"use client";
-import { useState } from "react";
 import Image from "next/image";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import Link from "next/link";
-import TourItem from "@/components/product/components/tour-item";
-import { useTranslation } from "@/hooks/useTranslation";
+import { HomeApi } from "@/api/Home";
+import { getServerT } from "@/lib/i18n/getServerT";
+import TourTabs from "./TourTabs";
 
-export default function TourNoiDia({ data }: any) {
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState(0);
+export default async function TourNoiDia() {
+  const data =
+    ((await HomeApi.index("tour-domestic"))?.payload?.data as any) ?? [];
+  if (!data?.length) return;
+  const t = await getServerT();
   return (
     <div className="hidden lg:block px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="relative mt-12 px-6 py-8 rounded-3xl">
@@ -67,71 +61,7 @@ export default function TourNoiDia({ data }: any) {
             {t("trai_nghiem_sac_vang_va_kham_pha_van_hoa_mua_thu")}
           </p>
           {/* Tabs */}
-          <div className="w-full mt-6">
-            <div className="border-b border-gray-200">
-              <div className="flex space-x-3 mb-8">
-                {data.map(
-                  (
-                    category: {
-                      name: string;
-                      id: number;
-                      type_tour: number;
-                      tours: any[];
-                    },
-                    index: number
-                  ) => (
-                    <button
-                      key={index}
-                      className={`px-4 py-2 outline-none rounded-[8px] duration-300 border-2 border-solid ${
-                        activeTab === index
-                          ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                          : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                      }`}
-                      onClick={() => setActiveTab(index)}
-                      data-translate
-                    >
-                      {category.name}
-                    </button>
-                  )
-                )}
-              </div>
-              {data.map(
-                (
-                  category: {
-                    name: string;
-                    id: number;
-                    type_tour: number;
-                    tours: any[];
-                  },
-                  tabIndex: number
-                ) => (
-                  <div className="" key={tabIndex}>
-                    {/* {activeTab === tabIndex && ( */}
-                    <Carousel
-                      opts={{
-                        align: "start",
-                        loop: true,
-                      }}
-                      className={`${
-                        activeTab === tabIndex ? "block" : "hidden"
-                      }`}
-                    >
-                      <CarouselContent>
-                        {category.tours.map((tour, index) => (
-                          <CarouselItem key={index} className="basis-1/4">
-                            <TourItem key={index} tour={tour} />
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      <CarouselPrevious />
-                      <CarouselNext />
-                    </Carousel>
-                    {/* )} */}
-                  </div>
-                )
-              )}
-            </div>
-          </div>
+          <TourTabs data={data} />
         </div>
         {/* End */}
       </div>

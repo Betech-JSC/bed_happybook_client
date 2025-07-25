@@ -22,6 +22,8 @@ import FAQ from "@/components/content-page/FAQ";
 import { getServerLang } from "@/lib/session";
 import { getServerT } from "@/lib/i18n/getServerT";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
+import { Suspense } from "react";
+import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -59,8 +61,6 @@ for (let i = 1; i <= 8; i++) {
 export default async function Tours() {
   const res = (await TourApi.getAll()) as any;
   const data = res?.payload?.data;
-  const touristSuggest = (await BannerApi.getBannerPage("home-dichoi"))?.payload
-    ?.data as any;
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("tours", language))?.payload
     ?.data as any;
@@ -283,11 +283,12 @@ export default async function Tours() {
               </div>
             )}
             {/* Suggest Tour */}
-            {touristSuggest?.length > 0 && (
+            <Suspense fallback={<SkeletonProductTabs />}>
               <div className="mt-6">
-                <TouristSuggest data={touristSuggest}></TouristSuggest>
+                <TouristSuggest></TouristSuggest>
               </div>
-            )}
+            </Suspense>
+
             {/* Blog */}
             {contentPage?.content && (
               <div className="mt-8 rounded-2xl bg-gray-50 p-8">

@@ -41,8 +41,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function DinhCu() {
-  const newsByPage = (await newsApi.getLastedNewsByPage("dinh cu"))?.payload
-    ?.data as any;
   const language = await getServerLang();
   const categories = (await ProductCategoryApi.listByType("dinhcu", language))
     ?.payload?.data as any;
@@ -167,13 +165,12 @@ export default async function DinhCu() {
 
           <div className="bg-gray-100">
             <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen">
-              {newsByPage.length > 0 && (
-                <NewsByPage
-                  title={"Tin tức"}
-                  wrapperStyle={"pt-8 pb-6 bg-none"}
-                  data={newsByPage}
-                />
-              )}
+              <NewsByPage
+                title={"Tin tức"}
+                wrapperStyle={"pt-8 pb-6 bg-none"}
+                page="dinh cu"
+              />
+
               {/* Form contact */}
               <div className="py-6">
                 <FormContact />

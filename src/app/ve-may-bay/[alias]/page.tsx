@@ -26,6 +26,7 @@ import { notFound } from "next/navigation";
 import { ProductFlightApi } from "@/api/ProductFlight";
 import styles from "@/styles/styles.module.scss";
 import { isEmpty } from "lodash";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -62,12 +63,13 @@ export default async function AirlineTicketCategory({ params }: any) {
   if (!detail) notFound();
 
   const airportsData = (await FlightApi.airPorts())?.payload?.data as any;
-  const productFlights = (await ProductFlightApi.getFlights("all"))?.payload
-    ?.data as any;
+  const productFlights = (await ProductFlightApi.getFlights("all", detail.id))
+    ?.payload?.data as any;
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("ve-may-bay", language))
     ?.payload?.data as any;
   const metadata = getMetadata(contentPage);
+  const t = await getServerT();
   return (
     <SeoSchema
       metadata={metadata}
@@ -127,13 +129,10 @@ export default async function AirlineTicketCategory({ params }: any) {
                 height={44}
               ></Image>
               <div>
-                <p
-                  className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate
-                >
-                  Lựa Chọn Không Giới Hạn
+                <p className="text-18 text-gray-700 font-semibold mb-1">
+                  {t("lua_chon_khong_gioi_han")}
                 </p>
-                <p data-translate>Vô vàn hành trình, triệu cảm hứng</p>
+                <p>{t("vo_van_hanh_trinh_trieu_cam_hung")}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -145,13 +144,10 @@ export default async function AirlineTicketCategory({ params }: any) {
                 height={44}
               ></Image>
               <div>
-                <p
-                  className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate
-                >
-                  Dịch Vụ Cá Nhân Hóa
+                <p className="text-18 text-gray-700 font-semibold mb-1">
+                  {t("dich_vu_ca_nhan_hoa")}
                 </p>
-                <p data-translate>Chăm sóc đặc biệt, trải nghiệm độc đáo</p>
+                <p>{t("cham_soc_dac_biet_trai_nghiem_doc_dao")}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 h-20">
@@ -163,13 +159,10 @@ export default async function AirlineTicketCategory({ params }: any) {
                 height={44}
               ></Image>
               <div>
-                <p
-                  className="text-18 text-gray-700 font-semibold mb-1"
-                  data-translate
-                >
-                  Giá Trị Vượt Trội
+                <p className="text-18 text-gray-700 font-semibold mb-1">
+                  {t("gia_tri_vuot_troi")}
                 </p>
-                <p data-translate>Chất lượng đỉnh, đảm bảo giá tốt nhất</p>
+                <p>{t("chat_luong_dinh_dam_bao_gia_tot_nhat")}</p>
               </div>
             </div>
           </div>
@@ -188,10 +181,10 @@ export default async function AirlineTicketCategory({ params }: any) {
                               data-translate
                             >
                               {key === "popular"
-                                ? "Những chuyến bay phổ biến"
+                                ? t("nhung_chuyen_bay_pho_bien")
                                 : key === "oneWay"
-                                ? "Vé Máy Bay Một Chiều Dành Cho Bạn"
-                                : "Vé Máy Bay Khứ Hồi Dành Cho Bạn"}
+                                ? t("ve_may_bay_mot_chieu_danh_cho_ban")
+                                : t("ve_may_bay_khu_hoi_danh_cho_ban")}
                             </h2>
                           </div>
                         </div>
@@ -236,11 +229,8 @@ export default async function AirlineTicketCategory({ params }: any) {
         {detail.children?.length > 0 && (
           <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <div className="mb-8">
-              <h2
-                className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]"
-                data-translate="true"
-              >
-                Hành trình
+              <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
+                {t("diem_den")}
               </h2>
               <div className="grid grid-cols-5 gap-4 mt-3">
                 {detail.children.map((item: any) => (
@@ -249,7 +239,7 @@ export default async function AirlineTicketCategory({ params }: any) {
                       className={`text-gray-700 font-medium ${styles.text_hover_default}`}
                       data-translate="true"
                     >
-                      {`${item?.from_location?.city} - ${detail?.to_location?.city}`}
+                      {item?.name}
                     </h3>
                   </Link>
                 ))}

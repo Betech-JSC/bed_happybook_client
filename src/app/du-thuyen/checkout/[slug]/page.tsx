@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import CheckOutForm from "@/app/du-thuyen/components/FormCheckOut";
+import { isMatch, parse, isBefore, startOfDay } from "date-fns";
 
 export default async function TourCheckout({
   params,
@@ -9,10 +10,19 @@ export default async function TourCheckout({
   params: { slug: string };
   searchParams: { [key: string]: string | undefined };
 }) {
-  const res = (await ProductYachtApi.detail(
-    params.slug,
-    searchParams.departDate ?? ""
-  )) as any;
+  const departDate = searchParams.departDate ?? "";
+  if (
+    !departDate ||
+    !isMatch(departDate, "yyyy-MM-dd") ||
+    isBefore(
+      parse(departDate, "yyyy-MM-dd", new Date()),
+      startOfDay(new Date())
+    )
+  ) {
+    notFound();
+  }
+
+  const res = (await ProductYachtApi.detail(params.slug, departDate)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();

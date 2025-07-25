@@ -8,7 +8,8 @@ const ProductFlightApi = {
     locale = locale && arrLanguages.includes(locale) ? locale : "vi";
     return http.get<any>(`${path}/category/${alias}?locale=${locale}`);
   },
-  getFlights: (flightType: string) => http.get<any>(`${path}/${flightType}`),
+  getFlights: (flightType: string, categoryId?: number) =>
+    http.get<any>(`${path}/${flightType}?category=${categoryId ?? 0}`),
 };
 
 export { ProductFlightApi };

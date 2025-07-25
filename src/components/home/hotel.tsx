@@ -1,13 +1,15 @@
-"use client";
-import { useState } from "react";
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import HotelTabs from "@/app/khach-san/components/HotelTabs";
-import { useTranslation } from "@/hooks/useTranslation";
+import { HomeApi } from "@/api/Home";
+import { getServerT } from "@/lib/i18n/getServerT";
 
-export default function Hotel({ data }: any) {
-  const { t } = useTranslation();
+export default async function Hotel() {
+  const data = ((await HomeApi.index("hotel"))?.payload?.data as any) ?? [];
+  if (!data?.length) return;
+  const t = await getServerT();
+
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
       <div className="relative lg:mb-8 lg:mt-12 lg:px-6 py-6 lg:py-8">

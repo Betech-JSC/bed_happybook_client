@@ -14,6 +14,8 @@ import FooterMenu from "@/components/content-page/footer-menu";
 import { PageApi } from "@/api/Page";
 import { getServerLang } from "@/lib/session";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { Suspense } from "react";
+import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -48,9 +50,6 @@ export default async function Visa() {
   const data = res?.payload?.data;
   const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
     ?.data as any;
-  const newsByPage = (await newsApi.getLastedNewsByPage("visa"))?.payload
-    ?.data as any;
-
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("visa", language))?.payload
     ?.data as any;
@@ -106,11 +105,13 @@ export default async function Visa() {
                 />
               </div>
             )}
-            {newsByPage.length > 0 && (
-              <div className="mt-6">
-                <NewsByPage title={"Cẩm nang visa"} data={newsByPage} />
-              </div>
-            )}
+            <Suspense fallback={<SkeletonProductTabs />}>
+              <NewsByPage
+                title={"Cẩm nang visa"}
+                page={"visa"}
+                wrapperStyle="mt-6"
+              />
+            </Suspense>
             {data?.visaByCategory?.length > 0 &&
               data.visaByCategory.map((parentCategory: any, index: number) => (
                 <div className="mt-6" key={index}>

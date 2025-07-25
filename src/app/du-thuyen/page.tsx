@@ -17,6 +17,7 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { PageApi } from "@/api/Page";
 import SeoSchema from "@/components/schema";
 import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -55,7 +56,7 @@ export default async function ProductYacht() {
   const contentPage = (await PageApi.getContent("du-thuyen", language))?.payload
     ?.data as any;
   const metadata = getMetadata(contentPage);
-
+  const t = await getServerT();
   return (
     <SeoSchema
       metadata={metadata}
@@ -72,21 +73,15 @@ export default async function ProductYacht() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link
-                    href="/"
-                    className="text-blue-700"
-                    data-translate="true"
-                  >
-                    Trang chủ
+                  <Link href="/" className="text-blue-700">
+                    {t("trang_chu")}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-gray-700" data-translate="true">
-                    Du thuyền
-                  </p>
+                  <p className="text-gray-700">{t("du_thuyen")}</p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>

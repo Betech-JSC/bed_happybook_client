@@ -6,8 +6,11 @@ import {
 } from "@/components/ui/carousel";
 import CompoItem from "../product/components/CompoItem";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { HomeApi } from "@/api/Home";
 
-export default async function CompoHot({ data }: any) {
+export default async function CompoHot() {
+  const data = ((await HomeApi.index("combo"))?.payload?.data as any) ?? [];
+  if (!data?.length) return;
   const t = await getServerT();
   return (
     <div

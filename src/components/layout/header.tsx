@@ -381,14 +381,23 @@ export default function Header() {
             >
               {t("visa")}
             </Link>
-            <Link
-              href="/du-thuyen"
-              className={clsx(styles.header__menu_item, {
+            <div
+              className={clsx(`relative`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/du-thuyen"),
               })}
             >
-              {t("du_thuyen")}
-            </Link>
+              <Link href="/du-thuyen" className="py-4">
+                {t("du_thuyen")}
+              </Link>
+              <div className={` ${styles.header__sub_menu_item}`}>
+                <Link href="/du-thuyen/du-thuyen-sai-gon">
+                  {t("du_thuyen_sai_gon")}
+                </Link>
+                <Link href="/du-thuyen/du-thuyen-ha-long">
+                  {t("du_thuyen_ha_long")}
+                </Link>
+              </div>
+            </div>
             <Link
               href="/khach-san"
               className={clsx(styles.header__menu_item, {

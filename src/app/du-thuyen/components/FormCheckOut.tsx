@@ -245,7 +245,7 @@ export default function CheckOutForm({
 
         <form className="rounded-xl mt-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="bg-white p-4 rounded-xl">
-            <div className="w-full mb-3">
+            {/* <div className="w-full mb-3">
               <div className="flex items-center border border-gray-300 rounded-md pl-4 space-x-2">
                 <div>
                   <Image
@@ -262,16 +262,16 @@ export default function CheckOutForm({
                     className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs"
                   >
                     <span data-translate="true">Ngày tham quan</span>
-                    {/* <span className="text-red-500">*</span> */}
+                    <span className="text-red-500">*</span>
                   </label>
-                  {/* <div className="w-1/2 pt-6 pb-2 pr-2 rounded-md">
+                  <div className="w-1/2 pt-6 pb-2 pr-2 rounded-md">
                     <input
                       type="text"
                       {...register("depart_date")}
                       className="indent-4 outline-none"
                       readOnly
                     />
-                  </div> */}
+                  </div>
                   <div className="[&>div]:w-full pt-6 pb-2 pr-2 w-full rounded-md">
                     <Controller
                       name={`depart_date`}
@@ -306,7 +306,7 @@ export default function CheckOutForm({
               {errors.depart_date && (
                 <p className="text-red-600">{errors.depart_date.message}</p>
               )}
-            </div>
+            </div> */}
             <p
               className="text-blue-700 text-base font-medium"
               data-translate="true"
