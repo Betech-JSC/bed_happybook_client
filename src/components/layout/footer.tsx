@@ -90,7 +90,7 @@ export default async function Footer() {
             <div className="mt-1">
               <p className="font-bold mr-1 inline-block">{t("chi_nhanh_1")}</p>
               <p className="inline-block">
-                {t("124_le_quang_dinh_p_14_q_binh_thanh_tphcm")}
+                {t("124_le_quang_dinh_p_binh_thanh_tphcm")}
               </p>
             </div>
           </div>
