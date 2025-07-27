@@ -202,7 +202,7 @@ const generalStaticText: string[] = [
   "Nộp hồ sơ",
   "Đợi kết quả",
   "Điểm đến được yêu thích",
-  "Diểm đi",
+  "Điểm đi",
   "Điểm đến",
   "Sắp xếp",
   "Mới nhất",
