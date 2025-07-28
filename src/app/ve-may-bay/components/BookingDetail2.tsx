@@ -1,7 +1,7 @@
 "use client";
 import { formatCurrency, formatTime, formatTimeZone } from "@/lib/formatters";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
@@ -25,8 +25,10 @@ import { PageApi } from "@/api/Page";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { translateText } from "@/utils/translateApi";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { language } = useLanguage();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -54,6 +56,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const [onePayTriggered, setOnePayTriggered] = useState(false);
 
   const {
     register,
@@ -238,6 +241,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     },
     [showRuleTicket, fetchFareRules]
   );
+
   const handleTicketPaymentTimeout = () => {
     setTicketPaymentTimeout(true);
   };
@@ -273,11 +277,36 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     }
   }, [selectedPaymentMethod, qrCodeGenerated, data]);
 
+  useEffect(() => {
+    if (
+      selectedPaymentMethod === "onepay" &&
+      data?.orderInfo?.sku &&
+      !onePayTriggered
+    ) {
+      setOnePayTriggered(true);
+      PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
+        if (result?.payment_url) {
+          window.location.replace(result.payment_url);
+        }
+      });
+    }
+  }, [selectedPaymentMethod, data?.orderInfo?.sku, onePayTriggered]);
+
+  useEffect(() => {
+    if (selectedPaymentMethod !== "onepay") {
+      setOnePayTriggered(false);
+    }
+    if (selectedPaymentMethod !== "vietqr") {
+      setQrCodeGenerated(false);
+    }
+  }, [selectedPaymentMethod]);
+
   const getTransferInformation = async () => {
     PageApi.getContent("thong-tin-chuyen-khoan").then((result: any) => {
       setTransferInformation(result?.payload?.data);
     });
   };
+
   useEffect(() => {
     getTransferInformation();
   }, []);
@@ -293,7 +322,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     );
   }
   if (!data) notFound();
-
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
@@ -305,32 +333,38 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           }}
         >
           <div className="flex flex-col lg:flex-row lg:space-x-4 justify-center px-4 lg:px-0 py-4">
-            <p className="text-22 font-bold text-white" data-translate="true">
-              Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất{" "}
-            </p>
-            {!ticketPaymentTimeout && data.orderInfo.booking_deadline ? (
-              <CountDownCheckOut
-                timeCountDown={data.orderInfo.booking_deadline}
-                handleTicketPaymentTimeout={handleTicketPaymentTimeout}
-              />
+            {!isPaid ? (
+              <Fragment>
+                <p className="text-22 font-bold text-white">
+                  {t("hoan_tat_don_hang_cua_ban_de_giu_gia_tot_nhat")}{" "}
+                </p>
+                {!ticketPaymentTimeout && data.orderInfo.booking_deadline ? (
+                  <CountDownCheckOut
+                    timeCountDown={data.orderInfo.booking_deadline}
+                    handleTicketPaymentTimeout={handleTicketPaymentTimeout}
+                  />
+                ) : (
+                  <div className="mt-3 lg:mt-0 flex space-x-2 items-center text-22 font-bold text-[#FF9258]">
+                    <p>00:00:00</p>
+                    <Image
+                      src={`/icon/clock-stopwatch.svg`}
+                      width={20}
+                      height={20}
+                      alt="Icon"
+                      className="w-5 h-5"
+                    />
+                  </div>
+                )}
+              </Fragment>
             ) : (
-              <div className="mt-3 lg:mt-0 flex space-x-2 items-center text-22 font-bold text-[#FF9258]">
-                <p>00:00:00</p>
-                <Image
-                  src={`/icon/clock-stopwatch.svg`}
-                  width={20}
-                  height={20}
-                  alt="Icon"
-                  className="w-5 h-5"
-                />
-              </div>
+              <p className="text-22 font-bold text-white">
+                {t("thong_tin_don_hang")}
+              </p>
             )}
           </div>
         </div>
         <div className="mt-6">
-          <p className="font-bold text-18" data-translate="true">
-            Tóm tắt chuyến bay
-          </p>
+          <p className="font-bold text-18">{t("tom_tat_chuyen_bay")}</p>
           {fareData.map((flight: any, indexFlight: number) => {
             const fromOption = airports
               .flatMap((country) => country.airports)
@@ -344,11 +378,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 className="bg-white rounded-xl p-3 md:p-6 mt-3"
               >
                 <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
-                  <p
-                    className="lg:w-2/12 text-sm text-gray-700"
-                    data-translate="true"
-                  >
-                    Chuyến bay
+                  <p className="lg:w-2/12 text-sm text-gray-700">
+                    {t("chuyen_bay")}
                   </p>
                   <div className="lg:w-10/12 font-bold">
                     {fromOption && toOption ? (
@@ -400,7 +431,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                               {segment.flightNumber}
                             </h3>
                             <div className="text-sm text-gray-500">
-                              <span data-translate="true"> Hạng: </span>
+                              <span> {t("hang")} </span>
                               <span>
                                 {flight.selectedTicketClass.bookingClass}
                               </span>
@@ -467,11 +498,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                   : ""}
                               </span>
                               {flight.legs < 1 && (
-                                <span
-                                  className="text-sm text-gray-500"
-                                  data-translate="true"
-                                >
-                                  Bay thẳng
+                                <span className="text-sm text-gray-500">
+                                  {t("bay_thang")}
                                 </span>
                               )}
                             </div>
@@ -594,20 +622,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           })}
         </div>
         <div className="mt-6">
-          <p className="font-bold text-18" data-translate="true">
-            Thông tin liên hệ
-          </p>
+          <p className="font-bold text-18">{t("thong_tin_lien_he")}</p>
           <div className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words">
             <div className="flex space-x-2 pb-3 border-b border-gray-300">
-              <p className="w-1/4 text-gray-700" data-translate="true">
-                Mã đơn hàng
-              </p>
+              <p className="w-1/4 text-gray-700">{t("ma_don_hang")}</p>
               <p className="w-3/4 font-medium">{data.orderInfo.sku}</p>
             </div>
             <div className="flex space-x-2 mt-3">
-              <div className="w-1/4 text-gray-700" data-translate="true">
-                Họ và tên
-              </div>
+              <div className="w-1/4 text-gray-700">{t("ho_va_ten")}</div>
               <div className="w-3/4 ">
                 <p className="font-bold" data-translate="true">
                   {data?.contact?.full_name}
@@ -616,9 +638,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               </div>
             </div>
             <div className="flex space-x-2 mt-3">
-              <p className="w-1/4 text-gray-700" data-translate="true">
-                Giới tính
-              </p>
+              <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
               <p className="w-3/4 font-medium" data-translate="true">
                 {data.contact.gender ? "Nam" : "Nữ"}
               </p>
@@ -628,9 +648,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               <p className="w-3/4 font-medium">08/09/1995</p>
             </div> */}
             <div className="flex space-x-2 mt-3">
-              <p className="w-1/4 text-gray-700" data-translate="true">
-                Email
-              </p>
+              <p className="w-1/4 text-gray-700">{t("email")}</p>
               <p className="w-3/4 font-medium" data-translate="true">
                 {data.contact.email}
               </p>
@@ -638,18 +656,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           </div>
         </div>
         <div className="mt-6">
-          <p className="font-bold text-18" data-translate="true">
-            Thông tin hành khách
-          </p>
+          <p className="font-bold text-18">{t("thong_tin_hanh_khach")}</p>
           {data.passengers.map((passenger: any, index: number) => (
             <div
               key={index}
               className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words"
             >
               <div className="flex space-x-2 mt-3">
-                <div className="w-1/4 text-gray-700" data-translate="true">
-                  Họ và tên
-                </div>
+                <div className="w-1/4 text-gray-700">{t("ho_va_ten")}</div>
                 <div className="w-3/4 ">
                   <p className="font-bold" data-translate="true">
                     {passenger.first_name.toUpperCase()}{" "}
@@ -659,17 +673,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 </div>
               </div>
               <div className="flex space-x-2 mt-3">
-                <p className="w-1/4 text-gray-700" data-translate="true">
-                  Giới tính
-                </p>
+                <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
                 <p className="w-3/4 font-medium" data-translate="true">
                   {passenger.gender ? "Nam" : "Nữ"}
                 </p>
               </div>
               <div className="flex space-x-2 mt-3">
-                <p className="w-1/4 text-gray-700" data-translate="true">
-                  Năm sinh
-                </p>
+                <p className="w-1/4 text-gray-700">{t("nam_sinh")}</p>
                 <p className="w-3/4 font-medium">
                   {format(
                     parse(passenger.birthday, "yyyy-MM-dd", new Date()),
@@ -679,9 +689,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               </div>
               {passenger?.baggages?.length > 0 && (
                 <div className="flex space-x-2 mt-3">
-                  <p className="w-1/4 text-gray-700" data-translate="true">
-                    Dịch vụ mua thêm
-                  </p>
+                  <p className="w-1/4 text-gray-700">{t("dich_vu_mua_them")}</p>
                   <div className="w-3/4 font-semibold">
                     {passenger.baggages.map((baggage: any, index: number) => (
                       <div key={index} className="mb-2">
@@ -702,86 +710,117 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </div>
           ))}
         </div>
-        <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
-          {!ticketPaymentTimeout && (
-            <>
-              <div className="mt-6">
-                <p className="font-bold text-18" data-translate="true">
-                  Hình thức thanh toán
-                </p>
-                <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                  <div className="flex space-x-3 items-start">
-                    <input
-                      type="radio"
-                      value="cash"
-                      id="payment_cash"
-                      {...register("payment_method")}
-                      className="w-5 h-5 mt-[2px]"
-                      onChange={(e) => {
-                        setValue("payment_method", e.target.value);
-                        setSelectedPaymentMethod(e.target.value);
-                      }}
-                    />
-                    <label
-                      htmlFor="payment_cash"
-                      className="flex space-x-1 w-full"
-                    >
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/cash.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div className="max-w-[85%]">
-                        <span
-                          className="font-medium text-base"
-                          data-translate="true"
-                        >
-                          Thanh toán sau
-                        </span>
-                        <p className="text-gray-500" data-translate="true">
-                          Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên
-                          hệ xác nhận
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                  <div className="flex space-x-3 items-start mt-4">
-                    <input
-                      type="radio"
-                      value="vietqr"
-                      id="payment_vietqr"
-                      {...register("payment_method")}
-                      className="w-5 h-5 mt-[2px]"
-                      onChange={(e) => {
-                        setValue("payment_method", e.target.value);
-                        setSelectedPaymentMethod(e.target.value);
-                      }}
-                    />
-                    <label htmlFor="payment_vietqr" className=" flex space-x-1">
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/transfer.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div>
-                        <span
-                          className="font-medium text-base max-width-[85%]"
-                          data-translate="true"
-                        >
-                          Thanh toán chuyển khoản ngân hàng
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-                  {/* <div className="flex space-x-3 items-start mt-4">
+        {!isPaid && (
+          <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
+            {!ticketPaymentTimeout && (
+              <>
+                <div className="mt-6">
+                  <p className="font-bold text-18">
+                    {t("hinh_thuc_thanh_toan")}
+                  </p>
+                  <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
+                    <div className="flex space-x-3 items-start">
+                      <input
+                        type="radio"
+                        value="cash"
+                        id="payment_cash"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
+                      />
+                      <label
+                        htmlFor="payment_cash"
+                        className="flex space-x-1 w-full"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/cash.svg"
+                            alt="Icon"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div className="max-w-[85%]">
+                          <span className="font-medium text-base">
+                            {t("thanh_toan_sau")}
+                          </span>
+                          <p className="text-gray-500">
+                            {t(
+                              "quy_khach_vui_long_giu_lien_lac_de_doi_ngu_cskh_lien_he_xac_nhan"
+                            )}
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                    <div className="flex space-x-3 items-start mt-4">
+                      <input
+                        type="radio"
+                        value="vietqr"
+                        id="payment_vietqr"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
+                      />
+                      <label
+                        htmlFor="payment_vietqr"
+                        className=" flex space-x-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/transfer.svg"
+                            alt="Icon"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("thanh_toan_chuyen_khoan_ngan_hang")}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                    <div className="flex space-x-3 items-start mt-4">
+                      <input
+                        type="radio"
+                        value="onepay"
+                        id="payment_onepay"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
+                      />
+                      <label
+                        htmlFor="payment_onepay"
+                        className=" flex items-center gap-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/onepay.svg"
+                            alt="Icon"
+                            width={64}
+                            height={64}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("thanh_toan_qua_one_pay")}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                    {/* <div className="flex space-x-3 items-start mt-4">
                     <input
                       type="radio"
                       value="international_card"
@@ -816,50 +855,55 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       </div>
                     </label>
                   </div> */}
-                  {errors.payment_method && (
-                    <p className="text-red-600">
-                      {errors.payment_method.message}
-                    </p>
-                  )}
+                    {errors.payment_method && (
+                      <p className="text-red-600">
+                        {errors.payment_method.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-              {!isEmpty(vietQrData) && selectedPaymentMethod === "vietqr" && (
-                <QRCodeDisplay
-                  vietQrData={vietQrData}
-                  order={data?.orderInfo}
-                  isPaid={isPaid}
-                  setIsPaid={(paid) => setIsPaid(paid)}
-                />
-              )}
-            </>
-          )}
-          <div className="mt-4">
-            <LoadingButton
-              isLoading={loadingSubmitForm}
-              text={
-                ticketPaymentTimeout
-                  ? "Đã hết thời gian thanh toán"
-                  : isPaid
-                  ? "Hoàn tất thanh toán"
-                  : "Xác nhận thanh toán"
-              }
-              disabled={
-                ticketPaymentTimeout ||
-                !selectedPaymentMethod ||
-                (selectedPaymentMethod === "vietqr" && !isPaid)
-                  ? true
-                  : false
-              }
-              style={
-                ticketPaymentTimeout ||
-                !selectedPaymentMethod ||
-                (selectedPaymentMethod === "vietqr" && !isPaid)
-                  ? "bg-gray-300 disabled:cursor-not-allowed"
-                  : ""
-              }
-            />
-          </div>
-        </form>
+                {!isEmpty(vietQrData) && selectedPaymentMethod === "vietqr" && (
+                  <QRCodeDisplay
+                    vietQrData={vietQrData}
+                    order={data?.orderInfo}
+                    isPaid={isPaid}
+                    setIsPaid={(paid) => setIsPaid(paid)}
+                  />
+                )}
+              </>
+            )}
+            <div className="mt-4">
+              <LoadingButton
+                isLoading={loadingSubmitForm}
+                text={
+                  ticketPaymentTimeout
+                    ? "Đã hết thời gian thanh toán"
+                    : isPaid
+                    ? "Hoàn tất thanh toán"
+                    : "Xác nhận thanh toán"
+                }
+                disabled={
+                  ticketPaymentTimeout ||
+                  !selectedPaymentMethod ||
+                  ((selectedPaymentMethod === "vietqr" ||
+                    selectedPaymentMethod === "onepay") &&
+                    !isPaid)
+                    ? true
+                    : false
+                }
+                style={
+                  ticketPaymentTimeout ||
+                  !selectedPaymentMethod ||
+                  ((selectedPaymentMethod === "vietqr" ||
+                    selectedPaymentMethod === "onepay") &&
+                    !isPaid)
+                    ? "bg-gray-300 disabled:cursor-not-allowed"
+                    : ""
+                }
+              />
+            </div>
+          </form>
+        )}
       </div>
       <div
         className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl p-3 lg:p-6  ${
