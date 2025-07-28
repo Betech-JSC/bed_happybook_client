@@ -16,6 +16,7 @@ import { vi, enUS } from "date-fns/locale";
 import { format, isValid } from "date-fns";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import { useTranslation } from "@/hooks/useTranslation";
+import DisplayPrice from "@/components/base/DisplayPrice";
 
 type optionFilterType = {
   label: string;
@@ -32,7 +33,6 @@ export default function Search({
   optionsFilter: optionFilterType[];
 }) {
   const { t } = useTranslation();
-  const today = new Date();
   const { language } = useLanguage();
 
   const searchParams = useSearchParams();
@@ -42,7 +42,7 @@ export default function Search({
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
-    departureDate: format(today, "yyyy-MM-dd"),
+    // departureDate: format(today, "yyyy-MM-dd"),
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
@@ -144,7 +144,7 @@ export default function Search({
           options={optionsFilter}
           handleFilterChange={handleFilterChange}
           handleSortData={handleSortData}
-          showFilterDate={true}
+          showFilterDate={false}
         />
       </div>
       <div className="w-full lg:w-9/12">
@@ -177,9 +177,7 @@ export default function Search({
                         translatedText ? "opacity-100" : "opacity-0"
                       }`}
                     >
-                      <Link
-                        href={`/ve-vui-choi/${item.slug}?departDate=${query.departureDate}`}
-                      >
+                      <Link href={`/ve-vui-choi/${item.slug}`}>
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}
@@ -193,17 +191,18 @@ export default function Search({
                     </div>
                     <div className="py-3 px-5 bg-white rounded-b-xl">
                       <Link
-                        href={`/ve-vui-choi/${item.slug}?departDate=${query.departureDate}`}
+                        href={`/ve-vui-choi/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
                         data-translate="true"
                       >
                         {renderTextContent(item.name)}
                       </Link>
                       <div className="mt-1 text-end">
-                        <span>Giá từ </span>
-                        <span className="text-xl font-semibold text-right text-primary">
-                          {formatCurrency(item.minPrice)}
-                        </span>
+                        <DisplayPrice
+                          price={item.min_price}
+                          textPrefix="Giá từ"
+                          currency={item?.currency}
+                        />
                       </div>
                     </div>
                   </div>
@@ -245,7 +244,7 @@ export default function Search({
                 <span className="loader_spiner"></span>
               ) : (
                 <>
-                  <span>{language === "vi" ? "Xem thêm" : "See more"}</span>
+                  <span>{t("xem_them")}</span>
                   <svg
                     className="group-hover:stroke-primary stroke-gray-700 duration-300"
                     width="20"

@@ -10,6 +10,7 @@ const BookingProductApi = {
   Combo: (data: any) => http.post<any>(`${path}/combo`, data),
   Ticket: (data: any) => http.post<any>(`${path}/ticket`, data),
   Yacht: (data: any) => http.post<any>(`${path}/yacht`, data),
+  FastTrack: (data: any) => http.post<any>(`${path}/fast-track`, data),
 };
 
 export { BookingProductApi };

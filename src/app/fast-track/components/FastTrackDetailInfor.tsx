@@ -17,7 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-export default function YachtDetailInfor({ product }: any) {
+export default function FastTrackDetailInfor({ product }: any) {
   const today = new Date();
   const { t } = useTranslation();
   const { language } = useLanguage();
@@ -33,7 +33,7 @@ export default function YachtDetailInfor({ product }: any) {
     saturday: "Bảy",
     sunday: "Chủ nhật",
   };
-  const daysOpeningRaw = product?.yacht?.opening_days;
+  const daysOpeningRaw = product?.fast_track?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
@@ -47,7 +47,7 @@ export default function YachtDetailInfor({ product }: any) {
         .filter(Boolean)
         .join(", ");
   const parsedTimeOpening = parse(
-    product?.yacht?.opening_time,
+    product?.fast_track?.opening_time,
     "HH:mm:ss",
     new Date()
   );
@@ -57,7 +57,7 @@ export default function YachtDetailInfor({ product }: any) {
     const dayName = format(departDate, "EEEE").toLowerCase();
     const clonedProduct = cloneDeep(product);
 
-    clonedProduct.yacht?.options.forEach((option: any) => {
+    clonedProduct.fast_track?.options.forEach((option: any) => {
       const validPrices = option.prices.filter(
         (p: any) => Array.isArray(p.days) && p.days.includes(dayName)
       );
@@ -65,7 +65,7 @@ export default function YachtDetailInfor({ product }: any) {
       const grouped: Record<number, any[]> = {};
 
       validPrices.forEach((p: any) => {
-        const typeId = p.product_yacht_type_id;
+        const typeId = p.product_fast_track_type_id;
         if (!grouped[typeId]) grouped[typeId] = [];
         grouped[typeId].push(p);
       });
@@ -88,7 +88,6 @@ export default function YachtDetailInfor({ product }: any) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
   return (
     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
@@ -99,8 +98,8 @@ export default function YachtDetailInfor({ product }: any) {
               {t("cac_goi_dich_vu")}
             </h2>
             <div className="mt-6">
-              {detail?.yacht?.options?.length > 0 &&
-                detail?.yacht?.options.map((option: any) => (
+              {detail?.fast_track?.options?.length > 0 ? (
+                detail?.fast_track?.options.map((option: any) => (
                   <div
                     key={option.id}
                     className="mb-6 last:mb-0 py-2 px-4 border border-gray-300 rounded-2xl"
@@ -149,7 +148,7 @@ export default function YachtDetailInfor({ product }: any) {
                               <DisplayPrice
                                 className={`!text-base mr-4 text-black !font-normal`}
                                 price={ticket.price}
-                                currency={detail?.currency}
+                                currency={product?.currency}
                               />
 
                               <p className="text-sm text-gray-500 mt-1">
@@ -162,7 +161,7 @@ export default function YachtDetailInfor({ product }: any) {
                     {option.prices?.length > 0 && (
                       <div className="text-end mt-6 mb-2">
                         <Link
-                          href={`/du-thuyen/checkout/${detail?.slug}?option=${
+                          href={`/fast-track/checkout/${detail?.slug}?option=${
                             option.id
                           }&departDate=${format(departDate, "yyyy-MM-dd")}`}
                           className="bg-blue-600 w-[110px] text__default_hover p-[10px] text-white rounded-lg inline-flex items-center justify-center"
@@ -172,7 +171,10 @@ export default function YachtDetailInfor({ product }: any) {
                       </div>
                     )}
                   </div>
-                ))}
+                ))
+              ) : (
+                <p>{t("thong_tin_dang_cap_nhat")}</p>
+              )}
             </div>
           </div>
         </div>
@@ -186,7 +188,7 @@ export default function YachtDetailInfor({ product }: any) {
                 data-translate="true"
                 className="cke_editable"
                 dangerouslySetInnerHTML={{
-                  __html: renderTextContent(product?.yacht?.description),
+                  __html: renderTextContent(product?.fast_track?.description),
                 }}
               ></div>
             </div>
@@ -225,7 +227,7 @@ export default function YachtDetailInfor({ product }: any) {
                 height={18}
               />
               <span data-translate="true">
-                {renderTextContent(product?.yacht?.address)}
+                {renderTextContent(product?.fast_track?.address)}
               </span>
             </div>
           </div>

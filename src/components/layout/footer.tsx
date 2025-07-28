@@ -223,6 +223,12 @@ export default async function Footer() {
                 >
                   {t("combo")}
                 </Link>
+                <Link
+                  href="/fast-track"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                >
+                  {t("fast_track")}
+                </Link>
               </div>
             </div>
             <div>

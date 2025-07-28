@@ -36,6 +36,7 @@ import { isEmpty, isNumber } from "lodash";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import { useVoucherManager } from "@/hooks/useVoucherManager";
+import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
 
 export default function FlightBookForm({ airportsData }: any) {
   const router = useRouter();
@@ -129,11 +130,11 @@ export default function FlightBookForm({ airportsData }: any) {
     });
     const chdArr = data.chd
       ? data.chd.map((item, index) => {
-        if (listBaggagePassenger.chd && listBaggagePassenger.chd[index]) {
-          item.baggages = listBaggagePassenger.chd[index];
-        }
-        return { value: item, Type: "CHD" };
-      })
+          if (listBaggagePassenger.chd && listBaggagePassenger.chd[index]) {
+            item.baggages = listBaggagePassenger.chd[index];
+          }
+          return { value: item, Type: "CHD" };
+        })
       : [];
     const infArr = data.inf
       ? data.inf.map((item) => ({ value: item, Type: "INF" }))
@@ -679,181 +680,12 @@ export default function FlightBookForm({ airportsData }: any) {
                     className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
                   ></textarea>
                 </div>
-                <div className="mt-2 flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    {...register("checkBoxGenerateInvoice")}
-                    checked={generateInvoice}
-                    onChange={(e) => {
-                      setGenerateInvoice(e.target.checked);
-                    }}
-                    className="w-4 h-4"
-                  />
-                  <span
-                    className="text-sm"
-                    onClick={() => {
-                      setGenerateInvoice(!generateInvoice);
-                    }}
-                    data-translate="true"
-                  >
-                    Tôi muốn xuất hóa đơn
-                  </span>
-                </div>
-                {/* generateInvoice */}
-                <div
-                  className={`mt-4   ${generateInvoice ? "visible" : "invisible hidden"
-                    }`}
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_company_name"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        <span data-translate="true">Tên công ty</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_company_name"
-                        type="text"
-                        {...register(`invoice.company_name`)}
-                        placeholder="Nhập tên công ty"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.company_name && (
-                        <p className="text-red-600">
-                          {errors.invoice?.company_name?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_company_address"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        <span data-translate="true">Địa chỉ</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_company_address"
-                        type="text"
-                        placeholder="Nhập địa chỉ công ty"
-                        {...register(`invoice.address`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.address && (
-                        <p className="text-red-600">
-                          {errors.invoice?.address?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_city"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        <span data-translate="true">Thành phố</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_city"
-                        type="text"
-                        placeholder="Nhập thành phố"
-                        {...register(`invoice.city`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.city && (
-                        <p className="text-red-600">
-                          {errors.invoice?.city?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_tax_code"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        <span data-translate="true">Mã số thuế</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_tax_code"
-                        type="text"
-                        placeholder="Nhập mã số thuế"
-                        {...register(`invoice.mst`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.mst && (
-                        <p className="text-red-600">
-                          {errors.invoice?.mst?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_recipient_name"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        <span data-translate="true">Người nhận hóa đơn</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_recipient_name"
-                        type="text"
-                        placeholder="Nhập họ và tên người nhận"
-                        {...register(`invoice.contact_name`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.contact_name && (
-                        <p className="text-red-600">
-                          {errors.invoice?.contact_name?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_phone"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        <span data-translate="true">Số điện thoại</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_phone"
-                        type="text"
-                        placeholder="Nhập số điện thoại người nhận"
-                        {...register(`invoice.phone`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.phone && (
-                        <p className="text-red-600">
-                          {errors.invoice?.phone?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <label
-                        htmlFor="GenerateInvoice_email"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                      >
-                        <span data-translate="true">Email</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="GenerateInvoice_email"
-                        type="text"
-                        placeholder="Nhập Email"
-                        {...register(`invoice.email`)}
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                      />
-                      {errors.invoice?.email && (
-                        <p className="text-red-600">
-                          {errors.invoice?.email?.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <GenerateInvoiceForm
+                  register={register}
+                  errors={errors}
+                  generateInvoice={generateInvoice}
+                  setGenerateInvoice={setGenerateInvoice}
+                />
               </div>
             </div>
           </div>
@@ -1132,8 +964,9 @@ export default function FlightBookForm({ airportsData }: any) {
                             return (
                               <div
                                 id={`wrapper-baggage-atd-leg-${leg}`}
-                                className={`relative ${!hasBaggage ? "cursor-not-allowed" : ""
-                                  }`}
+                                className={`relative ${
+                                  !hasBaggage ? "cursor-not-allowed" : ""
+                                }`}
                                 key={leg}
                               >
                                 <label
@@ -1153,10 +986,11 @@ export default function FlightBookForm({ airportsData }: any) {
                                       );
                                     }}
                                     disabled={!hasBaggage}
-                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${!hasBaggage
+                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${
+                                      !hasBaggage
                                         ? "cursor-not-allowed appearance-none"
                                         : ""
-                                      }`}
+                                    }`}
                                   >
                                     <option value="" data-translate="true">
                                       {hasBaggage
@@ -1361,8 +1195,9 @@ export default function FlightBookForm({ airportsData }: any) {
                               chdBaggages.length > 0 ? true : false;
                             return (
                               <div
-                                className={`relative ${!hasBaggage ? "cursor-not-allowed" : ""
-                                  }`}
+                                className={`relative ${
+                                  !hasBaggage ? "cursor-not-allowed" : ""
+                                }`}
                                 key={leg}
                               >
                                 <label
@@ -1382,10 +1217,11 @@ export default function FlightBookForm({ airportsData }: any) {
                                       );
                                     }}
                                     disabled={!hasBaggage}
-                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${!hasBaggage
+                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${
+                                      !hasBaggage
                                         ? "cursor-not-allowed appearance-none"
                                         : ""
-                                      }`}
+                                    }`}
                                   >
                                     <option value="" data-translate="true">
                                       {hasBaggage
@@ -1614,9 +1450,9 @@ export default function FlightBookForm({ airportsData }: any) {
               const durationFlight = flight.duration
                 ? flight.duration
                 : differenceInSeconds(
-                  new Date(flight.arrival.at),
-                  new Date(flight.departure.at)
-                ) / 60;
+                    new Date(flight.arrival.at),
+                    new Date(flight.departure.at)
+                  ) / 60;
               const startDateLocale = format(
                 new Date(flight.departure.at),
                 "EEEE dd/MM/yyyy",
@@ -1624,8 +1460,9 @@ export default function FlightBookForm({ airportsData }: any) {
               );
               return (
                 <div
-                  className={`py-3 px-3 lg:px-6 mb-3 border-t-gray-300 ${index > 0 ? "border-t" : "border-t-0"
-                    }`}
+                  className={`py-3 px-3 lg:px-6 mb-3 border-t-gray-300 ${
+                    index > 0 ? "border-t" : "border-t-0"
+                  }`}
                   key={index}
                 >
                   <div className="flex justify-between">
@@ -1778,10 +1615,11 @@ export default function FlightBookForm({ airportsData }: any) {
                     </div>
                   </button>
                   <div
-                    className={`rounded-lg transition-all delay-300 ease-in ${activeIndex === index
+                    className={`rounded-lg transition-all delay-300 ease-in ${
+                      activeIndex === index
                         ? "max-h-16 opacity-100 visible"
                         : "max-h-0 opacity-0 invisible"
-                      } `}
+                    } `}
                   >
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
                       <span data-translate="true">Vé</span>
@@ -1806,8 +1644,9 @@ export default function FlightBookForm({ airportsData }: any) {
                 </span>
                 <p className="font-semibold">
                   {totalBaggages.price && totalBaggages.quantity
-                    ? `${formatCurrency(totalBaggages.price)} x ${totalBaggages.quantity
-                    }`
+                    ? `${formatCurrency(totalBaggages.price)} x ${
+                        totalBaggages.quantity
+                      }`
                     : "0đ"}
                 </p>
               </div>

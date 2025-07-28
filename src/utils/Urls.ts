@@ -10,6 +10,7 @@ export enum BlogTypes {
   COMPO = "compo",
   YACHT = "du-thuyen",
   TICKET = "ve-vui-choi",
+  FAST_TRACK = "fast-track",
 }
 
 export enum ProductTypes {

@@ -1,20 +1,16 @@
 "use client";
 
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import TourStyle from "@/styles/tour.module.scss";
 import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
 import { useSearchParams } from "next/navigation";
 import { translatePage } from "@/utils/translateDom";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { format, isValid } from "date-fns";
-import { ProductYachtApi } from "@/api/ProductYacht";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 
 type optionFilterType = {
   label: string;
@@ -33,7 +29,6 @@ export default function Search({
   categoryDefault?: number;
 }) {
   const { t } = useTranslation();
-  const { language } = useLanguage();
 
   const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
@@ -58,7 +53,7 @@ export default function Search({
       setIsDisabled(true);
       setIsLastPage(false);
       const search = buildSearch(query);
-      const res = await ProductYachtApi.search(`${search}`);
+      const res = await ProductFastTrackApi.search(`${search}`);
       const result = res?.payload?.data;
 
       setData((prevData: any[]) => {
@@ -149,7 +144,7 @@ export default function Search({
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold">{t("du_thuyen")}</h1>
+          <h1 className="text-32 font-bold">{t("fast_track")}</h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
@@ -177,7 +172,7 @@ export default function Search({
                         translatedText ? "opacity-100" : "opacity-0"
                       }`}
                     >
-                      <Link href={`/du-thuyen/${item.slug}`}>
+                      <Link href={`/fast-track/${item.slug}`}>
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}
@@ -191,7 +186,7 @@ export default function Search({
                     </div>
                     <div className="py-3 px-5 bg-white rounded-b-xl">
                       <Link
-                        href={`/du-thuyen/${item.slug}`}
+                        href={`/fast-track/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
                         data-translate="true"
                       >

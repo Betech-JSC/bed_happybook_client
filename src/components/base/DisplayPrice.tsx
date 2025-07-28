@@ -1,8 +1,11 @@
+"use client";
 import { formatCurrency } from "@/lib/formatters";
-import { displayProductPrice } from "@/utils/Helper";
-import clsx from "clsx";
+import { displayProductPrice, toSnakeCase } from "@/utils/Helper";
 import { isEmpty } from "lodash";
 import { Fragment } from "react";
+import { cn } from "@/lib/utils";
+import { getServerT } from "@/lib/i18n/getServerT";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function DisplayPrice({
   price,
@@ -15,17 +18,16 @@ export default function DisplayPrice({
   className?: string;
   currency?: any;
 }) {
+  const { t } = useTranslation();
   return (
     <Fragment>
       {price > 0 ? (
         <>
           {!isEmpty(textPrefix) && (
-            <span className="mr-1" data-translate="true">
-              {textPrefix}
-            </span>
+            <span className="mr-1">{t(toSnakeCase(textPrefix as string))}</span>
           )}
           <span
-            className={clsx(
+            className={cn(
               "text-[#F27145] font-semibold text-base lg:text-xl",
               className
             )}
@@ -39,13 +41,12 @@ export default function DisplayPrice({
         </>
       ) : (
         <span
-          className={clsx(
+          className={cn(
             "text-[#F27145] font-semibold text-base lg:text-xl",
             className
           )}
-          data-translate="true"
         >
-          Liên hệ
+          {t("lien_he")}
         </span>
       )}
     </Fragment>

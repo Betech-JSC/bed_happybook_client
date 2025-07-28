@@ -12,21 +12,24 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import {
-  checkOutAmusementTicketSchema,
-  checkOutAmusementTicketType,
-} from "@/schemaValidations/checkOutAmusementTicket";
 import { renderTextContent } from "@/utils/Helper";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { datePickerLocale } from "@/constants/language";
 import { isEmpty } from "lodash";
 import { format, parse } from "date-fns";
-import { useVoucherManager } from "@/hooks/useVoucherManager";
-import VoucherProgram from "@/components/product/components/VoucherProgram";
-import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useUser } from "@/contexts/UserContext";
+import { useVoucherManager } from "@/hooks/useVoucherManager";
+import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
+import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
+import { vi, enUS } from "date-fns/locale";
 import { useTranslation } from "@/hooks/useTranslation";
 import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
+import {
+  CheckOutYachtSchema,
+  CheckOutYachtType,
+} from "@/schemaValidations/checkOutYacht";
 
 interface Ticket {
   id: number;
@@ -56,9 +59,6 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
-  const [schemaForm, setSchemaForm] = useState(() =>
-    checkOutAmusementTicketSchema(messages, generateInvoice)
-  );
   // Handle Voucher
   const {
     totalDiscount,
@@ -69,13 +69,16 @@ export default function CheckOutForm({
     setVoucherErrors,
     handleApplyVoucher,
     handleSearch,
-  } = useVoucherManager("entertainment_ticket");
-  const ticketOptionSelected = useMemo(() => {
-    return product?.ticket_options.find(
+  } = useVoucherManager("yacht");
+  const yachtOptionSelected = useMemo(() => {
+    return product?.fast_track?.options.find(
       (item: any) => item.id === ticketOptionId
     );
   }, [product, ticketOptionId]);
 
+  const [schemaForm, setSchemaForm] = useState(() =>
+    CheckOutYachtSchema(messages, generateInvoice)
+  );
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
     tuesday: "Ba",
@@ -85,7 +88,7 @@ export default function CheckOutForm({
     saturday: "Bảy",
     sunday: "Chủ nhật",
   };
-  const daysOpeningRaw = product?.ticket?.opening_days;
+  const daysOpeningRaw = product?.fast_track?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
@@ -99,7 +102,7 @@ export default function CheckOutForm({
         .filter(Boolean)
         .join(", ");
   const parsedTimeOpening = parse(
-    product?.ticket?.opening_time,
+    product?.fast_track?.opening_time,
     "HH:mm:ss",
     new Date()
   );
@@ -126,7 +129,7 @@ export default function CheckOutForm({
   }, [product?.ticket_prices]);
 
   useEffect(() => {
-    setSchemaForm(checkOutAmusementTicketSchema(messages, generateInvoice));
+    setSchemaForm(CheckOutYachtSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
 
   const {
@@ -135,7 +138,7 @@ export default function CheckOutForm({
     reset,
     control,
     formState: { errors },
-  } = useForm<checkOutAmusementTicketType>({
+  } = useForm<CheckOutYachtType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
       full_name: userInfo?.name,
@@ -149,7 +152,7 @@ export default function CheckOutForm({
     },
   });
 
-  const onSubmit = async (data: checkOutAmusementTicketType) => {
+  const onSubmit = async (data: CheckOutYachtType) => {
     const isSelectedTicketOption = tickets.find(
       (item: any) => item.quantity > 0
     );
@@ -166,7 +169,6 @@ export default function CheckOutForm({
         id: item.id,
         quantity: item.quantity,
       }));
-
       const formatData = {
         is_invoice: generateInvoice,
         product_id: product?.id,
@@ -189,7 +191,7 @@ export default function CheckOutForm({
       if (!generateInvoice) {
         delete formatData.invoice;
       }
-      const respon = await BookingProductApi.Ticket(formatData);
+      const respon = await BookingProductApi.FastTrack(formatData);
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
@@ -252,7 +254,7 @@ export default function CheckOutForm({
               className="text-blue-700 text-base font-medium"
               data-translate="true"
             >
-              {ticketOptionSelected?.name}
+              {yachtOptionSelected?.name}
             </p>
             <div className="mt-1">
               {tickets.map(
@@ -280,9 +282,12 @@ export default function CheckOutForm({
                       </div>
                       <div className="flex items-start md:w-[30%] justify-between">
                         <div>
-                          <span className="text-base mr-4">
-                            {formatCurrency(ticket.price)}
-                          </span>
+                          <DisplayPrice
+                            className={`!text-base mr-4 text-black !font-normal`}
+                            price={ticket.price}
+                            currency={product?.currency}
+                          />
+
                           <p className="text-sm text-gray-500 mt-1">
                             {t("gia")} / {t("khach")}
                           </p>
@@ -337,15 +342,15 @@ export default function CheckOutForm({
                     htmlFor="fullName"
                     className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                   >
-                    <span>{t("ho_va_ten")}</span>
+                    <span data-translate="true">Họ và tên</span>
                     <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="fullName"
                     type="text"
                     {...register("full_name")}
-                    placeholder={t("ho_va_ten")}
-                    title={t("ho_va_ten")}
+                    placeholder="Nhập họ và tên"
+                    title="Nhập họ và tên"
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                   />
                   {errors.full_name && (
@@ -433,7 +438,6 @@ export default function CheckOutForm({
                   className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
                 ></textarea>
               </div>
-
               <GenerateInvoiceForm
                 register={register}
                 errors={errors}
@@ -480,15 +484,20 @@ export default function CheckOutForm({
                 height={18}
               />
               <span data-translate="true">
-                {renderTextContent(product?.ticket?.address)}
+                {renderTextContent(product?.fast_track?.address)}
               </span>
             </div>
             {tickets?.map((item: any) => (
               <div key={item.id} className="mt-2 flex justify-between">
                 <span data-translate="true">{item.title}</span>
-                <span className="font-bold text-sm">
-                  {`${formatCurrency(item.price)} x ${item.quantity}`}
-                </span>
+                <div className="font-bold text-sm flex gap-1">
+                  <DisplayPrice
+                    className={`!font-bold !text-sm text-black`}
+                    price={item.price}
+                    currency={product?.currency}
+                  />
+                  <span>{` x ${item.quantity}`}</span>
+                </div>
               </div>
             ))}
           </div>

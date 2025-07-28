@@ -473,11 +473,11 @@ export default function Header() {
                 }}
               >
                 <Link
-                  href="/dinh-cu"
+                  href="/fast-track"
                   className={styles.text_hover_default}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
-                  {t("dinh_cu")}
+                  {t("fast_track")}
                 </Link>
                 <Link
                   href="/dang-ky-ctv"

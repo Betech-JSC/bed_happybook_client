@@ -12,10 +12,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import {
-  checkOutAmusementTicketSchema,
-  checkOutAmusementTicketType,
-} from "@/schemaValidations/checkOutAmusementTicket";
 import { renderTextContent } from "@/utils/Helper";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { datePickerLocale } from "@/constants/language";
@@ -28,6 +24,12 @@ import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import { vi, enUS } from "date-fns/locale";
+import { useTranslation } from "@/hooks/useTranslation";
+import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
+import {
+  CheckOutYachtSchema,
+  CheckOutYachtType,
+} from "@/schemaValidations/checkOutYacht";
 
 interface Ticket {
   id: number;
@@ -46,6 +48,7 @@ export default function CheckOutForm({
   product: any;
   ticketOptionId: number;
 }) {
+  const { t } = useTranslation();
   const { userInfo } = useUser();
   const router = useRouter();
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
@@ -67,9 +70,14 @@ export default function CheckOutForm({
     handleApplyVoucher,
     handleSearch,
   } = useVoucherManager("yacht");
+  const yachtOptionSelected = useMemo(() => {
+    return product?.yacht?.options.find(
+      (item: any) => item.id === ticketOptionId
+    );
+  }, [product, ticketOptionId]);
 
   const [schemaForm, setSchemaForm] = useState(() =>
-    checkOutAmusementTicketSchema(messages, generateInvoice)
+    CheckOutYachtSchema(messages, generateInvoice)
   );
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
@@ -121,7 +129,7 @@ export default function CheckOutForm({
   }, [product?.ticket_prices]);
 
   useEffect(() => {
-    setSchemaForm(checkOutAmusementTicketSchema(messages, generateInvoice));
+    setSchemaForm(CheckOutYachtSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
 
   const {
@@ -130,7 +138,7 @@ export default function CheckOutForm({
     reset,
     control,
     formState: { errors },
-  } = useForm<checkOutAmusementTicketType>({
+  } = useForm<CheckOutYachtType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
       full_name: userInfo?.name,
@@ -144,7 +152,7 @@ export default function CheckOutForm({
     },
   });
 
-  const onSubmit = async (data: checkOutAmusementTicketType) => {
+  const onSubmit = async (data: CheckOutYachtType) => {
     const isSelectedTicketOption = tickets.find(
       (item: any) => item.quantity > 0
     );
@@ -235,11 +243,8 @@ export default function CheckOutForm({
               "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
           }}
         >
-          <h3
-            className="text-22 py-4 px-8 font-semibold text-white"
-            data-translate="true"
-          >
-            Thông tin đơn hàng
+          <h3 className="text-22 py-4 px-8 font-semibold text-white">
+            {t("thong_tin_don_hang")}
           </h3>
         </div>
 
@@ -311,7 +316,7 @@ export default function CheckOutForm({
               className="text-blue-700 text-base font-medium"
               data-translate="true"
             >
-              {product?.name}
+              {yachtOptionSelected?.name}
             </p>
             <div className="mt-1">
               {tickets.map(
@@ -345,11 +350,8 @@ export default function CheckOutForm({
                             currency={product?.currency}
                           />
 
-                          <p
-                            className="text-sm text-gray-500 mt-1"
-                            data-translate="true"
-                          >
-                            Giá / Khách
+                          <p className="text-sm text-gray-500 mt-1">
+                            {t("gia")} / {t("khach")}
                           </p>
                         </div>
                         <div className="flex items-center">
@@ -394,9 +396,7 @@ export default function CheckOutForm({
             </div>
           </div>
           <div className="mt-6">
-            <p className="text-18 font-bold" data-translate="true">
-              Thông tin liên hệ
-            </p>
+            <p className="text-18 font-bold">{t("thong_tin_lien_he")}</p>
             <div className="mt-4 bg-white py-4 px-6 rounded-xl">
               <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="relative">
@@ -500,8 +500,13 @@ export default function CheckOutForm({
                   className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
                 ></textarea>
               </div>
-
-              <div className="mt-2 flex items-center space-x-2 cursor-pointer">
+              <GenerateInvoiceForm
+                register={register}
+                errors={errors}
+                generateInvoice={generateInvoice}
+                setGenerateInvoice={setGenerateInvoice}
+              />
+              {/* <div className="mt-2 flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"
                   {...register("checkBoxGenerateInvoice")}
@@ -520,9 +525,9 @@ export default function CheckOutForm({
                 >
                   Tôi muốn xuất hóa đơn
                 </span>
-              </div>
+              </div> */}
               {/* generateInvoice */}
-              <div
+              {/* <div
                 className={`mt-4   ${
                   generateInvoice ? "visible" : "invisible hidden"
                 }`}
@@ -675,7 +680,7 @@ export default function CheckOutForm({
                     )}
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
             <LoadingButton
               style="mt-6"
@@ -754,9 +759,8 @@ export default function CheckOutForm({
             ) : (
               totalPrice > 0 && (
                 <div className="w-full flex justify-between">
-                  <span className="font-medium">Tổng cộng</span>
                   <DisplayPrice
-                    textPrefix={""}
+                    textPrefix={"Tổng cộng"}
                     price={totalPrice}
                     currency={product?.currency}
                   />

@@ -241,6 +241,15 @@ const generalStaticText: string[] = [
   "Xem thêm",
   "Giá",
   "Hành trình",
+  "Thông tin liên hệ",
+  "Mã khuyến mãi",
+  "Chọn mã khuyến mãi...",
+  "Không tìm thấy mã khuyến mãi phù hợp",
+  "Tổng cộng",
+  "Chỉ từ",
+  "Thông tin đơn hàng",
+  "Tôi muốn xuất hóa đơn",
+  "Fast track",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
