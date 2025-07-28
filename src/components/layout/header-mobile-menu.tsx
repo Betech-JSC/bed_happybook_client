@@ -175,6 +175,12 @@ export default function HeaderMobileMenu() {
             >
               {t("combo")}
             </Link>
+            <Link
+              href="/fast-track"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("fast_track")}
+            </Link>
           </div>
           <div className="mt-6">
             <p>
