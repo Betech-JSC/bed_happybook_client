@@ -1,6 +1,7 @@
 import Image from "next/image";
 import AboutUs from "@/styles/aboutUs.module.scss";
 import { getServerT } from "@/lib/i18n/getServerT";
+import Link from "next/link";
 export default async function Service() {
   const t = await getServerT();
   return (
@@ -19,7 +20,7 @@ export default async function Service() {
           </div>
         </div>
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className={AboutUs.service_item}>
+          <Link href="/ve-may-bay" className={AboutUs.service_item}>
             <div>
               <Image
                 src="/about-us/Icon.png"
@@ -43,8 +44,8 @@ export default async function Service() {
                 )}
               </p>
             </div>
-          </div>
-          <div className={AboutUs.service_item}>
+          </Link>
+          <Link href="/visa" className={AboutUs.service_item}>
             <div>
               <Image
                 src="/about-us/Icon-1.png"
@@ -68,8 +69,8 @@ export default async function Service() {
                 )}
               </p>
             </div>
-          </div>
-          <div className={AboutUs.service_item}>
+          </Link>
+          <Link href="/khach-san" className={AboutUs.service_item}>
             <div>
               <Image
                 src="/about-us/Icon-2.png"
@@ -88,8 +89,8 @@ export default async function Service() {
                 )}
               </p>
             </div>
-          </div>
-          <div className={AboutUs.service_item}>
+          </Link>
+          <Link href="/tours" className={AboutUs.service_item}>
             <div>
               <Image
                 src="/about-us/Icon-3.png"
@@ -108,7 +109,7 @@ export default async function Service() {
                 )}
               </p>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
