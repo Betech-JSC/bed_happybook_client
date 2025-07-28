@@ -48,6 +48,11 @@ export default async function RootLayout({
     <html lang={session.language}>
       <head>
         {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> */}
+        {/* FB */}
+        <meta
+          name="facebook-domain-verification"
+          content="x7vlq92evnjo5wwhxtpy922e3hu2ac"
+        />
         {/* Google Tag Manager */}
         <Script id="gtm-script" strategy="afterInteractive">
           {`
