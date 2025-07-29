@@ -57,6 +57,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [onePayTriggered, setOnePayTriggered] = useState(false);
+  const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(false);
 
   const {
     register,
@@ -364,179 +365,215 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           </div>
         </div>
         <div className="mt-6">
-          <p className="font-bold text-18">{t("tom_tat_chuyen_bay")}</p>
-          {fareData.map((flight: any, indexFlight: number) => {
-            const fromOption = airports
-              .flatMap((country) => country.airports)
-              .find((airport) => airport.code === flight.departure.IATACode);
-            const toOption = airports
-              .flatMap((country) => country.airports)
-              .find((airport) => airport.code === flight.arrival.IATACode);
-            return (
-              <div
-                key={indexFlight}
-                className="bg-white rounded-xl p-3 md:p-6 mt-3"
-              >
-                <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
-                  <p className="lg:w-2/12 text-sm text-gray-700">
-                    {t("chuyen_bay")}
-                  </p>
-                  <div className="lg:w-10/12 font-bold">
-                    {fromOption && toOption ? (
-                      <p data-translate="true">
-                        {`${fromOption?.city} (${fromOption.code}) - ${toOption?.city} (${toOption.code}) `}
+          <button
+            onClick={() => setIsOpenBookingDetail(!isOpenBookingDetail)}
+            className="bg-white text-gray-700 font-bold px-4 py-3 rounded flex justify-between w-full text-xl"
+          >
+            {t("chi_tiet_don_hang")}
+            <svg
+              width="22"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={`${isOpenBookingDetail ? "rotate-180" : "rotate-0"}`}
+            >
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="#283448"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <div
+            className={`bg-white border-t transition-all duration-300 overflow-hidden ${
+              isOpenBookingDetail
+                ? "max-h-[2500px] opacity-100 p-4"
+                : "max-h-0 opacity-0 p-0"
+            }`}
+          >
+            <div>
+              <p className="font-bold text-18">{t("tom_tat_chuyen_bay")}</p>
+              {fareData.map((flight: any, indexFlight: number) => {
+                const fromOption = airports
+                  .flatMap((country) => country.airports)
+                  .find(
+                    (airport) => airport.code === flight.departure.IATACode
+                  );
+                const toOption = airports
+                  .flatMap((country) => country.airports)
+                  .find((airport) => airport.code === flight.arrival.IATACode);
+                return (
+                  <div
+                    key={indexFlight}
+                    className="bg-white rounded-xl p-3 md:p-6 mt-3 border"
+                  >
+                    <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
+                      <p className="lg:w-2/12 text-sm text-gray-700">
+                        {t("chuyen_bay")}
                       </p>
-                    ) : (
-                      <p data-translate="true">{`${flight.departure.IATACode} - ${flight.arrival.IATACode}`}</p>
-                    )}
-                  </div>
-                </div>
-                {flight.segments.map((segment: any, segmentIndex: number) => {
-                  const fromSegmenOption = airports
-                    .flatMap((country) => country.airports)
-                    .find(
-                      (airport) => airport.code === flight.departure.IATACode
-                    );
-                  const toSegmentOption = airports
-                    .flatMap((country) => country.airports)
-                    .find(
-                      (airport) => airport.code === flight.arrival.IATACode
-                    );
-                  const durationFlight =
-                    differenceInSeconds(
-                      new Date(segment.arrival.at),
-                      new Date(segment.departure.at)
-                    ) / 60;
-                  return (
-                    <div
-                      key={segmentIndex}
-                      className="flex flex-col-reverse lg:flex-row items-start justify-between mt-4 lg:space-x-3"
-                    >
-                      <div className="w-full lg:w-2/12 mt-5 lg:mt-0">
-                        <div className="flex flex-row lg:flex-col justify-between lg:justify-normal items-center md:items-baseline w-full text-left mb-3">
-                          <div>
-                            <DisplayImage
-                              imagePath={`assets/images/airline/${segment.airline.toLowerCase()}.gif`}
-                              width={80}
-                              height={24}
-                              alt={"AirLine"}
-                              classStyle={"max-w-16 md:max-w-20 max-h-10"}
-                            />
-                          </div>
-                          <div className="">
-                            <h3
-                              className="text-sm my-2"
-                              style={{ wordBreak: "break-word" }}
-                            >
-                              {segment.flightNumber}
-                            </h3>
-                            <div className="text-sm text-gray-500">
-                              <span> {t("hang")} </span>
-                              <span>
-                                {flight.selectedTicketClass.bookingClass}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="lg:w-10/12 text-center flex justify-between">
-                        <div className="flex gap-6 w-full">
-                          <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
-                            <span
-                              className="text-sm w-full"
-                              data-translate="true"
-                            >
-                              {format(
-                                new Date(segment.departure.at),
-                                "EEEE, d 'tháng' M yyyy",
-                                { locale: vi }
-                              )}
-                            </span>
-                            <span className="mt-2 text-lg font-bold w-full">
-                              {formatTimeZone(
-                                segment.departure.at,
-                                segment.departure.timezone
-                              )}
-                            </span>
-                            <span className="mt-2 text-sm text-gray-500 w-full">
-                              {fromSegmenOption ? (
-                                <p data-translate="true">
-                                  {`${fromSegmenOption?.city} (${segment.departure.IATACode})`}
-                                </p>
-                              ) : (
-                                <p>{segment.departure.IATACode}</p>
-                              )}
-                            </span>
-                          </div>
-
-                          <div className="w-[30%] flex items-center space-x-3">
-                            <div className="flex flex-col space-y-2 items-center w-full">
-                              <span className="text-sm text-gray-700 ">
-                                <Image
-                                  src={`/icon/AirplaneTilt-2.svg`}
-                                  width={20}
-                                  height={20}
-                                  alt="Icon"
-                                  className="w-5 h-5"
-                                />
-                              </span>
-                              <div className="relative flex items-center w-full">
-                                <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
-                                <div className="flex-grow h-px bg-gray-500"></div>
-                                <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
-                              </div>
-                              <span
-                                className="text-sm text-gray-700"
-                                data-translate="true"
-                              >
-                                {durationFlight
-                                  ? `${Math.floor(
-                                      durationFlight / 60
-                                    )} giờ ${Math.floor(
-                                      durationFlight % 60
-                                    )} phút`
-                                  : ""}
-                              </span>
-                              {flight.legs < 1 && (
-                                <span className="text-sm text-gray-500">
-                                  {t("bay_thang")}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
-                            <span
-                              className="text-sm w-full"
-                              data-translate="true"
-                            >
-                              {format(
-                                new Date(segment.arrival.at),
-                                "EEEE, d 'tháng' M yyyy",
-                                { locale: vi }
-                              )}
-                            </span>
-                            <span className="mt-2 text-lg font-bold w-full">
-                              {formatTimeZone(
-                                segment.arrival.at,
-                                segment.arrival.timezone
-                              )}
-                            </span>
-                            <span className="mt-2 text-sm text-gray-500 w-full">
-                              {toSegmentOption ? (
-                                <p data-translate="true">{`${toSegmentOption?.city} (${segment.arrival.IATACode})`}</p>
-                              ) : (
-                                <p>{segment.arrival.IATACode}</p>
-                              )}
-                            </span>
-                          </div>
-                        </div>
+                      <div className="lg:w-10/12 font-bold">
+                        {fromOption && toOption ? (
+                          <p data-translate="true">
+                            {`${fromOption?.city} (${fromOption.code}) - ${toOption?.city} (${toOption.code}) `}
+                          </p>
+                        ) : (
+                          <p data-translate="true">{`${flight.departure.IATACode} - ${flight.arrival.IATACode}`}</p>
+                        )}
                       </div>
                     </div>
-                  );
-                })}
-                <div>
-                  {/* <button
+                    {flight.segments.map(
+                      (segment: any, segmentIndex: number) => {
+                        const fromSegmenOption = airports
+                          .flatMap((country) => country.airports)
+                          .find(
+                            (airport) =>
+                              airport.code === flight.departure.IATACode
+                          );
+                        const toSegmentOption = airports
+                          .flatMap((country) => country.airports)
+                          .find(
+                            (airport) =>
+                              airport.code === flight.arrival.IATACode
+                          );
+                        const durationFlight =
+                          differenceInSeconds(
+                            new Date(segment.arrival.at),
+                            new Date(segment.departure.at)
+                          ) / 60;
+                        return (
+                          <div
+                            key={segmentIndex}
+                            className="flex flex-col-reverse lg:flex-row items-start justify-between mt-4 lg:space-x-3"
+                          >
+                            <div className="w-full lg:w-2/12 mt-5 lg:mt-0">
+                              <div className="flex flex-row lg:flex-col justify-between lg:justify-normal items-center md:items-baseline w-full text-left mb-3">
+                                <div>
+                                  <DisplayImage
+                                    imagePath={`assets/images/airline/${segment.airline.toLowerCase()}.gif`}
+                                    width={80}
+                                    height={24}
+                                    alt={"AirLine"}
+                                    classStyle={"max-w-16 md:max-w-20 max-h-10"}
+                                  />
+                                </div>
+                                <div className="">
+                                  <h3
+                                    className="text-sm my-2"
+                                    style={{ wordBreak: "break-word" }}
+                                  >
+                                    {segment.flightNumber}
+                                  </h3>
+                                  <div className="text-sm text-gray-500">
+                                    <span> {t("hang")} </span>
+                                    <span>
+                                      {flight.selectedTicketClass.bookingClass}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="lg:w-10/12 text-center flex justify-between">
+                              <div className="flex gap-6 w-full">
+                                <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
+                                  <span
+                                    className="text-sm w-full"
+                                    data-translate="true"
+                                  >
+                                    {format(
+                                      new Date(segment.departure.at),
+                                      "EEEE, d 'tháng' M yyyy",
+                                      { locale: vi }
+                                    )}
+                                  </span>
+                                  <span className="mt-2 text-lg font-bold w-full">
+                                    {formatTimeZone(
+                                      segment.departure.at,
+                                      segment.departure.timezone
+                                    )}
+                                  </span>
+                                  <span className="mt-2 text-sm text-gray-500 w-full">
+                                    {fromSegmenOption ? (
+                                      <p data-translate="true">
+                                        {`${fromSegmenOption?.city} (${segment.departure.IATACode})`}
+                                      </p>
+                                    ) : (
+                                      <p>{segment.departure.IATACode}</p>
+                                    )}
+                                  </span>
+                                </div>
+
+                                <div className="w-[30%] flex items-center space-x-3">
+                                  <div className="flex flex-col space-y-2 items-center w-full">
+                                    <span className="text-sm text-gray-700 ">
+                                      <Image
+                                        src={`/icon/AirplaneTilt-2.svg`}
+                                        width={20}
+                                        height={20}
+                                        alt="Icon"
+                                        className="w-5 h-5"
+                                      />
+                                    </span>
+                                    <div className="relative flex items-center w-full">
+                                      <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
+                                      <div className="flex-grow h-px bg-gray-500"></div>
+                                      <div className="flex-shrink-0 w-1 h-1 bg-white border-2 border-gray-700 rounded-full"></div>
+                                    </div>
+                                    <span
+                                      className="text-sm text-gray-700"
+                                      data-translate="true"
+                                    >
+                                      {durationFlight
+                                        ? `${Math.floor(
+                                            durationFlight / 60
+                                          )} giờ ${Math.floor(
+                                            durationFlight % 60
+                                          )} phút`
+                                        : ""}
+                                    </span>
+                                    {flight.legs < 1 && (
+                                      <span className="text-sm text-gray-500">
+                                        {t("bay_thang")}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="w-[30%] flex flex-col items-center md:items-start justify-start text-left">
+                                  <span
+                                    className="text-sm w-full"
+                                    data-translate="true"
+                                  >
+                                    {format(
+                                      new Date(segment.arrival.at),
+                                      "EEEE, d 'tháng' M yyyy",
+                                      { locale: vi }
+                                    )}
+                                  </span>
+                                  <span className="mt-2 text-lg font-bold w-full">
+                                    {formatTimeZone(
+                                      segment.arrival.at,
+                                      segment.arrival.timezone
+                                    )}
+                                  </span>
+                                  <span className="mt-2 text-sm text-gray-500 w-full">
+                                    {toSegmentOption ? (
+                                      <p data-translate="true">{`${toSegmentOption?.city} (${segment.arrival.IATACode})`}</p>
+                                    ) : (
+                                      <p>{segment.arrival.IATACode}</p>
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                    )}
+                    <div>
+                      {/* <button
                     className=" text-blue-700 border-b border-blue-700 font-medium mb-2"
                     onClick={() => toggleShowRuleTicket(flight)}
                     disabled={isLoadingRules}
@@ -545,170 +582,185 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                     Điều kiện vé
                   </button> */}
 
-                  <div>
-                    {showRuleTicket === flight.flightCode && isLoadingRules && (
-                      <span className="loader_spiner mt-2"></span>
-                    )}
-                    {showRuleTicket === flight.flightCode &&
-                      !isLoadingRules && (
-                        <div className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0">
-                          {Array.isArray(flight.ListRulesTicket) &&
-                          flight.ListRulesTicket.length > 0 ? (
-                            (() => {
-                              const isFareRulesOfStrings =
-                                Array.isArray(flight.ListRulesTicket) &&
-                                typeof flight.ListRulesTicket[0] === "string";
+                      <div>
+                        {showRuleTicket === flight.flightCode &&
+                          isLoadingRules && (
+                            <span className="loader_spiner mt-2"></span>
+                          )}
+                        {showRuleTicket === flight.flightCode &&
+                          !isLoadingRules && (
+                            <div className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0">
+                              {Array.isArray(flight.ListRulesTicket) &&
+                              flight.ListRulesTicket.length > 0 ? (
+                                (() => {
+                                  const isFareRulesOfStrings =
+                                    Array.isArray(flight.ListRulesTicket) &&
+                                    typeof flight.ListRulesTicket[0] ===
+                                      "string";
 
-                              return (
-                                <div>
-                                  {isFareRulesOfStrings ? (
-                                    <ul
-                                      className="mt-4 pl-6"
-                                      style={{ listStyle: "circle" }}
-                                    >
-                                      {flight.ListRulesTicket.map(
-                                        (text: any, indexRule: number) => (
-                                          <li key={indexRule}>{text}</li>
-                                        )
-                                      )}
-                                    </ul>
-                                  ) : (
+                                  return (
                                     <div>
-                                      {flight.ListRulesTicket.map(
-                                        (item: any, indexRule: number) => (
-                                          <div key={indexRule} className="mb-4">
-                                            {item.key && (
-                                              <p className="font-semibold text-18">
-                                                {item.key}
-                                              </p>
-                                            )}
-                                            <ul
-                                              className="mt-4 pl-6"
-                                              style={{ listStyle: "circle" }}
-                                            >
-                                              {item?.value?.length > 0 &&
-                                                item.value.map(
-                                                  (
-                                                    ruleText: string,
-                                                    indexRuleText: number
-                                                  ) =>
-                                                    ruleText && (
-                                                      <li key={indexRuleText}>
-                                                        {ruleText}
-                                                      </li>
-                                                    )
+                                      {isFareRulesOfStrings ? (
+                                        <ul
+                                          className="mt-4 pl-6"
+                                          style={{ listStyle: "circle" }}
+                                        >
+                                          {flight.ListRulesTicket.map(
+                                            (text: any, indexRule: number) => (
+                                              <li key={indexRule}>{text}</li>
+                                            )
+                                          )}
+                                        </ul>
+                                      ) : (
+                                        <div>
+                                          {flight.ListRulesTicket.map(
+                                            (item: any, indexRule: number) => (
+                                              <div
+                                                key={indexRule}
+                                                className="mb-4"
+                                              >
+                                                {item.key && (
+                                                  <p className="font-semibold text-18">
+                                                    {item.key}
+                                                  </p>
                                                 )}
-                                            </ul>
-                                          </div>
-                                        )
+                                                <ul
+                                                  className="mt-4 pl-6"
+                                                  style={{
+                                                    listStyle: "circle",
+                                                  }}
+                                                >
+                                                  {item?.value?.length > 0 &&
+                                                    item.value.map(
+                                                      (
+                                                        ruleText: string,
+                                                        indexRuleText: number
+                                                      ) =>
+                                                        ruleText && (
+                                                          <li
+                                                            key={indexRuleText}
+                                                          >
+                                                            {ruleText}
+                                                          </li>
+                                                        )
+                                                    )}
+                                                </ul>
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
                                       )}
                                     </div>
-                                  )}
+                                  );
+                                })()
+                              ) : (
+                                <div className="mb-4">
+                                  Xin vui lòng liên hệ với Happy Book để nhận
+                                  thông tin chi tiết.
                                 </div>
-                              );
-                            })()
-                          ) : (
-                            <div className="mb-4">
-                              Xin vui lòng liên hệ với Happy Book để nhận thông
-                              tin chi tiết.
+                              )}
                             </div>
                           )}
-                        </div>
-                      )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-6">
+              <p className="font-bold text-18">{t("thong_tin_lien_he")}</p>
+              <div className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words border">
+                <div className="flex space-x-2 pb-3 border-b border-gray-300">
+                  <p className="w-1/4 text-gray-700">{t("ma_don_hang")}</p>
+                  <p className="w-3/4 font-medium">{data.orderInfo.sku}</p>
+                </div>
+                <div className="flex space-x-2 mt-3">
+                  <div className="w-1/4 text-gray-700">{t("ho_va_ten")}</div>
+                  <div className="w-3/4 ">
+                    <p className="font-bold" data-translate="true">
+                      {data?.contact?.full_name}
+                    </p>
+                    {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-6">
-          <p className="font-bold text-18">{t("thong_tin_lien_he")}</p>
-          <div className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words">
-            <div className="flex space-x-2 pb-3 border-b border-gray-300">
-              <p className="w-1/4 text-gray-700">{t("ma_don_hang")}</p>
-              <p className="w-3/4 font-medium">{data.orderInfo.sku}</p>
-            </div>
-            <div className="flex space-x-2 mt-3">
-              <div className="w-1/4 text-gray-700">{t("ho_va_ten")}</div>
-              <div className="w-3/4 ">
-                <p className="font-bold" data-translate="true">
-                  {data?.contact?.full_name}
-                </p>
-                {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
-              </div>
-            </div>
-            <div className="flex space-x-2 mt-3">
-              <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
-              <p className="w-3/4 font-medium" data-translate="true">
-                {data.contact.gender ? "Nam" : "Nữ"}
-              </p>
-            </div>
-            {/* <div className="flex space-x-2 mt-3">
+                <div className="flex space-x-2 mt-3">
+                  <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
+                  <p className="w-3/4 font-medium" data-translate="true">
+                    {data.contact.gender ? "Nam" : "Nữ"}
+                  </p>
+                </div>
+                {/* <div className="flex space-x-2 mt-3">
               <p className="w-1/4 text-gray-700">Năm sinh</p>
               <p className="w-3/4 font-medium">08/09/1995</p>
             </div> */}
-            <div className="flex space-x-2 mt-3">
-              <p className="w-1/4 text-gray-700">{t("email")}</p>
-              <p className="w-3/4 font-medium" data-translate="true">
-                {data.contact.email}
-              </p>
+                <div className="flex space-x-2 mt-3">
+                  <p className="w-1/4 text-gray-700">{t("email")}</p>
+                  <p className="w-3/4 font-medium" data-translate="true">
+                    {data.contact.email}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6">
+              <p className="font-bold text-18">{t("thong_tin_hanh_khach")}</p>
+              {data.passengers.map((passenger: any, index: number) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words border"
+                >
+                  <div className="flex space-x-2 mt-3">
+                    <div className="w-1/4 text-gray-700">{t("ho_va_ten")}</div>
+                    <div className="w-3/4 ">
+                      <p className="font-bold" data-translate="true">
+                        {passenger.first_name.toUpperCase()}{" "}
+                        {passenger.last_name.toUpperCase()}
+                      </p>
+                      {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
+                    </div>
+                  </div>
+                  <div className="flex space-x-2 mt-3">
+                    <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
+                    <p className="w-3/4 font-medium" data-translate="true">
+                      {passenger.gender ? "Nam" : "Nữ"}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2 mt-3">
+                    <p className="w-1/4 text-gray-700">{t("nam_sinh")}</p>
+                    <p className="w-3/4 font-medium">
+                      {format(
+                        parse(passenger.birthday, "yyyy-MM-dd", new Date()),
+                        "dd/MM/yyyy"
+                      )}
+                    </p>
+                  </div>
+                  {passenger?.baggages?.length > 0 && (
+                    <div className="flex space-x-2 mt-3">
+                      <p className="w-1/4 text-gray-700">
+                        {t("dich_vu_mua_them")}
+                      </p>
+                      <div className="w-3/4 font-semibold">
+                        {passenger.baggages.map(
+                          (baggage: any, index: number) => (
+                            <div key={index} className="mb-2">
+                              <span data-translate="true">
+                                {baggage.leg ? "Chiều về" : "Chiều đi"}
+                              </span>
+                              <span>{" - "}</span>
+                              <span data-translate="true">{baggage.name} </span>
+                              <span>
+                                ({baggage.price.toLocaleString("vi-VN")}{" "}
+                                {baggage.currency})
+                              </span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-        <div className="mt-6">
-          <p className="font-bold text-18">{t("thong_tin_hanh_khach")}</p>
-          {data.passengers.map((passenger: any, index: number) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words"
-            >
-              <div className="flex space-x-2 mt-3">
-                <div className="w-1/4 text-gray-700">{t("ho_va_ten")}</div>
-                <div className="w-3/4 ">
-                  <p className="font-bold" data-translate="true">
-                    {passenger.first_name.toUpperCase()}{" "}
-                    {passenger.last_name.toUpperCase()}
-                  </p>
-                  {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
-                </div>
-              </div>
-              <div className="flex space-x-2 mt-3">
-                <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
-                <p className="w-3/4 font-medium" data-translate="true">
-                  {passenger.gender ? "Nam" : "Nữ"}
-                </p>
-              </div>
-              <div className="flex space-x-2 mt-3">
-                <p className="w-1/4 text-gray-700">{t("nam_sinh")}</p>
-                <p className="w-3/4 font-medium">
-                  {format(
-                    parse(passenger.birthday, "yyyy-MM-dd", new Date()),
-                    "dd/MM/yyyy"
-                  )}
-                </p>
-              </div>
-              {passenger?.baggages?.length > 0 && (
-                <div className="flex space-x-2 mt-3">
-                  <p className="w-1/4 text-gray-700">{t("dich_vu_mua_them")}</p>
-                  <div className="w-3/4 font-semibold">
-                    {passenger.baggages.map((baggage: any, index: number) => (
-                      <div key={index} className="mb-2">
-                        <span data-translate="true">
-                          {baggage.leg ? "Chiều về" : "Chiều đi"}
-                        </span>
-                        <span>{" - "}</span>
-                        <span data-translate="true">{baggage.name} </span>
-                        <span>
-                          ({baggage.price.toLocaleString("vi-VN")}{" "}
-                          {baggage.currency})
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
         </div>
         {!isPaid && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
