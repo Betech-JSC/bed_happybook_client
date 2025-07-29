@@ -64,6 +64,17 @@ export default async function RootLayout({
           `}
         </Script>
         {/* End Google Tag Manager */}
+
+        {/* Google Ads (gtag.js) */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=AW-17408673405" strategy="afterInteractive" />
+        <Script id="google-ads-script" strategy="afterInteractive">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'AW-17408673405');
+          `}
+        </Script>
       </head>
       <body className={OpenSans.className}>
         <GTMNoScript />
