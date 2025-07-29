@@ -193,12 +193,14 @@ const FlightDomesticDetail = ({
                           "vi-VN"
                         )
                     : flight.selectedTicketClass
-                    ? flight.selectedTicketClass.totalPrice.toLocaleString(
-                        "vi-VN"
-                      )
-                    : flight.fareOptions[0].totalPrice.toLocaleString(
-                        "vi-VN"
-                      )}{" "}
+                    ? (
+                        flight.selectedTicketClass.fareAdultFinal +
+                        flight.selectedTicketClass.taxAdult
+                      ).toLocaleString("vi-VN")
+                    : (
+                        flight.fareOptions[0].fareAdultFinal +
+                        flight.fareOptions[0].taxAdult
+                      ).toLocaleString("vi-VN")}{" "}
                   {flight.currency}
                 </p>
               </div>
@@ -290,12 +292,32 @@ const FlightDomesticDetail = ({
                           <div>
                             {totalPassengers > 1 ? (
                               <div>
-                                <p className="text-primary text-22 font-bold">
-                                  {`${ticket.totalPriceWithOutTax.toLocaleString()} ${
-                                    flight.currency
+                                <p className="text-sm text-gray-700 font-semibold mb-2">
+                                  {`${t("nguoi_lon")}: ${(
+                                    ticket.fareAdultFinal + ticket.taxAdult
+                                  ).toLocaleString()} ${flight.currency} x ${
+                                    flight.numberAdt
                                   }`}
                                 </p>
-                                <div className="text-sm text-gray-700">
+                                {flight.numberChd > 0 && (
+                                  <p className="text-sm text-gray-700 font-semibold mb-2">
+                                    {`${t("tre_em")}: ${(
+                                      ticket.fareChildFinal + ticket.taxChild
+                                    ).toLocaleString()} ${flight.currency} x ${
+                                      flight.numberChd
+                                    }`}
+                                  </p>
+                                )}
+                                {flight.numberInf > 0 && (
+                                  <p className="text-sm text-gray-700 font-semibold mb-2">
+                                    {`${t("em_be")}: ${(
+                                      ticket.fareInfantFinal + ticket.taxInfant
+                                    ).toLocaleString()} ${flight.currency} x ${
+                                      flight.numberInf
+                                    }`}
+                                  </p>
+                                )}
+                                <div className="text-primary text-22 font-bold">
                                   <span>{t("tong")} : </span>
                                   {formatCurrency(ticket.totalPrice)}
                                 </div>

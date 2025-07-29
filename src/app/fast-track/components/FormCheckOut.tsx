@@ -69,7 +69,7 @@ export default function CheckOutForm({
     setVoucherErrors,
     handleApplyVoucher,
     handleSearch,
-  } = useVoucherManager("yacht");
+  } = useVoucherManager("fast-track");
   const yachtOptionSelected = useMemo(() => {
     return product?.fast_track?.options.find(
       (item: any) => item.id === ticketOptionId
