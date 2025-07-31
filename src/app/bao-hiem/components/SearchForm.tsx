@@ -32,7 +32,7 @@ export default function SearchFormInsurance() {
   const hasOpenedRef = useRef<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<SearchForm>({
-    departurePlace: "",
+    departurePlace: "Việt Nam",
     destinationPlace: "",
     departureDate: null,
     returnDate: null,
@@ -105,7 +105,7 @@ export default function SearchFormInsurance() {
       new Date()
     );
     setFormData({
-      departurePlace: searchParams.get("departure") ?? "",
+      departurePlace: "Việt Nam",
       destinationPlace: searchParams.get("destination") ?? "",
       departureDate: isValid(departDate) ? departDate : null,
       returnDate: isValid(returnDate) ? returnDate : null,
@@ -180,9 +180,9 @@ export default function SearchFormInsurance() {
       toast.error("Vui lòng chọn đầy đủ thông tin");
     }
   };
-  const filteredDeparture = departure.filter(
-    (opt) => opt.label !== formData.destinationPlace
-  );
+  // const filteredDeparture = departure.filter(
+  //   (opt) => opt.label !== formData.destinationPlace
+  // );
 
   const filteredDestination = destination.filter(
     (opt) => opt.label !== formData.departurePlace
@@ -202,7 +202,13 @@ export default function SearchFormInsurance() {
               width={18}
               height={18}
             ></Image>
-            {mounted && (
+            <input
+              type="text"
+              value="Việt Nam"
+              readOnly
+              className="w-full focus:outline-none text-black indent-2"
+            />
+            {/* {mounted && (
               <Select
                 value={departure.find(
                   (opt) => opt.label === formData.departurePlace
@@ -241,7 +247,7 @@ export default function SearchFormInsurance() {
                 }}
                 isLoading={isLoading}
               />
-            )}
+            )} */}
           </div>
         </div>
         <div className="w-full md:w-1/2">
@@ -262,9 +268,7 @@ export default function SearchFormInsurance() {
                   (opt) => opt.label === formData.destinationPlace
                 )}
                 options={filteredDestination}
-                placeholder={`${
-                  language === "en" ? "Select insurance" : "Chọn địa điểm"
-                }`}
+                placeholder={t("chon_diem_den")}
                 className="w-full flex-1 focus:outline-none text-black appearance-none"
                 styles={{
                   control: (base) => ({
