@@ -75,6 +75,23 @@ export default async function RootLayout({
           gtag('config', 'AW-17408673405');
           `}
         </Script>
+
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17408673405"
+        />
+        <Script
+          id="gtag-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17408673405');
+          `,
+          }}
+        />
       </head>
       <body className={OpenSans.className}>
         <GTMNoScript />
