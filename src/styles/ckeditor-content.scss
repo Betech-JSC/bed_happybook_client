@@ -18,7 +18,8 @@
   svg,
   video {
     display: block;
-    vertical-align: middle;
+    margin: 0 auto !important;
+    border-radius: 4px;
   }
   max-width: 100% !important;
 }
