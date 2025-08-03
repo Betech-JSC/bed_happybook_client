@@ -15,7 +15,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import Link from "next/link";
 import { BookingProductApi } from "@/api/BookingProduct";
 import { useRouter } from "next/navigation";
-import { decodeHtml, renderTextContent } from "@/utils/Helper";
+import {
+  decodeHtml,
+  handleSessionStorage,
+  renderTextContent,
+} from "@/utils/Helper";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
@@ -130,8 +134,10 @@ export default function FormCheckOut({ data, room, detail }: any) {
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
+        handleSessionStorage("save", "bookingData", respon?.payload?.data);
+
         setTimeout(() => {
-          router.push("/khach-san");
+          router.push("/thong-tin-dat-hang");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);

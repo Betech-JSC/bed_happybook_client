@@ -16,7 +16,7 @@ import {
   checkOutAmusementTicketSchema,
   checkOutAmusementTicketType,
 } from "@/schemaValidations/checkOutAmusementTicket";
-import { renderTextContent } from "@/utils/Helper";
+import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { isEmpty } from "lodash";
 import { format, parse } from "date-fns";
 import { useVoucherManager } from "@/hooks/useVoucherManager";
@@ -193,8 +193,10 @@ export default function CheckOutForm({
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
+        handleSessionStorage("save", "bookingData", respon?.payload?.data);
+
         setTimeout(() => {
-          router.push("/");
+          router.push("/thong-tin-dat-hang");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);
