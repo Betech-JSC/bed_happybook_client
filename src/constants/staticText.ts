@@ -263,6 +263,8 @@ const generalStaticText: string[] = [
   "Thanh toán chuyển khoản ngân hàng",
   "Thanh toán qua OnePay",
   "Chi tiết đơn hàng",
+  "Trở về trang chủ",
+  "Yêu cầu đặc biệt",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",

@@ -12,7 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
-import { renderTextContent } from "@/utils/Helper";
+import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { datePickerLocale } from "@/constants/language";
 import { isEmpty } from "lodash";
@@ -191,12 +191,15 @@ export default function CheckOutForm({
       if (!generateInvoice) {
         delete formatData.invoice;
       }
+
       const respon = await BookingProductApi.Yacht(formatData);
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
+        handleSessionStorage("save", "bookingData", respon?.payload?.data);
+
         setTimeout(() => {
-          router.push("/");
+          router.push("/thong-tin-dat-hang");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);

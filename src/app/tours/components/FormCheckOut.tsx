@@ -19,7 +19,7 @@ import { toastMessages, validationMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { datePickerLocale } from "@/constants/language";
 import Link from "next/link";
-import { renderTextContent } from "@/utils/Helper";
+import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { formatCurrency } from "@/lib/formatters";
 import { useVoucherManager } from "@/hooks/useVoucherManager";
 import { useUser } from "@/contexts/UserContext";
@@ -114,12 +114,15 @@ export default function CheckOutTourForm({
       if (!generateInvoice) {
         delete formatData.invoice;
       }
+
       const respon = await BookingProductApi.Tour(formatData);
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
+        handleSessionStorage("save", "bookingData", respon?.payload?.data);
+
         setTimeout(() => {
-          router.push("/tours");
+          router.push("/thong-tin-dat-hang");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);
@@ -371,9 +374,9 @@ export default function CheckOutTourForm({
                         <option value="female" data-translate="true">
                           Nữ
                         </option>
-                        <option value="other" data-translate="true">
+                        {/* <option value="other" data-translate="true">
                           Khác
-                        </option>
+                        </option> */}
                       </select>
                     </div>
                     {errors.gender && (

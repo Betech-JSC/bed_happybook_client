@@ -13,7 +13,7 @@ import { BookingProductApi } from "@/api/BookingProduct";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import DisplayPrice from "@/components/base/DisplayPrice";
-import { renderTextContent } from "@/utils/Helper";
+import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import Image from "next/image";
 import Link from "next/link";
 import { isEmpty } from "lodash";
@@ -96,8 +96,10 @@ export default function FormCheckOut({
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
+        handleSessionStorage("save", "bookingData", respon?.payload?.data);
+
         setTimeout(() => {
-          router.push("/visa");
+          router.push("/thong-tin-dat-hang");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);
@@ -189,9 +191,9 @@ export default function FormCheckOut({
                       <option value="female" data-translate="true">
                         Nữ
                       </option>
-                      <option value="other" data-translate="true">
+                      {/* <option value="other" data-translate="true">
                         Khác
-                      </option>
+                      </option> */}
                     </select>
                     {errors.gender && (
                       <p className="text-red-600">{errors.gender.message}</p>
