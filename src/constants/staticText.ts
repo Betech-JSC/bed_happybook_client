@@ -46,6 +46,7 @@ export const flightStaticText: string[] = [
   "Tóm tắt chuyến bay",
   "Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất",
   "Chuyến bay",
+  "Ngày đặt",
 ];
 
 export const visaStaticText: string[] = [
@@ -260,8 +261,11 @@ const generalStaticText: string[] = [
   "Dịch vụ mua thêm",
   "Thanh toán sau",
   "Quý khách vui lòng giữ liên lạc để đội ngũ CSKH liên hệ xác nhận",
-  "Thanh toán chuyển khoản ngân hàng",
-  "Thanh toán qua OnePay",
+  "Thanh toán tiền mặt",
+  "Thanh toán quét mã QR ngân hàng",
+  "Thanh toán Visa, MasterCard, JCB",
+  "Chưa chọn phương thức thanh toán",
+  "Đã thanh toán",
   "Chi tiết đơn hàng",
   "Trở về trang chủ",
   "Yêu cầu đặc biệt",

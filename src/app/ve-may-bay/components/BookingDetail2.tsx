@@ -81,10 +81,19 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         if (respon?.status === 200) {
           reset();
           toast.success(toaStrMsg.sendSuccess);
-          handleSessionStorage("remove", ["bookingFlight"]);
-          setTimeout(() => {
-            router.push("/ve-may-bay");
-          }, 1000);
+
+          if (selectedPaymentMethod === "onepay") {
+            PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
+              if (result?.payment_url) {
+                window.location.href = result.payment_url;
+              }
+            });
+          } else {
+            handleSessionStorage("remove", ["bookingFlight"]);
+            setTimeout(() => {
+              router.push("/ve-may-bay");
+            }, 1000);
+          }
         } else {
           toast.error(toaStrMsg.sendFailed);
         }
@@ -278,25 +287,25 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     }
   }, [selectedPaymentMethod, qrCodeGenerated, data]);
 
-  useEffect(() => {
-    if (
-      selectedPaymentMethod === "onepay" &&
-      data?.orderInfo?.sku &&
-      !onePayTriggered
-    ) {
-      setOnePayTriggered(true);
-      PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
-        if (result?.payment_url) {
-          window.location.replace(result.payment_url);
-        }
-      });
-    }
-  }, [selectedPaymentMethod, data?.orderInfo?.sku, onePayTriggered]);
+  // useEffect(() => {
+  //   if (
+  //     selectedPaymentMethod === "onepay" &&
+  //     data?.orderInfo?.sku &&
+  //     !onePayTriggered
+  //   ) {
+  //     setOnePayTriggered(true);
+  //     PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
+  //       if (result?.payment_url) {
+  //         window.location.href = result.payment_url;
+  //       }
+  //     });
+  //   }
+  // }, [selectedPaymentMethod, data?.orderInfo?.sku, onePayTriggered]);
 
   useEffect(() => {
-    if (selectedPaymentMethod !== "onepay") {
-      setOnePayTriggered(false);
-    }
+    // if (selectedPaymentMethod !== "onepay") {
+    //   setOnePayTriggered(false);
+    // }
     if (selectedPaymentMethod !== "vietqr") {
       setQrCodeGenerated(false);
     }
@@ -835,7 +844,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         </div>
                         <div>
                           <span className="font-medium text-base max-width-[85%]">
-                            {t("thanh_toan_chuyen_khoan_ngan_hang")}
+                            {t("thanh_toan_quet_ma_qr_ngan_hang")}
                           </span>
                         </div>
                       </label>
@@ -867,7 +876,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         </div>
                         <div>
                           <span className="font-medium text-base max-width-[85%]">
-                            {t("thanh_toan_qua_one_pay")}
+                            {t("thanh_toan_visa_master_card_jcb")}
                           </span>
                         </div>
                       </label>
@@ -937,18 +946,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 disabled={
                   ticketPaymentTimeout ||
                   !selectedPaymentMethod ||
-                  ((selectedPaymentMethod === "vietqr" ||
-                    selectedPaymentMethod === "onepay") &&
-                    !isPaid)
+                  (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? true
                     : false
                 }
                 style={
                   ticketPaymentTimeout ||
                   !selectedPaymentMethod ||
-                  ((selectedPaymentMethod === "vietqr" ||
-                    selectedPaymentMethod === "onepay") &&
-                    !isPaid)
+                  (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? "bg-gray-300 disabled:cursor-not-allowed"
                     : ""
                 }

@@ -6,45 +6,76 @@ import { formatTime } from "@/lib/formatters";
 import Image from "next/image";
 import { vi } from "date-fns/locale";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/getServerT";
+import { StatusLabel } from "@/components/base/StatusLabel";
+import { PaymentMethodLabel } from "@/components/base/PaymentMethodLabel";
+import { isBefore } from "date-fns";
 
-export default function FlightBookingHistory({
+export default async function FlightBookingHistory({
   flights,
   airports,
 }: {
   flights: any;
   airports: AirportsCountry[];
 }) {
+  const t = await getServerT();
   return (
     <Fragment>
-      <h2 className="text-xl font-semibold mb-6" data-translate="true">
-        Lịch sử đặt vé
-      </h2>
+      <h2 className="text-xl font-semibold mb-6">{t("lich_su_dat_ve")}</h2>
       {flights?.length > 0 ? (
         flights.map((flight: any, indexFlight: number) =>
           flight.fare_datas.map((fareData: any) => {
             const flightData = fareData.flights[0];
-
             const fromOption = airports
               .flatMap((country) => country.airports)
               .find((airport) => airport.code === flightData.StartPoint);
             const toOption = airports
               .flatMap((country) => country.airports)
               .find((airport) => airport.code === flightData.EndPoint);
+            const isOverTimeOrder = isBefore(
+              flight.booking_deadline,
+              new Date()
+            );
             return (
               <div
                 key={indexFlight}
                 className="bg-white rounded-xl p-3 md:p-6 border border-gray-300 mb-6 last:mb-0"
               >
-                <p className="mb-5 text-18 font-medium">
-                  Ngày đặt{" "}
-                  {format(parseISO(flight.created_at), "HH:mm dd-MM-yyyy")}
-                </p>
-                <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
-                  <p
-                    className="lg:w-2/12 text-sm text-gray-700"
-                    data-translate="true"
+                <div className="flex justify-between mb-5 ">
+                  <p className="text-18 font-medium">
+                    {t("ngay_dat")}{" "}
+                    {format(parseISO(flight.created_at), "HH:mm dd-MM-yyyy")}
+                  </p>
+                  <Link
+                    href={`${
+                      flight.status === "new" &&
+                      !isOverTimeOrder &&
+                      !flight.payment_method
+                        ? `/lich-su-dat-ve/${flight.sku}`
+                        : "#"
+                    }`}
+                    className="flex flex-col gap-2 items-end"
                   >
-                    Chuyến bay
+                    <StatusLabel
+                      status={
+                        isOverTimeOrder &&
+                        !["done", "paid"].includes(flight.status)
+                          ? "close"
+                          : flight.status
+                      }
+                      label={`${
+                        isOverTimeOrder &&
+                        !["done", "paid", "close"].includes(flight.status)
+                          ? "Quá hạn thanh toán"
+                          : ""
+                      }`}
+                    />
+                    <PaymentMethodLabel method={flight.payment_method} />
+                  </Link>
+                </div>
+                <div className="flex flex-col lg:flex-row pb-3 border-b border-gray-300 lg:space-x-3">
+                  <p className="lg:w-2/12 text-sm text-gray-700">
+                    {t("chuyen_bay")}
                   </p>
                   <div className="lg:w-10/12 font-bold">
                     {fromOption && toOption ? (
@@ -93,7 +124,7 @@ export default function FlightBookingHistory({
                                 {segment.FlightNumber}
                               </h3>
                               <div className="text-sm text-gray-500">
-                                <span data-translate="true"> Hạng: </span>
+                                <span> {t("hang")} </span>
                                 <span>{segment.Class}</span>
                               </div>
                             </div>

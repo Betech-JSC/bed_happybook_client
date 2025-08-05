@@ -36,8 +36,14 @@ const FlightApi = {
   updatePaymentMethod: (data: any) =>
     http.post<any>(`update-payment-booking-flight`, data),
   getPopularFlights: () => http.get<any>("home/lay-chuyen-bay-pho-bien"),
-  bookingHistory: (token: string | undefined) =>
-    http.get<any>(`${path}/booking-history`, {
+  bookingHistory: (token: string | undefined, page: number) =>
+    http.get<any>(`${path}/booking-history?page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  bookingDetail: (token: string | undefined, orderCode: string) =>
+    http.get<any>(`${path}/booking-detail/${orderCode}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
