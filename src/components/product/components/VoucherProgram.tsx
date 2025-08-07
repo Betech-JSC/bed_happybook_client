@@ -17,6 +17,9 @@ const CustomOption = (isCurrencyVnd: boolean) => {
     const discountValue = isCurrencyVnd
       ? data.discount_value
       : data.discount_value_dollar;
+    const maxDiscountValue = isCurrencyVnd
+      ? data.max_discount_value
+      : data.max_discount_value_dollar;
     const lang = isCurrencyVnd ? "vi" : "en";
     return (
       <div
@@ -40,7 +43,10 @@ const CustomOption = (isCurrencyVnd: boolean) => {
           <span>
             {data.discount_type === "amount"
               ? formatCurrency(discountValue, lang)
-              : `${discountValue}%`}
+              : `${discountValue}% - Tối đa ${formatCurrency(
+                  maxDiscountValue,
+                  lang
+                )}`}
           </span>
         </div>
         {minOrderAmount > 0 && (
@@ -104,20 +110,25 @@ export default function VoucherProgram({
 
   useEffect(() => {
     const programIds = selectedVouchers.map((v) => v.voucher_id);
-    const discount = selectedVouchers.reduce((sum, v) => {
+    let discount = selectedVouchers.reduce((sum, v) => {
       if (isCurrencyVnd) {
         return (
           sum +
           (v.discount_type === "amount"
             ? v.discount_value
-            : (totalPrice * v.discount_value) / 100)
+            : (totalPrice * v.discount_value) / 100 < v.max_discount_value
+            ? (totalPrice * v.discount_value) / 100
+            : v.max_discount_value)
         );
       } else {
         return (
           sum +
           (v.discount_type === "amount"
             ? v.discount_value_dollar
-            : (totalPrice * v.discount_value_dollar) / 100)
+            : (totalPrice * v.discount_value_dollar) / 100 <
+              v.max_discount_value_dollar
+            ? (totalPrice * v.discount_value_dollar) / 100
+            : v.max_discount_value_dollar)
         );
       }
     }, 0);
