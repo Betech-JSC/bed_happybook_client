@@ -849,7 +849,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         </div>
                       </label>
                     </div>
-                    <div className="flex space-x-3 items-start mt-4">
+                    <div className="flex space-x-3 md:items-center mt-4">
                       <input
                         type="radio"
                         value="onepay"
@@ -863,15 +863,15 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                       />
                       <label
                         htmlFor="payment_onepay"
-                        className=" flex items-center gap-1"
+                        className="flex md:items-center gap-1"
                       >
                         <div className="font-normal">
                           <Image
-                            src="/payment-method/onepay.svg"
+                            src="/payment-method/visa.svg"
                             alt="Icon"
-                            width={64}
-                            height={64}
-                            className="mt-1"
+                            width={48}
+                            height={28}
+                            className="md:mt-1"
                           />
                         </div>
                         <div>

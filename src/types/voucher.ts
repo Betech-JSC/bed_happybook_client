@@ -7,6 +7,8 @@ export interface VoucherType {
   discount_value_dollar: number;
   min_order_amount: number;
   min_order_amount_dollar: number;
+  max_discount_value: number;
+  max_discount_value_dollar: number;
   quantity: number;
   start_date: Date;
   end_date: Date;
