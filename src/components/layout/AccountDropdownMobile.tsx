@@ -88,7 +88,7 @@ export default function AccountDropdownMobile() {
               {t("thong_tin_tai_khoan")}
             </Link>
             <Link href="/lich-su-dat-ve" onClick={() => setOpen(false)}>
-              {t("lich_su_dat_ve")}
+              {t("lich_su_dat_hang")}
             </Link>
             <Link href="/thay-doi-mat-khau" onClick={() => setOpen(false)}>
               {t("doi_mat_khau")}

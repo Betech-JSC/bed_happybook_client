@@ -21,7 +21,9 @@ export default async function FlightBookingHistory({
   const t = await getServerT();
   return (
     <Fragment>
-      <h2 className="text-xl font-semibold mb-6">{t("lich_su_dat_ve")}</h2>
+      <p className="mb-6 text-xl md:text-2xl font-semibold">
+        {t("lich_su_dat_ve_may_bay")}
+      </p>
       {flights?.length > 0 ? (
         flights.map((flight: any, indexFlight: number) =>
           flight.fare_datas.map((fareData: any) => {
@@ -41,7 +43,7 @@ export default async function FlightBookingHistory({
                 key={indexFlight}
                 className="bg-white rounded-xl p-3 md:p-6 border border-gray-300 mb-6 last:mb-0"
               >
-                <div className="flex justify-between mb-5 ">
+                <div className="flex flex-col md:flex-row gap-3 justify-between mb-5 ">
                   <p className="text-18 font-medium">
                     {t("ngay_dat")}{" "}
                     {format(parseISO(flight.created_at), "HH:mm dd-MM-yyyy")}
@@ -54,7 +56,7 @@ export default async function FlightBookingHistory({
                         ? `/lich-su-dat-ve/${flight.sku}`
                         : "#"
                     }`}
-                    className="flex flex-col gap-2 items-end"
+                    className="flex flex-col gap-3 md:gap-2 items-start md:items-end"
                   >
                     <StatusLabel
                       status={
@@ -102,7 +104,7 @@ export default async function FlightBookingHistory({
                       ) / 60;
                     return (
                       <div
-                        key={segmentIndex}
+                        key={segment.datacom_segment_id}
                         className="flex flex-col-reverse lg:flex-row items-start justify-between mt-4 lg:space-x-3"
                       >
                         <div className="w-full lg:w-2/12 mt-5 lg:mt-0">
