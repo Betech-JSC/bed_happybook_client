@@ -58,7 +58,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [onePayTriggered, setOnePayTriggered] = useState(false);
   const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(false);
-
+  const [onePayFee, setOnePayFee] = useState<number>(0);
   const {
     register,
     handleSubmit,
@@ -273,17 +273,22 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   }, []);
 
   useEffect(() => {
-    if (
-      selectedPaymentMethod === "vietqr" &&
-      !qrCodeGenerated &&
-      data?.orderInfo?.sku
-    ) {
-      PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku).then(
-        (result: any) => {
-          setQrCodeGenerated(true);
-          setVietQrData(result?.data);
-        }
-      );
+    if (selectedPaymentMethod === "onepay") {
+      setOnePayFee(0.025);
+    } else {
+      setOnePayFee(0);
+      if (
+        selectedPaymentMethod === "vietqr" &&
+        !qrCodeGenerated &&
+        data?.orderInfo?.sku
+      ) {
+        PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku).then(
+          (result: any) => {
+            setQrCodeGenerated(true);
+            setVietQrData(result?.data);
+          }
+        );
+      }
     }
   }, [selectedPaymentMethod, qrCodeGenerated, data]);
 
@@ -1063,7 +1068,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                   Giá gốc
                 </span>
                 <p className="font-semibold">
-                  {formatCurrency(totalPrice + totalBaggages.price)}
+                  {formatCurrency(
+                    totalPrice + totalBaggages.price + totalPrice * onePayFee
+                  )}
                 </p>
               </div>
               <div className="flex justify-between">
@@ -1087,7 +1094,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               {formatCurrency(
                 totalPrice +
                   totalBaggages.price -
-                  data?.orderInfo?.total_discount
+                  data?.orderInfo?.total_discount +
+                  totalPrice * onePayFee
               )}
             </p>
           </div>
