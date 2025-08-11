@@ -245,14 +245,14 @@ export default async function Contact() {
                         </span>
                         <span>
                           {t(
-                            "tang_1_phong_phu_tower_9310_quang_trung_khu_pho_1_phuong_tang_nhon_phu_thanh_pho_ho_chi_minh_viet_nam"
+                            "blue_sea_tower_205_b_hoang_hoa_tham_phuong_binh_loi_trung_thanh_pho_ho_chi_minh"
                           )}
                         </span>
                       </p>
-                      <p className="text-gray-900">
+                      {/* <p className="text-gray-900">
                         <span className="font-medium">{t("chi_nhanh_1")}</span>{" "}
                         <span>{t("124_le_quang_dinh_p_binh_thanh_tphcm")}</span>
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                   <div>
