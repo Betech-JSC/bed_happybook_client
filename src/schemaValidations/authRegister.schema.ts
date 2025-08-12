@@ -10,6 +10,15 @@ export const getAuthRegisterSchema = (messages: ValidationMessages) => {
         .min(1, (messages.minLength as (length: number) => string)(1))
         .email(messages.email as string),
 
+      phone: z
+        .string()
+        .min(1, {
+          message: messages.required,
+        })
+        .regex(/^\d{10,11}$/, {
+          message: messages.inValid,
+        }),
+
       name: z
         .string()
         .min(3, (messages.minLength as (length: number) => string)(3))

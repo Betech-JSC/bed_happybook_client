@@ -37,7 +37,9 @@ export default function UserProfile() {
             <InfoItem label="Email" value={userInfo.email} />
             <InfoItem
               label="Số điện thoại"
-              value={!isEmpty(userInfo.phone) || "Chưa xác định"}
+              value={
+                !isEmpty(userInfo.phone) ? userInfo.phone : "Chưa xác định"
+              }
             />
             <InfoItem
               label="Ngày đăng ký"
