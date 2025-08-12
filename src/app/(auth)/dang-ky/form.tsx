@@ -59,7 +59,7 @@ export default function FormRegister() {
     <form onSubmit={handleSubmit(onSubmit)} className="mt-3 rounded-xl ">
       <div className="mt-6 pb-6 border-b-[1px] border-gray-300">
         <div className="mt-3">
-          <p data-translate="true">{t("ho_va_ten")}</p>
+          <p>{t("ho_va_ten")}</p>
           <input
             type="text"
             {...register("name")}
@@ -69,7 +69,7 @@ export default function FormRegister() {
           {errors.name && <p className="text-red-600">{errors.name.message}</p>}
         </div>
         <div className="mt-3">
-          <p data-translate="true">{t("email")}</p>
+          <p>{t("email")}</p>
           <input
             type="text"
             {...register("email")}
@@ -80,8 +80,22 @@ export default function FormRegister() {
             <p className="text-red-600">{errors.email.message}</p>
           )}
         </div>
+
         <div className="mt-3">
-          <p data-translate="true">{t("mat_khau")}</p>
+          <p>{t("so_dien_thoai")}</p>
+          <input
+            type="text"
+            {...register("phone")}
+            placeholder={`${t("nhap")} ${t("so_dien_thoai")}`}
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full indent-3.5 outline-primary"
+          />
+          {errors.phone && (
+            <p className="text-red-600">{errors.phone.message}</p>
+          )}
+        </div>
+
+        <div className="mt-3">
+          <p>{t("mat_khau")}</p>
           <input
             type="password"
             {...register("password")}
@@ -93,7 +107,7 @@ export default function FormRegister() {
           )}
         </div>
         <div className="mt-3">
-          <p data-translate="true">{t("nhap_lai_mat_khau")}</p>
+          <p>{t("nhap_lai_mat_khau")}</p>
           <input
             type="password"
             placeholder={t("nhap_lai_mat_khau")}
