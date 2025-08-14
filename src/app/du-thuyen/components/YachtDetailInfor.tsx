@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
+import ProductLightboxGallery from "@/components/product/components/ProductLightboxGallery";
 
 export default function YachtDetailInfor({ product }: any) {
   const today = new Date();
@@ -159,8 +160,9 @@ export default function YachtDetailInfor({ product }: any) {
                           </div>
                         </div>
                       ))}
-                    {option.prices?.length > 0 && (
-                      <div className="text-end mt-6 mb-2">
+                    <div className="flex justify-end gap-4 mt-6 mb-2">
+                      <ProductLightboxGallery images={option.images ?? []} />
+                      {option.prices?.length > 0 && (
                         <Link
                           href={`/du-thuyen/checkout/${detail?.slug}?option=${
                             option.id
@@ -169,8 +171,8 @@ export default function YachtDetailInfor({ product }: any) {
                         >
                           {t("chon")}
                         </Link>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 ))}
             </div>
