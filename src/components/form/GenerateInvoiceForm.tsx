@@ -30,10 +30,14 @@ type InvoiceField = keyof FormData["invoice"];
 const fields: { id: InvoiceField; label: string; placeholder: string }[] = [
   {
     id: "contact_name",
-    label: "Người nhận hóa đơn",
-    placeholder: "Nhập họ và tên người nhận",
+    label: "Họ và tên người nhận hoá đơn / Tên công ty thể hiện trên hoá đơn",
+    placeholder: "Nhập họ và tên người nhận / Tên công ty ",
   },
-  { id: "mst", label: "Mã số thuế", placeholder: "Nhập mã số thuế" },
+  {
+    id: "mst",
+    label: "Mã số thuế doanh nghiệp / Mã định danh công dân",
+    placeholder: "Nhập MST doanh nghiệp / Mã định danh công dân",
+  },
   { id: "address", label: "Địa chỉ", placeholder: "Nhập địa chỉ công ty" },
   //   { id: "company_name", label: "Tên công ty", placeholder: "Nhập tên công ty" },
   //   { id: "city", label: "Thành phố", placeholder: "Nhập thành phố" },
@@ -83,7 +87,7 @@ export default function GenerateInvoiceForm({
             >
               <label
                 htmlFor={`GenerateInvoice_${field.id}`}
-                className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs mr-4 lg:mr-2 leading-4"
               >
                 <span data-translate="true">{field.label}</span>{" "}
                 <span className="text-red-500">*</span>
@@ -93,7 +97,9 @@ export default function GenerateInvoiceForm({
                 type="text"
                 placeholder={field.placeholder}
                 {...register(`invoice.${field.id}`)}
-                className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                className={`text-sm w-full border border-gray-300 rounded-md  pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
+                  field.id === "address" ? "pt-6" : "pt-10"
+                }`}
               />
               {(errors.invoice as Record<string, FieldError>)?.[field.id]
                 ?.message && (
