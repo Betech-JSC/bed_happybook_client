@@ -274,7 +274,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
 
   useEffect(() => {
     if (selectedPaymentMethod === "onepay") {
-      setOnePayFee(0.025);
+      setOnePayFee(
+        (totalPrice + totalBaggages.price - data?.orderInfo?.total_discount) *
+          0.025
+      );
     } else {
       setOnePayFee(0);
       if (
@@ -290,7 +293,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         );
       }
     }
-  }, [selectedPaymentMethod, qrCodeGenerated, data]);
+  }, [selectedPaymentMethod, qrCodeGenerated, data, totalPrice, totalBaggages]);
 
   // useEffect(() => {
   //   if (
@@ -1046,6 +1049,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </div>
           ))}
 
+          {onePayFee > 0 && (
+            <div className="flex justify-between mb-1 text-red-600 font-semibold">
+              <span className="text-sm " data-translate="true">
+                Phí xử lý giao dịch thẻ quốc tế (2.5%)
+              </span>
+              <p>{formatCurrency(onePayFee)}</p>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-sm text-gray-500" data-translate="true">
               Hành lý bổ sung
@@ -1068,9 +1079,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                   Giá gốc
                 </span>
                 <p className="font-semibold">
-                  {formatCurrency(
-                    totalPrice + totalBaggages.price + totalPrice * onePayFee
-                  )}
+                  {formatCurrency(totalPrice + totalBaggages.price)}
                 </p>
               </div>
               <div className="flex justify-between">
@@ -1087,15 +1096,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </div>
           )}
           <div className="flex justify-between gap-2 mt-4 pt-4 md:pb-6 border-t border-t-gray-200">
-            <span className="text-gray-700 font-bold" data-translate="true">
-              Tổng cộng
-            </span>
+            <span className="text-gray-700 font-bold">{t("tong_cong")}</span>
             <p className="font-bold text-primary">
               {formatCurrency(
                 totalPrice +
                   totalBaggages.price -
-                  data?.orderInfo?.total_discount +
-                  totalPrice * onePayFee
+                  data?.orderInfo?.total_discount
               )}
             </p>
           </div>
