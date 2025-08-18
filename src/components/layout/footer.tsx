@@ -83,6 +83,16 @@ export default async function Footer() {
               <p className="font-bold mr-1 inline-block">{t("tru_so_chinh")}</p>
               <p className="inline">
                 {t(
+                  "tang_1_phong_phu_tower_9310_quang_trung_khu_pho_1_phuong_tang_nhon_phu_thanh_pho_ho_chi_minh_viet_nam"
+                )}
+              </p>
+            </div>
+            <div className="mt-1">
+              <p className="font-bold mr-1 inline-block">
+                {t("dia_diem_kinh_doanh")}
+              </p>
+              <p className="inline">
+                {t(
                   "blue_sea_tower_205_b_hoang_hoa_tham_phuong_binh_loi_trung_thanh_pho_ho_chi_minh"
                 )}
               </p>

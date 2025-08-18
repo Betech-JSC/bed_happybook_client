@@ -176,6 +176,8 @@ const footerStaticText: string[] = [
   "Email tuyển dụng - đăng ký CTV:",
   "Trụ sở chính:",
   "BlueSea Tower, 205B Hoàng Hoa Thám, Phường Bình Lợi Trung, Thành phố Hồ Chí Minh",
+  "Tầng 1, Phong Phú Tower, 93/10 Quang Trung, Khu phố 1, Phường Tăng Nhơn Phú, Thành phố Hồ Chí Minh, Việt Nam",
+  "Địa điểm kinh doanh:",
   "Về HappyBook",
   "Về chúng tôi",
   "Liên hệ chúng tôi",
