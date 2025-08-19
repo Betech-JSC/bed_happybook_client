@@ -47,6 +47,10 @@ export default function QRCodeDisplay({
         if (response?.payload?.data?.paid === true) {
           setIsPaid(true);
           toast.success(`${toaStrMsg.transferSuccessful}`);
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
           clearInterval(interval);
         }
       }, 3000);
