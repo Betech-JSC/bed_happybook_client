@@ -250,7 +250,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                         >
                           <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
                             <Link
-                              href={`/visa/chi-tiet/${item.slug}`}
+                              href={`/visa/${item.slug}`}
                               className="block overflow-hidden rounded-t-2xl	"
                             >
                               <Image
@@ -264,7 +264,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                               />
                             </Link>
                             <Link
-                              href={`/visa/chi-tiet/${item.slug}`}
+                              href={`/visa/${item.slug}`}
                               className="block py-3 px-4 lg:h-[72px] "
                             >
                               <p
