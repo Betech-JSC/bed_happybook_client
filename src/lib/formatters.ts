@@ -88,13 +88,13 @@ const formatMetadata = (metadata: Metadata): Metadata => {
       [lang]: `${alternates?.canonical}?lang=${lang}`,
     };
   });
-
   return {
     alternates: {
       ...alternates,
       languages: alternates?.languages || languages!,
     },
     ..._metadata,
+    robots: _metadata?.robots ?? "index, follow",
   };
 };
 
