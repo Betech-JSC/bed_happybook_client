@@ -1,0 +1,82 @@
+.pswp img {
+  object-fit: cover;
+  border-radius: 4px;
+}
+.pswp__button--zoom {
+  display: none !important;
+}
+.pswp-custom-thumbs-list {
+  display: flex;
+  overflow-x: hidden;
+  gap: 10px;
+  scrollbar-width: thin;
+  justify-content: center;
+  .swiper-wrapper {
+    display: flex;
+  }
+  .swiper-slide {
+    width: auto;
+    flex-shrink: 0;
+  }
+}
+.pswp-custom-thumbs {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: saturate(120%) blur(4px);
+  z-index: 3;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.pswp-custom-thumbs-list::-webkit-scrollbar {
+  height: 6px;
+}
+.pswp-custom-thumbs-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+.pswp-thumb-item {
+  flex: 0 0 auto;
+  width: 120px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.pswp-thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+.pswp-thumb-item:hover img {
+  transform: scale(1.04);
+  filter: saturate(110%);
+}
+.pswp-thumb-item.active {
+  border-color: #e11d48;
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.3);
+}
+.pswp__img {
+  filter: brightness(1.1) contrast(1.05);
+}
+@media (max-width: 767.98px) {
+  .pswp-thumb-item {
+    width: 90px;
+    height: 60px;
+  }
+  .pswp__button--arrow--prev,
+  .pswp__button--arrow--next {
+    display: none !important;
+  }
+}

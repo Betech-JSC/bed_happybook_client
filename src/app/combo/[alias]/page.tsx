@@ -21,10 +21,10 @@ import { ComboApi } from "@/api/Combo";
 import { notFound } from "next/navigation";
 import { formatCurrency, formatMetadata } from "@/lib/formatters";
 import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
-import ImageGallery from "../components/ImageGallery";
 import Tabs from "../components/Tabs";
 import Hotel from "../components/Hotel";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
+import ProductGallery from "@/components/product/components/ProductGallery";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { alias } = params;
@@ -103,7 +103,7 @@ export default async function CompoDetail({
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery gallery={detail?.gallery ?? []} />
+              <ProductGallery product={detail} />
               <div className="mt-4">
                 <Tabs data={detail} />
               </div>

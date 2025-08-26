@@ -53,7 +53,7 @@ export default function ProductLightboxGallery({
       secondaryZoomLevel: () => (window.innerWidth >= 1024 ? 2 : 1),
       paddingFn: () => ({
         top: 20,
-        bottom: 100,
+        bottom: 20,
         left: 20,
         right: 20,
       }),
@@ -131,12 +131,12 @@ export default function ProductLightboxGallery({
       thumbsList = null;
     };
 
-    lightbox.on("afterInit", onAfterInit);
+    // lightbox.on("afterInit", onAfterInit);
     lightbox.on("change", onChange);
     lightbox.on("destroy", onDestroy);
 
     return () => {
-      lightbox.off("afterInit", onAfterInit);
+      // lightbox.off("afterInit", onAfterInit);
       lightbox.off("change", onChange);
       lightbox.off("destroy", onDestroy);
       lightbox.destroy();

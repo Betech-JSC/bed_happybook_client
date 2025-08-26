@@ -17,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductLightboxGallery from "@/components/product/components/ProductLightboxGallery";
+import ProductGallery from "@/components/product/components/ProductGallery";
 
 export default function YachtDetailInfor({ product }: any) {
   const today = new Date();
@@ -93,9 +94,9 @@ export default function YachtDetailInfor({ product }: any) {
   return (
     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-        <ImageGallery detail={detail} />
+        <ProductGallery product={detail} />
         <div id="cac-goi-dich-vu" className="mt-4">
-          <div className={`bg-white rounded-2xl p-6`}>
+          <div className={`bg-white rounded-2xl p-4 md:p-6`}>
             <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               {t("cac_goi_dich_vu")}
             </h2>
@@ -179,7 +180,7 @@ export default function YachtDetailInfor({ product }: any) {
           </div>
         </div>
         <div className="mt-4">
-          <div className={`bg-white rounded-2xl p-6`}>
+          <div className={`bg-white rounded-2xl p-4 md:p-6`}>
             <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
               {t("chi_tiet_dia_diem")}
             </h2>
@@ -196,7 +197,7 @@ export default function YachtDetailInfor({ product }: any) {
         </div>
       </div>
       <div className="w-full lg:w-4/12">
-        <div className="mt-4 p-6 lg:mt-0 flex flex-col justify-between rounded-2xl bg-white">
+        <div className="mt-4 p-4 md:p-6 lg:mt-0 flex flex-col justify-between rounded-2xl bg-white">
           <div>
             <h1
               className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
@@ -244,7 +245,7 @@ export default function YachtDetailInfor({ product }: any) {
             </SmoothScrollLink>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 mt-3">
+        <div className="bg-white rounded-2xl p-4 md:p-6 mt-3">
           <p className="font-semibold">{t("ngay_di")}</p>
           <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
             <Image
@@ -275,7 +276,7 @@ export default function YachtDetailInfor({ product }: any) {
         <div className="mt-3">
           <Schedule schedule={detail?.schedule ?? []} />
         </div>
-        <div className="mt-3 bg-white rounded-2xl p-6">
+        <div className="mt-3 bg-white rounded-2xl p-3 md:p-6">
           <h2 className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold">
             {t("luu_y")}
           </h2>
