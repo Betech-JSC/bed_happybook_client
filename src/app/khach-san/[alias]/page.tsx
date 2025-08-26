@@ -26,6 +26,7 @@ import { renderTextContent } from "@/utils/Helper";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 import HotelDetailTabs from "../components/HotalDetaiTabs";
+import HotelGallery from "../components/HotelGallery";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const res = (await HotelApi.detail(params?.alias)) as any;
@@ -122,40 +123,7 @@ export default async function HotelDetail({
             </BreadcrumbList>
           </Breadcrumb>
           <div className=" mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 rounded-lg">
-              <div className="overflow-hidden rounded-lg">
-                <Image
-                  className="cursor-pointer w-full h-[280px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-                  src={`${detail.image_url}/${detail.image_location}`}
-                  alt="Image"
-                  width={700}
-                  height={450}
-                  sizes="100vw"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {detail?.gallery?.length > 0 &&
-                  detail.gallery.map(
-                    (item: any, index: number) =>
-                      index <= 4 && (
-                        <div
-                          className="overflow-hidden rounded-lg h-32 md:h-[220px]"
-                          key={index}
-                        >
-                          <Image
-                            className="cursor-pointer w-full h-32 md:h-[220px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-                            src={`${item.image_url}${item.image}`}
-                            alt="Image"
-                            width={320}
-                            height={220}
-                            sizes="100vw"
-                            // style={{ height: "100%", width: "100%" }}
-                          />
-                        </div>
-                      )
-                  )}
-              </div>
-            </div>
+            <HotelGallery product={detail} />
             <div className="mt-4">
               <HotelDetailTabs data={detail} />
             </div>

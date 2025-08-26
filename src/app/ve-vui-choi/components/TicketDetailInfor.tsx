@@ -8,15 +8,14 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import { cloneDeep, isEmpty } from "lodash";
-import ImageGallery from "./ImageGallery";
 import TicketOptionContent from "./TicketOptionContent";
 import { renderTextContent } from "@/utils/Helper";
-import { formatCurrency } from "@/lib/formatters";
 import Link from "next/link";
 import Image from "next/image";
 import Schedule from "./Schedule";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import ProductGallery from "@/components/product/components/ProductGallery";
 
 export default function TicketDetailInfor({ product }: any) {
   const today = new Date();
@@ -92,7 +91,7 @@ export default function TicketDetailInfor({ product }: any) {
   return (
     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-        <ImageGallery detail={detail} />
+        <ProductGallery product={detail} />
         <div id="cac-goi-dich-vu" className="mt-4">
           <div className={`bg-white rounded-2xl p-6`}>
             <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">

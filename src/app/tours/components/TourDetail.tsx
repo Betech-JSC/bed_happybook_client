@@ -26,6 +26,7 @@ import { getLabelRatingProduct, renderTextContent } from "@/utils/Helper";
 import { getServerLang } from "@/lib/session";
 import ImageGallery from "./ImageGallery";
 import Tabs from "./Tabs";
+import ProductGallery from "@/components/product/components/ProductGallery";
 
 export default async function TourDetail({ alias }: { alias: string }) {
   const language = await getServerLang();
@@ -108,7 +109,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              {detail?.gallery && <ImageGallery gallery={detail?.gallery} />}
+              {detail?.gallery && <ProductGallery product={detail} />}
               <div className="mt-4">
                 <Tabs detail={detail} id={detail.id} />
               </div>

@@ -269,6 +269,18 @@ const CheckIsMobileDevice = () => {
   return window.matchMedia("(max-width: 767px)").matches;
 };
 
+const getImageSize = (
+  url: string
+): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement("img");
+    img.src = url;
+    img.onload = () =>
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = reject;
+  });
+};
+
 const getDefaultFormDataSearchFlights = (
   searchParams: URLSearchParams,
   airportDefault?: {
@@ -341,5 +353,6 @@ export {
   displayProductPrice,
   extractSlugAndId,
   CheckIsMobileDevice,
+  getImageSize,
   getDefaultFormDataSearchFlights,
 };

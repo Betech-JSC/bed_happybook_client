@@ -21,15 +21,14 @@ import { VisaApi } from "@/api/Visa";
 import { notFound } from "next/navigation";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
-import { formatCurrency, formatMetadata, formatMoney } from "@/lib/formatters";
 import FAQ from "@/components/content-page/FAQ";
 import { PageApi } from "@/api/Page";
 import ContentByPage from "@/components/content-page/ContentByPage";
 import { displayProductPrice, renderTextContent } from "@/utils/Helper";
 import { getServerLang } from "@/lib/session";
 import DisplayPrice from "@/components/base/DisplayPrice";
-import ImageGallery from "./ImageGallery";
 import Tabs from "./Tabs";
+import ProductGallery from "@/components/product/components/ProductGallery";
 
 export default async function VisaDetail({ alias }: { alias: string }) {
   const response = await VisaApi.detail(alias);
@@ -109,7 +108,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
           </Breadcrumb>
           <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
             <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
-              <ImageGallery detail={detail} />
+              <ProductGallery product={detail} />
               <div className="mt-4">
                 <Tabs detail={detail} />
               </div>
