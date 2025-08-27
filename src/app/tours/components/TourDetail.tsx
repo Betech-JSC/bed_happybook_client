@@ -164,7 +164,21 @@ export default async function TourDetail({ alias }: { alias: string }) {
                       </span>
                     </span>
                   </div>
-                  <div>
+                  {detail?.opening_days && (
+                    <div className="flex space-x-2 mt-3 items-center">
+                      <Image
+                        className="w-4 h-4"
+                        src="/icon/clock.svg"
+                        alt="Icon"
+                        width={18}
+                        height={18}
+                      />
+                      <span>
+                        <span data-translate>{detail?.opening_days}</span>
+                      </span>
+                    </div>
+                  )}
+                  {/* <div>
                     {detail.remain && (
                       <p className="flex space-x-2 mt-2">
                         <Image
@@ -178,7 +192,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                         }`}</span>
                       </p>
                     )}
-                  </div>
+                  </div> */}
                   <div className="flex space-x-2 mt-3 items-center">
                     <Image
                       className="w-4 h-4"

@@ -56,22 +56,35 @@ export default function TourItem({ tour }: any) {
             tour.night ? `${tour.night} đêm` : ""
           }`}</span>
         </p>
+        <div className="flex space-x-2 mt-2 items-start">
+          <Image
+            src="/icon/clock-check.svg"
+            alt="Time"
+            width={20}
+            height={20}
+            className="mt-[2px]"
+          />
+          <span data-translate className="line-clamp-2 min-h-12">
+            {tour.opening_days ?? "Đang cập nhật..."}
+          </span>
+        </div>
+
         {/* {tour.start_date && tour.end_date && ( */}
-        <p className="flex space-x-2 mt-2">
+        {/* <p className="flex space-x-2 mt-2">
           <span data-translate>{`Khởi hành vào: ${
             tour.start_date && tour.end_date
               ? tour.start_date.split("-").reverse().join("/")
               : ""
           }`}</span>
-        </p>
+        </p> */}
         {/* )} */}
         {/* {tour.remain && ( */}
-        <p className="flex space-x-2 mt-2">
+        {/* <p className="flex space-x-2 mt-2">
           <Image src="/icon/Ticket.svg" alt="Time" width={20} height={20} />
           <span data-translate>{`Chỗ trống: ${
             tour.remain ? tour.remain : "Liên hệ"
           }`}</span>
-        </p>
+        </p> */}
         {/* )} */}
         <div className="flex justify-between mt-[14px]">
           <div className="flex space-x-2">
