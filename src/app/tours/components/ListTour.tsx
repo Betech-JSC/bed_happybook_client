@@ -251,7 +251,19 @@ export default function ListTour({
                         tour.day ? `${tour.day} ngày` : ""
                       } ${tour.night ? `${tour.night} đêm` : ""}`}</span>
                     </div>
-                    {tour.start_date && tour.end_date && (
+                    {tour.opening_days && (
+                      <div className="flex space-x-2 mt-2 items-center">
+                        <Image
+                          className="w-4 h-4"
+                          src="/icon/clock-check.svg"
+                          alt="Time"
+                          width={18}
+                          height={18}
+                        />
+                        <span data-translate="true">{tour.opening_days}</span>
+                      </div>
+                    )}
+                    {/* {tour.start_date && tour.end_date && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
                           className="w-4 h-4"
@@ -265,8 +277,8 @@ export default function ListTour({
                           .reverse()
                           .join("/")}`}</span>
                       </div>
-                    )}
-                    {tour.remain && (
+                    )} */}
+                    {/* {tour.remain && (
                       <div className="flex space-x-2 mt-2 items-center">
                         <Image
                           className="w-4 h-4"
@@ -279,7 +291,7 @@ export default function ListTour({
                           tour.remain ?? "Liên hệ"
                         }`}</span>
                       </div>
-                    )}
+                    )} */}
 
                     {tour.depart_point && (
                       <div className="flex space-x-2 mt-2 items-center">
