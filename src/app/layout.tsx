@@ -115,6 +115,22 @@ export default async function RootLayout({
                 strategy="afterInteractive"
               />
               {/* === End Pancake === */}
+
+              {/* Xoá thương hiệu Pancake ở footer widget */}
+              <Script id="remove-pancake-brand" strategy="afterInteractive">
+                {`
+                    document.addEventListener("DOMContentLoaded", () => {
+                      const observer = new MutationObserver(() => {
+                        const el = document.querySelector('.pkcp-popup-setup-footer-title');
+                        if (el) {
+                          el.remove();
+                        }
+                      });
+                      observer.observe(document.body, { childList: true, subtree: true });
+                    });
+                  `}
+              </Script>
+              {/* === End Pancake === */}
             </UserProvider>
           </TranslationProvider>
         </LanguageProvider>
