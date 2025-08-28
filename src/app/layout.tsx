@@ -92,6 +92,28 @@ export default async function RootLayout({
           `,
           }}
         />
+        {/* === Pancake live chat === */}
+        <Script
+          src="https://chat-plugin.pancake.vn/main/auto?page_id=web_happybookwebsite"
+          strategy="afterInteractive"
+        />
+        {/* === End Pancake === */}
+
+        {/* Xoá thương hiệu Pancake ở footer widget */}
+        <Script id="remove-pancake-brand" strategy="afterInteractive">
+          {`
+                    document.addEventListener("DOMContentLoaded", () => {
+                      const observer = new MutationObserver(() => {
+                        const el = document.querySelector('.pkcp-popup-setup-footer-title');
+                        if (el) {
+                          el.remove();
+                        }
+                      });
+                      observer.observe(document.body, { childList: true, subtree: true });
+                    });
+                  `}
+        </Script>
+        {/* === End Pancake === */}
       </head>
       <body className={OpenSans.className}>
         <GTMNoScript />
@@ -109,28 +131,6 @@ export default async function RootLayout({
               <LoadingProvider>
                 <AppLoader />
               </LoadingProvider>
-              {/* === Pancake live chat === */}
-              <Script
-                src="https://chat-plugin.pancake.vn/main/auto?page_id=web_happybookwebsite"
-                strategy="afterInteractive"
-              />
-              {/* === End Pancake === */}
-
-              {/* Xoá thương hiệu Pancake ở footer widget */}
-              <Script id="remove-pancake-brand" strategy="afterInteractive">
-                {`
-                    document.addEventListener("DOMContentLoaded", () => {
-                      const observer = new MutationObserver(() => {
-                        const el = document.querySelector('.pkcp-popup-setup-footer-title');
-                        if (el) {
-                          el.remove();
-                        }
-                      });
-                      observer.observe(document.body, { childList: true, subtree: true });
-                    });
-                  `}
-              </Script>
-              {/* === End Pancake === */}
             </UserProvider>
           </TranslationProvider>
         </LanguageProvider>
