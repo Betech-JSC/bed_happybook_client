@@ -109,6 +109,12 @@ export default async function RootLayout({
               <LoadingProvider>
                 <AppLoader />
               </LoadingProvider>
+              {/* === Pancake live chat === */}
+              <Script
+                src="https://chat-plugin.pancake.vn/main/auto?page_id=web_happybookwebsite"
+                strategy="afterInteractive"
+              />
+              {/* === End Pancake === */}
             </UserProvider>
           </TranslationProvider>
         </LanguageProvider>
