@@ -1111,6 +1111,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             <p className="font-bold text-primary">
               {formatCurrency(
                 totalPrice +
+                  onePayFee +
                   totalBaggages.price -
                   data?.orderInfo?.total_discount
               )}

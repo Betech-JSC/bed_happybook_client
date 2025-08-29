@@ -42,10 +42,10 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function AboutUs() {
-  const members = (await BannerApi.getBannerPage("home-doingu"))?.payload
-    ?.data as any;
-  const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
-    ?.data as any;
+  // const members = (await BannerApi.getBannerPage("home-doingu"))?.payload
+  //   ?.data as any;
+  // const partners = (await BannerApi.getBannerPage("home-doitac"))?.payload
+  //   ?.data as any;
 
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("ve-chung-toi", language))
@@ -123,7 +123,7 @@ export default async function AboutUs() {
           </div>
         </div>
         <PartnerAirlines />
-        {members?.length > 0 && <Members data={members}></Members>}
+        {/* {members?.length > 0 && <Members data={members}></Members>} */}
         <Service></Service>
 
         <div className="bg-[#F9FAFB]">
