@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function SupportFloatingIcons() {
   return (
-    <div className="fixed bottom-[22%] right-2 md:bottom-1/4 -translate-y-1/4 z-[100]">
+    <div className="fixed right-2 bottom-[32%] md:bottom-[33%] -translate-y-1/4 z-[100]">
       <div className="flex flex-col items-center">
         <a href="tel:1900633437">
           <Image
@@ -14,7 +14,7 @@ export default function SupportFloatingIcons() {
             unoptimized={true}
           />
         </a>
-        <Link
+        {/* <Link
           href="https://www.facebook.com/happybooktravel"
           target="_blank"
           className="mt-4 transition-transform hover:scale-100 md:hover:scale-125 duration-300"
@@ -32,7 +32,7 @@ export default function SupportFloatingIcons() {
             height={40}
             alt="Zalo"
           />
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
