@@ -2,7 +2,7 @@
 import { getServerSideSitemapIndex } from "next-sitemap";
 
 export async function GET(request: Request) {
-  const api = process.env.API_URL || "http://api.happybooktravel.com";
+  const api = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://api.happybooktravel.com";
   const sitemap = [
     `${api}/sitemap_news.xml`,
     `${api}/sitemap_news_categories.xml`,

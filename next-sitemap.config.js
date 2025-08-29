@@ -1,7 +1,7 @@
 /** @type {import('next-sitemap').IConfig} */
 
 module.exports = {
-  siteUrl: process.env.SITE_UR || "https://happybooktravel.com",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://happybooktravel.com",
   changefreq: "daily",
   priority: 1,
   generateRobotsTxt: true,
@@ -32,7 +32,7 @@ module.exports = {
     ],
     additionalSitemaps: [
       `${
-        process.env.SITE_URL || "https://happybooktravel.com"
+        process.env.NEXT_PUBLIC_SITE_URL || "https://happybooktravel.com"
       }/server-sitemap-index.xml`,
     ],
   },
