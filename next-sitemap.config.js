@@ -32,9 +32,8 @@ module.exports = {
     ],
     additionalSitemaps: [
       `${
-        process.env.NEXT_PUBLIC_API_ENDPOINT ||
-        "https://api.happybooktravel.com"
-      }/sitemap.xml`,
+        process.env.NEXT_PUBLIC_SITE_URL || "https://happybooktravel.com"
+      }/server-sitemap-index.xml`,
     ],
   },
 };
