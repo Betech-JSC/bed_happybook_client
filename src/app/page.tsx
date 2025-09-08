@@ -53,9 +53,7 @@ export default async function Home() {
   const airportsData = await FlightApi.getCachedAirports();
   return (
     <Fragment>
-      <Suspense fallback={null}>
-        <WebsiteSchema />
-      </Suspense>
+      <WebsiteSchema />
       <Suspense>
         <Search airportsData={airportsData} />
       </Suspense>

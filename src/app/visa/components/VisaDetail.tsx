@@ -49,7 +49,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
         },
         {
           url: blogUrl(BlogTypes.VISA, detail.slug, true),
-          name: detail?.title as string,
+          name: detail?.name as string,
         },
       ]}
     >

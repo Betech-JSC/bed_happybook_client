@@ -49,11 +49,22 @@ export async function WebsiteSchema({
                 addressCountry: "VN",
               },
               openingHours: [seo?.seo_opening_hours],
+              review: {
+                "@type": "Review",
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: 5,
+                  bestRating: 5,
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Happy Book",
+                },
+              },
               aggregateRating: {
                 "@type": "AggregateRating",
-                ratingValue: "5",
-                bestRating: "5",
-                // ratingCount: "10",
+                ratingValue: 5,
+                reviewCount: 10,
               },
               sameAs: [
                 siteUrl,
@@ -115,11 +126,22 @@ export async function WebsiteSchema({
               },
               telephone: seo?.seo_phone,
               openingHours: [seo?.seo_opening_hours],
+              review: {
+                "@type": "Review",
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: 5,
+                  bestRating: 5,
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Happy Book",
+                },
+              },
               aggregateRating: {
                 "@type": "AggregateRating",
-                ratingValue: "5",
-                bestRating: "5",
-                // ratingCount: "10",
+                ratingValue: 5,
+                reviewCount: 10,
               },
               // paymentAccepted: "Credit Card, Cash",
               sameAs: [
