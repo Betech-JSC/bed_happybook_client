@@ -363,7 +363,7 @@ export default async function SeoSchema({
         aggregateRating: {
           "@type": "AggregateRating",
           ratingValue: 5,
-          reviewCount: 0,
+          reviewCount: 1,
         },
         offers: {
           "@type": "Offer",
