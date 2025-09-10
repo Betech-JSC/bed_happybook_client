@@ -90,7 +90,7 @@ export default function Hotel({ data }: any) {
               <div className="p-3 flex flex-col justify-between h-full">
                 <div className="flex-grow">
                   <Link
-                    href={`/khach-san/chi-tiet/${data?.hotelOfCompo?.slug}`}
+                    href={`/khach-san/${data?.hotelOfCompo?.slug}`}
                     className="block overflow-hidden rounded-xl"
                   >
                     <Image
@@ -102,7 +102,7 @@ export default function Hotel({ data }: any) {
                     />
                   </Link>
                   <Link
-                    href={`/khach-san/chi-tiet/${data?.hotelOfCompo?.slug}`}
+                    href={`/khach-san/${data?.hotelOfCompo?.slug}`}
                     className="mt-2 text-18 font-semibold line-clamp-3 text__default_hover"
                   >
                     <h3 data-translate="true">
