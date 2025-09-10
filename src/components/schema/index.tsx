@@ -113,12 +113,22 @@ export default async function SeoSchema({
         },
         telephone: seo?.seo_phone,
         openingHours: [seo?.seo_opening_hours],
+        review: {
+          "@type": "Review",
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: 5,
+            bestRating: 5,
+          },
+          author: {
+            "@type": "Person",
+            name: "Happy Book",
+          },
+        },
         aggregateRating: {
           "@type": "AggregateRating",
-          ratingValue: "5",
-          bestRating: "5",
-          ratingCount: "10",
-          reviewCount: "10",
+          ratingValue: 5,
+          reviewCount: 10,
         },
         // paymentAccepted: "Credit Card, Cash",
         sameAs: [
@@ -150,11 +160,22 @@ export default async function SeoSchema({
         },
         telephone: seo?.seo_phone,
         openingHours: [seo?.seo_opening_hours],
+        review: {
+          "@type": "Review",
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: 5,
+            bestRating: 5,
+          },
+          author: {
+            "@type": "Person",
+            name: "Happy Book",
+          },
+        },
         aggregateRating: {
           "@type": "AggregateRating",
-          ratingValue: "5",
-          bestRating: "5",
-          // ratingCount: "10",
+          ratingValue: 5,
+          reviewCount: 10,
         },
         // paymentAccepted: "Credit Card, Cash",
         sameAs: [
@@ -315,8 +336,9 @@ export default async function SeoSchema({
       {
         "@type": "Product",
         name: product?.meta_title || product?.name,
-        description: product?.meta_description || product?.meta_title || product?.name,
-        category: "Tour",
+        description:
+          product?.meta_description || product?.meta_title || product?.name,
+        category: product?.product_type,
         mainEntityOfPage: {
           "@id": `${url}#webpage`,
         },
@@ -326,6 +348,23 @@ export default async function SeoSchema({
           // height: "891",
           // width: "1200",
         })),
+        review: {
+          "@type": "Review",
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: 5,
+            bestRating: 5,
+          },
+          author: {
+            "@type": "Person",
+            name: "Happy Book",
+          },
+        },
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: 5,
+          reviewCount: 1,
+        },
         offers: {
           "@type": "Offer",
           price: product.price,

@@ -29,7 +29,7 @@ const jsonLd = (data: FAQSchemaProps["data"]): WithContext<FAQPage> => ({
 });
 
 export default function FAQSchema({ data, children }: FAQSchemaProps) {
-  if (data?.length <= 0) return children;
+  if (data?.length < 1) return children;
   return (
     <>
       <Script
