@@ -26,7 +26,7 @@ function getMetadata(data: any) {
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: data?.canonical_link || pageUrl(BlogTypes.YACHT, true),
+      canonical: data?.canonical_link || pageUrl(BlogTypes.FAST_TRACK, true),
     },
     openGraph: {
       images: [

@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     robots: data?.meta_robots,
     keywords: data?.keywords,
     alternates: {
-      canonical: productUrl(data?.slug, ProductTypes.HOTEL, true),
+      canonical: productUrl(ProductTypes.HOTEL, data?.slug, true),
     },
     openGraph: {
       images: [
