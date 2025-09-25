@@ -26,6 +26,7 @@ import HomeYacht from "@/components/home/Yacht";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import NewsByPage from "@/components/content-page/NewsByPage";
 import HomeAmusementTicket from "@/components/home/AmusementTicket";
+import HomeFastTrack from "@/components/home/FastTrack";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const seo = await settingApi.getCachedMetaSeo();
@@ -118,6 +119,12 @@ export default async function Home() {
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <Flight />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <HomeFastTrack />
           </AosAnimate>
         </Suspense>
 
