@@ -127,7 +127,7 @@ export default function FastTrackTabs({
                           <div className="overflow-hidden rounded-t-2xl	">
                             <Link href={`/fast-track/${item.slug}`}>
                               <Image
-                                className="hover:scale-110 ease-in duration-300 cursor-pointer"
+                                className="hover:scale-110 ease-in duration-300 cursor-pointer object-cover"
                                 src={`${item.image_url}/${item.image_location}`}
                                 alt="Image"
                                 width={320}
