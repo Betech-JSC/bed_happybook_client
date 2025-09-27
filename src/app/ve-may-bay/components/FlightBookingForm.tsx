@@ -203,6 +203,8 @@ export default function FlightBookForm({ airportsData }: any) {
     }
     let finalData = {
       ...formatData,
+      ticket_object_list: dropdown,
+      totalBaggages,
       passengers,
       fare_data,
       is_invoice: generateInvoice,
