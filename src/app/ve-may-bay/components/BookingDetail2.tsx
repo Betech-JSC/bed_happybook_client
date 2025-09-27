@@ -276,18 +276,34 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     if (selectedPaymentMethod === "onepay") {
       setOnePayFee(
         (totalPrice + totalBaggages.price - data?.orderInfo?.total_discount) *
-          0.025
+        0.025
       );
     } else {
       setOnePayFee(0);
       if (
-        selectedPaymentMethod === "vietqr" &&
-        !qrCodeGenerated &&
-        data?.orderInfo?.sku
+        selectedPaymentMethod === 'vietqr'
       ) {
-        PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku).then(
+        // PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku).then(
+        //   (result: any) => {
+        //     setQrCodeGenerated(true);
+        //     setVietQrData(result?.data);
+        //   }
+        // );
+
+        PaymentApi.createReceipt({
+          "payment_method_id": 5,
+          "total_amount": totalPrice,
+          "description": "Thu đơn hàng",
+          "note": "KH chuyển khoản",
+          "allocations": [
+            {
+              "ref_type": "order",
+              "ref_code": "DH45311092025",
+              "amount": totalPrice
+            }
+          ]
+        }).then(
           (result: any) => {
-            setQrCodeGenerated(true);
             setVietQrData(result?.data);
           }
         );
@@ -416,11 +432,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </svg>
           </button>
           <div
-            className={`bg-white border-t transition-all duration-300 overflow-hidden ${
-              isOpenBookingDetail
-                ? "max-h-[2500px] opacity-100 p-4"
-                : "max-h-0 opacity-0 p-0"
-            }`}
+            className={`bg-white border-t transition-all duration-300 overflow-hidden ${isOpenBookingDetail
+              ? "max-h-[2500px] opacity-100 p-4"
+              : "max-h-0 opacity-0 p-0"
+              }`}
           >
             <div>
               <p className="font-bold text-18">{t("tom_tat_chuyen_bay")}</p>
@@ -555,10 +570,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                     >
                                       {durationFlight
                                         ? `${Math.floor(
-                                            durationFlight / 60
-                                          )} giờ ${Math.floor(
-                                            durationFlight % 60
-                                          )} phút`
+                                          durationFlight / 60
+                                        )} giờ ${Math.floor(
+                                          durationFlight % 60
+                                        )} phút`
                                         : ""}
                                     </span>
                                     {flight.legs < 1 && (
@@ -619,12 +634,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           !isLoadingRules && (
                             <div className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0">
                               {Array.isArray(flight.ListRulesTicket) &&
-                              flight.ListRulesTicket.length > 0 ? (
+                                flight.ListRulesTicket.length > 0 ? (
                                 (() => {
                                   const isFareRulesOfStrings =
                                     Array.isArray(flight.ListRulesTicket) &&
                                     typeof flight.ListRulesTicket[0] ===
-                                      "string";
+                                    "string";
 
                                   return (
                                     <div>
@@ -959,20 +974,20 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                   ticketPaymentTimeout
                     ? "Đã hết thời gian thanh toán"
                     : isPaid
-                    ? "Hoàn tất thanh toán"
-                    : "Xác nhận thanh toán"
+                      ? "Hoàn tất thanh toán"
+                      : "Xác nhận thanh toán"
                 }
                 disabled={
                   ticketPaymentTimeout ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? true
                     : false
                 }
                 style={
                   ticketPaymentTimeout ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? "bg-gray-300 disabled:cursor-not-allowed"
                     : ""
                 }
@@ -982,11 +997,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         )}
       </div>
       <div
-        className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl p-3 lg:p-6  ${
-          isStickySideBar
-            ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
-            : "w-full"
-        }`}
+        className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl p-3 lg:p-6  ${isStickySideBar
+          ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
+          : "w-full"
+          }`}
       >
         <div className="p-3 lg:py-4 lg:px-4">
           <p className="text-22 font-bold mb-2" data-translate="true">
@@ -1038,11 +1052,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 </div>
               </button>
               <div
-                className={`rounded-lg transition-all delay-300 ease-in ${
-                  activeIndex === index
-                    ? "max-h-16 opacity-100 visible"
-                    : "max-h-0 opacity-0 invisible"
-                } `}
+                className={`rounded-lg transition-all delay-300 ease-in ${activeIndex === index
+                  ? "max-h-16 opacity-100 visible"
+                  : "max-h-0 opacity-0 invisible"
+                  } `}
               >
                 <div className="text-sm text-gray-500 flex justify-between mt-1">
                   <span data-translate="true">Vé</span>
@@ -1074,9 +1087,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </span>
             <p className="font-semibold">
               {totalBaggages.price && totalBaggages.quantity
-                ? `${formatCurrency(totalBaggages.price)} x ${
-                    totalBaggages.quantity
-                  }`
+                ? `${formatCurrency(totalBaggages.price)} x ${totalBaggages.quantity
+                }`
                 : "0đ"}
             </p>
           </div>
@@ -1111,9 +1123,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             <p className="font-bold text-primary">
               {formatCurrency(
                 totalPrice +
-                  onePayFee +
-                  totalBaggages.price -
-                  data?.orderInfo?.total_discount
+                onePayFee +
+                totalBaggages.price -
+                data?.orderInfo?.total_discount
               )}
             </p>
           </div>

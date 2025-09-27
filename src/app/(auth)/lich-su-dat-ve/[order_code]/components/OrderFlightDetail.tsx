@@ -101,14 +101,6 @@ export default function OrderFlightDetail({ detail }: any) {
     setTicketPaymentTimeout(true);
   };
 
-  useEffect(() => {
-    if (selectedPaymentMethod === "vietqr" && !qrCodeGenerated && detail?.sku) {
-      PaymentApi.generateQrCodeAirlineTicket(detail.sku).then((result: any) => {
-        setQrCodeGenerated(true);
-        setVietQrData(result?.data);
-      });
-    }
-  }, [selectedPaymentMethod, qrCodeGenerated, detail]);
 
   useEffect(() => {
     if (selectedPaymentMethod !== "vietqr") {
@@ -297,20 +289,20 @@ export default function OrderFlightDetail({ detail }: any) {
                   ticketPaymentTimeout
                     ? "Đã hết thời gian thanh toán"
                     : isPaid
-                    ? "Hoàn tất thanh toán"
-                    : "Xác nhận thanh toán"
+                      ? "Hoàn tất thanh toán"
+                      : "Xác nhận thanh toán"
                 }
                 disabled={
                   ticketPaymentTimeout ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? true
                     : false
                 }
                 style={
                   ticketPaymentTimeout ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? "bg-gray-300 disabled:cursor-not-allowed"
                     : ""
                 }
