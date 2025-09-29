@@ -48,6 +48,7 @@ export default function QRCodeDisplay({
       translatePage("#wrapper-payment-transfer", 10);
     }
   }, [isPaid]);
+
   return (
     <div
       id="wrapper-payment-transfer"

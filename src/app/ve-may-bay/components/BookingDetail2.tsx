@@ -280,36 +280,38 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       );
     } else {
       setOnePayFee(0);
-      if (
-        selectedPaymentMethod === 'vietqr'
-      ) {
-        // PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku).then(
-        //   (result: any) => {
-        //     setQrCodeGenerated(true);
-        //     setVietQrData(result?.data);
-        //   }
-        // );
+      if (selectedPaymentMethod === 'vietqr' && !qrCodeGenerated) {
+        PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku)
+          .then((qrResult: any) => {
 
-        PaymentApi.createReceipt({
-          "payment_method_id": 5,
-          "total_amount": totalPrice,
-          "description": "Thu đơn hàng",
-          "note": "KH chuyển khoản",
-          "allocations": [
-            {
-              "ref_type": "order",
-              "ref_code": "DH45311092025",
-              "amount": totalPrice
-            }
-          ]
-        }).then(
-          (result: any) => {
-            setVietQrData(result?.data);
-          }
-        );
+            let total = qrResult.data['total_price'] - qrResult.data['total_discount'];
+            let sku = qrResult.data['sku'];
+
+            return PaymentApi.createReceipt({
+              "payment_method_id": 5,
+              "total_amount": total,
+              "description": "Thu đơn hàng",
+              "note": "KH chuyển khoản",
+              "allocations": [
+                {
+                  "ref_type": "order",
+                  "ref_code": sku,
+                  "amount": total
+                }
+              ]
+            });
+          })
+          .then((receiptResult: any) => {
+            setQrCodeGenerated(true);
+            setVietQrData(receiptResult?.data);
+          })
+          .catch((error) => {
+            console.error("Error generating QR code or creating receipt:", error);
+          });
       }
     }
   }, [selectedPaymentMethod, qrCodeGenerated, data, totalPrice, totalBaggages]);
+
 
   // useEffect(() => {
   //   if (
