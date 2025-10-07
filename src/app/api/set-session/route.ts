@@ -8,5 +8,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   Object.assign(session, body);
   await session.save();
-  return res;
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: res.headers,
+  });
 }
