@@ -39,7 +39,7 @@ export default function ListFlightsInternationalNormal({
   const [tabsFlightDetail, setTabsFlightDetail] = useState<
     { id: number; name: string }[]
   >([]);
-  const [flightsLimit, setFlightsLimit] = useState(INITIAL_LIMIT);
+  const btnCheckoutRef = useRef<HTMLDivElement>(null);
 
   const handleShowPopupFlightDetail = (
     flight: any,
@@ -179,6 +179,24 @@ export default function ListFlightsInternationalNormal({
   };
 
   let flightsGroup: any = groupFlights([...filteredFlightsData]);
+  let totalPrice = 0;
+  if (
+    selectedDepartFlight &&
+    selectedDepartFlight?.source !== "1G" &&
+    selectedReturnFlight &&
+    selectedReturnFlight?.source !== "1G"
+  ) {
+    totalPrice +=
+      selectedDepartFlight?.selectedTicketClass?.totalPrice +
+      selectedReturnFlight?.selectedTicketClass?.totalPrice;
+    if (btnCheckoutRef.current) {
+      handleScrollSmooth(btnCheckoutRef.current);
+    }
+  }
+  if (!Object.values(flightsGroup).some((arr) => (arr as any[]).length > 0)) {
+    return null;
+  }
+
   return (
     <Fragment>
       <div
@@ -227,9 +245,10 @@ export default function ListFlightsInternationalNormal({
                   </div>
                 </div>
               </div>
-              {group.map((item: any, index: number) => (
-                <div key={index}>
+              {group?.length ? (
+                group.map((item: any, index: number) => (
                   <FlightInternationDetail
+                    key={index}
                     FareData={item}
                     onSelectFlight={
                       parseInt(leg) === 0
@@ -242,24 +261,43 @@ export default function ListFlightsInternationalNormal({
                     totalPassengers={totalPassengers}
                     flightLeg={leg}
                   />
+                ))
+              ) : (
+                <div className="w-full my-12 text-center text-2xl font-semibold">
+                  <p>{t("khong_co_chuyen_bay_nao_trong_ngay_hom_nay")}</p>
+                  <p className="mt-1">
+                    {t(
+                      "quy_khach_vui_long_chuyen_sang_ngay_khac_de_dat_ve_xin_cam_on"
+                    )}
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
           ))}
-
-        <button
-          className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${
-            !isCheckOut
-              ? "disabled:bg-gray-200 disabled:cursor-not-allowed"
-              : ""
-          }`}
-          onClick={() => {
-            handleCheckout();
-          }}
-          disabled={isCheckOut ? false : true}
+        <div
+          className="flex justify-between px-4 py-6 items-end"
+          ref={btnCheckoutRef}
         >
-          <span>{t("chon")}</span>
-        </button>
+          <div>
+            <span className="font-medium">{t("tong_tien_thanh_toan")}:</span>{" "}
+            <span className="text-2xl font-bold text-primary">
+              {totalPrice.toLocaleString("vi-VN")}
+            </span>
+          </div>
+          <button
+            className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${
+              !isCheckOut
+                ? "disabled:bg-gray-200 disabled:cursor-not-allowed"
+                : ""
+            }`}
+            onClick={() => {
+              handleCheckout();
+            }}
+            disabled={isCheckOut ? false : true}
+          >
+            <span>{t("chon")}</span>
+          </button>
+        </div>
       </div>
       <FlightInternationalDetailPopup
         airports={airportsData}

@@ -8,7 +8,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { addDays, parse, format, isValid, isBefore, isSameDay } from "date-fns";
+import {
+  addDays,
+  parse,
+  format,
+  isValid,
+  isBefore,
+  isSameDay,
+  startOfDay,
+} from "date-fns";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
@@ -26,7 +34,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import ListFlights from "./SearchFlights/List";
 import { useTranslation } from "@/hooks/useTranslation";
 import ListFlightsInternaltion from "./SearchFlights/International/List";
-import ListFlights1GInternaltion from "./SearchFlights/International/1G/List";
 
 export default function SearchFlightsResult({
   airportsData,
@@ -145,19 +152,35 @@ export default function SearchFlightsResult({
   const [returnDays, setReturnDays] = useState<TabDays[]>([]);
 
   const generateDays = useCallback(
-    (baseDate: Date, type: string, displayType: "desktop" | "mobile") => {
+    (
+      baseDate: Date,
+      type: "depart" | "return",
+      displayType: "desktop" | "mobile",
+      departDateStr?: string
+    ) => {
       const newDays: TabDays[] = [];
+      const now = startOfDay(new Date());
+
+      const departDate = departDateStr
+        ? startOfDay(parse(departDateStr, "ddMMyyyy", new Date()))
+        : now;
 
       for (let i = -3; i <= 3; i++) {
         const date = addDays(baseDate, i);
+        const isToday = isSameDay(date, now);
+
         const isDisabled =
-          isBefore(date, new Date()) && !isSameDay(date, new Date());
+          type === "return"
+            ? isBefore(date, departDate) && !isToday
+            : isBefore(date, now) && !isToday;
+
         newDays.push({
           label: getDayLabel(date.getDay(), displayType, language),
           date,
           disabled: isDisabled,
         });
       }
+
       if (type === "depart") setDays(newDays);
       else setReturnDays(newDays);
     },
@@ -171,8 +194,16 @@ export default function SearchFlightsResult({
 
   useEffect(() => {
     generateDays(currentDate, "depart", displayType);
-    if (isRoundTrip) generateDays(currentReturnDay, "return", displayType);
-  }, [currentDate, currentReturnDay, isRoundTrip, displayType, generateDays]);
+    if (isRoundTrip)
+      generateDays(currentReturnDay, "return", displayType, DepartDate);
+  }, [
+    currentDate,
+    currentReturnDay,
+    isRoundTrip,
+    displayType,
+    DepartDate,
+    generateDays,
+  ]);
 
   const handleClickDate = (date: Date, typeDate: number) => {
     const formattedDate = format(date, "ddMMyyyy");
