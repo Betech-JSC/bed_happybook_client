@@ -48,6 +48,8 @@ const FlightApi = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  getFlightType: (from: string, to: string) =>
+    http.get<any>(`${path}/flight-type?from=${from}&to=${to}`),
 };
 
 export { FlightApi };

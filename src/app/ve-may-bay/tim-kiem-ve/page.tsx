@@ -109,6 +109,12 @@ export default async function SearchTicket({
     ?.payload?.data as any;
   const t = await getServerT();
 
+  const flightType = (
+    await FlightApi.getFlightType(
+      mergedParams.StartPoint,
+      mergedParams.EndPoint
+    )
+  )?.payload?.data as any;
   return (
     <SeoSchema
       metadata={metadata}
@@ -171,7 +177,10 @@ export default async function SearchTicket({
               </BreadcrumbList>
             </Breadcrumb>
             <div className="min-h-40" id="wrapper_search_flight">
-              <SearchFlightsResult airportsData={airportsData} />
+              <SearchFlightsResult
+                airportsData={airportsData}
+                flightType={flightType}
+              />
             </div>
           </div>
           <PartnerAirlines />
