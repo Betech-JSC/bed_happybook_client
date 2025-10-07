@@ -124,7 +124,7 @@ export default function ListFlightsInternaltion({
       handleSessionStorage("save", "departFlight", selectedDepartFlight);
       handleSessionStorage("save", "returnFlight", selectedReturnFlight);
       handleSessionStorage("save", "flightSession", flightSession);
-      await fetch("/api/set-session", {
+      const res = await fetch("/api/set-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -134,7 +134,12 @@ export default function ListFlightsInternaltion({
               ? "1G"
               : "NORMAL",
         }),
-      }).then(() => router.push("/ve-may-bay/thong-tin-hanh-khach"));
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        router.push("/ve-may-bay/thong-tin-hanh-khach");
+      }
     }
   };
 

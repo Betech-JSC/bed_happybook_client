@@ -348,13 +348,17 @@ export default function ListFlights({
   }, [isRoundTrip, selectedReturnFlight, selectedDepartFlight]);
 
   const handleCheckout = useCallback(async () => {
-    await fetch("/api/set-session", {
+    const res = await fetch("/api/set-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         flightType: "NORMAL",
       }),
-    }).then(() => router.push("/ve-may-bay/thong-tin-hanh-khach"));
+    });
+    const data = await res.json();
+    if (data.ok) {
+      router.push("/ve-may-bay/thong-tin-hanh-khach");
+    }
   }, [router]);
 
   useEffect(() => {
