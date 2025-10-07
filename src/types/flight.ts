@@ -69,6 +69,7 @@ export interface FlightCalendarProps {
 
 export interface ListFilghtProps {
   airportsData: AirportsCountry[];
+  flightType: string;
 }
 export interface SearchFilghtProps {
   airportsData: AirportsCountry[];

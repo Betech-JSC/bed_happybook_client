@@ -25,8 +25,13 @@ import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ListFlights from "./SearchFlights/List";
 import { useTranslation } from "@/hooks/useTranslation";
+import ListFlightsInternaltion from "./SearchFlights/International/List";
+import ListFlights1GInternaltion from "./SearchFlights/International/1G/List";
 
-export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
+export default function SearchFlightsResult({
+  airportsData,
+  flightType,
+}: ListFilghtProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const { language } = useLanguage();
@@ -55,7 +60,6 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   const [error, setError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
-  const [flightType, setFlightType] = useState<string>("");
   const [searchId, setSearchId] = useState<string | null>(null);
   const [flightItineraryResource, setFlightItineraryResource] = useState<
     Array<{ key: string; value: number }>
@@ -216,7 +220,12 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         setAirlineData([]);
         setError("");
         if (StartPoint && EndPoint && DepartDate) {
-          const response = await FlightApi.search(params);
+          const response = await FlightApi.search({
+            ...params,
+            isGroupedItineraryResponse:
+              isRoundTrip && flightType === "international",
+            locations: { from: StartPoint, to: EndPoint },
+          });
           const responseData = response?.payload?.data;
           const resources: any = responseData?.resources ?? [];
           if (responseData?.searchId) {
@@ -251,6 +260,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
       } catch (error: any) {
         setSearchId(null);
         setIsReady(true);
+
         if (error instanceof HttpError) {
           if (error.payload.code === 400) {
             setError(toaStrMsg.notFoundFlight);
@@ -274,6 +284,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     isRoundTrip,
     router,
     toaStrMsg,
+    flightType,
   ]);
 
   // Fetch resources
@@ -283,6 +294,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
         const response = await FlightApi.searchOperation({
           search_id: searchId,
         });
+
         if (
           response?.payload?.data?.completedJobs ===
           response?.payload?.data?.numberOfJobs
@@ -308,13 +320,21 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
 
     let timer: NodeJS.Timeout;
     let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 10;
+
     const fetchAndRepeat = async () => {
       if (cancelled || isFullFlightResource) return;
 
+      attempts++;
       await fetchFlightOperation();
 
-      if (!cancelled && !isFullFlightResource) {
+      if (!cancelled && !isFullFlightResource && attempts < maxAttempts) {
         timer = setTimeout(fetchAndRepeat, 1000);
+      }
+
+      if (attempts >= maxAttempts) {
+        setIsFullFlightResource(true);
       }
     };
 
@@ -349,6 +369,7 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
               chd: passengerChd,
               inf: passengerInf,
             },
+            locations: { from: StartPoint, to: EndPoint },
           })
         );
         const results = await Promise.allSettled(promises);
@@ -393,6 +414,8 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
     passengerInf,
     stopNumFilters,
     toaStrMsg.errorConnectApiFlight,
+    StartPoint,
+    EndPoint,
   ]);
 
   // Fetch airline data
@@ -403,7 +426,9 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
 
     const airlineSet = new Set<string>();
     flightsData.forEach((flight: any) => {
-      if (flight.segments.length) {
+      if (flight.source === "1G") {
+        airlineSet.add(flight.airline);
+      } else if (flight.segments.length) {
         flight.segments.map((segment: any) => airlineSet.add(segment.airline));
       }
     });
@@ -477,28 +502,55 @@ export default function SearchFlightsResult({ airportsData }: ListFilghtProps) {
   return (
     <Fragment>
       <div ref={resultsRef}>
-        <ListFlights
-          from={from}
-          to={to}
-          airportsData={airportsData}
-          flightsData={flightsData}
-          airlineData={airlineData}
-          isFullFlightResource={isFullFlightResource}
-          returnDate={ReturnDate}
-          departDate={DepartDate}
-          currentDate={currentDate}
-          currentReturnDay={currentReturnDay}
-          returnDays={returnDays}
-          departDays={days}
-          handleClickDate={handleClickDate}
-          flightSession={searchId}
-          isRoundTrip={isRoundTrip}
-          totalPassengers={totalPassengers}
-          flightType={flightType}
-          flightStopNum={stopNumFilters.filter((item) => item > 0)}
-          translatedStaticText={[]}
-          isReady={isReady}
-        />
+        {isRoundTrip && flightType === "international" ? (
+          <ListFlightsInternaltion
+            from={from}
+            to={to}
+            airportsData={airportsData}
+            flightsData={flightsData}
+            airlineData={airlineData}
+            isFullFlightResource={isFullFlightResource}
+            returnDate={ReturnDate}
+            departDate={DepartDate}
+            currentDate={currentDate}
+            currentReturnDay={currentReturnDay}
+            returnDays={returnDays}
+            departDays={days}
+            handleClickDate={handleClickDate}
+            flightSession={searchId}
+            isRoundTrip={isRoundTrip}
+            totalPassengers={totalPassengers}
+            flightType={flightType}
+            flightStopNum={stopNumFilters.filter((item) => item > 0)}
+            translatedStaticText={[]}
+            isReady={isReady}
+          />
+        ) : (
+          <>
+            <ListFlights
+              from={from}
+              to={to}
+              airportsData={airportsData}
+              flightsData={flightsData}
+              airlineData={airlineData}
+              isFullFlightResource={isFullFlightResource}
+              returnDate={ReturnDate}
+              departDate={DepartDate}
+              currentDate={currentDate}
+              currentReturnDay={currentReturnDay}
+              returnDays={returnDays}
+              departDays={days}
+              handleClickDate={handleClickDate}
+              flightSession={searchId}
+              isRoundTrip={isRoundTrip}
+              totalPassengers={totalPassengers}
+              flightType={flightType}
+              flightStopNum={stopNumFilters.filter((item) => item > 0)}
+              translatedStaticText={[]}
+              isReady={isReady}
+            />
+          </>
+        )}
       </div>
     </Fragment>
   );

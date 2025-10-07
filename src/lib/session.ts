@@ -8,6 +8,7 @@ export interface SessionData {
   isLoggedIn: boolean;
   access_token?: string;
   userInfo?: UserInfoType;
+  flightType?: string;
 }
 
 export const defaultSession: SessionData = {
@@ -15,6 +16,7 @@ export const defaultSession: SessionData = {
   isLoggedIn: false,
   access_token: undefined,
   userInfo: undefined,
+  flightType: undefined,
 };
 
 export const sessionOptions: SessionOptions = {
