@@ -357,9 +357,9 @@ export default function ListFlights({
     });
     const data = await res.json();
     if (data.ok) {
-      router.push("/ve-may-bay/thong-tin-hanh-khach");
+      window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
     }
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (isCheckOut && typeof window !== "undefined") {

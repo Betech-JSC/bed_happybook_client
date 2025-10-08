@@ -39,6 +39,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   return getMetadata(contentPage);
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function CustomerInfo() {
   const airportsReponse = await FlightApi.airPorts();
   const airportsData = airportsReponse?.payload.data ?? [];
