@@ -130,7 +130,7 @@ export default function ListFlightsInternaltion({
         body: JSON.stringify({
           flightType:
             selectedDepartFlight?.source === "1G" &&
-            selectedDepartFlight?.source === "1G"
+            selectedReturnFlight?.source === "1G"
               ? "1G"
               : "NORMAL",
         }),
@@ -138,7 +138,7 @@ export default function ListFlightsInternaltion({
 
       const data = await res.json();
       if (data.ok) {
-        router.push("/ve-may-bay/thong-tin-hanh-khach");
+        window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
       }
     }
   };
