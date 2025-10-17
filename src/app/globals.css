@@ -161,3 +161,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media (max-width: 767px) {
+  .zalo-chat-widget {
+    bottom: 40px !important;  
+    right: 12px !important;   
+    width: 70px;   
+    height: 70px;  
+    left: auto !important; 
+  }
+}
