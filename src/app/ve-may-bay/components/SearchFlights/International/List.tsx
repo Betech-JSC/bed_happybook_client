@@ -8,17 +8,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { format, isSameDay, parseISO } from "date-fns";
+import { differenceInHours, format, isSameDay, parseISO } from "date-fns";
 import Image from "next/image";
 import { pareseDateFromString } from "@/lib/formatters";
 import { handleSessionStorage } from "@/utils/Helper";
 import { filtersFlight, ListFlight } from "@/types/flight";
-import { useRouter } from "next/navigation";
 import _ from "lodash";
-import { useLanguage } from "@/contexts/LanguageContext";
-import FlightInternational1GDetail from "./1G/Detail";
 import { useTranslation } from "@/hooks/useTranslation";
-import Flight1GDetailPopup from "./1G/FlightDetailPopup";
 import SideBarFilterFlights from "../../SideBarFilter";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -35,12 +31,13 @@ const defaultFilers: filtersFlight = {
   departureTime: [0, 24],
   arrivalTime: [0, 24],
 };
+const INITIAL_LIMIT = 5;
+const SOURCE_1G = "1G";
 
 export default function ListFlightsInternaltion({
   airportsData,
   flightsData,
   airlineData,
-  isFullFlightResource,
   from,
   to,
   returnDate,
@@ -53,13 +50,9 @@ export default function ListFlightsInternaltion({
   flightSession,
   isRoundTrip,
   totalPassengers,
-  flightType,
-  flightStopNum,
-  translatedStaticText,
   isReady,
 }: ListFlight) {
   const { t } = useTranslation();
-  const router = useRouter();
   const [selectedDepartFlight, setSelectedDepartFlight] = useState<any>(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState<any>(null);
   const [selectedFareDataId, setSelectedFareDataId] = useState<string | null>(
@@ -68,6 +61,8 @@ export default function ListFlightsInternaltion({
   const [isCheckOut, setIsCheckOut] = useState<boolean>(false);
   const [filters, setFilters] = useState(defaultFilers);
   const wrapperResultRef = useRef<HTMLDivElement>(null);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [dataLimit, setDataLimit] = useState(INITIAL_LIMIT);
 
   const resetFilters = () => {
     setFilters(defaultFilers);
@@ -119,6 +114,186 @@ export default function ListFlightsInternaltion({
     }
   };
 
+  const handleFilterFlight1G = useCallback(
+    (flights: any) => {
+      if (flights.length > 0) {
+        if (filters.airlines.length > 0) {
+          flights = flights.filter((flight: any) => {
+            const match = filters.airlines.some(
+              (airline: any) =>
+                airline.trim().toLowerCase() ===
+                flight.airline.trim().toLowerCase()
+            );
+            return match;
+          });
+        }
+      }
+
+      if (
+        filters?.departureTime?.[0] !== 0 ||
+        filters?.departureTime?.[1] !== 24
+      ) {
+        const [startHour, endHour] = filters.departureTime;
+        const fromMinute = startHour * 60;
+        const toMinute = endHour * 60;
+        flights = flights.map((item: any) => ({
+          ...item,
+          journeys: [
+            item.journeys?.[0]?.filter((flight: any) => {
+              const departure = parseISO(flight.departure.at);
+              const departureMinutes =
+                departure.getHours() * 60 + departure.getMinutes();
+              return (
+                departureMinutes >= fromMinute && departureMinutes <= toMinute
+              );
+            }) ?? [],
+
+            item.journeys?.[1] ?? [],
+          ],
+        }));
+      }
+
+      if (filters?.arrivalTime?.[0] !== 0 || filters?.arrivalTime?.[1] !== 24) {
+        const [startHour, endHour] = filters.arrivalTime;
+        const fromMinute = startHour * 60;
+        const toMinute = endHour * 60;
+        flights = flights.map((item: any) => ({
+          ...item,
+          journeys: [
+            item.journeys?.[0] ?? [],
+            item.journeys?.[1]?.filter((flight: any) => {
+              const departure = parseISO(flight.arrival.at);
+              const departureMinutes =
+                departure.getHours() * 60 + departure.getMinutes();
+              return (
+                departureMinutes >= fromMinute && departureMinutes <= toMinute
+              );
+            }) ?? [],
+          ],
+        }));
+      }
+      flights = [...flights]
+        .filter(
+          (flight) =>
+            flight?.journeys?.[0]?.length && flight?.journeys?.[1]?.length
+        )
+        .sort((a, b) => {
+          if (filters.sortAirLine === "asc") {
+            const nameA = a.airline?.toLowerCase() ?? "";
+            const nameB = b.airline?.toLowerCase() ?? "";
+            const nameCompare = nameA.localeCompare(nameB);
+            if (nameCompare !== 0) return nameCompare;
+          }
+
+          const priceA = a?.totalPrice ?? 0;
+          const priceB = b?.totalPrice ?? 0;
+          return priceA - priceB;
+        });
+      return flights;
+    },
+    [filters]
+  );
+  const handleFilterFlightNormal = useCallback(
+    (flights: any) => {
+      if (!flights?.length) return [];
+      if (filters.airlines.length > 0) {
+        flights = flights.filter((flight: any) => {
+          return flight.trips.some((trip: any) => {
+            return filters.airlines.some(
+              (airline: string) =>
+                airline.trim().toLowerCase() ===
+                trip.airLineCode.trim().toLowerCase()
+            );
+          });
+        });
+      }
+
+      // --- Filter giờ khởi hành ---
+      if (
+        filters?.departureTime?.[0] !== 0 ||
+        filters?.departureTime?.[1] !== 24
+      ) {
+        const [startHour, endHour] = filters.departureTime;
+        const fromMinute = startHour * 60;
+        const toMinute = endHour * 60;
+
+        flights = flights
+          .map((flight: any) => {
+            const filteredTrips = flight.trips.filter((trip: any) => {
+              const departure = parseISO(trip.departure.at);
+              const departureMinutes =
+                departure.getHours() * 60 + departure.getMinutes();
+              return (
+                departureMinutes >= fromMinute && departureMinutes <= toMinute
+              );
+            });
+
+            return { ...flight, trips: filteredTrips };
+          })
+          .filter((flight: any) => {
+            const hasDeparture = flight.trips.some(
+              (trip: any) => trip.itineraryId === 1
+            );
+            const hasReturn = flight.trips.some(
+              (trip: any) => trip.itineraryId === 2
+            );
+            return flight.trips.length > 0 && hasDeparture && hasReturn;
+          });
+      }
+
+      // --- Filter giờ hạ cánh ---
+      if (filters?.arrivalTime?.[0] !== 0 || filters?.arrivalTime?.[1] !== 24) {
+        const [startHour, endHour] = filters.arrivalTime;
+        const fromMinute = startHour * 60;
+        const toMinute = endHour * 60;
+
+        flights = flights
+          .map((flight: any) => {
+            const filteredTrips = flight.trips.filter((trip: any) => {
+              const arrival = parseISO(trip.arrival.at);
+              const arrivalMinutes =
+                arrival.getHours() * 60 + arrival.getMinutes();
+              return arrivalMinutes >= fromMinute && arrivalMinutes <= toMinute;
+            });
+
+            return { ...flight, trips: filteredTrips };
+          })
+          .filter((flight: any) => {
+            const hasDeparture = flight.trips.some(
+              (trip: any) => trip.itineraryId === 1
+            );
+            const hasReturn = flight.trips.some(
+              (trip: any) => trip.itineraryId === 2
+            );
+            return flight.trips.length > 0 && hasDeparture && hasReturn;
+          });
+      }
+
+      return flights;
+    },
+    [filters]
+  );
+  useEffect(() => {
+    const cloneData = _.cloneDeep(flightsData);
+    const filtered = [
+      ...handleFilterFlight1G(
+        cloneData.filter((item: any) => item.source === SOURCE_1G)
+      ),
+      ...handleFilterFlightNormal(
+        cloneData.filter((item: any) => item.source !== SOURCE_1G)
+      ),
+    ].sort((a, b) => a.totalPrice - b.totalPrice);
+    setFilteredData(filtered);
+  }, [filters, flightsData, handleFilterFlightNormal, handleFilterFlight1G]);
+
+  // Reset when filters
+  useEffect(() => {
+    setSelectedFareDataId(null);
+    setSelectedDepartFlight(null);
+    setSelectedReturnFlight(null);
+    setIsCheckOut(false);
+  }, [filters]);
+  // End filter
   const handleCheckout = async () => {
     if (isCheckOut) {
       handleSessionStorage("save", "departFlight", selectedDepartFlight);
@@ -129,9 +304,9 @@ export default function ListFlightsInternaltion({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           flightType:
-            selectedDepartFlight?.source === "1G" &&
-            selectedReturnFlight?.source === "1G"
-              ? "1G"
+            selectedDepartFlight?.source === SOURCE_1G &&
+            selectedReturnFlight?.source === SOURCE_1G
+              ? SOURCE_1G
               : "NORMAL",
         }),
       });
@@ -148,10 +323,10 @@ export default function ListFlightsInternaltion({
     FareId: string,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setIsCheckOut(false);
     if (FareId !== selectedFareDataId) {
       handleUncheck(e);
       setSelectedReturnFlight(null);
-      setIsCheckOut(false);
     }
     setSelectedDepartFlight(flight);
     setSelectedFareDataId(FareId);
@@ -162,10 +337,10 @@ export default function ListFlightsInternaltion({
     FareId: string,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setIsCheckOut(false);
     if (FareId !== selectedFareDataId) {
       handleUncheck(e);
       setSelectedDepartFlight(null);
-      setIsCheckOut(false);
     }
     setSelectedReturnFlight(flight);
     setSelectedFareDataId(FareId);
@@ -187,6 +362,39 @@ export default function ListFlightsInternaltion({
         }
       });
   };
+
+  const visibletData = filteredData.slice(0, dataLimit);
+  const loadMoreDataRef = useRef<HTMLDivElement | null>(null);
+  const timeouDataId = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setDataLimit(INITIAL_LIMIT);
+  }, [filters, filteredData]);
+
+  useEffect(() => {
+    if (!loadMoreDataRef.current || dataLimit >= filteredData.length) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          timeouDataId.current = setTimeout(() => {
+            setDataLimit((prev) =>
+              Math.min(prev + INITIAL_LIMIT, filteredData.length)
+            );
+            timeouDataId.current = null;
+          }, 200);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loadMoreDataRef.current);
+
+    return () => {
+      observer.disconnect();
+      if (timeouDataId.current) clearTimeout(timeouDataId.current);
+    };
+  }, [dataLimit, filteredData]);
   return (
     <Fragment>
       <div
@@ -224,15 +432,62 @@ export default function ListFlightsInternaltion({
                 </div>
                 <div>
                   <h3 className="font-semibold">{`${from} - ${to} `}</h3>
+                  <div className="mt-1 text-sm flex flex-col gap-1">
+                    <div className="flex flex-col md:flex-row gap-1">
+                      <span className="font-semibold">{t("ngay_di")}:</span>{" "}
+                      {departDate
+                        ? pareseDateFromString(
+                            departDate,
+                            "ddMMyyyy",
+                            "dd/MM/yyyy"
+                          )
+                        : ""}
+                      <span className="mx-2">{"-"}</span>
+                      <span className="font-semibold">
+                        {t("ngay_ve")}:
+                      </span>{" "}
+                      {returnDate
+                        ? pareseDateFromString(
+                            returnDate,
+                            "ddMMyyyy",
+                            "dd/MM/yyyy"
+                          )
+                        : ""}{" "}
+                    </div>
+                    <span>
+                      {totalPassengers} {t("khach")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {/* <div
+                className="flex text-white p-4 rounded-t-2xl shadow-md space-x-4 items-center"
+                style={{
+                  background:
+                    " linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                }}
+              >
+                <div className="w-10 h-10 p-2 bg-primary rounded-lg inline-flex items-center justify-center">
+                  <Image
+                    src="/icon/AirplaneTilt.svg"
+                    width={20}
+                    height={20}
+                    alt="Icon"
+                    className="w-5 h-5"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold">{`${from} - ${to} `}</h3>
                   <div className="text-sm">
-                    <span>{totalPassengers} Khách - </span>
+                    <span>
+                      {totalPassengers} {t("khach")} -{" "}
+                    </span>
                     {departDate
                       ? pareseDateFromString(departDate, "ddMMyyyy", "dd/MM")
                       : ""}
                   </div>
                 </div>
               </div>
-              {/* Tabs day */}
               <div className="grid grid-cols-7 items-center bg-white rounded-b-2xl">
                 {departDays.map((day, index) => (
                   <button
@@ -281,7 +536,9 @@ export default function ListFlightsInternaltion({
                 <div>
                   <h3 className="font-semibold">{`${to} - ${from} `}</h3>
                   <div className="text-sm">
-                    <span>{totalPassengers} Khách - </span>
+                    <span>
+                      {totalPassengers} {t("khach")} -{" "}
+                    </span>
                     {returnDate
                       ? pareseDateFromString(returnDate, "ddMMyyyy", "dd/MM")
                       : ""}
@@ -316,54 +573,55 @@ export default function ListFlightsInternaltion({
                     </div>
                   </button>
                 ))}
-              </div>
+              </div> */}
             </Fragment>
-            {isReady && flightsData?.length ? (
-              <Fragment>
-                <ListFlights1GInternaltion
-                  from={from}
-                  to={to}
-                  airportsData={airportsData}
-                  flightsData={flightsData.filter(
-                    (item: any) => item.source === "1G"
-                  )}
-                  airlineData={airlineData}
-                  returnDate={returnDate}
-                  departDate={departDate}
-                  flightSession={flightSession}
-                  isRoundTrip={isRoundTrip}
-                  totalPassengers={totalPassengers}
-                  filters={filters}
-                  handleSelectDepartFlight={handleSelectDepartFlight}
-                  handleSelectReturnFlight={handleSelectReturnFlight}
-                  selectedFareDataId={selectedFareDataId}
-                  handleCheckout={handleCheckout}
-                  isCheckOut={isCheckOut}
-                />
-
-                <ListFlightsInternationalNormal
-                  from={from}
-                  to={to}
-                  airportsData={airportsData}
-                  flightsData={flightsData.filter(
-                    (item: any) => item.source !== "1G"
-                  )}
-                  airlineData={airlineData}
-                  returnDate={returnDate}
-                  departDate={departDate}
-                  flightSession={flightSession}
-                  isRoundTrip={isRoundTrip}
-                  totalPassengers={totalPassengers}
-                  filters={filters}
-                  handleSelectDepartFlight={handleSelectDepartFlight}
-                  handleSelectReturnFlight={handleSelectReturnFlight}
-                  selectedDepartFlight={selectedDepartFlight}
-                  selectedReturnFlight={selectedReturnFlight}
-                  selectedFareDataId={selectedFareDataId}
-                  handleCheckout={handleCheckout}
-                  isCheckOut={isCheckOut}
-                />
-              </Fragment>
+            {filteredData?.length > 0 ? (
+              visibletData.map((flightsItem: any, index: number) => {
+                const is1G = flightsItem.source === SOURCE_1G;
+                return (
+                  <Fragment key={index}>
+                    {is1G ? (
+                      <ListFlights1GInternaltion
+                        from={from}
+                        to={to}
+                        airportsData={airportsData}
+                        flightsData={flightsItem}
+                        airlineData={airlineData}
+                        returnDate={returnDate}
+                        departDate={departDate}
+                        flightSession={flightSession}
+                        isRoundTrip={isRoundTrip}
+                        totalPassengers={totalPassengers}
+                        handleSelectDepartFlight={handleSelectDepartFlight}
+                        handleSelectReturnFlight={handleSelectReturnFlight}
+                        selectedFareDataId={selectedFareDataId}
+                        handleCheckout={handleCheckout}
+                        isCheckOut={isCheckOut}
+                      />
+                    ) : (
+                      <ListFlightsInternationalNormal
+                        from={from}
+                        to={to}
+                        airportsData={airportsData}
+                        flightsData={flightsItem}
+                        airlineData={airlineData}
+                        returnDate={returnDate}
+                        departDate={departDate}
+                        flightSession={flightSession}
+                        isRoundTrip={isRoundTrip}
+                        totalPassengers={totalPassengers}
+                        handleSelectDepartFlight={handleSelectDepartFlight}
+                        handleSelectReturnFlight={handleSelectReturnFlight}
+                        selectedDepartFlight={selectedDepartFlight}
+                        selectedReturnFlight={selectedReturnFlight}
+                        selectedFareDataId={selectedFareDataId}
+                        handleCheckout={handleCheckout}
+                        isCheckOut={isCheckOut}
+                      />
+                    )}
+                  </Fragment>
+                );
+              })
             ) : (
               <div className="w-full my-12 text-center text-2xl font-semibold">
                 <p>{t("khong_co_chuyen_bay_nao_trong_ngay_hom_nay")}</p>
@@ -372,6 +630,14 @@ export default function ListFlightsInternaltion({
                     "quy_khach_vui_long_chuyen_sang_ngay_khac_de_dat_ve_xin_cam_on"
                   )}
                 </p>
+              </div>
+            )}
+            {dataLimit < filteredData.length && (
+              <div
+                ref={loadMoreDataRef}
+                className="mt-4 h-10 text-center inline-flex justify-center items-center w-full gap-3"
+              >
+                <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
               </div>
             )}
           </div>
