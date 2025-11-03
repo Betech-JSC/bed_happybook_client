@@ -351,20 +351,6 @@ export default function Header() {
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
           <nav className="flex h-[26px] space-x-8">
-            <div
-              className={clsx(`relative`, styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/tours"),
-              })}
-            >
-              <Link href="/tours" className="py-4">
-                {t("Tours")}
-              </Link>
-              <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/tours/tour-noi-dia">{t("tour_noi_dia")}</Link>
-                <Link href="/tours/tour-quoc-te">{t("tour_quoc_te")}</Link>
-              </div>
-            </div>
-
             <Link
               href="/ve-may-bay"
               className={clsx(styles.header__menu_item, {
@@ -372,6 +358,14 @@ export default function Header() {
               })}
             >
               {t("ve_may_bay")}
+            </Link>
+            <Link
+              href="/khach-san"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/khach-san"),
+              })}
+            >
+              {t("khach_san")}
             </Link>
             <Link
               href="/visa"
@@ -398,13 +392,26 @@ export default function Header() {
                 </Link>
               </div>
             </div>
-            <Link
-              href="/khach-san"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/khach-san"),
+            <div
+              className={clsx(`relative`, styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/tours"),
               })}
             >
-              {t("khach_san")}
+              <Link href="/tours" className="py-4">
+                {t("Tours")}
+              </Link>
+              <div className={` ${styles.header__sub_menu_item}`}>
+                <Link href="/tours/tour-noi-dia">{t("tour_noi_dia")}</Link>
+                <Link href="/tours/tour-quoc-te">{t("tour_quoc_te")}</Link>
+              </div>
+            </div>
+            <Link
+              href="/fast-track"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/fast-track"),
+              })}
+            >
+              {t("fast_track")}
             </Link>
             <Link
               href="/bao-hiem"
@@ -466,19 +473,19 @@ export default function Header() {
                     : "[&>a]:max-h-0 invisible"
                 }`}
                 style={{
-                  maxHeight: isMenuOpen ? "274px" : "0px ",
+                  maxHeight: isMenuOpen ? "236px" : "0px ",
                   opacity: isMenuOpen ? "1" : "0",
                   zIndex: isMenuOpen ? "10" : "-1",
                   transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
                 }}
               >
-                <Link
+                {/* <Link
                   href="/fast-track"
                   className={styles.text_hover_default}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
                   {t("fast_track")}
-                </Link>
+                </Link> */}
                 <Link
                   href="/dang-ky-ctv"
                   className={styles.text_hover_default}
