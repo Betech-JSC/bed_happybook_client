@@ -24,6 +24,7 @@ import PartnerAirlines from "../components/Partner";
 import { redirect } from "next/navigation";
 import { format, parse, isValid, isBefore, startOfDay } from "date-fns";
 import { getServerT } from "@/lib/i18n/getServerT";
+import SearchFlightsInternationalResult from "../components/SearchFlights/International/SearchResult";
 
 export const metadata: Metadata = formatMetadata({
   robots: "index, follow",
@@ -54,6 +55,12 @@ export default async function SearchTicket({
     to: "Hà Nội (HAN)",
   };
   const mergedParams = { ...defaultParams, ...searchParams };
+
+  if (!["oneWay", "roundTrip"].includes(mergedParams?.tripType)) {
+    mergedParams.tripType = "oneWay";
+    const queryString = new URLSearchParams(mergedParams).toString();
+    redirect(`/ve-may-bay/tim-kiem-ve?${queryString}`);
+  }
 
   const parseDDMMYYYY = (dateStr: string) =>
     parse(dateStr, "ddMMyyyy", new Date());
@@ -177,10 +184,18 @@ export default async function SearchTicket({
               </BreadcrumbList>
             </Breadcrumb>
             <div className="min-h-40" id="wrapper_search_flight">
-              <SearchFlightsResult
-                airportsData={airportsData}
-                flightType={flightType}
-              />
+              {flightType === "international" &&
+              mergedParams.tripType === "roundTrip" ? (
+                <SearchFlightsInternationalResult
+                  airportsData={airportsData}
+                  flightType={flightType}
+                />
+              ) : (
+                <SearchFlightsResult
+                  airportsData={airportsData}
+                  flightType={flightType}
+                />
+              )}
             </div>
           </div>
           <PartnerAirlines />

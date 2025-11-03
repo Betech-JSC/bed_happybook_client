@@ -93,7 +93,7 @@ export default function SideBarFilterFlights({
             </div>
           </div>
         </div>
-        <div className="mt-3 pb-3 border-b border-gray-200">
+        {/* <div className="mt-3 pb-3 border-b border-gray-200">
           <h2 className="font-semibold">{t("sap_xep")}</h2>
           <div className="flex space-x-2 mt-3 items-center"></div>
           <div className="flex space-x-2 items-center">
@@ -107,7 +107,7 @@ export default function SideBarFilterFlights({
             />
             <label htmlFor="sortAirLine">{t("hang_hang_khong")}</label>
           </div>
-        </div>
+        </div> */}
         {airlineData.length > 0 && (
           <div className="mt-3 pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("hang_hang_khong")}</h2>

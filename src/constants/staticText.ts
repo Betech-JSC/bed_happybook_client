@@ -1,4 +1,6 @@
 export const flightStaticText: string[] = [
+  "Chuyến đi",
+  "Chuyến về",
   "Xem chi tiết",
   "Chi tiết",
   "Hạng vé",
