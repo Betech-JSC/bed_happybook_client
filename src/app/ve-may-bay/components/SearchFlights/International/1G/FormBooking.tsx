@@ -1615,11 +1615,11 @@ export default function Flight1GBookForm({ airportsData }: any) {
                     {formatCurrency(finalPrice - totalDiscount)}
                   </p>
                 </div>
-                <div className="text-[#166987] font-semibold mt-1 text-sm leading-6 italic">
+                {/* <div className="text-[#166987] font-semibold mt-1 text-sm leading-6 italic">
                   Bạn được tặng {totalAdt + totalChd + totalInf} bảo hiểm du
                   lịch.Sau khi đơn hàng được đặt sẽ có booker liên hệ để tư vấn
                   gói bảo hiểm phù hợp với bạn.
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

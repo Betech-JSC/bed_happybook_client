@@ -131,16 +131,16 @@ export default function HeaderMobileMenu() {
               {t("ve_may_bay")}
             </Link>
             <Link
-              href="/tours/tour-noi-dia"
-              className="block mt-4 cursor-pointer hover:text-[#F27145]"
-            >
-              {t("tour_noi_dia")}
-            </Link>
-            <Link
-              href="/tours/tour-quoc-te"
+              href="/khach-san"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
-              {t("tour_quoc_te")}
+              {t("khach_san")}
+            </Link>
+            <Link
+              href="/visa"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("visa")}
             </Link>
             <Link
               href="/du-thuyen"
@@ -148,38 +148,35 @@ export default function HeaderMobileMenu() {
             >
               {t("du_thuyen")}
             </Link>
-            {/* <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              Vé máy bay quốc tế
-            </p> */}
             <Link
-              href="/visa"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+              href="/tours"
+              className="block mt-4 cursor-pointer hover:text-[#F27145]"
             >
-              {t("dich_vu_lam_visa")}
-            </Link>
-            {/* <Link
-              href="/dinh-cu"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("dinh_cu")}
-            </Link> */}
-            <Link
-              href="/khach-san"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("khach_san")}
-            </Link>
-            <Link
-              href="/combo"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("combo")}
+              {t("tours")}
             </Link>
             <Link
               href="/fast-track"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >
               {t("fast_track")}
+            </Link>
+            <Link
+              href="/bao-hiem"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("bao_hiem")}
+            </Link>
+            <Link
+              href="/ve-vui-choi"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("ve_vui_choi")}
+            </Link>
+            <Link
+              href="/combo"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("combo")}
             </Link>
           </div>
           <div className="mt-6">

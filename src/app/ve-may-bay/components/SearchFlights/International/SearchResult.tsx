@@ -492,6 +492,8 @@ export default function SearchFlightsInternationalResult({
   useEffect(() => {
     if (!loading && (flights1G.length || flightsNormalGroupped.length)) {
       setIsReady(true);
+    } else {
+      setIsReady(false);
     }
   }, [loading, flights1G, flightsNormalGroupped]);
 
