@@ -399,7 +399,6 @@ export default function ListFlightsInternaltion({
     <Fragment>
       <div
         className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12 relative"
-        data-aos="fade"
         ref={wrapperResultRef}
       >
         <SideBarFilterFlights
@@ -433,28 +432,30 @@ export default function ListFlightsInternaltion({
                 <div>
                   <h3 className="font-semibold">{`${from} - ${to} `}</h3>
                   <div className="mt-1 text-sm flex flex-col gap-1">
-                    <div className="flex flex-col md:flex-row gap-1">
-                      <span className="font-semibold">{t("ngay_di")}:</span>{" "}
-                      {departDate
-                        ? pareseDateFromString(
-                            departDate,
-                            "ddMMyyyy",
-                            "dd/MM/yyyy"
-                          )
-                        : ""}
-                      <span className="mx-2">{"-"}</span>
-                      <span className="font-semibold">
-                        {t("ngay_ve")}:
-                      </span>{" "}
-                      {returnDate
-                        ? pareseDateFromString(
-                            returnDate,
-                            "ddMMyyyy",
-                            "dd/MM/yyyy"
-                          )
-                        : ""}{" "}
+                    <div className="flex flex-col md:flex-row gap-2">
+                      <div>
+                        <span className="font-semibold">{t("ngay_di")}:</span>{" "}
+                        {departDate
+                          ? pareseDateFromString(
+                              departDate,
+                              "ddMMyyyy",
+                              "dd/MM/yyyy"
+                            )
+                          : ""}
+                      </div>
+                      <span className="mx-2 hidden md:block">{"-"}</span>
+                      <div>
+                        <span className="font-semibold">{t("ngay_ve")}:</span>{" "}
+                        {returnDate
+                          ? pareseDateFromString(
+                              returnDate,
+                              "ddMMyyyy",
+                              "dd/MM/yyyy"
+                            )
+                          : ""}{" "}
+                      </div>
                     </div>
-                    <span>
+                    <span className="mt-1">
                       {totalPassengers} {t("khach")}
                     </span>
                   </div>

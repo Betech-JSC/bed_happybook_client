@@ -17,6 +17,7 @@ import _ from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
 import FlightInternational1GDetail from "./Detail";
 import Flight1GDetailPopup from "./FlightDetailPopup";
+import PriceDropdown from "../PriceDropdown";
 
 const INITIAL_LIMIT = 5;
 
@@ -80,47 +81,61 @@ export default function ListFlights1GInternaltion({
                   }`}
                   key={leg}
                 >
-                  <div className="flex py-4 px-8 rounded-t-2xl space-x-4 items-center bg-blue-50">
-                    <div className="inline-flex items-center justify-center">
-                      <Image
-                        src="/icon/AirplaneTiltBlue.svg"
-                        width={32}
-                        height={32}
-                        alt="Icon"
-                        className="w-8 h-8"
-                      />
-                    </div>
-                    <div>
-                      <h3
-                        className={`font-bold text-18 ${
-                          leg === 0 ? "text-blue-500" : "text-orange-500"
-                        }`}
-                      >
-                        {/* {leg === 0 ? `${from} - ${to}` : `${to} - ${from}`} */}
-                        {leg === 0 ? t("chuyen_di") : t("chuyen_ve")}
-                      </h3>
+                  <div className="flex items-start flex-col-reverse md:flex-row gap-4 justify-between py-4 px-8 rounded-t-2xl bg-blue-50">
+                    <div className="flex space-x-4 items-center">
+                      <div className="inline-flex items-center justify-center">
+                        <Image
+                          src="/icon/AirplaneTiltBlue.svg"
+                          width={32}
+                          height={32}
+                          alt="Icon"
+                          className="w-8 h-8"
+                        />
+                      </div>
+                      <div>
+                        <h3
+                          className={`font-bold text-18 ${
+                            leg === 0 ? "text-blue-500" : "text-orange-500"
+                          }`}
+                        >
+                          {leg === 0 ? t("chuyen_di") : t("chuyen_ve")}
+                        </h3>
 
-                      <div className="text-sm">
-                        <span>
-                          {totalPassengers} {t("khach")} -{" "}
-                        </span>
-                        {leg === 0
-                          ? departDate
+                        <div className="text-sm">
+                          <span>
+                            {totalPassengers} {t("khach")} -{" "}
+                          </span>
+                          {leg === 0
+                            ? departDate
+                              ? pareseDateFromString(
+                                  departDate,
+                                  "ddMMyyyy",
+                                  "dd/MM"
+                                )
+                              : ""
+                            : returnDate
                             ? pareseDateFromString(
-                                departDate,
+                                returnDate,
                                 "ddMMyyyy",
                                 "dd/MM"
                               )
-                            : ""
-                          : returnDate
-                          ? pareseDateFromString(
-                              returnDate,
-                              "ddMMyyyy",
-                              "dd/MM"
-                            )
-                          : ""}
+                            : ""}
+                        </div>
                       </div>
                     </div>
+                    {leg === 0 && (
+                      <div>
+                        <PriceDropdown
+                          totalPrice={flightsData.totalPrice}
+                          totalPriceAdt={flightsData.totalAdult}
+                          totalPriceChd={flightsData.totalChild}
+                          totalPriceInf={flightsData.totalInfant}
+                          numberAdt={flightsData?.numberAdt}
+                          numberChd={flightsData?.numberChd}
+                          numberInf={flightsData?.numberInf}
+                        />
+                      </div>
+                    )}
                   </div>
                   <FlightInternational1GDetail
                     journey={journey}
@@ -135,8 +150,8 @@ export default function ListFlights1GInternaltion({
               );
             })}
 
-            <div className="flex justify-between px-4 py-6 items-end">
-              <div>
+            <div className="flex justify-end px-4 py-6 items-end">
+              {/* <div>
                 {flightsData?.numberAdt > 1 && (
                   <p className="text-sm text-gray-700 font-semibold mb-2">
                     {t("nguoi_lon")}:{" "}
@@ -166,7 +181,7 @@ export default function ListFlights1GInternaltion({
                     {flightsData?.totalPrice?.toLocaleString("vi-VN")}
                   </span>
                 </div>
-              </div>
+              </div> */}
               <button
                 className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${
                   !isCheckOut || selectedFareDataId !== flightsData.hpb_id
@@ -177,7 +192,7 @@ export default function ListFlights1GInternaltion({
                   handleCheckout();
                 }}
                 disabled={
-                  isCheckOut || selectedFareDataId === flightsData.hpb_id
+                  !isCheckOut || !selectedFareDataId === flightsData.hpb_id
                 }
               >
                 <span>{t("chon")}</span>

@@ -10,6 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import FlightInternationDetail from "./Detail";
 import FlightInternationalDetailPopup from "./FlightDetailPopup";
+import PriceDropdown from "../PriceDropdown";
 
 export default function ListFlightsInternationalNormal({
   airportsData,
@@ -96,7 +97,7 @@ export default function ListFlightsInternationalNormal({
       >
         {/* Depart flights */}
         <div className={`pb-2 bg-[#FCFCFD] rounded-t-3xl`}>
-          <div className="flex justify-between py-4 px-8 rounded-t-2xl space-x-4 items-center bg-blue-50">
+          <div className="flex items-start flex-col-reverse md:flex-row gap-4 justify-between py-4 px-8 rounded-t-2xl bg-blue-50">
             <div className="flex space-x-4 items-center">
               <div className="inline-flex items-center justify-center">
                 <Image
@@ -123,10 +124,15 @@ export default function ListFlightsInternationalNormal({
               </div>
             </div>
             <div>
-              <span className="font-medium">{t("tong_gia")}:</span>{" "}
-              <span className="text-2xl font-bold text-primary">
-                {flightsData.totalPrice.toLocaleString("vi-VN")} đ
-              </span>
+              <PriceDropdown
+                totalPrice={flightsData.totalPrice}
+                totalPriceAdt={totalPriceAdt}
+                totalPriceChd={totalPriceChd}
+                totalPriceInf={totalPriceInf}
+                numberAdt={flightsData?.numberAdt}
+                numberChd={flightsData?.numberChd}
+                numberInf={flightsData?.numberInf}
+              />
             </div>
           </div>
           {departFlights.map((item: any, index: number) => (
@@ -186,29 +192,9 @@ export default function ListFlightsInternationalNormal({
         </div>
         {/* Checkout */}
         <div
-          className="flex justify-between px-4 py-6 items-end"
+          className="flex justify-end px-4 py-6 items-end"
           ref={btnCheckoutRef}
         >
-          <div>
-            {flightsData?.numberAdt > 1 && (
-              <p className="text-sm text-gray-900 font-normal mb-2">
-                {t("nguoi_lon")}: {totalPriceAdt.toLocaleString("vi-VN")}
-                {" đ "}x {flightsData?.numberAdt}{" "}
-              </p>
-            )}
-            {flightsData?.numberChd >= 1 && (
-              <p className="text-sm text-gray-900 font-normal mb-2">
-                {t("tre_em")}: {totalPriceChd.toLocaleString("vi-VN")}
-                {" đ "}x {flightsData?.numberChd}{" "}
-              </p>
-            )}
-            {flightsData?.numberInf >= 1 && (
-              <p className="text-sm text-gray-900 font-normal mb-2">
-                {t("em_be")}: {totalPriceInf.toLocaleString("vi-VN")}
-                {" đ "}x {flightsData?.numberInf}{" "}
-              </p>
-            )}
-          </div>
           <button
             className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${
               !isCheckOut
