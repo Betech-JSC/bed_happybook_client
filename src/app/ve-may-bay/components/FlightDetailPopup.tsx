@@ -312,7 +312,7 @@ export default function FlightDetailPopup({
                                   </div>
                                 </div>
                               </div>
-                              {segment.stopTime > 0 && airPortTransit && (
+                              {segment.stopTime > 0 && (
                                 <div className="col-span-12 h-full w-full">
                                   <div className="flex h-full items-start gap-0 md:gap-2">
                                     <div className="w-0 md:w-2/12 flex h-full justify-between flex-col items-end"></div>
@@ -321,9 +321,11 @@ export default function FlightDetailPopup({
                                       <div className="bg-gray-50 rounded-lg p-4 flex space-x-4 lg:space-x-8 items-center text-sm">
                                         <p>
                                           Transfer in{" "}
-                                          {`${airPortEndPoint?.city ?? ""} (${
-                                            airPortEndPoint.code
-                                          })`}{" "}
+                                          {`${
+                                            airPortEndPoint
+                                              ? `${airPortEndPoint?.city} (${airPortEndPoint?.code})`
+                                              : segment.stopPoint ?? ""
+                                          }`}{" "}
                                         </p>
                                         <p>
                                           {formatNumberToHoursAndMinutesFlight(

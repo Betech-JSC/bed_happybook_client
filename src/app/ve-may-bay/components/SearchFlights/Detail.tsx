@@ -138,8 +138,8 @@ const FlightDomesticDetail = ({
                       <div className="flex-shrink-0 w-4 h-4 bg-white border-2 border-gray-400 rounded-full absolute left-1/2 -translate-x-1/2"></div>
                     </div>
                     <span className="text-sm text-gray-700 mt-2">
-                      {!isEmpty(flight.stopPoint)
-                        ? `${flight.stopPoint} ${t("diem_dung")}`
+                      {flight.legs
+                        ? `${flight.legs} ${t("diem_dung")}`
                         : t("bay_thang")}
                     </span>
                   </div>
@@ -265,6 +265,7 @@ const FlightDomesticDetail = ({
                               {ticket.carryOnBaggage ?? ""}
                             </p>
                           </div>
+
                           <div className="flex justify-between items-start mt-3">
                             <p className="text-sm text-gray-700 flex-1">
                               {t("hanh_ly_ky_gui")}
@@ -285,7 +286,7 @@ const FlightDomesticDetail = ({
                               )
                             }
                           >
-                            <span>{t("chi_tiet")}</span>
+                            <span>{t("dieu_kien_ve")}</span>
                           </button>
                         </div>
                         <div className="border-t border-gray-200 pt-4">
