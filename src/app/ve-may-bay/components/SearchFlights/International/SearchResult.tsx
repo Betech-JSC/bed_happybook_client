@@ -260,17 +260,6 @@ export default function SearchFlightsInternationalResult({
 
           const flightsData: any = responseData?.trips ?? [];
           if (flightsData.length) {
-            const listStopNum: number[] = [];
-            for (const item of flightsData) {
-              if (!listStopNum[item.legs]) {
-                listStopNum[item.legs] = item.legs;
-              }
-            }
-            setStopNumFilters(
-              listStopNum.filter(
-                (item: any) => item !== undefined && item !== null
-              )
-            );
             setFlightsData(flightsData);
           }
           if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
@@ -409,17 +398,6 @@ export default function SearchFlightsInternationalResult({
         });
 
         if (flightsData.length) {
-          setStopNumFilters((prev) => {
-            return Array.from(
-              new Set([
-                ...prev,
-                ...flightsData
-                  .map((f) => f.legs)
-                  .filter((v) => v !== undefined && v !== null),
-              ])
-            ).sort((a, b) => a - b);
-          });
-
           setFlightsData((prev: any) => [...prev, ...flightsData]);
         }
       } catch (err) {
@@ -476,6 +454,18 @@ export default function SearchFlightsInternationalResult({
   }, [flightItineraryResource, flightsData, toaStrMsg]);
 
   useEffect(() => {
+    const listStopNum = new Set<number>();
+
+    flightsData.forEach((item: any) => {
+      if (item.source === "1G") {
+        item.journeys
+          .flat()
+          .forEach((flight: any) => listStopNum.add(flight.StopNum));
+      } else {
+        listStopNum.add(item.legs);
+      }
+    });
+    setStopNumFilters(Array.from(listStopNum).sort((a, b) => a - b));
     const timeout = setTimeout(() => {
       if (!flightsData || flightsData.length === 0) {
         setIsReady(true);
@@ -484,7 +474,6 @@ export default function SearchFlightsInternationalResult({
 
     return () => clearTimeout(timeout);
   }, [flightsData]);
-
   const flights1G = flightsData.filter((item: any) => item.source === "1G");
   const flightsNormal = flightsData.filter((item: any) => item.source !== "1G");
   const flightsNormalGroupped = groupFlightsBySamePrice(flightsNormal);
@@ -651,7 +640,7 @@ export default function SearchFlightsInternationalResult({
           isRoundTrip={isRoundTrip}
           totalPassengers={totalPassengers}
           flightType={flightType}
-          flightStopNum={stopNumFilters.filter((item) => item > 0)}
+          flightStopNum={stopNumFilters}
           translatedStaticText={[]}
           isReady={isReady}
         />

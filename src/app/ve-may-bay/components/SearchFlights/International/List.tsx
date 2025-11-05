@@ -51,6 +51,7 @@ export default function ListFlightsInternaltion({
   isRoundTrip,
   totalPassengers,
   isReady,
+  flightStopNum,
 }: ListFlight) {
   const { t } = useTranslation();
   const [selectedDepartFlight, setSelectedDepartFlight] = useState<any>(null);
@@ -108,6 +109,13 @@ export default function ListFlightsInternaltion({
             ...prev,
             sortAirLine: checked ? value : "",
           };
+        } else if (name === "stopNum") {
+          return {
+            ...prev,
+            stopNum: checked
+              ? [...prev.stopNum, value]
+              : prev.stopNum.filter((itemStopNum) => itemStopNum !== value),
+          };
         }
         return prev;
       });
@@ -116,17 +124,28 @@ export default function ListFlightsInternaltion({
 
   const handleFilterFlight1G = useCallback(
     (flights: any) => {
-      if (flights.length > 0) {
-        if (filters.airlines.length > 0) {
-          flights = flights.filter((flight: any) => {
-            const match = filters.airlines.some(
-              (airline: any) =>
-                airline.trim().toLowerCase() ===
-                flight.airline.trim().toLowerCase()
-            );
-            return match;
-          });
-        }
+      if (!flights.length) return [];
+
+      if (filters.airlines.length > 0) {
+        flights = flights.filter((flight: any) => {
+          const match = filters.airlines.some(
+            (airline: any) =>
+              airline.trim().toLowerCase() ===
+              flight.airline.trim().toLowerCase()
+          );
+          return match;
+        });
+      }
+
+      // Filter điểm dừng
+      if (filters.stopNum.length > 0) {
+        flights = flights.filter((item: any) => {
+          return item.journeys?.some((leg: any[]) =>
+            leg.some((flight: any) =>
+              filters.stopNum.includes(flight?.StopNum?.toString())
+            )
+          );
+        });
       }
 
       if (
@@ -206,6 +225,18 @@ export default function ListFlightsInternaltion({
             );
           });
         });
+      }
+
+      // --- Filter điểm dừng---
+      if (filters.stopNum.length) {
+        flights = flights
+          .map((flight: any) => {
+            const filteredTrips = flight.trips.filter((trip: any) => {
+              return filters.stopNum.includes(trip?.legs?.toString());
+            });
+            return { ...flight, trips: filteredTrips };
+          })
+          .filter((flight: any) => flight.trips.length > 0);
       }
 
       // --- Filter giờ khởi hành ---
@@ -382,7 +413,7 @@ export default function ListFlightsInternaltion({
               Math.min(prev + INITIAL_LIMIT, filteredData.length)
             );
             timeouDataId.current = null;
-          }, 200);
+          }, 100);
         }
       },
       { threshold: 1 }
@@ -402,9 +433,9 @@ export default function ListFlightsInternaltion({
         ref={wrapperResultRef}
       >
         <SideBarFilterFlights
-          flightStopNum={0}
+          flightStopNum={flightStopNum}
           setFilters={setFilters}
-          filters={{ ...filters, stopNum: [] }}
+          filters={{ ...filters }}
           handleCheckboxChange={handleCheckboxChange}
           airlineData={airlineData}
           resetFilters={resetFilters}

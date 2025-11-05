@@ -103,8 +103,8 @@ const FlightInternationDetail = ({
                     <div className="flex-shrink-0 w-4 h-4 bg-white border-2 border-gray-400 rounded-full absolute left-1/2 -translate-x-1/2"></div>
                   </div>
                   <span className="text-sm text-gray-700 mt-2">
-                    {flight.StopNum
-                      ? `${flight.StopNum} ${t("diem_dung")}`
+                    {flight.legs
+                      ? `${flight.legs} ${t("diem_dung")}`
                       : t("bay_thang")}
                   </span>
                 </div>

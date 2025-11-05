@@ -268,17 +268,6 @@ export default function SearchFlightsResult({
 
           const flightsData: any = responseData?.trips ?? [];
           if (flightsData.length) {
-            const listStopNum: number[] = [];
-            for (const item of flightsData) {
-              if (!listStopNum[item.legs]) {
-                listStopNum[item.legs] = item.legs;
-              }
-            }
-            setStopNumFilters(
-              listStopNum.filter(
-                (item: any) => item !== undefined && item !== null
-              )
-            );
             setFlightsData(flightsData);
           }
           if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
@@ -417,17 +406,6 @@ export default function SearchFlightsResult({
         });
 
         if (flightsData.length) {
-          setStopNumFilters((prev) => {
-            return Array.from(
-              new Set([
-                ...prev,
-                ...flightsData
-                  .map((f) => f.legs)
-                  .filter((v) => v !== undefined && v !== null),
-              ])
-            ).sort((a, b) => a - b);
-          });
-
           setFlightsData((prev: any) => [...prev, ...flightsData]);
         }
       } catch (err) {
@@ -490,6 +468,9 @@ export default function SearchFlightsResult({
   }, [loading, flightsData]);
 
   useEffect(() => {
+    const listStopNum = new Set<number>();
+    flightsData.forEach((item: any) => listStopNum.add(item.legs));
+    setStopNumFilters(Array.from(listStopNum).sort((a, b) => a - b));
     const timeout = setTimeout(() => {
       if (!flightsData || flightsData.length === 0) {
         setIsReady(true);
@@ -533,55 +514,28 @@ export default function SearchFlightsResult({
   return (
     <Fragment>
       <div ref={resultsRef}>
-        {isRoundTrip && flightType === "international" ? (
-          <ListFlightsInternaltion
-            from={from}
-            to={to}
-            airportsData={airportsData}
-            flightsData={flightsData}
-            airlineData={airlineData}
-            isFullFlightResource={isFullFlightResource}
-            returnDate={ReturnDate}
-            departDate={DepartDate}
-            currentDate={currentDate}
-            currentReturnDay={currentReturnDay}
-            returnDays={returnDays}
-            departDays={days}
-            handleClickDate={handleClickDate}
-            flightSession={searchId}
-            isRoundTrip={isRoundTrip}
-            totalPassengers={totalPassengers}
-            flightType={flightType}
-            flightStopNum={stopNumFilters.filter((item) => item > 0)}
-            translatedStaticText={[]}
-            isReady={isReady}
-          />
-        ) : (
-          <>
-            <ListFlights
-              from={from}
-              to={to}
-              airportsData={airportsData}
-              flightsData={flightsData}
-              airlineData={airlineData}
-              isFullFlightResource={isFullFlightResource}
-              returnDate={ReturnDate}
-              departDate={DepartDate}
-              currentDate={currentDate}
-              currentReturnDay={currentReturnDay}
-              returnDays={returnDays}
-              departDays={days}
-              handleClickDate={handleClickDate}
-              flightSession={searchId}
-              isRoundTrip={isRoundTrip}
-              totalPassengers={totalPassengers}
-              flightType={flightType}
-              flightStopNum={stopNumFilters.filter((item) => item > 0)}
-              translatedStaticText={[]}
-              isReady={isReady}
-            />
-          </>
-        )}
+        <ListFlights
+          from={from}
+          to={to}
+          airportsData={airportsData}
+          flightsData={flightsData}
+          airlineData={airlineData}
+          isFullFlightResource={isFullFlightResource}
+          returnDate={ReturnDate}
+          departDate={DepartDate}
+          currentDate={currentDate}
+          currentReturnDay={currentReturnDay}
+          returnDays={returnDays}
+          departDays={days}
+          handleClickDate={handleClickDate}
+          flightSession={searchId}
+          isRoundTrip={isRoundTrip}
+          totalPassengers={totalPassengers}
+          flightType={flightType}
+          flightStopNum={stopNumFilters}
+          translatedStaticText={[]}
+          isReady={isReady}
+        />
       </div>
     </Fragment>
   );

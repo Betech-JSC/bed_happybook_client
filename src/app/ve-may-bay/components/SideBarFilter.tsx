@@ -18,31 +18,29 @@ export default function SideBarFilterFlights({
   const visibleCount = 5;
   const [showAll, setShowAll] = useState(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
-
   return (
     <Fragment>
       <aside className="hidden xl:block xl:col-span-3 bg-white p-4 rounded-2xl">
-        {Array.isArray(flightStopNum) && flightStopNum.length >= 1 && (
+        {Array.isArray(flightStopNum) && flightStopNum.length > 1 && (
           <div className="pb-3 border-b border-gray-200">
             <h2 className="font-semibold">{t("so_diem_dung")}</h2>
-            {flightStopNum.map(
-              (stopNum: number, index: number) =>
-                stopNum >= 1 && (
-                  <div key={index} className="flex space-x-2 mt-3 items-center">
-                    <input
-                      type="checkbox"
-                      name="stopNum"
-                      value={`${stopNum}`}
-                      id={`stopNum_${index}`}
-                      onChange={handleCheckboxChange}
-                      checked={filters.stopNum.includes(`${stopNum}`)}
-                    />
-                    <label htmlFor={`${`stopNum_${index}`}`}>
-                      {` ${stopNum} ${t("diem_dung")}`}
-                    </label>
-                  </div>
-                )
-            )}
+            {flightStopNum.map((stopNum: number, index: number) => (
+              <div key={index} className="flex space-x-2 mt-3 items-center">
+                <input
+                  type="checkbox"
+                  name="stopNum"
+                  value={`${stopNum}`}
+                  id={`stopNum_${index}`}
+                  onChange={handleCheckboxChange}
+                  checked={filters.stopNum.includes(`${stopNum}`)}
+                />
+                <label htmlFor={`${`stopNum_${index}`}`}>
+                  {`${
+                    stopNum ? `${stopNum} ${t("diem_dung")}` : t("bay_thang")
+                  }`}
+                </label>
+              </div>
+            ))}
           </div>
         )}
 
