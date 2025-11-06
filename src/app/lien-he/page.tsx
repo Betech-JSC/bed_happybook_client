@@ -304,7 +304,7 @@ export default async function Contact() {
                 </div>
               </div>
             </div>
-            <div className="mx-auto p-8 mt-8 lg:w-[920px] h-auto bg-white rounded-2xl  ">
+            <div className="mx-auto p-8 mt-8 lg:w-[920px] h-auto bg-white rounded-2xl">
               <h3 className="text-18 font-semibold">
                 {t(
                   "ban_co_the_gui_thong_tin_yeu_cau_cua_minh_qua_mau_lien_he_duoi_day_va_chung_toi_se_phan_hoi_trong_thoi_gian_som_nhat"
