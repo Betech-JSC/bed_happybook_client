@@ -27,6 +27,8 @@ import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import NewsByPage from "@/components/content-page/NewsByPage";
 import HomeAmusementTicket from "@/components/home/AmusementTicket";
 import HomeFastTrack from "@/components/home/FastTrack";
+import FormContact from "./lien-he/form";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const seo = await settingApi.getCachedMetaSeo();
@@ -52,6 +54,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
 export default async function Home() {
   const airportsData = await FlightApi.getCachedAirports();
+  const t = await getServerT();
   return (
     <Fragment>
       <WebsiteSchema />
@@ -182,7 +185,16 @@ export default async function Home() {
         <Suspense fallback={<SkeletonProductTabs />}>
           <PartnerAirlines />
         </Suspense>
-
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <div className="mx-auto p-8 lg:w-[920px] h-auto">
+            <h3 className="text-18 font-semibold text-center">
+              {t(
+                "ban_co_the_gui_thong_tin_yeu_cau_cua_minh_qua_mau_lien_he_duoi_day_va_chung_toi_se_phan_hoi_trong_thoi_gian_som_nhat"
+              )}
+            </h3>
+            <FormContact />
+          </div>
+        </Suspense>
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <FooterMenu page={"home"}></FooterMenu>
