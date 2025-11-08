@@ -1714,7 +1714,10 @@ export default function FlightBookForm({ airportsData }: any) {
       {flightsDetail.length > 0 && (
         <FlightDetailPopup
           airports={airportsData}
-          tabs={[{ id: 1, name: "Chi tiết hành trình" }]}
+          tabs={[
+            { id: 1, name: "Chi tiết hành trình" },
+            { id: 2, name: "Điều kiện vé" },
+          ]}
           flights={flightsDetail}
           isOpen={showFlightDetail}
           onClose={handleClosePopupFlightDetail}

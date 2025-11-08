@@ -339,6 +339,38 @@ export default function Flight1GDetailPopup({
                   );
                 })}
             </div>
+            {activeTab === 2 && (
+              <Fragment>
+                {flights.map((flightDetail: any, index: number) => (
+                  <div
+                    key={index}
+                    className={` bg-white ${
+                      index > 0
+                        ? "pt-4 border-t border-t-gray-300"
+                        : "mt-4 pb-6"
+                    }`}
+                  >
+                    {flights?.length > 1 && (
+                      <h2
+                        className="text-xl py-1 px-4 font-semibold text-white mb-4 max-w-fit rounded-lg"
+                        style={{
+                          background:
+                            "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
+                        }}
+                      >
+                        {flightDetail.flightLeg ? t("chieu_ve") : t("chieu_di")}
+                      </h2>
+                    )}
+
+                    <div className="flex flex-col gap-2">
+                      {t(
+                        "xin_vui_long_lien_he_happy_book_de_biet_them_chi_tiet"
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </Fragment>
+            )}
           </div>
         )}
     </div>,
