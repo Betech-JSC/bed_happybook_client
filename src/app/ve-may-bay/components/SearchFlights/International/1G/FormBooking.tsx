@@ -1628,7 +1628,10 @@ export default function Flight1GBookForm({ airportsData }: any) {
       {flightsDetail.length > 0 && (
         <Flight1GDetailPopup
           airports={airportsData}
-          tabs={[{ id: 1, name: "Chi tiết hành trình" }]}
+          tabs={[
+            { id: 1, name: "Chi tiết hành trình" },
+            { id: 2, name: "Điều kiện vé" },
+          ]}
           flights={flightsDetail.flatMap((item) => item.selectedTicketClass)}
           isOpen={showFlightDetail}
           onClose={handleClosePopupFlightDetail}
