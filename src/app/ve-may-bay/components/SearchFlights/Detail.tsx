@@ -257,23 +257,29 @@ const FlightDomesticDetail = ({
                             </p>
                           </div>
 
-                          <div className="flex justify-between items-start mt-3">
-                            <p className="text-sm text-gray-700 flex-1">
-                              {t("hanh_ly_xach_tay")}
-                            </p>
-                            <p className="font-medium text-sm flex-1 text-right">
-                              {ticket.carryOnBaggage ?? ""}
-                            </p>
-                          </div>
+                          {ticket.carryOnBaggage && (
+                            <div className="flex justify-between items-start mt-3">
+                              <p className="text-sm text-gray-700 flex-1">
+                                {t("hanh_ly_xach_tay")}
+                              </p>
+                              <p className="font-medium text-sm flex-1 text-right">
+                                {ticket.carryOnBaggage ?? ""}
+                              </p>
+                            </div>
+                          )}
 
-                          <div className="flex justify-between items-start mt-3">
-                            <p className="text-sm text-gray-700 flex-1">
-                              {t("hanh_ly_ky_gui")}
-                            </p>
-                            <p className="font-medium text-sm flex-1 text-right">
-                              {ticket.checkedBaggae ? ticket.checkedBaggae : ""}
-                            </p>
-                          </div>
+                          {ticket.checkedBaggae && (
+                            <div className="flex justify-between items-start mt-3">
+                              <p className="text-sm text-gray-700 flex-1">
+                                {t("hanh_ly_ky_gui")}
+                              </p>
+                              <p className="font-medium text-sm flex-1 text-right">
+                                {ticket.checkedBaggae
+                                  ? ticket.checkedBaggae
+                                  : ""}
+                              </p>
+                            </div>
+                          )}
 
                           <button
                             className="mt-3 text-blue-700 border-b border-blue-700 font-medium"
