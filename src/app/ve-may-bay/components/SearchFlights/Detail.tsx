@@ -123,8 +123,8 @@ const FlightDomesticDetail = ({
                   {flight.segments?.[0].airCraft}
                 </div>
                 <div className="col-span-full md:col-span-1 justify-between items-center space-x-[8px] md:space-x-[12px] ">
-                  <div className="grid grid-cols-3 ">
-                    <div className="col-span-2 text-primary text-18 font-bold">
+                  <div className="grid grid-cols-3">
+                    <div className="col-span-2 text-primary text-18 font-bold md:text-right">
                       {filters.priceWithoutTax === "1"
                         ? flight.selectedTicketClass
                           ? flight.selectedTicketClass.totalPriceWithOutTax.toLocaleString(
@@ -143,22 +143,24 @@ const FlightDomesticDetail = ({
                             flight.fareOptions[0].taxAdult
                           ).toLocaleString("vi-VN")}{" "}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleShowDetails(flight.flightCode, selectedFlight)}
-                      className="col-span-1 flex items-center justify-center w-8 h-8 rounded-full  transition-colors duration-200"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                        className="w-5 h-5 text-gray-500"
+                    <div className="col-span-1 flex items-center justify-end ">
+                      <button
+                        type="button"
+                        onClick={() => toggleShowDetails(flight.flightCode, selectedFlight)}
+                        className="w-8 h-8 rounded-full  transition-colors duration-200"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                          stroke="currentColor"
+                          className="w-5 h-5 text-gray-500"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
