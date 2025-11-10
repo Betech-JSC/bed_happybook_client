@@ -71,80 +71,98 @@ const FlightDomesticDetail = ({
     <Fragment>
       {flight && (
         <div className="h-fit">
-          <div className="grid grid-cols-8 items-start md:items-center justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
-            <div className="col-span-2">
-              <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
+          <div className="grid grid-cols-5 md:grid-cols-6 items-center justify-between bg-white p-3 rounded-lg mt-2 relative">
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-12">
                 <DisplayImage
                   imagePath={`assets/images/airline/${startOperating.toLowerCase()}.gif`}
                   width={80}
                   height={24}
                   alt={startOperating}
-                  classStyle={"max-w-16 md:max-w-20 max-h-10 mx-auto md:mx-0"}
+                  classStyle={"max-w-16 md:max-w-20 max-h-10 md:mx-0"}
                 />
-                <div className="flex items-center text-md font-semibold text-gray-500">
+                <div className="flex items-center  text-md font-semibold text-gray-500">
                   <h3 className="">
                     {flight.airline}
                   </h3>
-                  <p className="">
+                  <p className="whitespace-nowrap">
                     {flight.flightNumber}
                   </p>
                 </div>
               </div>
             </div>
-            <div className="col-span-2 flex">
-              <div className="flex space-x-[4px] items-center">
-                <span className="text-lg font-semibold">
-                  {formatTimeZone(
-                    flight.departure.at,
-                    flight.departure.timezone
-                  )}
-                </span>
-                <span>-</span>
-                <span className="text-lg">
-                  {formatTimeZone(flight.arrival.at, flight.arrival.timezone)}
-                </span>
-
+            <div className="col-span-2 md:col-span-2 flex  items-center">
+              <div className="grid grid-cols-2 w-full">
+                <div className="col-span-full md:col-span-1 flex space-x-[4px] items-center justify-center">
+                  <span className="text-lg font-semibold">
+                    {formatTimeZone(
+                      flight.departure.at,
+                      flight.departure.timezone
+                    )}
+                  </span>
+                  <span>-</span>
+                  <span className="text-lg">
+                    {formatTimeZone(flight.arrival.at, flight.arrival.timezone)}
+                  </span>
+                </div>
+                <div className="col-span-full md:col-span-1 flex space-x-[4px] items-center justify-center">
+                  <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
+                    {flight.departure.IATACode}
+                  </span>
+                  <span>-</span>
+                  <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
+                    {flight.arrival.IATACode}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="col-span-2">
-              <div className="flex space-x-[4px] items-center">
-                <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
-                  {flight.departure.IATACode}
-                </span>
-                <span>-</span>
-                <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
-                  {flight.arrival.IATACode}
-                </span>
-              </div>
-            </div>
-            <div className="col-span-2 text-center md:text-right">
-              <div className="mt-3 md:mt-0 flex justify-between">
-                <p className="text-primary text-18 font-bold text-right">
-                  {filters.priceWithoutTax === "1"
-                    ? flight.selectedTicketClass
-                      ? flight.selectedTicketClass.totalPriceWithOutTax.toLocaleString(
-                        "vi-VN"
-                      )
-                      : flight.fareOptions[0].totalPriceWithOutTax.toLocaleString(
-                        "vi-VN"
-                      )
-                    : flight.selectedTicketClass
-                      ? (
-                        flight.selectedTicketClass.fareAdultFinal +
-                        flight.selectedTicketClass.taxAdult
-                      ).toLocaleString("vi-VN")
-                      : (
-                        flight.fareOptions[0].fareAdultFinal +
-                        flight.fareOptions[0].taxAdult
-                      ).toLocaleString("vi-VN")}{" "}
-                  {flight.currency}
-                </p>
-                <input
-                  type="radio"
-                  className="w-5 h-5 cursor-pointer"
-                />
-              </div>
 
+            <div className="col-span-2 md:col-span-2 flex justify-between items-center">
+              <div className="grid grid-cols-2 w-full">
+                <div className="col-span-full md:col-span-1 md:text-center">
+                  {flight.segments?.[0].airCraft}
+                </div>
+                <div className="col-span-full md:col-span-1 justify-between items-center space-x-[8px] md:space-x-[12px] ">
+                  <div className="grid grid-cols-3 ">
+                    <div className="col-span-2 text-primary text-18 font-bold">
+                      {filters.priceWithoutTax === "1"
+                        ? flight.selectedTicketClass
+                          ? flight.selectedTicketClass.totalPriceWithOutTax.toLocaleString(
+                            "vi-VN"
+                          )
+                          : flight.fareOptions[0].totalPriceWithOutTax.toLocaleString(
+                            "vi-VN"
+                          )
+                        : flight.selectedTicketClass
+                          ? (
+                            flight.selectedTicketClass.fareAdultFinal +
+                            flight.selectedTicketClass.taxAdult
+                          ).toLocaleString("vi-VN")
+                          : (
+                            flight.fareOptions[0].fareAdultFinal +
+                            flight.fareOptions[0].taxAdult
+                          ).toLocaleString("vi-VN")}{" "}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toggleShowDetails(flight.flightCode, selectedFlight)}
+                      className="col-span-1 flex items-center justify-center w-8 h-8 rounded-full  transition-colors duration-200"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-5 h-5 text-gray-500"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
               {/* <button
                 onClick={() =>
                   toggleShowDetails(flight.flightCode, selectedFlight)
