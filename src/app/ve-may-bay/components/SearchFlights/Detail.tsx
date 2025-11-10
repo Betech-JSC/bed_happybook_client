@@ -72,7 +72,7 @@ const FlightDomesticDetail = ({
       {flight && (
         <div className="h-fit">
           <div className="grid grid-cols-8 items-start md:items-center justify-between bg-white p-3 md:p-6 rounded-lg mt-4 relative">
-            <div className="col-span-2 border-r border-gray-200">
+            <div className="col-span-2">
               <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
                 <DisplayImage
                   imagePath={`assets/images/airline/${startOperating.toLowerCase()}.gif`}
@@ -81,131 +81,71 @@ const FlightDomesticDetail = ({
                   alt={startOperating}
                   classStyle={"max-w-16 md:max-w-20 max-h-10 mx-auto md:mx-0"}
                 />
-                <div>
-                  <h3 className="text-sm md:text-18 font-semibold mb-1">
+                <div className="flex items-center text-md font-semibold text-gray-500">
+                  <h3 className="">
                     {flight.airline}
                   </h3>
-                  <p className="text-sm text-gray-500 break-words">
+                  <p className="">
                     {flight.flightNumber}
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
-                onClick={() =>
-                  setFlightDetail(flight, 0, [
-                    { id: 1, name: "Chi tiết hành trình" },
-                  ])
-                }
-              >
-                {t("xem_chi_tiet")}
-              </button>
             </div>
+            <div className="col-span-2 flex">
+              <div className="flex space-x-[4px] items-center">
+                <span className="text-lg font-semibold">
+                  {formatTimeZone(
+                    flight.departure.at,
+                    flight.departure.timezone
+                  )}
+                </span>
+                <span>-</span>
+                <span className="text-lg">
+                  {formatTimeZone(flight.arrival.at, flight.arrival.timezone)}
+                </span>
 
-            <div className="col-span-6 md:col-span-4 text-center flex justify-between">
-              <div className="flex items-center justify-between gap-4 w-full pl-3 md:px-6">
-                <div className="flex flex-col items-center">
-                  <span className="text-lg font-semibold">
-                    {formatTimeZone(
-                      flight.departure.at,
-                      flight.departure.timezone
-                    )}
-                  </span>
-                  <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
-                    {flight.departure.IATACode}
-                  </span>
-                </div>
-
-                <div className="flex items-center w-full space-x-3">
-                  <Image
-                    src="/icon/fa-solid_plane.svg"
-                    width={20}
-                    height={20}
-                    alt="Icon"
-                    className="w-5 h-5 hidden md:block"
-                  />
-                  <div className="flex flex-col items-center w-full">
-                    <span className="text-sm text-gray-700 mb-2">
-                      {flight.duration
-                        ? formatNumberToHoursAndMinutesFlight(flight.duration)
-                        : formatNumberToHoursAndMinutesFlight(
-                            flight.segments[0].duration ?? 0
-                          )}
-                    </span>
-                    <div className="relative flex items-center w-full">
-                      <div className="flex-grow h-px bg-gray-700"></div>
-                      <div className="flex-shrink-0 w-4 h-4 bg-white border-2 border-gray-400 rounded-full absolute left-1/2 -translate-x-1/2"></div>
-                    </div>
-                    <span className="text-sm text-gray-700 mt-2">
-                      {flight.legs
-                        ? `${flight.legs} ${t("diem_dung")}`
-                        : t("bay_thang")}
-                    </span>
-                  </div>
-                  <Image
-                    src="/icon/map-pinned.svg"
-                    width={20}
-                    height={20}
-                    alt="Icon"
-                    className="w-5 h-5 hidden md:block"
-                  />
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <span className="text-lg font-semibold">
-                    {formatTimeZone(flight.arrival.at, flight.arrival.timezone)}
-                  </span>
-                  <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
-                    {flight.arrival.IATACode}
-                  </span>
-                </div>
               </div>
             </div>
-            <div className="hidden md:flex flex-col items-center absolute right-[24%] h-fit">
-              <div className="w-11 h-11 bg-gray-100 rounded-full"></div>
-              <div className="relative h-fit w-px my-2 overflow-hidden">
-                <div className="h-20 w-1 bg-gradient-to-b from-[#4E6EB3] to-[#4E6EB3] via-transparent bg-[length:2px_16px] bg-repeat-y"></div>
+            <div className="col-span-2">
+              <div className="flex space-x-[4px] items-center">
+                <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
+                  {flight.departure.IATACode}
+                </span>
+                <span>-</span>
+                <span className="bg-gray-100 px-2 py-1 rounded-lg text-sm">
+                  {flight.arrival.IATACode}
+                </span>
               </div>
-              <div className="w-11 h-11 bg-gray-100 rounded-full"></div>
             </div>
-            <div className="col-span-8 w-full md:col-span-2 text-center md:text-right md:pl-8 xl:pr-8">
+            <div className="col-span-2 text-center md:text-right">
               <div className="mt-3 md:mt-0 flex justify-between">
-                <button
-                  type="button"
-                  className="inline-block md:hidden text-blue-700 border-b border-blue-700 font-normal"
-                  onClick={() =>
-                    setFlightDetail(flight, 0, [
-                      { id: 1, name: "Chi tiết hành trình" },
-                    ])
-                  }
-                >
-                  {t("xem_chi_tiet")}
-                </button>
-
                 <p className="text-primary text-18 font-bold text-right">
                   {filters.priceWithoutTax === "1"
                     ? flight.selectedTicketClass
                       ? flight.selectedTicketClass.totalPriceWithOutTax.toLocaleString(
-                          "vi-VN"
-                        )
+                        "vi-VN"
+                      )
                       : flight.fareOptions[0].totalPriceWithOutTax.toLocaleString(
-                          "vi-VN"
-                        )
+                        "vi-VN"
+                      )
                     : flight.selectedTicketClass
-                    ? (
+                      ? (
                         flight.selectedTicketClass.fareAdultFinal +
                         flight.selectedTicketClass.taxAdult
                       ).toLocaleString("vi-VN")
-                    : (
+                      : (
                         flight.fareOptions[0].fareAdultFinal +
                         flight.fareOptions[0].taxAdult
                       ).toLocaleString("vi-VN")}{" "}
                   {flight.currency}
                 </p>
+                <input
+                  type="radio"
+                  className="w-5 h-5 cursor-pointer"
+                />
               </div>
 
-              <button
+              {/* <button
                 onClick={() =>
                   toggleShowDetails(flight.flightCode, selectedFlight)
                 }
@@ -214,7 +154,7 @@ const FlightDomesticDetail = ({
                 {selectedFlight && selectedFlight.flightCode
                   ? t("thay_doi")
                   : t("chon")}
-              </button>
+              </button> */}
             </div>
           </div>
           {flight.fareOptions.length > 0 && (
@@ -223,11 +163,10 @@ const FlightDomesticDetail = ({
               style={{
                 maxHeight: showDetails === flight.flightCode ? height : "0px",
               }}
-              className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
-                showDetails === flight.flightCode && hasHeight
-                  ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
-                  : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
-              }`}
+              className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${showDetails === flight.flightCode && hasHeight
+                ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
+                : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
+                }`}
             >
               <div className="overflow-x-auto rounded-lg">
                 <div
@@ -302,26 +241,23 @@ const FlightDomesticDetail = ({
                                 <p className="text-sm text-gray-700 font-semibold mb-2">
                                   {`${t("nguoi_lon")}: ${(
                                     ticket.fareAdultFinal + ticket.taxAdult
-                                  ).toLocaleString()} ${flight.currency} x ${
-                                    flight.numberAdt
-                                  }`}
+                                  ).toLocaleString()} ${flight.currency} x ${flight.numberAdt
+                                    }`}
                                 </p>
                                 {flight.numberChd > 0 && (
                                   <p className="text-sm text-gray-700 font-semibold mb-2">
                                     {`${t("tre_em")}: ${(
                                       ticket.fareChildFinal + ticket.taxChild
-                                    ).toLocaleString()} ${flight.currency} x ${
-                                      flight.numberChd
-                                    }`}
+                                    ).toLocaleString()} ${flight.currency} x ${flight.numberChd
+                                      }`}
                                   </p>
                                 )}
                                 {flight.numberInf > 0 && (
                                   <p className="text-sm text-gray-700 font-semibold mb-2">
                                     {`${t("em_be")}: ${(
                                       ticket.fareInfantFinal + ticket.taxInfant
-                                    ).toLocaleString()} ${flight.currency} x ${
-                                      flight.numberInf
-                                    }`}
+                                    ).toLocaleString()} ${flight.currency} x ${flight.numberInf
+                                      }`}
                                   </p>
                                 )}
                                 <div className="text-primary text-22 font-bold">
