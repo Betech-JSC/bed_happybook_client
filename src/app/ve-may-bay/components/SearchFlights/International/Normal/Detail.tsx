@@ -37,7 +37,7 @@ const FlightInternationDetail = ({
   return (
     <Fragment>
       <div className="h-fit p-2 pb-0">
-        <div className="grid grid-cols-8 mb-2 last:mb-0 items-start md:items-center justify-between rounded-lg bg-white p-3 md:py-6 md:px-8 border border-gray-200">
+        <div className="grid grid-cols-8 mb-2 last:mb-0 items-start md:items-center justify-between rounded-lg bg-white py-2 px-3 border border-gray-200">
           <div className="col-span-2 border-r border-gray-200">
             <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
               <DisplayImage
@@ -95,8 +95,8 @@ const FlightInternationDetail = ({
                     {flight.duration
                       ? formatNumberToHoursAndMinutesFlight(flight.duration)
                       : formatNumberToHoursAndMinutesFlight(
-                          flight.segments[0].duration ?? 0
-                        )}
+                        flight.segments[0].duration ?? 0
+                      )}
                   </span>
                   <div className="relative flex items-center w-full">
                     <div className="flex-grow h-px bg-gray-700"></div>
