@@ -174,10 +174,10 @@ export default async function Contact() {
                         {t("email_chinh_thuc")}
                       </p>
                       <a
-                        href="mailto:info@happybooktravel.com"
+                        href="mailto:cskh@happybooktravel.com"
                         className="text-base mt-2"
                       >
-                        info@happybooktravel.com
+                        cskh@happybooktravel.com
                       </a>
                     </div>
                   </div>
