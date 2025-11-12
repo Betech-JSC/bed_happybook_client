@@ -67,18 +67,16 @@ export default function ListFlights1GInternaltion({
       <div className="my-6">
         <Fragment>
           <div
-            className={`bg-white rounded-2xl mb-8 border-2 ${
-              selectedFareDataId === flightsData.hpb_id
+            className={`bg-white rounded-2xl mb-8 border-2 ${selectedFareDataId === flightsData.hpb_id
                 ? "border-[#efad02]"
                 : "border-transparent"
-            }`}
+              }`}
           >
             {flightsData?.journeys?.map((journey: any, leg: number) => {
               return (
                 <div
-                  className={`pb-2 bg-[#FCFCFD] rounded-t-2xl ${
-                    leg ? "mt-4" : ""
-                  }`}
+                  className={`pb-2 bg-[#FCFCFD] rounded-t-2xl ${leg ? "mt-4" : ""
+                    }`}
                   key={leg}
                 >
                   <div className="flex items-start flex-col-reverse md:flex-row gap-4 justify-between py-4 px-8 rounded-t-2xl bg-blue-50">
@@ -94,9 +92,8 @@ export default function ListFlights1GInternaltion({
                       </div>
                       <div>
                         <h3
-                          className={`font-bold text-18 ${
-                            leg === 0 ? "text-blue-500" : "text-orange-500"
-                          }`}
+                          className={`font-bold text-18 ${leg === 0 ? "text-blue-500" : "text-orange-500"
+                            }`}
                         >
                           {leg === 0 ? t("chuyen_di") : t("chuyen_ve")}
                         </h3>
@@ -108,18 +105,18 @@ export default function ListFlights1GInternaltion({
                           {leg === 0
                             ? departDate
                               ? pareseDateFromString(
-                                  departDate,
-                                  "ddMMyyyy",
-                                  "dd/MM"
-                                )
+                                departDate,
+                                "ddMMyyyy",
+                                "dd/MM"
+                              )
                               : ""
                             : returnDate
-                            ? pareseDateFromString(
+                              ? pareseDateFromString(
                                 returnDate,
                                 "ddMMyyyy",
                                 "dd/MM"
                               )
-                            : ""}
+                              : ""}
                         </div>
                       </div>
                     </div>
@@ -150,7 +147,7 @@ export default function ListFlights1GInternaltion({
               );
             })}
 
-            <div className="flex justify-end px-4 py-6 items-end">
+            <div className="flex justify-end px-4 py-2 items-end">
               {/* <div>
                 {flightsData?.numberAdt > 1 && (
                   <p className="text-sm text-gray-700 font-semibold mb-2">
@@ -183,11 +180,10 @@ export default function ListFlights1GInternaltion({
                 </div>
               </div> */}
               <button
-                className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${
-                  !isCheckOut || selectedFareDataId !== flightsData.hpb_id
+                className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${!isCheckOut || selectedFareDataId !== flightsData.hpb_id
                     ? "disabled:bg-gray-200 disabled:cursor-not-allowed"
                     : ""
-                }`}
+                  }`}
                 onClick={() => {
                   handleCheckout();
                 }}

@@ -57,9 +57,9 @@ export default async function Footer() {
               </p>
               <a
                 className="inline-block"
-                href="mailto:info@happybooktravel.com"
+                href="mailto:cskh@happybooktravel.com"
               >
-                info@happybooktravel.com
+                cskh@happybooktravel.com
               </a>
             </div>
             <div className="mt-1">

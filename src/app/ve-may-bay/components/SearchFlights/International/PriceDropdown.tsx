@@ -20,29 +20,27 @@ export default function PriceDropdown({
       {/* Header */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center justify-end px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+        className="flex w-full items-center justify-end px-2 py-2 text-left hover:bg-gray-50 transition-colors"
       >
         <div className="flex gap-2 items-center">
           <p className="font-medium">{t("tong_gia")}: </p>
-          <p className="text-2xl font-bold text-primary">
+          <p className="text-xl font-bold text-primary">
             {" "}
             {totalPrice.toLocaleString("vi-VN")} đ
           </p>
           <ChevronDown
-            className={`size-5 text-gray-500 transition-transform duration-300 ${
-              open ? "rotate-180" : ""
-            }`}
+            className={`size-5 text-gray-500 transition-transform duration-300 ${open ? "rotate-180" : ""
+              }`}
           />
         </div>
       </button>
 
       {/* Dropdown*/}
       <div
-        className={`transition-all duration-500 ease-in-out overflow-hidden ${
-          open
-            ? "max-h-40 opacity-100 scale-y-100"
-            : "max-h-0 opacity-0 scale-y-95"
-        } origin-top`}
+        className={`transition-all duration-500 ease-in-out overflow-hidden ${open
+          ? "max-h-40 opacity-100 scale-y-100"
+          : "max-h-0 opacity-0 scale-y-95"
+          } origin-top`}
       >
         <div className="p-4 text-sm space-y-2">
           {numberAdt > 0 && (
