@@ -358,7 +358,9 @@ export default function Flight1GDetailPopup({
                             "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
                         }}
                       >
-                        {flightDetail.flightLeg ? t("chieu_ve") : t("chieu_di")}
+                        {flightDetail.sequence === 2
+                          ? t("chieu_ve")
+                          : t("chieu_di")}
                       </h2>
                     )}
 
