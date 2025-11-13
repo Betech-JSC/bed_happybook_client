@@ -429,7 +429,7 @@ export default function ListFlightsInternaltion({
   return (
     <Fragment>
       <div
-        className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-6 pb-12 relative"
+        className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start mt-6 pb-12 relative"
         ref={wrapperResultRef}
       >
         <SideBarFilterFlights
