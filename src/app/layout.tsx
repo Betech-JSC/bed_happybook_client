@@ -136,20 +136,6 @@ export default async function RootLayout({
               <Toaster toastOptions={toastOptions} />
               <div id="datepicker-portal"></div>
               <SupportFloatingIcons />
-              {/* === Zalo OA Chat Widget === */}
-              <div
-                className="zalo-chat-widget"
-                data-oaid="2451421179976954585"
-                data-welcome-message="Rất vui khi được hỗ trợ bạn!"
-                data-autopopup="0"
-                data-width="300"
-                data-height="300"
-              ></div>
-              <Script
-                src="https://sp.zalo.me/plugins/sdk.js"
-                strategy="afterInteractive"
-              />
-              {/* === End Zalo OA === */}
               <BackToTopButton></BackToTopButton>
               <Footer></Footer>
               <LoadingProvider>
