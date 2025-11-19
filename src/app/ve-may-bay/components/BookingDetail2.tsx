@@ -401,30 +401,20 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         </div>
         {isPaid && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
-            {isOrderCashSuccess ? (
-              <>
-                <p data-translate="true">
-                  HappyBook đã nhận được đơn hàng
-                  {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
-                </p>
-                <p data-translate="true">
-                  HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
-                </p>
-              </>
-            ) : (
-              <>
-                <p data-translate="true">
-                  HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng
-                  {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
-                </p>
-                <p data-translate="true">
-                  HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
-                </p>
-              </>
-            )}
+            <p data-translate="true">
+              {isOrderCashSuccess
+                ? "HappyBook đã nhận được đơn hàng"
+                : "HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng"
+              }
+              {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
+            </p>
 
+            <p data-translate="true">
+              HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
+            </p>
           </div>
         )}
+
         <div className="mt-6">
           <button
             onClick={() => setIsOpenBookingDetail(!isOpenBookingDetail)}
