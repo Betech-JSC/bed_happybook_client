@@ -54,6 +54,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [vietQrData, setVietQrData] = useState<any>({});
   const [transferInformation, setTransferInformation] = useState<any>(null);
   const [isPaid, setIsPaid] = useState<boolean>(false);
+  const [isOrderCashSuccess, setIsOrderCashSuccess] = useState<boolean>(false);
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [onePayTriggered, setOnePayTriggered] = useState(false);
@@ -88,11 +89,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 window.location.href = result.payment_url;
               }
             });
-          } else {
-            handleSessionStorage("remove", ["bookingFlight"]);
-            setTimeout(() => {
-              router.push("/ve-may-bay");
-            }, 1000);
+          }
+          if (selectedPaymentMethod === "cash") {
+            setIsOrderCashSuccess(true)
+            setIsPaid(true);
           }
         } else {
           toast.error(toaStrMsg.sendFailed);
@@ -401,13 +401,28 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         </div>
         {isPaid && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
-            <p data-translate="true">
-              HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng
-              {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
-            </p>
-            <p data-translate="true">
-              HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
-            </p>
+            {isOrderCashSuccess ? (
+              <>
+                <p data-translate="true">
+                  HappyBook đã nhận được đơn hàng
+                  {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
+                </p>
+                <p data-translate="true">
+                  HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
+                </p>
+              </>
+            ) : (
+              <>
+                <p data-translate="true">
+                  HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng
+                  {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
+                </p>
+                <p data-translate="true">
+                  HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
+                </p>
+              </>
+            )}
+
           </div>
         )}
         <div className="mt-6">
