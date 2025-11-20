@@ -9,6 +9,7 @@ import {
 import _ from "lodash";
 import DisplayImage from "@/components/base/DisplayImage";
 import { useTranslation } from "@/hooks/useTranslation";
+import FlightInfo from "@/components/FlightInfo";
 
 const FlightInternational1GDetail = ({
   journey,
@@ -17,6 +18,9 @@ const FlightInternational1GDetail = ({
   fareData,
 }: any) => {
   const { t } = useTranslation();
+
+  const [selectedDetailFlight, setSelectedDetailFlight] = React.useState<any>(null);
+
   const handleSelectFlight = (
     flightSelected: any,
     e: React.ChangeEvent<HTMLInputElement>
@@ -32,7 +36,7 @@ const FlightInternational1GDetail = ({
           {journey.map((flight: any, key: number) => (
             <div
               key={key}
-              className="grid grid-cols-8 mb-2 last:mb-0 items-start md:items-center justify-between rounded-lg bg-white p-3 md:py-2 md:px-4 border border-gray-200"
+              className="grid grid-cols-8 mb-2 last:mb-0 items-start md:items-center justify-between rounded-lg bg-white p-3 md:py-2 md:px-4 border border-gray-200 gap-2"
             >
               <div className="col-span-2 border-r border-gray-200">
                 <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
@@ -52,16 +56,6 @@ const FlightInternational1GDetail = ({
                     </p>
                   </div>
                 </div>
-                <button
-                  className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
-                  onClick={() =>
-                    setFlightDetail(flight, 0, [
-                      { id: 1, name: "Chi tiết hành trình" },
-                    ])
-                  }
-                >
-                  {t("xem_chi_tiet")}
-                </button>
               </div>
 
               <div className="col-span-6 md:col-span-4 text-center flex justify-between">
@@ -134,15 +128,27 @@ const FlightInternational1GDetail = ({
                   <div className="h-20 w-1 bg-gray-200"></div>
                 </div>
               </div>
-              <div className="col-span-8 w-full md:col-span-2 text-center md:text-right xl:pr-8">
-                <input
-                  name={`flight[${flight.sequence === 1 ? 0 : 1}]`}
-                  onChange={(e) => handleSelectFlight(flight, e)}
-                  type="radio"
-                  className="w-7 h-7 cursor-pointer"
-                />
+              <div className="col-span-8 w-full md:col-span-2 text-center">
+                <div>
+                  <input
+                    name={`flight[${flight.sequence === 1 ? 0 : 1}]`}
+                    onChange={(e) => handleSelectFlight(flight, e)}
+                    type="radio"
+                    className="w-7 h-7 cursor-pointer"
+                  />
+                </div>
+                <button
+                  className="hidden md:inline-block text-blue-700 border-b border-blue-700 font-normal"
+                  onClick={() => setSelectedDetailFlight(flight)}
+                >
+                  {t("xem_chi_tiet")}
+                </button>
+              </div>
+              <div className="col-span-full">
+                <FlightInfo flight={selectedDetailFlight} />
               </div>
             </div>
+
           ))}
         </div>
       )}

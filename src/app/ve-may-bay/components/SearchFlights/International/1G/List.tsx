@@ -68,8 +68,8 @@ export default function ListFlights1GInternaltion({
         <Fragment>
           <div
             className={`bg-white rounded-2xl mb-8 border-2 ${selectedFareDataId === flightsData.hpb_id
-                ? "border-[#efad02]"
-                : "border-transparent"
+              ? "border-[#efad02]"
+              : "border-transparent"
               }`}
           >
             {flightsData?.journeys?.map((journey: any, leg: number) => {
@@ -181,8 +181,8 @@ export default function ListFlights1GInternaltion({
               </div> */}
               <button
                 className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${!isCheckOut || selectedFareDataId !== flightsData.hpb_id
-                    ? "disabled:bg-gray-200 disabled:cursor-not-allowed"
-                    : ""
+                  ? "disabled:bg-gray-200 disabled:cursor-not-allowed"
+                  : ""
                   }`}
                 onClick={() => {
                   handleCheckout();
