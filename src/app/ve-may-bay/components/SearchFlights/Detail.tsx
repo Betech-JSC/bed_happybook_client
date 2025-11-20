@@ -73,15 +73,17 @@ const FlightDomesticDetail = ({
         <div className="h-fit">
           <div className="grid grid-cols-5 md:grid-cols-6 items-center justify-between bg-white p-3 rounded-lg mt-2 relative">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-12">
-                <DisplayImage
-                  imagePath={`assets/images/airline/${startOperating.toLowerCase()}.gif`}
-                  width={80}
-                  height={24}
-                  alt={startOperating}
-                  classStyle={"max-w-16 md:max-w-20 max-h-10 md:mx-0"}
-                />
-                <div className="flex items-center  text-md font-semibold text-gray-500">
+              <div className="grid grid-cols-2 gap-2 md:gap-12">
+                <div className="col-span-full md:col-span-1">
+                  <DisplayImage
+                    imagePath={`assets/images/airline/${startOperating.toLowerCase()}.gif`}
+                    width={80}
+                    height={24}
+                    alt={startOperating}
+                    classStyle={"max-w-16 md:max-w-20 max-h-10 md:mx-0"}
+                  />
+                </div>
+                <div className="col-span-full md:col-span-1 flex items-center  text-md font-semibold text-gray-500">
                   <h3 className="">
                     {flight.airline}
                   </h3>
@@ -93,7 +95,7 @@ const FlightDomesticDetail = ({
             </div>
             <div className="col-span-2 md:col-span-2 flex  items-center">
               <div className="grid grid-cols-2 w-full">
-                <div className="col-span-full md:col-span-1 flex space-x-[4px] items-center justify-center">
+                <div className="col-span-full md:col-span-1 flex space-x-[4px] items-center justify-center md:justify-start">
                   <span className="text-lg font-semibold">
                     {formatTimeZone(
                       flight.departure.at,
