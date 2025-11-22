@@ -36,10 +36,10 @@ const FlightInternational1GDetail = ({
           {journey.map((flight: any, key: number) => (
             <div
               key={key}
-              className="grid grid-cols-8 mb-2 last:mb-0 items-start md:items-center justify-between rounded-lg bg-white p-3 md:py-2 md:px-4 border border-gray-200 gap-2"
+              className="grid grid-cols-8 mb-2 last:mb-0 items-start md:items-center justify-between rounded-lg bg-white p-4 md:py-2 md:px-4 border border-gray-200"
             >
-              <div className="col-span-2 border-r border-gray-200">
-                <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left mb-3">
+              <div className="col-span-2">
+                <div className="flex flex-col md:flex-row item-start md:items-center gap-2 md:gap-4 text-center md:text-left">
                   <DisplayImage
                     imagePath={`assets/images/airline/${flight.airline.toLowerCase()}.gif`}
                     width={80}
@@ -123,18 +123,13 @@ const FlightInternational1GDetail = ({
                   </div>
                 </div>
               </div>
-              <div className="hidden md:flex flex-col items-center absolute right-[24%] h-fit">
-                <div className="relative h-fit w-px my-2 overflow-hidden">
-                  <div className="h-20 w-1 bg-gray-200"></div>
-                </div>
-              </div>
               <div className="col-span-8 w-full md:col-span-2 text-center">
                 <div>
                   <input
                     name={`flight[${flight.sequence === 1 ? 0 : 1}]`}
                     onChange={(e) => handleSelectFlight(flight, e)}
                     type="radio"
-                    className="w-7 h-7 cursor-pointer"
+                    className="w-5 h-5 cursor-pointer"
                   />
                 </div>
                 <button
