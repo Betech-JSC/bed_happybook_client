@@ -38,8 +38,41 @@ export default function PromoModal() {
     return (
         <div
             onClick={() => setShow(false)}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[90]">
-            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row z-[90] animate-fadeIn">
+            className="
+        fixed inset-0 bg-black bg-opacity-50 
+        flex items-center justify-center 
+        p-4 
+        pt-20 pb-20           /* Thêm padding trên/dưới mobile */
+        z-[90]
+    "
+        >
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="
+            bg-white dark:bg-gray-800 rounded-lg shadow-2xl 
+            w-full max-w-4xl overflow-hidden 
+            flex flex-col md:flex-row 
+            relative 
+            animate-fadeIn
+            max-h-[80vh]
+            overflow-y-auto 
+        "
+            >
+
+                {/* Close Button */}
+                <button
+                    onClick={() => setShow(false)}
+                    className="
+                absolute top-3 right-3 
+                text-gray-600 dark:text-gray-300 
+                hover:text-black dark:hover:text-white 
+                transition
+                z-[999]
+                bg-white rounded-full w-[10px] h-[10px]
+            "
+                >
+                    ✕
+                </button>
 
                 {/* Image */}
                 <div className="w-full md:w-1/2">
@@ -84,7 +117,7 @@ export default function PromoModal() {
                         </a>
 
                         <a
-                            href="http://localhost:3000/mua-ve-may-bay-quoc-te-tang-fast-track"
+                            href="https://happybooktravel.com/mua-ve-may-bay-quoc-te-tang-fast-track"
                             target="_blank"
                             className="block w-full border-2 border-[#0055D9] text-[#0055D9] font-bold text-lg py-3 px-6 rounded-lg hover:bg-[#0055D9] hover:text-white transition"
                         >
@@ -94,11 +127,11 @@ export default function PromoModal() {
 
                     {/* Footer note */}
                     <div className="mt-6 text-xs text-gray-500">
-                        {/* <p>*Áp dụng khi mua vé từ 11/11 - 31/12/2025</p> */}
                         <p className="mt-1">Hotline: 1900 633 437 | Website: happybooktravel.com</p>
                     </div>
                 </div>
             </div>
         </div>
+
     );
 }
