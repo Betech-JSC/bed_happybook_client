@@ -1,23 +1,44 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function PromoModal() {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-        const onReady = () => {
-            setTimeout(() => {
-                setShow(true);
-            }, 5000); // 5s sau DOMContentLoaded
-        };
+        // Key duy nhất cho phiên khuyến mãi này (đổi khi muốn reset)
+        const PROMO_KEY = "promo_shown_nov2025";
 
-        if (document.readyState === "complete" || document.readyState === "interactive") {
-            onReady();
-        } else {
-            window.addEventListener("DOMContentLoaded", onReady);
+        // Kiểm tra xem đã có tab nào "chiếm quyền" hiển thị popup chưa
+        const alreadyShown = sessionStorage.getItem(PROMO_KEY) === "true";
+
+        if (alreadyShown) {
+            return; // Các tab khác vào sau → bỏ qua hoàn toàn
         }
 
-        return () => window.removeEventListener("DOMContentLoaded", onReady);
+        // Tab này là tab đầu tiên → chiếm quyền hiển thị
+        sessionStorage.setItem(PROMO_KEY, "true");
+
+        // Đảm bảo chỉ 1 tab được show (phòng trường hợp race condition)
+        let timer: NodeJS.Timeout;
+
+        const startTimer = () => {
+            timer = setTimeout(() => {
+                setShow(true);
+            }, 5000);
+        };
+
+        // Chạy ngay nếu DOM đã sẵn sàng
+        if (document.readyState === "loading") {
+            const onReady = () => {
+                startTimer();
+                document.removeEventListener("DOMContentLoaded", onReady);
+            };
+            document.addEventListener("DOMContentLoaded", onReady);
+        } else {
+            startTimer();
+        }
+
+        return () => clearTimeout(timer);
     }, []);
 
     // Disable scroll khi popup mở
@@ -25,11 +46,10 @@ export default function PromoModal() {
         if (show) {
             document.body.style.overflow = "hidden";
         } else {
-            document.body.style.overflow = "";
+            document.body.style.overflow = "unset";
         }
-
         return () => {
-            document.body.style.overflow = ""; // cleanup
+            document.body.style.overflow = "unset";
         };
     }, [show]);
 
@@ -38,77 +58,69 @@ export default function PromoModal() {
     return (
         <div
             onClick={() => setShow(false)}
-            className="
-                    fixed inset-0 bg-black bg-opacity-50 
-                    flex items-center justify-center 
-                    p-4 
-                    pt-20 pb-20          
-                    z-[999]
-    "
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 pt-20 pb-20 z-[999]"
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="
-            bg-white dark:bg-gray-800 rounded-lg shadow-2xl 
-            w-full max-w-4xl overflow-hidden 
-            flex flex-col md:flex-row 
-            relative 
-            animate-fadeIn
-            max-h-[80vh]
-            overflow-y-auto 
-        "
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row relative max-h-[80vh] overflow-y-auto"
             >
-                {/* Close Button */}
+                {/* Close Button - sửa size cho dễ bấm */}
                 <button
                     onClick={() => setShow(false)}
-                    className="
-                absolute top-3 right-3 
-                text-gray-600 dark:text-gray-300 
-                hover:text-black dark:hover:text-white 
-                transition
-                z-[999]
-                bg-white rounded-full w-[10px] h-[10px]
-            "
+                    className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white dark:bg-gray-700 shadow-lg flex items-center justify-center text-2xl hover:bg-gray-200 dark:hover:bg-gray-600 transition"
                 >
-                    ✕
+                    ×
                 </button>
 
-                {/* Image */}
                 <div className="w-full md:w-1/2">
-                    <img src="/promotions/buy-ticket.webp" alt="Promo" className="w-full h-full object-cover" />
+                    <img
+                        src="/promotions/buy-ticket.webp"
+                        alt="Khuyến mãi vé máy bay"
+                        className="w-full h-full object-cover"
+                    />
                 </div>
 
-                {/* Content */}
-                <div className="w-full md:w-1/2 p-6 sm:p-8 flex flex-col items-center justify-center text-center bg-[#F0F8FF] relative">
-                    {/* Title */}
+                <div className="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-center text-center bg-[#F0F8FF]">
                     <h1
                         className="font-black text-3xl sm:text-4xl text-[#F15A24] uppercase tracking-wide"
                         style={{
-                            textShadow: "2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF",
+                            textShadow:
+                                "2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF",
                         }}
                     >
                         Mua vé máy bay
                     </h1>
 
-                    <h2 className="font-black text-2xl sm:text-3xl text-[#0055D9] uppercase tracking-wide">Tặng ngay fast track</h2>
+                    <h2 className="font-black text-2xl sm:text-3xl text-[#0055D9] uppercase tracking-wide mt-2">
+                        Tặng ngay Fast Track
+                    </h2>
 
-                    {/* Description */}
-                    <p className="mt-4 text-sm text-gray-600">Nhận ngay dịch vụ Fast Track ưu tiên tại sân bay khi đặt vé máy bay!</p>
+                    <p className="mt-4 text-sm text-gray-600">
+                        Nhận ngay dịch vụ Fast Track ưu tiên tại sân bay khi đặt vé máy bay!
+                    </p>
 
-                    {/* Action buttons */}
-                    <div className="w-full mt-6 space-y-3">
-                        <a href="https://happybooktravel.com/ve-may-bay" target="_blank" className="block w-full bg-[#F15A24] text-white font-bold text-lg py-3 px-6 rounded-lg shadow-md hover:bg-orange-600 transition transform hover:-translate-y-1">
+                    <div className="w-full mt-8 space-y-4">
+                        <a
+                            href="/ve-may-bay"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full bg-[#F15A24] text-white font-bold text-lg py-4 rounded-lg shadow-lg hover:bg-orange-600 transition transform hover:-translate-y-1"
+                        >
                             Đặt vé ngay nhé!
                         </a>
 
-                        <a href="https://happybooktravel.com/mua-ve-may-bay-quoc-te-tang-fast-track" target="_blank" className="block w-full border-2 border-[#0055D9] text-[#0055D9] font-bold text-lg py-3 px-6 rounded-lg hover:bg-[#0055D9] hover:text-white transition">
-                            Thể lệ chương trình
+                        <a
+                            href="/mua-ve-may-bay-quoc-te-tang-fast-track"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full border-2 border-[#0055D9] text-[#0055D9] font-bold text-lg py-4 rounded-lg hover:bg-[#0055D9] hover:text-white transition"
+                        >
+                            Xem thể lệ chương trình
                         </a>
                     </div>
 
-                    {/* Footer note */}
-                    <div className="mt-6 text-xs text-gray-500">
-                        <p className="mt-1">Hotline: 1900 633 437 | Website: happybooktravel.com</p>
+                    <div className="mt-8 text-xs text-gray-500">
+                        <p>Hotline: 1900 633 437 | Website: happybooktravel.com</p>
                     </div>
                 </div>
             </div>
