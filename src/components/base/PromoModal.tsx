@@ -39,7 +39,7 @@ export default function PromoModal() {
         <div
             onClick={() => setShow(false)}
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[90]">
-            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row z-[90]">
+            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row z-[90] animate-fadeIn">
 
                 {/* Image */}
                 <div className="w-full md:w-1/2">
@@ -88,7 +88,7 @@ export default function PromoModal() {
                             target="_blank"
                             className="block w-full border-2 border-[#0055D9] text-[#0055D9] font-bold text-lg py-3 px-6 rounded-lg hover:bg-[#0055D9] hover:text-white transition"
                         >
-                            Xem thêm ưu đãi
+                            Thể lệ chương trình
                         </a>
                     </div>
 
