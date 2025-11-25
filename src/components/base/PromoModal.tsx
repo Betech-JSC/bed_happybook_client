@@ -101,7 +101,7 @@ export default function PromoModal() {
 
                     <div className="w-full mt-8 space-y-4">
                         <a
-                            href="/ve-may-bay"
+                            href="https://happybooktravel.com/ve-may-bay"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="block w-full bg-[#F15A24] text-white font-bold text-lg py-4 rounded-lg shadow-lg hover:bg-orange-600 transition transform hover:-translate-y-1"
@@ -110,7 +110,7 @@ export default function PromoModal() {
                         </a>
 
                         <a
-                            href="/mua-ve-may-bay-quoc-te-tang-fast-track"
+                            href="https://happybooktravel.com/mua-ve-may-bay-quoc-te-tang-fast-track"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="block w-full border-2 border-[#0055D9] text-[#0055D9] font-bold text-lg py-4 rounded-lg hover:bg-[#0055D9] hover:text-white transition"
