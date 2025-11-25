@@ -39,11 +39,11 @@ export default function PromoModal() {
         <div
             onClick={() => setShow(false)}
             className="
-        fixed inset-0 bg-black bg-opacity-50 
-        flex items-center justify-center 
-        p-4 
-        pt-20 pb-20           /* Thêm padding trên/dưới mobile */
-        z-[90]
+                    fixed inset-0 bg-black bg-opacity-50 
+                    flex items-center justify-center 
+                    p-4 
+                    pt-20 pb-20          
+                    z-[999]
     "
         >
             <div
@@ -58,7 +58,6 @@ export default function PromoModal() {
             overflow-y-auto 
         "
             >
-
                 {/* Close Button */}
                 <button
                     onClick={() => setShow(false)}
@@ -76,51 +75,33 @@ export default function PromoModal() {
 
                 {/* Image */}
                 <div className="w-full md:w-1/2">
-                    <img
-                        src="/promotions/buy-ticket.webp"
-                        alt="Promo"
-                        className="w-full h-full object-cover"
-                    />
+                    <img src="/promotions/buy-ticket.webp" alt="Promo" className="w-full h-full object-cover" />
                 </div>
 
                 {/* Content */}
                 <div className="w-full md:w-1/2 p-6 sm:p-8 flex flex-col items-center justify-center text-center bg-[#F0F8FF] relative">
-
                     {/* Title */}
                     <h1
                         className="font-black text-3xl sm:text-4xl text-[#F15A24] uppercase tracking-wide"
                         style={{
-                            textShadow:
-                                "2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF",
+                            textShadow: "2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF",
                         }}
                     >
                         Mua vé máy bay
                     </h1>
 
-                    <h2 className="font-black text-2xl sm:text-3xl text-[#0055D9] uppercase tracking-wide">
-                        Tặng ngay fast track
-                    </h2>
+                    <h2 className="font-black text-2xl sm:text-3xl text-[#0055D9] uppercase tracking-wide">Tặng ngay fast track</h2>
 
                     {/* Description */}
-                    <p className="mt-4 text-sm text-gray-600">
-                        Nhận ngay dịch vụ Fast Track ưu tiên tại sân bay khi đặt vé máy bay!
-                    </p>
+                    <p className="mt-4 text-sm text-gray-600">Nhận ngay dịch vụ Fast Track ưu tiên tại sân bay khi đặt vé máy bay!</p>
 
                     {/* Action buttons */}
                     <div className="w-full mt-6 space-y-3">
-                        <a
-                            href="https://happybooktravel.com/ve-may-bay"
-                            target="_blank"
-                            className="block w-full bg-[#F15A24] text-white font-bold text-lg py-3 px-6 rounded-lg shadow-md hover:bg-orange-600 transition transform hover:-translate-y-1"
-                        >
+                        <a href="https://happybooktravel.com/ve-may-bay" target="_blank" className="block w-full bg-[#F15A24] text-white font-bold text-lg py-3 px-6 rounded-lg shadow-md hover:bg-orange-600 transition transform hover:-translate-y-1">
                             Đặt vé ngay nhé!
                         </a>
 
-                        <a
-                            href="https://happybooktravel.com/mua-ve-may-bay-quoc-te-tang-fast-track"
-                            target="_blank"
-                            className="block w-full border-2 border-[#0055D9] text-[#0055D9] font-bold text-lg py-3 px-6 rounded-lg hover:bg-[#0055D9] hover:text-white transition"
-                        >
+                        <a href="https://happybooktravel.com/mua-ve-may-bay-quoc-te-tang-fast-track" target="_blank" className="block w-full border-2 border-[#0055D9] text-[#0055D9] font-bold text-lg py-3 px-6 rounded-lg hover:bg-[#0055D9] hover:text-white transition">
                             Thể lệ chương trình
                         </a>
                     </div>
@@ -132,6 +113,5 @@ export default function PromoModal() {
                 </div>
             </div>
         </div>
-
     );
 }
