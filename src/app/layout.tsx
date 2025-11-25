@@ -17,6 +17,7 @@ import Script from "next/script";
 import GTMNoScript from "@/components/base/GTMNoScript";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
 import { TranslationProvider } from "../contexts/TranslationContext";
+import PromoModal from "@/components/base/PromoModal";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -132,6 +133,7 @@ export default async function RootLayout({
             <UserProvider initialUser={session.userInfo}>
               <Header></Header>
               <HeaderMobile></HeaderMobile>
+              <PromoModal />
               {children}
               <Toaster toastOptions={toastOptions} />
               <div id="datepicker-portal"></div>
