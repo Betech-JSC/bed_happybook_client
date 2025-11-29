@@ -89,11 +89,10 @@ export default function ListFlightsInternationalNormal({
   return (
     <Fragment>
       <div
-        className={`bg-white rounded-2xl my-6 border-2 ${
-          selectedFareDataId === flightsData.hpb_id
+        className={`bg-white rounded-2xl my-6 border-2 ${selectedFareDataId === flightsData.hpb_id
             ? "border-[#efad02]"
             : "border-white border-0"
-        }`}
+          }`}
       >
         {/* Depart flights */}
         <div className={`pb-2 bg-[#FCFCFD] rounded-t-3xl`}>
@@ -146,6 +145,7 @@ export default function ListFlightsInternationalNormal({
               totalPassengers={totalPassengers}
               flightLeg={0}
               HPB_ID={flightsData.hpb_id}
+              airports={airportsData}
             />
           ))}
         </div>
@@ -187,6 +187,7 @@ export default function ListFlightsInternationalNormal({
               totalPassengers={totalPassengers}
               flightLeg={1}
               HPB_ID={flightsData.hpb_id}
+              airports={airportsData}
             />
           ))}
         </div>
@@ -196,11 +197,10 @@ export default function ListFlightsInternationalNormal({
           ref={btnCheckoutRef}
         >
           <button
-            className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${
-              !isCheckOut
+            className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${!isCheckOut
                 ? "disabled:bg-gray-200 disabled:cursor-not-allowed"
                 : ""
-            }`}
+              }`}
             onClick={() => {
               handleCheckout();
             }}
