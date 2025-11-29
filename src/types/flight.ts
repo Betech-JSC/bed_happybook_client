@@ -33,6 +33,14 @@ export interface AirportPopupSelectorProps {
   airportsData: AirportsCountry[];
 }
 
+export interface MultiCitySegment {
+  from: string | null;
+  to: string | null;
+  fromPlace: string | null;
+  toPlace: string | null;
+  departureDate: Date | null;
+}
+
 export interface FormData {
   from: string | null;
   to: string | null;
@@ -45,6 +53,7 @@ export interface FormData {
   cheapest: number;
   fromPlace: string | null;
   toPlace: string | null;
+  multiCitySegments?: MultiCitySegment[];
 }
 export interface SearchParamsProps {
   Adt: number;
