@@ -142,6 +142,7 @@ export default function ListFlights1GInternaltion({
                     setFlightDetail={handleShowPopupFlightDetail}
                     fareData={flightsData}
                     selectedFareDataId={selectedFareDataId}
+                    airports={airportsData}
                   />
                 </div>
               );
