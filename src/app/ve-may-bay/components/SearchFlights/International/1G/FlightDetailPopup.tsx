@@ -13,6 +13,7 @@ import { toSnakeCase } from "@/utils/Helper";
 import { isEmpty } from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createPortal } from "react-dom";
+import FlightInfo from "@/components/FlightInfo";
 
 export default function Flight1GDetailPopup({
   isOpen,
@@ -42,9 +43,8 @@ export default function Flight1GDetailPopup({
   return createPortal(
     <div
       id="flight-detail-2-popup-wrapper"
-      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-70 flex justify-center items-center ${
-        isOpen ? "opacity-100 visible z-[9999]" : "opacity-0 invisible z-[-1]"
-      }`}
+      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-70 flex justify-center items-center ${isOpen ? "opacity-100 visible z-[9999]" : "opacity-0 invisible z-[-1]"
+        }`}
       style={{
         opacity: isOpen ? "100" : "0",
       }}
@@ -76,9 +76,8 @@ export default function Flight1GDetailPopup({
             )}
             {/* Tabs */}
             <div
-              className={`flex sticky top-[-25px] bg-white z-[999]  ${
-                tabs.length > 1 ? "mt-3" : "justify-between"
-              } `}
+              className={`flex sticky top-[-25px] bg-white z-[999]  ${tabs.length > 1 ? "mt-3" : "justify-between"
+                } `}
             >
               {tabs.map((tab: any, index: number) => (
                 <div key={index} onClick={() => setActiveTab(tab.id)}>
@@ -86,16 +85,14 @@ export default function Flight1GDetailPopup({
                     type="button"
                     className={`pt-2 font-bold duration-150 transition-colors outline-none 
                     ${activeTab === tab.id ? "text-primary " : ""} 
-                    ${
-                      tabs.length > 1 && activeTab === tab.id
+                    ${tabs.length > 1 && activeTab === tab.id
                         ? "border-b-2 border-primary"
                         : ""
-                    } 
-                    ${
-                      tabs.length < 2 && activeTab === tab.id
+                      } 
+                    ${tabs.length < 2 && activeTab === tab.id
                         ? "text-22 px-0"
                         : "px-4"
-                    }`}
+                      }`}
                   >
                     {t(`${toSnakeCase(tab.name)}`)}
                   </button>
@@ -125,11 +122,10 @@ export default function Flight1GDetailPopup({
                   return (
                     <div
                       key={key}
-                      className={` bg-white ${
-                        key > 0
+                      className={` bg-white ${key > 0
                           ? "pt-6 border-t border-t-gray-300"
                           : "mt-4 pb-6"
-                      }`}
+                        }`}
                     >
                       <h2
                         className="text-xl py-1 px-4 font-semibold text-white mb-6 max-w-fit rounded-lg"
@@ -140,201 +136,7 @@ export default function Flight1GDetailPopup({
                       >
                         {flight.sequence === 2 ? t("chieu_ve") : t("chieu_di")}
                       </h2>
-                      {flight?.segments?.length > 0 &&
-                        flight.segments.map((segment: any, index: number) => {
-                          const segmentArrivalAt = parseISO(segment.arrival.at);
-                          const segmentDepartureAt = parseISO(
-                            segment.departure.at
-                          );
-                          const durationFlight =
-                            segment.duration > 0
-                              ? segment.duration
-                              : differenceInSeconds(
-                                  segmentArrivalAt,
-                                  segmentDepartureAt
-                                ) / 60;
-                          const airPortStartPoint =
-                            airports
-                              .flatMap((country: any) => country.airports)
-                              .find(
-                                (airport: any) =>
-                                  airport.code === segment.departure.IATACode
-                              ) || null;
-                          const airPortEndPoint =
-                            airports
-                              .flatMap((country: any) => country.airports)
-                              .find(
-                                (airport: any) =>
-                                  airport.code === segment.arrival.IATACode
-                              ) || null;
-                          const flightCarryOnBaggage: string = "";
-                          const flightCheckedBagge: string = "";
-                          const airPortTransit =
-                            airports
-                              .flatMap((country: any) => country.airports)
-                              .find(
-                                (airport: any) =>
-                                  airport.code === segment.stopPoint
-                              ) || null;
-
-                          const operatingAirline = !isEmpty(segment?.operating)
-                            ? segment?.operating
-                            : segment.airline;
-                          return (
-                            <div
-                              className={`grid grid-cols-12 items-start gap-6 ${
-                                index > 0 ? "mt-6" : ""
-                              }`}
-                              key={index}
-                            >
-                              <div className="col-span-12 h-full w-full">
-                                <div className="flex h-full items-start gap-2">
-                                  <div className="w-4/12 md:w-2/12 flex h-full justify-between flex-col items-end">
-                                    <div className="text-center w-full">
-                                      <p className="text-22 font-bold">
-                                        {formatTimeZone(
-                                          segment.departure.at,
-                                          segment.departure.timezone
-                                        )}
-                                      </p>
-                                      <p className="text-gray-500">
-                                        {format(
-                                          new Date(segment.departure.at),
-                                          "dd/MM/yyyy"
-                                        )}
-                                      </p>
-                                    </div>
-                                    <div className="font-semibold text-center w-full">
-                                      <Image
-                                        src="/icon/AirplaneTiltBlue.svg"
-                                        width={20}
-                                        height={20}
-                                        alt="Icon"
-                                        className="w-5 h-5 mx-auto"
-                                      />
-                                      <p className="mt-2 text-22 text-[#4E6EB3]">
-                                        {formatNumberToHoursAndMinutesFlight(
-                                          durationFlight
-                                        )}
-                                      </p>
-                                    </div>
-                                    <div className="text-center w-full">
-                                      <p className="text-22 font-bold">
-                                        {formatTimeZone(
-                                          segment.arrival.at,
-                                          segment.arrival.timezone
-                                        )}
-                                      </p>
-                                      <p className="text-gray-500">
-                                        {format(
-                                          new Date(segment.arrival.at),
-                                          "dd/MM/yyyy"
-                                        )}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="w-1/12 relative h-full py-5 flex flex-col items-center">
-                                    <div className="w-[6px] h-[6px] bg-blue-700 rounded-full"></div>
-                                    <div className="w-px h-full bg-blue-700"></div>
-                                    <div className="w-[6px] h-[6px] bg-blue-700 rounded-full"></div>
-                                  </div>
-                                  <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
-                                    <div>
-                                      <div className="text-22 font-bold">
-                                        {airPortStartPoint
-                                          ? `${
-                                              airPortStartPoint?.city ?? ""
-                                            } (${airPortStartPoint.code})`
-                                          : `${segment.departure.IATACode}`}
-                                      </div>
-                                      <p className="text-gray-500 mt-1 h-6"></p>
-                                    </div>
-                                    <div className="rounded-lg py-3 px-4 bg-gray-50">
-                                      <div className="flex space-x-3">
-                                        <DisplayImage
-                                          imagePath={`assets/images/airline/${operatingAirline.toLowerCase()}.gif`}
-                                          width={82}
-                                          height={24}
-                                          alt={"AirLine"}
-                                          classStyle={
-                                            "max-w-20 md:max-w-24 max-h-10"
-                                          }
-                                        />
-                                        <p className="font-bold">
-                                          {segment.airline}
-                                        </p>
-                                      </div>
-                                      <div className="mt-3 flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0 text-sm font-medium">
-                                        <p>{segment.flightNumber}</p>
-                                        <p className="hidden md:block">-</p>
-                                        <p>
-                                          {t("hang")}{" "}
-                                          {flight.groupClass
-                                            ? flight?.bookingClass
-                                            : segment.bookingClass ?? ""}
-                                        </p>
-                                      </div>
-
-                                      <div className="mt-3 flex flex-col md:flex-row flex-wrap gap-3 text-sm font-medium">
-                                        {flightCarryOnBaggage &&
-                                          !isEmpty(
-                                            flightCarryOnBaggage.trim()
-                                          ) && (
-                                            <p>{`${t(
-                                              "hanh_ly_xach_tay"
-                                            )}: ${flightCarryOnBaggage}`}</p>
-                                          )}
-                                        {flightCheckedBagge &&
-                                          !isEmpty(
-                                            flightCheckedBagge.trim()
-                                          ) && (
-                                            <p>{`${t(
-                                              "hanh_ly_ky_gui"
-                                            )}: ${flightCheckedBagge}`}</p>
-                                          )}
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <p className="text-gray-500 mt-1 h-6"></p>
-                                      <p className="text-22 font-bold">
-                                        {airPortEndPoint
-                                          ? `${airPortEndPoint?.city ?? ""} (${
-                                              airPortEndPoint.code
-                                            })`
-                                          : `${segment.arrival.IATACode}`}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              {segment.stopTime > 0 && (
-                                <div className="col-span-12 h-full w-full">
-                                  <div className="flex h-full items-start gap-0 md:gap-2">
-                                    <div className="w-0 md:w-2/12 flex h-full justify-between flex-col items-end"></div>
-                                    <div className="w-0 md:w-1/12 h-full py-5 flex flex-col items-center"></div>
-                                    <div className="w-full md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
-                                      <div className="bg-gray-50 rounded-lg p-4 flex space-x-4 lg:space-x-8 items-center text-sm">
-                                        <p>
-                                          Transfer in{" "}
-                                          {`${
-                                            airPortEndPoint
-                                              ? `${airPortEndPoint?.city} (${airPortEndPoint?.code})`
-                                              : segment.stopPoint ?? ""
-                                          }`}{" "}
-                                        </p>
-                                        <p>
-                                          {formatNumberToHoursAndMinutesFlight(
-                                            segment.stopTime
-                                          )}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                      <FlightInfo flight={flight} airports={airports} />
                     </div>
                   );
                 })}
@@ -344,11 +146,10 @@ export default function Flight1GDetailPopup({
                 {flights.map((flightDetail: any, index: number) => (
                   <div
                     key={index}
-                    className={` bg-white ${
-                      index > 0
+                    className={` bg-white ${index > 0
                         ? "pt-4 border-t border-t-gray-300"
                         : "mt-4 pb-6"
-                    }`}
+                      }`}
                   >
                     {flights?.length > 1 && (
                       <h2
