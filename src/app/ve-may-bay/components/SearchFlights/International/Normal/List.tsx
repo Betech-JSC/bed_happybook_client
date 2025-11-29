@@ -145,6 +145,7 @@ export default function ListFlightsInternationalNormal({
               totalPassengers={totalPassengers}
               flightLeg={0}
               HPB_ID={flightsData.hpb_id}
+              airports={airportsData}
             />
           ))}
         </div>
@@ -186,6 +187,7 @@ export default function ListFlightsInternationalNormal({
               totalPassengers={totalPassengers}
               flightLeg={1}
               HPB_ID={flightsData.hpb_id}
+              airports={airportsData}
             />
           ))}
         </div>
