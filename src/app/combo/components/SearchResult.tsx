@@ -175,7 +175,7 @@ export default function SearchResult({
                 }`}
               >
                 <div className="w-full md:w-5/12 relative overflow-hidden rounded-t-2xl lg:rounded-none lg:rounded-l-2xl">
-                  <Link href={`/combo/chi-tiet/${item.slug}`}>
+                  <Link href={`/combo/${item.slug}`}>
                     <Image
                       className="block hover:scale-110 ease-in duration-300 cursor-pointer h-auto w-full rounded-t-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
                       src={`${item.image_url}/${item.image_location}`}
@@ -191,7 +191,7 @@ export default function SearchResult({
                   <div className="my-4 lg:mr-6">
                     <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                       <Link
-                        href={`/combo/chi-tiet/${item.slug}`}
+                        href={`/combo/${item.slug}`}
                         className="w-full md:w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
                       >
                         <h2 data-translate="true">
