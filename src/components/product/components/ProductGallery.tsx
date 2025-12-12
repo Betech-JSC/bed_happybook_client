@@ -49,11 +49,11 @@ export default function ProductGallery({ product }: Props) {
           const fullSrc = `${img.image_url}/${img.image}`;
           try {
             const { width, height } = await getImageSize(fullSrc);
-            return { src: fullSrc, msrc: fullSrc + "?w=400", width, height };
+            return { src: fullSrc, msrc: fullSrc, width, height };
           } catch {
             return {
               src: fullSrc,
-              msrc: fullSrc + "?w=400",
+              msrc: fullSrc,
               width: 900,
               height: 600,
             };
