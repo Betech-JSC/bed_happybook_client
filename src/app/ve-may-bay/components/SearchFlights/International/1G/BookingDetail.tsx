@@ -355,8 +355,8 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
           </button>
           <div
             className={`bg-white border-t transition-all duration-300 overflow-hidden ${isOpenBookingDetail
-                ? "max-h-[2500px] opacity-100 p-4"
-                : "max-h-0 opacity-0 p-0"
+              ? "max-h-[2500px] opacity-100 p-4"
+              : "max-h-0 opacity-0 p-0"
               }`}
           >
             <div>
@@ -779,7 +779,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                         </div>
                       </label>
                     </div>
-                    <div className="flex space-x-3 items-start mt-4">
+                    {/* <div className="flex space-x-3 items-start mt-4">
                       <input
                         type="radio"
                         value="vietqr"
@@ -810,7 +810,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                           </span>
                         </div>
                       </label>
-                    </div>
+                    </div> */}
                     <div className="flex space-x-3 md:items-center mt-4">
                       <input
                         type="radio"
@@ -926,8 +926,8 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
       </div>
       <div
         className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl p-3 lg:p-6  ${isStickySideBar
-            ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
-            : "w-full"
+          ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
+          : "w-full"
           }`}
       >
         <div className="p-3 lg:py-4 lg:px-4">
@@ -981,8 +981,8 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
               </button>
               <div
                 className={`rounded-lg transition-all delay-300 ease-in ${activeIndex === index
-                    ? "max-h-16 opacity-100 visible"
-                    : "max-h-0 opacity-0 invisible"
+                  ? "max-h-16 opacity-100 visible"
+                  : "max-h-0 opacity-0 invisible"
                   } `}
               >
                 <div className="text-sm text-gray-500 flex justify-between mt-1">

@@ -858,7 +858,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         </div>
                       </label>
                     </div>
-                    <div className="flex space-x-3 items-start mt-4">
+                    {/* <div className="flex space-x-3 items-start mt-4">
                       <input
                         type="radio"
                         value="vietqr"
@@ -889,7 +889,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           </span>
                         </div>
                       </label>
-                    </div>
+                    </div> */}
                     <div className="flex space-x-3 md:items-center mt-4">
                       <input
                         type="radio"
