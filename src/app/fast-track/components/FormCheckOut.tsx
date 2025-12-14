@@ -60,7 +60,7 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
-  const [customerType, setCustomerType] = useState<"personal" | "group" | "">("");
+  const [customerType, setCustomerType] = useState<"personal" | "group">("personal");
   const [guestList, setGuestList] = useState<any[]>([]);
   const [flightNumber, setFlightNumber] = useState<string>("");
   const [flightTime, setFlightTime] = useState<string>("");
@@ -238,7 +238,7 @@ export default function CheckOutForm({
           departure_date: format(data.depart_date, "yyyy-MM-dd"),
           ticket_option_id: ticketOptionId,
           tickets: ticketsBooking,
-          ...(customerType && { customer_type: customerType }),
+          customer_type: customerType, // Luôn gửi customer_type (mặc định là "personal")
           ...(shouldSendGuestList && { guest_list: guestList }),
           ...(flightNumber && { flight_number: flightNumber }),
           ...(flightTime && { flight_time: flightTime }),
@@ -302,6 +302,12 @@ export default function CheckOutForm({
     );
   };
 
+  // Tính tổng số lượng vé đã chọn
+  const totalTicketQuantity = tickets.reduce(
+    (sum, ticket) => sum + ticket.quantity,
+    0
+  );
+
   // Tính tổng giá vé
   const ticketsPrice = tickets.reduce(
     (sum, ticket) => sum + ticket.quantity * ticket.price,
@@ -316,14 +322,42 @@ export default function CheckOutForm({
   // Tổng chi phí = giá vé + phụ phí
   const totalPrice = ticketsPrice + additionalFeesPrice;
 
+  // Đồng bộ guestList với số lượng vé đã chọn
+  useEffect(() => {
+    if (customerType === "group" && totalTicketQuantity > 0) {
+      setGuestList((prevGuestList) => {
+        const currentGuestCount = prevGuestList.length;
+        if (totalTicketQuantity > currentGuestCount) {
+          // Thêm khách nếu số lượng vé tăng
+          const newGuests = Array(totalTicketQuantity - currentGuestCount)
+            .fill(null)
+            .map(() => ({ name: "", phone: "", email: "" }));
+          return [...prevGuestList, ...newGuests];
+        } else if (totalTicketQuantity < currentGuestCount) {
+          // Xóa khách nếu số lượng vé giảm
+          return prevGuestList.slice(0, totalTicketQuantity);
+        }
+        return prevGuestList;
+      });
+    } else if (customerType === "personal") {
+      // Cá nhân: không cần guestList
+      setGuestList([]);
+    }
+  }, [totalTicketQuantity, customerType]);
+
   const handleCustomerTypeChange = (type: "personal" | "group") => {
     setCustomerType(type);
     if (type === "personal") {
       // Cá nhân: không cần nhập thông tin khách riêng, dùng thông tin từ form liên hệ
       setGuestList([]);
     } else {
-      // Đoàn: cần nhập thông tin cho ít nhất 2 khách
-      setGuestList([{ name: "", phone: "", email: "" }, { name: "", phone: "", email: "" }]);
+      // Đoàn: tạo guestList khớp với số lượng vé đã chọn
+      const guestCount = Math.max(totalTicketQuantity, 1);
+      setGuestList(
+        Array(guestCount)
+          .fill(null)
+          .map(() => ({ name: "", phone: "", email: "" }))
+      );
     }
   };
 
@@ -333,15 +367,6 @@ export default function CheckOutForm({
     setGuestList(updated);
   };
 
-  const addGuest = () => {
-    setGuestList([...guestList, { name: "", phone: "", email: "" }]);
-  };
-
-  const removeGuest = (index: number) => {
-    if (guestList.length > 1) {
-      setGuestList(guestList.filter((_, i) => i !== index));
-    }
-  };
 
   const toggleAdditionalFee = (feeId: number) => {
     setSelectedAdditionalFees((prev) =>
@@ -552,34 +577,30 @@ export default function CheckOutForm({
                 </div>
               </button>
             </div>
-            {customerType && (
-              <button
-                type="button"
-                onClick={() => {
-                  setCustomerType("");
-                  setGuestList([]);
-                }}
-                className="text-sm text-gray-500 hover:text-gray-700 underline"
-                data-translate="true"
-              >
-                Bỏ chọn
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setCustomerType("personal");
+                setGuestList([]);
+              }}
+              className="text-sm text-gray-500 hover:text-gray-700 underline"
+              data-translate="true"
+            >
+              Đặt lại về mặc định
+            </button>
 
             {/* Chỉ hiển thị form nhập thông tin khách khi chọn "group" */}
             {customerType === "group" && (
               <div className="mt-4 pt-4 border-t">
                 <div className="flex justify-between items-center mb-3">
                   <p className="font-semibold" data-translate="true">
-                    Danh sách thông tin khách
+                    Danh sách thông tin khách ({totalTicketQuantity} khách)
                   </p>
-                  <button
-                    type="button"
-                    onClick={addGuest}
-                    className="text-blue-600 text-sm font-medium hover:text-blue-700"
-                  >
-                    + Thêm khách
-                  </button>
+                  {totalTicketQuantity > 0 && (
+                    <span className="text-xs text-gray-500">
+                      Số lượng khách tự động khớp với số vé đã chọn
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-4">
                   {guestList.map((guest, index) => (
@@ -591,15 +612,6 @@ export default function CheckOutForm({
                         <span className="font-medium text-sm">
                           Khách {index + 1}
                         </span>
-                        {guestList.length > 2 && (
-                          <button
-                            type="button"
-                            onClick={() => removeGuest(index)}
-                            className="text-red-600 text-sm hover:text-red-700"
-                          >
-                            Xóa
-                          </button>
-                        )}
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="relative">
