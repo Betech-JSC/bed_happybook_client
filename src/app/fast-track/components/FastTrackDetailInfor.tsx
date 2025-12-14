@@ -160,14 +160,14 @@ export default function FastTrackDetailInfor({ product }: any) {
                       ))}
                     {/* Additional Fees Section - Hiển thị phụ phí từ bảng product_fast_track_additional_fees */}
                     {detail?.additional_fees?.length > 0 && (
-                      <div className="mt-4 pt-4 border-t">
+                      <div className="mt-4 pt-4">
                         <h3 className="text-base font-semibold mb-3" data-translate="true">
                           Phụ phí thêm
                         </h3>
                         {detail.additional_fees.map((fee: any) => (
                           <div
                             key={fee.id}
-                            className="flex justify-between items-center py-2 border-b last:border-none"
+                            className="flex justify-between items-center py-2 last:border-none"
                           >
                             <div>
                               <div
