@@ -158,6 +158,42 @@ export default function FastTrackDetailInfor({ product }: any) {
                           </div>
                         </div>
                       ))}
+                    {/* Additional Fees Section - Hiển thị phụ phí từ bảng product_fast_track_additional_fees */}
+                    {detail?.additional_fees?.length > 0 && (
+                      <div className="mt-4 pt-4 border-t">
+                        <h3 className="text-base font-semibold mb-3" data-translate="true">
+                          Phụ phí thêm
+                        </h3>
+                        {detail.additional_fees.map((fee: any) => (
+                          <div
+                            key={fee.id}
+                            className="flex justify-between items-center py-2 border-b last:border-none"
+                          >
+                            <div>
+                              <div
+                                className="font-medium text-sm"
+                                data-translate="true"
+                              >
+                                {renderTextContent(fee.name)}
+                              </div>
+                              {fee.description && (
+                                <div
+                                  className="text-xs text-gray-500 mt-1"
+                                  data-translate="true"
+                                >
+                                  {renderTextContent(fee.description)}
+                                </div>
+                              )}
+                            </div>
+                            <DisplayPrice
+                              className="!text-sm text-black !font-medium"
+                              price={fee.price}
+                              currency={product?.currency}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     {option.prices?.length > 0 && (
                       <div className="text-end mt-6 mb-2">
                         <Link

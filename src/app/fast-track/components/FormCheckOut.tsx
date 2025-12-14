@@ -8,6 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 import { BookingProductApi } from "@/api/BookingProduct";
+import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -59,6 +60,15 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
+  const [customerType, setCustomerType] = useState<"personal" | "group" | "">("");
+  const [guestList, setGuestList] = useState<any[]>([]);
+  const [flightNumber, setFlightNumber] = useState<string>("");
+  const [flightTime, setFlightTime] = useState<string>("");
+  const [flightArrivalTime, setFlightArrivalTime] = useState<string>("");
+  const [flightDate, setFlightDate] = useState<string>("");
+  const [selectedAdditionalFees, setSelectedAdditionalFees] = useState<number[]>([]);
+  const [additionalFees, setAdditionalFees] = useState<any[]>([]);
+  const [loadingAdditionalFees, setLoadingAdditionalFees] = useState<boolean>(false);
   // Handle Voucher
   const {
     totalDiscount,
@@ -128,6 +138,54 @@ export default function CheckOutForm({
     }
   }, [product?.ticket_prices]);
 
+  // Fetch additional fees from API
+  useEffect(() => {
+    const fetchAdditionalFees = async () => {
+      try {
+        setLoadingAdditionalFees(true);
+        const response = await ProductFastTrackApi.getAdditionalFees();
+        if (response?.status === 200 && response?.payload?.data) {
+          const fees = Array.isArray(response.payload.data) 
+            ? response.payload.data 
+            : [];
+          
+          // Filter only active fees and sort
+          const sortedFees = fees
+            .filter((fee: any) => fee.status === 1 || fee.status === true)
+            .sort((a: any, b: any) => {
+              if (a.sort_order !== b.sort_order) {
+                return (a.sort_order || 0) - (b.sort_order || 0);
+              }
+              return (b.id || 0) - (a.id || 0);
+            });
+          
+          setAdditionalFees(sortedFees);
+        }
+      } catch (error) {
+        console.error("Error fetching additional fees:", error);
+        // Fallback to product.additional_fees if API fails
+        if (product?.additional_fees) {
+          const fees = Array.isArray(product.additional_fees) 
+            ? product.additional_fees 
+            : [];
+          const sortedFees = fees
+            .filter((fee: any) => fee.status === 1 || fee.status === true)
+            .sort((a: any, b: any) => {
+              if (a.sort_order !== b.sort_order) {
+                return (a.sort_order || 0) - (b.sort_order || 0);
+              }
+              return (b.id || 0) - (a.id || 0);
+            });
+          setAdditionalFees(sortedFees);
+        }
+      } finally {
+        setLoadingAdditionalFees(false);
+      }
+    };
+
+    fetchAdditionalFees();
+  }, [product?.additional_fees]);
+
   useEffect(() => {
     setSchemaForm(CheckOutYachtSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
@@ -169,6 +227,10 @@ export default function CheckOutForm({
         id: item.id,
         quantity: item.quantity,
       }));
+      // Chỉ gửi guest_list khi là "group" và có dữ liệu
+      const shouldSendGuestList = customerType === "group" && guestList.length > 0 && 
+        guestList.some((guest) => guest.name || guest.phone || guest.email);
+      
       const formatData = {
         is_invoice: generateInvoice,
         product_id: product?.id,
@@ -176,6 +238,15 @@ export default function CheckOutForm({
           departure_date: format(data.depart_date, "yyyy-MM-dd"),
           ticket_option_id: ticketOptionId,
           tickets: ticketsBooking,
+          ...(customerType && { customer_type: customerType }),
+          ...(shouldSendGuestList && { guest_list: guestList }),
+          ...(flightNumber && { flight_number: flightNumber }),
+          ...(flightTime && { flight_time: flightTime }),
+          ...(flightArrivalTime && { flight_arrival_time: flightArrivalTime }),
+          ...(flightDate && { flight_date: flightDate }),
+          ...(selectedAdditionalFees.length > 0 && { 
+            additional_fees: selectedAdditionalFees.map((id) => ({ id })) 
+          }),
         },
         contact: {
           email: data.email,
@@ -231,10 +302,54 @@ export default function CheckOutForm({
     );
   };
 
-  const totalPrice = tickets.reduce(
+  // Tính tổng giá vé
+  const ticketsPrice = tickets.reduce(
     (sum, ticket) => sum + ticket.quantity * ticket.price,
     0
   );
+  
+  // Tính tổng phụ phí đã chọn
+  const additionalFeesPrice = additionalFees
+    .filter((fee: any) => selectedAdditionalFees.includes(fee.id))
+    .reduce((sum: number, fee: any) => sum + Number(fee.price || 0), 0);
+  
+  // Tổng chi phí = giá vé + phụ phí
+  const totalPrice = ticketsPrice + additionalFeesPrice;
+
+  const handleCustomerTypeChange = (type: "personal" | "group") => {
+    setCustomerType(type);
+    if (type === "personal") {
+      // Cá nhân: không cần nhập thông tin khách riêng, dùng thông tin từ form liên hệ
+      setGuestList([]);
+    } else {
+      // Đoàn: cần nhập thông tin cho ít nhất 2 khách
+      setGuestList([{ name: "", phone: "", email: "" }, { name: "", phone: "", email: "" }]);
+    }
+  };
+
+  const handleGuestListChange = (index: number, field: string, value: string) => {
+    const updated = [...guestList];
+    updated[index] = { ...updated[index], [field]: value };
+    setGuestList(updated);
+  };
+
+  const addGuest = () => {
+    setGuestList([...guestList, { name: "", phone: "", email: "" }]);
+  };
+
+  const removeGuest = (index: number) => {
+    if (guestList.length > 1) {
+      setGuestList(guestList.filter((_, i) => i !== index));
+    }
+  };
+
+  const toggleAdditionalFee = (feeId: number) => {
+    setSelectedAdditionalFees((prev) =>
+      prev.includes(feeId)
+        ? prev.filter((id) => id !== feeId)
+        : [...prev, feeId]
+    );
+  };
   return (
     <div className="flex flex-col-reverse items-start lg:flex-row lg:space-x-8 lg:mt-4 pb-8">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0 rounded-2xl">
@@ -335,6 +450,267 @@ export default function CheckOutForm({
               )}
             </div>
           </div>
+
+          {/* Additional Fees Section - Hiển thị danh sách phụ phí từ bảng product_fast_track_additional_fees */}
+          {additionalFees.length > 0 && (
+            <div className="mt-6 bg-white p-4 rounded-xl">
+              <p className="text-18 font-bold mb-4" data-translate="true">
+                Phụ phí thêm
+              </p>
+              <div className="space-y-3">
+                {additionalFees.map((fee: any) => (
+                  <div
+                    key={fee.id}
+                    className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${
+                      selectedAdditionalFees.includes(fee.id)
+                        ? "border-blue-500 bg-blue-50 shadow-sm"
+                        : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                    }`}
+                    onClick={() => toggleAdditionalFee(fee.id)}
+                  >
+                    <div className="flex items-start gap-3 flex-1">
+                      <input
+                        type="checkbox"
+                        checked={selectedAdditionalFees.includes(fee.id)}
+                        onChange={() => toggleAdditionalFee(fee.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="mt-1 cursor-pointer w-4 h-4"
+                      />
+                      <div className="flex-1">
+                        <div
+                          className="font-medium text-base text-gray-900"
+                          data-translate="true"
+                        >
+                          {renderTextContent(fee.name)}
+                        </div>
+                        {fee.description && (
+                          <div
+                            className="text-sm text-gray-500 mt-1"
+                            data-translate="true"
+                            dangerouslySetInnerHTML={{
+                              __html: renderTextContent(fee.description),
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <DisplayPrice
+                      className="!text-base !font-semibold text-blue-600 ml-4 flex-shrink-0"
+                      price={fee.price}
+                      currency={product?.currency}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Customer Type and Guest Information - Optional */}
+          <div className="mt-6 bg-white p-4 rounded-xl">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-18 font-bold" data-translate="true">
+                Phân loại khách
+              </p>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                Tùy chọn
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 mb-4" data-translate="true">
+              Chọn loại khách để nhập thông tin bổ sung (nếu cần)
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <button
+                type="button"
+                onClick={() => handleCustomerTypeChange("personal")}
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  customerType === "personal"
+                    ? "border-blue-600 bg-blue-50 shadow-sm"
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                <div className="font-semibold" data-translate="true">
+                  Đón/Tiễn cá nhân
+                </div>
+                <div className="text-xs text-gray-500 mt-1" data-translate="true">
+                  Sử dụng thông tin từ form liên hệ
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleCustomerTypeChange("group")}
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  customerType === "group"
+                    ? "border-blue-600 bg-blue-50 shadow-sm"
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                <div className="font-semibold" data-translate="true">
+                  Đón/Tiễn đoàn
+                </div>
+                <div className="text-xs text-gray-500 mt-1" data-translate="true">
+                  Nhập thông tin cho nhiều khách
+                </div>
+              </button>
+            </div>
+            {customerType && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCustomerType("");
+                  setGuestList([]);
+                }}
+                className="text-sm text-gray-500 hover:text-gray-700 underline"
+                data-translate="true"
+              >
+                Bỏ chọn
+              </button>
+            )}
+
+            {/* Chỉ hiển thị form nhập thông tin khách khi chọn "group" */}
+            {customerType === "group" && (
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex justify-between items-center mb-3">
+                  <p className="font-semibold" data-translate="true">
+                    Danh sách thông tin khách
+                  </p>
+                  <button
+                    type="button"
+                    onClick={addGuest}
+                    className="text-blue-600 text-sm font-medium hover:text-blue-700"
+                  >
+                    + Thêm khách
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {guestList.map((guest, index) => (
+                    <div
+                      key={index}
+                      className="p-4 border border-gray-200 rounded-lg bg-gray-50"
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="font-medium text-sm">
+                          Khách {index + 1}
+                        </span>
+                        {guestList.length > 2 && (
+                          <button
+                            type="button"
+                            onClick={() => removeGuest(index)}
+                            className="text-red-600 text-sm hover:text-red-700"
+                          >
+                            Xóa
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="relative">
+                          <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                            <span data-translate="true">Họ và tên</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={guest.name}
+                            onChange={(e) =>
+                              handleGuestListChange(index, "name", e.target.value)
+                            }
+                            placeholder="Nhập họ và tên"
+                            className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
+                          />
+                        </div>
+                        <div className="relative">
+                          <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                            <span data-translate="true">Số điện thoại</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={guest.phone}
+                            onChange={(e) =>
+                              handleGuestListChange(index, "phone", e.target.value)
+                            }
+                            placeholder="Nhập số điện thoại"
+                            className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
+                          />
+                        </div>
+                        <div className="relative">
+                          <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                            <span data-translate="true">Email</span>
+                          </label>
+                          <input
+                            type="email"
+                            value={guest.email}
+                            onChange={(e) =>
+                              handleGuestListChange(index, "email", e.target.value)
+                            }
+                            placeholder="Nhập email"
+                            className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Flight Information - Optional */}
+            <div className="mt-6 pt-4 border-t">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-18 font-bold" data-translate="true">
+                  Thông tin chuyến bay
+                </p>
+                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                  Tùy chọn
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Số hiệu chuyến bay</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={flightNumber}
+                    onChange={(e) => setFlightNumber(e.target.value)}
+                    placeholder="VD: VN123"
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Giờ bay</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={flightTime}
+                    onChange={(e) => setFlightTime(e.target.value)}
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Giờ đáp</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={flightArrivalTime}
+                    onChange={(e) => setFlightArrivalTime(e.target.value)}
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Ngày bay</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={flightDate}
+                    onChange={(e) => setFlightDate(e.target.value)}
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="mt-6">
             <p className="text-18 font-bold">{t("thong_tin_lien_he")}</p>
             <div className="mt-4 bg-white py-4 px-6 rounded-xl">
@@ -502,6 +878,27 @@ export default function CheckOutForm({
                 </div>
               </div>
             ))}
+            {selectedAdditionalFees.length > 0 && (
+              <>
+                <div className="mt-4 pt-4 border-t">
+                  <p className="font-semibold mb-2" data-translate="true">
+                    Phụ phí
+                  </p>
+                  {additionalFees
+                    .filter((fee: any) => selectedAdditionalFees.includes(fee.id))
+                    .map((fee: any) => (
+                      <div key={fee.id} className="mt-2 flex justify-between">
+                        <span data-translate="true">{fee.name}</span>
+                        <DisplayPrice
+                          className="!font-bold !text-sm text-black"
+                          price={fee.price}
+                          currency={product?.currency}
+                        />
+                      </div>
+                    ))}
+                </div>
+              </>
+            )}
           </div>
           <div className="pt-4 border-t">
             <VoucherProgram

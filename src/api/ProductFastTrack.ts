@@ -10,6 +10,7 @@ const ProductFastTrackApi = {
   detailBySlug: (slug: string) =>
     http.get<any>(`${path}/detail-by-slug/${slug}`),
   getOptionsFilter: () => http.get<any>(`${path}/options-filter`),
+  getAdditionalFees: () => http.get<any>(`${path}/additional-fees`),
 };
 
 export { ProductFastTrackApi };
