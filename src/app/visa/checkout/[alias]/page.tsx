@@ -7,6 +7,7 @@ import FormCheckOut from "@/app/visa/components/FormCheckOut";
 import { displayProductPrice, renderTextContent } from "@/utils/Helper";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { isEmpty } from "lodash";
+import FacebookPixel from "@/components/tracking/FacebookPixel";
 
 export default async function VisaCheckOut({
   params,
@@ -18,13 +19,19 @@ export default async function VisaCheckOut({
   if (!detail) {
     notFound();
   }
+  
+  const showFacebookPixel = params.alias === "visa-di-uc";
+  
   return (
-    <main className="bg-gray-100 mt-10">
-      <div className="base__content ">
-        <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
-          <FormCheckOut productId={detail.id} detail={detail} />
+    <>
+      {showFacebookPixel && <FacebookPixel />}
+      <main className="bg-gray-100 mt-10">
+        <div className="base__content ">
+          <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
+            <FormCheckOut productId={detail.id} detail={detail} />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
