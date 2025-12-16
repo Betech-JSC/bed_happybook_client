@@ -41,6 +41,22 @@ const PaymentApi = {
     }
   },
 
+  onePayForProduct: async (orderCode: string) => {
+    try {
+      const response = await fetch(`${API_PAYMENT_URL}/onepay/create-for-product`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ order_code: orderCode }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Fetch error:", error);
+      return null;
+    }
+  },
+
   createReceipt: async (payload: {
     payment_method_id: number;
     total_amount: number;

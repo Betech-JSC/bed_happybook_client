@@ -266,10 +266,62 @@ export default function CheckOutForm({
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
-        handleSessionStorage("save", "bookingData", respon?.payload?.data);
+        
+        // Merge thêm thông tin từ form và product vào response để hiển thị đầy đủ
+        const responseData = respon?.payload?.data || {};
+        const enrichedData = {
+          ...responseData,
+          // Đảm bảo có thông tin liên hệ
+          full_name: responseData.full_name || data.full_name,
+          phone: responseData.phone || data.phone,
+          email: responseData.email || data.email,
+          gender: responseData.gender || data.gender,
+          note: responseData.note || data.note || "",
+          // Merge thông tin booking
+          booking: {
+            ...responseData.booking,
+            customer_type: customerType,
+            ...(shouldSendGuestList && { guest_list: guestList }),
+            ...(flightNumber && { flight_number: flightNumber }),
+            ...(flightTime && { flight_time: flightTime }),
+            ...(flightArrivalTime && { flight_arrival_time: flightArrivalTime }),
+            ...(flightDate && { flight_date: flightDate }),
+            // Thêm thông tin vé với name từ tickets
+            tickets: tickets
+              .filter((t: Ticket) => t.quantity > 0)
+              .map((t: Ticket) => ({
+                id: t.id,
+                quantity: t.quantity,
+                name: t.title,
+                price: t.price,
+              })),
+            // Thêm thông tin phụ phí với name từ additionalFees
+            ...(selectedAdditionalFees.length > 0 && {
+              additional_fees: additionalFees
+                .filter((fee: any) => selectedAdditionalFees.includes(fee.id))
+                .map((fee: any) => ({
+                  id: fee.id,
+                  name: fee.name,
+                  description: fee.description,
+                  price: fee.price,
+                })),
+            }),
+          },
+          // Đảm bảo có thông tin product
+          product: responseData.product || {
+            id: product?.id,
+            name: product?.name,
+            image_url: product?.image_url,
+            image_location: product?.image_location || product?.gallery?.[0]?.image_location,
+            currency: product?.currency,
+          },
+        };
+        
+        // Lưu data đầy đủ vào sessionStorage để hiển thị ở page thanh toán
+        handleSessionStorage("save", "bookingFastTrack", enrichedData);
 
         setTimeout(() => {
-          router.push("/thong-tin-dat-hang");
+          router.push("/fast-track/thong-tin-dat-cho");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);
@@ -838,7 +890,7 @@ export default function CheckOutForm({
             <LoadingButton
               style="mt-6"
               isLoading={loading}
-              text="Gửi yêu cầu"
+              text="Thanh toán"
               disabled={loading}
             />
           </div>
