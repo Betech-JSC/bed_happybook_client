@@ -18,6 +18,20 @@ type Props = {
   };
 };
 
+// Helper function to check if file is video
+const isVideoFile = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.flv', '.wmv', '.m4v', '.3gp', '.ogv'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.endsWith(ext));
+};
+
+// Helper function to check if file is image
+const isImageFile = (url: string): boolean => {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp', '.ico'];
+  const lowerUrl = url.toLowerCase();
+  return imageExtensions.some(ext => lowerUrl.endsWith(ext));
+};
+
 export default function ProductGallery({ product }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [lightboxItems, setLightboxItems] = useState<any[]>([]);
@@ -47,15 +61,45 @@ export default function ProductGallery({ product }: Props) {
       const items = await Promise.all(
         gallery.map(async (img: any) => {
           const fullSrc = `${img.image_url}/${img.image}`;
+          const isVideo = isVideoFile(fullSrc);
+          const isImage = isImageFile(fullSrc);
+          
+          if (isVideo) {
+            return {
+              src: fullSrc,
+              msrc: fullSrc,
+              width: 900,
+              height: 600,
+              type: 'video',
+            };
+          }
+          
+          if (isImage) {
+            try {
+              const { width, height } = await getImageSize(fullSrc);
+              return { src: fullSrc, msrc: fullSrc, width, height, type: 'image' };
+            } catch {
+              return {
+                src: fullSrc,
+                msrc: fullSrc,
+                width: 900,
+                height: 600,
+                type: 'image',
+              };
+            }
+          }
+          
+          // Default to image if extension not recognized
           try {
             const { width, height } = await getImageSize(fullSrc);
-            return { src: fullSrc, msrc: fullSrc, width, height };
+            return { src: fullSrc, msrc: fullSrc, width, height, type: 'image' };
           } catch {
             return {
               src: fullSrc,
               msrc: fullSrc,
               width: 900,
               height: 600,
+              type: 'image',
             };
           }
         })
@@ -91,28 +135,46 @@ export default function ProductGallery({ product }: Props) {
           const fullSrc = item.src;
           const width = item.width || 900;
           const height = item.height || 600;
+          const isVideo = item.type === 'video';
+          
           return (
             <SwiperSlide key={index}>
-              <Link
-                href={fullSrc}
-                data-pswp-src={fullSrc}
-                data-pswp-width={width}
-                data-pswp-height={height}
-                data-cropped="true"
-                onClick={(e) => {
-                  e.preventDefault();
-                  lightboxRef.current?.pswp?.goTo(index);
-                }}
-              >
-                <Image
-                  className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-                  src={fullSrc}
-                  alt={`Image ${index + 1}`}
-                  width={845}
-                  height={450}
-                  sizes="100vw"
-                />
-              </Link>
+              {isVideo ? (
+                <div className="relative w-full h-[300px] md:h-[450px] rounded-lg overflow-hidden">
+                  <video
+                    className="w-full h-full object-cover rounded-lg"
+                    controls
+                    preload="metadata"
+                    playsInline
+                  >
+                    <source src={fullSrc} type="video/mp4" />
+                    <source src={fullSrc} type="video/webm" />
+                    <source src={fullSrc} type="video/quicktime" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              ) : (
+                <Link
+                  href={fullSrc}
+                  data-pswp-src={fullSrc}
+                  data-pswp-width={width}
+                  data-pswp-height={height}
+                  data-cropped="true"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    lightboxRef.current?.pswp?.goTo(index);
+                  }}
+                >
+                  <Image
+                    className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
+                    src={fullSrc}
+                    alt={`Image ${index + 1}`}
+                    width={845}
+                    height={450}
+                    sizes="100vw"
+                  />
+                </Link>
+              )}
             </SwiperSlide>
           );
         })}
@@ -146,17 +208,44 @@ export default function ProductGallery({ product }: Props) {
           className="thumbs-swiper"
         >
           {lightboxItems?.length > 1 &&
-            lightboxItems.map((item: any, index: number) => (
-              <SwiperSlide key={index} className="overflow-hidden rounded-lg">
-                <Image
-                  className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-                  src={item.src}
-                  alt={`Thumb ${index + 1}`}
-                  width={135}
-                  height={120}
-                />
-              </SwiperSlide>
-            ))}
+            lightboxItems.map((item: any, index: number) => {
+              const isVideo = item.type === 'video';
+              return (
+                <SwiperSlide key={index} className="overflow-hidden rounded-lg">
+                  {isVideo ? (
+                    <div className="relative h-24 md:h-[120px] rounded-lg overflow-hidden">
+                      <video
+                        className="w-full h-full object-cover rounded-lg"
+                        muted
+                        playsInline
+                        preload="metadata"
+                      >
+                        <source src={item.src} type="video/mp4" />
+                        <source src={item.src} type="video/webm" />
+                        <source src={item.src} type="video/quicktime" />
+                      </video>
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                        <svg
+                          className="w-8 h-8 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                        </svg>
+                      </div>
+                    </div>
+                  ) : (
+                    <Image
+                      className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
+                      src={item.src}
+                      alt={`Thumb ${index + 1}`}
+                      width={135}
+                      height={120}
+                    />
+                  )}
+                </SwiperSlide>
+              );
+            })}
         </Swiper>
       </div>
     </div>
