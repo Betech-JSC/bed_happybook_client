@@ -742,43 +742,6 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                     {t("hinh_thuc_thanh_toan")}
                   </p>
                   <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                    <div className="flex space-x-3 items-start">
-                      <input
-                        type="radio"
-                        value="cash"
-                        id="payment_cash"
-                        {...register("payment_method")}
-                        className="w-5 h-5 mt-[2px]"
-                        onChange={(e) => {
-                          setValue("payment_method", e.target.value);
-                          setSelectedPaymentMethod(e.target.value);
-                        }}
-                      />
-                      <label
-                        htmlFor="payment_cash"
-                        className="flex space-x-1 w-full"
-                      >
-                        <div className="font-normal">
-                          <Image
-                            src="/payment-method/cash.svg"
-                            alt="Icon"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
-                          />
-                        </div>
-                        <div className="max-w-[85%]">
-                          <span className="font-medium text-base">
-                            {t("thanh_toan_sau")}
-                          </span>
-                          <p className="text-gray-500">
-                            {t(
-                              "quy_khach_vui_long_giu_lien_lac_de_doi_ngu_cskh_lien_he_xac_nhan"
-                            )}
-                          </p>
-                        </div>
-                      </label>
-                    </div>
                     {/* <div className="flex space-x-3 items-start mt-4">
                       <input
                         type="radio"
