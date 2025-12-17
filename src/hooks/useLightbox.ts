@@ -42,8 +42,8 @@ export function useLightbox({
     if (!lightboxItems.length) return;
 
     const lightbox = new PhotoSwipeLightbox({
-      gallery: `#${galleryId}`,
-      children: "a[data-pswp-src]",
+      // Dùng trực tiếp dataSource để đảm bảo thứ tự/index khớp với lightboxItems
+      dataSource: lightboxItems,
       showHideAnimationType: "fade",
       pswpModule: () => import("photoswipe"),
       wheelToZoom: true,
@@ -112,13 +112,26 @@ export function useLightbox({
         btn.setAttribute("aria-label", `Image ${i + 1}`);
         btn.setAttribute("data-index", `${i}`);
 
-        const thumb = document.createElement("img");
-        thumb.src = img.msrc || img.src;
-        thumb.alt = `Thumbnail ${i + 1}`;
-        thumb.decoding = "async";
-        thumb.loading = "lazy";
-
-        btn.appendChild(thumb);
+        // Nếu là video -> dùng thẻ video; ngược lại dùng img
+        const isVideo = img.type === "video" || img.isVideo;
+        if (isVideo) {
+          const thumbVideo = document.createElement("video");
+          thumbVideo.src = img.msrc || img.src;
+          thumbVideo.muted = true;
+          thumbVideo.playsInline = true;
+          thumbVideo.preload = "metadata";
+          thumbVideo.style.width = "100%";
+          thumbVideo.style.height = "100%";
+          thumbVideo.style.objectFit = "cover";
+          btn.appendChild(thumbVideo);
+        } else {
+          const thumb = document.createElement("img");
+          thumb.src = img.msrc || img.src;
+          thumb.alt = `Thumbnail ${i + 1}`;
+          thumb.decoding = "async";
+          thumb.loading = "lazy";
+          btn.appendChild(thumb);
+        }
         btn.addEventListener("click", () => pswp.goTo(i));
 
         slideEl.appendChild(btn);

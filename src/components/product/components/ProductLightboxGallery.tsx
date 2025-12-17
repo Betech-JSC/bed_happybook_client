@@ -5,6 +5,31 @@ import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
 import { cn } from "@/lib/utils";
 
+const videoExtensions = [
+  ".mp4",
+  ".webm",
+  ".mov",
+  ".avi",
+  ".mkv",
+  ".flv",
+  ".wmv",
+  ".m4v",
+  ".3gp",
+  ".ogv",
+];
+
+const getFileExtension = (url: string) => {
+  const clean = url.split("?")[0].split("#")[0];
+  const lastDot = clean.lastIndexOf(".");
+  if (lastDot === -1) return "";
+  return clean.substring(lastDot).toLowerCase();
+};
+
+const isVideo = (url: string) => {
+  const ext = getFileExtension(url);
+  return videoExtensions.includes(ext);
+};
+
 type Images = {
   id: string;
   image_location: string;
@@ -32,10 +57,18 @@ export default function ProductLightboxGallery({
   const items = useMemo(() => {
     return (images ?? []).map((img) => {
       const src = img.image_url + img.image_location;
+      const video = isVideo(src);
       return {
         src,
         width: img.fit_width ?? 900,
         height: img.fit_height ?? 600,
+        type: video ? "video" : "image",
+        isVideo: video,
+        ...(video
+          ? {
+              html: `<div class="pswp__video-wrapper"><video src="${src}" style="max-width:100%;max-height:80vh" controls autoplay playsinline></video></div>`,
+            }
+          : {}),
       };
     });
   }, [images]);
@@ -104,13 +137,25 @@ export default function ProductLightboxGallery({
         item.setAttribute("aria-label", `Ảnh ${i + 1}`);
         item.setAttribute("data-index", String(i));
 
-        const thumb = document.createElement("img");
-        thumb.src = img.image_url + img.image_location;
-        thumb.alt = "Menu Image";
-        thumb.decoding = "async";
-        thumb.loading = "lazy";
-
-        item.appendChild(thumb);
+        const isVidThumb = isVideo(img.image_url + img.image_location);
+        if (isVidThumb) {
+          const thumbVideo = document.createElement("video");
+          thumbVideo.src = img.image_url + img.image_location;
+          thumbVideo.muted = true;
+          thumbVideo.playsInline = true;
+          thumbVideo.preload = "metadata";
+          thumbVideo.style.width = "100%";
+          thumbVideo.style.height = "100%";
+          thumbVideo.style.objectFit = "cover";
+          item.appendChild(thumbVideo);
+        } else {
+          const thumb = document.createElement("img");
+          thumb.src = img.image_url + img.image_location;
+          thumb.alt = "Menu Image";
+          thumb.decoding = "async";
+          thumb.loading = "lazy";
+          item.appendChild(thumb);
+        }
         item.addEventListener("click", () => pswp.goTo(i));
 
         thumbsList!.appendChild(item);

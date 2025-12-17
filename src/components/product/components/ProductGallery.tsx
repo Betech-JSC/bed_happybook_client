@@ -75,6 +75,7 @@ const isImageFile = (url: string): boolean => {
 
 export default function ProductGallery({ product }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+  const [mainSwiper, setMainSwiper] = useState<any>(null);
   const [lightboxItems, setLightboxItems] = useState<any[]>([]);
   const DEFAULT_IMAGE_SRC = "/images/default-image.png";
   const galleryId = useId().replace(/:/g, "_");
@@ -112,6 +113,24 @@ export default function ProductGallery({ product }: Props) {
               width: 900,
               height: 600,
               type: 'video',
+              html: `
+                <div style="
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  background: #000;
+                ">
+                  <video
+                    src="${fullSrc}"
+                    style="width: 100%; height: 100%; max-width: 1200px; max-height: 80vh; object-fit: contain;"
+                    controls
+                    autoplay
+                    playsinline
+                  ></video>
+                </div>
+              `,
             };
           }
           
@@ -151,6 +170,39 @@ export default function ProductGallery({ product }: Props) {
     prepareGallery();
   }, [gallery]);
 
+  // Auto play/pause video khi slide active thay đổi
+  useEffect(() => {
+    if (!mainSwiper) return;
+
+    const handleSlideChange = () => {
+      const slides: HTMLElement[] = mainSwiper.slides || [];
+      slides.forEach((slide: HTMLElement) => {
+        const videos = slide.querySelectorAll("video");
+        videos.forEach((v: HTMLVideoElement) => {
+          v.pause();
+        });
+      });
+      const activeSlide: HTMLElement | undefined = mainSwiper.slides
+        ? mainSwiper.slides[mainSwiper.activeIndex]
+        : undefined;
+      if (activeSlide) {
+        const videos = activeSlide.querySelectorAll("video");
+        videos.forEach((v: HTMLVideoElement) => {
+          v.muted = true;
+          v.play().catch(() => {});
+        });
+      }
+    };
+
+    mainSwiper.on("slideChange", handleSlideChange);
+    // chạy ngay lần đầu
+    handleSlideChange();
+
+    return () => {
+      mainSwiper.off("slideChange", handleSlideChange);
+    };
+  }, [mainSwiper]);
+
   const lightboxRef = useLightbox({
     galleryId,
     items: lightboxItems,
@@ -165,14 +217,16 @@ export default function ProductGallery({ product }: Props) {
   if (!gallery?.length) return null;
 
   return (
+    <>
     <div className="image-gallery" id={galleryId}>
       <Swiper
         spaceBetween={10}
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Thumbs]}
+        onSwiper={setMainSwiper}
         className="main-swiper w-full h-[300px] md:h-[450px] rounded-lg"
       >
-        {lightboxItems.map((item: any, index: number) => {
+          {lightboxItems.map((item: any, index: number) => {
           const fullSrc = item.src;
           const width = item.width || 900;
           const height = item.height || 600;
@@ -187,12 +241,26 @@ export default function ProductGallery({ product }: Props) {
                     controls
                     preload="metadata"
                     playsInline
+                    muted
                   >
                     <source src={fullSrc} type="video/mp4" />
                     <source src={fullSrc} type="video/webm" />
                     <source src={fullSrc} type="video/quicktime" />
                     Your browser does not support the video tag.
                   </video>
+                  <span className="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                    Video
+                  </span>
+                  <button
+                    type="button"
+                    className="absolute inset-0 flex items-center justify-center bg-black/25 text-white"
+                    onClick={() => lightboxRef.current?.loadAndOpen(index, lightboxItems)}
+                    aria-label="Open video"
+                  >
+                    <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                    </svg>
+                  </button>
                 </div>
               ) : (
                 <Link
@@ -203,7 +271,7 @@ export default function ProductGallery({ product }: Props) {
                   data-cropped="true"
                   onClick={(e) => {
                     e.preventDefault();
-                    lightboxRef.current?.pswp?.goTo(index);
+                    lightboxRef.current?.loadAndOpen(index, lightboxItems);
                   }}
                 >
                   <Image
@@ -290,6 +358,6 @@ export default function ProductGallery({ product }: Props) {
         </Swiper>
       </div>
     </div>
+    </>
   );
 }
-
