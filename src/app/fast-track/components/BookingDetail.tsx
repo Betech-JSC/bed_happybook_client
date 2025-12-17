@@ -34,9 +34,8 @@ export default function BookingDetail() {
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(true);
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("onepay");
   const [isPaid, setIsPaid] = useState<boolean>(false);
-  const [isOrderCashSuccess, setIsOrderCashSuccess] = useState<boolean>(false);
   const [onePayFee, setOnePayFee] = useState<number>(0);
   const [isGeneratingPaymentUrl, setIsGeneratingPaymentUrl] = useState<boolean>(false);
   const [qrCodeGenerated, setQrCodeGenerated] = useState<boolean>(false);
@@ -53,7 +52,7 @@ export default function BookingDetail() {
     resolver: zodResolver(CheckOutBody(messages)),
     mode: "onSubmit",
     defaultValues: {
-      payment_method: "vietqr",
+      payment_method: "onepay",
     },
   });
 
@@ -62,8 +61,9 @@ export default function BookingDetail() {
     setLoading(false);
     if (bookingData) {
       setData(bookingData);
-      // Set default payment method to vietqr
-      setValue("payment_method", "vietqr");
+      // Default payment method to onepay
+      setValue("payment_method", "onepay");
+      setSelectedPaymentMethod("onepay");
     }
   }, [setValue]);
 
@@ -198,12 +198,6 @@ export default function BookingDetail() {
             console.error("Error generating payment URL:", paymentError);
             toast.error("Có lỗi xảy ra khi tạo link thanh toán. Vui lòng thử lại.");
           }
-        } else if (selectedPaymentMethod === "cash") {
-          // Thanh toán sau - chỉ cần hiển thị thông báo thành công
-          // KHÔNG set isPaid = true vì status đơn hàng vẫn là "chưa thanh toán"
-          setIsOrderCashSuccess(true);
-          // Không set setIsPaid(true) để status vẫn là chưa thanh toán
-          // Không xóa sessionStorage để người dùng có thể xem lại thông tin đơn hàng
         } else if (selectedPaymentMethod === "vietqr") {
           // VietQR - QR code đã được generate trong useEffect, không cần xử lý gì thêm ở đây
           // Chỉ cần đảm bảo payment_method đã được cập nhật
@@ -254,12 +248,10 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {(isPaid || isOrderCashSuccess) && (
+        {isPaid && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
             <p data-translate="true">
-              {isOrderCashSuccess
-                ? "HappyBook đã nhận được đơn hàng"
-                : "HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng"}
+              HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng
               {data?.code && `: ${data.code}`}
             </p>
             <p data-translate="true">
@@ -507,57 +499,21 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid && !isOrderCashSuccess && (
+        {!isPaid  && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
                 {t("hinh_thuc_thanh_toan")}
               </p>
               <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                <div className="flex space-x-3 items-start">
-                  <input
-                    type="radio"
-                    value="cash"
-                    id="payment_cash"
-                    {...register("payment_method")}
-                    className="w-5 h-5 mt-[2px]"
-                    onChange={(e) => {
-                      setValue("payment_method", e.target.value);
-                      setSelectedPaymentMethod(e.target.value);
-                    }}
-                  />
-                  <label
-                    htmlFor="payment_cash"
-                    className="flex space-x-1 w-full"
-                  >
-                    <div className="font-normal">
-                      <Image
-                        src="/payment-method/cash.svg"
-                        alt="Icon"
-                        width={24}
-                        height={24}
-                        className="w-6 h-6"
-                      />
-                    </div>
-                    <div className="max-w-[85%]">
-                      <span className="font-medium text-base">
-                        {t("thanh_toan_sau")}
-                      </span>
-                      <p className="text-gray-500">
-                        {t(
-                          "quy_khach_vui_long_giu_lien_lac_de_doi_ngu_cskh_lien_he_xac_nhan"
-                        )}
-                      </p>
-                    </div>
-                  </label>
-                </div>
-                <div className="flex space-x-3 md:items-center mt-4">
+                <div className="flex space-x-3 md:items-center">
                   <input
                     type="radio"
                     value="onepay"
                     id="payment_onepay"
                     {...register("payment_method")}
                     className="w-5 h-5 mt-[2px]"
+                    checked={selectedPaymentMethod === "onepay"}
                     onChange={(e) => {
                       setValue("payment_method", e.target.value);
                       setSelectedPaymentMethod(e.target.value);
@@ -611,10 +567,9 @@ export default function BookingDetail() {
                   : "Thanh toán"
               }
               disabled={
-                loadingSubmitForm || 
-                isGeneratingPaymentUrl || 
-                !selectedPaymentMethod ||
-                (selectedPaymentMethod === "vietqr" && !isPaid)
+                loadingSubmitForm ||
+                isGeneratingPaymentUrl ||
+                !selectedPaymentMethod
               }
             />
           </form>
