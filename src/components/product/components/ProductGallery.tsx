@@ -18,18 +18,59 @@ type Props = {
   };
 };
 
+// Helper: normalize URL string
+const normalizeUrl = (url: string) => (url || "").trim();
+
+// Helper: extract extension, ignoring query/fragment
+const getFileExtension = (url: string): string => {
+  const safeUrl = normalizeUrl(url);
+  if (!safeUrl) return "";
+  // Strip query / fragment
+  const noQuery = safeUrl.split("?")[0].split("#")[0];
+  // Take filename after last slash
+  const filename = noQuery.substring(noQuery.lastIndexOf("/") + 1);
+  const dotIdx = filename.lastIndexOf(".");
+  if (dotIdx === -1) return "";
+  return filename.substring(dotIdx).toLowerCase();
+};
+
 // Helper function to check if file is video
 const isVideoFile = (url: string): boolean => {
-  const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.flv', '.wmv', '.m4v', '.3gp', '.ogv'];
-  const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.endsWith(ext));
+  const videoExtensions = [
+    ".mp4",
+    ".webm",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".flv",
+    ".wmv",
+    ".m4v",
+    ".3gp",
+    ".ogv",
+  ];
+  const extension = getFileExtension(url);
+  if (extension && videoExtensions.includes(extension)) return true;
+  // Fallback: handle edge cases if extension missing
+  const lowerUrl = normalizeUrl(url).toLowerCase();
+  return videoExtensions.some((ext) => lowerUrl.endsWith(ext));
 };
 
 // Helper function to check if file is image
 const isImageFile = (url: string): boolean => {
-  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp', '.ico'];
-  const lowerUrl = url.toLowerCase();
-  return imageExtensions.some(ext => lowerUrl.endsWith(ext));
+  const imageExtensions = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".svg",
+    ".bmp",
+    ".ico",
+  ];
+  const extension = getFileExtension(url);
+  if (extension && imageExtensions.includes(extension)) return true;
+  const lowerUrl = normalizeUrl(url).toLowerCase();
+  return imageExtensions.some((ext) => lowerUrl.endsWith(ext));
 };
 
 export default function ProductGallery({ product }: Props) {
@@ -251,3 +292,4 @@ export default function ProductGallery({ product }: Props) {
     </div>
   );
 }
+
