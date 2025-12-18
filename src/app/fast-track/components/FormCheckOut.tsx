@@ -367,11 +367,98 @@ export default function CheckOutForm({
   );
   
   // Tính tổng phụ phí đã chọn
-  const additionalFeesPrice = additionalFees
-    .filter((fee: any) => selectedAdditionalFees.includes(fee.id))
-    .reduce((sum: number, fee: any) => sum + Number(fee.price || 0), 0);
+  // Lưu ý: "Phụ phí giờ bay thêm" cần tính theo quantity (150,000 VND × quantity)
+  const additionalFeesPrice = useMemo(() => {
+    const totalQuantity = tickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    
+    return additionalFees
+      .filter((fee: any) => selectedAdditionalFees.includes(fee.id))
+      .reduce((sum: number, fee: any) => {
+        const feeName = (fee.name || '').toLowerCase();
+        const isNightTimeFee = feeName.includes('phụ phí giờ bay thêm') || feeName.includes('phu phi gio bay them');
+        
+        // Nếu là "Phụ phí giờ bay thêm", tính theo quantity
+        if (isNightTimeFee) {
+          return sum + (150000 * totalQuantity);
+        }
+        
+        // Các phụ phí khác: tính theo giá đơn vị
+        return sum + Number(fee.price || 0);
+      }, 0);
+  }, [additionalFees, selectedAdditionalFees, tickets]);
   
-  // Tổng chi phí = giá vé + phụ phí
+  // Kiểm tra xem thời gian có đáp ứng điều kiện phụ phí giờ bay thêm không
+  const shouldApplyNightTimeSurcharge = useMemo(() => {
+    // Kiểm tra điều kiện cơ bản
+    if (!tickets || tickets.length === 0 || !yachtOptionSelected) {
+      return false;
+    }
+
+    // Tính tổng quantity của tất cả tickets
+    const totalQuantity = tickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    if (totalQuantity === 0) {
+      return false;
+    }
+
+    // Lấy name của option để xác định đón hay tiễn
+    const optionName = (yachtOptionSelected.name || '').toLowerCase();
+    let timeToCheck: string | null = null;
+
+    // Xác định giờ cần kiểm tra dựa vào option name
+    if (optionName.includes('đón')) {
+      timeToCheck = flightArrivalTime; // Đón: kiểm tra giờ hạ cánh
+    } else if (optionName.includes('tiễn')) {
+      timeToCheck = flightTime; // Tiễn: kiểm tra giờ khởi hành
+    } else {
+      // Nếu không có "đón" hoặc "tiễn" trong option name thì không tính
+      return false;
+    }
+
+    // Nếu chưa nhập giờ thì không tính
+    if (!timeToCheck || timeToCheck.trim() === '') {
+      return false;
+    }
+
+    // Parse time (format: "HH:mm" hoặc "HH:mm:ss")
+    const timeParts = timeToCheck.split(':');
+    if (timeParts.length === 0 || !timeParts[0]) {
+      return false;
+    }
+
+    const hour = parseInt(timeParts[0], 10);
+    if (isNaN(hour)) {
+      return false;
+    }
+
+    // Kiểm tra nếu giờ trong khung 23:00 - 05:59
+    return hour >= 23 || hour < 6;
+  }, [tickets, flightTime, flightArrivalTime, yachtOptionSelected]);
+
+  // Tự động tích/bỏ tích "Phụ phí giờ bay thêm" dựa trên thời gian
+  useEffect(() => {
+    // Tìm "Phụ phí giờ bay thêm" trong additionalFees
+    const nightTimeFee = additionalFees.find((fee: any) => {
+      const feeName = (fee.name || '').toLowerCase();
+      return feeName.includes('phụ phí giờ bay thêm') || feeName.includes('phu phi gio bay them');
+    });
+
+    if (!nightTimeFee) {
+      return; // Không có phụ phí này trong danh sách
+    }
+
+    const isCurrentlySelected = selectedAdditionalFees.includes(nightTimeFee.id);
+
+    // Nếu thời gian đáp ứng điều kiện và chưa được tích → Tự động tích
+    if (shouldApplyNightTimeSurcharge && !isCurrentlySelected) {
+      setSelectedAdditionalFees((prev) => [...prev, nightTimeFee.id]);
+    }
+    // Nếu thời gian không đáp ứng điều kiện và đã được tích → Tự động bỏ tích
+    else if (!shouldApplyNightTimeSurcharge && isCurrentlySelected) {
+      setSelectedAdditionalFees((prev) => prev.filter((id) => id !== nightTimeFee.id));
+    }
+  }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees]);
+
+  // Tổng chi phí = giá vé + phụ phí (phụ phí giờ bay thêm đã được tự động tích vào additional fees nếu đáp ứng điều kiện)
   const totalPrice = ticketsPrice + additionalFeesPrice;
   // const totalPrice = 2000; => test case
 
@@ -427,7 +514,8 @@ export default function CheckOutForm({
         ? prev.filter((id) => id !== feeId)
         : [...prev, feeId]
     );
-  };
+    };
+
   return (
     <div className="flex flex-col-reverse items-start lg:flex-row lg:space-x-8 lg:mt-4 pb-8">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0 rounded-2xl">
@@ -536,49 +624,63 @@ export default function CheckOutForm({
                 Phụ phí thêm
               </p>
               <div className="space-y-3">
-                {additionalFees.map((fee: any) => (
-                  <div
-                    key={fee.id}
-                    className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${
-                      selectedAdditionalFees.includes(fee.id)
-                        ? "border-blue-500 bg-blue-50 shadow-sm"
-                        : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-                    }`}
-                    onClick={() => toggleAdditionalFee(fee.id)}
-                  >
-                    <div className="flex items-start gap-3 flex-1">
-                      <input
-                        type="checkbox"
-                        checked={selectedAdditionalFees.includes(fee.id)}
-                        onChange={() => toggleAdditionalFee(fee.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="mt-1 cursor-pointer w-4 h-4"
-                      />
-                      <div className="flex-1">
-                        <div
-                          className="font-medium text-base text-gray-900"
-                          data-translate="true"
-                        >
-                          {renderTextContent(fee.name)}
-                        </div>
-                        {fee.description && (
+                {additionalFees
+                  .filter((fee: any) => {
+                    // Kiểm tra xem có phải "Phụ phí giờ bay thêm" không
+                    const feeName = (fee.name || '').toLowerCase();
+                    const isNightTimeFee = feeName.includes('phụ phí giờ bay thêm') || feeName.includes('phu phi gio bay them');
+                    
+                    // Nếu là phụ phí giờ bay thêm, chỉ hiển thị khi thời gian đáp ứng điều kiện
+                    if (isNightTimeFee) {
+                      return shouldApplyNightTimeSurcharge;
+                    }
+                    
+                    // Các phụ phí khác luôn hiển thị
+                    return true;
+                  })
+                  .map((fee: any) => (
+                    <div
+                      key={fee.id}
+                      className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${
+                        selectedAdditionalFees.includes(fee.id)
+                          ? "border-blue-500 bg-blue-50 shadow-sm"
+                          : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                      }`}
+                      onClick={() => toggleAdditionalFee(fee.id)}
+                    >
+                      <div className="flex items-start gap-3 flex-1">
+                        <input
+                          type="checkbox"
+                          checked={selectedAdditionalFees.includes(fee.id)}
+                          onChange={() => toggleAdditionalFee(fee.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-1 cursor-pointer w-4 h-4"
+                        />
+                        <div className="flex-1">
                           <div
-                            className="text-sm text-gray-500 mt-1"
+                            className="font-medium text-base text-gray-900"
                             data-translate="true"
-                            dangerouslySetInnerHTML={{
-                              __html: renderTextContent(fee.description),
-                            }}
-                          />
-                        )}
+                          >
+                            {renderTextContent(fee.name)}
+                          </div>
+                          {fee.description && (
+                            <div
+                              className="text-sm text-gray-500 mt-1"
+                              data-translate="true"
+                              dangerouslySetInnerHTML={{
+                                __html: renderTextContent(fee.description),
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
+                      <DisplayPrice
+                        className="!text-base !font-semibold text-blue-600 ml-4 flex-shrink-0"
+                        price={fee.price}
+                        currency={product?.currency}
+                      />
                     </div>
-                    <DisplayPrice
-                      className="!text-base !font-semibold text-blue-600 ml-4 flex-shrink-0"
-                      price={fee.price}
-                      currency={product?.currency}
-                    />
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}
@@ -726,6 +828,39 @@ export default function CheckOutForm({
                   Tùy chọn
                 </span>
               </div>
+              
+              {/* Thông báo về phụ phí giờ bay thêm */}
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <svg
+                    className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-900 mb-1" data-translate="true">
+                      {t("luu_y_phu_phi_gio_bay_them")}
+                    </p>
+                    <ul className="text-xs text-blue-800 space-y-1 ml-4 list-disc">
+                      <li data-translate="true">
+                        {t("doi_voi_dich_vu_don_san_bay")}
+                      </li>
+                      <li data-translate="true">
+                        {t("doi_voi_dich_vu_tien_san_bay")}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="relative">
                   <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">

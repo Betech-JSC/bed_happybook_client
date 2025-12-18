@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
 import { notFound, useRouter } from "next/navigation";
@@ -215,6 +215,46 @@ export default function BookingDetail() {
       setLoadingSubmitForm(false);
     }
   };
+
+  // Xác định phụ phí giờ bay thêm từ additional_fees
+  const nightTimeSurchargeFee = useMemo(() => {
+    if (!data?.booking?.additional_fees || !Array.isArray(data.booking.additional_fees)) {
+      return null;
+    }
+    
+    return data.booking.additional_fees.find(
+      (fee: any) => fee.name === 'Phụ phí giờ bay thêm' || 
+                     fee.name?.toLowerCase().includes('phụ phí giờ bay thêm')
+    );
+  }, [data?.booking?.additional_fees]);
+
+  // Lấy thông tin giờ bay để hiển thị giải thích
+  const getNightTimeSurchargeInfo = useMemo(() => {
+    if (!nightTimeSurchargeFee) return null;
+
+    const flightTime = data?.booking?.flight_time;
+    const flightArrivalTime = data?.booking?.flight_arrival_time;
+    
+    // Xác định giờ nào được dùng để tính phụ phí
+    // (Cần check option name từ tickets hoặc booking để biết đón hay tiễn)
+    // Tạm thời hiển thị cả 2 giờ nếu có
+    let timeInfo = '';
+    if (flightArrivalTime) {
+      timeInfo = `${t("gio_dap")}: ${flightArrivalTime}`;
+    }
+    if (flightTime) {
+      if (timeInfo) {
+        timeInfo += ` | ${t("gio_bay")}: ${flightTime}`;
+      } else {
+        timeInfo = `${t("gio_bay")}: ${flightTime}`;
+      }
+    }
+
+    return {
+      fee: nightTimeSurchargeFee,
+      timeInfo: timeInfo || null,
+    };
+  }, [nightTimeSurchargeFee, data?.booking?.flight_time, data?.booking?.flight_arrival_time, t]);
 
   if (loading) {
     return (
@@ -469,29 +509,49 @@ export default function BookingDetail() {
                         {t("phu_phi_da_chon")}
                       </p>
                       {data.booking.additional_fees.map(
-                        (fee: any, index: number) => (
-                          <div key={index} className="mb-2 text-sm">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <span className="text-gray-600 font-medium">
-                                  {fee.name || `${t("phu_phi")} ${index + 1}`}
-                                </span>
-                                {fee.description && (
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    {fee.description}
-                                  </p>
+                        (fee: any, index: number) => {
+                          const isNightTimeSurcharge = fee.name === 'Phụ phí giờ bay thêm' || 
+                                                       fee.name?.toLowerCase().includes('phụ phí giờ bay thêm');
+                          
+                          return (
+                            <div key={index} className="mb-2 text-sm">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <span className="text-gray-600 font-medium">
+                                    {fee.name || `${t("phu_phi")} ${index + 1}`}
+                                  </span>
+                                  {fee.description && (
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      {fee.description}
+                                    </p>
+                                  )}
+                                  {/* Hiển thị thông tin giải thích cho phụ phí giờ bay thêm */}
+                                  {isNightTimeSurcharge && getNightTimeSurchargeInfo?.timeInfo && (
+                                    <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                                      <p className="text-blue-800 font-medium mb-1">
+                                        {t("luu_y_phu_phi_gio_bay_them")}
+                                      </p>
+                                      <p className="text-blue-700">
+                                        {getNightTimeSurchargeInfo.timeInfo}
+                                      </p>
+                                      <ul className="text-blue-700 mt-1 ml-4 list-disc space-y-0.5">
+                                        <li>{t("doi_voi_dich_vu_don_san_bay")}</li>
+                                        <li>{t("doi_voi_dich_vu_tien_san_bay")}</li>
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
+                                {fee.price && (
+                                  <DisplayPrice
+                                    className="!text-sm !font-semibold ml-2"
+                                    price={fee.price}
+                                    currency={data?.product?.currency}
+                                  />
                                 )}
                               </div>
-                              {fee.price && (
-                                <DisplayPrice
-                                  className="!text-sm !font-semibold"
-                                  price={fee.price}
-                                  currency={data?.product?.currency}
-                                />
-                              )}
                             </div>
-                          </div>
-                        )
+                          );
+                        }
                       )}
                     </div>
                   )}
