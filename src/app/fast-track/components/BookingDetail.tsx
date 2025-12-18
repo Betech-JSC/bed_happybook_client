@@ -521,8 +521,7 @@ export default function BookingDetail() {
                                     {fee.name || `${t("phu_phi")} ${index + 1}`}
                                   </span>
                                   {fee.description && (
-                                    <p className="text-xs text-gray-500 mt-1">
-                                      {fee.description}
+                                    <p className="text-xs text-gray-500 mt-1" _ dangerouslySetInnerHTML={{ __html: fee.description }}>
                                     </p>
                                   )}
                                   {/* Hiển thị thông tin giải thích cho phụ phí giờ bay thêm */}
