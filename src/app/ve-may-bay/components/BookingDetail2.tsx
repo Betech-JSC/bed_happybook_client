@@ -69,6 +69,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   } = useForm<CheckOutBodyType>({
     resolver: zodResolver(CheckOutBody(messages)),
     mode: "onSubmit",
+    defaultValues: {
+      payment_method: "onepay",
+    },
   });
   const onSubmit = (dataForm: CheckOutBodyType) => {
     const finalData = {
@@ -198,6 +201,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       }
     }
   }, []);
+
+  useEffect(() => {
+    // Set phương thức thanh toán mặc định là onepay
+    setValue("payment_method", "onepay");
+  }, [setValue]);
 
   const fetchFareRules = useCallback(
     async (flight: any) => {
@@ -821,7 +829,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                     {t("hinh_thuc_thanh_toan")}
                   </p>
                   <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                    {/* <div className="flex space-x-3 items-start mt-4">
+                    <div className="flex space-x-3 items-start mt-4">
                       <input
                         type="radio"
                         value="vietqr"
@@ -852,7 +860,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           </span>
                         </div>
                       </label>
-                    </div> */}
+                    </div>
                     <div className="flex space-x-3 md:items-center mt-4">
                       <input
                         type="radio"

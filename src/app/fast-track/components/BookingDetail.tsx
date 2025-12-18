@@ -89,6 +89,7 @@ export default function BookingDetail() {
         const totalPrice = data?.total_price || 0;
         const totalDiscount = data?.total_discount || 0;
         const total = totalPrice - totalDiscount;
+        // const total = 2000; => test case
         const orderCode = data?.code;
 
         if (total > 0 && orderCode) {
@@ -506,7 +507,40 @@ export default function BookingDetail() {
                 {t("hinh_thuc_thanh_toan")}
               </p>
               <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                <div className="flex space-x-3 md:items-center">
+              <div className="flex space-x-3 items-start ">
+                      <input
+                        type="radio"
+                        value="vietqr"
+                        id="payment_vietqr"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
+                      />
+                      <label
+                        htmlFor="payment_vietqr"
+                        className=" flex space-x-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/transfer.svg"
+                            alt="Icon"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("thanh_toan_quet_ma_qr_ngan_hang")}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+          
+                <div className="flex space-x-3 md:items-center mt-4">
                   <input
                     type="radio"
                     value="onepay"
@@ -546,7 +580,7 @@ export default function BookingDetail() {
                 )}
               </div>
             </div>
-            {/* {!isEmpty(vietQrData) && selectedPaymentMethod === "vietqr" && (
+            {!isEmpty(vietQrData) && selectedPaymentMethod === "vietqr" && (
               <QRCodeDisplay
                 vietQrData={vietQrData}
                 order={{
@@ -557,7 +591,7 @@ export default function BookingDetail() {
                 isPaid={isPaid}
                 setIsPaid={(paid) => setIsPaid(paid)}
               />
-            )} */}
+            )}
             <LoadingButton
               style="mt-6"
               isLoading={loadingSubmitForm || isGeneratingPaymentUrl}

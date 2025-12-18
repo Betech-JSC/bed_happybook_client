@@ -373,6 +373,7 @@ export default function CheckOutForm({
   
   // Tổng chi phí = giá vé + phụ phí
   const totalPrice = ticketsPrice + additionalFeesPrice;
+  // const totalPrice = 2000; => test case
 
   // Đồng bộ guestList với số lượng vé đã chọn
   useEffect(() => {
