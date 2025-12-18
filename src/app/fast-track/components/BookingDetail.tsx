@@ -593,17 +593,27 @@ export default function BookingDetail() {
               />
             )}
             <LoadingButton
-              style="mt-6"
+              style={
+                loadingSubmitForm ||
+                isGeneratingPaymentUrl ||
+                !selectedPaymentMethod ||
+                (selectedPaymentMethod === "vietqr" && !isPaid)
+                  ? "mt-6 bg-gray-300 disabled:cursor-not-allowed"
+                  : "mt-6"
+              }
               isLoading={loadingSubmitForm || isGeneratingPaymentUrl}
               text={
                 isGeneratingPaymentUrl
                   ? "Đang tạo link thanh toán..."
-                  : "Thanh toán"
+                  : selectedPaymentMethod === "vietqr" && !isPaid
+                    ? "Đang chờ thanh toán"
+                    : "Thanh toán"
               }
               disabled={
                 loadingSubmitForm ||
                 isGeneratingPaymentUrl ||
-                !selectedPaymentMethod
+                !selectedPaymentMethod ||
+                (selectedPaymentMethod === "vietqr" && !isPaid)
               }
             />
           </form>
