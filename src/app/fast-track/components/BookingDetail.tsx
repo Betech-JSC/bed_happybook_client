@@ -116,7 +116,7 @@ export default function BookingDetail() {
             })
             .catch((error) => {
               console.error("Error creating receipt:", error);
-              toast.error("Không thể tạo mã QR thanh toán. Vui lòng thử lại.");
+              toast.error(t("khong_the_tao_ma_qr_thanh_toan"));
             });
         }
       }
@@ -157,12 +157,12 @@ export default function BookingDetail() {
 
   const onSubmit = async (dataForm: CheckOutBodyType) => {
     if (!data?.code) {
-      toast.error("Không tìm thấy mã đơn hàng");
+      toast.error(t("khong_tim_thay_ma_don_hang"));
       return;
     }
 
     if (!dataForm.payment_method) {
-      toast.error("Vui lòng chọn phương thức thanh toán");
+      toast.error(t("vui_long_chon_phuong_thuc_thanh_toan"));
       return;
     }
 
@@ -192,12 +192,12 @@ export default function BookingDetail() {
               window.location.href = paymentResult.payment_url;
             } else {
               setIsGeneratingPaymentUrl(false);
-              toast.error(paymentResult?.message || "Không thể tạo link thanh toán. Vui lòng thử lại.");
+              toast.error(paymentResult?.message || t("khong_the_tao_link_thanh_toan"));
             }
           } catch (paymentError: any) {
             setIsGeneratingPaymentUrl(false);
             console.error("Error generating payment URL:", paymentError);
-            toast.error("Có lỗi xảy ra khi tạo link thanh toán. Vui lòng thử lại.");
+            toast.error(t("co_loi_xay_ra_khi_tao_link_thanh_toan"));
           }
         } else if (selectedPaymentMethod === "vietqr") {
           // VietQR - QR code đã được generate trong useEffect, không cần xử lý gì thêm ở đây
@@ -222,7 +222,7 @@ export default function BookingDetail() {
         className={`flex my-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Đang tải thông tin đặt chỗ...</span>
+        <span className="text-18">{t("dang_tai_thong_tin_dat_cho")}</span>
       </div>
     );
   }
@@ -251,12 +251,12 @@ export default function BookingDetail() {
 
         {isPaid && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
-            <p data-translate="true">
-              HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng
+            <p>
+              {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
               {data?.code && `: ${data.code}`}
             </p>
-            <p data-translate="true">
-              HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
+            <p>
+              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24h")}
             </p>
           </div>
         )}
@@ -308,8 +308,8 @@ export default function BookingDetail() {
                 {data?.gender && (
                   <div className="flex space-x-2 mt-3">
                     <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
-                    <p className="w-3/4 font-medium" data-translate="true">
-                      {data?.gender === "male" ? "Nam" : "Nữ"}
+                    <p className="w-3/4 font-medium">
+                      {data?.gender === "male" ? t("nam") : t("nu")}
                     </p>
                   </div>
                 )}
@@ -335,11 +335,11 @@ export default function BookingDetail() {
                 {/* Thông tin khách hàng (customer type, guest list) */}
                 {data?.booking?.customer_type && (
                   <div className="flex space-x-2 mt-3">
-                    <p className="w-1/4 text-gray-700">Phân loại khách</p>
+                    <p className="w-1/4 text-gray-700">{t("phan_loai_khach")}</p>
                     <p className="w-3/4 font-medium">
                       {data.booking.customer_type === "personal"
-                        ? "Cá nhân"
-                        : "Đoàn"}
+                        ? t("ca_nhan")
+                        : t("doan")}
                     </p>
                   </div>
                 )}
@@ -349,7 +349,7 @@ export default function BookingDetail() {
                   data.booking.guest_list.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-300">
                       <p className="w-full text-gray-700 font-semibold mb-2">
-                        Danh sách khách
+                        {t("danh_sach_khach")}
                       </p>
                       {data.booking.guest_list.map((guest: any, index: number) => (
                         <div
@@ -357,23 +357,23 @@ export default function BookingDetail() {
                           className="mb-3 p-3 bg-gray-50 rounded-lg"
                         >
                           <p className="font-medium text-sm mb-1">
-                            Khách {index + 1}
+                            {t("khach")} {index + 1}
                           </p>
                           {guest.name && (
                             <p className="text-sm">
-                              <span className="text-gray-600">Họ tên: </span>
+                              <span className="text-gray-600">{t("ho_va_ten")}: </span>
                               {guest.name}
                             </p>
                           )}
                           {guest.phone && (
                             <p className="text-sm">
-                              <span className="text-gray-600">SĐT: </span>
+                              <span className="text-gray-600">{t("so_dien_thoai")}: </span>
                               {guest.phone}
                             </p>
                           )}
                           {guest.email && (
                             <p className="text-sm">
-                              <span className="text-gray-600">Email: </span>
+                              <span className="text-gray-600">{t("email")}: </span>
                               {guest.email}
                             </p>
                           )}
@@ -389,12 +389,12 @@ export default function BookingDetail() {
                   data?.booking?.flight_arrival_time) && (
                   <div className="mt-3 pt-3 border-t border-gray-300">
                     <p className="w-full text-gray-700 font-semibold mb-2">
-                      Thông tin chuyến bay
+                      {t("thong_tin_chuyen_bay")}
                     </p>
                     {data.booking.flight_number && (
                       <div className="flex space-x-2 mt-2">
                         <p className="w-1/4 text-gray-600 text-sm">
-                          Số hiệu chuyến bay:
+                          {t("so_hieu_chuyen_bay")}:
                         </p>
                         <p className="w-3/4 font-medium text-sm">
                           {data.booking.flight_number}
@@ -403,7 +403,7 @@ export default function BookingDetail() {
                     )}
                     {data.booking.flight_time && (
                       <div className="flex space-x-2 mt-2">
-                        <p className="w-1/4 text-gray-600 text-sm">Giờ bay:</p>
+                        <p className="w-1/4 text-gray-600 text-sm">{t("gio_bay")}:</p>
                         <p className="w-3/4 font-medium text-sm">
                           {data.booking.flight_time}
                         </p>
@@ -411,7 +411,7 @@ export default function BookingDetail() {
                     )}
                     {data.booking.flight_arrival_time && (
                       <div className="flex space-x-2 mt-2">
-                        <p className="w-1/4 text-gray-600 text-sm">Giờ đáp:</p>
+                        <p className="w-1/4 text-gray-600 text-sm">{t("gio_dap")}:</p>
                         <p className="w-3/4 font-medium text-sm">
                           {data.booking.flight_arrival_time}
                         </p>
@@ -419,7 +419,7 @@ export default function BookingDetail() {
                     )}
                     {data.booking.flight_date && (
                       <div className="flex space-x-2 mt-2">
-                        <p className="w-1/4 text-gray-600 text-sm">Ngày bay:</p>
+                        <p className="w-1/4 text-gray-600 text-sm">{t("ngay_bay")}:</p>
                         <p className="w-3/4 font-medium text-sm">
                           {data.booking.flight_date}
                         </p>
@@ -434,17 +434,17 @@ export default function BookingDetail() {
                   data.booking.tickets.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-300">
                       <p className="w-full text-gray-700 font-semibold mb-2">
-                        Vé đã chọn
+                        {t("ve_da_chon")}
                       </p>
                       {data.booking.tickets.map((ticket: any, index: number) => (
                         <div key={index} className="mb-2 text-sm">
                           <div className="flex justify-between items-start">
                             <div>
                               <span className="text-gray-600 font-medium">
-                                {ticket.name || `Vé ${index + 1}`}:
+                                {ticket.name || `${t("ve")} ${index + 1}`}:
                               </span>{" "}
                               <span className="font-medium">
-                                {ticket.quantity} vé
+                                {ticket.quantity} {t("ve")}
                               </span>
                             </div>
                             {ticket.price && (
@@ -466,7 +466,7 @@ export default function BookingDetail() {
                   data.booking.additional_fees.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-300">
                       <p className="w-full text-gray-700 font-semibold mb-2">
-                        Phụ phí đã chọn
+                        {t("phu_phi_da_chon")}
                       </p>
                       {data.booking.additional_fees.map(
                         (fee: any, index: number) => (
@@ -474,7 +474,7 @@ export default function BookingDetail() {
                             <div className="flex justify-between items-start">
                               <div>
                                 <span className="text-gray-600 font-medium">
-                                  {fee.name || `Phụ phí ${index + 1}`}
+                                  {fee.name || `${t("phu_phi")} ${index + 1}`}
                                 </span>
                                 {fee.description && (
                                   <p className="text-xs text-gray-500 mt-1">
@@ -604,10 +604,10 @@ export default function BookingDetail() {
               isLoading={loadingSubmitForm || isGeneratingPaymentUrl}
               text={
                 isGeneratingPaymentUrl
-                  ? "Đang tạo link thanh toán..."
+                  ? t("dang_tao_link_thanh_toan")
                   : selectedPaymentMethod === "vietqr" && !isPaid
-                    ? "Đang chờ thanh toán"
-                    : "Thanh toán"
+                    ? t("dang_cho_thanh_toan")
+                    : t("thanh_toan")
               }
               disabled={
                 loadingSubmitForm ||
@@ -644,8 +644,8 @@ export default function BookingDetail() {
           <div className="mt-4 pt-4 border-t border-t-gray-200">
             {onePayFee > 0 && (
               <div className="flex justify-between mb-1 text-red-600 font-semibold">
-                <span className="text-sm" data-translate="true">
-                  Phí xử lý giao dịch thẻ quốc tế (2.5%)
+                <span className="text-sm">
+                  {t("phi_xu_ly_giao_dich_the_quoc_te")}
                 </span>
                 <DisplayPrice
                   price={onePayFee}
@@ -663,7 +663,7 @@ export default function BookingDetail() {
               totalPrice > 0 && (
                 <div className="w-full flex justify-between">
                   <DisplayPrice
-                    textPrefix={"Tổng cộng"}
+                    textPrefix={t("tong_cong")}
                     price={finalTotal}
                     currency={data?.product?.currency}
                   />
