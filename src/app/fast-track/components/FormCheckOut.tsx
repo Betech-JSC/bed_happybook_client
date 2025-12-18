@@ -60,6 +60,8 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
+  const [errFlightTime, setErrFlightTime] = useState<string>("");
+  const [errFlightArrivalTime, setErrFlightArrivalTime] = useState<string>("");
   const [customerType, setCustomerType] = useState<"personal" | "group">("personal");
   const [guestList, setGuestList] = useState<any[]>([]);
   const [flightNumber, setFlightNumber] = useState<string>("");
@@ -220,6 +222,31 @@ export default function CheckOutForm({
       return;
     } else {
       setErrTicketOption("");
+    }
+
+    // Validation: Kiểm tra thời gian bay/đáp dựa trên loại dịch vụ (đón/tiễn)
+    const optionName = (yachtOptionSelected?.name || '').toLowerCase();
+    const isDonService = optionName.includes('đón');
+    const isTienService = optionName.includes('tiễn');
+
+    // Reset errors
+    setErrFlightTime("");
+    setErrFlightArrivalTime("");
+
+    // Nếu là dịch vụ đón sân bay → bắt buộc nhập thời gian đáp
+    if (isDonService && (!flightArrivalTime || flightArrivalTime.trim() === '')) {
+      const errorMsg = t("vui_long_nhap_gio_dap_cho_dich_vu_don_san_bay");
+      setErrFlightArrivalTime(errorMsg);
+      toast.error(errorMsg);
+      return;
+    }
+
+    // Nếu là dịch vụ tiễn sân bay → bắt buộc nhập thời gian bay
+    if (isTienService && (!flightTime || flightTime.trim() === '')) {
+      const errorMsg = t("vui_long_nhap_gio_bay_cho_dich_vu_tien_san_bay");
+      setErrFlightTime(errorMsg);
+      toast.error(errorMsg);
+      return;
     }
     try {
       setLoading(true);
@@ -877,24 +904,50 @@ export default function CheckOutForm({
                 <div className="relative">
                   <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
                     <span data-translate="true">Giờ bay</span>
+                    {(() => {
+                      const optionName = (yachtOptionSelected?.name || '').toLowerCase();
+                      const isTienService = optionName.includes('tiễn');
+                      return isTienService && <span className="text-red-500 ml-1">*</span>;
+                    })()}
                   </label>
                   <input
                     type="time"
                     value={flightTime}
-                    onChange={(e) => setFlightTime(e.target.value)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                    onChange={(e) => {
+                      setFlightTime(e.target.value);
+                      setErrFlightTime(""); // Clear error when user types
+                    }}
+                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
+                      errFlightTime ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
+                  {errFlightTime && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">{errFlightTime}</p>
+                  )}
                 </div>
                 <div className="relative">
                   <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
                     <span data-translate="true">Giờ đáp</span>
+                    {(() => {
+                      const optionName = (yachtOptionSelected?.name || '').toLowerCase();
+                      const isDonService = optionName.includes('đón');
+                      return isDonService && <span className="text-red-500 ml-1">*</span>;
+                    })()}
                   </label>
                   <input
                     type="time"
                     value={flightArrivalTime}
-                    onChange={(e) => setFlightArrivalTime(e.target.value)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                    onChange={(e) => {
+                      setFlightArrivalTime(e.target.value);
+                      setErrFlightArrivalTime(""); // Clear error when user types
+                    }}
+                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
+                      errFlightArrivalTime ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
+                  {errFlightArrivalTime && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">{errFlightArrivalTime}</p>
+                  )}
                 </div>
                 <div className="relative">
                   <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">

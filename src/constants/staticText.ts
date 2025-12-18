@@ -337,6 +337,8 @@ const generalStaticText: string[] = [
   "Mở",
   "Vui lòng chọn giới tính",
   "VD: VN123",
+  "Vui lòng nhập giờ đáp cho dịch vụ đón sân bay",
+  "Vui lòng nhập giờ bay cho dịch vụ tiễn sân bay",
 ];
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
