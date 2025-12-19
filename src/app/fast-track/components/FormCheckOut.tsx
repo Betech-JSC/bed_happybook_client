@@ -689,7 +689,7 @@ export default function CheckOutForm({
                               className="text-sm text-gray-500 mt-1"
                               data-translate="true"
                               dangerouslySetInnerHTML={{
-                                __html: renderTextContent(fee.description),
+                                __html: fee.description,
                               }}
                             />
                           )}
