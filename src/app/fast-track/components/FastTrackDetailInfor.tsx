@@ -180,8 +180,9 @@ export default function FastTrackDetailInfor({ product }: any) {
                                 <div
                                   className="text-xs text-gray-500 mt-1"
                                   data-translate="true"
+                                  dangerouslySetInnerHTML={{ __html: fee.description }}
                                 >
-                                  {renderTextContent(fee.description)}
+
                                 </div>
                               )}
                             </div>
