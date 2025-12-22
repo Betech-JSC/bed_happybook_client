@@ -77,6 +77,8 @@ export default function ProductGallery({ product }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [mainSwiper, setMainSwiper] = useState<any>(null);
   const [lightboxItems, setLightboxItems] = useState<any[]>([]);
+  const [playingVideoIndex, setPlayingVideoIndex] = useState<number | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
   const DEFAULT_IMAGE_SRC = "/images/default-image.png";
   const galleryId = useId().replace(/:/g, "_");
   const gallery = useMemo(() => {
@@ -128,6 +130,7 @@ export default function ProductGallery({ product }: Props) {
                     controls
                     autoplay
                     playsinline
+                    muted
                   ></video>
                 </div>
               `,
@@ -172,7 +175,7 @@ export default function ProductGallery({ product }: Props) {
 
   // Auto play/pause video khi slide active thay đổi
   useEffect(() => {
-    if (!mainSwiper) return;
+    if (!mainSwiper || isLightboxOpen) return; // Không auto play khi lightbox đang mở
 
     const handleSlideChange = () => {
       const slides: HTMLElement[] = mainSwiper.slides || [];
@@ -189,8 +192,14 @@ export default function ProductGallery({ product }: Props) {
         const videos = activeSlide.querySelectorAll("video");
         videos.forEach((v: HTMLVideoElement) => {
           v.muted = true;
-          v.play().catch(() => {});
+          v.play()
+            .then(() => {
+              setPlayingVideoIndex(mainSwiper.activeIndex);
+            })
+            .catch(() => {});
         });
+      } else {
+        setPlayingVideoIndex(null);
       }
     };
 
@@ -201,7 +210,7 @@ export default function ProductGallery({ product }: Props) {
     return () => {
       mainSwiper.off("slideChange", handleSlideChange);
     };
-  }, [mainSwiper]);
+  }, [mainSwiper, isLightboxOpen]);
 
   const lightboxRef = useLightbox({
     galleryId,
@@ -235,32 +244,56 @@ export default function ProductGallery({ product }: Props) {
           return (
             <SwiperSlide key={index}>
               {isVideo ? (
-                <div className="relative w-full h-[300px] md:h-[450px] rounded-lg overflow-hidden">
+                <div className="relative w-full h-[300px] md:h-[450px] rounded-lg overflow-hidden group">
                   <video
                     className="w-full h-full object-cover rounded-lg"
                     controls
                     preload="metadata"
                     playsInline
                     muted
+                    onPlay={() => setPlayingVideoIndex(index)}
+                    onPause={() => {
+                      if (playingVideoIndex === index) {
+                        setPlayingVideoIndex(null);
+                      }
+                    }}
                   >
                     <source src={fullSrc} type="video/mp4" />
                     <source src={fullSrc} type="video/webm" />
                     <source src={fullSrc} type="video/quicktime" />
                     Your browser does not support the video tag.
                   </video>
-                  <span className="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                  <span className="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded z-10">
                     Video
                   </span>
-                  <button
-                    type="button"
-                    className="absolute inset-0 flex items-center justify-center bg-black/25 text-white"
-                    onClick={() => lightboxRef.current?.loadAndOpen(index, lightboxItems)}
-                    aria-label="Open video"
-                  >
-                    <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                    </svg>
-                  </button>
+                  {/* Chỉ hiển thị button play khi video không đang chạy và lightbox không mở */}
+                  {playingVideoIndex !== index && !isLightboxOpen && (
+                    <button
+                      type="button"
+                      className="absolute inset-0 flex items-center justify-center bg-black/25 text-white z-10 transition-opacity group-hover:bg-black/40"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Pause tất cả video trong slide trước khi mở lightbox
+                        if (mainSwiper) {
+                          const slides: HTMLElement[] = mainSwiper.slides || [];
+                          slides.forEach((slide: HTMLElement) => {
+                            const videos = slide.querySelectorAll("video");
+                            videos.forEach((v: HTMLVideoElement) => {
+                              v.pause();
+                            });
+                          });
+                        }
+                        setPlayingVideoIndex(null);
+                        lightboxRef.current?.loadAndOpen(index, lightboxItems);
+                      }}
+                      aria-label="Open video in lightbox"
+                    >
+                      <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               ) : (
                 <Link
