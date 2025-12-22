@@ -66,9 +66,41 @@ export default function CheckOutForm({
   const [flightTime, setFlightTime] = useState<string>("");
   const [flightArrivalTime, setFlightArrivalTime] = useState<string>("");
   const [flightDate, setFlightDate] = useState<string>("");
+  
+  // Format time để đảm bảo format 24 giờ (HH:mm) - không có giây
+  const formatTime24h = (time: string): string => {
+    if (!time) return "";
+    // Input type="time" trả về format HH:mm hoặc HH:mm:ss
+    // Chúng ta chỉ cần HH:mm (không có giây)
+    const parts = time.split(":");
+    if (parts.length >= 2) {
+      const hours = parts[0].padStart(2, "0");
+      const minutes = parts[1].padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+    return time;
+  };
+  
+  // Handle time change để đảm bảo format 24 giờ (HH:mm)
+  const handleFlightTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Input type="time" với step="60" sẽ trả về format HH:mm (24 giờ)
+    // Đảm bảo format đúng
+    const formatted = formatTime24h(value);
+    setFlightTime(formatted);
+  };
+  
+  const handleFlightArrivalTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Input type="time" với step="60" sẽ trả về format HH:mm (24 giờ)
+    // Đảm bảo format đúng
+    const formatted = formatTime24h(value);
+    setFlightArrivalTime(formatted);
+  };
   const [selectedAdditionalFees, setSelectedAdditionalFees] = useState<number[]>([]);
   const [additionalFees, setAdditionalFees] = useState<any[]>([]);
   const [loadingAdditionalFees, setLoadingAdditionalFees] = useState<boolean>(false);
+  const [documents, setDocuments] = useState<{ passport?: File[]; visa?: File[] }>({});
   // Handle Voucher
   const {
     totalDiscount,
@@ -503,6 +535,7 @@ export default function CheckOutForm({
     } else if (customerType === "personal") {
       // Cá nhân: không cần guestList
       setGuestList([]);
+
     }
   }, [totalTicketQuantity, customerType]);
 
@@ -903,10 +936,15 @@ export default function CheckOutForm({
                   <input
                     type="time"
                     value={flightTime}
-                    onChange={(e) => setFlightTime(e.target.value)}
+                    onChange={handleFlightTimeChange}
+                    step="60"
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
                       serviceType.isTienService && !flightTime ? 'border-red-300' : 'border-gray-300'
                     }`}
+                    style={{ 
+                      colorScheme: 'light',
+                      fontVariantNumeric: 'tabular-nums'
+                    }}
                   />
                 </div>
                 <div className="relative">
@@ -917,10 +955,15 @@ export default function CheckOutForm({
                   <input
                     type="time"
                     value={flightArrivalTime}
-                    onChange={(e) => setFlightArrivalTime(e.target.value)}
+                    onChange={handleFlightArrivalTimeChange}
+                    step="60"
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
                       serviceType.isDonService && !flightArrivalTime ? 'border-red-300' : 'border-gray-300'
                     }`}
+                    style={{ 
+                      colorScheme: 'light',
+                      fontVariantNumeric: 'tabular-nums'
+                    }}
                   />
                 </div>
                 <div className="relative">
@@ -1162,3 +1205,4 @@ export default function CheckOutForm({
     </div>
   );
 }
+
