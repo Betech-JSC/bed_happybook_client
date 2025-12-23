@@ -401,7 +401,6 @@ export default function CheckOutTourForm({
                             />
                           )}
                         />
-                    </div>
                     <div className="relative">
                       <label
                         htmlFor="email"
