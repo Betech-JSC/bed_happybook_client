@@ -382,13 +382,6 @@ export default function FormCheckOut({
                 <div className="mt-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="relative">
-                      <label
-                        htmlFor="phone"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs z-10 bg-white px-1"
-                      >
-                        <span data-translate="true">Số điện thoại </span>
-                        <span className="text-red-500">*</span>
-                      </label>
                       <div className="pt-6">
                         <Controller
                           name="phone"

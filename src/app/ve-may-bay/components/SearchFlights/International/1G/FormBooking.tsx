@@ -37,6 +37,7 @@ import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import { useVoucherManager } from "@/hooks/useVoucherManager";
 import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
+import PhoneInput from "@/components/form/PhoneInput";
 import { useTranslation } from "@/hooks/useTranslation";
 import Flight1GDetailPopup from "./FlightDetailPopup";
 
@@ -544,25 +545,22 @@ export default function Flight1GBookForm({ airportsData }: any) {
                     )}
                   </div>
                   <div className="relative">
-                    <label
-                      htmlFor="phone"
-                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                    >
-                      <span data-translate="true">Số điện thoại</span>
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="phone"
-                      type="text"
-                      {...register("contact.phone")}
-                      placeholder="Nhập số điện thoại"
-                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                    <Controller
+                      name="contact.phone"
+                      control={control}
+                      render={({ field }) => (
+                        <PhoneInput
+                          id="phone"
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Nhập số điện thoại"
+                          error={errors.contact?.phone?.message}
+                          defaultCountry="VN"
+                          label="Số điện thoại"
+                          required
+                        />
+                      )}
                     />
-                    {errors.contact?.phone && (
-                      <p className="text-red-600">
-                        {errors.contact?.phone.message}
-                      </p>
-                    )}
                   </div>
                   <div className="relative">
                     <label

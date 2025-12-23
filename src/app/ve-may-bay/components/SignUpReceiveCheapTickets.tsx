@@ -15,6 +15,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
+import PhoneInput from "@/components/form/PhoneInput";
+import { Controller } from "react-hook-form";
 
 export default function SignUpReceiveCheapTickets() {
   const { t } = useTranslation();
@@ -27,6 +29,7 @@ export default function SignUpReceiveCheapTickets() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<SignUpReceiveCheapTicketType>({
     resolver: zodResolver(schema),
@@ -88,24 +91,22 @@ export default function SignUpReceiveCheapTickets() {
               <div className="mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
-                    <label
-                      htmlFor="phone"
-                      className="absolute top-0 left-0 h-full translate-y-1 translate-x-4 font-medium text-xs"
-                    >
-                      <span>{t("so_dien_thoai")}</span>
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="phone"
-                      type="text"
-                      {...register("phone")}
-                      title={t("so_dien_thoai")}
-                      placeholder={t("so_dien_thoai")}
-                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                    <Controller
+                      name="phone"
+                      control={control}
+                      render={({ field }) => (
+                        <PhoneInput
+                          id="phone"
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={t("so_dien_thoai")}
+                          error={errors.phone?.message}
+                          defaultCountry="VN"
+                          label={t("so_dien_thoai")}
+                          required
+                        />
+                      )}
                     />
-                    {errors.phone && (
-                      <p className="text-red-600">{errors.phone.message}</p>
-                    )}
                   </div>
                   <div className="relative">
                     <label

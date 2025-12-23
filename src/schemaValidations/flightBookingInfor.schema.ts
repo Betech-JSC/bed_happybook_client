@@ -182,9 +182,20 @@ export const FlightBookingInforBody = (
         .min(1, {
           message: messages.required,
         })
-        .regex(/^0\d{9,10}$/, {
-          message: messages.inValid,
-        }),
+        .refine(
+          (val) => {
+            // Accept format with country code: +84xxxxxxxxx
+            if (val.startsWith("+")) {
+              const digitsOnly = val.replace(/\D/g, "");
+              return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+            }
+            // Accept format without country code: 0xxxxxxxxx (10-11 digits)
+            return /^0\d{9,10}$/.test(val);
+          },
+          {
+            message: messages.inValid,
+          }
+        ),
       email: z.string().min(1, { message: messages.required }).email({
         message: messages.email,
       }),
