@@ -27,6 +27,7 @@ import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount
 import { vi, enUS } from "date-fns/locale";
 import { useTranslation } from "@/hooks/useTranslation";
 import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
+import PhoneInput from "@/components/form/PhoneInput";
 import {
   CheckOutYachtSchema,
   CheckOutYachtType,
@@ -415,9 +416,9 @@ export default function CheckOutForm({
 
   // Tính tổng giá vé
   const ticketsPrice = tickets.reduce(
-    (sum, ticket) => sum + ticket.quantity * ticket.price,
-    0
-  );
+      (sum, ticket) => sum + ticket.quantity * ticket.price,
+      0
+    );
   
   // Tính tổng phụ phí đã chọn
   // Lưu ý: "Phụ phí giờ bay thêm" cần tính theo quantity (150,000 VND × quantity)
@@ -740,7 +741,7 @@ export default function CheckOutForm({
           )}
 
           {/* Customer Type and Guest Information - Optional */}
-          <div className="mt-6 bg-white p-4 rounded-xl">
+            <div className="mt-6 bg-white p-4 rounded-xl">
             <div className="flex items-center justify-between mb-2">
               <p className="text-18 font-bold" data-translate="true">
                 Phân loại khách
@@ -801,76 +802,73 @@ export default function CheckOutForm({
             {/* Chỉ hiển thị form nhập thông tin khách khi chọn "group" */}
             {customerType === "group" && (
               <div className="mt-4 pt-4 border-t">
-                <div className="flex justify-between items-center mb-3">
+              <div className="flex justify-between items-center mb-3">
                   <p className="font-semibold" data-translate="true">
-                    Danh sách thông tin khách ({totalTicketQuantity} khách)
-                  </p>
-                  {totalTicketQuantity > 0 && (
-                    <span className="text-xs text-gray-500">
-                      Số lượng khách tự động khớp với số vé đã chọn
-                    </span>
-                  )}
-                </div>
-                <div className="space-y-4">
-                  {guestList.map((guest, index) => (
-                    <div
-                      key={index}
-                      className="p-4 border border-gray-200 rounded-lg bg-gray-50"
-                    >
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="font-medium text-sm">
-                          Khách {index + 1}
-                        </span>
+                  Danh sách thông tin khách ({totalTicketQuantity} khách)
+                </p>
+                {totalTicketQuantity > 0 && (
+                  <span className="text-xs text-gray-500">
+                    Số lượng khách tự động khớp với số vé đã chọn
+                  </span>
+                )}
+              </div>
+              <div className="space-y-4">
+                {guestList.map((guest, index) => (
+                  <div
+                    key={index}
+                    className="p-4 border border-gray-200 rounded-lg bg-gray-50"
+                  >
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-medium text-sm">
+                        Khách {index + 1}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="relative">
+                        <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                          <span data-translate="true">Họ và tên</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={guest.name}
+                          onChange={(e) =>
+                            handleGuestListChange(index, "name", e.target.value)
+                          }
+                          placeholder="Nhập họ và tên"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
+                        />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="relative">
-                          <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                            <span data-translate="true">Họ và tên</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={guest.name}
-                            onChange={(e) =>
-                              handleGuestListChange(index, "name", e.target.value)
-                            }
-                            placeholder="Nhập họ và tên"
-                            className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
-                          />
-                        </div>
-                        <div className="relative">
-                          <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                            <span data-translate="true">Số điện thoại</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={guest.phone}
-                            onChange={(e) =>
-                              handleGuestListChange(index, "phone", e.target.value)
-                            }
-                            placeholder="Nhập số điện thoại"
-                            className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
-                          />
-                        </div>
-                        <div className="relative">
-                          <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                            <span data-translate="true">Email</span>
-                          </label>
-                          <input
-                            type="email"
-                            value={guest.email}
-                            onChange={(e) =>
-                              handleGuestListChange(index, "email", e.target.value)
-                            }
-                            placeholder="Nhập email"
-                            className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
-                          />
-                        </div>
+                      <div className="relative">
+                          <PhoneInput
+                            value={guest.phone || ""}
+                            onChange={(value) =>
+                              handleGuestListChange(index, "phone", value)
+                          }
+                          placeholder="Nhập số điện thoại"
+                            defaultCountry="VN"
+                            label="Số điện thoại"
+                        />
+                      </div>
+                      <div className="relative">
+                        <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                          <span data-translate="true">Email</span>
+                        </label>
+                        <input
+                          type="email"
+                          value={guest.email}
+                          onChange={(e) =>
+                            handleGuestListChange(index, "email", e.target.value)
+                          }
+                          placeholder="Nhập email"
+                          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+          )}
 
             {/* Flight Information - Optional */}
             <div className="mt-6 pt-4 border-t">
@@ -941,10 +939,6 @@ export default function CheckOutForm({
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
                       serviceType.isTienService && !flightTime ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    style={{ 
-                      colorScheme: 'light',
-                      fontVariantNumeric: 'tabular-nums'
-                    }}
                   />
                 </div>
                 <div className="relative">
@@ -960,10 +954,6 @@ export default function CheckOutForm({
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
                       serviceType.isDonService && !flightArrivalTime ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    style={{ 
-                      colorScheme: 'light',
-                      fontVariantNumeric: 'tabular-nums'
-                    }}
                   />
                 </div>
                 <div className="relative">
@@ -1038,24 +1028,22 @@ export default function CheckOutForm({
               <div className="mt-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="relative">
-                    <label
-                      htmlFor="phone"
-                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
-                    >
-                      <span data-translate="true">Số điện thoại</span>
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <input
+                      <Controller
+                        name="phone"
+                        control={control}
+                        render={({ field }) => (
+                          <PhoneInput
                       id="phone"
-                      type="text"
-                      {...register("phone")}
-                      title="Nhập số điện thoại"
+                            value={field.value}
+                            onChange={field.onChange}
                       placeholder="Nhập số điện thoại"
-                      className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                            error={errors.phone?.message}
+                            defaultCountry="VN"
+                            label="Số điện thoại"
+                            required
                     />
-                    {errors.phone && (
-                      <p className="text-red-600">{errors.phone.message}</p>
                     )}
+                      />
                   </div>
                   <div className="relative">
                     <label
@@ -1137,16 +1125,16 @@ export default function CheckOutForm({
             </div>
             {tickets?.map((item: any) => (
               <div key={item.id} className="mt-2 flex justify-between">
-                <span data-translate="true">{item.title}</span>
+                    <span data-translate="true">{item.title}</span>
                 <div className="font-bold text-sm flex gap-1">
-                  <DisplayPrice
-                    className={`!font-bold !text-sm text-black`}
+                        <DisplayPrice
+                          className={`!font-bold !text-sm text-black`}
                     price={item.price}
-                    currency={product?.currency}
-                  />
+                          currency={product?.currency}
+                        />
                   <span>{` x ${item.quantity}`}</span>
-                </div>
-              </div>
+                    </div>
+                  </div>
             ))}
             {selectedAdditionalFees.length > 0 && (
               <>

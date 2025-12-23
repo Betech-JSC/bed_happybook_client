@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import LoadingButton from "@/components/base/LoadingButton";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import {
   CheckOutVisaSchema,
@@ -23,6 +23,7 @@ import { HttpError } from "@/lib/error";
 import { useUser } from "@/contexts/UserContext";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
+import PhoneInput from "@/components/form/PhoneInput";
 
 export default function FormCheckOut({
   productId,
@@ -61,6 +62,7 @@ export default function FormCheckOut({
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<CheckOutVisaType>({
     resolver: zodResolver(schemaForm),
@@ -205,22 +207,27 @@ export default function FormCheckOut({
                     <div className="relative">
                       <label
                         htmlFor="phone"
-                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                        className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs z-10 bg-white px-1"
                       >
                         <span data-translate="true">Số điện thoại </span>
                         <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        id="phone"
-                        type="text"
-                        {...register("phone")}
-                        title="Nhập số điện thoại"
-                        placeholder="Nhập số điện thoại"
-                        className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                      />
-                      {errors.phone && (
-                        <p className="text-red-600">{errors.phone.message}</p>
-                      )}
+                      <div className="pt-6">
+                        <Controller
+                          name="phone"
+                          control={control}
+                          render={({ field }) => (
+                            <PhoneInput
+                              id="phone"
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Nhập số điện thoại"
+                              error={errors.phone?.message}
+                              defaultCountry="VN"
+                            />
+                          )}
+                        />
+                      </div>
                     </div>
                     <div className="relative">
                       <label

@@ -52,9 +52,20 @@ export const CheckOutTourSchema = (
       .min(1, {
         message: messages.required,
       })
-      .regex(/^\d{10,11}$/, {
-        message: messages.inValid,
-      }),
+      .refine(
+        (val) => {
+          // Accept format with country code: +84xxxxxxxxx
+          if (val.startsWith("+")) {
+            const digitsOnly = val.replace(/\D/g, "");
+            return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+          }
+          // Accept format without country code: 10-11 digits
+          return /^\d{10,11}$/.test(val);
+        },
+        {
+          message: messages.inValid,
+        }
+      ),
 
     gender: z
       .string()

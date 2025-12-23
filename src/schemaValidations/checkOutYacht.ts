@@ -11,9 +11,21 @@ export const CheckOutYachtSchema = (
       .min(1, {
         message: messages.required,
       })
-      .regex(/^\d{10,11}$/, {
-        message: messages.inValid,
-      }),
+      .refine(
+        (val) => {
+          // Accept format with country code: +84xxxxxxxxx
+          if (val.startsWith("+")) {
+            // Remove country code and check if remaining digits are 7-15 digits (international standard)
+            const digitsOnly = val.replace(/\D/g, "");
+            return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+          }
+          // Accept format without country code: 10-11 digits (Vietnam format)
+          return /^\d{10,11}$/.test(val);
+        },
+        {
+          message: messages.inValid,
+        }
+      ),
     depart_date: z.date({
       required_error: messages.required,
       invalid_type_error: messages.inValid,

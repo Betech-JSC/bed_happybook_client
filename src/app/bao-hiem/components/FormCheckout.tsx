@@ -29,6 +29,7 @@ import { useVoucherManager } from "@/hooks/useVoucherManager";
 import DisplayImage from "@/components/base/DisplayImage";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
+import PhoneInput from "@/components/form/PhoneInput";
 
 const defaultInsuranceInfo = {
   gender: "male",
@@ -575,23 +576,25 @@ export default function FormCheckOut({
                       )}
                     </div>
                     <div className="lg:col-span-1 relative">
-                      <input
-                        type="text"
-                        placeholder="Số điện thoại"
-                        {...register(`phone_buyer`)}
-                        onChange={(e) =>
-                          setInsuranceBuyerInfo((prev) => ({
-                            ...prev,
-                            phone: e.target.value,
-                          }))
-                        }
-                        className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      <Controller
+                        name="phone_buyer"
+                        control={control}
+                        render={({ field }) => (
+                          <PhoneInput
+                            value={field.value}
+                            onChange={(value) => {
+                              field.onChange(value);
+                              setInsuranceBuyerInfo((prev) => ({
+                                ...prev,
+                                phone: value,
+                              }));
+                            }}
+                            placeholder="Số điện thoại"
+                            error={errors.phone_buyer?.message}
+                            defaultCountry="VN"
+                          />
+                        )}
                       />
-                      {errors.phone_buyer && (
-                        <p className="text-red-600">
-                          {errors.phone_buyer?.message}
-                        </p>
-                      )}
                     </div>
                     <div className="lg:col-span-1 relative">
                       <input
@@ -981,18 +984,20 @@ export default function FormCheckOut({
                               )}
                             </div>
                             <div className="relative">
-                              <input
-                                type="text"
-                                placeholder="Số điện thoại"
+                              <Controller
+                                name={`insured_info.${index}.phone`}
+                                control={control}
                                 defaultValue={item.phone}
-                                {...register(`insured_info.${index}.phone`)}
-                                className="h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                              />{" "}
-                              {errors.insured_info?.[index]?.phone && (
-                                <p className="text-red-600">
-                                  {errors.insured_info?.[index]?.phone?.message}
-                                </p>
-                              )}
+                                render={({ field }) => (
+                                  <PhoneInput
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    placeholder="Số điện thoại"
+                                    error={errors.insured_info?.[index]?.phone?.message}
+                                    defaultCountry="VN"
+                                  />
+                                )}
+                              />
                             </div>
                             <div className="relative">
                               <input
