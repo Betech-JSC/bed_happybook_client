@@ -60,6 +60,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [onePayTriggered, setOnePayTriggered] = useState(false);
   const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(false);
   const [onePayFee, setOnePayFee] = useState<number>(0);
+  const [isOpenPriceDetail, setIsOpenPriceDetail] = useState(false);
+  const toggleDropdownPriceDetail = () => {
+    setIsOpenPriceDetail(!isOpenPriceDetail);
+  };
+
   const {
     register,
     handleSubmit,
@@ -94,7 +99,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             });
           }
           if (selectedPaymentMethod === "cash") {
-            setIsOrderCashSuccess(true)
+            setIsOrderCashSuccess(true);
             setIsPaid(true);
           }
         } else {
@@ -195,7 +200,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             }
             return acc;
           },
-          { price: 0, quantity: 0 }
+          { price: 0, quantity: 0 },
         );
         setTotalBaggages(accumulated);
       }
@@ -223,14 +228,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       } catch (error: any) {
         const fareRules = await translateText(
           ["Xin vui lòng liên hệ với Happy Book để nhận thông tin chi tiết."],
-          language
+          language,
         );
         return fareRules;
       } finally {
         setIsLoadingRules(false);
       }
     },
-    [language]
+    [language],
   );
 
   useEffect(() => {
@@ -246,13 +251,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const toggleShowRuleTicket = useCallback(
     async (FareData: any) => {
       setShowRuleTicket(
-        showRuleTicket === FareData.flightCode ? null : FareData.flightCode
+        showRuleTicket === FareData.flightCode ? null : FareData.flightCode,
       );
       if (!FareData.ListRulesTicket) {
         FareData.ListRulesTicket = await fetchFareRules(FareData);
       }
     },
-    [showRuleTicket, fetchFareRules]
+    [showRuleTicket, fetchFareRules],
   );
 
   const handleTicketPaymentTimeout = () => {
@@ -279,29 +284,29 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     if (selectedPaymentMethod === "onepay") {
       setOnePayFee(
         (totalPrice + totalBaggages.price - data?.orderInfo?.total_discount) *
-        0.025
+          0.025,
       );
     } else {
       setOnePayFee(0);
-      if (selectedPaymentMethod === 'vietqr' && !qrCodeGenerated) {
+      if (selectedPaymentMethod === "vietqr" && !qrCodeGenerated) {
         PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku)
           .then((qrResult: any) => {
-
-            let total = qrResult.data['total_price'] - qrResult.data['total_discount'];
-            let sku = qrResult.data['sku'];
+            let total =
+              qrResult.data["total_price"] - qrResult.data["total_discount"];
+            let sku = qrResult.data["sku"];
 
             return PaymentApi.createReceipt({
-              "payment_method_id": 5,
-              "total_amount": total,
-              "description": "Thu đơn hàng",
-              "note": "KH chuyển khoản",
-              "allocations": [
+              payment_method_id: 5,
+              total_amount: total,
+              description: "Thu đơn hàng",
+              note: "KH chuyển khoản",
+              allocations: [
                 {
-                  "ref_type": "order",
-                  "ref_code": sku,
-                  "amount": total
-                }
-              ]
+                  ref_type: "order",
+                  ref_code: sku,
+                  amount: total,
+                },
+              ],
             });
           })
           .then((receiptResult: any) => {
@@ -309,12 +314,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             setVietQrData(receiptResult?.data);
           })
           .catch((error) => {
-            console.error("Error generating QR code or creating receipt:", error);
+            console.error(
+              "Error generating QR code or creating receipt:",
+              error,
+            );
           });
       }
     }
   }, [selectedPaymentMethod, qrCodeGenerated, data, totalPrice, totalBaggages]);
-
 
   // useEffect(() => {
   //   if (
@@ -407,8 +414,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             <p data-translate="true">
               {isOrderCashSuccess
                 ? "HappyBook đã nhận được đơn hàng"
-                : "HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng"
-              }
+                : "HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng"}
               {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
             </p>
 
@@ -442,10 +448,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </svg>
           </button>
           <div
-            className={`bg-white border-t transition-all duration-300 overflow-hidden ${isOpenBookingDetail
-              ? "max-h-[2500px] opacity-100 p-4"
-              : "max-h-0 opacity-0 p-0"
-              }`}
+            className={`bg-white border-t transition-all duration-300 overflow-hidden ${
+              isOpenBookingDetail
+                ? "max-h-[2500px] opacity-100 p-4"
+                : "max-h-0 opacity-0 p-0"
+            }`}
           >
             <div>
               <p className="font-bold text-18">{t("tom_tat_chuyen_bay")}</p>
@@ -453,7 +460,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 const fromOption = airports
                   .flatMap((country) => country.airports)
                   .find(
-                    (airport) => airport.code === flight.departure.IATACode
+                    (airport) => airport.code === flight.departure.IATACode,
                   );
                 const toOption = airports
                   .flatMap((country) => country.airports)
@@ -483,18 +490,18 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           .flatMap((country) => country.airports)
                           .find(
                             (airport) =>
-                              airport.code === flight.departure.IATACode
+                              airport.code === flight.departure.IATACode,
                           );
                         const toSegmentOption = airports
                           .flatMap((country) => country.airports)
                           .find(
                             (airport) =>
-                              airport.code === flight.arrival.IATACode
+                              airport.code === flight.arrival.IATACode,
                           );
                         const durationFlight =
                           differenceInSeconds(
                             new Date(segment.arrival.at),
-                            new Date(segment.departure.at)
+                            new Date(segment.departure.at),
                           ) / 60;
                         return (
                           <div
@@ -538,13 +545,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                     {format(
                                       new Date(segment.departure.at),
                                       "EEEE, d 'tháng' M yyyy",
-                                      { locale: vi }
+                                      { locale: vi },
                                     )}
                                   </span>
                                   <span className="mt-2 text-lg font-bold w-full">
                                     {formatTimeZone(
                                       segment.departure.at,
-                                      segment.departure.timezone
+                                      segment.departure.timezone,
                                     )}
                                   </span>
                                   <span className="mt-2 text-sm text-gray-500 w-full">
@@ -580,10 +587,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                     >
                                       {durationFlight
                                         ? `${Math.floor(
-                                          durationFlight / 60
-                                        )} giờ ${Math.floor(
-                                          durationFlight % 60
-                                        )} phút`
+                                            durationFlight / 60,
+                                          )} giờ ${Math.floor(
+                                            durationFlight % 60,
+                                          )} phút`
                                         : ""}
                                     </span>
                                     {flight.legs < 1 && (
@@ -602,13 +609,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                     {format(
                                       new Date(segment.arrival.at),
                                       "EEEE, d 'tháng' M yyyy",
-                                      { locale: vi }
+                                      { locale: vi },
                                     )}
                                   </span>
                                   <span className="mt-2 text-lg font-bold w-full">
                                     {formatTimeZone(
                                       segment.arrival.at,
-                                      segment.arrival.timezone
+                                      segment.arrival.timezone,
                                     )}
                                   </span>
                                   <span className="mt-2 text-sm text-gray-500 w-full">
@@ -623,7 +630,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                             </div>
                           </div>
                         );
-                      }
+                      },
                     )}
                     <div>
                       {/* <button
@@ -644,12 +651,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           !isLoadingRules && (
                             <div className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0">
                               {Array.isArray(flight.ListRulesTicket) &&
-                                flight.ListRulesTicket.length > 0 ? (
+                              flight.ListRulesTicket.length > 0 ? (
                                 (() => {
                                   const isFareRulesOfStrings =
                                     Array.isArray(flight.ListRulesTicket) &&
                                     typeof flight.ListRulesTicket[0] ===
-                                    "string";
+                                      "string";
 
                                   return (
                                     <div>
@@ -661,7 +668,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                           {flight.ListRulesTicket.map(
                                             (text: any, indexRule: number) => (
                                               <li key={indexRule}>{text}</li>
-                                            )
+                                            ),
                                           )}
                                         </ul>
                                       ) : (
@@ -687,7 +694,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                                     item.value.map(
                                                       (
                                                         ruleText: string,
-                                                        indexRuleText: number
+                                                        indexRuleText: number,
                                                       ) =>
                                                         ruleText && (
                                                           <li
@@ -695,11 +702,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                                           >
                                                             {ruleText}
                                                           </li>
-                                                        )
+                                                        ),
                                                     )}
                                                 </ul>
                                               </div>
-                                            )
+                                            ),
                                           )}
                                         </div>
                                       )}
@@ -782,7 +789,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                     <p className="w-3/4 font-medium">
                       {format(
                         parse(passenger.birthday, "yyyy-MM-dd", new Date()),
-                        "dd/MM/yyyy"
+                        "dd/MM/yyyy",
                       )}
                     </p>
                   </div>
@@ -805,7 +812,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                 {baggage.currency})
                               </span>
                             </div>
-                          )
+                          ),
                         )}
                       </div>
                     </div>
@@ -952,15 +959,15 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 }
                 disabled={
                   ticketPaymentTimeout ||
-                    !selectedPaymentMethod ||
-                    (selectedPaymentMethod === "vietqr" && !isPaid)
+                  !selectedPaymentMethod ||
+                  (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? true
                     : false
                 }
                 style={
                   ticketPaymentTimeout ||
-                    !selectedPaymentMethod ||
-                    (selectedPaymentMethod === "vietqr" && !isPaid)
+                  !selectedPaymentMethod ||
+                  (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? "bg-gray-300 disabled:cursor-not-allowed"
                     : ""
                 }
@@ -969,136 +976,152 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           </form>
         )}
       </div>
-      <div
-        className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl p-3 lg:p-6  ${isStickySideBar
-          ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
-          : "w-full"
-          }`}
-      >
-        <div className="p-3 lg:py-4 lg:px-4">
-          <p className="text-22 font-bold mb-2" data-translate="true">
-            Giá chi tiết
-          </p>
-          {dropdown.map((item: any, index: number) => (
-            <div key={index} className="mb-4">
-              <button
-                type="button"
-                onClick={() => toggleDropdown(index)}
-                className="flex justify-between text-sm items-start space-x-3 w-full text-left outline-none"
-              >
-                <div className="flex w-8/12">
-                  <span data-translate="true">
-                    {item.title} (
-                    {Array.from({ length: item.quantity }, (_, key) => (
-                      <span key={keyLoopDropdown++}>
-                        hành khách {keyLoopDropdown}
-                        {key < item.quantity - 1 && ", "}
-                      </span>
-                    ))}
-                    )
-                  </span>
-                  <span className="ml-1">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d={
-                          activeIndex === index
-                            ? "M15 12.5L10 7.5L5 12.5"
-                            : "M5 7.5L10 12.5L15 7.5"
-                        }
-                        stroke="#667085"
-                        strokeWidth="1.66667"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </div>
+      <div className="w-full md:w-5/12 lg:w-4/12 bg-white p-5 md:p-3 lg:p-6 fixed md:sticky md:top-20 lg:top-[140px] max-md:left-0 rounded-t-3xl md:rounded-3xl max-md:bottom-0 z-[2147483648] md:z-10 max-md:shadow-lg border-gray-200 border md:border-0">
+        <div className="md:p-3 lg:py-4 lg:px-4">
+          <button onClick={toggleDropdownPriceDetail} className={`flex items-center justify-between w-full ${isOpenPriceDetail ? 'mb-2' : ''}`}>
+            <h3 className="text-22 font-bold" data-translate="true">
+              Giá chi tiết
+            </h3>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={`transition-transform ${isOpenPriceDetail ? "rotate-180" : ""}`}
+            >
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="currentColor"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <div className={`${isOpenPriceDetail ? 'max-h-auto opacity-100 visible' : 'max-h-0 opacity-0 invisible'} h-full overflow-hidden transition-all duration-300 ease-in-out`}>
+            {dropdown.map((item: any, index: number) => (
+              <div key={index} className="mb-4">
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown(index)}
+                  className="flex justify-between text-sm items-start space-x-3 w-full text-left outline-none"
+                >
+                  <div className="flex w-8/12">
+                    <span data-translate="true">
+                      {item.title} (
+                      {Array.from({ length: item.quantity }, (_, key) => (
+                        <span key={keyLoopDropdown++}>
+                          hành khách {keyLoopDropdown}
+                          {key < item.quantity - 1 && ", "}
+                        </span>
+                      ))}
+                      )
+                    </span>
+                    <span className="ml-1">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d={
+                            activeIndex === index
+                              ? "M15 12.5L10 7.5L5 12.5"
+                              : "M5 7.5L10 12.5L15 7.5"
+                          }
+                          stroke="#667085"
+                          strokeWidth="1.66667"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </div>
 
-                <div className="text-gray-900 font-bold w-4/12 text-right">
-                  {formatCurrency(item.totalPrice)} x {item.quantity}
-                </div>
-              </button>
-              <div
-                className={`rounded-lg transition-all delay-300 ease-in ${activeIndex === index
-                  ? "max-h-16 opacity-100 visible"
-                  : "max-h-0 opacity-0 invisible"
+                  <div className="text-gray-900 font-bold w-4/12 text-right">
+                    {formatCurrency(item.totalPrice)} x {item.quantity}
+                  </div>
+                </button>
+                <div
+                  className={`rounded-lg transition-all delay-300 ease-in ${
+                    activeIndex === index
+                      ? "max-h-16 opacity-100 visible"
+                      : "max-h-0 opacity-0 invisible"
                   } `}
-              >
-                <div className="text-sm text-gray-500 flex justify-between mt-1">
-                  <span data-translate="true">Vé</span>
-                  <span>
-                    {formatCurrency(item.totalPriceTicket)} x {item.quantity}
-                  </span>
-                </div>
-                <div className="text-sm text-gray-500 flex justify-between mt-1">
-                  <span data-translate="true">Thuế và phí</span>
-                  <span>
-                    {formatCurrency(item.totalTax)} x {item.quantity}
-                  </span>
+                >
+                  <div className="text-sm text-gray-500 flex justify-between mt-1">
+                    <span data-translate="true">Vé</span>
+                    <span>
+                      {formatCurrency(item.totalPriceTicket)} x {item.quantity}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-500 flex justify-between mt-1">
+                    <span data-translate="true">Thuế và phí</span>
+                    <span>
+                      {formatCurrency(item.totalTax)} x {item.quantity}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-
-          {onePayFee > 0 && (
-            <div className="flex justify-between mb-1 text-red-600 font-semibold">
-              <span className="text-sm " data-translate="true">
-                Phí xử lý giao dịch thẻ quốc tế (2.5%)
+            ))}
+            {onePayFee > 0 && (
+              <div className="flex justify-between mb-1 text-red-600 font-semibold">
+                <span className="text-sm " data-translate="true">
+                  Phí xử lý giao dịch thẻ quốc tế (2.5%)
+                </span>
+                <p>{formatCurrency(onePayFee)}</p>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500" data-translate="true">
+                Hành lý bổ sung
               </span>
-              <p>{formatCurrency(onePayFee)}</p>
+              <p className="font-semibold">
+                {totalBaggages.price && totalBaggages.quantity
+                  ? `${formatCurrency(totalBaggages.price)} x ${
+                      totalBaggages.quantity
+                    }`
+                  : "0đ"}
+              </p>
             </div>
-          )}
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500" data-translate="true">
-              Hành lý bổ sung
-            </span>
-            <p className="font-semibold">
-              {totalBaggages.price && totalBaggages.quantity
-                ? `${formatCurrency(totalBaggages.price)} x ${totalBaggages.quantity
-                }`
-                : "0đ"}
-            </p>
+            {data?.orderInfo?.total_discount > 0 && (
+              <div className="flex flex-col gap-2 mt-4 pt-3 border-t border-t-gray-200">
+                <div className="flex justify-between">
+                  <span
+                    className="text-gray-700 font-semibold"
+                    data-translate="true"
+                  >
+                    Giá gốc
+                  </span>
+                  <p className="font-semibold">
+                    {formatCurrency(totalPrice + totalBaggages.price)}
+                  </p>
+                </div>
+                <div className="flex justify-between">
+                  <span
+                    className="text-gray-700 font-semibold"
+                    data-translate="true"
+                  >
+                    Giá giảm
+                  </span>
+                  <p className="font-semibold">
+                    {formatCurrency(data?.orderInfo?.total_discount)}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          {data?.orderInfo?.total_discount > 0 && (
-            <div className="flex flex-col gap-2 mt-4 pt-3 border-t border-t-gray-200">
-              <div className="flex justify-between">
-                <span
-                  className="text-gray-700 font-semibold"
-                  data-translate="true"
-                >
-                  Giá gốc
-                </span>
-                <p className="font-semibold">
-                  {formatCurrency(totalPrice + totalBaggages.price)}
-                </p>
-              </div>
-              <div className="flex justify-between">
-                <span
-                  className="text-gray-700 font-semibold"
-                  data-translate="true"
-                >
-                  Giá giảm
-                </span>
-                <p className="font-semibold">
-                  {formatCurrency(data?.orderInfo?.total_discount)}
-                </p>
-              </div>
-            </div>
-          )}
-          <div className="flex justify-between gap-2 mt-4 pt-4 md:pb-6 border-t border-t-gray-200">
+          <div className="flex justify-between gap-2 mt-2 pt-2 md:mt-4 md:pt-4 md:pb-6 border-t border-t-gray-200">
             <span className="text-gray-700 font-bold">{t("tong_cong")}</span>
             <p className="font-bold text-primary">
               {formatCurrency(
                 totalPrice +
-                onePayFee +
-                totalBaggages.price -
-                data?.orderInfo?.total_discount
+                  onePayFee +
+                  totalBaggages.price -
+                  data?.orderInfo?.total_discount,
               )}
             </p>
           </div>

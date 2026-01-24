@@ -66,10 +66,10 @@ export default function FormCheckOut({
   const insuranceDetailRef = useRef<HTMLDivElement>(null);
   const insuranceTypes = ["domestic", "international"];
   const [showInsuranceDetails, setShowInsuranceDetails] = useState<number[]>(
-    []
+    [],
   );
   const [insuredInfoList, setInsuredInfoList] = useState<InsuranceInfoType[]>(
-    []
+    [],
   );
   const [insuranceBuyerInfo, setInsuranceBuyerInfo] =
     useState<InsuranceInfoType>(defaultInsuranceInfo);
@@ -98,12 +98,12 @@ export default function FormCheckOut({
     const departDate = parse(
       searchParams.get("departure_date") ?? "",
       "ddMMyyyy",
-      new Date()
+      new Date(),
     );
     const returnDate = parse(
       searchParams.get("return_date") ?? "",
       "ddMMyyyy",
-      new Date()
+      new Date(),
     );
     const totalGuests = isNumber(parseInt(searchParams.get("guests") ?? "1"))
       ? parseInt(searchParams.get("guests") ?? "1")
@@ -122,12 +122,12 @@ export default function FormCheckOut({
     setInsuredInfoList(
       Array.from({ length: totalGuests }, () => ({
         ...defaultInsuranceInfo,
-      }))
+      })),
     );
   }, [searchParams]);
 
   const [schemaForm, setSchemaForm] = useState(() =>
-    checkOutInsuranceSchema(messages, generateInvoice, contactByBuyer)
+    checkOutInsuranceSchema(messages, generateInvoice, contactByBuyer),
   );
   const {
     register,
@@ -152,7 +152,7 @@ export default function FormCheckOut({
 
   useEffect(() => {
     setSchemaForm(
-      checkOutInsuranceSchema(messages, generateInvoice, contactByBuyer)
+      checkOutInsuranceSchema(messages, generateInvoice, contactByBuyer),
     );
   }, [contactByBuyer, generateInvoice, messages]);
 
@@ -270,26 +270,26 @@ export default function FormCheckOut({
     (itemId: any) => {
       if (showInsuranceDetails.includes(itemId)) {
         setShowInsuranceDetails(
-          showInsuranceDetails.filter((item) => item !== itemId)
+          showInsuranceDetails.filter((item) => item !== itemId),
         );
       } else {
         setShowInsuranceDetails((prev) => [...prev, itemId]);
       }
     },
-    [showInsuranceDetails]
+    [showInsuranceDetails],
   );
 
   useEffect(() => {
     if (!insuranceDetailRef.current) return;
     setHeight(
-      insuranceDetailRef ? insuranceDetailRef.current.scrollHeight + 200 : 0
+      insuranceDetailRef ? insuranceDetailRef.current.scrollHeight + 200 : 0,
     );
   }, [showInsuranceDetails]);
 
   useEffect(() => {
     if (!contactByBuyer) {
       setShowInsuranceDetails(
-        Array.from({ length: searchForm.guests }, (_, i) => i + 1)
+        Array.from({ length: searchForm.guests }, (_, i) => i + 1),
       );
     } else {
       setShowInsuranceDetails([]);
@@ -315,7 +315,7 @@ export default function FormCheckOut({
               <p className="mt-3 text-base text-white">
                 {`(${format(startDate, "dd/MM/yyyy")} - ${format(
                   endDate,
-                  "dd/MM/yyyy"
+                  "dd/MM/yyyy",
                 )}) `}
                 {diffDate > 0 && `${diffDate} Ngày`}
               </p>
@@ -374,7 +374,7 @@ export default function FormCheckOut({
                   >
                     {formatCurrency(
                       totalDiscount > totalFee ? 0 : totalFee - totalDiscount,
-                      currencyFormatDisplay
+                      currencyFormatDisplay,
                     )}
                   </p>
                 </div>
@@ -556,26 +556,7 @@ export default function FormCheckOut({
                     </div>
                   </div>
                   <div className="mt-4 grid lg:grid-cols-4 gap-4">
-                    <div className="lg:col-span-2 relative">
-                      <input
-                        type="text"
-                        placeholder="Địa chỉ"
-                        {...register(`address_buyer`)}
-                        onChange={(e) =>
-                          setInsuranceBuyerInfo((prev) => ({
-                            ...prev,
-                            address: e.target.value,
-                          }))
-                        }
-                        className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
-                      />{" "}
-                      {errors.address_buyer && (
-                        <p className="text-red-600">
-                          {errors.address_buyer?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="lg:col-span-1 relative">
+                    <div className="z-10">
                       <Controller
                         name="phone_buyer"
                         control={control}
@@ -592,11 +573,12 @@ export default function FormCheckOut({
                             placeholder="Số điện thoại"
                             error={errors.phone_buyer?.message}
                             defaultCountry="VN"
+                            showLabel={false}
                           />
                         )}
                       />
                     </div>
-                    <div className="lg:col-span-1 relative">
+                    <div>
                       <input
                         type="text"
                         placeholder="Email"
@@ -612,6 +594,96 @@ export default function FormCheckOut({
                       {errors.email_buyer && (
                         <p className="text-red-600">
                           {errors.email_buyer?.message}
+                        </p>
+                      )}
+                    </div>
+                    {/**  Bổ sung Sổ hộ chiếu và ngày hết hạn */}
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Sổ hộ chiếu"
+                        {...register(`passport_buyer`)}
+                        className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      />
+                      {errors.passport_buyer && (
+                        <p className="text-red-600">
+                          {errors.passport_buyer?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <div className="h-[46px] w-full booking-form-birthday flex justify-between items-center py-3 pl-1 pr-4 border border-gray-300 rounded-md">
+                        <Controller
+                          name="passport_expiry_date_buyer"
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              id="passport_expiry_date_buyer"
+                              selected={
+                                field.value instanceof Date
+                                  ? field.value
+                                  : field.value
+                                    ? new Date(field.value)
+                                    : null
+                              }
+                              onChange={(date: Date | null) =>
+                                field.onChange(date)
+                              }
+                              onChangeRaw={(event) => {
+                                if (event) {
+                                  const target =
+                                    event.target as HTMLInputElement;
+                                  if (target.value) {
+                                    target.value = target.value
+                                      .trim()
+                                      .replace(/\//g, "-");
+                                  }
+                                }
+                              }}
+                              placeholderText="Ngày hết hạn"
+                              dateFormat="dd-MM-yyyy"
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                              locale={language === "vi" ? vi : enUS}
+                              minDate={new Date()}
+                              className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                            />
+                          )}
+                        />{" "}
+                        <Image
+                          src="/icon/calendar.svg"
+                          alt="Icon"
+                          className="h-5"
+                          width={18}
+                          height={20}
+                        />
+                      </div>
+
+                      {errors.passport_expiry_date_buyer && (
+                        <p className="text-red-600">
+                          {errors.passport_expiry_date_buyer?.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Địa chỉ"
+                        {...register(`address_buyer`)}
+                        onChange={(e) =>
+                          setInsuranceBuyerInfo((prev) => ({
+                            ...prev,
+                            address: e.target.value,
+                          }))
+                        }
+                        className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
+                      />{" "}
+                      {errors.address_buyer && (
+                        <p className="text-red-600">
+                          {errors.address_buyer?.message}
                         </p>
                       )}
                     </div>
@@ -835,14 +907,14 @@ export default function FormCheckOut({
                                         new Date(
                                           new Date().getFullYear() - 15,
                                           11,
-                                          31
+                                          31,
                                         )
                                       }
                                       minDate={
                                         new Date(
                                           new Date().getFullYear() - 85,
                                           11,
-                                          31
+                                          31,
                                         )
                                       }
                                       className="text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
@@ -880,7 +952,7 @@ export default function FormCheckOut({
                                 placeholder="Số CCCD"
                                 defaultValue={item.citizenId}
                                 {...register(
-                                  `insured_info.${index}.passport_number`
+                                  `insured_info.${index}.passport_number`,
                                 )}
                                 className="relative h-[54.4px] text-sm w-full border border-gray-300 rounded-md py-3 px-4 placeholder-gray-400 focus:outline-none focus:border-primary"
                               />{" "}
@@ -990,7 +1062,10 @@ export default function FormCheckOut({
                                     value={field.value}
                                     onChange={field.onChange}
                                     placeholder="Số điện thoại"
-                                    error={errors.insured_info?.[index]?.phone?.message}
+                                    error={
+                                      errors.insured_info?.[index]?.phone
+                                        ?.message
+                                    }
                                     defaultCountry="VN"
                                   />
                                 )}
