@@ -58,14 +58,26 @@ export default function PhoneInput({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!value) return;
+    if (!value) {
+      if (phone) setPhone("");
+      return;
+    }
     const match = countries
       .sort((a, b) => b.dialCode.length - a.dialCode.length)
       .find((c) => value.startsWith(c.dialCode));
 
     if (match) {
-      setSelectedCountry(match);
-      setPhone(value.replace(match.dialCode, ""));
+      if (match.code !== selectedCountry.code) {
+        setSelectedCountry(match);
+      }
+      const newPhone = value.replace(match.dialCode, "");
+      if (newPhone !== phone) {
+        setPhone(newPhone);
+      }
+    } else {
+      if (value !== phone) {
+        setPhone(value);
+      }
     }
   }, [value]);
 

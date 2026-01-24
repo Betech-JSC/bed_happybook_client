@@ -263,8 +263,9 @@ export default function FormCheckOut({
         birthday: item.birthday ? new Date(item.birthday) : undefined,
       };
     });
-    reset({ insured_info: formatted });
-  }, [insuredInfoList, reset]);
+
+    setValue("insured_info", formatted as any);
+  }, [insuredInfoList, setValue]);
 
   const toggleShowInsuranceDetails = useCallback(
     (itemId: any) => {
