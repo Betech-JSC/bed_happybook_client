@@ -32,6 +32,8 @@ import {
   CheckOutYachtSchema,
   CheckOutYachtType,
 } from "@/schemaValidations/checkOutYacht";
+import Tooltip from "@/components/base/Tooltip";
+import { Info } from "lucide-react";
 
 interface Ticket {
   id: number;
@@ -61,7 +63,9 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
-  const [customerType, setCustomerType] = useState<"personal" | "group">("personal");
+  const [customerType, setCustomerType] = useState<"personal" | "group">(
+    "personal",
+  );
   const [guestList, setGuestList] = useState<any[]>([]);
   const [flightNumber, setFlightNumber] = useState<string>("");
   const [flightTime, setFlightTime] = useState<string>("");
@@ -91,17 +95,25 @@ export default function CheckOutForm({
     setFlightTime(formatted);
   };
 
-  const handleFlightArrivalTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFlightArrivalTimeChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const value = e.target.value;
     // Input type="time" với step="60" sẽ trả về format HH:mm (24 giờ)
     // Đảm bảo format đúng
     const formatted = formatTime24h(value);
     setFlightArrivalTime(formatted);
   };
-  const [selectedAdditionalFees, setSelectedAdditionalFees] = useState<number[]>([]);
+  const [selectedAdditionalFees, setSelectedAdditionalFees] = useState<
+    number[]
+  >([]);
   const [additionalFees, setAdditionalFees] = useState<any[]>([]);
-  const [loadingAdditionalFees, setLoadingAdditionalFees] = useState<boolean>(false);
-  const [documents, setDocuments] = useState<{ passport?: File[]; visa?: File[] }>({});
+  const [loadingAdditionalFees, setLoadingAdditionalFees] =
+    useState<boolean>(false);
+  const [documents, setDocuments] = useState<{
+    passport?: File[];
+    visa?: File[];
+  }>({});
   // Handle Voucher
   const {
     totalDiscount,
@@ -115,21 +127,21 @@ export default function CheckOutForm({
   } = useVoucherManager("fast-track");
   const yachtOptionSelected = useMemo(() => {
     return product?.fast_track?.options.find(
-      (item: any) => item.id === ticketOptionId
+      (item: any) => item.id === ticketOptionId,
     );
   }, [product, ticketOptionId]);
 
   // Xác định loại dịch vụ (đón hay tiễn) dựa trên tên option
   const serviceType = useMemo(() => {
-    const optionName = (yachtOptionSelected?.name || '').toLowerCase();
+    const optionName = (yachtOptionSelected?.name || "").toLowerCase();
     return {
-      isDonService: optionName.includes('đón'),
-      isTienService: optionName.includes('tiễn'),
+      isDonService: optionName.includes("đón"),
+      isTienService: optionName.includes("tiễn"),
     };
   }, [yachtOptionSelected]);
 
   const [schemaForm, setSchemaForm] = useState(() =>
-    CheckOutYachtSchema(messages, generateInvoice)
+    CheckOutYachtSchema(messages, generateInvoice),
   );
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
@@ -150,13 +162,13 @@ export default function CheckOutForm({
   const displayDaysOpening = isFullWeek
     ? "Mỗi ngày"
     : daysOpening
-      .map((day: any) => dayMap[day])
-      .filter(Boolean)
-      .join(", ");
+        .map((day: any) => dayMap[day])
+        .filter(Boolean)
+        .join(", ");
   const parsedTimeOpening = parse(
     product?.fast_track?.opening_time,
     "HH:mm:ss",
-    new Date()
+    new Date(),
   );
   const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
 
@@ -254,7 +266,7 @@ export default function CheckOutForm({
 
   const onSubmit = async (data: CheckOutYachtType) => {
     const isSelectedTicketOption = tickets.find(
-      (item: any) => item.quantity > 0
+      (item: any) => item.quantity > 0,
     );
     if (isEmpty(isSelectedTicketOption)) {
       setErrTicketOption("Vui lòng chọn ít nhất 1 loại vé");
@@ -282,7 +294,9 @@ export default function CheckOutForm({
         quantity: item.quantity,
       }));
       // Chỉ gửi guest_list khi là "group" và có dữ liệu
-      const shouldSendGuestList = customerType === "group" && guestList.length > 0 &&
+      const shouldSendGuestList =
+        customerType === "group" &&
+        guestList.length > 0 &&
         guestList.some((guest) => guest.name || guest.phone || guest.email);
 
       const formatData = {
@@ -299,7 +313,7 @@ export default function CheckOutForm({
           ...(flightArrivalTime && { flight_arrival_time: flightArrivalTime }),
           ...(flightDate && { flight_date: flightDate }),
           ...(selectedAdditionalFees.length > 0 && {
-            additional_fees: selectedAdditionalFees.map((id) => ({ id }))
+            additional_fees: selectedAdditionalFees.map((id) => ({ id })),
           }),
         },
         contact: {
@@ -338,7 +352,9 @@ export default function CheckOutForm({
             ...(shouldSendGuestList && { guest_list: guestList }),
             ...(flightNumber && { flight_number: flightNumber }),
             ...(flightTime && { flight_time: flightTime }),
-            ...(flightArrivalTime && { flight_arrival_time: flightArrivalTime }),
+            ...(flightArrivalTime && {
+              flight_arrival_time: flightArrivalTime,
+            }),
             ...(flightDate && { flight_date: flightDate }),
             // Thêm thông tin vé với name từ tickets
             tickets: tickets
@@ -366,7 +382,8 @@ export default function CheckOutForm({
             id: product?.id,
             name: product?.name,
             image_url: product?.image_url,
-            image_location: product?.image_location || product?.gallery?.[0]?.image_location,
+            image_location:
+              product?.image_location || product?.gallery?.[0]?.image_location,
             currency: product?.currency,
           },
         };
@@ -404,36 +421,41 @@ export default function CheckOutForm({
           return { ...ticket, quantity: newQty };
         }
         return ticket;
-      })
+      }),
     );
   };
 
   // Tính tổng số lượng vé đã chọn
   const totalTicketQuantity = tickets.reduce(
     (sum, ticket) => sum + ticket.quantity,
-    0
+    0,
   );
 
   // Tính tổng giá vé
   const ticketsPrice = tickets.reduce(
     (sum, ticket) => sum + ticket.quantity * ticket.price,
-    0
+    0,
   );
 
   // Tính tổng phụ phí đã chọn
   // Lưu ý: "Phụ phí giờ bay thêm" cần tính theo quantity (150,000 VND × quantity)
   const additionalFeesPrice = useMemo(() => {
-    const totalQuantity = tickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    const totalQuantity = tickets.reduce(
+      (sum, ticket) => sum + ticket.quantity,
+      0,
+    );
 
     return additionalFees
       .filter((fee: any) => selectedAdditionalFees.includes(fee.id))
       .reduce((sum: number, fee: any) => {
-        const feeName = (fee.name || '').toLowerCase();
-        const isNightTimeFee = feeName.includes('phụ phí giờ bay thêm') || feeName.includes('phu phi gio bay them');
+        const feeName = (fee.name || "").toLowerCase();
+        const isNightTimeFee =
+          feeName.includes("phụ phí giờ bay thêm") ||
+          feeName.includes("phu phi gio bay them");
 
         // Nếu là "Phụ phí giờ bay thêm", tính theo quantity
         if (isNightTimeFee) {
-          return sum + (150000 * totalQuantity);
+          return sum + 150000 * totalQuantity;
         }
 
         // Các phụ phí khác: tính theo giá đơn vị
@@ -449,19 +471,22 @@ export default function CheckOutForm({
     }
 
     // Tính tổng quantity của tất cả tickets
-    const totalQuantity = tickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    const totalQuantity = tickets.reduce(
+      (sum, ticket) => sum + ticket.quantity,
+      0,
+    );
     if (totalQuantity === 0) {
       return false;
     }
 
     // Lấy name của option để xác định đón hay tiễn
-    const optionName = (yachtOptionSelected.name || '').toLowerCase();
+    const optionName = (yachtOptionSelected.name || "").toLowerCase();
     let timeToCheck: string | null = null;
 
     // Xác định giờ cần kiểm tra dựa vào option name
-    if (optionName.includes('đón')) {
+    if (optionName.includes("đón")) {
       timeToCheck = flightArrivalTime; // Đón: kiểm tra giờ hạ cánh
-    } else if (optionName.includes('tiễn')) {
+    } else if (optionName.includes("tiễn")) {
       timeToCheck = flightTime; // Tiễn: kiểm tra giờ khởi hành
     } else {
       // Nếu không có "đón" hoặc "tiễn" trong option name thì không tính
@@ -469,12 +494,12 @@ export default function CheckOutForm({
     }
 
     // Nếu chưa nhập giờ thì không tính
-    if (!timeToCheck || timeToCheck.trim() === '') {
+    if (!timeToCheck || timeToCheck.trim() === "") {
       return false;
     }
 
     // Parse time (format: "HH:mm" hoặc "HH:mm:ss")
-    const timeParts = timeToCheck.split(':');
+    const timeParts = timeToCheck.split(":");
     if (timeParts.length === 0 || !timeParts[0]) {
       return false;
     }
@@ -492,15 +517,20 @@ export default function CheckOutForm({
   useEffect(() => {
     // Tìm "Phụ phí giờ bay thêm" trong additionalFees
     const nightTimeFee = additionalFees.find((fee: any) => {
-      const feeName = (fee.name || '').toLowerCase();
-      return feeName.includes('phụ phí giờ bay thêm') || feeName.includes('phu phi gio bay them');
+      const feeName = (fee.name || "").toLowerCase();
+      return (
+        feeName.includes("phụ phí giờ bay thêm") ||
+        feeName.includes("phu phi gio bay them")
+      );
     });
 
     if (!nightTimeFee) {
       return; // Không có phụ phí này trong danh sách
     }
 
-    const isCurrentlySelected = selectedAdditionalFees.includes(nightTimeFee.id);
+    const isCurrentlySelected = selectedAdditionalFees.includes(
+      nightTimeFee.id,
+    );
 
     // Nếu thời gian đáp ứng điều kiện và chưa được tích → Tự động tích
     if (shouldApplyNightTimeSurcharge && !isCurrentlySelected) {
@@ -508,7 +538,9 @@ export default function CheckOutForm({
     }
     // Nếu thời gian không đáp ứng điều kiện và đã được tích → Tự động bỏ tích
     else if (!shouldApplyNightTimeSurcharge && isCurrentlySelected) {
-      setSelectedAdditionalFees((prev) => prev.filter((id) => id !== nightTimeFee.id));
+      setSelectedAdditionalFees((prev) =>
+        prev.filter((id) => id !== nightTimeFee.id),
+      );
     }
   }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees]);
 
@@ -536,7 +568,6 @@ export default function CheckOutForm({
     } else if (customerType === "personal") {
       // Cá nhân: không cần guestList
       setGuestList([]);
-
     }
   }, [totalTicketQuantity, customerType]);
 
@@ -551,23 +582,26 @@ export default function CheckOutForm({
       setGuestList(
         Array(guestCount)
           .fill(null)
-          .map(() => ({ name: "", phone: "", email: "" }))
+          .map(() => ({ name: "", phone: "", email: "" })),
       );
     }
   };
 
-  const handleGuestListChange = (index: number, field: string, value: string) => {
+  const handleGuestListChange = (
+    index: number,
+    field: string,
+    value: string,
+  ) => {
     const updated = [...guestList];
     updated[index] = { ...updated[index], [field]: value };
     setGuestList(updated);
   };
 
-
   const toggleAdditionalFee = (feeId: number) => {
     setSelectedAdditionalFees((prev) =>
       prev.includes(feeId)
         ? prev.filter((id) => id !== feeId)
-        : [...prev, feeId]
+        : [...prev, feeId],
     );
   };
 
@@ -634,10 +668,11 @@ export default function CheckOutForm({
                           <button
                             type="button"
                             className={`w-6 h-6 font-medium text-xl rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center
-                          ${ticket.quantity <= ticket.minQty
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                              } `}
+                          ${
+                            ticket.quantity <= ticket.minQty
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          } `}
                             onClick={() => updateCount(ticket.id, -1)}
                             disabled={ticket.quantity <= ticket.minQty}
                           >
@@ -650,10 +685,11 @@ export default function CheckOutForm({
                           <button
                             type="button"
                             className={`w-6 h-6 text-xl font-medium rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center 
-                           ${ticket.quantity >= 20
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                              }`}
+                           ${
+                             ticket.quantity >= 20
+                               ? "cursor-not-allowed opacity-50"
+                               : ""
+                           }`}
                             onClick={() => updateCount(ticket.id, 1)}
                             disabled={ticket.quantity >= 20}
                           >
@@ -662,7 +698,7 @@ export default function CheckOutForm({
                         </div>
                       </div>
                     </div>
-                  )
+                  ),
               )}
               {errTicketOption && (
                 <p className="text-red-600 mt-2">{errTicketOption}</p>
@@ -680,8 +716,10 @@ export default function CheckOutForm({
                 {additionalFees
                   .filter((fee: any) => {
                     // Kiểm tra xem có phải "Phụ phí giờ bay thêm" không
-                    const feeName = (fee.name || '').toLowerCase();
-                    const isNightTimeFee = feeName.includes('phụ phí giờ bay thêm') || feeName.includes('phu phi gio bay them');
+                    const feeName = (fee.name || "").toLowerCase();
+                    const isNightTimeFee =
+                      feeName.includes("phụ phí giờ bay thêm") ||
+                      feeName.includes("phu phi gio bay them");
 
                     // Nếu là phụ phí giờ bay thêm, chỉ hiển thị khi thời gian đáp ứng điều kiện
                     if (isNightTimeFee) {
@@ -694,10 +732,11 @@ export default function CheckOutForm({
                   .map((fee: any) => (
                     <div
                       key={fee.id}
-                      className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${selectedAdditionalFees.includes(fee.id)
+                      className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${
+                        selectedAdditionalFees.includes(fee.id)
                           ? "border-blue-500 bg-blue-50 shadow-sm"
                           : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-                        }`}
+                      }`}
                       onClick={() => toggleAdditionalFee(fee.id)}
                     >
                       <div className="flex items-start gap-3 flex-1">
@@ -708,7 +747,7 @@ export default function CheckOutForm({
                           onClick={(e) => e.stopPropagation()}
                           className="mt-1 cursor-pointer w-4 h-4"
                         />
-                        <div className="flex-1">
+                        <div className="flex-1 flex items-center gap-3">
                           <div
                             className="font-medium text-base text-gray-900"
                             data-translate="true"
@@ -716,13 +755,27 @@ export default function CheckOutForm({
                             {renderTextContent(fee.name)}
                           </div>
                           {fee.description && (
-                            <div
-                              className="text-sm text-gray-500 mt-1"
-                              data-translate="true"
-                              dangerouslySetInnerHTML={{
-                                __html: fee.description,
-                              }}
-                            />
+                          <Tooltip
+                            contentClassName="max-w-[280px] md:max-w-[400px] w-max"
+                            content={
+                              <div>
+                                  <div
+                                    className="text-sm text-gray-300"
+                                    data-translate="true"
+                                    dangerouslySetInnerHTML={{
+                                      __html: fee.description,
+                                    }}
+                                  />
+                                
+                              </div>
+                            }
+                            position="top"
+                            delay={300}
+                          >
+                            <button className="flex items-center justify-center">
+                              <Info />
+                            </button>
+                          </Tooltip>
                           )}
                         </div>
                       </div>
@@ -754,30 +807,38 @@ export default function CheckOutForm({
               <button
                 type="button"
                 onClick={() => handleCustomerTypeChange("personal")}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "personal"
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  customerType === "personal"
                     ? "border-blue-600 bg-blue-50 shadow-sm"
                     : "border-gray-300 hover:border-gray-400"
-                  }`}
+                }`}
               >
                 <div className="font-semibold" data-translate="true">
                   Đón/Tiễn cá nhân
                 </div>
-                <div className="text-xs text-gray-500 mt-1" data-translate="true">
+                <div
+                  className="text-xs text-gray-500 mt-1"
+                  data-translate="true"
+                >
                   Sử dụng thông tin từ form liên hệ
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => handleCustomerTypeChange("group")}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "group"
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  customerType === "group"
                     ? "border-blue-600 bg-blue-50 shadow-sm"
                     : "border-gray-300 hover:border-gray-400"
-                  }`}
+                }`}
               >
                 <div className="font-semibold" data-translate="true">
                   Đón/Tiễn đoàn
                 </div>
-                <div className="text-xs text-gray-500 mt-1" data-translate="true">
+                <div
+                  className="text-xs text-gray-500 mt-1"
+                  data-translate="true"
+                >
                   Nhập thông tin cho nhiều khách
                 </div>
               </button>
@@ -827,7 +888,11 @@ export default function CheckOutForm({
                             type="text"
                             value={guest.name}
                             onChange={(e) =>
-                              handleGuestListChange(index, "name", e.target.value)
+                              handleGuestListChange(
+                                index,
+                                "name",
+                                e.target.value,
+                              )
                             }
                             placeholder="Nhập họ và tên"
                             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
@@ -852,7 +917,11 @@ export default function CheckOutForm({
                             type="email"
                             value={guest.email}
                             onChange={(e) =>
-                              handleGuestListChange(index, "email", e.target.value)
+                              handleGuestListChange(
+                                index,
+                                "email",
+                                e.target.value,
+                              )
                             }
                             placeholder="Nhập email"
                             className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 bg-white"
@@ -893,7 +962,10 @@ export default function CheckOutForm({
                     />
                   </svg>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-blue-900 mb-1" data-translate="true">
+                    <p
+                      className="text-sm font-medium text-blue-900 mb-1"
+                      data-translate="true"
+                    >
                       {t("luu_y_phu_phi_gio_bay_them")}
                     </p>
                     <ul className="text-xs text-blue-800 space-y-1 ml-4 list-disc">
@@ -924,29 +996,39 @@ export default function CheckOutForm({
                 <div className="relative">
                   <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
                     <span data-translate="true">Giờ bay</span>
-                    {serviceType.isTienService && <span className="text-red-500 ml-1">*</span>}
+                    {serviceType.isTienService && (
+                      <span className="text-red-500 ml-1">*</span>
+                    )}
                   </label>
                   <input
                     type="time"
                     value={flightTime}
                     onChange={handleFlightTimeChange}
                     step="60"
-                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isTienService && !flightTime ? 'border-red-300' : 'border-gray-300'
-                      }`}
+                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
+                      serviceType.isTienService && !flightTime
+                        ? "border-red-300"
+                        : "border-gray-300"
+                    }`}
                   />
                 </div>
                 <div className="relative">
                   <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
                     <span data-translate="true">Giờ đáp</span>
-                    {serviceType.isDonService && <span className="text-red-500 ml-1">*</span>}
+                    {serviceType.isDonService && (
+                      <span className="text-red-500 ml-1">*</span>
+                    )}
                   </label>
                   <input
                     type="time"
                     value={flightArrivalTime}
                     onChange={handleFlightArrivalTimeChange}
                     step="60"
-                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isDonService && !flightArrivalTime ? 'border-red-300' : 'border-gray-300'
-                      }`}
+                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
+                      serviceType.isDonService && !flightArrivalTime
+                        ? "border-red-300"
+                        : "border-gray-300"
+                    }`}
                   />
                 </div>
                 <div className="relative">
@@ -1136,7 +1218,9 @@ export default function CheckOutForm({
                     Phụ phí
                   </p>
                   {additionalFees
-                    .filter((fee: any) => selectedAdditionalFees.includes(fee.id))
+                    .filter((fee: any) =>
+                      selectedAdditionalFees.includes(fee.id),
+                    )
                     .map((fee: any) => (
                       <div key={fee.id} className="mt-2 flex justify-between">
                         <span data-translate="true">{fee.name}</span>
@@ -1186,4 +1270,3 @@ export default function CheckOutForm({
     </div>
   );
 }
-

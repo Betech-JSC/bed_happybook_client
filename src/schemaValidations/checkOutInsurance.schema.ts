@@ -56,6 +56,8 @@ export const checkOutInsuranceSchema = (messages: ValidationMessages, checkBoxGe
     email_buyer: z.string().min(1, { message: messages.required }).email({
       message: messages.email,
     }),
+    passport_buyer: z.string().optional(),
+    passport_expiry_date_buyer: z.date().optional(),
 
     insured_info: z.array(
       z.object({
