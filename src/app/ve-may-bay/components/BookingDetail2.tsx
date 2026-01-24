@@ -94,11 +94,14 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           if (selectedPaymentMethod === "onepay") {
             PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
               if (result?.payment_url) {
-                window.open(
-                  result.payment_url,
-                  "_blank",
-                  "noopener,noreferrer"
-                );
+                window.location.href = result.payment_url;
+
+                // window.open(
+                //   result.payment_url,
+                //   "_blank",
+                //   "noopener,noreferrer"
+                // );
+
               }
             });
           }
@@ -288,7 +291,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     if (selectedPaymentMethod === "onepay") {
       setOnePayFee(
         (totalPrice + totalBaggages.price - data?.orderInfo?.total_discount) *
-          0.025,
+        0.025,
       );
     } else {
       setOnePayFee(0);
@@ -452,11 +455,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </svg>
           </button>
           <div
-            className={`bg-white border-t transition-all duration-300 overflow-hidden ${
-              isOpenBookingDetail
-                ? "max-h-[2500px] opacity-100 p-4"
-                : "max-h-0 opacity-0 p-0"
-            }`}
+            className={`bg-white border-t transition-all duration-300 overflow-hidden ${isOpenBookingDetail
+              ? "max-h-[2500px] opacity-100 p-4"
+              : "max-h-0 opacity-0 p-0"
+              }`}
           >
             <div>
               <p className="font-bold text-18">{t("tom_tat_chuyen_bay")}</p>
@@ -591,10 +593,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                                     >
                                       {durationFlight
                                         ? `${Math.floor(
-                                            durationFlight / 60,
-                                          )} giờ ${Math.floor(
-                                            durationFlight % 60,
-                                          )} phút`
+                                          durationFlight / 60,
+                                        )} giờ ${Math.floor(
+                                          durationFlight % 60,
+                                        )} phút`
                                         : ""}
                                     </span>
                                     {flight.legs < 1 && (
@@ -655,12 +657,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                           !isLoadingRules && (
                             <div className="text-gray-700 list-disc list-inside [&_li]:mb-2 [&_li:last-child]:mb-0">
                               {Array.isArray(flight.ListRulesTicket) &&
-                              flight.ListRulesTicket.length > 0 ? (
+                                flight.ListRulesTicket.length > 0 ? (
                                 (() => {
                                   const isFareRulesOfStrings =
                                     Array.isArray(flight.ListRulesTicket) &&
                                     typeof flight.ListRulesTicket[0] ===
-                                      "string";
+                                    "string";
 
                                   return (
                                     <div>
@@ -963,15 +965,15 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 }
                 disabled={
                   ticketPaymentTimeout ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? true
                     : false
                 }
                 style={
                   ticketPaymentTimeout ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? "bg-gray-300 disabled:cursor-not-allowed"
                     : ""
                 }
@@ -1050,11 +1052,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                   </div>
                 </button>
                 <div
-                  className={`rounded-lg transition-all delay-300 ease-in ${
-                    activeIndex === index
-                      ? "max-h-16 opacity-100 visible"
-                      : "max-h-0 opacity-0 invisible"
-                  } `}
+                  className={`rounded-lg transition-all delay-300 ease-in ${activeIndex === index
+                    ? "max-h-16 opacity-100 visible"
+                    : "max-h-0 opacity-0 invisible"
+                    } `}
                 >
                   <div className="text-sm text-gray-500 flex justify-between mt-1">
                     <span data-translate="true">Vé</span>
@@ -1085,9 +1086,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               </span>
               <p className="font-semibold">
                 {totalBaggages.price && totalBaggages.quantity
-                  ? `${formatCurrency(totalBaggages.price)} x ${
-                      totalBaggages.quantity
-                    }`
+                  ? `${formatCurrency(totalBaggages.price)} x ${totalBaggages.quantity
+                  }`
                   : "0đ"}
               </p>
             </div>
@@ -1123,9 +1123,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             <p className="font-bold text-primary">
               {formatCurrency(
                 totalPrice +
-                  onePayFee +
-                  totalBaggages.price -
-                  data?.orderInfo?.total_discount,
+                onePayFee +
+                totalBaggages.price -
+                data?.orderInfo?.total_discount,
               )}
             </p>
           </div>

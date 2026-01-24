@@ -87,16 +87,19 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
           toast.success(toaStrMsg.sendSuccess);
 
           if (selectedPaymentMethod === "onepay") {
-            const result = await PaymentApi.onePay(data.orderInfo.sku);
 
-            if (result?.payment_url) {
-              window.open(
-                result.payment_url,
-                "_blank",
-                "noopener,noreferrer"
-              );
+            PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
+              if (result?.payment_url) {
+                window.location.href = result.payment_url;
 
-            }
+                // window.open(
+                //   result.payment_url,
+                //   "_blank",
+                //   "noopener,noreferrer"
+                // );
+              }
+            });
+
           } else {
             handleSessionStorage("remove", ["bookingFlight"]);
             setTimeout(() => {
