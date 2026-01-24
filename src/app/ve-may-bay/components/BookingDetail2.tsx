@@ -89,7 +89,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           if (selectedPaymentMethod === "onepay") {
             PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
               if (result?.payment_url) {
-                window.location.href = result.payment_url;
+                window.open(
+                  result.payment_url,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
               }
             });
           }

@@ -81,16 +81,22 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
       try {
         setLoadingSubmitForm(true);
         const respon = await FlightApi.updatePaymentMethod(finalData);
+
         if (respon?.status === 200) {
           reset();
           toast.success(toaStrMsg.sendSuccess);
 
           if (selectedPaymentMethod === "onepay") {
-            PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
-              if (result?.payment_url) {
-                window.location.href = result.payment_url;
-              }
-            });
+            const result = await PaymentApi.onePay(data.orderInfo.sku);
+
+            if (result?.payment_url) {
+              window.open(
+                result.payment_url,
+                "_blank",
+                "noopener,noreferrer"
+              );
+
+            }
           } else {
             handleSessionStorage("remove", ["bookingFlight"]);
             setTimeout(() => {
@@ -100,12 +106,13 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
         } else {
           toast.error(toaStrMsg.sendFailed);
         }
-      } catch (error: any) {
+      } catch (error) {
         toast.error(toaStrMsg.error);
       } finally {
         setLoadingSubmitForm(false);
       }
     };
+
     if (finalData) {
       updatePaymentMethod();
     }

@@ -65,7 +65,11 @@ export default function OrderFlightDetail({ detail }: any) {
           if (selectedPaymentMethod === "onepay") {
             PaymentApi.onePay(detail.sku).then((result: any) => {
               if (result?.payment_url) {
-                window.location.href = result.payment_url;
+                window.open(
+                  result.payment_url,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
               }
             });
           } else {

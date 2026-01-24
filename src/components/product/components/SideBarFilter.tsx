@@ -147,11 +147,10 @@ export default function SideBarFilterProduct({
                         return (
                           <div
                             key={optionIndex}
-                            className={`mt-3 flex space-x-2 items-center ${
-                              !showAll && optionIndex > visibleCount
+                            className={`mt-3 flex space-x-2 items-center ${!showAll && optionIndex > visibleCount
                                 ? "invisible"
                                 : ""
-                            }`}
+                              }`}
                           >
                             <input
                               type="checkbox"
@@ -219,9 +218,8 @@ export default function SideBarFilterProduct({
                       {showAll ? "Thu gọn" : "Xem thêm"}
                     </span>
                     <Image
-                      className={`transform transition-transform ${
-                        showAll ? "rotate-[270deg]" : "rotate-90"
-                      }`}
+                      className={`transform transition-transform ${showAll ? "rotate-[270deg]" : "rotate-90"
+                        }`}
                       src="/icon/chevron-right.svg"
                       alt="Icon"
                       width={20}
@@ -258,9 +256,8 @@ export default function SideBarFilterProduct({
           </button>
         </div>
         <div
-          className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
-            openModal ? "visible z-[9999]" : "invisible z-[-1]"
-          }`}
+          className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${openModal ? "visible z-[9999]" : "invisible z-[-1]"
+            }`}
           style={{
             opacity: openModal ? "100" : "0",
           }}
@@ -394,7 +391,7 @@ export default function SideBarFilterProduct({
                                               { length: 5 },
                                               (_, starIndex) =>
                                                 option.value &&
-                                                starIndex < option.value ? (
+                                                  starIndex < option.value ? (
                                                   <Image
                                                     key={starIndex}
                                                     className="w-auto"
