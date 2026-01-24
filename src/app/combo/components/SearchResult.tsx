@@ -170,12 +170,11 @@ export default function SearchResult({
             data.map((item: any, index: number) => (
               <div
                 key={index}
-                className={`flex flex-col md:flex-row lg:space-x-6 rounded-3xl bg-white mt-4 transition-opacity duration-700 ${
-                  translatedText ? "opacity-100" : "opacity-0"
-                }`}
+                className={`flex flex-col md:flex-row lg:space-x-6 rounded-3xl bg-white mt-4 pointer-events-none transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
+                  }`}
               >
                 <div className="w-full md:w-5/12 relative overflow-hidden rounded-t-2xl lg:rounded-none lg:rounded-l-2xl">
-                  <Link href={`/combo/${item.slug}`}>
+                  <Link href={`/combo/${item.slug}`} className="pointer-events-none">
                     <Image
                       className="block hover:scale-110 ease-in duration-300 cursor-pointer h-auto w-full rounded-t-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
                       src={`${item.image_url}/${item.image_location}`}
@@ -192,7 +191,7 @@ export default function SearchResult({
                     <div className="flex flex-col lg:flex-row space-x-0 space-y-2 lg:space-y-0 lg:space-x-2">
                       <Link
                         href={`/combo/${item.slug}`}
-                        className="w-full md:w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3"
+                        className="w-full md:w-[80%] text-18 font-semibold hover:text-primary duration-300 transition-colors line-clamp-3 pointer-events-none"
                       >
                         <h2 data-translate="true">
                           {renderTextContent(item.name)}
@@ -202,7 +201,7 @@ export default function SearchResult({
                         <>
                           {Array.from({ length: 5 }, (_, index) =>
                             item?.combo?.hotel?.star &&
-                            index < item?.combo?.hotel.star ? (
+                              index < item?.combo?.hotel.star ? (
                               <Image
                                 key={index}
                                 className="w-4 h-4"
@@ -270,9 +269,8 @@ export default function SearchResult({
                     <div className="text-base text-end">
                       <DisplayPrice
                         price={item?.price - item?.discount_price}
-                        textPrefix={`${
-                          item?.discount_price > 0 ? "giá ưu đãi" : "chỉ từ"
-                        }`}
+                        textPrefix={`${item?.discount_price > 0 ? "giá ưu đãi" : "chỉ từ"
+                          }`}
                       />
                     </div>
                   </div>

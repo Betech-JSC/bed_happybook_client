@@ -45,7 +45,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
     useState<boolean>(false);
   const [qrCodeGenerated, setQrCodeGenerated] = useState<boolean>(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>("onepay");
+    useState<string>("");
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
@@ -69,7 +69,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
     resolver: zodResolver(CheckOutBody(messages)),
     mode: "onSubmit",
     defaultValues: {
-      payment_method: "onepay",
+      payment_method: "",
     },
   });
   const onSubmit = (dataForm: CheckOutBodyType) => {
@@ -200,11 +200,6 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
       }
     }
   }, []);
-
-  useEffect(() => {
-    // Set phương thức thanh toán mặc định là onepay
-    setValue("payment_method", "onepay");
-  }, [setValue]);
 
   useEffect(() => {
     if (data?.orderInfo?.sku) {
@@ -659,7 +654,6 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                     <p className="font-bold" data-translate="true">
                       {data?.contact?.full_name}
                     </p>
-                    {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
                   </div>
                 </div>
                 <div className="flex space-x-2 mt-3">
@@ -668,10 +662,6 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                     {data.contact.gender ? "Nam" : "Nữ"}
                   </p>
                 </div>
-                {/* <div className="flex space-x-2 mt-3">
-              <p className="w-1/4 text-gray-700">Năm sinh</p>
-              <p className="w-3/4 font-medium">08/09/1995</p>
-            </div> */}
                 <div className="flex space-x-2 mt-3">
                   <p className="w-1/4 text-gray-700">{t("email")}</p>
                   <p className="w-3/4 font-medium" data-translate="true">
@@ -694,7 +684,6 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                         {passenger.first_name.toUpperCase()}{" "}
                         {passenger.last_name.toUpperCase()}
                       </p>
-                      {/* <p className="text-sm mt-1">7 KG Hành lý xách tay</p> */}
                     </div>
                   </div>
                   <div className="flex space-x-2 mt-3">
@@ -814,41 +803,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                         </div>
                       </label>
                     </div>
-                    {/* <div className="flex space-x-3 items-start mt-4">
-                    <input
-                      type="radio"
-                      value="international_card"
-                      id="international_card"
-                      {...register("payment_method")}
-                      className="w-5 h-5 mt-[2px]"
-                      onChange={(e) => {
-                        setValue("payment_method", e.target.value);
-                        setSelectedPaymentMethod(e.target.value);
-                      }}
-                    />
-                    <label
-                      htmlFor="international_card"
-                      className=" flex space-x-1"
-                    >
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/transfer.svg"
-                          alt="Icon"
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <div className="max-width-[85%]">
-                        <span
-                          className="block text-base font-medium"
-                          data-translate="true"
-                        >
-                          Thanh Toán Visa
-                        </span>
-                      </div>
-                    </label>
-                  </div> */}
+
                     {errors.payment_method && (
                       <p className="text-red-600">
                         {errors.payment_method.message}

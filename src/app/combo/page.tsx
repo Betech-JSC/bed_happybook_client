@@ -59,9 +59,9 @@ export default async function CompoTour() {
   const formatLocationsData =
     locationsData?.length > 0
       ? locationsData.map((opt: any) => ({
-          value: opt.id,
-          label: opt.name,
-        }))
+        value: opt.id,
+        label: opt.name,
+      }))
       : [];
   const comboData = ((await ComboApi.getAll())?.payload?.data as any) ?? [];
   const hotDestination =
@@ -131,7 +131,7 @@ export default async function CompoTour() {
                           key={item.id}
                           className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
                         >
-                          <div className="overflow-hidden rounded-lg relative">
+                          <div className="overflow-hidden rounded-lg relative pointer-events-none">
                             <Link href={`/combo/${item.slug}`}>
                               <Image
                                 src={`${item.image_url}/${item.image_location}`}

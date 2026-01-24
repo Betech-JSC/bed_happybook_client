@@ -155,11 +155,10 @@ export default function PhoneInput({
                     <button
                       key={c.code}
                       onClick={() => handleCountrySelect(c)}
-                      className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                        selectedCountry.code === c.code
-                          ? "bg-primary/10 font-medium"
-                          : ""
-                      }`}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 transition-colors ${selectedCountry.code === c.code
+                        ? "bg-primary/10 font-medium"
+                        : ""
+                        }`}
                     >
                       <span className="text-base flex-shrink-0">{c.flag}</span>
                       <span className="flex-1 text-left truncate">{c.name}</span>
@@ -175,7 +174,6 @@ export default function PhoneInput({
             </div>
           )}
         </div>
-
         {/* Phone input */}
         <input
           id={id}

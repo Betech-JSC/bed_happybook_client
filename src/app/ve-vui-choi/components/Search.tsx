@@ -171,13 +171,12 @@ export default function Search({
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
               {data.map((item: any, index: number) => {
                 return (
-                  <div key={index} className="rounded-xl">
+                  <div key={index} className="rounded-xl pointer-events-none">
                     <div
-                      className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${
-                        translatedText ? "opacity-100" : "opacity-0"
-                      }`}
+                      className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
+                        }`}
                     >
-                      <Link href={`/ve-vui-choi/${item.slug}`}>
+                      <Link href={`/ve-vui-choi/${item.slug}`} className="pointer-events-none">
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}

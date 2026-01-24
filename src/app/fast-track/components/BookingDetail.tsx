@@ -34,7 +34,7 @@ export default function BookingDetail() {
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(true);
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("onepay");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const [onePayFee, setOnePayFee] = useState<number>(0);
   const [isGeneratingPaymentUrl, setIsGeneratingPaymentUrl] = useState<boolean>(false);
@@ -52,20 +52,9 @@ export default function BookingDetail() {
     resolver: zodResolver(CheckOutBody(messages)),
     mode: "onSubmit",
     defaultValues: {
-      payment_method: "onepay",
+      payment_method: "",
     },
   });
-
-  useEffect(() => {
-    const bookingData = handleSessionStorage("get", "bookingFastTrack");
-    setLoading(false);
-    if (bookingData) {
-      setData(bookingData);
-      // Default payment method to onepay
-      setValue("payment_method", "onepay");
-      setSelectedPaymentMethod("onepay");
-    }
-  }, [setValue]);
 
   useEffect(() => {
     if (data?.code) {
@@ -170,13 +159,13 @@ export default function BookingDetail() {
       code: data.code,
       payment_method: dataForm.payment_method,
     };
-    
+
     try {
       setLoadingSubmitForm(true);
-      
+
       // Bước 1: Cập nhật phương thức thanh toán
       const respon = await BookingProductApi.updatePaymentMethod(finalData);
-      
+
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
@@ -186,7 +175,7 @@ export default function BookingDetail() {
           setIsGeneratingPaymentUrl(true);
           try {
             const paymentResult = await PaymentApi.onePayForProduct(data.code);
-            
+
             if (paymentResult?.success && paymentResult?.payment_url) {
               // Redirect đến trang thanh toán OnePay
               window.location.href = paymentResult.payment_url;
@@ -221,10 +210,10 @@ export default function BookingDetail() {
     if (!data?.booking?.additional_fees || !Array.isArray(data.booking.additional_fees)) {
       return null;
     }
-    
+
     return data.booking.additional_fees.find(
-      (fee: any) => fee.name === 'Phụ phí giờ bay thêm' || 
-                     fee.name?.toLowerCase().includes('phụ phí giờ bay thêm')
+      (fee: any) => fee.name === 'Phụ phí giờ bay thêm' ||
+        fee.name?.toLowerCase().includes('phụ phí giờ bay thêm')
     );
   }, [data?.booking?.additional_fees]);
 
@@ -234,7 +223,7 @@ export default function BookingDetail() {
 
     const flightTime = data?.booking?.flight_time;
     const flightArrivalTime = data?.booking?.flight_arrival_time;
-    
+
     // Xác định giờ nào được dùng để tính phụ phí
     // (Cần check option name từ tickets hoặc booking để biết đón hay tiễn)
     // Tạm thời hiển thị cả 2 giờ nếu có
@@ -325,11 +314,10 @@ export default function BookingDetail() {
             </svg>
           </button>
           <div
-            className={`bg-white border-t transition-all duration-300 overflow-hidden ${
-              isOpenBookingDetail
-                ? "max-h-[2500px] opacity-100 p-4"
-                : "max-h-0 opacity-0 p-0"
-            }`}
+            className={`bg-white border-t transition-all duration-300 overflow-hidden ${isOpenBookingDetail
+              ? "max-h-[2500px] opacity-100 p-4"
+              : "max-h-0 opacity-0 p-0"
+              }`}
           >
             <div>
               <p className="font-bold text-18">{t("thong_tin_lien_he")}</p>
@@ -427,46 +415,46 @@ export default function BookingDetail() {
                   data?.booking?.flight_time ||
                   data?.booking?.flight_date ||
                   data?.booking?.flight_arrival_time) && (
-                  <div className="mt-3 pt-3 border-t border-gray-300">
-                    <p className="w-full text-gray-700 font-semibold mb-2">
-                      {t("thong_tin_chuyen_bay")}
-                    </p>
-                    {data.booking.flight_number && (
-                      <div className="flex space-x-2 mt-2">
-                        <p className="w-1/4 text-gray-600 text-sm">
-                          {t("so_hieu_chuyen_bay")}:
-                        </p>
-                        <p className="w-3/4 font-medium text-sm">
-                          {data.booking.flight_number}
-                        </p>
-                      </div>
-                    )}
-                    {data.booking.flight_time && (
-                      <div className="flex space-x-2 mt-2">
-                        <p className="w-1/4 text-gray-600 text-sm">{t("gio_bay")}:</p>
-                        <p className="w-3/4 font-medium text-sm">
-                          {data.booking.flight_time}
-                        </p>
-                      </div>
-                    )}
-                    {data.booking.flight_arrival_time && (
-                      <div className="flex space-x-2 mt-2">
-                        <p className="w-1/4 text-gray-600 text-sm">{t("gio_dap")}:</p>
-                        <p className="w-3/4 font-medium text-sm">
-                          {data.booking.flight_arrival_time}
-                        </p>
-                      </div>
-                    )}
-                    {data.booking.flight_date && (
-                      <div className="flex space-x-2 mt-2">
-                        <p className="w-1/4 text-gray-600 text-sm">{t("ngay_bay")}:</p>
-                        <p className="w-3/4 font-medium text-sm">
-                          {data.booking.flight_date}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                    <div className="mt-3 pt-3 border-t border-gray-300">
+                      <p className="w-full text-gray-700 font-semibold mb-2">
+                        {t("thong_tin_chuyen_bay")}
+                      </p>
+                      {data.booking.flight_number && (
+                        <div className="flex space-x-2 mt-2">
+                          <p className="w-1/4 text-gray-600 text-sm">
+                            {t("so_hieu_chuyen_bay")}:
+                          </p>
+                          <p className="w-3/4 font-medium text-sm">
+                            {data.booking.flight_number}
+                          </p>
+                        </div>
+                      )}
+                      {data.booking.flight_time && (
+                        <div className="flex space-x-2 mt-2">
+                          <p className="w-1/4 text-gray-600 text-sm">{t("gio_bay")}:</p>
+                          <p className="w-3/4 font-medium text-sm">
+                            {data.booking.flight_time}
+                          </p>
+                        </div>
+                      )}
+                      {data.booking.flight_arrival_time && (
+                        <div className="flex space-x-2 mt-2">
+                          <p className="w-1/4 text-gray-600 text-sm">{t("gio_dap")}:</p>
+                          <p className="w-3/4 font-medium text-sm">
+                            {data.booking.flight_arrival_time}
+                          </p>
+                        </div>
+                      )}
+                      {data.booking.flight_date && (
+                        <div className="flex space-x-2 mt-2">
+                          <p className="w-1/4 text-gray-600 text-sm">{t("ngay_bay")}:</p>
+                          <p className="w-3/4 font-medium text-sm">
+                            {data.booking.flight_date}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                 {/* Thông tin vé đã chọn */}
                 {data?.booking?.tickets &&
@@ -510,9 +498,9 @@ export default function BookingDetail() {
                       </p>
                       {data.booking.additional_fees.map(
                         (fee: any, index: number) => {
-                          const isNightTimeSurcharge = fee.name === 'Phụ phí giờ bay thêm' || 
-                                                       fee.name?.toLowerCase().includes('phụ phí giờ bay thêm');
-                          
+                          const isNightTimeSurcharge = fee.name === 'Phụ phí giờ bay thêm' ||
+                            fee.name?.toLowerCase().includes('phụ phí giờ bay thêm');
+
                           return (
                             <div key={index} className="mb-2 text-sm">
                               <div className="flex justify-between items-start">
@@ -559,46 +547,46 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid  && (
+        {!isPaid && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
                 {t("hinh_thuc_thanh_toan")}
               </p>
               <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-              <div className="flex space-x-3 items-start ">
-                      <input
-                        type="radio"
-                        value="vietqr"
-                        id="payment_vietqr"
-                        {...register("payment_method")}
-                        className="w-5 h-5 mt-[2px]"
-                        onChange={(e) => {
-                          setValue("payment_method", e.target.value);
-                          setSelectedPaymentMethod(e.target.value);
-                        }}
+                <div className="flex space-x-3 items-start ">
+                  <input
+                    type="radio"
+                    value="vietqr"
+                    id="payment_vietqr"
+                    {...register("payment_method")}
+                    className="w-5 h-5 mt-[2px]"
+                    onChange={(e) => {
+                      setValue("payment_method", e.target.value);
+                      setSelectedPaymentMethod(e.target.value);
+                    }}
+                  />
+                  <label
+                    htmlFor="payment_vietqr"
+                    className=" flex space-x-1"
+                  >
+                    <div className="font-normal">
+                      <Image
+                        src="/payment-method/transfer.svg"
+                        alt="Icon"
+                        width={24}
+                        height={24}
+                        className="w-6 h-6"
                       />
-                      <label
-                        htmlFor="payment_vietqr"
-                        className=" flex space-x-1"
-                      >
-                        <div className="font-normal">
-                          <Image
-                            src="/payment-method/transfer.svg"
-                            alt="Icon"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
-                          />
-                        </div>
-                        <div>
-                          <span className="font-medium text-base max-width-[85%]">
-                            {t("thanh_toan_quet_ma_qr_ngan_hang")}
-                          </span>
-                        </div>
-                      </label>
                     </div>
-          
+                    <div>
+                      <span className="font-medium text-base max-width-[85%]">
+                        {t("thanh_toan_quet_ma_qr_ngan_hang")}
+                      </span>
+                    </div>
+                  </label>
+                </div>
+
                 <div className="flex space-x-3 md:items-center mt-4">
                   <input
                     type="radio"
@@ -654,9 +642,9 @@ export default function BookingDetail() {
             <LoadingButton
               style={
                 loadingSubmitForm ||
-                isGeneratingPaymentUrl ||
-                !selectedPaymentMethod ||
-                (selectedPaymentMethod === "vietqr" && !isPaid)
+                  isGeneratingPaymentUrl ||
+                  !selectedPaymentMethod ||
+                  (selectedPaymentMethod === "vietqr" && !isPaid)
                   ? "mt-6 bg-gray-300 disabled:cursor-not-allowed"
                   : "mt-6"
               }
@@ -679,11 +667,10 @@ export default function BookingDetail() {
         )}
       </div>
       <div
-        className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl ${
-          isStickySideBar
-            ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
-            : "w-full"
-        }`}
+        className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl ${isStickySideBar
+          ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
+          : "w-full"
+          }`}
       >
         <div className="overflow-hidden rounded-t-2xl">
           {data?.product?.image_location && (

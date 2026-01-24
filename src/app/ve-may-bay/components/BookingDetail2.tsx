@@ -45,7 +45,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     useState<boolean>(false);
   const [qrCodeGenerated, setQrCodeGenerated] = useState<boolean>(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>("onepay");
+    useState<string>("");
   const toggleDropdown = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
@@ -70,7 +70,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     resolver: zodResolver(CheckOutBody(messages)),
     mode: "onSubmit",
     defaultValues: {
-      payment_method: "onepay",
+      payment_method: "",
     },
   });
   const onSubmit = (dataForm: CheckOutBodyType) => {
@@ -201,11 +201,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       }
     }
   }, []);
-
-  useEffect(() => {
-    // Set phương thức thanh toán mặc định là onepay
-    setValue("payment_method", "onepay");
-  }, [setValue]);
 
   const fetchFareRules = useCallback(
     async (flight: any) => {

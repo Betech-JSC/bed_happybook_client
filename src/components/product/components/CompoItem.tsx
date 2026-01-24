@@ -12,7 +12,7 @@ export default function CompoItem({ data }: any) {
     vehicleIcon.splice(0, 1);
   }
   return (
-    <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
+    <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white pointer-events-none">
       <div className="relative overflow-hidden rounded-t-2xl">
         <Link href={`/combo/${data.slug}`}>
           <Image
@@ -39,7 +39,7 @@ export default function CompoItem({ data }: any) {
       <div className="py-3 px-4">
         <Link
           href={`/combo/${data.slug}`}
-          className={`text-base text-gray-900 min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
+          className={`text-base text-gray-900 pointer-events-none min-h-12 font-semibold line-clamp-2 ${styles.text_hover_default}`}
         >
           <h3 data-translate="true">{data.name}</h3>
         </Link>
@@ -51,9 +51,8 @@ export default function CompoItem({ data }: any) {
             height={20}
           />
           <span data-translate="true">
-            {`${data?.combo?.day ? data?.combo.day : ""} ngày ${
-              data?.combo?.night ? data?.combo?.night : ""
-            } đêm`}
+            {`${data?.combo?.day ? data?.combo.day : ""} ngày ${data?.combo?.night ? data?.combo?.night : ""
+              } đêm`}
           </span>
         </p>
         <div className="flex justify-between mt-[14px]">
@@ -72,9 +71,8 @@ export default function CompoItem({ data }: any) {
           <div>
             <DisplayPrice
               price={data.price - data.discount_price}
-              textPrefix={`${
-                data.discount_price > 0 ? "giá ưu đãi" : "chỉ từ"
-              }`}
+              textPrefix={`${data.discount_price > 0 ? "giá ưu đãi" : "chỉ từ"
+                }`}
             />
           </div>
         </div>

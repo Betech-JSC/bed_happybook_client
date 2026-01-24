@@ -77,11 +77,10 @@ export default function AmusementTicketTabs({
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
-                     ${
-                       activeTab === index
-                         ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                         : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                     }`}
+                     ${activeTab === index
+                            ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                            : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
+                          }`}
                         onClick={() => {
                           setActiveTab(index);
                         }}
@@ -105,11 +104,10 @@ export default function AmusementTicketTabs({
                     align: "start",
                     loop: true,
                   }}
-                  className={`${
-                    category.products.length > 0 && activeTab === index
+                  className={`${category.products.length > 0 && activeTab === index
                       ? "block visible"
                       : "hidden invisible"
-                  }`}
+                    }`}
                 >
                   <CarouselContent>
                     {category.products.map((item: any, subIndex: number) => (
@@ -119,7 +117,7 @@ export default function AmusementTicketTabs({
                       >
                         <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
                           <div className="overflow-hidden rounded-t-2xl	">
-                            <Link href={`/ve-vui-choi/${item.slug}`}>
+                            <Link href={`/ve-vui-choi/${item.slug}`} className="pointer-events-none">
                               <Image
                                 className="hover:scale-110 ease-in duration-300 cursor-pointer"
                                 src={`${item.image_url}/${item.image_location}`}
@@ -134,7 +132,7 @@ export default function AmusementTicketTabs({
                           <div className="py-3 px-4 h-fit ">
                             <Link
                               href={`/ve-vui-choi/${item.slug}`}
-                              className={`text-base font-semibold ${styles.text_hover_default}`}
+                              className={`text-base pointer-events-none font-semibold ${styles.text_hover_default}`}
                             >
                               <h3
                                 data-translate="true"
@@ -159,11 +157,10 @@ export default function AmusementTicketTabs({
                   <CarouselNext className="hidden lg:inline-flex" />
                 </Carousel>
                 <div
-                  className={`min-h-[100px] content-center text-center ${
-                    category.products.length <= 0 && activeTab === index
+                  className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
                       ? "block visible"
                       : "hidden invisible"
-                  }`}
+                    }`}
                 >
                   <p className="font-bold text-xl">
                     {t("thong_tin_dang_cap_nhat")}

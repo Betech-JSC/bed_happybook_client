@@ -666,9 +666,8 @@ export default function FormCheckOut({
                   </div>
                   {/* generateInvoice */}
                   <div
-                    className={`mt-6 ${
-                      generateInvoice ? "visible" : "invisible hidden"
-                    }`}
+                    className={`mt-6 ${generateInvoice ? "visible" : "invisible hidden"
+                      }`}
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="relative">
@@ -809,8 +808,8 @@ export default function FormCheckOut({
                                         field.value instanceof Date
                                           ? field.value
                                           : field.value
-                                          ? new Date(field.value)
-                                          : null
+                                            ? new Date(field.value)
+                                            : null
                                       }
                                       onChange={(date: Date | null) =>
                                         field.onChange(date)
@@ -887,13 +886,13 @@ export default function FormCheckOut({
                               />{" "}
                               {errors.insured_info?.[index]
                                 ?.passport_number && (
-                                <p className="text-red-600">
-                                  {
-                                    errors.insured_info?.[index]
-                                      ?.passport_number?.message
-                                  }
-                                </p>
-                              )}
+                                  <p className="text-red-600">
+                                    {
+                                      errors.insured_info?.[index]
+                                        ?.passport_number?.message
+                                    }
+                                  </p>
+                                )}
                             </div>
                           </div>
                           <div className="my-4 text-right flex w-full justify-end">
@@ -915,11 +914,10 @@ export default function FormCheckOut({
                                 viewBox="0 0 20 20"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
-                                className={`${
-                                  showInsuranceDetails.includes(itemId)
-                                    ? "rotate-180"
-                                    : ""
-                                }`}
+                                className={`${showInsuranceDetails.includes(itemId)
+                                  ? "rotate-180"
+                                  : ""
+                                  }`}
                               >
                                 <path
                                   d="M5 7.5L10 12.5L15 7.5"
@@ -933,11 +931,10 @@ export default function FormCheckOut({
                           </div>
                           <div
                             ref={insuranceDetailRef}
-                            className={`grid lg:grid-cols-4 gap-4 transition-[opacity,max-height,transform] ease-out duration-300 overflow-hidden ${
-                              showInsuranceDetails.includes(itemId)
-                                ? `opacity-1 border-blue-500 translate-y-0`
-                                : "opacity-0 border-none -translate-y-6 invisible"
-                            }`}
+                            className={`grid lg:grid-cols-4 gap-4 transition-[opacity,max-height,transform] ease-out duration-300 overflow-hidden ${showInsuranceDetails.includes(itemId)
+                              ? `opacity-1 border-blue-500 translate-y-0`
+                              : "opacity-0 border-none -translate-y-6 invisible"
+                              }`}
                             style={{
                               maxHeight: showInsuranceDetails.includes(itemId)
                                 ? height
@@ -1054,11 +1051,10 @@ export default function FormCheckOut({
                             text="Đặt đơn bảo hiểm"
                             isLoading={loading}
                             disabled={!isAgreeTerms}
-                            style={`${
-                              !isAgreeTerms
-                                ? "bg-gray-300 !cursor-not-allowed"
-                                : ""
-                            }`}
+                            style={`${!isAgreeTerms
+                              ? "bg-gray-300 !cursor-not-allowed"
+                              : ""
+                              }`}
                           />
                         </div>
                       </div>
