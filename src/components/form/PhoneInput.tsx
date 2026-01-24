@@ -34,6 +34,7 @@ interface PhoneInputProps {
   defaultCountry?: string;
   placeholder?: string;
   id?: string;
+  showLabel?: boolean;
 }
 
 export default function PhoneInput({
@@ -45,6 +46,7 @@ export default function PhoneInput({
   defaultCountry = "VN",
   placeholder = "Nhập số điện thoại",
   id,
+  showLabel = true,
 }: PhoneInputProps) {
   const [selectedCountry, setSelectedCountry] = useState(
     countries.find((c) => c.code === defaultCountry) || countries[0]
@@ -56,14 +58,26 @@ export default function PhoneInput({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!value) return;
+    if (!value) {
+      if (phone) setPhone("");
+      return;
+    }
     const match = countries
       .sort((a, b) => b.dialCode.length - a.dialCode.length)
       .find((c) => value.startsWith(c.dialCode));
 
     if (match) {
-      setSelectedCountry(match);
-      setPhone(value.replace(match.dialCode, ""));
+      if (match.code !== selectedCountry.code) {
+        setSelectedCountry(match);
+      }
+      const newPhone = value.replace(match.dialCode, "");
+      if (newPhone !== phone) {
+        setPhone(newPhone);
+      }
+    } else {
+      if (value !== phone) {
+        setPhone(value);
+      }
     }
   }, [value]);
 
@@ -110,18 +124,18 @@ export default function PhoneInput({
   return (
     <div className="relative">
       {/* Label */}
-      <label
+      {showLabel && <label
         htmlFor={id}
         className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs z-10"
       >
         {label}
         {required && <span className="text-red-500">*</span>}
-      </label>
+      </label>}
 
       {/* Input wrapper */}
       <div className="relative flex items-center">
         {/* Flag dropdown */}
-        <div ref={dropdownRef} className="absolute left-4 top-[40%]">
+        <div ref={dropdownRef} className={`absolute left-4 ${showLabel ? 'top-[40%]' : 'top-1/2 -translate-y-1/2'}`}>
           <button
             type="button"
             onClick={() => setOpen(!open)}
@@ -181,7 +195,7 @@ export default function PhoneInput({
           value={phone}
           onChange={handlePhoneChange}
           placeholder={placeholder}
-          className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 pl-24 pr-3 placeholder-gray-400 focus:outline-none focus:border-primary"
+          className={`text-sm w-full border border-gray-300 rounded-md pl-24 pr-3 placeholder-gray-400 focus:outline-none focus:border-primary ${showLabel ? 'pt-6 pb-2' : 'py-3'}`}
         />
       </div>
 
