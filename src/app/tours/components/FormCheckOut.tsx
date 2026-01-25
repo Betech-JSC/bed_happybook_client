@@ -13,7 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { toast } from "react-hot-toast";
 import { BookingProductApi } from "@/api/BookingProduct";
-import { format } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { useRouter } from "next/navigation";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -73,6 +73,18 @@ export default function CheckOutTourForm({
     setSchemaForm(CheckOutTourSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
 
+  const parseDateString = (dateString: string | undefined) => {
+    if (!dateString) return undefined;
+    const formats = ["dd-MM-yyyy", "yyyy-MM-dd", "dd/MM/yyyy"];
+    for (const fmt of formats) {
+      const date = parse(dateString, fmt, new Date());
+      if (isValid(date)) return date;
+    }
+    return undefined;
+  };
+
+  const parsedStartDate = parseDateString(startDate);
+
   const {
     register,
     handleSubmit,
@@ -82,6 +94,7 @@ export default function CheckOutTourForm({
   } = useForm<CheckOutTourType>({
     resolver: zodResolver(schemaForm),
     defaultValues: {
+      depart_date: parsedStartDate,
       full_name: userInfo?.name,
       phone: userInfo?.phone?.toString(),
       email: userInfo?.email,
@@ -189,7 +202,7 @@ export default function CheckOutTourForm({
                           render={({ field }) => (
                             <DatePicker
                               id={`depart_date`}
-                              selected={field.value || startDate}
+                              selected={field.value}
                               onChange={(date: Date | null) =>
                                 field.onChange(date)
                               }
@@ -387,20 +400,20 @@ export default function CheckOutTourForm({
                 </div>
                 <div className="mt-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <Controller
-                          name="phone"
-                          control={control}
-                          render={({ field }) => (
-                            <PhoneInput
-                              id="phone"
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Nhập số điện thoại"
-                              error={errors.phone?.message}
-                              defaultCountry="VN"
-                            />
-                          )}
+                    <Controller
+                      name="phone"
+                      control={control}
+                      render={({ field }) => (
+                        <PhoneInput
+                          id="phone"
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Nhập số điện thoại"
+                          error={errors.phone?.message}
+                          defaultCountry="VN"
                         />
+                      )}
+                    />
                     <div className="relative">
                       <label
                         htmlFor="email"
@@ -476,9 +489,8 @@ export default function CheckOutTourForm({
               height={18}
             />
             <span data-translate="true">
-              {`${detail.day ? `${detail.day} ngày ` : ""}  ${
-                detail.night ? `${detail.night} đêm ` : ""
-              }
+              {`${detail.day ? `${detail.day} ngày ` : ""}  ${detail.night ? `${detail.night} đêm ` : ""
+                }
                   `}
             </span>
           </div>
