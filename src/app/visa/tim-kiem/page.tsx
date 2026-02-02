@@ -24,8 +24,12 @@ export default async function SearchVisa({
 }: {
   searchParams: { [key: string]: string };
 }) {
-  const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
-    ?.data as any;
+  const text = searchParams?.text ?? "";
+  const optionsFilter = (
+    await VisaApi.getOptionsFilter(
+      text ? { text } : undefined
+    )
+  )?.payload?.data as any;
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("visa", language))?.payload
     ?.data as any;

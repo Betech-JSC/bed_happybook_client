@@ -195,9 +195,8 @@ export default function ListVisa({
               data.map((item: any, index: number) => (
                 <div
                   key={index}
-                  className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-3 md:p-5 transition-opacity duration-700 ${
-                    translatedText ? "opacity-100" : "opacity-0"
-                  }`}
+                  className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-3 md:p-5 transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
+                    }`}
                 >
                   <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                     <Link href={`/visa/${item.slug}`}>

@@ -9,7 +9,16 @@ const VisaApi = {
     http.get<any>(`${path}/categories/${alias}`, data),
   getAll: () => http.get<any>("/product/visa/all"),
   search: (url: string) => http.get<any>(url),
-  getOptionsFilter: () => http.get<any>("product/visa/options-filter"),
+  getOptionsFilter: (params?: { text?: string; diem_den?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.text?.trim()) searchParams.set("text", params.text.trim());
+    if (params?.diem_den?.trim())
+      searchParams.set("diem_den", params.diem_den.trim());
+    const search = searchParams.toString()
+      ? `?${searchParams.toString()}`
+      : "";
+    return http.get<any>(`product/visa/options-filter${search}`);
+  },
 };
 
 export { VisaApi };
