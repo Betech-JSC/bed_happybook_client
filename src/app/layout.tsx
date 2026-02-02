@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/header";
@@ -15,6 +16,7 @@ import { LoadingProvider } from "../contexts/LoadingContext";
 import SupportFloatingIcons from "@/components/layout/support-floating-icons";
 import Script from "next/script";
 import GTMNoScript from "@/components/base/GTMNoScript";
+import ProgressBar from "@/components/layout/ProgressBar";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
 import { TranslationProvider } from "../contexts/TranslationContext";
 import PromoModal from "@/components/base/PromoModal";
@@ -128,6 +130,9 @@ export default async function RootLayout({
       </head>
       <body className={OpenSans.className}>
         <GTMNoScript />
+        <Suspense fallback={null}>
+          <ProgressBar color="#ea580c" height="3px" />
+        </Suspense>
         <LanguageProvider serverLang={session.language}>
           <TranslationProvider translations={translations}>
             <UserProvider initialUser={session.userInfo}>
