@@ -71,7 +71,7 @@ const FlightDomesticDetail = ({
     <Fragment>
       {flight && (
         <div className="h-fit">
-          <div className="grid grid-cols-5 md:grid-cols-6 items-center justify-between bg-white p-3 rounded-lg mt-2 relative">
+          <div className="grid grid-cols-5 md:grid-cols-6 items-center justify-between gap-8 bg-white p-3 rounded-lg mt-2 relative">
             <div className="col-span-1 md:col-span-2">
               <div className="grid grid-cols-2 gap-2 md:gap-12">
                 <div className="col-span-full md:col-span-1">
@@ -83,11 +83,11 @@ const FlightDomesticDetail = ({
                     classStyle={"max-w-16 md:max-w-20 max-h-10 md:mx-0"}
                   />
                 </div>
-                <div className="col-span-full md:col-span-1 flex items-center  text-md font-semibold text-gray-500">
+                <div className="col-span-full md:col-span-1 flex items-center  text-[12px] md:text-sm font-semibold text-gray-500">
                   <h3 className="">
                     {flight.airline}
                   </h3>
-                  <p className="whitespace-nowrap">
+                  <p className="whitespace-nowrap text-[12px] md:text-sm">
                     {flight.flightNumber}
                   </p>
                 </div>
@@ -167,16 +167,6 @@ const FlightDomesticDetail = ({
                 </div>
 
               </div>
-              {/* <button
-                onClick={() =>
-                  toggleShowDetails(flight.flightCode, selectedFlight)
-                }
-                className="block text-center mt-5 md:mt-3 w-full bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300"
-              >
-                {selectedFlight && selectedFlight.flightCode
-                  ? t("thay_doi")
-                  : t("chon")}
-              </button> */}
             </div>
           </div>
           {flight.fareOptions.length > 0 && (
