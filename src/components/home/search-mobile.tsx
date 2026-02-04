@@ -53,14 +53,13 @@ export default function SearchMobile({ airportsData }: any) {
       </form>
       <div className="relative">
         {/* Search Bar */}
-        <div className="grid grid-cols-4 gap-2 my-4 px-1">
+        <div className="grid grid-cols-4 gap-1.5 md:gap-2 my-4 px-3 md:px-1">
           <div
             onClick={() => setActiveTabMb("ve-may-bay")}
-            className={`rounded-2xl text-center h-[104px] block content-center ${
-              activeTabMb === "ve-may-bay"
-                ? "bg-white text-[#175CD3]"
-                : "bg-[#00000054] text-white"
-            }`}
+            className={`rounded-2xl text-center h-[104px] block content-center ${activeTabMb === "ve-may-bay"
+              ? "bg-white text-[#175CD3]"
+              : "bg-[#00000054] text-white"
+              }`}
           >
             <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
               <Image
@@ -78,11 +77,10 @@ export default function SearchMobile({ airportsData }: any) {
           </div>
           <div
             onClick={() => setActiveTabMb("hotel")}
-            className={`rounded-2xl text-center h-[104px] block content-center ${
-              activeTabMb === "hotel"
-                ? "bg-white text-[#175CD3]"
-                : "bg-[#00000054] text-white"
-            }`}
+            className={`rounded-2xl text-center h-[104px] block content-center ${activeTabMb === "hotel"
+              ? "bg-white text-[#175CD3]"
+              : "bg-[#00000054] text-white"
+              }`}
           >
             <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
               <Image
@@ -100,11 +98,10 @@ export default function SearchMobile({ airportsData }: any) {
           </div>
           <div
             onClick={() => setActiveTabMb("insurance")}
-            className={`rounded-2xl text-center h-[104px] block content-center ${
-              activeTabMb === "insurance"
-                ? "bg-white text-[#175CD3]"
-                : "bg-[#00000054] text-white"
-            }`}
+            className={`rounded-2xl text-center h-[104px] block content-center ${activeTabMb === "insurance"
+              ? "bg-white text-[#175CD3]"
+              : "bg-[#00000054] text-white"
+              }`}
           >
             <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto content-center">
               <Image
@@ -119,11 +116,10 @@ export default function SearchMobile({ airportsData }: any) {
           </div>
           <div
             onClick={() => setActiveTabMb("amusement-ticket")}
-            className={`rounded-2xl text-center h-[104px] block content-center ${
-              activeTabMb === "amusement-ticket"
-                ? "bg-white text-[#175CD3]"
-                : "bg-[#00000054] text-white"
-            }`}
+            className={`rounded-2xl text-center h-[104px] block content-center ${activeTabMb === "amusement-ticket"
+              ? "bg-white text-[#175CD3]"
+              : "bg-[#00000054] text-white"
+              }`}
           >
             <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto content-center">
               <Image
@@ -139,7 +135,7 @@ export default function SearchMobile({ airportsData }: any) {
             </span>
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-2 my-4 px-1">
+        <div className="grid grid-cols-4 gap-1.5 md:gap-2 my-4 px-3 md:px-1">
           <Link
             href="/visa"
             className={`rounded-2xl text-center h-[104px] block content-center bg-[#00000054] text-white`}
@@ -221,12 +217,11 @@ export default function SearchMobile({ airportsData }: any) {
           </Link>
         </div>
         {/* Tabs Fly */}
-        <div className="mx-2 h-fit pt-6 pb-4 bg-white rounded-2xl shadow-lg relative">
+        <div className="mx-3 md:mx-2 h-fit pt-6 pb-4 bg-white rounded-2xl shadow-lg relative">
           {/* Tab Fly */}
           <div
-            className={`px-3 ${
-              activeTabMb === "ve-may-bay" ? "block" : "hidden"
-            }`}
+            className={`px-3 ${activeTabMb === "ve-may-bay" ? "block" : "hidden"
+              }`}
           >
             <Suspense>
               <SearchFlight airportsData={airportsData} />
@@ -242,18 +237,16 @@ export default function SearchMobile({ airportsData }: any) {
 
           {/* Tab */}
           <div
-            className={`px-3 ${
-              activeTabMb === "insurance" ? "block" : "hidden"
-            }`}
+            className={`px-3 ${activeTabMb === "insurance" ? "block" : "hidden"
+              }`}
           >
             <SearchFormInsurance />
           </div>
 
           {/* Tab Ticket */}
           <div
-            className={`px-3 ${
-              activeTabMb === "amusement-ticket" ? "block" : "hidden"
-            }`}
+            className={`px-3 ${activeTabMb === "amusement-ticket" ? "block" : "hidden"
+              }`}
           >
             <TicketSearchForm />
           </div>

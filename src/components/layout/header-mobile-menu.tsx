@@ -11,10 +11,12 @@ import clsx from "clsx";
 import AccountDropdownMobile from "./AccountDropdownMobile";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toSnakeCase } from "@/utils/Helper";
+import { useMenu } from "@/contexts/MenuContext";
+
 export default function HeaderMobileMenu() {
   const { t } = useTranslation();
   const pathname = usePathname();
-  const [isMenuMbOpen, setIsMenuMbOpen] = useState(false);
+  const { isMenuMbOpen, setIsMenuMbOpen } = useMenu();
   const [menuHeight, setMenuHeight] = useState("0px");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage } = useLanguage();
@@ -32,6 +34,7 @@ export default function HeaderMobileMenu() {
   useEffect(() => {
     setIsMenuMbOpen(false);
   }, [pathname]);
+
   return (
     <Fragment>
       <div className="w-[67%] justify-end flex items-center gap-3">
@@ -79,9 +82,8 @@ export default function HeaderMobileMenu() {
                         <Image
                           src={`/language/${item.lang}.svg`}
                           alt="Icon"
-                          className={`h-10 ${
-                            item.lang === "vi" ? "rounded-full" : ""
-                          }`}
+                          className={`h-10 ${item.lang === "vi" ? "rounded-full" : ""
+                            }`}
                           width={20}
                           height={20}
                           style={{ width: 20, height: 20 }}
@@ -108,7 +110,7 @@ export default function HeaderMobileMenu() {
       </div>
       {/* Mobile Menu */}
       <div
-        className={`fixed max-h-[600px] inset-[-1px] flex items-center justify z-50  top-[69px] duration-500 ease-in-out`}
+        className={`fixed max-h-[600px] inset-[-1px] flex items-center justify z-50  top-[68px] duration-500 ease-in-out`}
         style={{
           height: menuHeight,
           opacity: isMenuMbOpen ? "1" : "0",
