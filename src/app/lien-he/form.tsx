@@ -33,14 +33,34 @@ export default function FormContact() {
 
   const onSubmit = async (data: ContactBodyType) => {
     try {
+      console.log("Form data being submitted:", data);
+
+      // Strip country code from phone number for backend
+      let cleanPhone = data.phone.replace(/^\+?\d{1,3}/, '').trim(); // Remove country code prefix
+
+      // Add leading 0 if needed (Vietnamese phone numbers start with 0)
+      if (cleanPhone && !cleanPhone.startsWith('0') && cleanPhone.length === 9) {
+        cleanPhone = '0' + cleanPhone;
+      }
+
+      const cleanedData = {
+        ...data,
+        phone: cleanPhone,
+      };
+
+      console.log("Cleaned data for API:", cleanedData);
+
       setLoading(true);
-      const response = await contactApi.send(data);
+      const response = await contactApi.send(cleanedData);
+      console.log("API Response:", response);
       if (response?.status === 200) {
         reset();
         toast.dismiss();
         toast.success(toaStrMsg.sendSuccess);
       }
     } catch (error: any) {
+      console.error("Submit error:", error);
+      console.error("Error response:", error?.response?.data);
       toast.error(toaStrMsg.sendFailed);
     } finally {
       setLoading(false);
