@@ -168,6 +168,7 @@ export default function PhoneInput({
                   filteredCountries.map((c) => (
                     <button
                       key={c.code}
+                      type="button"
                       onClick={() => handleCountrySelect(c)}
                       className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 transition-colors ${selectedCountry.code === c.code
                         ? "bg-primary/10 font-medium"

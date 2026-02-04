@@ -17,7 +17,7 @@ export const ContactSchema = (messages: ValidationMessages) =>
       .min(1, {
         message: messages.required,
       })
-      .regex(/^\d{10,11}$/, {
+      .regex(/^(\+?\d{1,3})?(\d{9,11})$/, {
         message: messages.inValid,
       }),
     service: z.string().trim().min(4, {

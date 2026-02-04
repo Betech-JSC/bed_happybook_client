@@ -231,9 +231,8 @@ export default function Header() {
                           <Image
                             src={`/language/${item.lang}.svg`}
                             alt="Icon"
-                            className={`h-10 ${
-                              item.lang === "vi" ? "rounded-full" : ""
-                            }`}
+                            className={`h-10 ${item.lang === "vi" ? "rounded-full" : ""
+                              }`}
                             width={20}
                             height={20}
                             style={{ width: 20, height: 20 }}
@@ -281,9 +280,8 @@ export default function Header() {
                  ${styles.header__menu_item}`}
             >
               <div
-                className={`w-auto whitespace-nowrap text-ellipsis overflow-hidden font-semibold ${
-                  isSticky ? "text-gray-700" : "text-white"
-                }`}
+                className={`w-auto whitespace-nowrap text-ellipsis overflow-hidden font-semibold ${isSticky ? "text-gray-700" : "text-white"
+                  }`}
               >
                 {userInfo.name}
               </div>
@@ -465,13 +463,11 @@ export default function Header() {
               </div>
               {/* Menu */}
               <nav
-                className={`absolute -left-full top-12 z-10 ${
-                  styles.header__menu_sub_menu
-                }  ${
-                  isMenuOpen
+                className={`absolute -left-full top-12 z-10 ${styles.header__menu_sub_menu
+                  }  ${isMenuOpen
                     ? "[&>a]:max-h-12 visible"
                     : "[&>a]:max-h-0 invisible"
-                }`}
+                  }`}
                 style={{
                   maxHeight: isMenuOpen ? "236px" : "0px ",
                   opacity: isMenuOpen ? "1" : "0",

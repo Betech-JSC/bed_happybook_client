@@ -8,13 +8,16 @@ $color-blue-700: #2e90fa;
 //   font-style: normal;
 // }
 .text_hover_default {
-  @apply transition-colors duration-300 hover:!text-[#f27145]  cursor-pointer;
+  @apply transition-colors duration-300 lg:hover:text-[#f27145] cursor-pointer;
 }
+
 .header__menu {
   @apply pt-4 pb-[10px] fixed top-0 w-full;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
   &_item {
     @apply relative h-8 hover:text-[#f27145] transition-colors duration-300 text-[#EAECF0];
+
     // transition: hover 0.4s ease-in;
     &:hover {
       &:after {
@@ -22,6 +25,7 @@ $color-blue-700: #2e90fa;
         height: 3px;
       }
     }
+
     &:after {
       position: absolute;
       content: "";
@@ -32,19 +36,21 @@ $color-blue-700: #2e90fa;
       transition: all 0.3s ease-in;
     }
   }
+
   &_item.active {
     color: $primary-color !important;
+
     &:after {
       background-color: $primary-color;
       height: 3px;
     }
   }
+
   &_sub_menu {
-    @apply flex flex-col transition-all lg:h-72 duration-500 ease-in-out 
-    border-gray-300 border-2 py-2 space-y-2 absolute right-0 w-[250px] 
-    bg-white text-black px-4 rounded-sm [&>a]:duration-300 [&>a]:transition-all [&>a]:ease-in;
+    @apply flex flex-col transition-all lg:h-72 duration-500 ease-in-out border-gray-300 border-2 py-2 space-y-2 absolute right-0 w-[250px] bg-white text-black px-4 rounded-sm [&>a]:duration-300 [&>a]:transition-all [&>a]:ease-in;
   }
 }
+
 .header__sticky {
   @apply transition-all duration-300 ease-in opacity-100;
   top: 0;
@@ -52,27 +58,33 @@ $color-blue-700: #2e90fa;
   z-index: 99;
   background-color: #fff;
   border-bottom: 1px solid #d0d5dd;
+
   .header__menu_item {
     color: #283448;
+
     // padding-bottom: 10px;
     &:hover {
       color: $primary-color;
     }
   }
+
   .header__menu_search {
     border: 1px solid #d0d5dd;
     box-shadow: 0px 1px 2px 0px #1018280d;
   }
+
   .header__menu_phone_contact {
     color: #175cd3;
     border: 1px solid #2e90fa;
   }
+
   .nav_icon {
     span {
       background-color: #000;
     }
   }
 }
+
 .header__menu_item {
   &:hover .header__sub_menu_item {
     color: #000;
@@ -82,6 +94,7 @@ $color-blue-700: #2e90fa;
     visibility: visible;
     transform: translateY(0px);
   }
+
   .header__sub_menu_item {
     @apply transition-all duration-300;
     display: flex;
@@ -98,8 +111,10 @@ $color-blue-700: #2e90fa;
     transform: translateY(-10px);
     visibility: hidden;
     position: absolute;
+
     & a {
       margin: 0 12px;
+
       &:hover {
         @apply transition-colors duration-300 text-primary;
       }
@@ -110,13 +125,15 @@ $color-blue-700: #2e90fa;
 .header__menu_phone_contact {
   @extend .text_hover_default;
 }
+
 .nav_icon {
-  width: 36px;
+  width: 28px;
   height: 40px;
   position: relative;
   transform: rotate(0deg);
   transition: transform 0.5s ease-in-out;
   cursor: pointer;
+
   span {
     display: block;
     position: absolute;
@@ -129,6 +146,7 @@ $color-blue-700: #2e90fa;
     transform: rotate(0deg);
     transition: all 0.4s ease-in;
   }
+
   span:nth-child(1) {
     top: 8px;
     transform-origin: right center;
@@ -143,32 +161,38 @@ $color-blue-700: #2e90fa;
     top: 24px;
     transform-origin: right center;
   }
+
   &.open {
     span:nth-child(1) {
       transform: rotate(-45deg) translate(8px, 12px);
-      top: 3px;
-      left: -8px;
+      top: 6px;
+      left: -18px;
     }
+
     span:nth-child(2) {
       width: 0%;
       opacity: 0;
     }
+
     span:nth-child(3) {
       transform: rotate(45deg) translate(11px, -8px);
-      top: 29px;
-      left: -8px;
+      top: 27px;
+      left: -17px;
     }
   }
 }
+
 // Visa step
 .progressbar {
   display: flex;
   counter-reset: step;
+
   &__step {
     list-style: none;
     position: relative;
     text-align: center;
     cursor: pointer;
+
     &:before {
       content: "B" counter(step);
       counter-increment: step;
@@ -185,6 +209,7 @@ $color-blue-700: #2e90fa;
       font-weight: 600;
       transition: all 0.3s linear;
     }
+
     &:after {
       content: "";
       position: absolute;
@@ -195,19 +220,23 @@ $color-blue-700: #2e90fa;
       left: 50%;
       z-index: -1;
     }
+
     &_title {
       @apply text-[28px] font-semibold mt-2 md:mt-5;
       transition: all 0.3s linear;
     }
+
     &:hover {
       &:before {
         background-color: #016de2;
         @apply text-white;
       }
+
       .progressbar__step_title {
         color: $primary-color;
       }
     }
+
     &:last-child:after {
       content: none;
     }
@@ -218,12 +247,15 @@ $color-blue-700: #2e90fa;
 .member__item {
   position: relative;
   cursor: pointer;
+
   &:hover .member__img {
     filter: grayscale(0);
   }
+
   &:hover .member__info {
     opacity: 1;
   }
+
   .member__info {
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
@@ -236,20 +268,25 @@ $color-blue-700: #2e90fa;
     width: 90%;
     height: 110px;
     transition: all 0.3s ease-in;
+
     p:first-child {
       color: $primary-color;
     }
   }
+
   .member__img {
     border-radius: 1rem;
     transition: 0.4s;
   }
 }
+
 .back__top {
   @apply fixed bottom-[10%] right-1 z-[999];
+
   &_btn {
     @apply w-16 flex flex-col items-center h-[78px] transition duration-500 opacity-0 transform translate-y-10;
   }
+
   &_icon {
     width: 48px;
     height: 45.6px;
@@ -259,12 +296,14 @@ $color-blue-700: #2e90fa;
 @media (max-width: 767px) {
   .progressbar {
     flex-direction: column;
+
     &__step:after {
       left: 13%;
       top: 25%;
       width: 2px;
       height: 100%;
     }
+
     &__step:before {
       position: absolute;
       left: 9%;
@@ -272,6 +311,7 @@ $color-blue-700: #2e90fa;
     }
   }
 }
+
 @media (max-width: 1024px) {
   .hide__background_mb {
     background: unset !important;

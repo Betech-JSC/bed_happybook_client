@@ -13,6 +13,8 @@ import { LanguageProvider } from "../contexts/LanguageContext";
 import { getSession } from "@/lib/session";
 import { UserProvider } from "../contexts/UserContext";
 import { LoadingProvider } from "../contexts/LoadingContext";
+import { MenuProvider } from "@/contexts/MenuContext";
+import MobileMenuOverlay from "@/components/layout/MobileMenuOverlay";
 import SupportFloatingIcons from "@/components/layout/support-floating-icons";
 import Script from "next/script";
 import GTMNoScript from "@/components/base/GTMNoScript";
@@ -165,18 +167,21 @@ export default async function RootLayout({
         <LanguageProvider serverLang={session.language}>
           <TranslationProvider translations={translations}>
             <UserProvider initialUser={session.userInfo}>
-              <Header></Header>
-              <HeaderMobile></HeaderMobile>
-              {/* <PromoModal /> */}
-              {children}
-              <Toaster toastOptions={toastOptions} />
-              <div id="datepicker-portal"></div>
-              <SupportFloatingIcons />
-              <BackToTopButton></BackToTopButton>
-              <Footer></Footer>
-              <LoadingProvider>
-                <AppLoader />
-              </LoadingProvider>
+              <MenuProvider>
+                <Header></Header>
+                <HeaderMobile></HeaderMobile>
+                <MobileMenuOverlay />
+                {/* <PromoModal /> */}
+                {children}
+                <Toaster toastOptions={toastOptions} />
+                <div id="datepicker-portal"></div>
+                <SupportFloatingIcons />
+                <BackToTopButton></BackToTopButton>
+                <Footer></Footer>
+                <LoadingProvider>
+                  <AppLoader />
+                </LoadingProvider>
+              </MenuProvider>
             </UserProvider>
           </TranslationProvider>
         </LanguageProvider>
