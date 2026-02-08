@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { HomeApi } from "@/api/Home";
+import { getCachedHomeIndex } from "@/app/utils/home-cached-api";
 import { getServerT } from "@/lib/i18n/getServerT";
 import TourTabs from "./TourTabs";
 
 export default async function TourNoiDia() {
   const data =
-    ((await HomeApi.index("tour-domestic"))?.payload?.data as any) ?? [];
+    ((await getCachedHomeIndex("tour-noi-dia"))?.payload?.data as any) ?? [];
   if (!data?.length) return;
   const t = await getServerT();
   return (

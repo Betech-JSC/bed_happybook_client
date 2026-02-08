@@ -2,11 +2,12 @@ import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import HotelTabs from "@/app/khach-san/components/HotelTabs";
-import { HomeApi } from "@/api/Home";
+import { getCachedHomeIndex } from "@/app/utils/home-cached-api";
 import { getServerT } from "@/lib/i18n/getServerT";
 
 export default async function Hotel() {
-  const data = ((await HomeApi.index("hotel"))?.payload?.data as any) ?? [];
+  const data =
+    ((await getCachedHomeIndex("hotel"))?.payload?.data as any) ?? [];
   if (!data?.length) return;
   const t = await getServerT();
 

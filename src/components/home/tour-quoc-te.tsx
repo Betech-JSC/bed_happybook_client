@@ -1,12 +1,12 @@
-import { HomeApi } from "@/api/Home";
 import { getServerT } from "@/lib/i18n/getServerT";
 import Image from "next/image";
 import Link from "next/link";
 import TourTabs from "./TourTabs";
+import { getCachedHomeIndex } from "@/app/utils/home-cached-api";
 
 export default async function TourQuocTe() {
   const data =
-    ((await HomeApi.index("tour-international"))?.payload?.data as any) ?? [];
+    ((await getCachedHomeIndex("tour-quoc-te"))?.payload?.data as any) ?? [];
   if (!data?.length) return;
   const t = await getServerT();
   return (

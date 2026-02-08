@@ -9,7 +9,6 @@ import CompoHot from "@/components/home/compo-hot";
 import VisaSteps from "@/components/home/visa-steps";
 import TouristSuggest from "@/components/home/tourist-suggest";
 import Flight from "@/components/home/flight";
-import AosAnimate from "@/components/layout/aos-animate";
 import FooterMenu from "@/components/content-page/footer-menu";
 import Search from "@/components/home/search";
 import type { Metadata } from "next";
@@ -19,16 +18,29 @@ import { FlightApi } from "@/api/Flight";
 import { siteUrl } from "@/constants";
 import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 import { formatMetadata } from "@/lib/formatters";
-import { BannerApi } from "@/api/Banner";
-import PartnerAirlines from "./ve-may-bay/components/Partner";
 import { settingApi } from "@/api/Setting";
 import HomeYacht from "@/components/home/Yacht";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import NewsByPage from "@/components/content-page/NewsByPage";
 import HomeAmusementTicket from "@/components/home/AmusementTicket";
 import HomeFastTrack from "@/components/home/FastTrack";
-import FormContact from "./lien-he/form";
 import { getServerT } from "@/lib/i18n/getServerT";
+import dynamic from "next/dynamic";
+
+const PartnerAirlines = dynamic(
+  () => import("./ve-may-bay/components/Partner"),
+  {
+    loading: () => <SkeletonProductTabs />,
+  }
+);
+
+const FormContact = dynamic(() => import("./lien-he/form"), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-2xl" />,
+});
+
+const AosAnimate = dynamic(() => import("@/components/layout/aos-animate"), {
+  ssr: true,
+});
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const seo = await settingApi.getCachedMetaSeo();

@@ -8,13 +8,13 @@ import {
 } from "@/components/ui/carousel";
 import styles from "@/styles/styles.module.scss";
 import FlightItem from "@/components/product/components/flight-item";
-import { ProductFlightApi } from "@/api/ProductFlight";
+import { getCachedProductFlights } from "@/app/utils/home-cached-api";
 import { getServerT } from "@/lib/i18n/getServerT";
 
 export default async function Flight() {
   const t = await getServerT();
   const data =
-    (await ProductFlightApi.getFlights("popular"))?.payload?.data?.popular ??
+    (await getCachedProductFlights("popular"))?.payload?.data?.popular ??
     ([] as any);
 
   if (!data?.length) return;
