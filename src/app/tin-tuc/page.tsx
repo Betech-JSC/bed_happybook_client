@@ -12,6 +12,11 @@ import { renderTextContent } from "@/utils/Helper";
 import { settingApi } from "@/api/Setting";
 import { PageApi } from "@/api/Page";
 import { getServerLang } from "@/lib/session";
+import { cache } from "react";
+
+const getCachedPageContent = cache(async (language: string) => {
+  return (await PageApi.getContent("tin-tuc", language))?.payload?.data as any;
+});
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -36,8 +41,8 @@ function getMetadata(data: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const contentPage = (await PageApi.getContent("tin-tuc"))?.payload
-    ?.data as any;
+  const language = await getServerLang();
+  const contentPage = await getCachedPageContent(language);
 
   return getMetadata(contentPage);
 }
@@ -49,8 +54,7 @@ export default async function Posts() {
     response?.payload.data.categoriesWithPosts ?? [];
 
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("tin-tuc", language))
-    ?.payload?.data as any;
+  const contentPage = await getCachedPageContent(language);
   const metadata = getMetadata(contentPage);
 
   return (
@@ -79,7 +83,8 @@ export default async function Posts() {
                       width={844}
                       height={545}
                       className="ease-in duration-300 w-full lg:h-[545px] object-cover"
-                      sizes="100vw"
+                      sizes="(max-width: 1024px) 100vw, 65vw"
+                      priority
                     />
                   </Link>
                 </div>
@@ -120,7 +125,7 @@ export default async function Posts() {
                             alt={item.title}
                             width={388}
                             height={240}
-                            sizes="100vw"
+                            sizes="(max-width: 1024px) 100vw, 35vw"
                             className="ease-in duration-300 object-cover"
                             style={{ width: "100%", height: "240px" }}
                           />
@@ -186,6 +191,7 @@ export default async function Posts() {
                               alt={item.title}
                               width={252}
                               height={168}
+                              sizes="(max-width: 1024px) 100vw, 33vw"
                             />
                           </Link>
                         </div>

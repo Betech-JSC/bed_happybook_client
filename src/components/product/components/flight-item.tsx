@@ -45,6 +45,8 @@ export default function FlightItem({ data }: any) {
               alt={data.name}
               width={200}
               height={160}
+              quality={80}
+              sizes="(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 25vw"
               style={{ height: 220, width: "100%" }}
             />
             {data.flight?.trip_type === "roundTrip" && (
@@ -78,13 +80,13 @@ export default function FlightItem({ data }: any) {
           {data.flight.trip_type === "roundTrip"
             ? returnYear === departYear
               ? `${format(departDate, "dd/MM")} - ${format(
-                  returnDate,
-                  "dd/MM/yyyy"
-                )}`
+                returnDate,
+                "dd/MM/yyyy"
+              )}`
               : `${format(departDate, "dd/MM/yyyy")} - ${format(
-                  returnDate,
-                  "dd/MM/yyyy"
-                )}`
+                returnDate,
+                "dd/MM/yyyy"
+              )}`
             : `${format(departDate, "dd/MM/yyyy")}`}
         </p>
         <div className="text-right mt-2">

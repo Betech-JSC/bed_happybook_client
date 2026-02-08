@@ -53,6 +53,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                         alt="Tin tức"
                         width={140}
                         height={100}
+                        sizes="(max-width: 768px) 35vw, 15vw"
                         style={{ width: "100%", height: "auto" }}
                       />
                     </Link>

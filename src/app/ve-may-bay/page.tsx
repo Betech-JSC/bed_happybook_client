@@ -1,31 +1,38 @@
 import type { Metadata } from "next";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import FlightItem from "@/components/product/components/flight-item";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Search from "./components/Search";
-import { Suspense } from "react";
-import { FlightApi } from "@/api/Flight";
-import { formatCurrency, formatDate, formatMetadata } from "@/lib/formatters";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
-import { buildSearch, cloneItemsCarousel } from "@/utils/Helper";
-import ContentByPage from "@/components/content-page/ContentByPage";
-import { PageApi } from "@/api/Page";
-import FooterMenu from "@/components/content-page/footer-menu";
-import FAQ from "@/components/content-page/FAQ";
-import { getServerLang } from "@/lib/session";
-import { format, isValid } from "date-fns";
-import styles from "@/styles/styles.module.scss";
-import { ProductFlightApi } from "@/api/ProductFlight";
-import { isEmpty } from "lodash";
+import { formatMetadata } from "@/lib/formatters";
 import { getServerT } from "@/lib/i18n/getServerT";
+import dynamic from "next/dynamic";
+import {
+  getCachedAirports,
+  getCachedPageContent,
+  getCachedFooterMenu,
+} from "./utils/cached-api";
+import { getServerLang } from "@/lib/session";
+import styles from "@/styles/styles.module.scss";
+
+// Dynamic imports for heavy sections
+const FlightCarouselSection = dynamic(
+  () => import("./components/FlightCarouselSection"),
+  {
+    loading: () => (
+      <div className="mt-6 py-6 h-96 bg-gray-100 animate-pulse rounded-2xl" />
+    ),
+  }
+);
+
+const ContentSection = dynamic(() => import("./components/ContentSection"), {
+  loading: () => <div className="mt-8 h-64 bg-gray-100 animate-pulse rounded-2xl" />,
+});
+
+const FAQ = dynamic(() => import("@/components/content-page/FAQ"), {
+  loading: () => <div className="my-8 h-40 bg-gray-100 animate-pulse rounded-2xl" />,
+});
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -50,23 +57,22 @@ function getMetadata(data: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const contentPage = (await PageApi.getContent("ve-may-bay"))?.payload
-    ?.data as any;
-
+  const contentPage = await getCachedPageContent();
   return getMetadata(contentPage);
 }
 
 export default async function AirlineTicket() {
-  const airportsReponse: any = await FlightApi.airPorts();
-  const airportsData = airportsReponse?.payload.data ?? [];
-  const productFlights = (await ProductFlightApi.getFlights("all"))?.payload
-    ?.data as any;
+  // Critical for LCP: Fetch airports immediately (blocking but necessary for Search)
+  const airportsData = await getCachedAirports();
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("ve-may-bay", language))
-    ?.payload?.data as any;
+
+  // Parallel fetch for Metadata and SEO (blocking)
+  const contentPage = await getCachedPageContent(language);
   const metadata = getMetadata(contentPage);
-  const footerData = (await PageApi.footerMenu("flight"))?.payload as any;
   const t = await getServerT();
+
+  // Footer data needed for links below
+  const footerData = await getCachedFooterMenu("flight");
 
   return (
     <SeoSchema
@@ -153,68 +159,26 @@ export default async function AirlineTicket() {
               </div>
             </div>
           </div>
-          {/* Flight */}
-          {!isEmpty(productFlights) &&
-            Object.entries(productFlights as Record<string, any[]>).map(
-              ([key, items], index) => {
-                if (items?.length > 0) {
-                  return (
-                    <div className="mt-6 py-6" key={index}>
-                      <div>
-                        <div className="flex justify-between">
-                          <div>
-                            <h2
-                              className="text-[24px] lg:text-32 font-bold"
-                              data-translate
-                            >
-                              {key === "popular"
-                                ? t("nhung_chuyen_bay_pho_bien")
-                                : key === "oneWay"
-                                ? t("ve_may_bay_mot_chieu_danh_cho_ban")
-                                : t("ve_may_bay_khu_hoi_danh_cho_ban")}
-                            </h2>
-                          </div>
-                        </div>
-                        <div className="mt-8 w-full">
-                          <Carousel
-                            opts={{
-                              align: "start",
-                              loop: true,
-                            }}
-                          >
-                            <CarouselContent>
-                              {items.map((flight: any) => (
-                                <CarouselItem
-                                  key={flight.id}
-                                  className="basis-10/12 md:basis-5/12 lg:basis-1/4 "
-                                >
-                                  <FlightItem data={flight} />
-                                </CarouselItem>
-                              ))}
-                            </CarouselContent>
-                            <CarouselPrevious className="hidden lg:inline-flex" />
-                            <CarouselNext className="hidden lg:inline-flex" />
-                          </Carousel>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-              }
-            )}
-          {/* Blog */}
-          {contentPage?.content && (
-            <div className="mt-8 rounded-2xl bg-gray-50 p-8">
-              <ContentByPage data={contentPage} />
-            </div>
-          )}
-          {/* Faq */}
+
+          {/* Flight Carousel - Streamed */}
+          <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-2xl mt-6" />}>
+            <FlightCarouselSection />
+          </Suspense>
+
+          {/* Blog - Streamed */}
+          <Suspense fallback={<div className="h-40 bg-gray-100 animate-pulse rounded-2xl mt-8" />}>
+            <ContentSection />
+          </Suspense>
+
+          {/* Faq - Streamed */}
           <div className="my-8">
             <FAQ />
           </div>
         </div>
+
+        {/* Footer Links - Streamed */}
         <div className="hidden lg:block py-12 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-          {footerData.flight?.length > 0 && (
+          {footerData?.flight?.length > 0 && (
             <div className="mb-8">
               <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
                 {t("diem_den")}
@@ -233,25 +197,6 @@ export default async function AirlineTicket() {
               </div>
             </div>
           )}
-          {/* {footerData.flight?.international?.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-[22px] pb-2 font-semibold border-b-2 border-b-[#2E90FA]">
-                {t("diem_den_quoc_te")}
-              </h2>
-              <div className="grid grid-cols-5 gap-4 mt-3">
-                {footerData.flight?.international.map((item: any) => (
-                  <Link key={item.id} href={`/ve-may-bay/${item.alias}`}>
-                    <h3
-                      className={`text-gray-700 font-medium ${styles.text_hover_default}`}
-                      data-translate="true"
-                    >
-                      {item.location.city}
-                    </h3>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )} */}
         </div>
       </main>
     </SeoSchema>

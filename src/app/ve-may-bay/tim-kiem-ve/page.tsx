@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import {
   Breadcrumb,
@@ -14,17 +14,39 @@ import { FlightApi } from "@/api/Flight";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
-import FAQ from "@/components/content-page/FAQ";
 import { PageApi } from "@/api/Page";
-import ContentByPage from "@/components/content-page/ContentByPage";
-import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { getServerLang } from "@/lib/session";
 import SearchFlightsResult from "../components/SearchResult";
-import PartnerAirlines from "../components/Partner";
 import { redirect } from "next/navigation";
 import { format, parse, isValid, isBefore, startOfDay } from "date-fns";
 import { getServerT } from "@/lib/i18n/getServerT";
 import SearchFlightsInternationalResult from "../components/SearchFlights/International/SearchResult";
+import dynamic from "next/dynamic";
+
+const PartnerAirlines = dynamic(() => import("../components/Partner"), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-2xl" />,
+});
+const FAQ = dynamic(() => import("@/components/content-page/FAQ"), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-2xl" />,
+});
+const ContentByPage = dynamic(
+  () => import("@/components/content-page/ContentByPage")
+);
+const WhyChooseHappyBook = dynamic(
+  () => import("@/components/content-page/whyChooseHappyBook")
+);
+
+const getCachedAirports = cache(async () => {
+  return (await FlightApi.airPorts())?.payload.data ?? [];
+});
+
+const getCachedPageContent = cache(async (language: string) => {
+  return (await PageApi.getContent("ve-may-bay", language))?.payload?.data as any;
+});
+
+const getCachedFlightType = cache(async (startPoint: string, endPoint: string) => {
+  return (await FlightApi.getFlightType(startPoint, endPoint))?.payload?.data as any;
+});
 
 export const metadata: Metadata = formatMetadata({
   robots: "index, follow",
@@ -109,19 +131,16 @@ export default async function SearchTicket({
     redirect(`/ve-may-bay/tim-kiem-ve?${queryString}`);
   }
 
-  const airportsReponse = await FlightApi.airPorts();
-  const airportsData = airportsReponse?.payload.data ?? [];
+  const airportsData = await getCachedAirports();
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("ve-may-bay", language))
-    ?.payload?.data as any;
+  const contentPage = await getCachedPageContent(language);
   const t = await getServerT();
 
-  const flightType = (
-    await FlightApi.getFlightType(
-      mergedParams.StartPoint,
-      mergedParams.EndPoint
-    )
-  )?.payload?.data as any;
+  const flightType = await getCachedFlightType(
+    mergedParams.StartPoint,
+    mergedParams.EndPoint
+  );
+
   return (
     <SeoSchema
       metadata={metadata}
@@ -185,7 +204,7 @@ export default async function SearchTicket({
             </Breadcrumb>
             <div className="min-h-40" id="wrapper_search_flight">
               {flightType === "international" &&
-              mergedParams.tripType === "roundTrip" ? (
+                mergedParams.tripType === "roundTrip" ? (
                 <SearchFlightsInternationalResult
                   airportsData={airportsData}
                   flightType={flightType}

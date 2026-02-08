@@ -17,26 +17,27 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { fetchNewsDetail } from "@/api/news";
 import { notFound } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import { formatDate, formatMetadata } from "@/lib/formatters";
 import { PostType, SearchParamsProps } from "@/types/post";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, blogUrl, pageUrl } from "@/utils/Urls";
 import "@/styles/ckeditor-content.scss";
 import { getServerLang } from "@/lib/session";
-import { translateText } from "@/utils/translateApi";
-import { renderTextContent } from "@/utils/Helper";
 import SideBar from "../tin-tuc/components/side-bar";
-import TableOfContents from "../tin-tuc/components/TableOfContents";
-import DisplayContentEditor from "@/components/base/DisplayContentEditor";
+import { getCachedNewsDetail } from "./utils/cached-api";
+import dynamic from "next/dynamic";
+
+const BlogContentSection = dynamic(() => import("./components/BlogContentSection"), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-2xl" />,
+});
 
 type Props = {
   params: { slug: string };
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const news = await fetchNewsDetail(params.slug, {});
+  const news = await getCachedNewsDetail(params.slug, {});
   return formatMetadata({
     title: news?.meta_title ?? news?.title,
     description: news?.meta_description,
@@ -64,20 +65,13 @@ export default async function Posts({
   params: { slug: string };
   searchParams: SearchParamsProps;
 }) {
-  const detail = await fetchNewsDetail(params.slug, searchParams);
+  const detail = await getCachedNewsDetail(params.slug, searchParams);
   const relatedNews: PostType[] = detail?.new_relation ?? [];
   if (!detail) {
     notFound();
   }
   const language = await getServerLang();
-  let translateData: any = {};
-  await translateText(
-    [renderTextContent(detail.content), renderTextContent(detail.toc)],
-    language
-  ).then((data) => {
-    translateData.content = data[0];
-    translateData.toc = data[1];
-  });
+
   return (
     <SeoSchema
       blog={detail}
@@ -163,25 +157,21 @@ export default async function Posts({
               </h1>
               <div className="my-6">
                 <Image
+                  priority
                   src={detail.image_url + detail.image_location}
                   width={900}
                   height={470}
-                  className="max-w-full lg-h[470px]"
+                  className="max-w-full lg-h[470px] w-full object-cover"
                   alt={detail.title}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 600px"
                 />
               </div>
-              <div
-                data-translate="true"
-                className="mb-8 pb-8 border-b-2 border-gray-200"
-              >
-                <DisplayContentEditor content={detail?.description} />
-              </div>
-              <TableOfContents toc={translateData?.toc} />
-              {translateData?.content && (
-                <div className="post__detail_content md:max-w-[460px] lg:max-w-[820px] overflow-hidden">
-                  <DisplayContentEditor content={translateData.content} />
-                </div>
-              )}
+
+              {/* Streamed Content with Translations */}
+              <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-2xl" />}>
+                <BlogContentSection detail={detail} language={language} />
+              </Suspense>
+
             </div>
           </div>
           {/* Side bar */}
@@ -219,7 +209,7 @@ export default async function Posts({
                                 alt="Tin tức"
                                 width={410}
                                 height={272}
-                                sizes="100vw"
+                                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 33vw"
                               />
                             </Link>
                           </div>
