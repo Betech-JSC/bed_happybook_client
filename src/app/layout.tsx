@@ -22,6 +22,7 @@ import ProgressBar from "@/components/layout/ProgressBar";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
 import { TranslationProvider } from "../contexts/TranslationContext";
 import PromoModal from "@/components/base/PromoModal";
+import { AosProvider } from "@/components/layout/AosProvider";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
 
@@ -59,7 +60,7 @@ export default async function RootLayout({
           content="x7vlq92evnjo5wwhxtpy922e3hu2ac"
         />
         {/* Google Tag Manager */}
-        <Script id="gtm-script" strategy="afterInteractive">
+        <Script id="gtm-script" strategy="lazyOnload">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -103,27 +104,13 @@ export default async function RootLayout({
         {/* === Pancake live chat === */}
         <Script
           src="https://chat-plugin.pancake.vn/main/auto?page_id=web_happybookwebsite"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         {/* === End Pancake === */}
 
-        {/* Xoá thương hiệu Pancake ở footer widget */}
-        <Script id="remove-pancake-brand" strategy="afterInteractive">
-          {`
-                    document.addEventListener("DOMContentLoaded", () => {
-                      const observer = new MutationObserver(() => {
-                        const el = document.querySelector('.pkcp-popup-setup-footer-title');
-                        if (el) {
-                          el.remove();
-                        }
-                      });
-                      observer.observe(document.body, { childList: true, subtree: true });
-                    });
-                  `}
-        </Script>
         {/* === End Pancake === */}
 
-        <Script id="ms-clarity" strategy="afterInteractive">
+        <Script id="ms-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -134,7 +121,7 @@ export default async function RootLayout({
         </Script>
 
         {/* Meta Pixel Code */}
-        <Script id="meta-pixel" strategy="afterInteractive">
+        <Script id="meta-pixel" strategy="lazyOnload">
           {`
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -166,23 +153,25 @@ export default async function RootLayout({
         </Suspense>
         <LanguageProvider serverLang={session.language}>
           <TranslationProvider translations={translations}>
-            <UserProvider initialUser={session.userInfo}>
-              <MenuProvider>
-                <Header></Header>
-                <HeaderMobile></HeaderMobile>
-                <MobileMenuOverlay />
-                {/* <PromoModal /> */}
-                {children}
-                <Toaster toastOptions={toastOptions} />
-                <div id="datepicker-portal"></div>
-                <SupportFloatingIcons />
-                <BackToTopButton></BackToTopButton>
-                <Footer></Footer>
-                <LoadingProvider>
-                  <AppLoader />
-                </LoadingProvider>
-              </MenuProvider>
-            </UserProvider>
+            <AosProvider>
+              <UserProvider initialUser={session.userInfo}>
+                <MenuProvider>
+                  <Header></Header>
+                  <HeaderMobile></HeaderMobile>
+                  <MobileMenuOverlay />
+                  {/* <PromoModal /> */}
+                  {children}
+                  <Toaster toastOptions={toastOptions} />
+                  <div id="datepicker-portal"></div>
+                  <SupportFloatingIcons />
+                  <BackToTopButton></BackToTopButton>
+                  <Footer></Footer>
+                  <LoadingProvider>
+                    <AppLoader />
+                  </LoadingProvider>
+                </MenuProvider>
+              </UserProvider>
+            </AosProvider>
           </TranslationProvider>
         </LanguageProvider>
       </body>

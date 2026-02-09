@@ -184,3 +184,8 @@
 #pancake-chat-plugin-root {
   z-index: 1000 !important;
 }
+
+/* Hide Pancake Brand */
+.pkcp-popup-setup-footer-title {
+  display: none !important;
+}
