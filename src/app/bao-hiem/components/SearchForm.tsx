@@ -422,7 +422,7 @@ export default function SearchFormInsurance() {
 
       <div className="w-full lg:w-[10%]" onClick={handleSearch}>
         <label className="hidden lg:block text-gray-700 mb-1 h-6"></label>
-        <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600  ">
+        <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800  ">
           <Image
             src="/icon/search.svg"
             alt="Phone icon"

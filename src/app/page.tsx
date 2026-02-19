@@ -74,7 +74,7 @@ export default async function Home() {
               width={500}
               height={584}
               className="object-cover w-full h-full"
-              alt="Background"
+              alt="Hỗ trợ tìm kiếm du lịch Happy Book"
             />
           </div>
           <div

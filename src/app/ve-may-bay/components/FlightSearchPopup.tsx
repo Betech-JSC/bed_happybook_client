@@ -145,9 +145,8 @@ export default function FlightSearchPopup({
   };
   return (
     <div
-      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
-        isOpen ? "visible z-[9999]" : "invisible z-[-1]"
-      }`}
+      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${isOpen ? "visible z-[9999]" : "invisible z-[-1]"
+        }`}
       style={{
         opacity: isOpen ? "100" : "0",
       }}
@@ -284,7 +283,7 @@ export default function FlightSearchPopup({
 
           <div className="w-full" onClick={handleSearch}>
             <label className="block text-gray-700 mb-1 h-6"></label>
-            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
+            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800">
               <Image
                 src="/icon/search.svg"
                 alt="Icon"

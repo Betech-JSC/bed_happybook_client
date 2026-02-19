@@ -116,7 +116,7 @@ export default function Search({ locations }: { locations: any }) {
               </div>
             </div>
 
-            <div className="w-full lg:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
+            <div className="w-full lg:w-1/5 text-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800 duration-300">
               <button
                 type="button"
                 className="ml-2 inline-flex items-center space-x-2 h-12 text-white"

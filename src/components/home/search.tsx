@@ -20,7 +20,7 @@ export default function Search({ airportsData }: any) {
           width={500}
           height={584}
           className="object-cover w-full h-full"
-          alt="Background"
+          alt="Tìm kiếm tour và vé máy bay Happy Book"
         />
       </div>
       <div
@@ -43,7 +43,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/AirplaneTilt.svg"
-                alt="Phone icon"
+                alt="Vé máy bay"
                 width={18}
                 height={18}
                 style={{ width: 18, height: 18 }}
@@ -57,7 +57,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/Buildings.svg"
-                alt="Phone icon"
+                alt="Khách sạn"
                 width={18}
                 height={18}
                 style={{ width: 18, height: 18 }}
@@ -71,7 +71,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/Umbrella.svg"
-                alt="Phone icon"
+                alt="Bảo hiểm"
                 width={18}
                 height={18}
               ></Image>
@@ -84,7 +84,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/Ticket.svg"
-                alt="Phone icon"
+                alt="Vé vui chơi"
                 width={18}
                 height={18}
               ></Image>

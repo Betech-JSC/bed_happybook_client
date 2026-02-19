@@ -18,7 +18,7 @@ export default function TourItem({ tour }: any) {
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
             src={`${tour.image_url}/${tour.image_location}`}
-            alt="Tour Image"
+            alt={tour.product_name || "Tour Happy Book"}
             width={320}
             height={320}
             sizes="(max-width: 768px) 100vw,
@@ -52,9 +52,8 @@ export default function TourItem({ tour }: any) {
             width={20}
             height={20}
           />
-          <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""} ${
-            tour.night ? `${tour.night} đêm` : ""
-          }`}</span>
+          <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""} ${tour.night ? `${tour.night} đêm` : ""
+            }`}</span>
         </p>
         <div className="flex space-x-2 mt-2 items-start">
           <Image
@@ -93,7 +92,7 @@ export default function TourItem({ tour }: any) {
                 <Image
                   key={index}
                   src={`/icon/${item}.svg`}
-                  alt="Icon"
+                  alt={item}
                   width={20}
                   height={20}
                 />

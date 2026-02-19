@@ -30,7 +30,7 @@ export default async function Hotel() {
             src="/bg-img/hotel.png"
             width={1280}
             height={500}
-            alt="Background"
+            alt="Khách sạn Happy Book"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />
@@ -73,7 +73,7 @@ export default async function Hotel() {
             <Image
               className=" hover:scale-110 ease-in duration-300"
               src="/icon/chevron-right.svg"
-              alt="Icon"
+              alt="Xem thêm"
               width={20}
               height={20}
             />

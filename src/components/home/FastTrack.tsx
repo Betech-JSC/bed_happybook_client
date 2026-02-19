@@ -25,7 +25,7 @@ export default async function HomeFastTrack() {
             src="/bg-img/tour-noi-dia.png"
             width={1280}
             height={500}
-            alt="Background"
+            alt="Fast Track Happy Book"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />

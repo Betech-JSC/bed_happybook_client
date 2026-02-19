@@ -15,7 +15,7 @@ export default async function Footer() {
             <div className="pb-12">
               <Image
                 src="/logo-footer.svg"
-                alt="Icon"
+                alt="Logo Happy Book"
                 width={287}
                 height={72}
               />
@@ -132,7 +132,7 @@ export default async function Footer() {
                   >
                     <Image
                       src="/social/fb.svg"
-                      alt="Icon"
+                      alt="Facebook Happy Book"
                       width={32}
                       height={32}
                     />
@@ -143,7 +143,7 @@ export default async function Footer() {
                   >
                     <Image
                       src="/social/tiktok.svg"
-                      alt="Icon"
+                      alt="Tiktok Happy Book"
                       width={32}
                       height={32}
                     />
@@ -162,7 +162,7 @@ export default async function Footer() {
                   >
                     <Image
                       src="/social/ytb.svg"
-                      alt="Icon"
+                      alt="Zalo Happy Book"
                       width={32}
                       height={32}
                     />
@@ -270,7 +270,7 @@ export default async function Footer() {
                   >
                     <Image
                       src="/social/fb.svg"
-                      alt="Icon"
+                      alt="Facebook Happy Book"
                       width={32}
                       height={32}
                     />
@@ -281,7 +281,7 @@ export default async function Footer() {
                   >
                     <Image
                       src="/social/tiktok.svg"
-                      alt="Icon"
+                      alt="Tiktok Happy Book"
                       width={32}
                       height={32}
                     />
@@ -300,7 +300,7 @@ export default async function Footer() {
                   >
                     <Image
                       src="/social/ytb.svg"
-                      alt="Icon"
+                      alt="Zalo Happy Book"
                       width={32}
                       height={32}
                     />
@@ -312,7 +312,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/1.svg"
-                    alt="Icon"
+                    alt="Phương thức thanh toán 1"
                     width={58}
                     height={40}
                   />
@@ -320,7 +320,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/2.svg"
-                    alt="Icon"
+                    alt="Phương thức thanh toán 2"
                     width={58}
                     height={40}
                   />
@@ -328,7 +328,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/3.svg"
-                    alt="Icon"
+                    alt="Phương thức thanh toán 3"
                     width={58}
                     height={40}
                   />
@@ -336,7 +336,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/4.svg"
-                    alt="Icon"
+                    alt="Phương thức thanh toán 4"
                     width={58}
                     height={40}
                   />
@@ -347,9 +347,9 @@ export default async function Footer() {
         </div>
         <div className="mt-8">
           <div className="flex justify-between xl:justify-center xl:space-x-[66px]">
-            <Image src="/certifi/1.svg" alt="Icon" width={100} height={32} />
-            <Image src="/certifi/2.svg" alt="Icon" width={100} height={32} />
-            <Image src="/certifi/3.svg" alt="Icon" width={100} height={32} />
+            <Image src="/certifi/1.svg" alt="Chứng nhận 1" width={100} height={32} />
+            <Image src="/certifi/2.svg" alt="Chứng nhận 2" width={100} height={32} />
+            <Image src="/certifi/3.svg" alt="Chứng nhận 3" width={100} height={32} />
           </div>
         </div>
         <div className="mt-8 text-center">

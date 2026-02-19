@@ -168,11 +168,11 @@ export default function AirportPopupSelector({
         const selectedType =
           activeInput === "departure"
             ? airportsData
-                .flatMap((data) => data.airports)
-                .find((a) => a.code === selectedDestination)?.type
+              .flatMap((data) => data.airports)
+              .find((a) => a.code === selectedDestination)?.type
             : airportsData
-                .flatMap((data) => data.airports)
-                .find((a) => a.code === selectedDeparture)?.type;
+              .flatMap((data) => data.airports)
+              .find((a) => a.code === selectedDeparture)?.type;
 
         // const filterByType =
         //   !selectedType ||
@@ -279,7 +279,7 @@ export default function AirportPopupSelector({
             ${isPopupVisible ? "visible z-[9999]" : "invisible z-[-1]"}`}
       >
         <div className="flex items-center justify-between px-4 py-2 border-b">
-          <h2 className="text-lg font-semibold text-orange-500">
+          <h2 className="text-lg font-semibold text-orange-700">
             {t(`chon_${activeInput === "departure" ? "diem_di" : "diem_den"}`)}
           </h2>
           <button
@@ -332,11 +332,10 @@ export default function AirportPopupSelector({
                 country.airports.length > 0 && (
                   <button
                     key={index}
-                    className={`px-3 py-1 mb-2 mr-2 md:mb-0 md:mr-0 rounded-md border ${
-                      selectedTab === country.id
-                        ? "bg-orange-500 text-white"
-                        : "text-gray-600 border-gray-300"
-                    }`}
+                    className={`px-3 py-1 mb-2 mr-2 md:mb-0 md:mr-0 rounded-md border ${selectedTab === country.id
+                      ? "bg-orange-700 text-white"
+                      : "text-gray-600 border-gray-300"
+                      }`}
                     onClick={() => setSelectedTab(country.id)}
                   >
                     {country.country}

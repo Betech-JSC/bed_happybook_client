@@ -24,7 +24,7 @@ export default async function HomeYacht() {
             src="/bg-img/tour-noi-dia.png"
             width={1280}
             height={500}
-            alt="Background"
+            alt="Du thuyền Happy Book"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />

@@ -280,7 +280,7 @@ export default function Search({
               <div className="flex items-center	w-full">
                 <Image
                   src="/icon/calendar.svg"
-                  alt="Icon"
+                  alt="Lịch"
                   className="h-10"
                   width={18}
                   height={18}
@@ -365,7 +365,7 @@ export default function Search({
             <div className="flex items-center border rounded-lg px-2 h-12">
               <Image
                 src="/icon/user-circle.svg"
-                alt="Icon"
+                alt="Số lượng khách"
                 className="h-10"
                 width={18}
                 height={18}
@@ -380,10 +380,10 @@ export default function Search({
 
           <div className="w-full lg:w-[15%]" onClick={handleSearch}>
             <label className="block text-gray-700 mb-1 h-6"></label>
-            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
+            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800">
               <Image
                 src="/icon/search.svg"
-                alt="Icon"
+                alt="Phím tìm kiếm"
                 className="h-10 inline-block"
                 width={18}
                 height={18}

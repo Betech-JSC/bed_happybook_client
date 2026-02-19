@@ -37,7 +37,7 @@ export default async function Flight() {
             src="/bg-img/flight.png"
             width={1280}
             height={500}
-            alt="Background"
+            alt="Chuyến bay phổ biến Happy Book"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />
