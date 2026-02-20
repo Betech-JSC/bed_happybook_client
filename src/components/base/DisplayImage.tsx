@@ -6,12 +6,16 @@ export default function DisplayImage({
   height,
   alt,
   classStyle = "",
+  priority = false, // Defaults to false
+  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
 }: {
   imagePath: string;
   width: number;
   height: number;
   alt: string;
-  classStyle: string;
+  classStyle?: string;
+  priority?: boolean;
+  sizes?: string;
 }) {
   const cmsDomain =
     process.env.NEXT_PUBLIC_CMS_URL || "https://cms.happybooktravel.com";
@@ -25,8 +29,9 @@ export default function DisplayImage({
       alt={alt}
       width={width}
       height={height}
-      priority
+      priority={priority}
       className={classStyle}
+      sizes={sizes}
     />
   );
 }

@@ -312,7 +312,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/1.svg"
-                    alt="Phương thức thanh toán 1"
+                    alt="Thanh toán qua Visa/MasterCard"
                     width={58}
                     height={40}
                   />
@@ -320,7 +320,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/2.svg"
-                    alt="Phương thức thanh toán 2"
+                    alt="Thanh toán qua JCB"
                     width={58}
                     height={40}
                   />
@@ -328,7 +328,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/3.svg"
-                    alt="Phương thức thanh toán 3"
+                    alt="Thanh toán qua OnePay"
                     width={58}
                     height={40}
                   />
@@ -336,7 +336,7 @@ export default async function Footer() {
                 <button>
                   <Image
                     src="/payment/4.svg"
-                    alt="Phương thức thanh toán 4"
+                    alt="Thanh toán qua Chuyển khoản"
                     width={58}
                     height={40}
                   />
@@ -347,9 +347,9 @@ export default async function Footer() {
         </div>
         <div className="mt-8">
           <div className="flex justify-between xl:justify-center xl:space-x-[66px]">
-            <Image src="/certifi/1.svg" alt="Chứng nhận 1" width={100} height={32} />
-            <Image src="/certifi/2.svg" alt="Chứng nhận 2" width={100} height={32} />
-            <Image src="/certifi/3.svg" alt="Chứng nhận 3" width={100} height={32} />
+            <Image src="/certifi/1.svg" alt="Chứng nhận IATA" width={100} height={32} />
+            <Image src="/certifi/2.svg" alt="Chứng nhận Bộ Công Thương" width={100} height={32} />
+            <Image src="/certifi/3.svg" alt="Chứng nhận Travel Trust" width={100} height={32} />
           </div>
         </div>
         <div className="mt-8 text-center">

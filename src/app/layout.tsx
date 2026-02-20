@@ -78,29 +78,12 @@ export default async function RootLayout({
         />
         <Script id="google-ads-script" strategy="afterInteractive">
           {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'AW-17408673405');
-          `}
-        </Script>
-
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17408673405"
-        />
-        <Script
-          id="gtag-init"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'AW-17408673405');
-          `,
-          }}
-        />
+          `}
+        </Script>
         {/* === Pancake live chat === */}
         <Script
           src="https://chat-plugin.pancake.vn/main/auto?page_id=web_happybookwebsite"

@@ -10,7 +10,7 @@ export default function SupportFloatingIcons() {
             src="/gif/phone.gif"
             width={60}
             height={60}
-            alt="1900633437"
+            alt="Hotline hỗ trợ Happy Book"
             unoptimized={true}
           />
         </a>

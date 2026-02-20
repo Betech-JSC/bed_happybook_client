@@ -166,7 +166,7 @@ export default async function Tours() {
                     <Image
                       className="hover:scale-110 ease-in duration-300"
                       src="/icon/chevron-right.svg"
-                      alt="Icon"
+                      alt="Xem tất cả"
                       width={20}
                       height={20}
                     />
@@ -233,7 +233,7 @@ export default async function Tours() {
                     <Image
                       className="hover:scale-110 ease-in duration-300"
                       src="/icon/chevron-right.svg"
-                      alt="Icon"
+                      alt="Xem tất cả"
                       width={20}
                       height={20}
                     />

@@ -31,9 +31,9 @@ export default function Search({ airportsData }: any) {
         }}
       ></div>
       <div className="lg:h-[694px] lg:px-[50px] xl:px-[80px] sm:px-3 content-center pt-[132px] max__screen">
-        <h1 className="text-3xl text-white font-bold text-center mb-12 relative">
+        <h2 className="text-3xl text-white font-bold text-center mb-12 relative">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
-        </h1>
+        </h2>
         <div className="h-[192px] pt-11 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
           <div className="min-w-[600px] w-max grid grid-cols-4 gap-2 mb-4 absolute top-[-12%] left-[50%] translate-x-[-50%] bg-[#000000] py-2 px-3 rounded-3xl">
             <button

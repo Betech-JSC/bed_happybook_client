@@ -28,11 +28,10 @@ export default async function Hotel() {
         <div className="absolute inset-0 z-[2] hidden lg:block">
           <Image
             src="/bg-img/hotel.png"
-            width={1280}
-            height={500}
             alt="Khách sạn Happy Book"
+            fill
             sizes="100vw"
-            className="w-full h-full rounded-3xl "
+            className="rounded-3xl object-cover"
           />
         </div>
         {/* Content */}
