@@ -117,8 +117,8 @@ export default function VisaTabs({
                     loop: true,
                   }}
                   className={`${category.products.length > 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
+                    ? "block visible"
+                    : "hidden invisible"
                     }`}
                 >
                   <CarouselContent>
@@ -127,17 +127,15 @@ export default function VisaTabs({
                         key={subIndex}
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                       >
-                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="overflow-hidden rounded-t-2xl	">
+                        <div className="relative overflow-hidden border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                          <div className="relative overflow-hidden aspect-[3/2]">
                             <Link href={`/visa/${visa.slug}`}>
                               <Image
-                                className="hover:scale-110 ease-in duration-300 cursor-pointer"
+                                className="lg:group-hover:scale-105 w-full h-full ease-in-out duration-300 cursor-pointer"
                                 src={`${visa.image_url}/${visa.image_location}`}
                                 alt={visa.name}
                                 width={320}
                                 height={320}
-                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                style={{ height: 200, width: "100%" }}
                               />
                             </Link>
                           </div>
@@ -172,8 +170,8 @@ export default function VisaTabs({
                 </Carousel>
                 <div
                   className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
+                    ? "block visible"
+                    : "hidden invisible"
                     }`}
                 >
                   <p className="font-bold text-xl" data-translate="true">

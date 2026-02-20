@@ -7,13 +7,13 @@ import Link from "next/link";
 export default function HotelItem({ hotel }: any) {
   const minPrice = hotel?.hotel?.rooms?.[0] ?? null;
   return (
-    <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white h-full">
+    <div className="overflow-hidden relative border-solid border-2 border-[#EAECF0] rounded-2xl bg-white h-full">
       <div className="flex flex-col justify-between h-full">
         <div>
-          <div className="overflow-hidden rounded-t-2xl relative h-52">
+          <div className="overflow-hidden relative aspect-[4/3]">
             <Link href={`/khach-san/${hotel.slug}`}>
               <Image
-                className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
+                className="lg:hover:scale-105 ease-in-out duration-300 cursor-pointer h-full w-full object-cover"
                 src={`${hotel.image_url}/${hotel.image_location}`}
                 alt={hotel.name}
                 width={320}
