@@ -42,9 +42,8 @@ export default function FlightInternationalDetailPopup({
   return createPortal(
     <div
       id="flight-detail-popup-wrapper"
-      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-70 flex justify-center items-center ${
-        isOpen ? "visible z-[9999]" : "invisible z-[-1]"
-      }`}
+      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-70 flex justify-center items-center ${isOpen ? "visible z-[9999]" : "invisible z-[-1]"
+        }`}
       style={{
         opacity: isOpen ? "100" : "0",
       }}
@@ -66,7 +65,7 @@ export default function FlightInternationalDetailPopup({
                 >
                   <Image
                     src="/icon/close.svg"
-                    alt="Icon"
+                    alt="Đóng"
                     className="h-6"
                     width={24}
                     height={24}
@@ -76,9 +75,8 @@ export default function FlightInternationalDetailPopup({
             )}
             {/* Tabs */}
             <div
-              className={`flex sticky top-[-25px] bg-white z-[999]  ${
-                tabs.length > 1 ? "mt-3" : "justify-between"
-              } `}
+              className={`flex sticky top-[-25px] bg-white z-[999]  ${tabs.length > 1 ? "mt-3" : "justify-between"
+                } `}
             >
               {tabs.map((tab: any, index: number) => (
                 <div key={index} onClick={() => setActiveTab(tab.id)}>
@@ -86,16 +84,14 @@ export default function FlightInternationalDetailPopup({
                     type="button"
                     className={`pt-2 font-bold duration-150 transition-colors outline-none 
                     ${activeTab === tab.id ? "text-primary " : ""} 
-                    ${
-                      tabs.length > 1 && activeTab === tab.id
+                    ${tabs.length > 1 && activeTab === tab.id
                         ? "border-b-2 border-primary"
                         : ""
-                    } 
-                    ${
-                      tabs.length < 2 && activeTab === tab.id
+                      } 
+                    ${tabs.length < 2 && activeTab === tab.id
                         ? "text-22 px-0"
                         : "px-4"
-                    }`}
+                      }`}
                   >
                     {t(`${toSnakeCase(tab.name)}`)}
                   </button>
@@ -111,7 +107,7 @@ export default function FlightInternationalDetailPopup({
                 >
                   <Image
                     src="/icon/close.svg"
-                    alt="Icon"
+                    alt="Đóng"
                     className="h-6"
                     width={24}
                     height={24}
@@ -125,11 +121,10 @@ export default function FlightInternationalDetailPopup({
                   return (
                     <div
                       key={key}
-                      className={` bg-white ${
-                        key > 0
-                          ? "pt-6 border-t border-t-gray-300"
-                          : "mt-4 pb-6"
-                      }`}
+                      className={` bg-white ${key > 0
+                        ? "pt-6 border-t border-t-gray-300"
+                        : "mt-4 pb-6"
+                        }`}
                     >
                       <h2
                         className="text-xl py-1 px-4 font-semibold text-white mb-6 max-w-fit rounded-lg"
@@ -150,9 +145,9 @@ export default function FlightInternationalDetailPopup({
                             segment.duration > 0
                               ? segment.duration
                               : differenceInSeconds(
-                                  segmentArrivalAt,
-                                  segmentDepartureAt
-                                ) / 60;
+                                segmentArrivalAt,
+                                segmentDepartureAt
+                              ) / 60;
                           const airPortStartPoint =
                             airports
                               .flatMap((country: any) => country.airports)
@@ -187,9 +182,8 @@ export default function FlightInternationalDetailPopup({
                             : segment.airline;
                           return (
                             <div
-                              className={`grid grid-cols-12 items-start gap-6 ${
-                                index > 0 ? "mt-6" : ""
-                              }`}
+                              className={`grid grid-cols-12 items-start gap-6 ${index > 0 ? "mt-6" : ""
+                                }`}
                               key={index}
                             >
                               <div className="col-span-12 h-full w-full">
@@ -214,7 +208,7 @@ export default function FlightInternationalDetailPopup({
                                         src="/icon/AirplaneTiltBlue.svg"
                                         width={20}
                                         height={20}
-                                        alt="Icon"
+                                        alt="Máy bay"
                                         className="w-5 h-5 mx-auto"
                                       />
                                       <p className="mt-2 text-22 text-[#4E6EB3]">
@@ -247,9 +241,8 @@ export default function FlightInternationalDetailPopup({
                                     <div>
                                       <div className="text-22 font-bold">
                                         {airPortStartPoint
-                                          ? `${
-                                              airPortStartPoint?.city ?? ""
-                                            } (${airPortStartPoint.code})`
+                                          ? `${airPortStartPoint?.city ?? ""
+                                          } (${airPortStartPoint.code})`
                                           : `${segment.departure.IATACode}`}
                                       </div>
                                       <p className="text-gray-500 mt-1 h-6"></p>
@@ -260,7 +253,7 @@ export default function FlightInternationalDetailPopup({
                                           imagePath={`assets/images/airline/${operatingAirline.toLowerCase()}.gif`}
                                           width={82}
                                           height={24}
-                                          alt={"AirLine"}
+                                          alt={operatingAirline}
                                           classStyle={
                                             "max-w-20 md:max-w-24 max-h-10"
                                           }
@@ -276,14 +269,13 @@ export default function FlightInternationalDetailPopup({
                                           {t("hang")}{" "}
                                           {flight.selectedTicketClass
                                             ? flight?.selectedTicketClass
-                                                ?.bookingClass
+                                              ?.bookingClass
                                             : segment.bookingClass ?? ""}
-                                          {`${
-                                            flight.selectedTicketClass
-                                              ?.fareBasisCode
-                                              ? ` (${flight?.selectedTicketClass?.fareBasisCode})`
-                                              : ""
-                                          }`}
+                                          {`${flight.selectedTicketClass
+                                            ?.fareBasisCode
+                                            ? ` (${flight?.selectedTicketClass?.fareBasisCode})`
+                                            : ""
+                                            }`}
                                         </p>
                                       </div>
 
@@ -310,9 +302,8 @@ export default function FlightInternationalDetailPopup({
                                       <p className="text-gray-500 mt-1 h-6"></p>
                                       <p className="text-22 font-bold">
                                         {airPortEndPoint
-                                          ? `${airPortEndPoint?.city ?? ""} (${
-                                              airPortEndPoint.code
-                                            })`
+                                          ? `${airPortEndPoint?.city ?? ""} (${airPortEndPoint.code
+                                          })`
                                           : `${segment.arrival.IATACode}`}
                                       </p>
                                     </div>
@@ -328,9 +319,8 @@ export default function FlightInternationalDetailPopup({
                                       <div className="bg-gray-50 rounded-lg p-4 flex space-x-4 lg:space-x-8 items-center text-sm">
                                         <p>
                                           Transfer in{" "}
-                                          {`${airPortEndPoint?.city ?? ""} (${
-                                            airPortEndPoint.code
-                                          })`}{" "}
+                                          {`${airPortEndPoint?.city ?? ""} (${airPortEndPoint.code
+                                            })`}{" "}
                                         </p>
                                         <p>
                                           {formatNumberToHoursAndMinutesFlight(
@@ -351,75 +341,73 @@ export default function FlightInternationalDetailPopup({
               {activeTab === 2 && (
                 <Fragment>
                   {!flightDetail.domestic &&
-                  ["1G", "VN1A"].includes(flightDetail.source) ? (
+                    ["1G", "VN1A"].includes(flightDetail.source) ? (
                     <div className="flex flex-col gap-2">
                       {!isEmpty(
                         flightDetail?.fareOptSelected?.carryOnBaggage
                       ) && (
-                        <div className="flex gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20px"
-                            height="20px"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="ml-[2px] text-[#efad02]"
-                          >
-                            <rect
-                              x="2"
-                              y="7"
-                              width="20"
-                              height="14"
-                              rx="2"
-                              ry="2"
-                            ></rect>
-                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                          </svg>
-                          <p>
-                            {t("hanh_ly_xach_tay")}:{" "}
-                            {flightDetail?.fareOptSelected?.carryOnBaggage}
-                          </p>
-                        </div>
-                      )}
+                          <div className="flex gap-2">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20px"
+                              height="20px"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="ml-[2px] text-[#efad02]"
+                            >
+                              <rect
+                                x="2"
+                                y="7"
+                                width="20"
+                                height="14"
+                                rx="2"
+                                ry="2"
+                              ></rect>
+                              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                            <p>
+                              {t("hanh_ly_xach_tay")}:{" "}
+                              {flightDetail?.fareOptSelected?.carryOnBaggage}
+                            </p>
+                          </div>
+                        )}
                       {!isEmpty(
                         flightDetail?.fareOptSelected?.checkedBaggae
                       ) && (
-                        <div className="flex gap-2">
-                          <Image
-                            src={`/icon/flight/${
-                              !isEmpty(
+                          <div className="flex gap-2">
+                            <Image
+                              src={`/icon/flight/${!isEmpty(
                                 flightDetail?.fareOptSelected?.checkedBaggae
                               )
                                 ? "luggage"
                                 : "no-luggage"
-                            }.svg`}
-                            width={24}
-                            height={24}
-                            alt="Icon"
-                            className="w-6 h-6"
-                          />
-                          <p
-                            className={`${
-                              isEmpty(
+                                }.svg`}
+                              width={24}
+                              height={24}
+                              alt="Hành lý"
+                              className="w-6 h-6"
+                            />
+                            <p
+                              className={`${isEmpty(
                                 flightDetail?.fareOptSelected?.checkedBaggae
                               )
                                 ? "text-[#ef5350]"
                                 : ""
-                            }`}
-                          >
-                            {t("hanh_ly_ky_gui")}:{" "}
-                            {!isEmpty(
-                              flightDetail?.fareOptSelected?.checkedBaggae
-                            )
-                              ? flightDetail?.fareOptSelected?.checkedBaggae
-                              : "Không bao gồm"}
-                          </p>
-                        </div>
-                      )}
+                                }`}
+                            >
+                              {t("hanh_ly_ky_gui")}:{" "}
+                              {!isEmpty(
+                                flightDetail?.fareOptSelected?.checkedBaggae
+                              )
+                                ? flightDetail?.fareOptSelected?.checkedBaggae
+                                : "Không bao gồm"}
+                            </p>
+                          </div>
+                        )}
                       {flightDetail?.fareOptSelected?.noRefund && (
                         <div className="flex flex-col md:flex-row gap-1">
                           <div className="flex gap-2">
@@ -427,7 +415,7 @@ export default function FlightInternationalDetailPopup({
                               src="/icon/flight/can-refund.svg"
                               width={24}
                               height={24}
-                              alt="Icon"
+                              alt="Hoàn vé"
                               className="w-6 h-6"
                             />
                             <span>{t("hoan_ve")}: </span>
@@ -440,23 +428,23 @@ export default function FlightInternationalDetailPopup({
                       )}
                       {flightDetail?.fareOptSelected?.changePenalties?.length >
                         0 && (
-                        <div className="flex flex-col md:flex-row gap-1">
-                          <div className="flex gap-2">
-                            <Image
-                              src="/icon/flight/can-change.svg"
-                              width={24}
-                              height={24}
-                              alt="Icon"
-                              className="w-6 h-6"
-                            />
-                            <span>{t("doi_ve")}:</span>
-                            <p>{t("duoc_phep")}</p>
+                          <div className="flex flex-col md:flex-row gap-1">
+                            <div className="flex gap-2">
+                              <Image
+                                src="/icon/flight/can-change.svg"
+                                width={24}
+                                height={24}
+                                alt="Đổi vé"
+                                className="w-6 h-6"
+                              />
+                              <span>{t("doi_ve")}:</span>
+                              <p>{t("duoc_phep")}</p>
+                            </div>
+                            <p className="text-[#166987] font-semibold text-end">
+                              ({t("phi_vui_long_lien_he_booker")}).
+                            </p>
                           </div>
-                          <p className="text-[#166987] font-semibold text-end">
-                            ({t("phi_vui_long_lien_he_booker")}).
-                          </p>
-                        </div>
-                      )}
+                        )}
                       {/* {flightDetail?.fareOptSelected?.noshowPenalties &&
                         !flightDetail?.fareOptSelected?.noshowPenalties
                           .length && (
@@ -465,7 +453,7 @@ export default function FlightInternationalDetailPopup({
                               src="/icon/flight/no-change.svg"
                               width={24}
                               height={24}
-                              alt="Icon"
+                              alt="Đổi vé"
                               className="w-6 h-6"
                             />
                             <p>Không được No Show</p>
@@ -479,53 +467,52 @@ export default function FlightInternationalDetailPopup({
                           {!isEmpty(
                             flightDetail?.fareRules?.carry_on_baggage
                           ) && (
-                            <div className="ml-[2px] flex gap-2">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="text-[#efad02]"
-                              >
-                                <rect
-                                  x="2"
-                                  y="7"
+                              <div className="ml-[2px] flex gap-2">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
                                   width="20"
-                                  height="14"
-                                  rx="2"
-                                  ry="2"
-                                ></rect>
-                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                              </svg>
-                              <p>{flightDetail?.fareRules?.carry_on_baggage}</p>
-                            </div>
-                          )}
+                                  height="20"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="text-[#efad02]"
+                                >
+                                  <rect
+                                    x="2"
+                                    y="7"
+                                    width="20"
+                                    height="14"
+                                    rx="2"
+                                    ry="2"
+                                  ></rect>
+                                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                </svg>
+                                <p>{flightDetail?.fareRules?.carry_on_baggage}</p>
+                              </div>
+                            )}
 
                           {!isEmpty(
                             flightDetail?.fareRules?.checked_baggage
                           ) && (
-                            <div className="flex gap-2">
-                              <Image
-                                src={`/icon/flight/${
-                                  !isEmpty(
+                              <div className="flex gap-2">
+                                <Image
+                                  src={`/icon/flight/${!isEmpty(
                                     flightDetail?.fareRules?.checked_baggage
                                   )
                                     ? "luggage"
                                     : "no-luggage"
-                                }.svg`}
-                                width={24}
-                                height={24}
-                                alt="Icon"
-                                className="w-6 h-6"
-                              />
-                              <p>{flightDetail?.fareRules?.checked_baggage}</p>
-                            </div>
-                          )}
+                                    }.svg`}
+                                  width={24}
+                                  height={24}
+                                  alt="Hành lý"
+                                  className="w-6 h-6"
+                                />
+                                <p>{flightDetail?.fareRules?.checked_baggage}</p>
+                              </div>
+                            )}
 
                           {!isEmpty(flightDetail?.fareRules?.can_refund) && (
                             <div className="flex gap-2">
@@ -533,7 +520,7 @@ export default function FlightInternationalDetailPopup({
                                 src="/icon/flight/can-refund.svg"
                                 width={24}
                                 height={24}
-                                alt="Icon"
+                                alt="Hoàn vé"
                                 className="w-6 h-6"
                               />
                               <span>{flightDetail?.fareRules?.can_refund}</span>
@@ -545,7 +532,7 @@ export default function FlightInternationalDetailPopup({
                                 src="/icon/flight/can-change.svg"
                                 width={24}
                                 height={24}
-                                alt="Icon"
+                                alt="Đổi vé"
                                 className="w-6 h-6"
                               />
                               <span>{flightDetail?.fareRules?.can_change}</span>

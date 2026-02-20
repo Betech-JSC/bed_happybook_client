@@ -15,7 +15,7 @@ export default function HotelItem({ hotel }: any) {
               <Image
                 className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                 src={`${hotel.image_url}/${hotel.image_location}`}
-                alt="Hotel Image"
+                alt={hotel.name}
                 width={320}
                 height={320}
                 sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
@@ -51,7 +51,7 @@ export default function HotelItem({ hotel }: any) {
                     key={index}
                     className="w-4 h-4"
                     src="/icon/starFull.svg"
-                    alt="Icon"
+                    alt="Sao đánh giá"
                     width={10}
                     height={10}
                   />
@@ -60,7 +60,7 @@ export default function HotelItem({ hotel }: any) {
                     key={index}
                     className="w-4 h-4"
                     src="/icon/star.svg"
-                    alt="Icon"
+                    alt="Sao đánh giá"
                     width={10}
                     height={10}
                   />

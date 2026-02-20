@@ -181,7 +181,7 @@ export default function CheckOutTourForm({
                     <div>
                       <Image
                         src="/icon/calendar.svg"
-                        alt="Icon"
+                        alt="Lịch"
                         className="h-5"
                         width={20}
                         height={20}
@@ -238,7 +238,7 @@ export default function CheckOutTourForm({
                     <div>
                       <Image
                         src="/icon/place.svg"
-                        alt="Icon"
+                        alt="Địa điểm"
                         className="h-5"
                         width={20}
                         height={20}
@@ -466,7 +466,7 @@ export default function CheckOutTourForm({
           <Image
             className="cursor-pointer w-full h-60 md:h-40 lg:h-[230px] rounded-t-2xl hover:scale-110 ease-in duration-300"
             src={`${detail.image_url}/${detail.image_location}`}
-            alt="Image"
+            alt={renderTextContent(detail?.name)}
             width={410}
             height={230}
             sizes="100vw"
@@ -484,7 +484,7 @@ export default function CheckOutTourForm({
             <Image
               className="w-4 h-4"
               src="/icon/clock.svg"
-              alt="Icon"
+              alt="Thời gian"
               width={18}
               height={18}
             />
@@ -498,7 +498,7 @@ export default function CheckOutTourForm({
             <Image
               className="w-4 h-4 mt-1"
               src="/icon/flag.svg"
-              alt="Icon"
+              alt="Điểm đi"
               width={18}
               height={18}
             />
@@ -510,7 +510,7 @@ export default function CheckOutTourForm({
             <Image
               className="w-4 h-4 mt-1"
               src="/icon/marker-pin-01.svg"
-              alt="Icon"
+              alt="Địa điểm"
               width={18}
               height={18}
             />

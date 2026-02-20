@@ -46,7 +46,7 @@ export default function VisaTabs({
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Icon"
+            alt="Xem tất cả"
             width={20}
             height={20}
           />
@@ -68,7 +68,7 @@ export default function VisaTabs({
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Icon"
+          alt="Xem tất cả"
           width={20}
           height={20}
         />
@@ -88,11 +88,10 @@ export default function VisaTabs({
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
-                     ${
-                       activeTab === index
-                         ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                         : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                     }`}
+                     ${activeTab === index
+                            ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                            : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
+                          }`}
                         onClick={() => {
                           setActiveTab(index);
                           setLinkCategory(`/visa/${tab.alias}`);
@@ -117,11 +116,10 @@ export default function VisaTabs({
                     align: "start",
                     loop: true,
                   }}
-                  className={`${
-                    category.products.length > 0 && activeTab === index
+                  className={`${category.products.length > 0 && activeTab === index
                       ? "block visible"
                       : "hidden invisible"
-                  }`}
+                    }`}
                 >
                   <CarouselContent>
                     {category.products.map((visa: any, subIndex: number) => (
@@ -135,7 +133,7 @@ export default function VisaTabs({
                               <Image
                                 className="hover:scale-110 ease-in duration-300 cursor-pointer"
                                 src={`${visa.image_url}/${visa.image_location}`}
-                                alt="Visa Image"
+                                alt={visa.name}
                                 width={320}
                                 height={320}
                                 sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
@@ -173,11 +171,10 @@ export default function VisaTabs({
                   <CarouselNext className="hidden lg:inline-flex" />
                 </Carousel>
                 <div
-                  className={`min-h-[100px] content-center text-center ${
-                    category.products.length <= 0 && activeTab === index
+                  className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
                       ? "block visible"
                       : "hidden invisible"
-                  }`}
+                    }`}
                 >
                   <p className="font-bold text-xl" data-translate="true">
                     Thông tin đang được cập nhật.....

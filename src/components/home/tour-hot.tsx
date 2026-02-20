@@ -80,7 +80,7 @@ export default async function TourHot() {
             <Image
               className=" hover:scale-110 ease-in duration-300"
               src="/icon/chevron-right.svg"
-              alt="Icon"
+              alt="Mũi tên xem thêm"
               width={20}
               height={20}
             />

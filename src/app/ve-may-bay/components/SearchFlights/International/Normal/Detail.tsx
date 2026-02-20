@@ -80,7 +80,7 @@ const FlightInternationDetail = ({
                   src="/icon/fa-solid_plane.svg"
                   width={20}
                   height={20}
-                  alt="Icon"
+                  alt="Máy bay"
                   className="w-3 h-3 md:w-5 md:h-5 block"
                 />
                 <div className="flex flex-col items-center w-full">
@@ -105,7 +105,7 @@ const FlightInternationDetail = ({
                   src="/icon/map-pinned.svg"
                   width={20}
                   height={20}
-                  alt="Icon"
+                  alt="Điểm đến"
                   className="w-3 h-3 md:w-5 md:h-5 block"
                 />
               </div>

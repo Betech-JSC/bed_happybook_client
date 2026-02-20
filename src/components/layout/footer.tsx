@@ -151,7 +151,7 @@ export default async function Footer() {
                   {/* <button>
                   <Image
                     src="/social/zalo.svg"
-                    alt="Icon"
+                    alt="Zalo Happy Book"
                     width={32}
                     height={32}
                   />
@@ -289,7 +289,7 @@ export default async function Footer() {
                   {/* <button>
                   <Image
                     src="/social/zalo.svg"
-                    alt="Icon"
+                    alt="Zalo Happy Book"
                     width={32}
                     height={32}
                   />

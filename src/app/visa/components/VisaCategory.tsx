@@ -104,7 +104,7 @@ export default async function VisaCategory({ alias }: { alias: string }) {
               <div className="flex items-center space-x-3 h-20">
                 <Image
                   src="/tour/adviser.svg"
-                  alt="Icon"
+                  alt="Tư vấn"
                   className="h-11 w-11"
                   width={44}
                   height={44}
@@ -121,7 +121,7 @@ export default async function VisaCategory({ alias }: { alias: string }) {
               <div className="flex items-center space-x-3 h-20">
                 <Image
                   src="/tour/developers.svg"
-                  alt="Icon"
+                  alt="Kinh nghiệm"
                   className="h-11 w-11"
                   width={44}
                   height={44}
@@ -138,7 +138,7 @@ export default async function VisaCategory({ alias }: { alias: string }) {
               <div className="flex items-center space-x-3 h-20">
                 <Image
                   src="/tour/product-icon.svg"
-                  alt="Icon"
+                  alt="Đa dạng"
                   className="h-11 w-11"
                   width={44}
                   height={44}

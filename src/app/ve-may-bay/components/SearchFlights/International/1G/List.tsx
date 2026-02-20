@@ -86,7 +86,7 @@ export default function ListFlights1GInternaltion({
                           src="/icon/AirplaneTiltBlue.svg"
                           width={32}
                           height={32}
-                          alt="Icon"
+                          alt="Máy bay"
                           className="w-8 h-8"
                         />
                       </div>

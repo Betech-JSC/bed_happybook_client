@@ -330,7 +330,7 @@ export default function FormCheckOut({
                         imagePath={detail?.insurance_type?.image_location}
                         width={205}
                         height={48}
-                        alt={"Brand"}
+                        alt={detail.name}
                         classStyle="w-full h-auto rounded-lg object-cover"
                       />
                     ) : (
@@ -338,7 +338,7 @@ export default function FormCheckOut({
                         src="/default-image.png"
                         width={205}
                         height={48}
-                        alt={"Brand"}
+                        alt={detail.name}
                         className="w=full h-auto object-cover rounded-lg"
                       />
                     )}
@@ -517,7 +517,7 @@ export default function FormCheckOut({
                         />{" "}
                         <Image
                           src="/icon/calendar.svg"
-                          alt="Icon"
+                          alt="Lịch trình"
                           className="h-5"
                           width={18}
                           height={20}
@@ -532,7 +532,7 @@ export default function FormCheckOut({
                     <div className="relative">
                       <Image
                         src="/icon/info-circle.svg"
-                        alt="Icon"
+                        alt="Thông tin"
                         className="h-5 absolute top-1/2 -translate-y-1/2 right-4 lg:right-5 z-10"
                         width={18}
                         height={20}
@@ -654,7 +654,7 @@ export default function FormCheckOut({
                         />{" "}
                         <Image
                           src="/icon/calendar.svg"
-                          alt="Icon"
+                          alt="Lịch trình"
                           className="h-5"
                           width={18}
                           height={20}
@@ -924,7 +924,7 @@ export default function FormCheckOut({
                                 />{" "}
                                 <Image
                                   src="/icon/calendar.svg"
-                                  alt="Icon"
+                                  alt="Lịch trình"
                                   className="h-5"
                                   width={18}
                                   height={20}
@@ -943,7 +943,7 @@ export default function FormCheckOut({
                             <div className="relative">
                               <Image
                                 src="/icon/info-circle.svg"
-                                alt="Icon"
+                                alt="Thông tin"
                                 className="h-5 absolute top-1/2 -translate-y-1/2 right-4 lg:right-5 z-10"
                                 width={18}
                                 height={20}

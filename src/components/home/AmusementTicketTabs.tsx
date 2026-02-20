@@ -39,7 +39,7 @@ export default function AmusementTicketTabs({
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Icon"
+            alt="Mũi tên xem thêm"
             width={20}
             height={20}
           />
@@ -57,7 +57,7 @@ export default function AmusementTicketTabs({
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Icon"
+          alt="Mũi tên xem thêm"
           width={20}
           height={20}
         />
@@ -105,8 +105,8 @@ export default function AmusementTicketTabs({
                     loop: true,
                   }}
                   className={`${category.products.length > 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
+                    ? "block visible"
+                    : "hidden invisible"
                     }`}
                 >
                   <CarouselContent>
@@ -121,7 +121,7 @@ export default function AmusementTicketTabs({
                               <Image
                                 className="hover:scale-110 ease-in duration-300 cursor-pointer"
                                 src={`${item.image_url}/${item.image_location}`}
-                                alt="Image"
+                                alt={item.name}
                                 width={320}
                                 height={320}
                                 sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
@@ -158,8 +158,8 @@ export default function AmusementTicketTabs({
                 </Carousel>
                 <div
                   className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
+                    ? "block visible"
+                    : "hidden invisible"
                     }`}
                 >
                   <p className="font-bold text-xl">

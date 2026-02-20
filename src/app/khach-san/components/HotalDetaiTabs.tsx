@@ -61,9 +61,8 @@ export default function HotelDetailTabs({ data }: any) {
             ref={(el) => {
               tabRefs.current[index] = el;
             }}
-            className={`px-3 md:px-5 py-[10px] duration-300 font-semibold text__default_hover  ${
-              activeTab === index ? "text-primary" : ""
-            }`}
+            className={`px-3 md:px-5 py-[10px] duration-300 font-semibold text__default_hover  ${activeTab === index ? "text-primary" : ""
+              }`}
             onClick={() => setActiveTab(index)}
             data-translate="true"
           >
@@ -80,9 +79,8 @@ export default function HotelDetailTabs({ data }: any) {
       </div>
       <div
         id="hotel-content-tab-0"
-        className={`w-full transition-opacity duration-700 ${
-          activeTab === 0 ? "block" : "hidden"
-        }  `}
+        className={`w-full transition-opacity duration-700 ${activeTab === 0 ? "block" : "hidden"
+          }  `}
       >
         <div className="bg-white rounded-2xl p-6">
           <h2
@@ -131,7 +129,7 @@ export default function HotelDetailTabs({ data }: any) {
                             ? `${data.image_url}/${item.image_location}`
                             : "/default-image.png"
                         }
-                        alt="Image"
+                        alt={renderTextContent(item.name)}
                         width={416}
                         height={256}
                         style={{ height: 275, width: "100%" }}
@@ -232,7 +230,7 @@ export default function HotelDetailTabs({ data }: any) {
                 <Image
                   className="w-4 h-4"
                   src="/icon/marker-pin-01.svg"
-                  alt="Icon"
+                  alt="Địa chỉ"
                   width={18}
                   height={18}
                 />

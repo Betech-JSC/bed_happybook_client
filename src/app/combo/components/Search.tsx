@@ -37,7 +37,7 @@ export default function Search({ locations }: { locations: any }) {
               <div className="absolute left-4 top-1/2 translate-y-1/4">
                 <Image
                   src="/icon/place.svg"
-                  alt="Icon"
+                  alt="Địa điểm"
                   className="h-10"
                   width={20}
                   height={20}
@@ -78,7 +78,7 @@ export default function Search({ locations }: { locations: any }) {
               <div className="absolute left-4 top-1/2 translate-y-1/4">
                 <Image
                   src="/icon/place.svg"
-                  alt="Icon"
+                  alt="Địa điểm"
                   className="h-10"
                   width={20}
                   height={20}
@@ -124,7 +124,7 @@ export default function Search({ locations }: { locations: any }) {
               >
                 <Image
                   src="/icon/search.svg"
-                  alt="Search icon"
+                  alt="Tìm kiếm"
                   className="h-10 mr-2"
                   width={20}
                   height={20}

@@ -152,15 +152,14 @@ export default async function TourDetail({ alias }: { alias: string }) {
                     <Image
                       className="w-4 h-4"
                       src="/icon/clock.svg"
-                      alt="Icon"
+                      alt="Thời gian"
                       width={18}
                       height={18}
                     />
                     <span>
                       <span data-translate>
-                        {`${detail.day ? `${detail.day} ngày` : ""} ${
-                          detail.night ? `${detail.night} đêm` : ""
-                        }`}
+                        {`${detail.day ? `${detail.day} ngày` : ""} ${detail.night ? `${detail.night} đêm` : ""
+                          }`}
                       </span>
                     </span>
                   </div>
@@ -169,7 +168,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                       <Image
                         className="w-4 h-4"
                         src="/icon/clock.svg"
-                        alt="Icon"
+                        alt="Thời gian"
                         width={18}
                         height={18}
                       />
@@ -181,12 +180,12 @@ export default async function TourDetail({ alias }: { alias: string }) {
                   {/* <div>
                     {detail.remain && (
                       <p className="flex space-x-2 mt-2">
-                        <Image
-                          src="/icon/Ticket.svg"
-                          alt="Time"
-                          width={20}
-                          height={20}
-                        />
+                         <Image
+                           src="/icon/Ticket.svg"
+                           alt="Chỗ trống"
+                           width={20}
+                           height={20}
+                         />
                         <span data-translate>{`Chỗ trống: ${
                           detail.remain ?? "Liên hệ"
                         }`}</span>
@@ -197,7 +196,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                     <Image
                       className="w-4 h-4"
                       src="/icon/flag.svg"
-                      alt="Icon"
+                      alt="Khởi hành"
                       width={18}
                       height={18}
                     />
@@ -211,7 +210,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                     <Image
                       className="w-4 h-4"
                       src="/icon/marker-pin-01.svg"
-                      alt="Icon"
+                      alt="Địa điểm"
                       width={18}
                       height={18}
                     />
@@ -301,7 +300,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                   <div className="flex items-center space-x-3 h-20">
                     <Image
                       src="/tour/adviser.svg"
-                      alt="Icon"
+                      alt="Tư vấn"
                       className="h-11 w-11"
                       width={44}
                       height={44}
@@ -324,7 +323,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                   <div className="flex items-center space-x-3 h-20">
                     <Image
                       src="/tour/developers.svg"
-                      alt="Icon"
+                      alt="Kinh nghiệm"
                       className="h-11 w-11"
                       width={44}
                       height={44}
@@ -347,7 +346,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                   <div className="flex items-center space-x-3 h-20">
                     <Image
                       src="/tour/product-icon.svg"
-                      alt="Icon"
+                      alt="Sản phẩm đa dạng"
                       className="h-11 w-11"
                       width={44}
                       height={44}

@@ -213,7 +213,7 @@ export default function AirportPopupSelector({
         <div className="flex h-12 items-center border rounded-lg px-2">
           <Image
             src="/icon/AirplaneTakeoff.svg"
-            alt="Icon"
+            alt="Cất cánh"
             className="h-10"
             width={18}
             height={18}
@@ -239,7 +239,7 @@ export default function AirportPopupSelector({
         <button className="border border-gray-300 p-2 rounded-full bg-white">
           <Image
             src="/icon/switch-horizontal.svg"
-            alt="Icon"
+            alt="Chuyển đổi"
             className="h-5"
             width={20}
             height={20}
@@ -253,7 +253,7 @@ export default function AirportPopupSelector({
         <div className="flex h-12 items-center border rounded-lg px-2  md:pl-6">
           <Image
             src="/icon/AirplaneLanding.svg"
-            alt="Icon"
+            alt="Hạ cánh"
             className="h-10"
             width={18}
             height={18}
@@ -288,7 +288,7 @@ export default function AirportPopupSelector({
           >
             <Image
               src="/icon/close.svg"
-              alt="Icon"
+              alt="Đóng"
               className="h-4 w-4 block"
               width={20}
               height={20}

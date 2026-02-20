@@ -60,11 +60,11 @@ export default function RatingCriteria({
                       ? "/icon/starFull.svg"
                       : "/icon/star.svg"
                   }
-                  alt="Icon"
+                  alt="Sao đánh giá"
                   width={32}
                   height={32}
-                  //   onMouseEnter={() => onHover(index, starValue)}
-                  //   onMouseLeave={() => onHover(index, 0)}
+                //   onMouseEnter={() => onHover(index, starValue)}
+                //   onMouseLeave={() => onHover(index, 0)}
                 />
               </label>
             );

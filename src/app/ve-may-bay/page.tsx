@@ -92,7 +92,7 @@ export default async function AirlineTicket() {
             width={500}
             height={584}
             className="object-cover w-full h-full"
-            alt="Background"
+            alt="VMB Happy Book"
           />
         </div>
         <div
@@ -116,7 +116,7 @@ export default async function AirlineTicket() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/globe-gradient.svg"
-                alt="Icon"
+                alt="Lựa chọn không giới hạn"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -131,7 +131,7 @@ export default async function AirlineTicket() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/Travel-gradient-icon.svg"
-                alt="Icon"
+                alt="Dịch vụ cá nhân hóa"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -146,7 +146,7 @@ export default async function AirlineTicket() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/sun-icon.svg"
-                alt="Icon"
+                alt="Giá trị vượt trội"
                 className="h-11 w-11"
                 width={44}
                 height={44}

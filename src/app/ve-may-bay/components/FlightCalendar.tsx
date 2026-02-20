@@ -42,11 +42,11 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
 
   const filteredFlights = airlineFilter
     ? allFlights.filter((flight) => {
-        if (flight.listAirlines.includes(airlineFilter)) {
-          flight.airline = airlineFilter;
-          return flight;
-        }
-      })
+      if (flight.listAirlines.includes(airlineFilter)) {
+        flight.airline = airlineFilter;
+        return flight;
+      }
+    })
     : allFlights;
   if (filteredFlights.length === 0) return null;
   return filteredFlights.reduce((lowest, flight) =>
@@ -246,7 +246,7 @@ export default function FlightCalendar({
             <div className="flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/AirplaneTakeoff.svg"
-                alt="Icon"
+                alt="Cất cánh"
                 className="h-10"
                 width={18}
                 height={18}
@@ -272,7 +272,7 @@ export default function FlightCalendar({
             <div className="flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/AirplaneLanding.svg"
-                alt="Icon"
+                alt="Hạ cánh"
                 className="h-10"
                 width={18}
                 height={18}
@@ -298,7 +298,7 @@ export default function FlightCalendar({
             <div className="flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/calendar.svg"
-                alt="Icon"
+                alt="Lịch trình"
                 className="h-10"
                 width={18}
                 height={18}
@@ -436,9 +436,8 @@ export default function FlightCalendar({
             return day ? (
               <div
                 key={day !== null ? day : `empty-${index}`}
-                className={`p-1 md:p-2 min-h-12 border rounded-lg md:rounded-xl lg:h-28 border-gray-200 transition-all duration-300 ${
-                  disabled ? "opacity-50 cursor-not-allowed bg-gray-200" : ""
-                } ${isActive ? "bg-primary text-white" : ""}`}
+                className={`p-1 md:p-2 min-h-12 border rounded-lg md:rounded-xl lg:h-28 border-gray-200 transition-all duration-300 ${disabled ? "opacity-50 cursor-not-allowed bg-gray-200" : ""
+                  } ${isActive ? "bg-primary text-white" : ""}`}
               >
                 {!disabled && (
                   <div
