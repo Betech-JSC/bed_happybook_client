@@ -16,8 +16,6 @@ import { filtersFlight, ListFlight } from "@/types/flight";
 import _ from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
 import SideBarFilterFlights from "../../SideBarFilter";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import ListFlightsInternationalNormal from "./Normal/List";
 import ListFlights1GInternaltion from "./1G/List";
 
@@ -78,13 +76,8 @@ export default function ListFlightsInternaltion({
     setIsCheckOut(false);
   };
 
-  useEffect(() => {
-    AOS.init({
-      duration: 400,
-      easing: "ease-in",
-      once: true,
-    });
-  }, []);
+  // AOS animations handled globally via AosProvider IntersectionObserver
+
 
   // Filter data
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {

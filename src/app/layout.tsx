@@ -24,7 +24,7 @@ import { TranslationProvider } from "../contexts/TranslationContext";
 import PromoModal from "@/components/base/PromoModal";
 import { AosProvider } from "@/components/layout/AosProvider";
 
-const OpenSans = Open_Sans({ subsets: ["vietnamese"] });
+const OpenSans = Open_Sans({ subsets: ["vietnamese"], display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -71,12 +71,12 @@ export default async function RootLayout({
         </Script>
         {/* End Google Tag Manager */}
 
-        {/* Google Ads (gtag.js) */}
+        {/* Google Ads (gtag.js) - lazyOnload to avoid TBT */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-17408673405"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-ads-script" strategy="afterInteractive">
+        <Script id="google-ads-script" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

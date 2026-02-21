@@ -1,19 +1,28 @@
 "use client";
 
 import React, { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 export const AosProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
-        AOS.init({
-            offset: 10,
-            delay: 0,
-            duration: 600,
-            easing: "ease-in-out",
-            once: true,
-            mirror: false,
-        });
+        // Use native IntersectionObserver instead of the heavy AOS library
+        // to eliminate the JS parsing/execution overhead that hurts TBT
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("aos-animate");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
+        );
+
+        // Observe all elements that have data-aos attribute
+        const elements = document.querySelectorAll("[data-aos]");
+        elements.forEach((el) => observer.observe(el));
+
+        return () => observer.disconnect();
     }, []);
 
     return <>{children}</>;
