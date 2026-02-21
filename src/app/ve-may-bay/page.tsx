@@ -62,17 +62,17 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function AirlineTicket() {
-  // Critical for LCP: Fetch airports immediately (blocking but necessary for Search)
-  const airportsData = await getCachedAirports();
   const language = await getServerLang();
 
-  // Parallel fetch for Metadata and SEO (blocking)
-  const contentPage = await getCachedPageContent(language);
-  const metadata = getMetadata(contentPage);
-  const t = await getServerT();
+  // Parallel fetch for critical data (blocking)
+  const [airportsData, contentPage, t, footerData] = await Promise.all([
+    getCachedAirports(),
+    getCachedPageContent(language),
+    getServerT(),
+    getCachedFooterMenu("flight"),
+  ]);
 
-  // Footer data needed for links below
-  const footerData = await getCachedFooterMenu("flight");
+  const metadata = getMetadata(contentPage);
 
   return (
     <SeoSchema

@@ -54,9 +54,11 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const airportsData = await FlightApi.getCachedAirports();
-  const seo = await settingApi.getCachedMetaSeo();
-  const t = await getServerT();
+  const [airportsData, seo, t] = await Promise.all([
+    FlightApi.getCachedAirports(),
+    settingApi.getCachedMetaSeo(),
+    getServerT(),
+  ]);
   return (
     <Fragment>
       <WebsiteSchema />

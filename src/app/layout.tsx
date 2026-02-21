@@ -53,6 +53,22 @@ export default async function RootLayout({
   return (
     <html lang={session.language}>
       <head>
+        <link rel="preconnect" href="https://api.happybooktravel.com" />
+        <link rel="preconnect" href="https://cms.happybooktravel.com" />
+        <link rel="preconnect" href="https://cdn.laptrinhdelamgi.edu.vn" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://connect.facebook.net" />
+        <link rel="preconnect" href="https://www.clarity.ms" />
+        <link rel="preconnect" href="https://chat-plugin.pancake.vn" />
+        <link rel="dns-prefetch" href="https://api.happybooktravel.com" />
+        <link rel="dns-prefetch" href="https://cms.happybooktravel.com" />
+        <link rel="dns-prefetch" href="https://cdn.laptrinhdelamgi.edu.vn" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        <link rel="dns-prefetch" href="https://www.clarity.ms" />
+        <link rel="dns-prefetch" href="https://chat-plugin.pancake.vn" />
         {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> */}
         {/* FB */}
         <meta
