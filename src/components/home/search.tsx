@@ -3,10 +3,12 @@ import { Suspense, useState } from "react";
 import Image from "next/image";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import { SearchFilghtProps } from "@/types/flight";
-import SearchHotel from "@/app/khach-san/components/Search";
-import SearchFormInsurance from "@/app/bao-hiem/components/SearchForm";
-import { default as TicketSearchForm } from "@/app/ve-vui-choi/components/SearchForm";
+import dynamic from "next/dynamic";
 import { useTranslation } from "@/hooks/useTranslation";
+
+const SearchHotel = dynamic(() => import("@/app/khach-san/components/Search"), { ssr: false });
+const SearchFormInsurance = dynamic(() => import("@/app/bao-hiem/components/SearchForm"), { ssr: false });
+const TicketSearchForm = dynamic(() => import("@/app/ve-vui-choi/components/SearchForm"), { ssr: false });
 
 export default function Search({ airportsData }: any) {
   const { t } = useTranslation();
