@@ -88,15 +88,15 @@ export default async function AirlineTicket() {
         <div className="absolute inset-0">
           <Image
             priority
-            src="/bg-image-2.png"
-            width={500}
-            height={584}
-            className="object-cover w-full h-full"
+            src="/bg-image-2.webp"
+            fill
+            sizes="100vw"
+            className="object-cover"
             alt="VMB Happy Book"
           />
         </div>
         <div
-          className="absolute w-full h-full"
+          className="absolute inset-0"
           style={{
             backgroundImage:
               "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",

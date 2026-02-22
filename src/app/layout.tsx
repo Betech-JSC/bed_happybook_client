@@ -105,9 +105,6 @@ export default async function RootLayout({
           src="https://chat-plugin.pancake.vn/main/auto?page_id=web_happybookwebsite"
           strategy="lazyOnload"
         />
-        {/* === End Pancake === */}
-
-        {/* === End Pancake === */}
 
         <Script id="ms-clarity" strategy="lazyOnload">
           {`

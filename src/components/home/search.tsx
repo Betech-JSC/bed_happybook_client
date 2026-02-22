@@ -13,23 +13,6 @@ export default function Search({ airportsData }: any) {
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="relative z-[1] hidden lg:block">
-      <div className="absolute inset-0">
-        <Image
-          priority
-          src="/bg-image.png"
-          width={500}
-          height={584}
-          className="object-cover w-full h-full"
-          alt="Tìm kiếm tour và vé máy bay Happy Book"
-        />
-      </div>
-      <div
-        className="absolute w-full h-full"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-        }}
-      ></div>
       <div className="lg:h-[694px] lg:px-[50px] xl:px-[80px] sm:px-3 content-center pt-[132px] max__screen">
         <h2 className="text-3xl text-white font-bold text-center mb-12 relative">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
