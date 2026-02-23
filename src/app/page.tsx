@@ -26,6 +26,7 @@ import HomeAmusementTicket from "@/components/home/AmusementTicket";
 import HomeFastTrack from "@/components/home/FastTrack";
 import { getServerT } from "@/lib/i18n/getServerT";
 import dynamic from "next/dynamic";
+// import SentryTestButton from "@/components/dev/SentryTestButton";
 
 const PartnerAirlines = dynamic(
   () => import("./ve-may-bay/components/Partner"),
@@ -213,6 +214,7 @@ export default async function Home() {
           </AosAnimate>
         </Suspense>
       </main>
+      {/* <SentryTestButton /> */}
     </Fragment>
   );
 }
