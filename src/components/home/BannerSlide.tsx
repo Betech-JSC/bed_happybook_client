@@ -33,9 +33,9 @@ export default function BannerSlide({ data }: any) {
               >
                 <Link href={banner?.url ?? "#"}>
                   <Image
-                    priority={index < 2}
+                    priority={index === 0}
                     src={`${banner.image_url}/${banner.image_location}`}
-                    alt={banner.title || "Banner Happy Book"}
+                    alt="Banner"
                     width={628}
                     height={210}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"

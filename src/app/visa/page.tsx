@@ -74,7 +74,7 @@ export default async function Visa() {
               width={1900}
               height={600}
               className="object-cover w-full h-full"
-              alt="Dịch vụ Visa Happy Book"
+              alt="Background"
             />
           </div>
           <div
@@ -135,13 +135,13 @@ export default async function Visa() {
                       >
                         {t("xem_tat_ca")}
                       </button>
-                       <Image
-                         className=" hover:scale-110 ease-in duration-300"
-                         src="/icon/chevron-right.svg"
-                         alt="Xem tất cả"
-                         width={20}
-                         height={20}
-                       />
+                      <Image
+                        className=" hover:scale-110 ease-in duration-300"
+                        src="/icon/chevron-right.svg"
+                        alt="Icon"
+                        width={20}
+                        height={20}
+                      />
                     </Link>
                   </div>
                   <Link
@@ -157,7 +157,7 @@ export default async function Visa() {
                     <Image
                       className=" hover:scale-110 ease-in duration-300"
                       src="/icon/chevron-right.svg"
-                      alt="Xem tất cả"
+                      alt="Icon"
                       width={20}
                       height={20}
                     />

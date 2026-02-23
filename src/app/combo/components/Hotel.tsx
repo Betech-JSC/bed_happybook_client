@@ -41,7 +41,7 @@ export default function Hotel({ data }: any) {
               <Image
                 className="w-4 h-4"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa chỉ"
+                alt="Icon"
                 width={18}
                 height={18}
               />
@@ -96,7 +96,7 @@ export default function Hotel({ data }: any) {
                     <Image
                       className="cursor-pointer rounded-lg hover:scale-110 ease-in duration-300"
                       src={`${data.image_url}/${item.image_location}`}
-                      alt={renderTextContent(item.name)}
+                      alt="Image"
                       width={416}
                       height={256}
                     />

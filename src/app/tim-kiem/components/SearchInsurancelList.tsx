@@ -61,7 +61,7 @@ export default function SearchInsuranceList({ insurances }: any) {
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Xem tất cả"
+            alt="Icon"
             width={20}
             height={20}
           />
@@ -97,7 +97,7 @@ export default function SearchInsuranceList({ insurances }: any) {
                               imagePath={item?.insurance_type.image_location}
                               width={174}
                               height={58}
-                              alt={item.name}
+                              alt={"Brand"}
                               classStyle="w-full h-auto rounded-sm object-cover "
                             />
                           ) : (
@@ -105,7 +105,7 @@ export default function SearchInsuranceList({ insurances }: any) {
                               src="/default-image.png"
                               width={174}
                               height={58}
-                              alt={item.name}
+                              alt={"Brand"}
                               className="w-full h-auto object-cover rounded-sm"
                             />
                           )}
@@ -122,8 +122,9 @@ export default function SearchInsuranceList({ insurances }: any) {
                     </div>
                     <div className="col-span-8 lg:col-span-5">
                       <div
-                        className={`grid grid-cols-4 lg:grid-cols-${currencyFormatDisplay === "vi" ? "4" : "5"
-                          }`}
+                        className={`grid grid-cols-4 lg:grid-cols-${
+                          currencyFormatDisplay === "vi" ? "4" : "5"
+                        }`}
                       >
                         {!isEmpty(item.exchange_rate) &&
                           currencyFormatDisplay !== "vi" && (
@@ -183,10 +184,11 @@ export default function SearchInsuranceList({ insurances }: any) {
                     style={{
                       maxHeight: showDetail === item.id ? "500px" : "0px",
                     }}
-                    className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${showDetail === item.id
+                    className={`bg-gray-100 border-2 rounded-2xl relative transition-[opacity,max-height,transform] ease-out duration-500 overflow-hidden ${
+                      showDetail === item.id
                         ? `opacity-1 border-blue-500 translate-y-0 mt-4 p-4 `
                         : "opacity-0 border-none -translate-y-6 invisible mt-0 pt-0"
-                      } overflow-y-auto rounded-lg`}
+                    } overflow-y-auto rounded-lg`}
                   >
                     <div className="flex flex-col justify-between py-3 px-4 md:px-6 bg-white rounded-lg">
                       <div className="pb-1">

@@ -1,19 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  compress: true,
-  poweredByHeader: false,
-  reactStrictMode: false,
-  // Tree-shake heavy packages to reduce JS bundle size → lowers TBT
-  experimental: {
-    optimizePackageImports: [
-      "swiper",
-      "lucide-react",
-      "lodash",
-      "@radix-ui/react-icons",
-      "embla-carousel-react",
-      "embla-carousel-autoplay",
-    ],
-  },
   images: {
     remotePatterns: [
       {
@@ -34,27 +20,9 @@ const nextConfig = {
       },
     ],
     loader: "default",
-    formats: ["image/avif", "image/webp"],
-  },
-  webpack: (config, { isServer }) => {
-    // Split large chunks to reduce initial JS payload → lowers TBT
-    if (!isServer) {
-      config.optimization.splitChunks = {
-        ...config.optimization.splitChunks,
-        chunks: "all",
-        cacheGroups: {
-          ...config.optimization.splitChunks?.cacheGroups,
-          // Isolate swiper into its own chunk (it's heavy)
-          swiper: {
-            name: "swiper",
-            test: /[\\/]node_modules[\\/](swiper)[\\/]/,
-            chunks: "all",
-            priority: 20,
-          },
-        },
-      };
-    }
-    return config;
+    // path: process.env.NEXT_PUBLIC_CDN_URL,
+    // domains: ["storage.googleapis.com"],
+    // unoptimized: true
   },
 };
 export default nextConfig;

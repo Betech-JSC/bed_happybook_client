@@ -55,10 +55,11 @@ export default function SearchForm() {
       const data = res?.payload?.data ?? [];
 
       const newOptions: Option[] = data.map((item: any) => ({
-        label: `${item.name} ${item?.ticket?.location?.name
-          ? `(${item?.ticket?.location?.name})`
-          : ""
-          }`,
+        label: `${item.name} ${
+          item?.ticket?.location?.name
+            ? `(${item?.ticket?.location?.name})`
+            : ""
+        }`,
         value: `${item.slug}-${item.id}`,
       }));
 
@@ -130,8 +131,9 @@ export default function SearchForm() {
               <Select
                 options={locations}
                 value={locationSelected}
-                placeholder={`${language === "en" ? "Select destination" : "Chọn điểm đến"
-                  }`}
+                placeholder={`${
+                  language === "en" ? "Select destination" : "Chọn điểm đến"
+                }`}
                 className="w-full"
                 styles={{
                   control: (base) => ({
@@ -192,7 +194,7 @@ export default function SearchForm() {
           <label className="block text-gray-700 mb-1 h-6"></label>
           <div
             onClick={() => handleSearch()}
-            className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800  "
+            className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600  "
           >
             <Image
               src="/icon/search.svg"

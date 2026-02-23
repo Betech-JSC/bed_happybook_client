@@ -152,7 +152,7 @@ export default function SignUpReceiveCheapTickets() {
             <div>
               <Image
                 src="/icon/AirplaneTiltBlack.svg"
-                alt="Máy bay"
+                alt="Icon"
                 width={32}
                 height={32}
                 style={{ width: "32px", height: "32px" }}
@@ -179,7 +179,7 @@ export default function SignUpReceiveCheapTickets() {
                 >
                   <Image
                     src="/social/fb.svg"
-                    alt="Facebook Happy Book"
+                    alt="Icon"
                     width={32}
                     height={32}
                   />
@@ -190,7 +190,7 @@ export default function SignUpReceiveCheapTickets() {
                 >
                   <Image
                     src="/social/ytb.svg"
-                    alt="Zalo Happy Book"
+                    alt="Icon"
                     width={32}
                     height={32}
                   />

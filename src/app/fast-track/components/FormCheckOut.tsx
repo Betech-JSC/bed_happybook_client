@@ -162,9 +162,9 @@ export default function CheckOutForm({
   const displayDaysOpening = isFullWeek
     ? "Mỗi ngày"
     : daysOpening
-      .map((day: any) => dayMap[day])
-      .filter(Boolean)
-      .join(", ");
+        .map((day: any) => dayMap[day])
+        .filter(Boolean)
+        .join(", ");
   const parsedTimeOpening = parse(
     product?.fast_track?.opening_time,
     "HH:mm:ss",
@@ -668,10 +668,11 @@ export default function CheckOutForm({
                           <button
                             type="button"
                             className={`w-6 h-6 font-medium text-xl rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center
-                          ${ticket.quantity <= ticket.minQty
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                              } `}
+                          ${
+                            ticket.quantity <= ticket.minQty
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          } `}
                             onClick={() => updateCount(ticket.id, -1)}
                             disabled={ticket.quantity <= ticket.minQty}
                           >
@@ -684,10 +685,11 @@ export default function CheckOutForm({
                           <button
                             type="button"
                             className={`w-6 h-6 text-xl font-medium rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center 
-                           ${ticket.quantity >= 20
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                              }`}
+                           ${
+                             ticket.quantity >= 20
+                               ? "cursor-not-allowed opacity-50"
+                               : ""
+                           }`}
                             onClick={() => updateCount(ticket.id, 1)}
                             disabled={ticket.quantity >= 20}
                           >
@@ -730,10 +732,11 @@ export default function CheckOutForm({
                   .map((fee: any) => (
                     <div
                       key={fee.id}
-                      className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${selectedAdditionalFees.includes(fee.id)
+                      className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${
+                        selectedAdditionalFees.includes(fee.id)
                           ? "border-blue-500 bg-blue-50 shadow-sm"
                           : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-                        }`}
+                      }`}
                       onClick={() => toggleAdditionalFee(fee.id)}
                     >
                       <div className="flex items-start gap-3 flex-1">
@@ -752,10 +755,10 @@ export default function CheckOutForm({
                             {renderTextContent(fee.name)}
                           </div>
                           {fee.description && (
-                            <Tooltip
-                              contentClassName="max-w-[280px] md:max-w-[400px] w-max"
-                              content={
-                                <div>
+                          <Tooltip
+                            contentClassName="max-w-[280px] md:max-w-[400px] w-max"
+                            content={
+                              <div>
                                   <div
                                     className="text-sm text-gray-300"
                                     data-translate="true"
@@ -763,16 +766,16 @@ export default function CheckOutForm({
                                       __html: fee.description,
                                     }}
                                   />
-
-                                </div>
-                              }
-                              position="top"
-                              delay={300}
-                            >
-                              <button className="flex items-center justify-center">
-                                <Info />
-                              </button>
-                            </Tooltip>
+                                
+                              </div>
+                            }
+                            position="top"
+                            delay={300}
+                          >
+                            <button className="flex items-center justify-center">
+                              <Info />
+                            </button>
+                          </Tooltip>
                           )}
                         </div>
                       </div>
@@ -804,10 +807,11 @@ export default function CheckOutForm({
               <button
                 type="button"
                 onClick={() => handleCustomerTypeChange("personal")}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "personal"
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  customerType === "personal"
                     ? "border-blue-600 bg-blue-50 shadow-sm"
                     : "border-gray-300 hover:border-gray-400"
-                  }`}
+                }`}
               >
                 <div className="font-semibold" data-translate="true">
                   Đón/Tiễn cá nhân
@@ -822,10 +826,11 @@ export default function CheckOutForm({
               <button
                 type="button"
                 onClick={() => handleCustomerTypeChange("group")}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "group"
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  customerType === "group"
                     ? "border-blue-600 bg-blue-50 shadow-sm"
                     : "border-gray-300 hover:border-gray-400"
-                  }`}
+                }`}
               >
                 <div className="font-semibold" data-translate="true">
                   Đón/Tiễn đoàn
@@ -1000,10 +1005,11 @@ export default function CheckOutForm({
                     value={flightTime}
                     onChange={handleFlightTimeChange}
                     step="60"
-                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isTienService && !flightTime
+                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
+                      serviceType.isTienService && !flightTime
                         ? "border-red-300"
                         : "border-gray-300"
-                      }`}
+                    }`}
                   />
                 </div>
                 <div className="relative">
@@ -1018,10 +1024,11 @@ export default function CheckOutForm({
                     value={flightArrivalTime}
                     onChange={handleFlightArrivalTimeChange}
                     step="60"
-                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isDonService && !flightArrivalTime
+                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${
+                      serviceType.isDonService && !flightArrivalTime
                         ? "border-red-300"
                         : "border-gray-300"
-                      }`}
+                    }`}
                   />
                 </div>
                 <div className="relative">
@@ -1171,7 +1178,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/clock.svg"
-                alt="Thời gian"
+                alt="Icon"
                 width={18}
                 height={18}
               />
@@ -1183,7 +1190,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa điểm"
+                alt="Icon"
                 width={18}
                 height={18}
               />

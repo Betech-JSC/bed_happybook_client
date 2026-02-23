@@ -21,7 +21,7 @@ export default function TravelGuide() {
           <Image
             className="ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Mũi tên xem tất cả"
+            alt="Icon"
             width={20}
             height={20}
           />
@@ -32,7 +32,7 @@ export default function TravelGuide() {
         <Image
           className="ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Mũi tên xem tất cả"
+          alt="Icon"
           width={20}
           height={20}
         />
@@ -46,7 +46,7 @@ export default function TravelGuide() {
                 width={500}
                 height={584}
                 style={{ width: "100%", height: "584px" }}
-                alt="Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa 462 Úc Tham Khảo"
+                alt="blog"
               />
             </div>
             <div
@@ -71,7 +71,7 @@ export default function TravelGuide() {
                 width={500}
                 height={280}
                 style={{ width: "100%", height: "280px" }}
-                alt="Hướng Dẫn Chi Tiết Gia Hạn Visa Việt Nam Cho Người Nước Ngoài"
+                alt="blog"
               />
             </div>
             <div
@@ -93,7 +93,7 @@ export default function TravelGuide() {
                 width={500}
                 height={280}
                 style={{ width: "100%", height: "280px" }}
-                alt="Làm Thế Nào Để Đăng Ký E visa Cho Người Nước Ngoài Vào Việt Nam?"
+                alt="blog"
               />
             </div>
             <div
@@ -115,7 +115,7 @@ export default function TravelGuide() {
                 width={500}
                 height={280}
                 style={{ width: "100%", height: "280px" }}
-                alt="Điểm Danh Những Khu Du Lịch Sinh Thái Bến Tre Được Nhiều Du Khách Chọn Lựa"
+                alt="blog"
               />
             </div>
             <div
@@ -138,7 +138,7 @@ export default function TravelGuide() {
                 width={500}
                 height={280}
                 style={{ width: "100%", height: "280px" }}
-                alt="Cập Nhật Thông Tin Chi Tiết Cho Người Lần Đầu Xin Visa 462 Úc Tham Khảo"
+                alt="blog"
               />
             </div>
             <div

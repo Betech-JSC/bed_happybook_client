@@ -133,11 +133,11 @@ export default function Flight1GBookForm({ airportsData }: any) {
     });
     const chdArr = data.chd
       ? data.chd.map((item, index) => {
-        if (listBaggagePassenger.chd && listBaggagePassenger.chd[index]) {
-          item.baggages = listBaggagePassenger.chd[index];
-        }
-        return { value: item, Type: "CHD" };
-      })
+          if (listBaggagePassenger.chd && listBaggagePassenger.chd[index]) {
+            item.baggages = listBaggagePassenger.chd[index];
+          }
+          return { value: item, Type: "CHD" };
+        })
       : [];
     const infArr = data.inf
       ? data.inf.map((item) => ({ value: item, Type: "INF" }))
@@ -876,8 +876,9 @@ export default function Flight1GBookForm({ airportsData }: any) {
                             return (
                               <div
                                 id={`wrapper-baggage-atd-leg-${leg}`}
-                                className={`relative ${!hasBaggage ? "cursor-not-allowed" : ""
-                                  }`}
+                                className={`relative ${
+                                  !hasBaggage ? "cursor-not-allowed" : ""
+                                }`}
                                 key={leg}
                               >
                                 <label
@@ -897,10 +898,11 @@ export default function Flight1GBookForm({ airportsData }: any) {
                                       );
                                     }}
                                     disabled={!hasBaggage}
-                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${!hasBaggage
+                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${
+                                      !hasBaggage
                                         ? "cursor-not-allowed appearance-none"
                                         : ""
-                                      }`}
+                                    }`}
                                   >
                                     <option value="" data-translate="true">
                                       {hasBaggage
@@ -1105,8 +1107,9 @@ export default function Flight1GBookForm({ airportsData }: any) {
                               chdBaggages.length > 0 ? true : false;
                             return (
                               <div
-                                className={`relative ${!hasBaggage ? "cursor-not-allowed" : ""
-                                  }`}
+                                className={`relative ${
+                                  !hasBaggage ? "cursor-not-allowed" : ""
+                                }`}
                                 key={leg}
                               >
                                 <label
@@ -1126,10 +1129,11 @@ export default function Flight1GBookForm({ airportsData }: any) {
                                       );
                                     }}
                                     disabled={!hasBaggage}
-                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${!hasBaggage
+                                    className={`text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5 ${
+                                      !hasBaggage
                                         ? "cursor-not-allowed appearance-none"
                                         : ""
-                                      }`}
+                                    }`}
                                   >
                                     <option value="" data-translate="true">
                                       {hasBaggage
@@ -1360,9 +1364,9 @@ export default function Flight1GBookForm({ airportsData }: any) {
               const durationFlight = flight.duration
                 ? flight.duration
                 : differenceInSeconds(
-                  new Date(flight.arrival.at),
-                  new Date(flight.departure.at)
-                ) / 60;
+                    new Date(flight.arrival.at),
+                    new Date(flight.departure.at)
+                  ) / 60;
               const startDateLocale = format(
                 new Date(flight.departure.at),
                 "EEEE dd/MM/yyyy",
@@ -1370,8 +1374,9 @@ export default function Flight1GBookForm({ airportsData }: any) {
               );
               return (
                 <div
-                  className={`py-3 px-3 lg:px-6 mb-3 border-t-gray-300 ${index > 0 ? "border-t" : "border-t-0"
-                    }`}
+                  className={`py-3 px-3 lg:px-6 mb-3 border-t-gray-300 ${
+                    index > 0 ? "border-t" : "border-t-0"
+                  }`}
                   key={index}
                 >
                   <div className="flex justify-between">
@@ -1418,7 +1423,7 @@ export default function Flight1GBookForm({ airportsData }: any) {
                           src="/icon/fa-solid_plane.svg"
                           width={20}
                           height={20}
-                          alt="Máy bay"
+                          alt="Icon"
                           className="w-5 h-5 hidden md:block"
                         />
                         <div className="flex flex-col items-center w-full">
@@ -1444,7 +1449,7 @@ export default function Flight1GBookForm({ airportsData }: any) {
                           src="/icon/map-pinned.svg"
                           width={20}
                           height={20}
-                          alt="Điểm đến"
+                          alt="Icon"
                           className="w-5 h-5 hidden md:block"
                         />
                       </div>
@@ -1524,10 +1529,11 @@ export default function Flight1GBookForm({ airportsData }: any) {
                     </div>
                   </button>
                   <div
-                    className={`rounded-lg transition-all delay-300 ease-in ${activeIndex === index
+                    className={`rounded-lg transition-all delay-300 ease-in ${
+                      activeIndex === index
                         ? "max-h-16 opacity-100 visible"
                         : "max-h-0 opacity-0 invisible"
-                      } `}
+                    } `}
                   >
                     <div className="text-sm text-gray-500 flex justify-between mt-1">
                       <span data-translate="true">Vé</span>
@@ -1552,8 +1558,9 @@ export default function Flight1GBookForm({ airportsData }: any) {
                 </span>
                 <p className="font-semibold">
                   {totalBaggages.price && totalBaggages.quantity
-                    ? `${formatCurrency(totalBaggages.price)} x ${totalBaggages.quantity
-                    }`
+                    ? `${formatCurrency(totalBaggages.price)} x ${
+                        totalBaggages.quantity
+                      }`
                     : "0đ"}
                 </p>
               </div>

@@ -42,7 +42,7 @@ export default function HeaderMobileMenu() {
           <button className="flex items-center space-x-1" type="button">
             <Image
               src={`/language/${language}.svg`}
-              alt="Ngôn ngữ hiện tại"
+              alt="Icon"
               className={`h-10 ${language === "vi" ? "rounded-full" : ""}`}
               width={20}
               height={20}
@@ -81,7 +81,7 @@ export default function HeaderMobileMenu() {
                       <div>
                         <Image
                           src={`/language/${item.lang}.svg`}
-                          alt={item.label}
+                          alt="Icon"
                           className={`h-10 ${item.lang === "vi" ? "rounded-full" : ""
                             }`}
                           width={20}

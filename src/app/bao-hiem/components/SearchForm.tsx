@@ -197,7 +197,7 @@ export default function SearchFormInsurance() {
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
               src="/icon/place.svg"
-              alt="Địa điểm"
+              alt="Icon"
               className="h-10"
               width={18}
               height={18}
@@ -257,7 +257,7 @@ export default function SearchFormInsurance() {
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
               src="/icon/place.svg"
-              alt="Địa điểm"
+              alt="Icon"
               className="h-10"
               width={18}
               height={18}
@@ -324,7 +324,7 @@ export default function SearchFormInsurance() {
             <div className="w-[45%] flex justify-between items-center	">
               <Image
                 src="/icon/calendar.svg"
-                alt="Lịch trình"
+                alt="Phone icon"
                 className="h-10"
                 width={18}
                 height={18}
@@ -351,7 +351,7 @@ export default function SearchFormInsurance() {
             <div className="w-[12px] xl:w-[20px]">
               <Image
                 src="/icon/line.png"
-                alt="Dấu gạch ngang"
+                alt="Icon"
                 className="h-[1px] max-w-[12px] xl:max-w-[20px] mx-auto"
                 width={280}
                 height={1}
@@ -394,7 +394,7 @@ export default function SearchFormInsurance() {
           <div className="flex items-center border rounded-lg px-2 h-12">
             <Image
               src="/icon/user-circle.svg"
-              alt="Hành khách"
+              alt="Icon"
               className="h-10"
               width={18}
               height={18}
@@ -422,10 +422,10 @@ export default function SearchFormInsurance() {
 
       <div className="w-full lg:w-[10%]" onClick={handleSearch}>
         <label className="hidden lg:block text-gray-700 mb-1 h-6"></label>
-        <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800  ">
+        <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600  ">
           <Image
             src="/icon/search.svg"
-            alt="Tìm kiếm"
+            alt="Phone icon"
             className="h-10 inline-block"
             width={18}
             height={18}

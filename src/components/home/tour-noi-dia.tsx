@@ -28,7 +28,7 @@ export default async function TourNoiDia() {
             src="/bg-img/tour-noi-dia.png"
             width={1280}
             height={500}
-            alt="Tour nội địa Happy Book"
+            alt="Background"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />
@@ -51,7 +51,7 @@ export default async function TourNoiDia() {
               <Image
                 className=" hover:scale-110 ease-in duration-300"
                 src="/icon/chevron-right.svg"
-                alt="Xem thêm"
+                alt="Icon"
                 width={20}
                 height={20}
               />

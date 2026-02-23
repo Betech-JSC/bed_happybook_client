@@ -18,13 +18,13 @@ export default function ImageTour({ url }: any) {
       >
         <SwiperSlide>
           <Image
-            className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
-            src={url}
-            alt="Ảnh tour"
-            width={845}
-            height={450}
-            sizes="100vw"
-          />
+              className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300"
+              src={url}
+              alt="Image"
+              width={845}
+              height={450}
+              sizes="100vw"
+            />
         </SwiperSlide>
       </Swiper>
       <div className="mt-3">
@@ -57,10 +57,10 @@ export default function ImageTour({ url }: any) {
             <Image
               className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300"
               src={url}
-              alt="Ảnh tour"
+              alt="Image"
               width={135}
-              height={120}
-            />
+                height={120}
+              />
           </SwiperSlide>
         </Swiper>
       </div>

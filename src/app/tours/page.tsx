@@ -104,7 +104,7 @@ export default async function Tours() {
               <div className="flex items-center space-x-3 h-20">
                 <Image
                   src="/tour/globe-gradient.svg"
-                  alt="Lựa chọn không giới hạn"
+                  alt="Icon"
                   className="h-11 w-11"
                   width={44}
                   height={44}
@@ -119,7 +119,7 @@ export default async function Tours() {
               <div className="flex items-center space-x-3 h-20">
                 <Image
                   src="/tour/Travel-gradient-icon.svg"
-                  alt="Dịch vụ cá nhân hóa"
+                  alt="Icon"
                   className="h-11 w-11"
                   width={44}
                   height={44}
@@ -134,7 +134,7 @@ export default async function Tours() {
               <div className="flex items-center space-x-3 h-20">
                 <Image
                   src="/tour/sun-icon.svg"
-                  alt="Giá trị vượt trội"
+                  alt="Icon"
                   className="h-11 w-11"
                   width={44}
                   height={44}
@@ -166,7 +166,7 @@ export default async function Tours() {
                     <Image
                       className="hover:scale-110 ease-in duration-300"
                       src="/icon/chevron-right.svg"
-                      alt="Xem tất cả"
+                      alt="Icon"
                       width={20}
                       height={20}
                     />
@@ -233,7 +233,7 @@ export default async function Tours() {
                     <Image
                       className="hover:scale-110 ease-in duration-300"
                       src="/icon/chevron-right.svg"
-                      alt="Xem tất cả"
+                      alt="Icon"
                       width={20}
                       height={20}
                     />

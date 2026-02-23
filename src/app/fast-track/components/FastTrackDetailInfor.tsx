@@ -37,15 +37,15 @@ export default function FastTrackDetailInfor({ product }: any) {
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
-      ? JSON.parse(daysOpeningRaw)
-      : [];
+    ? JSON.parse(daysOpeningRaw)
+    : [];
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
     ? "Mỗi ngày"
     : daysOpening
-      .map((day: any) => dayMap[day])
-      .filter(Boolean)
-      .join(", ");
+        .map((day: any) => dayMap[day])
+        .filter(Boolean)
+        .join(", ");
   const parsedTimeOpening = parse(
     product?.fast_track?.opening_time,
     "HH:mm:ss",
@@ -198,8 +198,9 @@ export default function FastTrackDetailInfor({ product }: any) {
                     {option.prices?.length > 0 && (
                       <div className="text-end mt-6 mb-2">
                         <Link
-                          href={`/fast-track/checkout/${detail?.slug}?option=${option.id
-                            }&departDate=${format(departDate, "yyyy-MM-dd")}`}
+                          href={`/fast-track/checkout/${detail?.slug}?option=${
+                            option.id
+                          }&departDate=${format(departDate, "yyyy-MM-dd")}`}
                           className="bg-blue-600 w-[110px] text__default_hover p-[10px] text-white rounded-lg inline-flex items-center justify-center"
                         >
                           {t("chon")}
@@ -245,7 +246,7 @@ export default function FastTrackDetailInfor({ product }: any) {
               <Image
                 className="w-4 h-4"
                 src="/icon/clock.svg"
-                alt="Thời gian"
+                alt="Icon"
                 width={18}
                 height={18}
               />
@@ -258,7 +259,7 @@ export default function FastTrackDetailInfor({ product }: any) {
               <Image
                 className="w-4 h-4"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa chỉ"
+                alt="Icon"
                 width={18}
                 height={18}
               />
@@ -285,7 +286,7 @@ export default function FastTrackDetailInfor({ product }: any) {
           <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
             <Image
               src="/icon/calendar.svg"
-              alt="Lịch trình"
+              alt="Phone icon"
               className="h-10"
               width={18}
               height={18}

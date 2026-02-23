@@ -147,7 +147,7 @@ export default function Header() {
             <button className="bg-blue-500 px-3 rounded-r-lg w-12 h-12">
               <Image
                 src="/icon/search.svg"
-                alt="Tìm kiếm tour"
+                alt="Search icon"
                 className="h-10"
                 width={20}
                 height={20}
@@ -191,7 +191,7 @@ export default function Header() {
             <button className="flex items-center space-x-1" type="button">
               <Image
                 src={`/language/${language}.svg`}
-                alt={`Ngôn ngữ ${language}`}
+                alt="Icon"
                 className={`h-10 ${language === "vi" ? "rounded-full" : ""}`}
                 width={20}
                 height={20}
@@ -230,7 +230,7 @@ export default function Header() {
                         <div>
                           <Image
                             src={`/language/${item.lang}.svg`}
-                            alt={`Ngôn ngữ ${item.lang}`}
+                            alt="Icon"
                             className={`h-10 ${item.lang === "vi" ? "rounded-full" : ""
                               }`}
                             width={20}

@@ -173,14 +173,15 @@ export default function Search({
                 return (
                   <div key={index} className="rounded-xl">
                     <div
-                      className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
-                        }`}
+                      className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${
+                        translatedText ? "opacity-100" : "opacity-0"
+                      }`}
                     >
                       <Link href={`/du-thuyen/${item.slug}`}>
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}
-                          alt={renderTextContent(item.name)}
+                          alt="Image"
                           width={360}
                           height={270}
                           sizes="100vw"

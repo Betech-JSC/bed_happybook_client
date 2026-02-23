@@ -51,7 +51,7 @@ export default function CountDownCheckOut({
         src={`/icon/clock-stopwatch.svg`}
         width={20}
         height={20}
-        alt="Thời gian"
+        alt="Icon"
         className="w-5 h-5"
       />
     </div>

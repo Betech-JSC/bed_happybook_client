@@ -113,11 +113,11 @@ export default async function AboutUs() {
               <Image
                 priority
                 src="/about-us/1.png"
-                alt="Văn phòng Happy Book"
+                alt="Image"
                 width={623}
                 height={492}
                 sizes="100vw"
-              // style={{ width: "100%", height: "100%" }}
+                // style={{ width: "100%", height: "100%" }}
               />
             </div>
           </div>
@@ -136,7 +136,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_8898827.svg"
-                    alt="Tư vấn chuyên nghiệp"
+                    alt="Icon"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -150,7 +150,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_11345966.svg"
-                    alt="Giao vé đúng hạn"
+                    alt="Icon"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -165,7 +165,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_5806908.svg"
-                    alt="Thanh toán tiện lợi"
+                    alt="Icon"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -179,7 +179,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_8898825.svg"
-                    alt="Khách hàng hài lòng"
+                    alt="Icon"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -202,7 +202,7 @@ export default async function AboutUs() {
             width={1900}
             height={500}
             sizes="100vw"
-          // style={{ width: "100%", height: "100%" }}
+            // style={{ width: "100%", height: "100%" }}
           />
         </div>
         {/* </AosAnimate> */}

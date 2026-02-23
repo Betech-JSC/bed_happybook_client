@@ -573,7 +573,7 @@ export default function BookingDetail() {
                     <div className="font-normal">
                       <Image
                         src="/payment-method/transfer.svg"
-                        alt="Chuyển khoản"
+                        alt="Icon"
                         width={24}
                         height={24}
                         className="w-6 h-6"
@@ -607,7 +607,7 @@ export default function BookingDetail() {
                     <div className="font-normal">
                       <Image
                         src="/payment-method/visa.svg"
-                        alt="Visa/MasterCard"
+                        alt="Icon"
                         width={48}
                         height={28}
                         className="md:mt-1"

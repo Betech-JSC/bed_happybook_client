@@ -37,7 +37,7 @@ export default async function Flight() {
             src="/bg-img/flight.png"
             width={1280}
             height={500}
-            alt="Chuyến bay phổ biến Happy Book"
+            alt="Background"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />
@@ -62,7 +62,7 @@ export default async function Flight() {
                 <Image
                   className=" hover:scale-110 ease-in duration-300"
                   src="/icon/chevron-right.svg"
-                  alt="Mũi tên xem tất cả"
+                  alt="Icon"
                   width={20}
                   height={20}
                 />
@@ -79,7 +79,7 @@ export default async function Flight() {
               <Image
                 className=" hover:scale-110 ease-in duration-300"
                 src="/icon/chevron-right.svg"
-                alt="Mũi tên xem tất cả"
+                alt="Icon"
                 width={20}
                 height={20}
               />

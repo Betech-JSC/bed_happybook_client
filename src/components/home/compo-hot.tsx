@@ -37,7 +37,7 @@ export default async function CompoHot() {
             <Image
               className="hidden lg:block"
               src="/compo-hot/image.png"
-              alt="Combo siêu hot hôm nay"
+              alt="Compo Hot"
               width={234}
               height={165}
               sizes="100vw"

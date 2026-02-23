@@ -7,15 +7,15 @@ import Link from "next/link";
 export default function HotelItem({ hotel }: any) {
   const minPrice = hotel?.hotel?.rooms?.[0] ?? null;
   return (
-    <div className="overflow-hidden relative border-solid border-2 border-[#EAECF0] rounded-2xl bg-white h-full">
+    <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white h-full">
       <div className="flex flex-col justify-between h-full">
         <div>
-          <div className="overflow-hidden relative aspect-[4/3]">
+          <div className="overflow-hidden rounded-t-2xl relative h-52">
             <Link href={`/khach-san/${hotel.slug}`}>
               <Image
-                className="lg:hover:scale-105 ease-in-out duration-300 cursor-pointer h-full w-full object-cover"
+                className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                 src={`${hotel.image_url}/${hotel.image_location}`}
-                alt={hotel.name}
+                alt="Hotel Image"
                 width={320}
                 height={320}
                 sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
@@ -51,7 +51,7 @@ export default function HotelItem({ hotel }: any) {
                     key={index}
                     className="w-4 h-4"
                     src="/icon/starFull.svg"
-                    alt="Sao đánh giá"
+                    alt="Icon"
                     width={10}
                     height={10}
                   />
@@ -60,7 +60,7 @@ export default function HotelItem({ hotel }: any) {
                     key={index}
                     className="w-4 h-4"
                     src="/icon/star.svg"
-                    alt="Sao đánh giá"
+                    alt="Icon"
                     width={10}
                     height={10}
                   />

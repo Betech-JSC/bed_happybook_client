@@ -26,7 +26,7 @@ export default function SearchTour() {
         <div className="absolute left-4">
           <Image
             src="/icon/place.svg"
-            alt="Địa điểm"
+            alt="Icon"
             className="h-10"
             width={20}
             height={20}

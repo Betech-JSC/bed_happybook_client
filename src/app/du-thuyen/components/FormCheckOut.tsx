@@ -93,15 +93,15 @@ export default function CheckOutForm({
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
-      ? JSON.parse(daysOpeningRaw)
-      : [];
+    ? JSON.parse(daysOpeningRaw)
+    : [];
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
     ? "Mỗi ngày"
     : daysOpening
-      .map((day: any) => dayMap[day])
-      .filter(Boolean)
-      .join(", ");
+        .map((day: any) => dayMap[day])
+        .filter(Boolean)
+        .join(", ");
   const parsedTimeOpening = parse(
     product?.yacht?.opening_time,
     "HH:mm:ss",
@@ -257,13 +257,13 @@ export default function CheckOutForm({
             {/* <div className="w-full mb-3">
               <div className="flex items-center border border-gray-300 rounded-md pl-4 space-x-2">
                 <div>
-                   <Image
-                     src="/icon/calendar.svg"
-                     alt="Lịch"
-                     className="h-5"
-                     width={20}
-                     height={20}
-                   />
+                  <Image
+                    src="/icon/calendar.svg"
+                    alt="Icon"
+                    className="h-5"
+                    width={20}
+                    height={20}
+                  />
                 </div>
                 <div className="relative w-full">
                   <label
@@ -362,10 +362,11 @@ export default function CheckOutForm({
                           <button
                             type="button"
                             className={`w-6 h-6 font-medium text-xl rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center
-                          ${ticket.quantity <= ticket.minQty
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                              } `}
+                          ${
+                            ticket.quantity <= ticket.minQty
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          } `}
                             onClick={() => updateCount(ticket.id, -1)}
                             disabled={ticket.quantity <= ticket.minQty}
                           >
@@ -378,10 +379,11 @@ export default function CheckOutForm({
                           <button
                             type="button"
                             className={`w-6 h-6 text-xl font-medium rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center 
-                           ${ticket.quantity >= 20
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                              }`}
+                           ${
+                             ticket.quantity >= 20
+                               ? "cursor-not-allowed opacity-50"
+                               : ""
+                           }`}
                             onClick={() => updateCount(ticket.id, 1)}
                             disabled={ticket.quantity >= 20}
                           >
@@ -453,20 +455,20 @@ export default function CheckOutForm({
               </div>
               <div className="mt-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <Controller
-                    name="phone"
-                    control={control}
-                    render={({ field }) => (
-                      <PhoneInput
-                        id="phone"
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Nhập số điện thoại"
-                        error={errors.phone?.message}
-                        defaultCountry="VN"
+                <Controller
+                        name="phone"
+                        control={control}
+                        render={({ field }) => (
+                          <PhoneInput
+                            id="phone"
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="Nhập số điện thoại"
+                            error={errors.phone?.message}
+                            defaultCountry="VN"
+                          />
+                        )}
                       />
-                    )}
-                  />
                   <div className="relative">
                     <label
                       htmlFor="email"
@@ -700,7 +702,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/clock.svg"
-                alt="Thời gian"
+                alt="Icon"
                 width={18}
                 height={18}
               />
@@ -712,7 +714,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa điểm"
+                alt="Icon"
                 width={18}
                 height={18}
               />

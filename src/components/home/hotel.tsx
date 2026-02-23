@@ -28,10 +28,11 @@ export default async function Hotel() {
         <div className="absolute inset-0 z-[2] hidden lg:block">
           <Image
             src="/bg-img/hotel.png"
-            alt="Khách sạn Happy Book"
-            fill
+            width={1280}
+            height={500}
+            alt="Background"
             sizes="100vw"
-            className="rounded-3xl object-cover"
+            className="w-full h-full rounded-3xl "
           />
         </div>
         {/* Content */}
@@ -53,7 +54,7 @@ export default async function Hotel() {
               <Image
                 className=" hover:scale-110 ease-in duration-300"
                 src="/icon/chevron-right.svg"
-                alt="Mũi tên xem thêm"
+                alt="Icon"
                 width={20}
                 height={20}
               />
@@ -72,7 +73,7 @@ export default async function Hotel() {
             <Image
               className=" hover:scale-110 ease-in duration-300"
               src="/icon/chevron-right.svg"
-              alt="Xem thêm"
+              alt="Icon"
               width={20}
               height={20}
             />

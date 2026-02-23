@@ -235,7 +235,7 @@ export default function QuestionAndAnswer({
                 <Image
                   className=" cursor-pointer h-3 w-3 md:h-4 md:w-4"
                   src="/icon/corner-up-left.svg"
-                  alt="Icon trả lời"
+                  alt="Icon"
                   width={32}
                   height={32}
                 />
@@ -271,7 +271,7 @@ export default function QuestionAndAnswer({
                   <Image
                     className=" cursor-pointer h-4 w-4"
                     src="/icon/corner-up-left.svg"
-                    alt="Icon trả lời"
+                    alt="Icon"
                     width={32}
                     height={32}
                   />

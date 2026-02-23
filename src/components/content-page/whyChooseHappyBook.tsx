@@ -14,7 +14,7 @@ export default async function WhyChooseHappyBook() {
           <div className="flex items-center space-x-3 h-20">
             <Image
               src="/tour/adviser.svg"
-              alt="Icon tư vấn"
+              alt="Icon"
               className="h-11 w-11"
               width={44}
               height={44}
@@ -31,7 +31,7 @@ export default async function WhyChooseHappyBook() {
           <div className="flex items-center space-x-3 h-20">
             <Image
               src="/tour/developers.svg"
-              alt="Icon kinh nghiệm"
+              alt="Icon"
               className="h-11 w-11"
               width={44}
               height={44}
@@ -48,7 +48,7 @@ export default async function WhyChooseHappyBook() {
           <div className="flex items-center space-x-3 h-20">
             <Image
               src="/tour/product-icon.svg"
-              alt="Icon sản phẩm"
+              alt="Icon"
               className="h-11 w-11"
               width={44}
               height={44}

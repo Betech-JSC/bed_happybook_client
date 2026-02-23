@@ -66,7 +66,7 @@ export default function Flight1GDetailPopup({
                 >
                   <Image
                     src="/icon/close.svg"
-                    alt="Đóng"
+                    alt="Icon"
                     className="h-6"
                     width={24}
                     height={24}
@@ -108,7 +108,7 @@ export default function Flight1GDetailPopup({
                 >
                   <Image
                     src="/icon/close.svg"
-                    alt="Đóng"
+                    alt="Icon"
                     className="h-6"
                     width={24}
                     height={24}
@@ -123,8 +123,8 @@ export default function Flight1GDetailPopup({
                     <div
                       key={key}
                       className={` bg-white ${key > 0
-                        ? "pt-6 border-t border-t-gray-300"
-                        : "mt-4 pb-6"
+                          ? "pt-6 border-t border-t-gray-300"
+                          : "mt-4 pb-6"
                         }`}
                     >
                       <h2
@@ -147,8 +147,8 @@ export default function Flight1GDetailPopup({
                   <div
                     key={index}
                     className={` bg-white ${index > 0
-                      ? "pt-4 border-t border-t-gray-300"
-                      : "mt-4 pb-6"
+                        ? "pt-4 border-t border-t-gray-300"
+                        : "mt-4 pb-6"
                       }`}
                   >
                     {flights?.length > 1 && (

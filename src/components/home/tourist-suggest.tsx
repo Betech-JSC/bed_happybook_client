@@ -37,7 +37,7 @@ export default async function TouristSuggest() {
                 <Link href={item.url}>
                   <Image
                     src={`${item.image_url}/${item.image_location}`}
-                    alt={item.title || "Điểm đến gợi ý"}
+                    alt="Image"
                     width={194}
                     height={295}
                     className="rounded-xl cursor-pointer w-full h-[240px]"

@@ -51,17 +51,19 @@ const TableOfContents = ({ toc }: Props) => {
         <div className="relative w-5 h-5">
           <Image
             onClick={toggleMenu}
-            className={`ease-in duration-300 cursor-pointer h-5 absolute top-0  ${!isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
-              }`}
+            className={`ease-in duration-300 cursor-pointer h-5 absolute top-0  ${
+              !isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
+            }`}
             src={`/icon/menu-mb.svg`}
-            alt="Mục lục"
+            alt="Icon"
             width={20}
             height={20}
           />
           <div
             onClick={toggleMenu}
-            className={`ease-in duration-300 cursor-pointer absolute top-0 ${isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
-              }`}
+            className={`ease-in duration-300 cursor-pointer absolute top-0 ${
+              isOpen ? "opacity-100 transform rotate-0" : "opacity-0 scale-0"
+            }`}
           >
             <svg
               width="22"

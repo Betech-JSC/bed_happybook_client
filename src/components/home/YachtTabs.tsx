@@ -44,7 +44,7 @@ export default function YachtTabs({
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Mũi tên xem tất cả"
+            alt="Icon"
             width={20}
             height={20}
           />
@@ -62,7 +62,7 @@ export default function YachtTabs({
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Mũi tên xem tất cả"
+          alt="Icon"
           width={20}
           height={20}
         />
@@ -82,10 +82,11 @@ export default function YachtTabs({
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
-                     ${activeTab === index
-                            ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                            : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                          }`}
+                     ${
+                       activeTab === index
+                         ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                         : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
+                     }`}
                         onClick={() => {
                           setActiveTab(index);
                           setLinkCategory(`/du-thuyen/${tab.alias}`);
@@ -110,10 +111,11 @@ export default function YachtTabs({
                     align: "start",
                     loop: true,
                   }}
-                  className={`${category.products.length > 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                    }`}
+                  className={`${
+                    category.products.length > 0 && activeTab === index
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
                 >
                   <CarouselContent>
                     {category.products.map((item: any, subIndex: number) => (
@@ -121,15 +123,17 @@ export default function YachtTabs({
                         key={subIndex}
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                       >
-                        <div className="group overflow-hidden relative border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="overflow-hidden relative aspect-[4/3]">
+                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                          <div className="overflow-hidden rounded-t-2xl	">
                             <Link href={`/du-thuyen/${item.slug}`}>
                               <Image
-                                className="lg:group-hover:scale-105 ease-in-out duration-300 w-full h-full cursor-pointer object-cover"
+                                className="hover:scale-110 ease-in duration-300 cursor-pointer"
                                 src={`${item.image_url}/${item.image_location}`}
-                                alt={item.name}
+                                alt="Image"
                                 width={320}
                                 height={320}
+                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                                style={{ height: 200, width: "100%" }}
                               />
                             </Link>
                           </div>
@@ -161,10 +165,11 @@ export default function YachtTabs({
                   <CarouselNext className="hidden lg:inline-flex" />
                 </Carousel>
                 <div
-                  className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                    }`}
+                  className={`min-h-[100px] content-center text-center ${
+                    category.products.length <= 0 && activeTab === index
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
                 >
                   <p className="font-bold text-xl">
                     {t("thong_tin_dang_cap_nhat")}

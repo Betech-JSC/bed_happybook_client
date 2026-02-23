@@ -21,7 +21,7 @@ export default function HotTourItem({ tour, isHot }: any) {
           <Image
             className=" hover:scale-110 ease-in duration-300 cursor-pointer object-cover"
             src={tour.tour_image ?? defaultImage}
-            alt={tour.tour_name ?? "Ảnh tour"}
+            alt="Tour Image"
             width={320}
             height={320}
             sizes="(max-width: 768px) 100vw,
@@ -51,14 +51,14 @@ export default function HotTourItem({ tour, isHot }: any) {
         <p className="flex space-x-2 mt-2">
           <Image
             src="/icon/clock-check.svg"
-            alt="Lịch trình"
+            alt="Time"
             width={20}
             height={20}
           />
           <span data-translate>{tour.duration ?? ""}</span>
         </p>
         <p className="flex space-x-2 mt-2">
-          <Image src="/icon/clock.svg" alt="Thời gian khởi hành" width={20} height={20} />
+          <Image src="/icon/clock.svg" alt="Time" width={20} height={20} />
           <span data-translate>
             {" "}
             Ngày khởi hành:{" "}
@@ -67,7 +67,7 @@ export default function HotTourItem({ tour, isHot }: any) {
         </p>
 
         <p className="flex space-x-2 mt-2">
-          <Image src="/icon/clock.svg" alt="Thời gian kết thúc" width={20} height={20} />
+          <Image src="/icon/clock.svg" alt="Time" width={20} height={20} />
           <span data-translate>
             {" "}
             Ngày kết thúc:{" "}
@@ -81,7 +81,7 @@ export default function HotTourItem({ tour, isHot }: any) {
                 <Image
                   key={index}
                   src={`/icon/${item}.svg`}
-                  alt="Phương tiện di chuyển"
+                  alt="Icon"
                   width={20}
                   height={20}
                 />

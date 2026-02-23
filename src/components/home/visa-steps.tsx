@@ -14,7 +14,7 @@ export default async function VisaSteps() {
   return (
     <div className="relative bg-cover bg-center py-12 md:px-3 lg:px-[50px] xl:px[80px]">
       <div className="absolute inset-0 z-[2] w-full">
-        <Image src="/visa-step-2.png" width={1440} height={518} alt="Các bước làm Visa" className="w-full h-full object-cover object-center" />
+        <Image src="/visa-step-2.png" width={1440} height={518} alt="Background" className="w-full h-full object-cover object-center" />
       </div>
       <div className="px-3 md:px-0 relative z-10 container mx-auto text-center text-white">
         <h2 className={` text-3xl font-semibold mb-5`}>{t("cac_buoc_lam_visa_tai_happy_book_travel")}</h2>

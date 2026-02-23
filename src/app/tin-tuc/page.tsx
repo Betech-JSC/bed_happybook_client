@@ -68,7 +68,6 @@ export default async function Posts() {
       ]}
     >
       <main className="bg-white lg:pt-[132px] px-3 lg:px-[80px] pt-14 max__screen">
-        <h1 className="sr-only">{metadata.title as string}</h1>
         {lastestPosts.length > 0 && (
           <div className="flex space-x-12 lg:h-[670px] mt-6 lg:mb-12">
             <div className="basis-full lg:basis-[65%]">
@@ -101,7 +100,7 @@ export default async function Posts() {
                     className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
                   >
                     <Link href={`/${lastestPosts[0].alias}`}>
-                      {lastestPosts[0].title ?? ""}
+                      <h3>{lastestPosts[0].title ?? ""}</h3>
                     </Link>
                   </h3>
                   <div
@@ -174,7 +173,7 @@ export default async function Posts() {
                     <Image
                       className="ease-in duration-300"
                       src="/icon/chevron-right.svg"
-                      alt="Xem tất cả"
+                      alt="Icon"
                       width={20}
                       height={20}
                     />

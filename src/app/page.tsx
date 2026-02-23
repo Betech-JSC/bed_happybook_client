@@ -1,6 +1,15 @@
 import { Fragment, Suspense } from "react";
 import Banner from "@/components/home/banner";
-import AosAnimate from "@/components/layout/aos-animate";
+import TourNoiDia from "@/components/home/tour-noi-dia";
+import TourHot from "@/components/home/tour-hot";
+import TourQuocTe from "@/components/home/tour-quoc-te";
+import VisaService from "@/components/home/visa-service";
+import Hotel from "@/components/home/hotel";
+import CompoHot from "@/components/home/compo-hot";
+import VisaSteps from "@/components/home/visa-steps";
+import TouristSuggest from "@/components/home/tourist-suggest";
+import Flight from "@/components/home/flight";
+import FooterMenu from "@/components/content-page/footer-menu";
 import Search from "@/components/home/search";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -10,27 +19,29 @@ import { siteUrl } from "@/constants";
 import { WebsiteSchema } from "@/components/schema/WebsiteSchema";
 import { formatMetadata } from "@/lib/formatters";
 import { settingApi } from "@/api/Setting";
+import HomeYacht from "@/components/home/Yacht";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
+import NewsByPage from "@/components/content-page/NewsByPage";
+import HomeAmusementTicket from "@/components/home/AmusementTicket";
+import HomeFastTrack from "@/components/home/FastTrack";
 import { getServerT } from "@/lib/i18n/getServerT";
 import dynamic from "next/dynamic";
 // import SentryTestButton from "@/components/dev/SentryTestButton";
 
-const TourNoiDia = dynamic(() => import("@/components/home/tour-noi-dia"));
-const TourHot = dynamic(() => import("@/components/home/tour-hot"));
-const TourQuocTe = dynamic(() => import("@/components/home/tour-quoc-te"));
-const VisaService = dynamic(() => import("@/components/home/visa-service"));
-const Hotel = dynamic(() => import("@/components/home/hotel"));
-const CompoHot = dynamic(() => import("@/components/home/compo-hot"));
-const VisaSteps = dynamic(() => import("@/components/home/visa-steps"));
-const TouristSuggest = dynamic(() => import("@/components/home/tourist-suggest"));
-const Flight = dynamic(() => import("@/components/home/flight"));
-const HomeYacht = dynamic(() => import("@/components/home/Yacht"));
-const HomeAmusementTicket = dynamic(() => import("@/components/home/AmusementTicket"));
-const HomeFastTrack = dynamic(() => import("@/components/home/FastTrack"));
-const FormContact = dynamic(() => import("./lien-he/form"));
-const PartnerAirlines = dynamic(() => import("./ve-may-bay/components/Partner"));
-const NewsByPage = dynamic(() => import("@/components/content-page/NewsByPage"));
-const FooterMenu = dynamic(() => import("@/components/content-page/footer-menu"));
+const PartnerAirlines = dynamic(
+  () => import("./ve-may-bay/components/Partner"),
+  {
+    loading: () => <SkeletonProductTabs />,
+  }
+);
+
+const FormContact = dynamic(() => import("./lien-he/form"), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-2xl" />,
+});
+
+const AosAnimate = dynamic(() => import("@/components/layout/aos-animate"), {
+  ssr: true,
+});
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const seo = await settingApi.getCachedMetaSeo();
@@ -55,63 +66,36 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [airportsData, seo, t] = await Promise.all([
-    FlightApi.getCachedAirports(),
-    settingApi.getCachedMetaSeo(),
-    getServerT(),
-  ]);
+  const airportsData = await FlightApi.getCachedAirports();
+  const t = await getServerT();
   return (
     <Fragment>
       <WebsiteSchema />
-      <h1 className="sr-only">{seo?.seo_title || "Happy Book - Dịch vụ du lịch hàng đầu"}</h1>
-
-      {/* Search Desktop Background - Moved to Server Component for LCP optimization */}
-      <div className="hidden lg:block absolute inset-0 h-[694px]">
-        <Image
-          priority
-          src="/bg-image.webp"
-          fill
-          sizes="100vw"
-          className="object-cover"
-          alt="Tìm kiếm tour và vé máy bay Happy Book"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-          }}
-        ></div>
-      </div>
-
-      <Suspense fallback={null}>
+      <Suspense>
         <Search airportsData={airportsData} />
       </Suspense>
-
       {/* Search Mobile */}
       <div className="mt-[68px] block lg:hidden relative h-max pb-10">
         <div className="mt-4 h-full">
           <div className="absolute inset-0 h-full">
             <Image
               priority
-              src="/bg-image.webp"
-              fill
-              sizes="100vw"
-              className="object-cover"
-              alt="Hỗ trợ tìm kiếm du lịch Happy Book"
+              src="/bg-image.png"
+              width={500}
+              height={584}
+              className="object-cover w-full h-full"
+              alt="Background"
             />
           </div>
           <div
-            className="absolute inset-0"
+            className="absolute w-full h-full"
             style={{
               backgroundImage:
                 "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
             }}
           ></div>
           <div className="relative">
-            <Suspense fallback={null}>
-              <SearchMobile airportsData={airportsData} />
-            </Suspense>
+            <SearchMobile airportsData={airportsData} />
           </div>
         </div>
       </div>
@@ -216,16 +200,16 @@ export default async function Home() {
         </Suspense>
         <Suspense fallback={<SkeletonProductTabs />}>
           <div className="mx-auto p-8 lg:w-[920px] h-auto">
-            <h2 className="text-18 font-semibold text-center">
+            <h3 className="text-18 font-semibold text-center">
               {t(
                 "ban_co_the_gui_thong_tin_yeu_cau_cua_minh_qua_mau_lien_he_duoi_day_va_chung_toi_se_phan_hoi_trong_thoi_gian_som_nhat"
               )}
-            </h2>
+            </h3>
             <FormContact />
           </div>
         </Suspense>
         <Suspense fallback={<SkeletonProductTabs />}>
-          <AosAnimate animation="fade-up">
+          <AosAnimate>
             <FooterMenu page={"home"}></FooterMenu>
           </AosAnimate>
         </Suspense>

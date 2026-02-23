@@ -84,7 +84,7 @@ export default function HotelGallery({ product }: any) {
             <Image
               className="cursor-pointer w-full h-[280px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
               src={lightboxItems[0].src}
-              alt={product?.name || "Ảnh khách sạn"}
+              alt="Image"
               width={700}
               height={450}
               sizes="100vw"
@@ -111,7 +111,7 @@ export default function HotelGallery({ product }: any) {
             <Image
               className="cursor-pointer w-full h-32 md:h-[220px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
               src={item.src}
-              alt={product?.name || "Ảnh khách sạn"}
+              alt="Image"
               width={320}
               height={220}
               sizes="100vw"

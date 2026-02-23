@@ -18,7 +18,7 @@ export default function CompoItem({ data }: any) {
           <Image
             className="hover:scale-110 ease-in duration-300 cursor-pointer object-cover"
             src={`${data.image_url}/${data.image_location}`}
-            alt={data.name}
+            alt="Banner"
             width={200}
             height={160}
             sizes="(max-width: 768px) 100vw,
@@ -62,7 +62,7 @@ export default function CompoItem({ data }: any) {
                 <Image
                   key={index}
                   src={`/icon/${item}.svg`}
-                  alt={item}
+                  alt="Icon"
                   width={20}
                   height={20}
                 />

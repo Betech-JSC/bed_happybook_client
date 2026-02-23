@@ -128,7 +128,7 @@ export default async function Hotel() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/globe-gradient.svg"
-                alt="Lựa chọn không giới hạn"
+                alt="Icon"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -143,7 +143,7 @@ export default async function Hotel() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/Travel-gradient-icon.svg"
-                alt="Dịch vụ cá nhân hóa"
+                alt="Icon"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -158,7 +158,7 @@ export default async function Hotel() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/sun-icon.svg"
-                alt="Giá trị vượt trội"
+                alt="Icon"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -221,7 +221,7 @@ export default async function Hotel() {
                       <Image
                         className="hover:scale-110 ease-in duration-300 cursor-pointer w-full rounded-t-2xl object-cover"
                         src={`${item.image_url}/${item.image_location}`}
-                        alt={item.name}
+                        alt="Image"
                         width={250}
                         height={260}
                         style={{ height: 220 }}

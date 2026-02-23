@@ -163,7 +163,7 @@ export default function FormCheckOut({
                     <div>
                       <Image
                         src="/icon/calendar.svg"
-                        alt="Lịch"
+                        alt="Icon"
                         className="h-5"
                         width={20}
                         height={20}
@@ -220,7 +220,7 @@ export default function FormCheckOut({
                     <div>
                       <Image
                         src="/icon/place.svg"
-                        alt="Địa điểm"
+                        alt="Icon"
                         className="h-5"
                         width={20}
                         height={20}
@@ -453,7 +453,7 @@ export default function FormCheckOut({
           <Image
             className="cursor-pointer w-full h-60 md:h-40 lg:h-[230px] rounded-t-2xl hover:scale-110 ease-in duration-300"
             src={`${detail.image_url}/${detail.image_location}`}
-            alt={renderTextContent(detail.name)}
+            alt="Image"
             width={410}
             height={230}
             sizes="100vw"
@@ -471,20 +471,21 @@ export default function FormCheckOut({
             <Image
               className="w-4 h-4"
               src="/icon/clock.svg"
-              alt="Thời gian"
+              alt="Icon"
               width={18}
               height={18}
             />
             <span data-translate="true">
-              {`${detail.combo.day ? detail.combo.day : ""} ngày ${detail.combo.night ? detail.combo.night : ""
-                } đêm`}
+              {`${detail.combo.day ? detail.combo.day : ""} ngày ${
+                detail.combo.night ? detail.combo.night : ""
+              } đêm`}
             </span>
           </div>
           <div className="flex space-x-2 mt-3 items-center">
             <Image
               className="w-4 h-4"
               src="/icon/marker-pin-01.svg"
-              alt="Địa chỉ"
+              alt="Icon"
               width={18}
               height={18}
             />

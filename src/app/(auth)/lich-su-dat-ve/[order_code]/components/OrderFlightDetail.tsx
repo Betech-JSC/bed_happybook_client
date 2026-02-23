@@ -143,7 +143,7 @@ export default function OrderFlightDetail({ detail }: any) {
                       src={`/icon/clock-stopwatch.svg`}
                       width={20}
                       height={20}
-                      alt="Thời gian"
+                      alt="Icon"
                       className="w-5 h-5"
                     />
                   </div>
@@ -189,7 +189,7 @@ export default function OrderFlightDetail({ detail }: any) {
                         <div className="font-normal">
                           <Image
                             src="/payment-method/cash.svg"
-                            alt="Thanh toán sau"
+                            alt="Icon"
                             width={24}
                             height={24}
                             className="w-6 h-6"
@@ -226,7 +226,7 @@ export default function OrderFlightDetail({ detail }: any) {
                         <div className="font-normal">
                           <Image
                             src="/payment-method/transfer.svg"
-                            alt="Chuyển khoản"
+                            alt="Icon"
                             width={24}
                             height={24}
                             className="w-6 h-6"
@@ -258,7 +258,7 @@ export default function OrderFlightDetail({ detail }: any) {
                         <div className="font-normal">
                           <Image
                             src="/payment-method/onepay.svg"
-                            alt="OnePay"
+                            alt="Icon"
                             width={64}
                             height={64}
                             className="mt-1"

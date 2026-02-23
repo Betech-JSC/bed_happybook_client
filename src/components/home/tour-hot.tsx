@@ -35,7 +35,7 @@ export default async function TourHot() {
             src="/bg-img/tour-hot.png"
             width={1280}
             height={500}
-            alt="Tour du lịch hot trong tháng tại Happy Book"
+            alt="Background"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />
@@ -60,7 +60,7 @@ export default async function TourHot() {
               <Image
                 className=" hover:scale-110 ease-in duration-300"
                 src="/icon/chevron-right.svg"
-                alt="Xem thêm"
+                alt="Icon"
                 width={20}
                 height={20}
               />
@@ -80,7 +80,7 @@ export default async function TourHot() {
             <Image
               className=" hover:scale-110 ease-in duration-300"
               src="/icon/chevron-right.svg"
-              alt="Mũi tên xem thêm"
+              alt="Icon"
               width={20}
               height={20}
             />

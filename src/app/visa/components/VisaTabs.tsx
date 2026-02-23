@@ -46,7 +46,7 @@ export default function VisaTabs({
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Xem tất cả"
+            alt="Icon"
             width={20}
             height={20}
           />
@@ -68,7 +68,7 @@ export default function VisaTabs({
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Xem tất cả"
+          alt="Icon"
           width={20}
           height={20}
         />
@@ -88,10 +88,11 @@ export default function VisaTabs({
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
-                     ${activeTab === index
-                            ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                            : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                          }`}
+                     ${
+                       activeTab === index
+                         ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                         : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
+                     }`}
                         onClick={() => {
                           setActiveTab(index);
                           setLinkCategory(`/visa/${tab.alias}`);
@@ -116,10 +117,11 @@ export default function VisaTabs({
                     align: "start",
                     loop: true,
                   }}
-                  className={`${category.products.length > 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                    }`}
+                  className={`${
+                    category.products.length > 0 && activeTab === index
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
                 >
                   <CarouselContent>
                     {category.products.map((visa: any, subIndex: number) => (
@@ -127,15 +129,17 @@ export default function VisaTabs({
                         key={subIndex}
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                       >
-                        <div className="relative overflow-hidden border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="relative overflow-hidden aspect-[3/2]">
+                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                          <div className="overflow-hidden rounded-t-2xl	">
                             <Link href={`/visa/${visa.slug}`}>
                               <Image
-                                className="lg:group-hover:scale-105 w-full h-full ease-in-out duration-300 cursor-pointer"
+                                className="hover:scale-110 ease-in duration-300 cursor-pointer"
                                 src={`${visa.image_url}/${visa.image_location}`}
-                                alt={visa.name}
+                                alt="Visa Image"
                                 width={320}
                                 height={320}
+                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
+                                style={{ height: 200, width: "100%" }}
                               />
                             </Link>
                           </div>
@@ -169,10 +173,11 @@ export default function VisaTabs({
                   <CarouselNext className="hidden lg:inline-flex" />
                 </Carousel>
                 <div
-                  className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                    }`}
+                  className={`min-h-[100px] content-center text-center ${
+                    category.products.length <= 0 && activeTab === index
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
                 >
                   <p className="font-bold text-xl" data-translate="true">
                     Thông tin đang được cập nhật.....

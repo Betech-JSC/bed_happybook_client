@@ -78,7 +78,7 @@ export default function ExcelUploader({
             onClick={handleDownload}
             className="w-full hover:border-primary duration-300 lg:w-auto flex gap-2 py-[10px] px-4 border border-gray-300 rounded-lg bg-white"
           >
-            <Image src="/icon/download.svg" alt="Tải xuống" width={20} height={20} />
+            <Image src="/icon/download.svg" alt="Icon" width={20} height={20} />
             <p>Tải danh sách mẫu</p>
           </button>
           <label
@@ -92,7 +92,7 @@ export default function ExcelUploader({
               onChange={handleFileChange}
               className="hidden"
             />
-            <Image src="/icon/download.svg" alt="Tải xuống" width={20} height={20} />
+            <Image src="/icon/download.svg" alt="Icon" width={20} height={20} />
             <p>Chọn danh sách</p>
           </label>
         </div>

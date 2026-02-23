@@ -167,15 +167,16 @@ export default function ListHotel({
                 <div
                   key={index}
                   className={`flex flex-col md:flex-row lg:space-x-6 rounded-3xl bg-white mb-4
-                  transition-opacity duration-700  ${translatedText ? "opacity-100" : "opacity-0"
-                    }`}
+                  transition-opacity duration-700  ${
+                    translatedText ? "opacity-100" : "opacity-0"
+                  }`}
                 >
                   <div className="w-full md:w-5/12 relative overflow-hidden md:rounded-l-2xl">
                     <Link href={`/khach-san/${item.slug}`}>
                       <Image
                         className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full rounded-t-2xl md:rounded-none md:rounded-l-2xl object-cover"
                         src={`${item.image_url}/${item.image_location}`}
-                        alt={renderTextContent(item.name)}
+                        alt="Image"
                         width={450}
                         height={350}
                         sizes="100vw"
@@ -201,7 +202,7 @@ export default function ListHotel({
                                   key={index}
                                   className="w-4 h-4"
                                   src="/icon/starFull.svg"
-                                  alt="Sao"
+                                  alt="Icon"
                                   width={10}
                                   height={10}
                                 />
@@ -210,7 +211,7 @@ export default function ListHotel({
                                   key={index}
                                   className="w-4 h-4"
                                   src="/icon/star.svg"
-                                  alt="Sao"
+                                  alt="Icon"
                                   width={10}
                                   height={10}
                                 />
@@ -223,7 +224,7 @@ export default function ListHotel({
                         <Image
                           className="w-4 h-4 mt-1"
                           src="/icon/marker-pin-01.svg"
-                          alt="Địa chỉ"
+                          alt="Icon"
                           width={20}
                           height={20}
                         />

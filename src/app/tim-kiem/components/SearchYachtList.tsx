@@ -37,7 +37,7 @@ export default function SearchYachtList({ yachts }: any) {
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Xem tất cả"
+            alt="Icon"
             width={20}
             height={20}
           />

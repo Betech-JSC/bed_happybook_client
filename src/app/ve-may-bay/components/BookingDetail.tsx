@@ -123,7 +123,7 @@ export default function BookingDetail({ airports }: BookingDetailProps) {
                                 src="/icon/AirplaneTilt.svg"
                                 width={20}
                                 height={20}
-                                alt="Máy bay"
+                                alt="Icon"
                                 className="w-5 h-5"
                               />
                             </div>
@@ -160,10 +160,11 @@ export default function BookingDetail({ airports }: BookingDetailProps) {
                                   ) || null;
                               return (
                                 <div
-                                  className={`grid grid-cols-12 items-center gap-6 ${index > 0
+                                  className={`grid grid-cols-12 items-center gap-6 ${
+                                    index > 0
                                       ? "border-t-gray-300 border-t pt-4 mt-4"
                                       : ""
-                                    }`}
+                                  }`}
                                   key={index}
                                 >
                                   <div className="col-span-12 md:col-span-2 flex flex-col">
@@ -172,7 +173,7 @@ export default function BookingDetail({ airports }: BookingDetailProps) {
                                         src={`/airline/${flight.Airline}.svg`}
                                         width={72}
                                         height={72}
-                                        alt={flight.Airline}
+                                        alt="Logo"
                                         className="w-20 h-20"
                                       />
                                     </div>
@@ -193,17 +194,17 @@ export default function BookingDetail({ airports }: BookingDetailProps) {
                                             src="/icon/AirplaneTiltBlue.svg"
                                             width={20}
                                             height={20}
-                                            alt="Máy bay"
+                                            alt="Icon"
                                             className="w-5 h-5 mx-auto"
                                           />
                                           <p className="mt-2 text-22 text-[#4E6EB3]">
                                             {segment.Duration
                                               ? formatNumberToHoursAndMinutesFlight(
-                                                segment.Duration
-                                              )
+                                                  segment.Duration
+                                                )
                                               : formatNumberToHoursAndMinutesFlight(
-                                                segment.StopTime
-                                              )}
+                                                  segment.StopTime
+                                                )}
                                           </p>
                                         </div>
                                         <div className="text-center w-full">
@@ -223,8 +224,9 @@ export default function BookingDetail({ airports }: BookingDetailProps) {
                                       <div className="w-7/12 md:w-9/12 flex justify-between space-y-3 md:space-y-0 flex-col h-full">
                                         <div>
                                           <p className="text-22 font-bold">
-                                            {`${airPortStartPoint?.city ?? ""
-                                              } (${segment.StartPoint})`}
+                                            {`${
+                                              airPortStartPoint?.city ?? ""
+                                            } (${segment.StartPoint})`}
                                           </p>
                                           <p className="text-gray-500 mt-1 h-6"></p>
                                         </div>
@@ -252,8 +254,9 @@ export default function BookingDetail({ airports }: BookingDetailProps) {
                                         <div>
                                           <p className="text-gray-500 mt-1 h-6"></p>
                                           <p className="text-22 font-bold">
-                                            {`${airPortEndPoint?.city ?? ""} (${segment.EndPoint
-                                              })`}
+                                            {`${airPortEndPoint?.city ?? ""} (${
+                                              segment.EndPoint
+                                            })`}
                                           </p>
                                         </div>
                                       </div>
