@@ -46,7 +46,7 @@ export default function Members({ data }: any) {
               <div className={AboutUs.member__item}>
                 <Image
                   src={`${member.image_url}/${member.image_location}`}
-                  alt="Image"
+                  alt={member.name}
                   width={600}
                   height={400}
                   sizes="100vw"

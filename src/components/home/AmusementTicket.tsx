@@ -24,7 +24,7 @@ export default async function HomeAmusementTicket() {
             src="/bg-img/tour-quoc-te.png"
             width={1280}
             height={500}
-            alt="Background"
+            alt="Vé vui chơi Happy Book"
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />

@@ -44,7 +44,7 @@ export default function FastTrackTabs({
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Icon"
+            alt="Mũi tên xem tất cả"
             width={20}
             height={20}
           />
@@ -62,7 +62,7 @@ export default function FastTrackTabs({
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Icon"
+          alt="Mũi tên xem tất cả"
           width={20}
           height={20}
         />
@@ -82,11 +82,10 @@ export default function FastTrackTabs({
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
-                     ${
-                       activeTab === index
-                         ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                         : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                     }`}
+                     ${activeTab === index
+                            ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                            : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
+                          }`}
                         onClick={() => {
                           setActiveTab(index);
                           setLinkCategory(`/fast-track/${tab.alias}`);
@@ -111,11 +110,10 @@ export default function FastTrackTabs({
                     align: "start",
                     loop: true,
                   }}
-                  className={`${
-                    category.products.length > 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
-                  }`}
+                  className={`${category.products.length > 0 && activeTab === index
+                    ? "block visible"
+                    : "hidden invisible"
+                    }`}
                 >
                   <CarouselContent>
                     {category.products.map((item: any, subIndex: number) => (
@@ -123,17 +121,15 @@ export default function FastTrackTabs({
                         key={subIndex}
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                       >
-                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="overflow-hidden rounded-t-2xl	">
+                        <div className="relative overflow-hidden border-solid border-2 border-[#EAECF0] rounded-2xl bg-white group">
+                          <div className="relative overflow-hidden aspect-[1/1]">
                             <Link href={`/fast-track/${item.slug}`}>
                               <Image
-                                className="hover:scale-110 ease-in duration-300 cursor-pointer object-cover"
+                                className="lg:group-hover:scale-105 ease-in-out w-full h-full duration-300 cursor-pointer object-cover"
                                 src={`${item.image_url}/${item.image_location}`}
-                                alt="Image"
+                                alt={item.name}
                                 width={320}
                                 height={320}
-                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                style={{ height: 200, width: "100%" }}
                               />
                             </Link>
                           </div>
@@ -165,11 +161,10 @@ export default function FastTrackTabs({
                   <CarouselNext className="hidden lg:inline-flex" />
                 </Carousel>
                 <div
-                  className={`min-h-[100px] content-center text-center ${
-                    category.products.length <= 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
-                  }`}
+                  className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
+                    ? "block visible"
+                    : "hidden invisible"
+                    }`}
                 >
                   <p className="font-bold text-xl">
                     {t("thong_tin_dang_cap_nhat")}

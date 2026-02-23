@@ -62,11 +62,10 @@ export default function SearchFilters({
                         return (
                           <div
                             key={optionIndex}
-                            className={`mt-3 flex space-x-2 items-center ${
-                              !showAll && optionIndex > visibleCount
+                            className={`mt-3 flex space-x-2 items-center ${!showAll && optionIndex > visibleCount
                                 ? "invisible"
                                 : ""
-                            }`}
+                              }`}
                           >
                             <input
                               type="checkbox"
@@ -110,11 +109,10 @@ export default function SearchFilters({
                       {showAll ? "Thu gọn" : "Xem thêm"}
                     </span>
                     <Image
-                      className={`transform transition-transform ${
-                        showAll ? "rotate-[270deg]" : "rotate-90"
-                      }`}
+                      className={`transform transition-transform ${showAll ? "rotate-[270deg]" : "rotate-90"
+                        }`}
                       src="/icon/chevron-right.svg"
-                      alt="Icon"
+                      alt="Xem thêm"
                       width={20}
                       height={20}
                     />
@@ -135,9 +133,8 @@ export default function SearchFilters({
           </button>
         </div>
         <div
-          className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
-            openModal ? "visible z-[9999]" : "invisible z-[-1]"
-          }`}
+          className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${openModal ? "visible z-[9999]" : "invisible z-[-1]"
+            }`}
           style={{
             opacity: openModal ? "100" : "0",
           }}
@@ -157,7 +154,7 @@ export default function SearchFilters({
               >
                 <Image
                   src="/icon/close.svg"
-                  alt="Icon"
+                  alt="Đóng"
                   className="h-10"
                   width={20}
                   height={20}
@@ -211,9 +208,9 @@ export default function SearchFilters({
                                           disabled={isDisabled}
                                           defaultChecked={
                                             searchParams &&
-                                            searchParams["loai_visa[]"]
+                                              searchParams["loai_visa[]"]
                                               ? searchParams["loai_visa[]"] ===
-                                                value
+                                              value
                                               : undefined
                                           }
                                           className={`flex-shrink-0 ${TourStyle.custom_checkbox}`}
@@ -230,9 +227,8 @@ export default function SearchFilters({
                                           }
                                         />
                                         <label
-                                          htmlFor={`mb-${
-                                            group.name + optionIndex
-                                          }`}
+                                          htmlFor={`mb-${group.name + optionIndex
+                                            }`}
                                           data-translate="true"
                                           className="line-clamp-1"
                                         >

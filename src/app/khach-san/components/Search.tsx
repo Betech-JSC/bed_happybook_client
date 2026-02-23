@@ -77,7 +77,7 @@ export default function Search() {
             <div className="mt-3 flex h-12 items-center border rounded-lg px-2">
               <Image
                 src="/icon/place.svg"
-                alt="Icon"
+                alt="Địa điểm"
                 className="h-10"
                 width={18}
                 height={18}
@@ -104,10 +104,10 @@ export default function Search() {
 
           <div className="mt-3 w-full md:w-3/12">
             <label className="block text-gray-700  h-6"></label>
-            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
+            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800">
               <Image
                 src="/icon/search.svg"
-                alt="Icon"
+                alt="Tìm kiếm"
                 className="h-10 inline-block"
                 width={18}
                 height={18}

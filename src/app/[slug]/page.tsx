@@ -161,7 +161,7 @@ export default async function Posts({
                   src={detail.image_url + detail.image_location}
                   width={900}
                   height={470}
-                  className="max-w-full lg-h[470px] w-full object-cover"
+                  className="max-w-full lg:h-[470px] w-full object-cover"
                   alt={detail.title}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 600px"
                 />
@@ -206,7 +206,7 @@ export default async function Posts({
                               <Image
                                 className="ease-in duration-300 lg:h-[256px] object-cover"
                                 src={`${post.image_url}/${post.image_location}`}
-                                alt="Tin tức"
+                                alt={post.title}
                                 width={410}
                                 height={272}
                                 sizes="(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 33vw"

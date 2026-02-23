@@ -190,7 +190,7 @@ export default function SearchForm({
         <div className="absolute left-4 top-1/2 translate-y-1/4 z-10">
           <Image
             src="/icon/place.svg"
-            alt="Icon"
+            alt="Địa điểm"
             className="h-10"
             width={20}
             height={20}
@@ -249,11 +249,10 @@ export default function SearchForm({
                     id={`${listboxId}-item-${idx}`}
                     role="option"
                     aria-selected={highlightedIndex === idx}
-                    className={`cursor-pointer px-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${
-                      highlightedIndex === idx
-                        ? "bg-primary/10 text-primary"
-                        : "hover:bg-gray-50 text-gray-700"
-                    }`}
+                    className={`cursor-pointer px-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${highlightedIndex === idx
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-gray-50 text-gray-700"
+                      }`}
                     onMouseEnter={() => setHighlightedIndex(idx)}
                     onClick={() => selectSuggestion(opt.value)}
                   >
@@ -301,14 +300,14 @@ export default function SearchForm({
           </select>
         </div>
       </div>
-      <div className="w-full md:w-1/5 text-center border rounded-lg px-2 h-12 bg-primary hover:bg-orange-600 duration-300">
+      <div className="w-full md:w-1/5 text-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800 duration-300">
         <button
           type="submit"
           className="ml-1 inline-flex items-center space-x-2 h-12 text-white w-full justify-center"
         >
           <Image
             src="/icon/search.svg"
-            alt="Search icon"
+            alt="Tìm kiếm visa"
             className="h-10 mr-1"
             width={20}
             height={20}

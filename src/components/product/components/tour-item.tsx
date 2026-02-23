@@ -12,19 +12,15 @@ export default function TourItem({ tour }: any) {
   }
   if (!tour) return;
   return (
-    <div className="rounded-2xl border-solid border-2 border-[#EAECF0] l bg-white">
-      <div className="relative overflow-hidden rounded-t-2xl">
+    <div className="relative overflow-hidden group rounded-2xl border-solid border-2 border-[#EAECF0] bg-white">
+      <div className="relative overflow-hidden aspect-[4/3]">
         <Link href={`/tours/${tour.slug}`}>
           <Image
-            className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
+            className="lg:group-hover:scale-110 ease-in duration-300 cursor-pointer	object-cover w-full h-full"
             src={`${tour.image_url}/${tour.image_location}`}
-            alt="Tour Image"
+            alt={tour.product_name || "Tour Happy Book"}
             width={320}
             height={320}
-            sizes="(max-width: 768px) 100vw,
-                  (max-width: 1200px) 50vw,
-                  33vw"
-            style={{ height: 220, width: "100%" }}
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
@@ -52,9 +48,8 @@ export default function TourItem({ tour }: any) {
             width={20}
             height={20}
           />
-          <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""} ${
-            tour.night ? `${tour.night} đêm` : ""
-          }`}</span>
+          <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""} ${tour.night ? `${tour.night} đêm` : ""
+            }`}</span>
         </p>
         <div className="flex space-x-2 mt-2 items-start">
           <Image
@@ -93,7 +88,7 @@ export default function TourItem({ tour }: any) {
                 <Image
                   key={index}
                   src={`/icon/${item}.svg`}
-                  alt="Icon"
+                  alt={item}
                   width={20}
                   height={20}
                 />

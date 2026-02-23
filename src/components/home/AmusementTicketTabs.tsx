@@ -39,7 +39,7 @@ export default function AmusementTicketTabs({
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Icon"
+            alt="Mũi tên xem thêm"
             width={20}
             height={20}
           />
@@ -57,7 +57,7 @@ export default function AmusementTicketTabs({
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Icon"
+          alt="Mũi tên xem thêm"
           width={20}
           height={20}
         />
@@ -105,8 +105,8 @@ export default function AmusementTicketTabs({
                     loop: true,
                   }}
                   className={`${category.products.length > 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
+                    ? "block visible"
+                    : "hidden invisible"
                     }`}
                 >
                   <CarouselContent>
@@ -115,17 +115,15 @@ export default function AmusementTicketTabs({
                         key={subIndex}
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                       >
-                        <div className="border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
-                          <div className="overflow-hidden rounded-t-2xl	">
+                        <div className="group relative overflow-hidden border-solid border-2 border-[#EAECF0] rounded-2xl bg-white">
+                          <div className="relative overflow-hidden aspect-[4/3]">
                             <Link href={`/ve-vui-choi/${item.slug}`} className="pointer-events-none">
                               <Image
-                                className="hover:scale-110 ease-in duration-300 cursor-pointer"
+                                className="lg:group-hover:scale-105 ease-in-out duration-300 w-full h-full cursor-pointer object-cover"
                                 src={`${item.image_url}/${item.image_location}`}
-                                alt="Image"
+                                alt={item.name}
                                 width={320}
                                 height={320}
-                                sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
-                                style={{ height: 200, width: "100%" }}
                               />
                             </Link>
                           </div>
@@ -158,8 +156,8 @@ export default function AmusementTicketTabs({
                 </Carousel>
                 <div
                   className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
-                      ? "block visible"
-                      : "hidden invisible"
+                    ? "block visible"
+                    : "hidden invisible"
                     }`}
                 >
                   <p className="font-bold text-xl">

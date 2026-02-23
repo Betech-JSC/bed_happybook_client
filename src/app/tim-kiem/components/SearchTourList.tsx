@@ -35,7 +35,7 @@ export default function SearchTourList({ tours }: any) {
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Icon"
+            alt="Xem tất cả"
             width={20}
             height={20}
           />
@@ -67,7 +67,7 @@ export default function SearchTourList({ tours }: any) {
                       <Image
                         className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
                         src={`${product.image_url}/${product.image_location}`}
-                        alt="Tour Image"
+                        alt={product.name}
                         width={320}
                         height={320}
                         sizes="(max-width: 768px) 100vw,
@@ -97,31 +97,28 @@ export default function SearchTourList({ tours }: any) {
                     <p className="flex space-x-2 mt-2">
                       <Image
                         src="/icon/clock-check.svg"
-                        alt="Time"
+                        alt="Thời gian"
                         width={20}
                         height={20}
                       />
-                      <span data-translate>{`${
-                        tour.day ? `${tour.day} ngày` : ""
-                      } ${tour.night ? `${tour.night} đêm` : ""}`}</span>
+                      <span data-translate>{`${tour.day ? `${tour.day} ngày` : ""
+                        } ${tour.night ? `${tour.night} đêm` : ""}`}</span>
                     </p>
                     <p className="flex space-x-2 mt-2">
-                      <span data-translate>{`Khởi hành vào: ${
-                        product.start_date
+                      <span data-translate>{`Khởi hành vào: ${product.start_date
                           ? product.start_date.split("-").reverse().join("/")
                           : ""
-                      }`}</span>
+                        }`}</span>
                     </p>
                     <p className="flex space-x-2 mt-2">
                       <Image
                         src="/icon/Ticket.svg"
-                        alt="Time"
+                        alt="Chỗ trống"
                         width={20}
                         height={20}
                       />
-                      <span data-translate>{`Chỗ trống: ${
-                        tour.remain ? tour.remain : "Liên hệ"
-                      }`}</span>
+                      <span data-translate>{`Chỗ trống: ${tour.remain ? tour.remain : "Liên hệ"
+                        }`}</span>
                     </p>
                     <div className="flex justify-between mt-[14px]">
                       <div className="flex space-x-2">
@@ -130,7 +127,7 @@ export default function SearchTourList({ tours }: any) {
                             <Image
                               key={index}
                               src={`/icon/${item}.svg`}
-                              alt="Icon"
+                              alt="Phương tiện"
                               width={20}
                               height={20}
                             />

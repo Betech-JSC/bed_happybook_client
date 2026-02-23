@@ -87,7 +87,7 @@ export default function Partner({ data }: any) {
               <SwiperSlide key={item.id} className="basis-1/6">
                 <Image
                   src={`${item.image_url}/${item.image_location}`}
-                  alt="Image"
+                  alt={item.name || "Đối tác"}
                   width={250}
                   height={60}
                   style={{ width: "auto", height: "42px", margin: "0 auto" }}
@@ -124,7 +124,7 @@ export default function Partner({ data }: any) {
                   <div>
                     <Image
                       src={`${item.image_url}/${item.image_location}`}
-                      alt="Image"
+                      alt={item.name || "Đối tác"}
                       width={250}
                       height={60}
                       style={{

@@ -180,20 +180,19 @@ export default function ListTour({
             data.map((tour: any, index: number) => (
               <div
                 key={index}
-                className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 mt-4 transition-opacity duration-700 ${
-                  translatedText ? "opacity-100" : "opacity-0"
-                }`}
+                className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 mt-4 transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
+                  }`}
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                   <Link href={`/tours/${tour.slug}`}>
                     <Image
                       className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full min-h-40 object-cover"
                       src={`${tour.image_url}/${tour.image_location}`}
-                      alt="Image"
+                      alt={renderTextContent(tour?.product_name)}
                       width={360}
                       height={270}
                       sizes="100vw"
-                      // style={{ height: 270 }}
+                    // style={{ height: 270 }}
                     />
                   </Link>
                   <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
@@ -243,13 +242,12 @@ export default function ListTour({
                       <Image
                         className="w-4 h-4"
                         src="/icon/clock.svg"
-                        alt="Icon"
+                        alt="Thời gian"
                         width={18}
                         height={18}
                       />
-                      <span data-translate="true">{`${
-                        tour.day ? `${tour.day} ngày` : ""
-                      } ${tour.night ? `${tour.night} đêm` : ""}`}</span>
+                      <span data-translate="true">{`${tour.day ? `${tour.day} ngày` : ""
+                        } ${tour.night ? `${tour.night} đêm` : ""}`}</span>
                     </div>
                     {tour.opening_days && (
                       <div className="flex space-x-2 mt-2 items-center">
@@ -298,7 +296,7 @@ export default function ListTour({
                         <Image
                           className="w-4 h-4"
                           src="/icon/flag.svg"
-                          alt="Icon"
+                          alt="Điểm khởi hành"
                           width={18}
                           height={18}
                         />
@@ -312,7 +310,7 @@ export default function ListTour({
                         <Image
                           className="w-4 h-4"
                           src="/icon/marker-pin-01.svg"
-                          alt="Icon"
+                          alt="Điểm đến"
                           width={18}
                           height={18}
                         />

@@ -45,7 +45,7 @@ const FlightInternational1GDetail = ({
                     imagePath={`assets/images/airline/${flight.airline.toLowerCase()}.gif`}
                     width={80}
                     height={24}
-                    alt={"AirLine"}
+                    alt={flight.airline}
                     classStyle={"max-w-16 md:max-w-20 max-h-10"}
                   />
                   <div>
@@ -78,7 +78,7 @@ const FlightInternational1GDetail = ({
                       src="/icon/fa-solid_plane.svg"
                       width={20}
                       height={20}
-                      alt="Icon"
+                      alt="Máy bay"
                       className="w-3 h-3 md:w-5 md:h-5 block"
                     />
                     <div className="flex flex-col items-center w-full">
@@ -106,7 +106,7 @@ const FlightInternational1GDetail = ({
                       src="/icon/map-pinned.svg"
                       width={20}
                       height={20}
-                      alt="Icon"
+                      alt="Điểm đến"
                       className="w-3 h-3 md:w-5 md:h-5 block"
                     />
                   </div>

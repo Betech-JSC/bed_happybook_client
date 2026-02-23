@@ -22,11 +22,10 @@ export default async function VisaService() {
         <div className="absolute inset-0 z-[2] hidden lg:block">
           <Image
             src="/bg-img/visa.png"
-            width={1280}
-            height={500}
-            alt="Background"
+            alt="Dịch vụ Visa Happy Book"
+            fill
             sizes="100vw"
-            className="w-full h-full rounded-3xl "
+            className="rounded-3xl object-cover"
           />
         </div>
         {/* Content */}
@@ -49,7 +48,7 @@ export default async function VisaService() {
               <Image
                 className=" hover:scale-110 ease-in duration-300"
                 src="/icon/chevron-right.svg"
-                alt="Icon"
+                alt="Mũi tên xem tất cả"
                 width={20}
                 height={20}
               />
@@ -69,7 +68,7 @@ export default async function VisaService() {
             <Image
               className=" hover:scale-110 ease-in duration-300"
               src="/icon/chevron-right.svg"
-              alt="Icon"
+              alt="Mũi tên xem tất cả"
               width={20}
               height={20}
             />

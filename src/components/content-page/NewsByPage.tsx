@@ -45,7 +45,7 @@ export default async function NewsByPage({
           <Image
             className="ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Icon"
+            alt="Xem tất cả"
             width={20}
             height={20}
           />
@@ -62,7 +62,7 @@ export default async function NewsByPage({
         <Image
           className="ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Icon"
+          alt="Xem thêm"
           width={20}
           height={20}
         />
@@ -79,7 +79,7 @@ export default async function NewsByPage({
                 width={500}
                 height={584}
                 className="w-full h-[280px] md:h-[500px] object-cover"
-                alt="blog"
+                alt={firstItem.title}
               />
             </div>
             <div
@@ -112,7 +112,7 @@ export default async function NewsByPage({
                     width={500}
                     height={280}
                     className="w-full h-[220px] object-cover"
-                    alt="blog"
+                    alt={item.title}
                   />
                 </div>
                 <div
@@ -154,7 +154,7 @@ export default async function NewsByPage({
                           width={500}
                           height={280}
                           className="rounded-xl w-full h-[200px] object-cover"
-                          alt="Blog image"
+                          alt={item.title}
                         />
                       </div>
                       <div

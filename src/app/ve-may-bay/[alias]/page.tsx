@@ -88,7 +88,7 @@ export default async function AirlineTicketCategory({ params }: any) {
             width={500}
             height={584}
             className="object-cover w-full h-full"
-            alt="Background"
+            alt="VMB Happy Book"
           />
         </div>
         <div
@@ -123,7 +123,7 @@ export default async function AirlineTicketCategory({ params }: any) {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/globe-gradient.svg"
-                alt="Icon"
+                alt="Lựa chọn không giới hạn"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -138,7 +138,7 @@ export default async function AirlineTicketCategory({ params }: any) {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/Travel-gradient-icon.svg"
-                alt="Icon"
+                alt="Dịch vụ cá nhân hóa"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -153,7 +153,7 @@ export default async function AirlineTicketCategory({ params }: any) {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/sun-icon.svg"
-                alt="Icon"
+                alt="Giá trị vượt trội"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -183,8 +183,8 @@ export default async function AirlineTicketCategory({ params }: any) {
                               {key === "popular"
                                 ? t("nhung_chuyen_bay_pho_bien")
                                 : key === "oneWay"
-                                ? t("ve_may_bay_mot_chieu_danh_cho_ban")
-                                : t("ve_may_bay_khu_hoi_danh_cho_ban")}
+                                  ? t("ve_may_bay_mot_chieu_danh_cho_ban")
+                                  : t("ve_may_bay_khu_hoi_danh_cho_ban")}
                             </h2>
                           </div>
                         </div>

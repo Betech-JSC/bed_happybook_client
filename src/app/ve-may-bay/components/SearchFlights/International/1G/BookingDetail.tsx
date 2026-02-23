@@ -319,7 +319,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                       src={`/icon/clock-stopwatch.svg`}
                       width={20}
                       height={20}
-                      alt="Icon"
+                      alt="Thời gian"
                       className="w-5 h-5"
                     />
                   </div>
@@ -434,7 +434,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                                     imagePath={`assets/images/airline/${segment.airline.toLowerCase()}.gif`}
                                     width={80}
                                     height={24}
-                                    alt={"AirLine"}
+                                    alt={segment.airline}
                                     classStyle={"max-w-16 md:max-w-20 max-h-10"}
                                   />
                                 </div>
@@ -496,7 +496,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                                         src={`/icon/AirplaneTilt-2.svg`}
                                         width={20}
                                         height={20}
-                                        alt="Icon"
+                                        alt="Máy bay"
                                         className="w-5 h-5"
                                       />
                                     </span>
@@ -768,7 +768,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                         <div className="font-normal">
                           <Image
                             src="/payment-method/transfer.svg"
-                            alt="Icon"
+                            alt="Chuyển khoản"
                             width={24}
                             height={24}
                             className="w-6 h-6"
@@ -800,7 +800,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                         <div className="font-normal">
                           <Image
                             src="/payment-method/visa.svg"
-                            alt="Icon"
+                            alt="Visa/MasterCard"
                             width={48}
                             height={28}
                             className="md:mt-1"

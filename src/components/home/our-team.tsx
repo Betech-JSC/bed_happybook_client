@@ -53,7 +53,7 @@ export default function OurTeam({ data }: any) {
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Icon"
+            alt="Mũi tên xem thêm"
             width={20}
             height={20}
           />
@@ -85,7 +85,7 @@ export default function OurTeam({ data }: any) {
               <div className={styles.member__item}>
                 <Image
                   src={`${member.image_url}/${member.image_location}`}
-                  alt="Image"
+                  alt={member.name}
                   width={100}
                   height={100}
                   sizes="100vw"

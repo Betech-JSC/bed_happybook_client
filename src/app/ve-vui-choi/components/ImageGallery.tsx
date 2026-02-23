@@ -30,7 +30,7 @@ export default function ImageGallery({ detail }: any) {
             <Image
               className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
               src={`${item.image_url}/${item.image}`}
-              alt="Image"
+              alt="Ảnh vé vui chơi"
               width={845}
               height={450}
               sizes="100vw"
@@ -69,7 +69,7 @@ export default function ImageGallery({ detail }: any) {
               <Image
                 className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                 src={`${item.image_url}/${item.image}`}
-                alt="Image"
+                alt="Ảnh vé vui chơi"
                 width={135}
                 height={120}
               />

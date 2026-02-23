@@ -205,20 +205,20 @@ export default function FormCheckOut({
                 <div className="mt-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="relative">
-                    <Controller
-                          name="phone"
-                          control={control}
-                          render={({ field }) => (
-                            <PhoneInput
-                              id="phone"
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Nhập số điện thoại"
-                              error={errors.phone?.message}
-                              defaultCountry="VN"
-                            />
-                          )}
-                        />
+                      <Controller
+                        name="phone"
+                        control={control}
+                        render={({ field }) => (
+                          <PhoneInput
+                            id="phone"
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="Nhập số điện thoại"
+                            error={errors.phone?.message}
+                            defaultCountry="VN"
+                          />
+                        )}
+                      />
                     </div>
                     <div className="relative">
                       <label
@@ -271,7 +271,7 @@ export default function FormCheckOut({
           <Image
             className="cursor-pointer w-full h-60 md:h-40 lg:h-[230px] rounded-t-2xl hover:scale-110 ease-in duration-300"
             src={`${detail.image_url}/${detail.image_location}`}
-            alt="Image"
+            alt={renderTextContent(detail.name)}
             width={410}
             height={230}
             sizes="100vw"

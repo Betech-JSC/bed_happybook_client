@@ -1,25 +1,10 @@
-import { arrLanguages } from "@/constants/language";
 import { HttpError } from "./error";
 
 type httpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-async function getLocaleForHttp(): Promise<string> {
-  let locale: string | undefined;
-
-  if (typeof window === "undefined") {
-    const { cookies } = await import("next/headers");
-    locale = cookies().get("locale")?.value;
-  } else {
-    const match = document.cookie.match(/(^| )locale=([^;]+)/);
-    locale = match ? decodeURIComponent(match[2]) : undefined;
-  }
-
-  if (locale && arrLanguages.includes(locale)) {
-    return locale;
-  }
-
-  return "vi";
-}
+// Default cache time for GET requests (5 minutes)
+// This is the key fix for "Document request latency" Lighthouse issue
+const DEFAULT_GET_CACHE = 60 * 5;
 
 const request = async <Response>(
   method: httpMethod,
@@ -32,7 +17,6 @@ const request = async <Response>(
   const baseHeader = {
     "Content-type": "application/json",
   };
-  // const locale = await getLocaleForHttp();
 
   const baseUrl =
     typeof window === "undefined"
@@ -50,10 +34,10 @@ const request = async <Response>(
       headers: {
         ...baseHeader,
         ...options?.headers,
-        // language: locale,
       },
       body,
       method,
+      signal: controller.signal,
       next: { revalidate: timeCache },
     });
     clearTimeout(timeoutId);
@@ -73,6 +57,7 @@ const request = async <Response>(
     }
     return data;
   } catch (error) {
+    clearTimeout(timeoutId);
     if (error instanceof HttpError) {
       throw error;
     } else if (error instanceof Error) {
@@ -94,37 +79,39 @@ const http = {
   get<Response>(
     url: string,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout?: number,
-    timeCache?: number
+    timeout: number = 10000,
+    // ✅ Fixed: was always 0 (no cache). Now defaults to 5 min.
+    // This is the root cause of the 3,820ms document latency.
+    timeCache: number = DEFAULT_GET_CACHE
   ) {
-    return request<Response>("GET", url, options);
+    return request<Response>("GET", url, options, timeout, timeCache);
   },
   post<Response>(
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout?: number,
-    timeCache?: number
+    timeout: number = 10000,
+    timeCache: number = 0 // POST: never cache
   ) {
-    return request<Response>("POST", url, { ...options, body });
+    return request<Response>("POST", url, { ...options, body }, timeout, timeCache);
   },
   put<Response>(
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout?: number,
-    timeCache?: number
+    timeout: number = 10000,
+    timeCache: number = 0
   ) {
-    return request<Response>("PUT", url, { ...options, body });
+    return request<Response>("PUT", url, { ...options, body }, timeout, timeCache);
   },
   delete<Response>(
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout?: number,
-    timeCache?: number
+    timeout: number = 10000,
+    timeCache: number = 0
   ) {
-    return request<Response>("DELETE", url, { ...options, body });
+    return request<Response>("DELETE", url, { ...options, body }, timeout, timeCache);
   },
 };
 

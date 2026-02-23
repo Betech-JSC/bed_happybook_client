@@ -16,8 +16,6 @@ import { FlightApi } from "@/api/Flight";
 import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FlightDomesticDetail from "./Detail";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import TimeRangeSlider from "@/components/base/TimeRangeSlider";
 import SideBarFilterFlights from "../SideBarFilter";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -74,13 +72,7 @@ export default function ListFlights({
   const [departLimit, setDepartLimit] = useState(INITIAL_LIMIT);
   const [returnLimit, setReturnLimit] = useState(INITIAL_LIMIT);
   const [filters, setFilters] = useState(defaultFilers);
-  useEffect(() => {
-    AOS.init({
-      duration: 400,
-      easing: "ease-in",
-      once: true,
-    });
-  }, []);
+  // AOS is handled globally via AosProvider IntersectionObserver
   const scrollToRef = (ref: any) => {
     if (ref.current) {
       handleScrollSmooth(ref.current);
@@ -484,7 +476,7 @@ export default function ListFlights({
                       src="/icon/AirplaneTilt.svg"
                       width={20}
                       height={20}
-                      alt="Icon"
+                      alt="Máy bay"
                       className="w-5 h-5"
                     />
                   </div>
@@ -506,15 +498,13 @@ export default function ListFlights({
                       onClick={() =>
                         !day.disabled && handleClickDate(day.date, 0)
                       }
-                      className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${
-                        isSameDay(day.date, currentDate)
-                          ? "border-b-2 border-b-primary text-primary"
-                          : "text-gray-700"
-                      } ${
-                        day.disabled
+                      className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentDate)
+                        ? "border-b-2 border-b-primary text-primary"
+                        : "text-gray-700"
+                        } ${day.disabled
                           ? "text-gray-700 opacity-50 cursor-not-allowed"
                           : "text-black"
-                      }`}
+                        }`}
                     >
                       <div
                         className="text-sm md:text-base font-semibold"
@@ -580,7 +570,7 @@ export default function ListFlights({
                         src="/icon/AirplaneTilt.svg"
                         width={20}
                         height={20}
-                        alt="Icon"
+                        alt="Máy bay"
                         className="w-5 h-5"
                       />
                     </div>
@@ -590,10 +580,10 @@ export default function ListFlights({
                         {totalPassengers} {t("khach")} -{" "}
                         {returnDate
                           ? pareseDateFromString(
-                              returnDate,
-                              "ddMMyyyy",
-                              "dd/MM"
-                            )
+                            returnDate,
+                            "ddMMyyyy",
+                            "dd/MM"
+                          )
                           : ""}
                       </p>
                     </div>
@@ -606,15 +596,13 @@ export default function ListFlights({
                         onClick={() =>
                           !day.disabled && handleClickDate(day.date, 1)
                         }
-                        className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${
-                          isSameDay(day.date, currentReturnDay)
-                            ? "border-b-2 border-b-primary text-primary"
-                            : "text-gray-700"
-                        } ${
-                          day.disabled
+                        className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentReturnDay)
+                          ? "border-b-2 border-b-primary text-primary"
+                          : "text-gray-700"
+                          } ${day.disabled
                             ? "text-gray-700 opacity-50 cursor-not-allowed"
                             : "text-black"
-                        }`}
+                          }`}
                       >
                         <div className="text-sm md:text-base font-semibold">
                           {day.label}
