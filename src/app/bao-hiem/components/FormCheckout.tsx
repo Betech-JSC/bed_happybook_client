@@ -30,6 +30,7 @@ import DisplayImage from "@/components/base/DisplayImage";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import PhoneInput from "@/components/form/PhoneInput";
+import { handleSessionStorage } from "@/utils/Helper";
 
 const defaultInsuranceInfo = {
   gender: "male",
@@ -185,8 +186,10 @@ export default function FormCheckOut({
         reset();
         setInsuredInfoList([]);
         toast.success(toaStrMsg.sendSuccess);
+        handleSessionStorage("save", "bookingData", respon?.payload?.data);
+
         setTimeout(() => {
-          router.push("/");
+          router.push("/thong-tin-dat-hang");
         }, 1200);
       } else {
         toast.error(toaStrMsg.sendFailed);
