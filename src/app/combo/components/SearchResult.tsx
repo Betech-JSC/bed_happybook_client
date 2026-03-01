@@ -178,7 +178,7 @@ export default function SearchResult({
                     <Image
                       className="block hover:scale-110 ease-in duration-300 cursor-pointer h-auto w-full rounded-t-2xl lg:rounded-none lg:rounded-l-2xl object-cover"
                       src={`${item.image_url}/${item.image_location}`}
-                      alt="Image"
+                      alt={renderTextContent(item.name)}
                       width={360}
                       height={270}
                       sizes="100vw"
@@ -206,7 +206,7 @@ export default function SearchResult({
                                 key={index}
                                 className="w-4 h-4"
                                 src="/icon/starFull.svg"
-                                alt="Icon"
+                                alt="Sao"
                                 width={16}
                                 height={16}
                               />
@@ -215,7 +215,7 @@ export default function SearchResult({
                                 key={index}
                                 className="w-4 h-4"
                                 src="/icon/star.svg"
-                                alt="Icon"
+                                alt="Sao"
                                 width={16}
                                 height={16}
                               />
@@ -228,7 +228,7 @@ export default function SearchResult({
                       <Image
                         className="w-4 h-4"
                         src="/icon/marker-pin-01.svg"
-                        alt="Icon"
+                        alt="Địa chỉ"
                         width={20}
                         height={20}
                       />

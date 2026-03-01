@@ -3,37 +3,22 @@ import { Suspense, useState } from "react";
 import Image from "next/image";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import { SearchFilghtProps } from "@/types/flight";
-import SearchHotel from "@/app/khach-san/components/Search";
-import SearchFormInsurance from "@/app/bao-hiem/components/SearchForm";
-import { default as TicketSearchForm } from "@/app/ve-vui-choi/components/SearchForm";
+import dynamic from "next/dynamic";
 import { useTranslation } from "@/hooks/useTranslation";
+
+const SearchHotel = dynamic(() => import("@/app/khach-san/components/Search"), { ssr: false });
+const SearchFormInsurance = dynamic(() => import("@/app/bao-hiem/components/SearchForm"), { ssr: false });
+const TicketSearchForm = dynamic(() => import("@/app/ve-vui-choi/components/SearchForm"), { ssr: false });
 
 export default function Search({ airportsData }: any) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="relative z-[1] hidden lg:block">
-      <div className="absolute inset-0">
-        <Image
-          priority
-          src="/bg-image.png"
-          width={500}
-          height={584}
-          className="object-cover w-full h-full"
-          alt="Background"
-        />
-      </div>
-      <div
-        className="absolute w-full h-full"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-        }}
-      ></div>
       <div className="lg:h-[694px] lg:px-[50px] xl:px-[80px] sm:px-3 content-center pt-[132px] max__screen">
-        <h1 className="text-3xl text-white font-bold text-center mb-12 relative">
+        <h2 className="text-3xl text-white font-bold text-center mb-12 relative">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
-        </h1>
+        </h2>
         <div className="h-[192px] pt-11 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
           <div className="min-w-[600px] w-max grid grid-cols-4 gap-2 mb-4 absolute top-[-12%] left-[50%] translate-x-[-50%] bg-[#000000] py-2 px-3 rounded-3xl">
             <button
@@ -43,7 +28,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/AirplaneTilt.svg"
-                alt="Phone icon"
+                alt="Vé máy bay"
                 width={18}
                 height={18}
                 style={{ width: 18, height: 18 }}
@@ -57,7 +42,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/Buildings.svg"
-                alt="Phone icon"
+                alt="Khách sạn"
                 width={18}
                 height={18}
                 style={{ width: 18, height: 18 }}
@@ -71,7 +56,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/Umbrella.svg"
-                alt="Phone icon"
+                alt="Bảo hiểm"
                 width={18}
                 height={18}
               ></Image>
@@ -84,7 +69,7 @@ export default function Search({ airportsData }: any) {
             >
               <Image
                 src="/icon/Ticket.svg"
-                alt="Phone icon"
+                alt="Vé vui chơi"
                 width={18}
                 height={18}
               ></Image>

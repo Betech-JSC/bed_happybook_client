@@ -145,9 +145,8 @@ export default function FlightSearchPopup({
   };
   return (
     <div
-      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
-        isOpen ? "visible z-[9999]" : "invisible z-[-1]"
-      }`}
+      className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${isOpen ? "visible z-[9999]" : "invisible z-[-1]"
+        }`}
       style={{
         opacity: isOpen ? "100" : "0",
       }}
@@ -160,7 +159,7 @@ export default function FlightSearchPopup({
           <button className="text-xl" onClick={onClose}>
             <Image
               src="/icon/close.svg"
-              alt="Icon"
+              alt="Đóng"
               className="h-10"
               width={20}
               height={20}
@@ -176,7 +175,7 @@ export default function FlightSearchPopup({
               <div className="flex h-12 items-center border rounded-lg px-2">
                 <Image
                   src="/icon/AirplaneTakeoff.svg"
-                  alt="Icon"
+                  alt="Cất cánh"
                   className="h-10"
                   width={18}
                   height={18}
@@ -195,7 +194,7 @@ export default function FlightSearchPopup({
               <button className="border border-gray-300 p-2 rounded-full bg-white">
                 <Image
                   src="/icon/switch-horizontal.svg"
-                  alt="Icon"
+                  alt="Chuyển đổi"
                   className="h-5"
                   width={20}
                   height={20}
@@ -210,7 +209,7 @@ export default function FlightSearchPopup({
               <div className="flex h-12 items-center border rounded-lg px-2">
                 <Image
                   src="/icon/AirplaneLanding.svg"
-                  alt="Icon"
+                  alt="Hạ cánh"
                   className="h-10"
                   width={18}
                   height={18}
@@ -234,7 +233,7 @@ export default function FlightSearchPopup({
               <div className="flex items-center	w-full">
                 <Image
                   src="/icon/calendar.svg"
-                  alt="Icon"
+                  alt="Lịch trình"
                   className="h-10"
                   width={18}
                   height={18}
@@ -269,7 +268,7 @@ export default function FlightSearchPopup({
             <div className="flex items-center border rounded-lg px-2 h-12">
               <Image
                 src="/icon/user-circle.svg"
-                alt="Icon"
+                alt="Số lượng khách"
                 className="h-10"
                 width={18}
                 height={18}
@@ -284,10 +283,10 @@ export default function FlightSearchPopup({
 
           <div className="w-full" onClick={handleSearch}>
             <label className="block text-gray-700 mb-1 h-6"></label>
-            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-500 hover:bg-orange-600">
+            <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800">
               <Image
                 src="/icon/search.svg"
-                alt="Icon"
+                alt="Tìm kiếm"
                 className="h-10 inline-block"
                 width={18}
                 height={18}

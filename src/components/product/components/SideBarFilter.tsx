@@ -81,7 +81,7 @@ export default function SideBarFilterProduct({
             <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
               <Image
                 src="/icon/calendar.svg"
-                alt="Phone icon"
+                alt="Lịch trình"
                 className="h-10"
                 width={18}
                 height={18}
@@ -148,8 +148,8 @@ export default function SideBarFilterProduct({
                           <div
                             key={optionIndex}
                             className={`mt-3 flex space-x-2 items-center ${!showAll && optionIndex > visibleCount
-                                ? "invisible"
-                                : ""
+                              ? "invisible"
+                              : ""
                               }`}
                           >
                             <input
@@ -176,7 +176,7 @@ export default function SideBarFilterProduct({
                                       key={starIndex}
                                       className="w-auto"
                                       src="/icon/starFull.svg"
-                                      alt="Icon"
+                                      alt="Sao đánh giá"
                                       width={10}
                                       height={10}
                                     />
@@ -185,7 +185,7 @@ export default function SideBarFilterProduct({
                                       key={starIndex}
                                       className="w-auto"
                                       src="/icon/star.svg"
-                                      alt="Icon"
+                                      alt="Sao đánh giá"
                                       width={10}
                                       height={10}
                                     />
@@ -221,7 +221,7 @@ export default function SideBarFilterProduct({
                       className={`transform transition-transform ${showAll ? "rotate-[270deg]" : "rotate-90"
                         }`}
                       src="/icon/chevron-right.svg"
-                      alt="Icon"
+                      alt="Mũi tên"
                       width={20}
                       height={20}
                     />
@@ -277,7 +277,7 @@ export default function SideBarFilterProduct({
               >
                 <Image
                   src="/icon/close.svg"
-                  alt="Icon"
+                  alt="Đóng"
                   className="h-10"
                   width={20}
                   height={20}
@@ -292,7 +292,7 @@ export default function SideBarFilterProduct({
                 <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
                   <Image
                     src="/icon/calendar.svg"
-                    alt="Phone icon"
+                    alt="Lịch trình"
                     className="h-10"
                     width={18}
                     height={18}
@@ -396,7 +396,7 @@ export default function SideBarFilterProduct({
                                                     key={starIndex}
                                                     className="w-auto"
                                                     src="/icon/starFull.svg"
-                                                    alt="Icon"
+                                                    alt="Sao đánh giá"
                                                     width={10}
                                                     height={10}
                                                   />
@@ -405,7 +405,7 @@ export default function SideBarFilterProduct({
                                                     key={starIndex}
                                                     className="w-auto"
                                                     src="/icon/star.svg"
-                                                    alt="Icon"
+                                                    alt="Sao đánh giá"
                                                     width={10}
                                                     height={10}
                                                   />

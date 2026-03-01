@@ -349,9 +349,8 @@ export default function CustomerRating({
       )}
       {/* Popup */}
       <div
-        className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
-          openModal ? "visible z-[9999]" : "invisible z-[-1]"
-        }`}
+        className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${openModal ? "visible z-[9999]" : "invisible z-[-1]"
+          }`}
         style={{
           opacity: openModal ? "100" : "0",
         }}
@@ -371,7 +370,7 @@ export default function CustomerRating({
             >
               <Image
                 src="/icon/close.svg"
-                alt="Icon"
+                alt="Đóng"
                 className="h-10"
                 width={20}
                 height={20}

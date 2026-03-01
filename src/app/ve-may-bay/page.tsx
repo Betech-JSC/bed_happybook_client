@@ -62,17 +62,17 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function AirlineTicket() {
-  // Critical for LCP: Fetch airports immediately (blocking but necessary for Search)
-  const airportsData = await getCachedAirports();
   const language = await getServerLang();
 
-  // Parallel fetch for Metadata and SEO (blocking)
-  const contentPage = await getCachedPageContent(language);
-  const metadata = getMetadata(contentPage);
-  const t = await getServerT();
+  // Parallel fetch for critical data (blocking)
+  const [airportsData, contentPage, t, footerData] = await Promise.all([
+    getCachedAirports(),
+    getCachedPageContent(language),
+    getServerT(),
+    getCachedFooterMenu("flight"),
+  ]);
 
-  // Footer data needed for links below
-  const footerData = await getCachedFooterMenu("flight");
+  const metadata = getMetadata(contentPage);
 
   return (
     <SeoSchema
@@ -88,15 +88,15 @@ export default async function AirlineTicket() {
         <div className="absolute inset-0">
           <Image
             priority
-            src="/bg-image-2.png"
-            width={500}
-            height={584}
-            className="object-cover w-full h-full"
-            alt="Background"
+            src="/bg-image-2.webp"
+            fill
+            sizes="100vw"
+            className="object-cover"
+            alt="VMB Happy Book"
           />
         </div>
         <div
-          className="absolute w-full h-full"
+          className="absolute inset-0"
           style={{
             backgroundImage:
               "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
@@ -116,7 +116,7 @@ export default async function AirlineTicket() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/globe-gradient.svg"
-                alt="Icon"
+                alt="Lựa chọn không giới hạn"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -131,7 +131,7 @@ export default async function AirlineTicket() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/Travel-gradient-icon.svg"
-                alt="Icon"
+                alt="Dịch vụ cá nhân hóa"
                 className="h-11 w-11"
                 width={44}
                 height={44}
@@ -146,7 +146,7 @@ export default async function AirlineTicket() {
             <div className="flex items-center space-x-3 h-20">
               <Image
                 src="/tour/sun-icon.svg"
-                alt="Icon"
+                alt="Giá trị vượt trội"
                 className="h-11 w-11"
                 width={44}
                 height={44}

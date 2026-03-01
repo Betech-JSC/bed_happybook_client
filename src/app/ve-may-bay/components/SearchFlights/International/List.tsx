@@ -16,8 +16,6 @@ import { filtersFlight, ListFlight } from "@/types/flight";
 import _ from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
 import SideBarFilterFlights from "../../SideBarFilter";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import ListFlightsInternationalNormal from "./Normal/List";
 import ListFlights1GInternaltion from "./1G/List";
 
@@ -78,13 +76,8 @@ export default function ListFlightsInternaltion({
     setIsCheckOut(false);
   };
 
-  useEffect(() => {
-    AOS.init({
-      duration: 400,
-      easing: "ease-in",
-      once: true,
-    });
-  }, []);
+  // AOS animations handled globally via AosProvider IntersectionObserver
+
 
   // Filter data
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,7 +329,7 @@ export default function ListFlightsInternaltion({
         body: JSON.stringify({
           flightType:
             selectedDepartFlight?.source === SOURCE_1G &&
-            selectedReturnFlight?.source === SOURCE_1G
+              selectedReturnFlight?.source === SOURCE_1G
               ? SOURCE_1G
               : "NORMAL",
         }),
@@ -456,7 +449,7 @@ export default function ListFlightsInternaltion({
                     src="/icon/AirplaneTilt.svg"
                     width={20}
                     height={20}
-                    alt="Icon"
+                    alt="Máy bay"
                     className="w-5 h-5"
                   />
                 </div>
@@ -468,10 +461,10 @@ export default function ListFlightsInternaltion({
                         <span className="font-semibold">{t("ngay_di")}:</span>{" "}
                         {departDate
                           ? pareseDateFromString(
-                              departDate,
-                              "ddMMyyyy",
-                              "dd/MM/yyyy"
-                            )
+                            departDate,
+                            "ddMMyyyy",
+                            "dd/MM/yyyy"
+                          )
                           : ""}
                       </div>
                       <span className="mx-2 hidden md:block">{"-"}</span>
@@ -479,10 +472,10 @@ export default function ListFlightsInternaltion({
                         <span className="font-semibold">{t("ngay_ve")}:</span>{" "}
                         {returnDate
                           ? pareseDateFromString(
-                              returnDate,
-                              "ddMMyyyy",
-                              "dd/MM/yyyy"
-                            )
+                            returnDate,
+                            "ddMMyyyy",
+                            "dd/MM/yyyy"
+                          )
                           : ""}{" "}
                       </div>
                     </div>
@@ -504,7 +497,7 @@ export default function ListFlightsInternaltion({
                     src="/icon/AirplaneTilt.svg"
                     width={20}
                     height={20}
-                    alt="Icon"
+                    alt="Máy bay"
                     className="w-5 h-5"
                   />
                 </div>
@@ -561,7 +554,7 @@ export default function ListFlightsInternaltion({
                     src="/icon/AirplaneTilt.svg"
                     width={20}
                     height={20}
-                    alt="Icon"
+                    alt="Máy bay"
                     className="w-5 h-5"
                   />
                 </div>

@@ -49,28 +49,26 @@ export default async function FlightBookingHistory({
                     {format(parseISO(flight.created_at), "HH:mm dd-MM-yyyy")}
                   </p>
                   <Link
-                    href={`${
-                      flight.status === "new" &&
-                      !isOverTimeOrder &&
-                      !flight.payment_method
+                    href={`${flight.status === "new" &&
+                        !isOverTimeOrder &&
+                        !flight.payment_method
                         ? `/lich-su-dat-ve/${flight.sku}`
                         : "#"
-                    }`}
+                      }`}
                     className="flex flex-col gap-3 md:gap-2 items-start md:items-end"
                   >
                     <StatusLabel
                       status={
                         isOverTimeOrder &&
-                        !["done", "paid"].includes(flight.status)
+                          !["done", "paid"].includes(flight.status)
                           ? "close"
                           : flight.status
                       }
-                      label={`${
-                        isOverTimeOrder &&
-                        !["done", "paid", "close"].includes(flight.status)
+                      label={`${isOverTimeOrder &&
+                          !["done", "paid", "close"].includes(flight.status)
                           ? "Quá hạn thanh toán"
                           : ""
-                      }`}
+                        }`}
                     />
                     <PaymentMethodLabel method={flight.payment_method} />
                   </Link>
@@ -114,7 +112,7 @@ export default async function FlightBookingHistory({
                                 imagePath={`assets/images/airline/${segment.Airline.toLowerCase()}.gif`}
                                 width={80}
                                 height={24}
-                                alt={"AirLine"}
+                                alt={segment.Airline}
                                 classStyle={"max-w-16 md:max-w-20 max-h-10"}
                               />
                             </div>
@@ -166,7 +164,7 @@ export default async function FlightBookingHistory({
                                     src={`/icon/AirplaneTilt-2.svg`}
                                     width={20}
                                     height={20}
-                                    alt="Icon"
+                                    alt="Máy bay"
                                     className="w-5 h-5"
                                   />
                                 </span>
@@ -181,10 +179,10 @@ export default async function FlightBookingHistory({
                                 >
                                   {durationFlight
                                     ? `${Math.floor(
-                                        durationFlight / 60
-                                      )} giờ ${Math.floor(
-                                        durationFlight % 60
-                                      )} phút`
+                                      durationFlight / 60
+                                    )} giờ ${Math.floor(
+                                      durationFlight % 60
+                                    )} phút`
                                     : ""}
                                 </span>
                                 {flightData.legs < 1 && (

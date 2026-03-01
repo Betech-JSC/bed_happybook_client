@@ -1171,7 +1171,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/clock.svg"
-                alt="Icon"
+                alt="Thời gian"
                 width={18}
                 height={18}
               />
@@ -1183,7 +1183,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/marker-pin-01.svg"
-                alt="Icon"
+                alt="Địa điểm"
                 width={18}
                 height={18}
               />

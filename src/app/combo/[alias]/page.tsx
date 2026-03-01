@@ -132,14 +132,13 @@ export default async function CompoDetail({
                     <Image
                       className="w-4 h-4"
                       src="/icon/clock.svg"
-                      alt="Icon"
+                      alt="Thời gian"
                       width={18}
                       height={18}
                     />
                     <span data-translate="true">
-                      {`${detail?.combo?.day ? detail.combo.day : ""} ngày ${
-                        detail?.combo?.night ? detail.combo.night : ""
-                      } đêm`}
+                      {`${detail?.combo?.day ? detail.combo.day : ""} ngày ${detail?.combo?.night ? detail.combo.night : ""
+                        } đêm`}
                     </span>
                   </div>
 
@@ -147,7 +146,7 @@ export default async function CompoDetail({
                     <Image
                       className="w-4 h-4"
                       src="/icon/marker-pin-01.svg"
-                      alt="Icon"
+                      alt="Địa chỉ"
                       width={18}
                       height={18}
                     />

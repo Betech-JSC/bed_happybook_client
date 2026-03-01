@@ -72,6 +72,7 @@ export default async function AboutUs() {
             width={1900}
             height={500}
             sizes="100vw"
+            className="w-full h-full object-cover"
           />
         </div>
         {/* </AosAnimate> */}
@@ -113,11 +114,11 @@ export default async function AboutUs() {
               <Image
                 priority
                 src="/about-us/1.png"
-                alt="Image"
+                alt="Văn phòng Happy Book"
                 width={623}
                 height={492}
                 sizes="100vw"
-                // style={{ width: "100%", height: "100%" }}
+              // style={{ width: "100%", height: "100%" }}
               />
             </div>
           </div>
@@ -136,7 +137,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_8898827.svg"
-                    alt="Icon"
+                    alt="Tư vấn chuyên nghiệp"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -150,7 +151,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_11345966.svg"
-                    alt="Icon"
+                    alt="Giao vé đúng hạn"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -165,7 +166,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_5806908.svg"
-                    alt="Icon"
+                    alt="Thanh toán tiện lợi"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -179,7 +180,7 @@ export default async function AboutUs() {
                 <div>
                   <Image
                     src="/about-us/fi_8898825.svg"
-                    alt="Icon"
+                    alt="Khách hàng hài lòng"
                     width={48}
                     height={48}
                     className="mx-auto"
@@ -202,7 +203,7 @@ export default async function AboutUs() {
             width={1900}
             height={500}
             sizes="100vw"
-            // style={{ width: "100%", height: "100%" }}
+            className="w-full h-full object-cover"
           />
         </div>
         {/* </AosAnimate> */}

@@ -74,7 +74,7 @@ export default async function Contact() {
               <Image
                 priority
                 src="/about-us/bg.png"
-                alt="Background"
+                alt="Hình nền Happy Book"
                 width={273}
                 height={273}
                 className="w-full h-full md:w-[273px]"
@@ -96,7 +96,7 @@ export default async function Contact() {
                     <div>
                       <Image
                         src="/icon/contact/AirplaneTilt.svg"
-                        alt="Icon"
+                        alt="Vé máy bay"
                         width={32}
                         height={32}
                         style={{ width: "32px", height: "32px" }}
@@ -119,7 +119,7 @@ export default async function Contact() {
                     <div>
                       <Image
                         src="/icon/contact/passport-outline.svg"
-                        alt="Icon"
+                        alt="Visa hộ chiếu"
                         width={32}
                         height={32}
                         style={{ width: "32px", height: "32px" }}
@@ -140,7 +140,7 @@ export default async function Contact() {
                     <div>
                       <Image
                         src="/icon/contact/bus.svg"
-                        alt="Icon"
+                        alt="Tour du lịch"
                         width={32}
                         height={32}
                         style={{ width: "32px", height: "32px" }}
@@ -163,7 +163,7 @@ export default async function Contact() {
                     <div>
                       <Image
                         src="/icon/contact/mail-01.svg"
-                        alt="Icon"
+                        alt="Email hỗ trợ"
                         width={32}
                         height={32}
                         style={{ width: "32px", height: "32px" }}
@@ -185,7 +185,7 @@ export default async function Contact() {
                     <div>
                       <Image
                         src="/icon/contact/user-square.svg"
-                        alt="Icon"
+                        alt="Tuyển dụng"
                         width={32}
                         height={32}
                         style={{ width: "32px", height: "32px" }}
@@ -207,7 +207,7 @@ export default async function Contact() {
                     <div>
                       <Image
                         src="/icon/contact/mail-01.svg"
-                        alt="Icon"
+                        alt="Email"
                         width={32}
                         height={32}
                         style={{ width: "32px", height: "32px" }}
@@ -231,7 +231,7 @@ export default async function Contact() {
                     <div>
                       <Image
                         src="/icon/contact/place.svg"
-                        alt="Icon"
+                        alt="Địa chỉ"
                         width={32}
                         height={32}
                         style={{ width: "32px", height: "32px" }}
@@ -272,7 +272,7 @@ export default async function Contact() {
                       >
                         <Image
                           src="/social/fb.svg"
-                          alt="Icon"
+                          alt="Facebook"
                           width={32}
                           height={32}
                         />
@@ -283,7 +283,7 @@ export default async function Contact() {
                       >
                         <Image
                           src="/social/tiktok.svg"
-                          alt="Icon"
+                          alt="Tiktok"
                           width={32}
                           height={32}
                         />
@@ -294,7 +294,7 @@ export default async function Contact() {
                       >
                         <Image
                           src="/social/ytb.svg"
-                          alt="Icon"
+                          alt="Youtube"
                           width={32}
                           height={32}
                         />

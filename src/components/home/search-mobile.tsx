@@ -43,7 +43,7 @@ export default function SearchMobile({ airportsData }: any) {
         <button className="bg-blue-500 px-3 rounded-r-lg w-12 h-12">
           <Image
             src="/icon/search.svg"
-            alt="Search icon"
+            alt="Tìm kiếm"
             className="h-10"
             width={20}
             height={20}
@@ -64,7 +64,7 @@ export default function SearchMobile({ airportsData }: any) {
             <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
               <Image
                 src="/icon/AirplaneTilt.svg"
-                alt="Phone icon"
+                alt="Vé máy bay"
                 width={20}
                 height={20}
                 className="rounded-full mx-auto"
@@ -85,7 +85,7 @@ export default function SearchMobile({ airportsData }: any) {
             <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
               <Image
                 src="/icon/Buildings.svg"
-                alt="Phone icon"
+                alt="Khách sạn"
                 width={20}
                 height={20}
                 className="rounded-full mx-auto"
@@ -106,7 +106,7 @@ export default function SearchMobile({ airportsData }: any) {
             <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto content-center">
               <Image
                 src="/icon/Umbrella.svg"
-                alt="Phone icon"
+                alt="Bảo hiểm"
                 width={20}
                 height={20}
                 className="rounded-full mx-auto"
@@ -124,7 +124,7 @@ export default function SearchMobile({ airportsData }: any) {
             <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto content-center">
               <Image
                 src="/icon/Ticket.svg"
-                alt="Phone icon"
+                alt="Vé vui chơi"
                 width={20}
                 height={20}
                 className="rounded-full mx-auto"
@@ -207,7 +207,7 @@ export default function SearchMobile({ airportsData }: any) {
             <div className="w-10 h-10 rounded-full mt-2 bg-[#175CD3] mx-auto content-center">
               <Image
                 src="/icon/Umbrella.svg"
-                alt="Phone icon"
+                alt="Combo"
                 width={20}
                 height={20}
                 className="rounded-full mx-auto"

@@ -25,33 +25,42 @@
   .header-background {
     background-color: rgba(4, 52, 154, 1);
   }
+
   .text-color-primary {
     color: #f27145;
   }
+
   .text__default_hover {
     @apply transition-colors duration-300 hover:!text-[#f27145] cursor-pointer;
   }
+
   .text-18 {
     @apply text-[18px] leading-[26.1px];
   }
+
   .text-22 {
     @apply text-[22px] leading-[31.9px];
   }
+
   .text-28 {
     @apply text-[28px] leading-[33.6px];
   }
+
   .text-32 {
     @apply text-[32px] leading-[38.4px];
   }
+
   .base__content {
     @apply pt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen;
   }
+
   @media (min-width: 1440px) {
     .max__screen {
       width: 1440px !important;
       margin: 0 auto !important;
     }
   }
+
   .loader_spiner {
     border: 3px solid #f3f3f3;
     border-radius: 50%;
@@ -66,10 +75,12 @@
     0% {
       transform: rotate(0deg);
     }
+
     100% {
       transform: rotate(360deg);
     }
   }
+
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #888 #f0f0f0;
@@ -92,6 +103,7 @@
   .custom-scrollbar::-webkit-scrollbar-track {
     background-color: #f0f0f0;
   }
+
   select {
     background-color: transparent !important;
   }
@@ -125,6 +137,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -157,6 +170,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -164,17 +178,24 @@
 
 @media (max-width: 767px) {
   .zalo-chat-widget {
-    bottom: 40px !important;  
-    right: 12px !important;   
-    width: 70px;   
-    height: 70px;  
-    left: auto !important; 
+    bottom: 40px !important;
+    right: 12px !important;
+    width: 70px;
+    height: 70px;
+    left: auto !important;
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .animate-fadeIn {
@@ -183,4 +204,64 @@
 
 #pancake-chat-plugin-root {
   z-index: 1000 !important;
+}
+
+/* Hide Pancake Brand */
+.pkcp-popup-setup-footer-title {
+  display: none !important;
+}
+
+/* ========================
+   Lightweight AOS replacement
+   (replaces heavy AOS library)  
+   ======================== */
+[data-aos] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+  will-change: opacity, transform;
+}
+
+[data-aos="fade-up"] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+[data-aos="fade-down"] {
+  opacity: 0;
+  transform: translateY(-24px);
+}
+
+[data-aos="fade-left"] {
+  opacity: 0;
+  transform: translateX(24px);
+}
+
+[data-aos="fade-right"] {
+  opacity: 0;
+  transform: translateX(-24px);
+}
+
+[data-aos="zoom-in"] {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+[data-aos].aos-animate {
+  opacity: 1;
+  transform: none;
+}
+
+/* After animation, free GPU layer */
+[data-aos].aos-animate {
+  will-change: auto;
+}
+
+/* ========================
+   Content-visibility for
+   below-the-fold sections
+   ======================== */
+main>*+* {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
 }

@@ -35,9 +35,8 @@ export default function SideBarFilterFlights({
                   checked={filters.stopNum.includes(`${stopNum}`)}
                 />
                 <label htmlFor={`${`stopNum_${index}`}`}>
-                  {`${
-                    stopNum ? `${stopNum} ${t("diem_dung")}` : t("bay_thang")
-                  }`}
+                  {`${stopNum ? `${stopNum} ${t("diem_dung")}` : t("bay_thang")
+                    }`}
                 </label>
               </div>
             ))}
@@ -121,9 +120,8 @@ export default function SideBarFilterFlights({
                 return (
                   <div
                     key={index}
-                    className={`flex gap-2 items-center mt-3 ${
-                      !showAll && index > visibleCount ? "invisible" : ""
-                    }`}
+                    className={`flex gap-2 items-center mt-3 ${!showAll && index > visibleCount ? "invisible" : ""
+                      }`}
                   >
                     <input
                       type="checkbox"
@@ -150,11 +148,10 @@ export default function SideBarFilterFlights({
                   {showAll ? "Thu gọn" : "Xem thêm"}
                 </span>
                 <Image
-                  className={`transform transition-transform ${
-                    showAll ? "rotate-[270deg]" : "rotate-90"
-                  }`}
+                  className={`transform transition-transform ${showAll ? "rotate-[270deg]" : "rotate-90"
+                    }`}
                   src="/icon/chevron-right.svg"
-                  alt="Icon"
+                  alt="Mũi tên"
                   width={20}
                   height={20}
                 />
@@ -194,9 +191,8 @@ export default function SideBarFilterFlights({
           </button>
         </div>
         <div
-          className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${
-            openModal ? "visible z-[9999]" : "invisible z-[-1]"
-          }`}
+          className={`fixed transition-opacity visible duration-300 px-3 md:px-0 inset-0  bg-black bg-opacity-50 flex justify-center items-center ${openModal ? "visible z-[9999]" : "invisible z-[-1]"
+            }`}
           style={{
             opacity: openModal ? "100" : "0",
           }}

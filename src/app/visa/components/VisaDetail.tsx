@@ -255,7 +255,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                               <Image
                                 className="hover:scale-110 ease-in duration-300 cursor-pointer	"
                                 src={`${item.image_url}/${item.image_location}`}
-                                alt="Banner"
+                                alt={item.name}
                                 width={200}
                                 height={160}
                                 sizes="(max-width: 768px) 100vw,(max-width: 1200px) 50vw,33vw"
@@ -306,7 +306,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                   <div className="flex items-center space-x-3 h-20">
                     <Image
                       src="/tour/adviser.svg"
-                      alt="Icon"
+                      alt="Tư vấn chuyên nghiệp"
                       className="h-11 w-11"
                       width={44}
                       height={44}
@@ -323,7 +323,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                   <div className="flex items-center space-x-3 h-20">
                     <Image
                       src="/tour/developers.svg"
-                      alt="Icon"
+                      alt="Kinh nghiệm lâu năm"
                       className="h-11 w-11"
                       width={44}
                       height={44}
@@ -340,7 +340,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                   <div className="flex items-center space-x-3 h-20">
                     <Image
                       src="/tour/product-icon.svg"
-                      alt="Icon"
+                      alt="Sản phẩm đa dạng"
                       className="h-11 w-11"
                       width={44}
                       height={44}

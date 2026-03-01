@@ -186,7 +186,7 @@ export default function FormCheckOut({ data, room, detail }: any) {
                     <div>
                       <Image
                         src="/icon/calendar.svg"
-                        alt="Icon"
+                        alt="Lịch nhận phòng"
                         className="h-5"
                         width={20}
                         height={20}
@@ -251,7 +251,7 @@ export default function FormCheckOut({ data, room, detail }: any) {
                     <div>
                       <Image
                         src="/icon/place.svg"
-                        alt="Icon"
+                        alt="Lịch trả phòng"
                         className="h-5"
                         width={20}
                         height={20}
@@ -408,20 +408,20 @@ export default function FormCheckOut({ data, room, detail }: any) {
                 </div>
                 <div className="mt-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <Controller
-                          name="phone"
-                          control={control}
-                          render={({ field }) => (
-                            <PhoneInput
-                              id="phone"
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Nhập số điện thoại"
-                              error={errors.phone?.message}
-                              defaultCountry="VN"
-                            />
-                          )}
+                    <Controller
+                      name="phone"
+                      control={control}
+                      render={({ field }) => (
+                        <PhoneInput
+                          id="phone"
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Nhập số điện thoại"
+                          error={errors.phone?.message}
+                          defaultCountry="VN"
                         />
+                      )}
+                    />
                     <div className="relative">
                       <label
                         htmlFor="email"
@@ -519,9 +519,8 @@ export default function FormCheckOut({ data, room, detail }: any) {
                 </div>
               </div>
               <LoadingButton
-                style={`mt-6 ${
-                  disabledForm ? "bg-gray-400 !cursor-not-allowed" : ""
-                }`}
+                style={`mt-6 ${disabledForm ? "bg-gray-400 !cursor-not-allowed" : ""
+                  }`}
                 isLoading={loading}
                 text="Gửi yêu cầu"
                 disabled={disabledForm}
@@ -535,7 +534,7 @@ export default function FormCheckOut({ data, room, detail }: any) {
           <Image
             className="cursor-pointer w-full h-60 md:h-40 lg:h-[230px] rounded-t-2xl hover:scale-110 ease-in duration-300"
             src={`${detail.image_url}/${detail.image_location}`}
-            alt="Image"
+            alt={renderTextContent(detail.name)}
             width={410}
             height={230}
             sizes="100vw"
@@ -556,7 +555,7 @@ export default function FormCheckOut({ data, room, detail }: any) {
                   key={index}
                   className="w-4 h-4"
                   src="/icon/starFull.svg"
-                  alt="Icon"
+                  alt="Sao đánh giá"
                   width={10}
                   height={10}
                 />
@@ -565,7 +564,7 @@ export default function FormCheckOut({ data, room, detail }: any) {
                   key={index}
                   className="w-4 h-4"
                   src="/icon/star.svg"
-                  alt="Icon"
+                  alt="Sao đánh giá"
                   width={10}
                   height={10}
                 />
