@@ -72,6 +72,7 @@ export default async function AboutUs() {
             width={1900}
             height={500}
             sizes="100vw"
+            className="w-full h-full object-cover"
           />
         </div>
         {/* </AosAnimate> */}
@@ -202,7 +203,7 @@ export default async function AboutUs() {
             width={1900}
             height={500}
             sizes="100vw"
-          // style={{ width: "100%", height: "100%" }}
+            className="w-full h-full object-cover"
           />
         </div>
         {/* </AosAnimate> */}
