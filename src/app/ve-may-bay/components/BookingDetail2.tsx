@@ -58,6 +58,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [onePayTriggered, setOnePayTriggered] = useState(false);
+  const [pollingStatus, setPollingStatus] = useState<boolean>(false);
   const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(false);
   const [onePayFee, setOnePayFee] = useState<number>(0);
   const [isOpenPriceDetail, setIsOpenPriceDetail] = useState(false);
@@ -94,14 +95,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           if (selectedPaymentMethod === "onepay") {
             PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
               if (result?.payment_url) {
-                window.location.href = result.payment_url;
-
-                // window.open(
-                //   result.payment_url,
-                //   "_blank",
-                //   "noopener,noreferrer"
-                // );
-
+                // Redirect đến trang thanh toán OnePay (Mở tab mới)
+                window.open(result.payment_url, '_blank');
+                setPollingStatus(true);
+                toast.success(t("da_mo_trang_thanh_toan_o_tab_moi"));
               }
             });
           }
@@ -246,14 +243,29 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   );
 
   useEffect(() => {
-    if (data?.orderInfo?.sku) {
-      PaymentApi.checkPaymentStatus(data?.orderInfo?.sku).then((response) => {
-        if (response?.payload?.data?.paid === true) {
-          setIsPaid(true);
-        }
-      });
+    let interval: any;
+    if (data?.orderInfo?.sku && !isPaid) {
+      const checkStatus = () => {
+        PaymentApi.checkPaymentStatus(data.orderInfo.sku).then((response) => {
+          if (response?.payload?.data?.paid === true) {
+            setIsPaid(true);
+            setPollingStatus(false);
+          }
+        });
+      };
+
+      // Check immediately
+      checkStatus();
+
+      // Set up polling if needed (e.g., when OnePay is opened)
+      if (pollingStatus) {
+        interval = setInterval(checkStatus, 5000);
+      }
     }
-  }, [data?.orderInfo?.sku]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [data?.orderInfo?.sku, isPaid, pollingStatus]);
 
   const toggleShowRuleTicket = useCallback(
     async (FareData: any) => {
@@ -416,17 +428,24 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             )}
           </div>
         </div>
+        {pollingStatus && !isPaid && (
+          <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
+            <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
+            <p>{t("dang_cho_thanh_toan")}</p>
+          </div>
+        )}
+
         {isPaid && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
-            <p data-translate="true">
+            <p>
               {isOrderCashSuccess
-                ? "HappyBook đã nhận được đơn hàng"
-                : "HappyBook đã nhận được khoản thanh toán thành công cho đơn hàng"}
+                ? t("happybook_da_nhan_duoc_don_hang")
+                : t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
               {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
             </p>
 
-            <p data-translate="true">
-              HappyBook sẽ gửi xác nhận đơn hàng trong thời gian không quá 24h.
+            <p>
+              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24_h")}
             </p>
           </div>
         )}

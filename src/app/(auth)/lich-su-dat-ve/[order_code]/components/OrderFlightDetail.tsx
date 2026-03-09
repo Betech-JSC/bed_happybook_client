@@ -38,6 +38,7 @@ export default function OrderFlightDetail({ detail }: any) {
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const [pollingStatus, setPollingStatus] = useState<boolean>(false);
 
   const {
     register,
@@ -64,18 +65,15 @@ export default function OrderFlightDetail({ detail }: any) {
 
           if (selectedPaymentMethod === "onepay") {
             PaymentApi.onePay(detail.sku).then((result: any) => {
-
-              window.location.href = result.payment_url;
-
-              // if (result?.payment_url) {
-              //   window.open(
-              //     result.payment_url,
-              //     "_blank",
-              //     "noopener,noreferrer"
-              //   );
-              // }
+              if (result?.payment_url) {
+                // Redirect đến trang thanh toán OnePay (Mở tab mới)
+                window.open(result.payment_url, '_blank');
+                setPollingStatus(true);
+                toast.success(t("da_mo_trang_thanh_toan_o_tab_moi"));
+              }
             });
-          } else {
+          }
+          else {
             setTimeout(() => {
               router.push("/ve-may-bay");
             }, 1000);
@@ -95,14 +93,29 @@ export default function OrderFlightDetail({ detail }: any) {
   };
 
   useEffect(() => {
-    if (detail?.sku) {
-      PaymentApi.checkPaymentStatus(detail?.sku).then((response) => {
-        if (response?.payload?.data?.paid === true) {
-          setIsPaid(true);
-        }
-      });
+    let interval: any;
+    if (detail?.sku && !isPaid) {
+      const checkStatus = () => {
+        PaymentApi.checkPaymentStatus(detail?.sku).then((response) => {
+          if (response?.payload?.data?.paid === true) {
+            setIsPaid(true);
+            setPollingStatus(false);
+          }
+        });
+      };
+
+      // Check immediately
+      checkStatus();
+
+      // Set up polling if needed (e.g., when OnePay is opened)
+      if (pollingStatus) {
+        interval = setInterval(checkStatus, 5000);
+      }
     }
-  }, [detail?.sku]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [detail?.sku, isPaid, pollingStatus]);
 
   const handleTicketPaymentTimeout = () => {
     setTicketPaymentTimeout(true);
@@ -156,6 +169,25 @@ export default function OrderFlightDetail({ detail }: any) {
             )}
           </div>
         </div>
+
+        {pollingStatus && !isPaid && (
+          <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
+            <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
+            <p>{t("dang_cho_thanh_toan")}</p>
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
+            <p>
+              {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
+              {detail?.sku && `: ${detail.sku}`}
+            </p>
+            <p>
+              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24_h")}
+            </p>
+          </div>
+        )}
 
         {!isPaid && (
           <form

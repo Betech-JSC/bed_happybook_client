@@ -41,6 +41,7 @@ export default function BookingDetail() {
   const [qrCodeGenerated, setQrCodeGenerated] = useState<boolean>(false);
   const [vietQrData, setVietQrData] = useState<any>({});
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
+  const [pollingStatus, setPollingStatus] = useState<boolean>(false);
 
   // Xác định phụ phí giờ bay thêm từ additional_fees
   const nightTimeSurchargeFee = useMemo(() => {
@@ -112,14 +113,29 @@ export default function BookingDetail() {
 
   // Payment Logic
   useEffect(() => {
-    if (data?.code) {
-      PaymentApi.checkPaymentStatus(data.code).then((response) => {
-        if (response?.payload?.data?.paid === true) {
-          setIsPaid(true);
-        }
-      });
+    let interval: any;
+    if (data?.code && !isPaid) {
+      const checkStatus = () => {
+        PaymentApi.checkPaymentStatus(data.code).then((response) => {
+          if (response?.payload?.data?.paid === true) {
+            setIsPaid(true);
+            setPollingStatus(false);
+          }
+        });
+      };
+
+      // Check immediately
+      checkStatus();
+
+      // Set up polling if needed (e.g., when OnePay is opened)
+      if (pollingStatus) {
+        interval = setInterval(checkStatus, 5000);
+      }
     }
-  }, [data?.code]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [data?.code, isPaid, pollingStatus]);
 
   useEffect(() => {
     if (selectedPaymentMethod === "onepay") {
@@ -204,8 +220,10 @@ export default function BookingDetail() {
             const paymentResult = await PaymentApi.onePayForProduct(data.code);
 
             if (paymentResult?.success && paymentResult?.payment_url) {
-              // Redirect đến trang thanh toán OnePay
-              window.location.href = paymentResult.payment_url;
+              // Redirect đến trang thanh toán OnePay (Mở tab mới)
+              window.open(paymentResult.payment_url, '_blank');
+              setPollingStatus(true);
+              toast.success(t("da_mo_trang_thanh_toan_o_tab_moi"));
             } else {
               setIsGeneratingPaymentUrl(false);
               toast.error(paymentResult?.message || t("khong_the_tao_link_thanh_toan"));
@@ -264,6 +282,13 @@ export default function BookingDetail() {
           </div>
         </div>
 
+        {pollingStatus && !isPaid && (
+          <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
+            <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
+            <p>{t("dang_cho_thanh_toan")}</p>
+          </div>
+        )}
+
         {isPaid && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
             <p>
@@ -271,7 +296,7 @@ export default function BookingDetail() {
               {data?.code && `: ${data.code}`}
             </p>
             <p>
-              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24h")}
+              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24_h")}
             </p>
           </div>
         )}
