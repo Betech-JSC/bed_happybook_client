@@ -11,10 +11,12 @@ import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import Search from "./Search";
 import { ProductFastTrackApi } from "@/api/ProductFastTrack";
+import { getServerLang } from "@/lib/session";
 
 export default async function FastTrackCategory({ detail }: any) {
-  const optionsFilter = (await ProductFastTrackApi.getOptionsFilter())?.payload
-    ?.data as any;
+  const language = await getServerLang();
+  const optionsFilter = (await ProductFastTrackApi.getOptionsFilter(language))
+    ?.payload?.data as any;
   const filteredOptions = optionsFilter.filter(
     (item: any) => item.name !== "category"
   );

@@ -108,13 +108,12 @@ export default function FastTrackDetailInfor({ product }: any) {
                       <div className="flex gap-2 md:gap-3 flex-col md:flex-row justify-between items-start">
                         <p
                           className="text-blue-700 text-18 font-semibold"
-                          data-translate="true"
                         >
                           {option?.name}
                         </p>
                         {departDate && (
                           <div className="w-32 flex-shrink-0">
-                            <span>Ngày </span>
+                            <span>Date </span>
                             <span>{format(departDate, "dd/MM/yyyy")}</span>
                           </div>
                         )}
@@ -130,13 +129,11 @@ export default function FastTrackDetailInfor({ product }: any) {
                           <div>
                             <div
                               className="font-semibold text-base"
-                              data-translate="true"
                             >
                               {renderTextContent(ticket?.type?.name)}
                             </div>
                             <div
                               className="text-sm text-gray-500 mt-1"
-                              data-translate="true"
                             >
                               {!isEmpty(ticket?.type?.description)
                                 ? renderTextContent(ticket?.type?.description)
@@ -172,14 +169,12 @@ export default function FastTrackDetailInfor({ product }: any) {
                             <div>
                               <div
                                 className="font-medium text-sm"
-                                data-translate="true"
                               >
                                 {renderTextContent(fee.name)}
                               </div>
                               {fee.description && (
                                 <div
                                   className="text-xs text-gray-500 mt-1"
-                                  data-translate="true"
                                   dangerouslySetInnerHTML={{ __html: fee.description }}
                                 >
 
@@ -221,7 +216,6 @@ export default function FastTrackDetailInfor({ product }: any) {
             </h2>
             <div className="ckeditor_container">
               <div
-                data-translate="true"
                 className="cke_editable"
                 dangerouslySetInnerHTML={{
                   __html: renderTextContent(product?.fast_track?.description),
@@ -236,7 +230,6 @@ export default function FastTrackDetailInfor({ product }: any) {
           <div>
             <h1
               className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-              data-translate="true"
             >
               {renderTextContent(product?.name)}
             </h1>
@@ -249,8 +242,8 @@ export default function FastTrackDetailInfor({ product }: any) {
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
-                Mở {displayTimeOpening ?? ""} | {displayDaysOpening ?? ""}
+              <span>
+                <span data-translate="true">Mở</span> {displayTimeOpening ?? ""} | {displayDaysOpening ?? ""}
               </span>
             </div>
 
@@ -262,7 +255,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
+              <span>
                 {renderTextContent(product?.fast_track?.address)}
               </span>
             </div>

@@ -49,10 +49,10 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function ProductFastTrack() {
-  const optionsFilter = (await ProductFastTrackApi.getOptionsFilter())?.payload
-    ?.data as any;
-
   const language = await getServerLang();
+  const optionsFilter = (await ProductFastTrackApi.getOptionsFilter(language))
+    ?.payload?.data as any;
+
   const contentPage = (await PageApi.getContent("fast-track", language))
     ?.payload?.data as any;
   const metadata = getMetadata(contentPage);
