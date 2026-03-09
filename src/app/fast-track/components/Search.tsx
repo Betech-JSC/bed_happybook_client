@@ -28,7 +28,7 @@ export default function Search({
   optionsFilter: optionFilterType[];
   categoryDefault?: number;
 }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
@@ -53,7 +53,7 @@ export default function Search({
       setIsDisabled(true);
       setIsLastPage(false);
       const search = buildSearch(query);
-      const res = await ProductFastTrackApi.search(`${search}`);
+      const res = await ProductFastTrackApi.search(`${search}`, lang);
       const result = res?.payload?.data;
 
       setData((prevData: any[]) => {
@@ -187,7 +187,6 @@ export default function Search({
                       <Link
                         href={`/fast-track/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
-                        data-translate="true"
                       >
                         {renderTextContent(item.name)}
                       </Link>

@@ -197,7 +197,7 @@ export default function CheckOutForm({
     const fetchAdditionalFees = async () => {
       try {
         setLoadingAdditionalFees(true);
-        const response = await ProductFastTrackApi.getAdditionalFees();
+        const response = await ProductFastTrackApi.getAdditionalFees(language);
         if (response?.status === 200 && response?.payload?.data) {
           const fees = Array.isArray(response.payload.data)
             ? response.payload.data
@@ -624,7 +624,6 @@ export default function CheckOutForm({
           <div className="bg-white p-4 rounded-xl">
             <p
               className="text-blue-700 text-base font-medium"
-              data-translate="true"
             >
               {yachtOptionSelected?.name}
             </p>
@@ -639,13 +638,11 @@ export default function CheckOutForm({
                       <div>
                         <div
                           className="font-semibold text-base"
-                          data-translate="true"
                         >
                           {renderTextContent(ticket.title)}
                         </div>
                         <div
                           className="text-sm text-gray-500 mt-1"
-                          data-translate="true"
                         >
                           {!isEmpty(ticket.description)
                             ? renderTextContent(ticket.description)
@@ -731,8 +728,8 @@ export default function CheckOutForm({
                     <div
                       key={fee.id}
                       className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${selectedAdditionalFees.includes(fee.id)
-                          ? "border-blue-500 bg-blue-50 shadow-sm"
-                          : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                        ? "border-blue-500 bg-blue-50 shadow-sm"
+                        : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
                         }`}
                       onClick={() => toggleAdditionalFee(fee.id)}
                     >
@@ -747,7 +744,6 @@ export default function CheckOutForm({
                         <div className="flex-1 flex items-center gap-3">
                           <div
                             className="font-medium text-base text-gray-900"
-                            data-translate="true"
                           >
                             {renderTextContent(fee.name)}
                           </div>
@@ -758,7 +754,6 @@ export default function CheckOutForm({
                                 <div>
                                   <div
                                     className="text-sm text-gray-300"
-                                    data-translate="true"
                                     dangerouslySetInnerHTML={{
                                       __html: fee.description,
                                     }}
@@ -805,8 +800,8 @@ export default function CheckOutForm({
                 type="button"
                 onClick={() => handleCustomerTypeChange("personal")}
                 className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "personal"
-                    ? "border-blue-600 bg-blue-50 shadow-sm"
-                    : "border-gray-300 hover:border-gray-400"
+                  ? "border-blue-600 bg-blue-50 shadow-sm"
+                  : "border-gray-300 hover:border-gray-400"
                   }`}
               >
                 <div className="font-semibold" data-translate="true">
@@ -823,8 +818,8 @@ export default function CheckOutForm({
                 type="button"
                 onClick={() => handleCustomerTypeChange("group")}
                 className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "group"
-                    ? "border-blue-600 bg-blue-50 shadow-sm"
-                    : "border-gray-300 hover:border-gray-400"
+                  ? "border-blue-600 bg-blue-50 shadow-sm"
+                  : "border-gray-300 hover:border-gray-400"
                   }`}
               >
                 <div className="font-semibold" data-translate="true">
@@ -1001,8 +996,8 @@ export default function CheckOutForm({
                     onChange={handleFlightTimeChange}
                     step="60"
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isTienService && !flightTime
-                        ? "border-red-300"
-                        : "border-gray-300"
+                      ? "border-red-300"
+                      : "border-gray-300"
                       }`}
                   />
                 </div>
@@ -1019,8 +1014,8 @@ export default function CheckOutForm({
                     onChange={handleFlightArrivalTimeChange}
                     step="60"
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isDonService && !flightArrivalTime
-                        ? "border-red-300"
-                        : "border-gray-300"
+                      ? "border-red-300"
+                      : "border-gray-300"
                       }`}
                   />
                 </div>
@@ -1163,7 +1158,6 @@ export default function CheckOutForm({
           <div className="pb-4 border-b border-gray-200">
             <h1
               className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-              data-translate="true"
             >
               {product?.name}
             </h1>
@@ -1175,8 +1169,8 @@ export default function CheckOutForm({
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
-                Mở {displayTimeOpening} | {displayDaysOpening}
+              <span>
+                <span data-translate="true">Mở</span> {displayTimeOpening} | {displayDaysOpening}
               </span>
             </div>
             <div className="flex space-x-2 mt-3 items-start">
@@ -1187,13 +1181,13 @@ export default function CheckOutForm({
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
+              <span>
                 {renderTextContent(product?.fast_track?.address)}
               </span>
             </div>
             {tickets?.map((item: any) => (
               <div key={item.id} className="mt-2 flex justify-between">
-                <span data-translate="true">{item.title}</span>
+                <span>{item.title}</span>
                 <div className="font-bold text-sm flex gap-1">
                   <DisplayPrice
                     className={`!font-bold !text-sm text-black`}
@@ -1216,7 +1210,7 @@ export default function CheckOutForm({
                     )
                     .map((fee: any) => (
                       <div key={fee.id} className="mt-2 flex justify-between">
-                        <span data-translate="true">{fee.name}</span>
+                        <span>{fee.name}</span>
                         <DisplayPrice
                           className="!font-bold !text-sm text-black"
                           price={fee.price}

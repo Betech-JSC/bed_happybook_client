@@ -7,16 +7,19 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { ProductCategoryApi } from "@/api/ProductCategory";
 import FastTrackDetail from "../components/FastTrackDetail";
 import FastTrackCategory from "../components/FastTrackCategory";
+import { getServerLang } from "@/lib/session";
+import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
   let data = null;
+  const language = await getServerLang();
 
-  data = (await ProductCategoryApi.detail("fast-track", slug))?.payload
+  data = (await ProductCategoryApi.detail("fast-track", slug, language))?.payload
     ?.data as any;
 
   if (!data) {
-    const resDetail = await ProductYachtApi.detailBySlug(slug);
+    const resDetail = await ProductFastTrackApi.detailBySlug(slug, language);
     data = resDetail?.payload.data;
     if (data) data.alias = data?.slug;
   }
@@ -35,8 +38,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
           url: data?.meta_image
             ? data.meta_image
             : data?.image_url && data?.image_location
-            ? `${data?.image_url}${data?.image_location}`
-            : null,
+              ? `${data?.image_url}${data?.image_location}`
+              : null,
           alt: data?.meta_title,
         },
       ],
@@ -52,8 +55,12 @@ export default async function FastTrackAliasPage({
   searchParams: { [key: string]: string | undefined };
 }) {
   const { slug } = params;
-  const detailCate = (await ProductCategoryApi.detail("fast-track", slug))
-    ?.payload?.data as any;
+  const language = await getServerLang();
+  const detailCate = (await ProductCategoryApi.detail(
+    "fast-track",
+    slug,
+    language
+  ))?.payload?.data as any;
   return !detailCate ? (
     <FastTrackDetail alias={slug} searchParams={searchParams} />
   ) : (
