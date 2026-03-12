@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import BookingDetail from "../components/BookingDetail";
+import BookingDetail from "../../thong-tin-dat-hang/components/BookingDetail";
 import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";

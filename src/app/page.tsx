@@ -13,6 +13,7 @@ import { settingApi } from "@/api/Setting";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import { getServerT } from "@/lib/i18n/getServerT";
 import dynamic from "next/dynamic";
+// import SentryTestButton from "@/components/dev/SentryTestButton";
 
 const TourNoiDia = dynamic(() => import("@/components/home/tour-noi-dia"));
 const TourHot = dynamic(() => import("@/components/home/tour-hot"));
@@ -229,6 +230,7 @@ export default async function Home() {
           </AosAnimate>
         </Suspense>
       </main>
+      {/* <SentryTestButton /> */}
     </Fragment>
   );
 }

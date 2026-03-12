@@ -389,10 +389,10 @@ export default function CheckOutForm({
         };
 
         // Lưu data đầy đủ vào sessionStorage để hiển thị ở page thanh toán
-        handleSessionStorage("save", "bookingFastTrack", enrichedData);
+        handleSessionStorage("save", "bookingData", enrichedData);
 
         setTimeout(() => {
-          router.push("/fast-track/thong-tin-dat-cho");
+          router.push("/thong-tin-dat-hang");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);
