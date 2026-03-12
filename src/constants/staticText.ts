@@ -38,7 +38,7 @@ export const flightStaticText: string[] = [
   "Thời gian",
   "Giờ cất cánh",
   "Giờ hạ cánh",
-  "Đăng ký nhân vé giá rẻ",
+  "Đăng ký nhanh vé giá rẻ",
   "Đặt vé nhanh tại HappyBook",
   "Hành lý xách tay",
   "Hành lý ký gửi",
