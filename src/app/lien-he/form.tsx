@@ -29,6 +29,13 @@ export default function FormContact() {
     formState: { errors },
   } = useForm<ContactBodyType>({
     resolver: zodResolver(ContactSchema(messages)),
+    defaultValues: {
+      service: "",
+      full_name: "",
+      phone: "",
+      email: "",
+      note: "",
+    },
   });
 
   const onSubmit = async (data: ContactBodyType) => {

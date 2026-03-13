@@ -131,7 +131,7 @@ export default async function CompoTour() {
                           key={item.id}
                           className="basis-10/12 md:basis-5/12 lg:basis-[30%]"
                         >
-                          <div className="overflow-hidden rounded-lg relative pointer-events-none">
+                          <div className="overflow-hidden rounded-lg relative">
                             <Link href={`/combo/${item.slug}`}>
                               <Image
                                 src={`${item.image_url}/${item.image_location}`}

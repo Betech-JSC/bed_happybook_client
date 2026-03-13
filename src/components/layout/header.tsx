@@ -267,7 +267,6 @@ export default function Header() {
             </svg>
             <span className="font-medium">1900-633-437</span>
           </a>
-
           {!userInfo ? (
             <Link
               href="/dang-nhap"
@@ -366,14 +365,18 @@ export default function Header() {
             >
               {t("khach_san")}
             </Link>
-            <Link
-              href="/visa"
-              className={clsx(styles.header__menu_item, {
+            <div
+              className={clsx(`relative`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/visa"),
               })}
             >
-              {t("visa")}
-            </Link>
+              <Link href="/visa" className="py-4">
+                {t("visa")}
+              </Link>
+              <div className={` ${styles.header__sub_menu_item}`}>
+                <Link href="/tu-van-nhan-visa">{t("Tư vấn visa miễn phí")}</Link>
+              </div>
+            </div>
             <div
               className={clsx(`relative`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/du-thuyen"),
@@ -490,13 +493,7 @@ export default function Header() {
                 >
                   {t("dang_ky_ctv")}
                 </Link>
-                <Link
-                  href="/tu-van-nhan-visa"
-                  className={styles.text_hover_default}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  {t("tu_van_visa")}
-                </Link>
+
                 {GeneralInforPaths.map(
                   (
                     item: { title: string; slug: string; url: string },

@@ -7,7 +7,7 @@ export const CheckOutVisaSchema = (
 ) => {
   return z.object({
     phone: z
-      .string()
+      .string({ required_error: messages.required })
       .min(1, {
         message: messages.required,
       })
@@ -27,7 +27,7 @@ export const CheckOutVisaSchema = (
       ),
 
     gender: z
-      .string()
+      .string({ required_error: messages.required })
       .min(1, {
         message: messages.required,
       })
@@ -35,12 +35,15 @@ export const CheckOutVisaSchema = (
         message: messages.required,
       }),
 
-    email: z.string().min(1, { message: messages.required }).email({
-      message: messages.email,
-    }),
+    email: z
+      .string({ required_error: messages.required })
+      .min(1, { message: messages.required })
+      .email({
+        message: messages.email,
+      }),
 
     full_name: z
-      .string()
+      .string({ required_error: messages.required })
       .min(3, {
         message: messages.required,
       })
@@ -50,24 +53,24 @@ export const CheckOutVisaSchema = (
 
     invoice: checkBoxGenerateInvoice
       ? z.object({
-          contact_name: z.string().min(3, { message: messages.required }),
-          address: z.string().min(3, { message: messages.required }),
-          mst: z
-            .string()
-            .min(1, {
-              message: messages.required,
-            })
-            .regex(/^\d{10,13}$/, {
-              message: messages.inValid,
-            }),
-        })
-      : z
-          .object({
-            contact_name: z.string().optional(),
-            mst: z.string().optional(),
-            address: z.string().optional(),
+        contact_name: z.string().min(3, { message: messages.required }),
+        address: z.string().min(3, { message: messages.required }),
+        mst: z
+          .string()
+          .min(1, {
+            message: messages.required,
           })
-          .optional(),
+          .regex(/^\d{10,13}$/, {
+            message: messages.inValid,
+          }),
+      })
+      : z
+        .object({
+          contact_name: z.string().optional(),
+          mst: z.string().optional(),
+          address: z.string().optional(),
+        })
+        .optional(),
 
     checkBoxGenerateInvoice: z.boolean(),
   });
