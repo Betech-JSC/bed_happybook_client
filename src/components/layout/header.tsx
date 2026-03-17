@@ -374,7 +374,8 @@ export default function Header() {
                 {t("visa")}
               </Link>
               <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/tu-van-nhan-visa">{t("Tư vấn visa miễn phí")}</Link>
+                <Link href="/visa">{t("danh_sach_visa_cac_nuoc")}</Link>
+                <Link href="/tu-van-nhan-visa">{t("tu_van_visa_mien_phi")}</Link>
               </div>
             </div>
             <div

@@ -203,6 +203,9 @@ export default function HeaderMobileMenu() {
               <strong> {t("khac")}</strong>
             </p>
             <div className="mt-4 hover:text-[#F27145] cursor-pointer">
+              <Link href="/visa"> {t("danh_sach_visa_cac_nuoc")}</Link>
+            </div>
+            <div className="mt-4 hover:text-[#F27145] cursor-pointer">
               <Link href="/tu-van-nhan-visa"> {t("tu_van_visa")}</Link>
             </div>
             {GeneralInforPaths.map(

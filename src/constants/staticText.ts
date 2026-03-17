@@ -160,6 +160,8 @@ const headerStaticText: string[] = [
   "Định cư",
   "Đăng ký CTV",
   "Tư vấn visa",
+  "Danh sách visa các nước",
+  "Tư vấn visa miễn phí",
   "Hướng dẫn thanh toán",
   "Hướng dẫn đặt vé",
   "Thông tin chuyển khoản",
