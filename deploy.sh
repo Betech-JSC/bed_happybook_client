@@ -15,7 +15,7 @@ cd /var/www/bed_happybook_client
 
 # Pull code mới nhất
 echo "📥 Pulling latest code..."
-git pull origin main
+git pull origin master
 
 # Cài đặt dependencies
 echo "📦 Installing dependencies..."
