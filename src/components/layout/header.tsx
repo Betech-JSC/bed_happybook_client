@@ -417,6 +417,14 @@ export default function Header() {
               {t("fast_track")}
             </Link>
             <Link
+              href="/business-lounge"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/business-lounge"),
+              })}
+            >
+              {t("business_lounge")}
+            </Link>
+            <Link
               href="/bao-hiem"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/bao-hiem"),

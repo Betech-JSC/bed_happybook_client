@@ -163,6 +163,12 @@ export default function HeaderMobileMenu() {
               {t("fast_track")}
             </Link>
             <Link
+              href="/business-lounge"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("business_lounge")}
+            </Link>
+            <Link
               href="/bao-hiem"
               className="block mt-3 hover:text-[#F27145] cursor-pointer"
             >

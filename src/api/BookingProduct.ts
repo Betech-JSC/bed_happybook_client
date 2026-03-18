@@ -11,6 +11,7 @@ const BookingProductApi = {
   Ticket: (data: any) => http.post<any>(`${path}/ticket`, data),
   Yacht: (data: any) => http.post<any>(`${path}/yacht`, data),
   FastTrack: (data: any) => http.post<any>(`${path}/fast-track`, data),
+  BusinessLounge: (data: any) => http.post<any>(`${path}/business-lounge`, data),
   updatePaymentMethod: (data: any) =>
     http.post<any>(`${path}/update-payment-method`, data),
   History: (token: string | undefined, productType: string, page: number) =>

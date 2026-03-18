@@ -168,6 +168,7 @@ const headerStaticText: string[] = [
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
+  "Business Lounge",
 ];
 
 const footerStaticText: string[] = [
@@ -280,6 +281,8 @@ const generalStaticText: string[] = [
   "Đặt ngay",
   "Số lượng",
   "Loại vé",
+  "Chọn loại vé",
+  "Ngày sử dụng",
   "Phòng",
   "Ngày nhận phòng",
   "Ngày trả phòng",
