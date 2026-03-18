@@ -12,6 +12,19 @@ jobs:
     environment: Production
 
     steps:
+      - name: 🐛 Debug Information
+        run: |
+          echo "🔀 Branch: ${{ github.ref_name }}"
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "👤 Actor: ${{ github.actor }}"
+          echo "📦 Repository: ${{ github.repository }}"
+          echo "🏷️ Event: ${{ github.event_name }}"
+          echo "🕐 Timestamp: $(date +'%Y-%m-%d %H:%M:%S %Z')"
+          echo "🌍 Environment: Production"
+          echo "🖥️ VPS Host: ${{ vars.VPS_HOST }}"
+          echo "👤 VPS User: ${{ vars.VPS_USERNAME }}"
+          echo "🔌 VPS Port: ${{ vars.VPS_PORT }}"
+
       - name: 🔐 Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
