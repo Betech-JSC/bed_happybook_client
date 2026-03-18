@@ -140,6 +140,11 @@ export default function CheckOutForm({
     };
   }, [yachtOptionSelected]);
 
+  // Kiểm tra loại dịch vụ VIP Lounge: ẩn phụ phí thêm & phân loại khách
+  const isVipLounge = useMemo(() => {
+    return product?.fast_track?.fast_track_type?.code === "vip_lounge";
+  }, [product?.fast_track?.fast_track_type?.code]);
+
   const [schemaForm, setSchemaForm] = useState(() =>
     CheckOutYachtSchema(messages, generateInvoice),
   );
@@ -705,7 +710,8 @@ export default function CheckOutForm({
           </div>
 
           {/* Additional Fees Section - Hiển thị danh sách phụ phí từ bảng product_fast_track_additional_fees */}
-          {additionalFees.length > 0 && (
+          {/* Ẩn khi là VIP Lounge */}
+          {!isVipLounge && additionalFees.length > 0 && (
             <div className="mt-6 bg-white p-4 rounded-xl">
               <p className="text-18 font-bold mb-4" data-translate="true">
                 Phụ phí thêm
@@ -789,6 +795,8 @@ export default function CheckOutForm({
 
           {/* Customer Type and Guest Information - Optional */}
           <div className="mt-6 bg-white p-4 rounded-xl">
+            {/* Phân loại khách - Ẩn khi là VIP Lounge */}
+            {!isVipLounge && <>
             <div className="flex items-center justify-between mb-2">
               <p className="text-18 font-bold" data-translate="true">
                 Phân loại khách
@@ -928,6 +936,8 @@ export default function CheckOutForm({
                 </div>
               </div>
             )}
+
+            </>}
 
             {/* Flight Information - Optional */}
             <div className="mt-6 pt-4 border-t">
