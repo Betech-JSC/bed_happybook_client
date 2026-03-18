@@ -38,7 +38,7 @@ export const flightStaticText: string[] = [
   "Thời gian",
   "Giờ cất cánh",
   "Giờ hạ cánh",
-  "Đăng ký nhân vé giá rẻ",
+  "Đăng ký nhanh vé giá rẻ",
   "Đặt vé nhanh tại HappyBook",
   "Hành lý xách tay",
   "Hành lý ký gửi",
@@ -160,12 +160,15 @@ const headerStaticText: string[] = [
   "Định cư",
   "Đăng ký CTV",
   "Tư vấn visa",
+  "Danh sách visa các nước",
+  "Tư vấn visa miễn phí",
   "Hướng dẫn thanh toán",
   "Hướng dẫn đặt vé",
   "Thông tin chuyển khoản",
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
+  "Business Lounge",
 ];
 
 const footerStaticText: string[] = [
@@ -278,6 +281,8 @@ const generalStaticText: string[] = [
   "Đặt ngay",
   "Số lượng",
   "Loại vé",
+  "Chọn loại vé",
+  "Ngày sử dụng",
   "Phòng",
   "Ngày nhận phòng",
   "Ngày trả phòng",

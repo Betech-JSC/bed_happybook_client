@@ -267,28 +267,6 @@ export default function Header() {
             </svg>
             <span className="font-medium">1900-633-437</span>
           </a>
-          <a
-            href="mailto:cskh@happybooktravel.com"
-            className={`flex lg:max-h-10 items-center space-x-2 border border-white px-3 py-2 rounded-3xl ${styles.header__menu_phone_contact}`}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 32 32"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2.66406 9.33325L13.5506 16.9538C14.4322 17.5709 14.873 17.8795 15.3524 17.999C15.7759 18.1046 16.2189 18.1046 16.6424 17.999C17.1218 17.8795 17.5626 17.5709 18.4442 16.9538L29.3307 9.33325M9.06406 26.6666H22.9307C25.1709 26.6666 26.291 26.6666 27.1467 26.2306C27.8993 25.8471 28.5113 25.2352 28.8948 24.4825C29.3307 23.6269 29.3307 22.5068 29.3307 20.2666V11.7333C29.3307 9.49304 29.3307 8.37294 28.8948 7.51729C28.5113 6.76464 27.8993 6.15272 27.1467 5.76923C26.291 5.33325 25.1709 5.33325 22.9307 5.33325H9.06406C6.82385 5.33325 5.70375 5.33325 4.8481 5.76923C4.09545 6.15272 3.48353 6.76464 3.10004 7.51729C2.66406 8.37294 2.66406 9.49304 2.66406 11.7333V20.2666C2.66406 22.5068 2.66406 23.6269 3.10004 24.4825C3.48353 25.2352 4.09545 25.8471 4.8481 26.2306C5.70375 26.6666 6.82385 26.6666 9.06406 26.6666Z"
-                stroke={isSticky ? "#175CD3" : "#EAECF0"}
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="transition-all duration-300"
-              />
-            </svg>
-            <span className="font-medium">{t("email")}</span>
-          </a>
           {!userInfo ? (
             <Link
               href="/dang-nhap"
@@ -387,14 +365,19 @@ export default function Header() {
             >
               {t("khach_san")}
             </Link>
-            <Link
-              href="/visa"
-              className={clsx(styles.header__menu_item, {
+            <div
+              className={clsx(`relative`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/visa"),
               })}
             >
-              {t("visa")}
-            </Link>
+              <Link href="/visa" className="py-4">
+                {t("visa")}
+              </Link>
+              <div className={` ${styles.header__sub_menu_item}`}>
+                <Link href="/visa">{t("danh_sach_visa_cac_nuoc")}</Link>
+                <Link href="/tu-van-nhan-visa">{t("tu_van_visa_mien_phi")}</Link>
+              </div>
+            </div>
             <div
               className={clsx(`relative`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/du-thuyen"),
@@ -432,6 +415,14 @@ export default function Header() {
               })}
             >
               {t("fast_track")}
+            </Link>
+            <Link
+              href="/business-lounge"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/business-lounge"),
+              })}
+            >
+              {t("business_lounge")}
             </Link>
             <Link
               href="/bao-hiem"
@@ -511,13 +502,7 @@ export default function Header() {
                 >
                   {t("dang_ky_ctv")}
                 </Link>
-                <Link
-                  href="/tu-van-nhan-visa"
-                  className={styles.text_hover_default}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  {t("tu_van_visa")}
-                </Link>
+
                 {GeneralInforPaths.map(
                   (
                     item: { title: string; slug: string; url: string },

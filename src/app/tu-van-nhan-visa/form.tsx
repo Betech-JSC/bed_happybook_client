@@ -29,13 +29,23 @@ export default function VisaApplicationForm() {
   } = useForm<FormData>({
     resolver: zodResolver(VisaApplicationSchema(messages)),
     defaultValues: {
+      country: "",
+      full_name: "",
+      birth_year: "",
+      phone: "",
+      email: "",
+      address: "",
+      temporary_address: "",
       is_relatives_abroad_not_legal: "",
       education: "",
       purpose_visa_application: [],
+      travel_history: "",
       job: [],
+      job_description: "",
       max_savings_book: "",
       assets_home: "",
       assets_car: "",
+      other_assets: "",
       is_visa_rejected: "",
     },
   });
@@ -168,24 +178,45 @@ export default function VisaApplicationForm() {
                   </div>
                 </div>
               </div>
-              <div className="relative mt-6">
-                <label
-                  htmlFor="phone"
-                  className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
-                >
-                  <span data-translate>SỐ ĐIỆN THOẠI NGƯỜI XIN VISA</span>
-                  <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="phone"
-                  type="text"
-                  placeholder="Nhập số điện thoại"
-                  {...register("phone")}
-                  className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
-                />
-                {errors.phone && (
-                  <p className="text-red-600">{errors.phone.message}</p>
-                )}
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <label
+                    htmlFor="phone"
+                    className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
+                  >
+                    <span data-translate>SỐ ĐIỆN THOẠI NGƯỜI XIN VISA</span>
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="phone"
+                    type="text"
+                    placeholder="Nhập số điện thoại"
+                    {...register("phone")}
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                  />
+                  {errors.phone && (
+                    <p className="text-red-600">{errors.phone.message}</p>
+                  )}
+                </div>
+                <div className="relative">
+                  <label
+                    htmlFor="email"
+                    className="absolute top-0 left-0 h-4 translate-y-1 translate-x-4 font-medium text-xs text-gray-700"
+                  >
+                    <span data-translate>EMAIL NGƯỜI XIN VISA</span>
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="Nhập email"
+                    {...register("email")}
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
+                  />
+                  {errors.email && (
+                    <p className="text-red-600">{errors.email.message}</p>
+                  )}
+                </div>
               </div>
               <div className="relative mt-6">
                 <label

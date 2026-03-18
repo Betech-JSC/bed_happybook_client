@@ -16,7 +16,7 @@ export interface ValidationMessages {
 export const validationMessages: Record<"vi" | "en", ValidationMessages> = {
   vi: {
     required: "Vui lòng điền thông tin này!",
-    email: "Email không hợp lệ",
+    email: "Vui lòng điền thôn tin này",
     inValid: "Thông tin không hợp lệ",
     minLength: (length: number) => `Vui lòng điền thông tin này!`,
     maxLength: (length: number) => `Thông tin không hợp lệ`,

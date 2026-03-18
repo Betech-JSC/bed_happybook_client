@@ -1,22 +1,16 @@
 "use client";
 
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import TourStyle from "@/styles/tour.module.scss";
 import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
-import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
-import { ProductTicket } from "@/api/ProductTicket";
 import { translatePage } from "@/utils/translateDom";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { vi, enUS } from "date-fns/locale";
-import { format, isValid } from "date-fns";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
-import { useTranslation } from "@/hooks/useTranslation";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import { useTranslation } from "@/hooks/useTranslation";
+import { ProductBusinessLoungeApi } from "@/api/ProductBusinessLounge";
 
 type optionFilterType = {
   label: string;
@@ -29,11 +23,12 @@ type optionFilterType = {
 
 export default function Search({
   optionsFilter,
+  categoryDefault,
 }: {
   optionsFilter: optionFilterType[];
+  categoryDefault?: number;
 }) {
   const { t } = useTranslation();
-  const { language } = useLanguage();
 
   const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
@@ -41,8 +36,8 @@ export default function Search({
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
-    location: searchParams.get("location") ?? "",
-    // departureDate: format(today, "yyyy-MM-dd"),
+    location_id: searchParams.get("location_id") ?? "",
+    "category[]": categoryDefault ? [categoryDefault] : "",
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
@@ -57,9 +52,8 @@ export default function Search({
       setLoadingLoadMore(true);
       setIsDisabled(true);
       setIsLastPage(false);
-
       const search = buildSearch(query);
-      const res = await ProductTicket.search(`${search}`);
+      const res = await ProductBusinessLoungeApi.search(`${search}`);
       const result = res?.payload?.data;
 
       setData((prevData: any[]) => {
@@ -78,7 +72,7 @@ export default function Search({
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
-      translatePage("#wrapper-search-amusement-ticket", 10).then(() =>
+      translatePage("#wrapper-search-business-lounge", 10).then(() =>
         setTranslatedText(true)
       );
     } catch (error) {
@@ -92,7 +86,7 @@ export default function Search({
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
-    query.location = "";
+    query.location_id = "";
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -114,6 +108,7 @@ export default function Search({
       }
     });
   };
+
   const handleSortData = (value: string) => {
     setData([]);
     const [sort, order] = value.split("|");
@@ -149,7 +144,7 @@ export default function Search({
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold">{t("ve_vui_choi")}</h1>
+          <h1 className="text-32 font-bold">{t("business_lounge")}</h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
             <div className="w-40 bg-white border border-gray-200 rounded-lg">
@@ -176,7 +171,7 @@ export default function Search({
                       className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
                         }`}
                     >
-                      <Link href={`/ve-vui-choi/${item.slug}`}>
+                      <Link href={`/business-lounge/${item.slug}`}>
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}
@@ -190,7 +185,7 @@ export default function Search({
                     </div>
                     <div className="py-3 px-5 bg-white rounded-b-xl">
                       <Link
-                        href={`/ve-vui-choi/${item.slug}`}
+                        href={`/business-lounge/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
                         data-translate="true"
                       >
