@@ -61,7 +61,7 @@ export default function SignUpReceiveCheapTickets() {
       <div className="w-full md:w-[60%] pr-0 md:pr-8">
         <div className="bg-white">
           <h2 className="pl-2 border-l-4 border-[#F27145] text-22 font-bold">
-            {t("dang_ky_nhan_ve_gia_re")}
+            {t("Đăng kí nhận vé giá rẻ")}
           </h2>
           <div className="mt-4 rounded-xl">
             <form
