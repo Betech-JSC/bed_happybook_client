@@ -139,6 +139,7 @@ export default function CheckOutForm({
       isTienService: optionName.includes("tiễn"),
     };
   }, [yachtOptionSelected]);
+  const isBusinessLounge = !!product?.fast_track?.is_business_lounge;
 
   const [schemaForm, setSchemaForm] = useState(() =>
     CheckOutYachtSchema(messages, generateInvoice),
@@ -173,6 +174,7 @@ export default function CheckOutForm({
   const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
 
   useEffect(() => {
+    if (isBusinessLounge) return;
     if (product?.ticket_prices) {
       const initialTickets: Ticket[] = [...product.ticket_prices]
         .sort((a, b) => {
@@ -542,7 +544,7 @@ export default function CheckOutForm({
         prev.filter((id) => id !== nightTimeFee.id),
       );
     }
-  }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees]);
+  }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees, isBusinessLounge]);
 
   // Tổng chi phí = giá vé + phụ phí (phụ phí giờ bay thêm đã được tự động tích vào additional fees nếu đáp ứng điều kiện)
   const totalPrice = ticketsPrice + additionalFeesPrice;
@@ -705,7 +707,7 @@ export default function CheckOutForm({
           </div>
 
           {/* Additional Fees Section - Hiển thị danh sách phụ phí từ bảng product_fast_track_additional_fees */}
-          {additionalFees.length > 0 && (
+          {!isBusinessLounge && additionalFees.length > 0 && (
             <div className="mt-6 bg-white p-4 rounded-xl">
               <p className="text-18 font-bold mb-4" data-translate="true">
                 Phụ phí thêm
@@ -731,8 +733,8 @@ export default function CheckOutForm({
                     <div
                       key={fee.id}
                       className={`flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-all ${selectedAdditionalFees.includes(fee.id)
-                          ? "border-blue-500 bg-blue-50 shadow-sm"
-                          : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                        ? "border-blue-500 bg-blue-50 shadow-sm"
+                        : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
                         }`}
                       onClick={() => toggleAdditionalFee(fee.id)}
                     >
@@ -789,6 +791,8 @@ export default function CheckOutForm({
 
           {/* Customer Type and Guest Information - Optional */}
           <div className="mt-6 bg-white p-4 rounded-xl">
+            {!isBusinessLounge && (
+            <>
             <div className="flex items-center justify-between mb-2">
               <p className="text-18 font-bold" data-translate="true">
                 Phân loại khách
@@ -805,8 +809,8 @@ export default function CheckOutForm({
                 type="button"
                 onClick={() => handleCustomerTypeChange("personal")}
                 className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "personal"
-                    ? "border-blue-600 bg-blue-50 shadow-sm"
-                    : "border-gray-300 hover:border-gray-400"
+                  ? "border-blue-600 bg-blue-50 shadow-sm"
+                  : "border-gray-300 hover:border-gray-400"
                   }`}
               >
                 <div className="font-semibold" data-translate="true">
@@ -823,8 +827,8 @@ export default function CheckOutForm({
                 type="button"
                 onClick={() => handleCustomerTypeChange("group")}
                 className={`p-4 border-2 rounded-lg text-left transition-all ${customerType === "group"
-                    ? "border-blue-600 bg-blue-50 shadow-sm"
-                    : "border-gray-300 hover:border-gray-400"
+                  ? "border-blue-600 bg-blue-50 shadow-sm"
+                  : "border-gray-300 hover:border-gray-400"
                   }`}
               >
                 <div className="font-semibold" data-translate="true">
@@ -928,6 +932,8 @@ export default function CheckOutForm({
                 </div>
               </div>
             )}
+            </>
+            )}
 
             {/* Flight Information - Optional */}
             <div className="mt-6 pt-4 border-t">
@@ -1001,8 +1007,8 @@ export default function CheckOutForm({
                     onChange={handleFlightTimeChange}
                     step="60"
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isTienService && !flightTime
-                        ? "border-red-300"
-                        : "border-gray-300"
+                      ? "border-red-300"
+                      : "border-gray-300"
                       }`}
                   />
                 </div>
@@ -1019,8 +1025,8 @@ export default function CheckOutForm({
                     onChange={handleFlightArrivalTimeChange}
                     step="60"
                     className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isDonService && !flightArrivalTime
-                        ? "border-red-300"
-                        : "border-gray-300"
+                      ? "border-red-300"
+                      : "border-gray-300"
                       }`}
                   />
                 </div>
@@ -1205,6 +1211,7 @@ export default function CheckOutForm({
               </div>
             ))}
             {selectedAdditionalFees.length > 0 && (
+
               <>
                 <div className="mt-4 pt-4 border-t">
                   <p className="font-semibold mb-2" data-translate="true">
