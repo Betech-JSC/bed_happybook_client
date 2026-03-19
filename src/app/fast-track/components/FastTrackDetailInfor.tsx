@@ -24,6 +24,7 @@ export default function FastTrackDetailInfor({ product }: any) {
   const [departDate, setDepartDate] = useState<Date>(today);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [detail, setDetail] = useState<any>(product);
+  const isBusinessLounge = !!product?.fast_track?.is_business_lounge;
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
     tuesday: "Ba",
@@ -159,7 +160,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                         </div>
                       ))}
                     {/* Additional Fees Section - Hiển thị phụ phí từ bảng product_fast_track_additional_fees */}
-                    {detail?.additional_fees?.length > 0 && (
+                    {!isBusinessLounge && detail?.additional_fees?.length > 0 && (
                       <div className="mt-4 pt-4">
                         <h3 className="text-base font-semibold mb-3" data-translate="true">
                           Phụ phí thêm

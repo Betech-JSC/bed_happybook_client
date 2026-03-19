@@ -140,6 +140,8 @@ export default function CheckOutForm({
     };
   }, [yachtOptionSelected]);
 
+  const isBusinessLounge = !!product?.fast_track?.is_business_lounge;
+
   const [schemaForm, setSchemaForm] = useState(() =>
     CheckOutYachtSchema(messages, generateInvoice),
   );
@@ -515,6 +517,9 @@ export default function CheckOutForm({
 
   // Tự động tích/bỏ tích "Phụ phí giờ bay thêm" dựa trên thời gian
   useEffect(() => {
+    // Business Lounge không có phụ phí
+    if (isBusinessLounge) return;
+
     // Tìm "Phụ phí giờ bay thêm" trong additionalFees
     const nightTimeFee = additionalFees.find((fee: any) => {
       const feeName = (fee.name || "").toLowerCase();
@@ -542,7 +547,7 @@ export default function CheckOutForm({
         prev.filter((id) => id !== nightTimeFee.id),
       );
     }
-  }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees]);
+  }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees, isBusinessLounge]);
 
   // Tổng chi phí = giá vé + phụ phí (phụ phí giờ bay thêm đã được tự động tích vào additional fees nếu đáp ứng điều kiện)
   const totalPrice = ticketsPrice + additionalFeesPrice;
@@ -705,7 +710,7 @@ export default function CheckOutForm({
           </div>
 
           {/* Additional Fees Section - Hiển thị danh sách phụ phí từ bảng product_fast_track_additional_fees */}
-          {additionalFees.length > 0 && (
+          {!isBusinessLounge && additionalFees.length > 0 && (
             <div className="mt-6 bg-white p-4 rounded-xl">
               <p className="text-18 font-bold mb-4" data-translate="true">
                 Phụ phí thêm
@@ -789,6 +794,8 @@ export default function CheckOutForm({
 
           {/* Customer Type and Guest Information - Optional */}
           <div className="mt-6 bg-white p-4 rounded-xl">
+            {!isBusinessLounge && (
+              <>
             <div className="flex items-center justify-between mb-2">
               <p className="text-18 font-bold" data-translate="true">
                 Phân loại khách
@@ -927,6 +934,8 @@ export default function CheckOutForm({
                   ))}
                 </div>
               </div>
+            )}
+              </>
             )}
 
             {/* Flight Information - Optional */}
@@ -1204,7 +1213,7 @@ export default function CheckOutForm({
                 </div>
               </div>
             ))}
-            {selectedAdditionalFees.length > 0 && (
+            {!isBusinessLounge && selectedAdditionalFees.length > 0 && (
               <>
                 <div className="mt-4 pt-4 border-t">
                   <p className="font-semibold mb-2" data-translate="true">
