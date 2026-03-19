@@ -69,6 +69,17 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://www.clarity.ms" />
         <link rel="dns-prefetch" href="https://chat-plugin.pancake.vn" />
         {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> */}
+        {/* Google Tag Manager */}
+        <Script id="gtm-script" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-WDB3FW7N');
+          `}
+        </Script>
+        {/* End Google Tag Manager */}
         {/* FB */}
         <meta
           name="facebook-domain-verification"
@@ -117,6 +128,16 @@ export default async function RootLayout({
         {/* End Meta Pixel Code */}
       </head>
       <body className={OpenSans.className}>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-WDB3FW7N"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <Suspense fallback={null}>
           <ProgressBar color="#ea580c" height="3px" />
         </Suspense>
