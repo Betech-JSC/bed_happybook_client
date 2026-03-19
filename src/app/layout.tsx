@@ -17,7 +17,6 @@ import { MenuProvider } from "@/contexts/MenuContext";
 import MobileMenuOverlay from "@/components/layout/MobileMenuOverlay";
 import SupportFloatingIcons from "@/components/layout/support-floating-icons";
 import Script from "next/script";
-import GTMNoScript from "@/components/base/GTMNoScript";
 import ProgressBar from "@/components/layout/ProgressBar";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
 import { TranslationProvider } from "../contexts/TranslationContext";
@@ -75,31 +74,6 @@ export default async function RootLayout({
           name="facebook-domain-verification"
           content="x7vlq92evnjo5wwhxtpy922e3hu2ac"
         />
-        {/* Google Tag Manager */}
-        <Script id="gtm-script" strategy="lazyOnload">
-          {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-T7CVWLJM');
-          `}
-        </Script>
-        {/* End Google Tag Manager */}
-
-        {/* Google Ads (gtag.js) - lazyOnload to avoid TBT */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17408673405"
-          strategy="lazyOnload"
-        />
-        <Script id="google-ads-script" strategy="lazyOnload">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-17408673405');
-          `}
-        </Script>
         {/* === Pancake live chat === */}
         <Script
           src="https://chat-plugin.pancake.vn/main/auto?page_id=web_happybookwebsite"
@@ -143,7 +117,6 @@ export default async function RootLayout({
         {/* End Meta Pixel Code */}
       </head>
       <body className={OpenSans.className}>
-        <GTMNoScript />
         <Suspense fallback={null}>
           <ProgressBar color="#ea580c" height="3px" />
         </Suspense>
