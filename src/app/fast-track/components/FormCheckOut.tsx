@@ -174,7 +174,6 @@ export default function CheckOutForm({
   const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
 
   useEffect(() => {
-    if (isBusinessLounge) return;
     if (product?.ticket_prices) {
       const initialTickets: Ticket[] = [...product.ticket_prices]
         .sort((a, b) => {
