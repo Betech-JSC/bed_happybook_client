@@ -264,6 +264,7 @@ export default function BookingDetail() {
   const totalPrice = data?.total_price || 0;
   const totalDiscount = data?.total_discount || 0;
   const finalTotal = totalPrice + onePayFee - totalDiscount;
+  const isYacht = data?.code?.startsWith("YACHT");
 
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
@@ -567,7 +568,7 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid && (
+        {!isPaid && !isYacht && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
