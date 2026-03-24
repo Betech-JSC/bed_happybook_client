@@ -7,11 +7,11 @@ export const checkOutAmusementTicketSchema = (
 ) => {
   return z.object({
     phone: z
-      .string()
+      .string({ required_error: messages.required })
       .min(1, {
         message: messages.required,
       })
-      .regex(/^\d{10,11}$/, {
+      .regex(/^(\+?\d{1,3})?(\d{9,11})$/, {
         message: messages.inValid,
       }),
     depart_date: z.date({

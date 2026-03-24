@@ -396,6 +396,7 @@ export default function CheckOutForm({
                         placeholder="Nhập số điện thoại"
                         error={errors.phone?.message}
                         defaultCountry="VN"
+                        required
                       />
                     )}
                   />
