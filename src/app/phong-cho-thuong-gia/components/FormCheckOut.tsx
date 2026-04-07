@@ -8,7 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 import { BookingProductApi } from "@/api/BookingProduct";
-import { ProductFastTrackApi } from "@/api/ProductFastTrack";
+import { ProductBusinessLoungeApi } from "@/api/ProductBusinessLounge";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -124,9 +124,9 @@ export default function CheckOutForm({
     setVoucherErrors,
     handleApplyVoucher,
     handleSearch,
-  } = useVoucherManager("fast-track");
+  } = useVoucherManager("business-lounge");
   const yachtOptionSelected = useMemo(() => {
-    return product?.fast_track?.options.find(
+    return product?.business_lounge?.options.find(
       (item: any) => item.id === ticketOptionId,
     );
   }, [product, ticketOptionId]);
@@ -139,7 +139,7 @@ export default function CheckOutForm({
       isTienService: optionName.includes("tiễn"),
     };
   }, [yachtOptionSelected]);
-  const isBusinessLounge = !!product?.fast_track?.is_business_lounge;
+  const isBusinessLounge = !!product?.business_lounge?.is_business_lounge;
 
   const [schemaForm, setSchemaForm] = useState(() =>
     CheckOutYachtSchema(messages, generateInvoice),
@@ -153,7 +153,7 @@ export default function CheckOutForm({
     saturday: "Bảy",
     sunday: "Chủ nhật",
   };
-  const daysOpeningRaw = product?.fast_track?.opening_days;
+  const daysOpeningRaw = product?.business_lounge?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
@@ -166,12 +166,16 @@ export default function CheckOutForm({
       .map((day: any) => dayMap[day])
       .filter(Boolean)
       .join(", ");
-  const parsedTimeOpening = parse(
-    product?.fast_track?.opening_time,
-    "HH:mm:ss",
-    new Date(),
-  );
-  const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+  let displayTimeOpening = product?.business_lounge?.opening_time;
+  try {
+    if (displayTimeOpening && displayTimeOpening.includes(":")) {
+      const parsedTimeOpening = parse(displayTimeOpening, "HH:mm:ss", new Date());
+      if (!isNaN(parsedTimeOpening.getTime())) {
+        displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+      }
+    }
+  } catch (error) {
+  }
 
   useEffect(() => {
     if (product?.ticket_prices) {
@@ -193,53 +197,10 @@ export default function CheckOutForm({
     }
   }, [product?.ticket_prices]);
 
-  // Fetch additional fees from API
+  // Business Lounge does not have additional fees
   useEffect(() => {
-    const fetchAdditionalFees = async () => {
-      try {
-        setLoadingAdditionalFees(true);
-        const response = await ProductFastTrackApi.getAdditionalFees();
-        if (response?.status === 200 && response?.payload?.data) {
-          const fees = Array.isArray(response.payload.data)
-            ? response.payload.data
-            : [];
-
-          // Filter only active fees and sort
-          const sortedFees = fees
-            .filter((fee: any) => fee.status === 1 || fee.status === true)
-            .sort((a: any, b: any) => {
-              if (a.sort_order !== b.sort_order) {
-                return (a.sort_order || 0) - (b.sort_order || 0);
-              }
-              return (b.id || 0) - (a.id || 0);
-            });
-
-          setAdditionalFees(sortedFees);
-        }
-      } catch (error) {
-        console.error("Error fetching additional fees:", error);
-        // Fallback to product.additional_fees if API fails
-        if (product?.additional_fees) {
-          const fees = Array.isArray(product.additional_fees)
-            ? product.additional_fees
-            : [];
-          const sortedFees = fees
-            .filter((fee: any) => fee.status === 1 || fee.status === true)
-            .sort((a: any, b: any) => {
-              if (a.sort_order !== b.sort_order) {
-                return (a.sort_order || 0) - (b.sort_order || 0);
-              }
-              return (b.id || 0) - (a.id || 0);
-            });
-          setAdditionalFees(sortedFees);
-        }
-      } finally {
-        setLoadingAdditionalFees(false);
-      }
-    };
-
-    fetchAdditionalFees();
-  }, [product?.additional_fees]);
+    setAdditionalFees([]);
+  }, []);
 
   useEffect(() => {
     setSchemaForm(CheckOutYachtSchema(messages, generateInvoice));
@@ -331,7 +292,7 @@ export default function CheckOutForm({
       if (!generateInvoice) {
         delete formatData.invoice;
       }
-      const respon = await BookingProductApi.FastTrack(formatData);
+      const respon = await BookingProductApi.BusinessLounge(formatData);
       if (respon?.status === 200) {
         reset();
         toast.success(toaStrMsg.sendSuccess);
@@ -393,7 +354,7 @@ export default function CheckOutForm({
         handleSessionStorage("save", "bookingData", enrichedData);
 
         setTimeout(() => {
-          router.push("/thong-tin-dat-hang");
+          router.push("/phong-cho-thuong-gia/thong-tin-dat-cho");
         }, 1500);
       } else {
         toast.error(toaStrMsg.sendFailed);
@@ -705,7 +666,7 @@ export default function CheckOutForm({
             </div>
           </div>
 
-          {/* Additional Fees Section - Hiển thị danh sách phụ phí từ bảng product_fast_track_additional_fees */}
+          {/* Additional Fees Section - Hiển thị danh sách phụ phí từ bảng product_business_lounge_additional_fees */}
           {!isBusinessLounge && additionalFees.length > 0 && (
             <div className="mt-6 bg-white p-4 rounded-xl">
               <p className="text-18 font-bold mb-4" data-translate="true">
@@ -947,39 +908,39 @@ export default function CheckOutForm({
 
               {/* Thông báo về phụ phí giờ bay thêm */}
               {!isBusinessLounge && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <svg
-                    className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <div className="flex-1">
-                    <p
-                      className="text-sm font-medium text-blue-900 mb-1"
-                      data-translate="true"
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <svg
+                      className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      {t("luu_y_phu_phi_gio_bay_them")}
-                    </p>
-                    <ul className="text-xs text-blue-800 space-y-1 ml-4 list-disc">
-                      <li data-translate="true">
-                        {t("doi_voi_dich_vu_don_san_bay")}
-                      </li>
-                      <li data-translate="true">
-                        {t("doi_voi_dich_vu_tien_san_bay")}
-                      </li>
-                    </ul>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <p
+                        className="text-sm font-medium text-blue-900 mb-1"
+                        data-translate="true"
+                      >
+                        {t("luu_y_phu_phi_gio_bay_them")}
+                      </p>
+                      <ul className="text-xs text-blue-800 space-y-1 ml-4 list-disc">
+                        <li data-translate="true">
+                          {t("doi_voi_dich_vu_don_san_bay")}
+                        </li>
+                        <li data-translate="true">
+                          {t("doi_voi_dich_vu_tien_san_bay")}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1195,7 +1156,7 @@ export default function CheckOutForm({
                 height={18}
               />
               <span data-translate="true">
-                {renderTextContent(product?.fast_track?.address)}
+                {renderTextContent(product?.business_lounge?.address)}
               </span>
             </div>
             {tickets?.map((item: any) => (

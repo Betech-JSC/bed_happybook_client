@@ -15,7 +15,7 @@ export const SignUpReceiveCheapTicketSchema = (
         message: messages.required,
       }),
     phone: z
-      .string()
+      .string({ required_error: messages.required })
       .min(1, {
         message: messages.required,
       })

@@ -27,6 +27,7 @@ const Flight = dynamic(() => import("@/components/home/flight"));
 const HomeYacht = dynamic(() => import("@/components/home/Yacht"));
 const HomeAmusementTicket = dynamic(() => import("@/components/home/AmusementTicket"));
 const HomeFastTrack = dynamic(() => import("@/components/home/FastTrack"));
+const HomeBusinessLounge = dynamic(() => import("@/components/home/BusinessLounge"));
 const FormContact = dynamic(() => import("./lien-he/form"));
 const PartnerAirlines = dynamic(() => import("./ve-may-bay/components/Partner"));
 const NewsByPage = dynamic(() => import("@/components/content-page/NewsByPage"));
@@ -157,6 +158,12 @@ export default async function Home() {
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <HomeFastTrack />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <HomeBusinessLounge />
           </AosAnimate>
         </Suspense>
 

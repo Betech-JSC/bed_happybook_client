@@ -17,14 +17,14 @@ import { vi, enUS } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductGallery from "@/components/product/components/ProductGallery";
 
-export default function FastTrackDetailInfor({ product }: any) {
+export default function BusinessLoungeDetailInfor({ product }: any) {
   const today = new Date();
   const { t } = useTranslation();
   const { language } = useLanguage();
   const [departDate, setDepartDate] = useState<Date>(today);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [detail, setDetail] = useState<any>(product);
-  const isBusinessLounge = !!product?.fast_track?.is_business_lounge;
+  const isBusinessLounge = !!product?.business_lounge?.is_business_lounge;
   const dayMap: Record<string, string> = {
     monday: "Thứ Hai",
     tuesday: "Ba",
@@ -34,7 +34,7 @@ export default function FastTrackDetailInfor({ product }: any) {
     saturday: "Bảy",
     sunday: "Chủ nhật",
   };
-  const daysOpeningRaw = product?.fast_track?.opening_days;
+  const daysOpeningRaw = product?.business_lounge?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
     : typeof daysOpeningRaw === "string"
@@ -47,18 +47,22 @@ export default function FastTrackDetailInfor({ product }: any) {
       .map((day: any) => dayMap[day])
       .filter(Boolean)
       .join(", ");
-  const parsedTimeOpening = parse(
-    product?.fast_track?.opening_time,
-    "HH:mm:ss",
-    new Date()
-  );
-  const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+  let displayTimeOpening = product?.business_lounge?.opening_time;
+  try {
+    if (displayTimeOpening && displayTimeOpening.includes(":")) {
+      const parsedTimeOpening = parse(displayTimeOpening, "HH:mm:ss", new Date());
+      if (!isNaN(parsedTimeOpening.getTime())) {
+        displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+      }
+    }
+  } catch (error) {
+  }
 
   const getMaxPricesPerOption = useCallback(() => {
     const dayName = format(departDate, "EEEE").toLowerCase();
     const clonedProduct = cloneDeep(product);
 
-    clonedProduct.fast_track?.options.forEach((option: any) => {
+    clonedProduct.business_lounge?.options.forEach((option: any) => {
       const validPrices = option.prices.filter(
         (p: any) => Array.isArray(p.days) && p.days.includes(dayName)
       );
@@ -66,7 +70,7 @@ export default function FastTrackDetailInfor({ product }: any) {
       const grouped: Record<number, any[]> = {};
 
       validPrices.forEach((p: any) => {
-        const typeId = p.product_fast_track_type_id;
+        const typeId = p.product_business_lounge_type_id;
         if (!grouped[typeId]) grouped[typeId] = [];
         grouped[typeId].push(p);
       });
@@ -99,8 +103,8 @@ export default function FastTrackDetailInfor({ product }: any) {
               {t("cac_goi_dich_vu")}
             </h2>
             <div className="mt-6">
-              {detail?.fast_track?.options?.length > 0 ? (
-                detail?.fast_track?.options.map((option: any) => (
+              {detail?.business_lounge?.options?.length > 0 ? (
+                detail?.business_lounge?.options.map((option: any) => (
                   <div
                     key={option.id}
                     className="mb-6 last:mb-0 py-2 px-4 border border-gray-300 rounded-2xl"
@@ -159,7 +163,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                           </div>
                         </div>
                       ))}
-                    {/* Additional Fees Section - Hiển thị phụ phí từ bảng product_fast_track_additional_fees */}
+                    {/* Additional Fees Section - Hiển thị phụ phí từ bảng product_business_lounge_additional_fees */}
                     {!isBusinessLounge && detail?.additional_fees?.length > 0 && (
                       <div className="mt-4 pt-4">
                         <h3 className="text-base font-semibold mb-3" data-translate="true">
@@ -199,7 +203,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                     {option.prices?.length > 0 && (
                       <div className="text-end mt-6 mb-2">
                         <Link
-                          href={`/fast-track/checkout/${detail?.slug}?option=${option.id
+                          href={`/phong-cho-thuong-gia/checkout/${detail?.slug}?option=${option.id
                             }&departDate=${format(departDate, "yyyy-MM-dd")}`}
                           className="bg-blue-600 w-[110px] text__default_hover p-[10px] text-white rounded-lg inline-flex items-center justify-center"
                         >
@@ -225,7 +229,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                 data-translate="true"
                 className="cke_editable"
                 dangerouslySetInnerHTML={{
-                  __html: renderTextContent(product?.fast_track?.description),
+                  __html: renderTextContent(product?.business_lounge?.description),
                 }}
               ></div>
             </div>
@@ -264,7 +268,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                 height={18}
               />
               <span data-translate="true">
-                {renderTextContent(product?.fast_track?.address)}
+                {renderTextContent(product?.business_lounge?.address)}
               </span>
             </div>
           </div>

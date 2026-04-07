@@ -2,8 +2,8 @@
 import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
 import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
+import { toast } from "react-hot-toast";
 import { notFound, useRouter } from "next/navigation";
-import { BookingDetailProps } from "@/types/flight";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -17,14 +17,15 @@ import { useTranslation } from "@/hooks/useTranslation";
 import DisplayPriceWithDiscount from "@/components/base/DisplayPriceWithDiscount";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import LoadingButton from "@/components/base/LoadingButton";
-import Link from "next/link";
 import { PaymentApi } from "@/api/Payment";
 import { BookingProductApi } from "@/api/BookingProduct";
+import { PageApi } from "@/api/Page";
 import QRCodeDisplay from "@/components/Payment/QRCodeDisplay";
-import { toast } from "react-hot-toast";
+import { format } from "date-fns";
 
 export default function BookingDetail() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { language } = useLanguage();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -32,54 +33,15 @@ export default function BookingDetail() {
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(true);
-
-  // Payment State
+  const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const [onePayFee, setOnePayFee] = useState<number>(0);
   const [isGeneratingPaymentUrl, setIsGeneratingPaymentUrl] = useState<boolean>(false);
   const [qrCodeGenerated, setQrCodeGenerated] = useState<boolean>(false);
   const [vietQrData, setVietQrData] = useState<any>({});
-  const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
+  const [transferInformation, setTransferInformation] = useState<any>(null);
   const [pollingStatus, setPollingStatus] = useState<boolean>(false);
-
-  // Xác định phụ phí giờ bay thêm từ additional_fees
-  const nightTimeSurchargeFee = useMemo(() => {
-    if (!data?.booking?.additional_fees || !Array.isArray(data.booking.additional_fees)) {
-      return null;
-    }
-
-    return data.booking.additional_fees.find(
-      (fee: any) => fee.name === 'Phụ phí giờ bay thêm' ||
-        fee.name?.toLowerCase().includes('phụ phí giờ bay thêm')
-    );
-  }, [data?.booking?.additional_fees]);
-
-  // Lấy thông tin giờ bay để hiển thị giải thích
-  const getNightTimeSurchargeInfo = useMemo(() => {
-    if (!nightTimeSurchargeFee) return null;
-
-    const flightTime = data?.booking?.flight_time;
-    const flightArrivalTime = data?.booking?.flight_arrival_time;
-
-    // Xác định giờ nào được dùng để tính phụ phí
-    let timeInfo = '';
-    if (flightArrivalTime) {
-      timeInfo = `${t("gio_dap")}: ${flightArrivalTime}`;
-    }
-    if (flightTime) {
-      if (timeInfo) {
-        timeInfo += ` | ${t("gio_bay")}: ${flightTime}`;
-      } else {
-        timeInfo = `${t("gio_bay")}: ${flightTime}`;
-      }
-    }
-
-    return {
-      fee: nightTimeSurchargeFee,
-      timeInfo: timeInfo || null,
-    };
-  }, [nightTimeSurchargeFee, data?.booking?.flight_time, data?.booking?.flight_arrival_time, t]);
 
   const {
     register,
@@ -95,23 +57,6 @@ export default function BookingDetail() {
     },
   });
 
-  useEffect(() => {
-    const bookingData = handleSessionStorage("get", "bookingData");
-    setLoading(false);
-    if (bookingData) {
-      setData(bookingData);
-    }
-  }, []);
-
-  const handleScroll = () => {
-    if (window.scrollY > 0) {
-      setStickySideBar(true);
-    } else {
-      setStickySideBar(false);
-    }
-  };
-
-  // Payment Logic
   useEffect(() => {
     let interval: any;
     if (data?.code && !isPaid) {
@@ -145,9 +90,11 @@ export default function BookingDetail() {
     } else {
       setOnePayFee(0);
       if (selectedPaymentMethod === 'vietqr' && !qrCodeGenerated && data?.code) {
+        // Sử dụng trực tiếp bookingData từ sessionStorage để tạo receipt
         const totalPrice = data?.total_price || 0;
         const totalDiscount = data?.total_discount || 0;
         const total = totalPrice - totalDiscount;
+        // const total = 2000; => test case
         const orderCode = data?.code;
 
         if (total > 0 && orderCode) {
@@ -181,11 +128,37 @@ export default function BookingDetail() {
     }
   }, [selectedPaymentMethod, qrCodeGenerated, data]);
 
+  const handleScroll = () => {
+    if (window.scrollY > 0) {
+      setStickySideBar(true);
+    } else {
+      setStickySideBar(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    if (window.scrollY) setStickySideBar(true);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   useEffect(() => {
     if (selectedPaymentMethod !== "vietqr") {
       setQrCodeGenerated(false);
     }
   }, [selectedPaymentMethod]);
+
+  const getTransferInformation = async () => {
+    PageApi.getContent("thong-tin-chuyen-khoan").then((result: any) => {
+      setTransferInformation(result?.payload?.data);
+    });
+  };
+
+  useEffect(() => {
+    getTransferInformation();
+  }, []);
 
   const onSubmit = async (dataForm: CheckOutBodyType) => {
     if (!data?.code) {
@@ -234,7 +207,8 @@ export default function BookingDetail() {
             toast.error(t("co_loi_xay_ra_khi_tao_link_thanh_toan"));
           }
         } else if (selectedPaymentMethod === "vietqr") {
-          // VietQR handled by useEffect
+          // VietQR - QR code đã được generate trong useEffect, không cần xử lý gì thêm ở đây
+          // Chỉ cần đảm bảo payment_method đã được cập nhật
         }
       } else {
         const errorMessage = respon?.payload?.message || respon?.payload?.errors || toaStrMsg.sendFailed;
@@ -249,13 +223,53 @@ export default function BookingDetail() {
     }
   };
 
+  // Xác định phụ phí giờ bay thêm từ additional_fees
+  const nightTimeSurchargeFee = useMemo(() => {
+    if (!data?.booking?.additional_fees || !Array.isArray(data.booking.additional_fees)) {
+      return null;
+    }
+
+    return data.booking.additional_fees.find(
+      (fee: any) => fee.name === 'Phụ phí giờ bay thêm' ||
+        fee.name?.toLowerCase().includes('phụ phí giờ bay thêm')
+    );
+  }, [data?.booking?.additional_fees]);
+
+  // Lấy thông tin giờ bay để hiển thị giải thích
+  const getNightTimeSurchargeInfo = useMemo(() => {
+    if (!nightTimeSurchargeFee) return null;
+
+    const flightTime = data?.booking?.flight_time;
+    const flightArrivalTime = data?.booking?.flight_arrival_time;
+
+    // Xác định giờ nào được dùng để tính phụ phí
+    // (Cần check option name từ tickets hoặc booking để biết đón hay tiễn)
+    // Tạm thời hiển thị cả 2 giờ nếu có
+    let timeInfo = '';
+    if (flightArrivalTime) {
+      timeInfo = `${t("gio_dap")}: ${flightArrivalTime}`;
+    }
+    if (flightTime) {
+      if (timeInfo) {
+        timeInfo += ` | ${t("gio_bay")}: ${flightTime}`;
+      } else {
+        timeInfo = `${t("gio_bay")}: ${flightTime}`;
+      }
+    }
+
+    return {
+      fee: nightTimeSurchargeFee,
+      timeInfo: timeInfo || null,
+    };
+  }, [nightTimeSurchargeFee, data?.booking?.flight_time, data?.booking?.flight_arrival_time, t]);
+
   if (loading) {
     return (
       <div
         className={`flex my-20 w-full justify-center items-center space-x-3 p-4 mx-auto rounded-lg text-center`}
       >
         <span className="loader_spiner !border-blue-500 !border-t-blue-200"></span>
-        <span className="text-18">Loading...</span>
+        <span className="text-18">{t("dang_tai_thong_tin_dat_cho")}</span>
       </div>
     );
   }
@@ -264,11 +278,10 @@ export default function BookingDetail() {
   const totalPrice = data?.total_price || 0;
   const totalDiscount = data?.total_discount || 0;
   const finalTotal = totalPrice + onePayFee - totalDiscount;
-  const isYacht = data?.code?.startsWith("YACHT");
 
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
-      <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
+      <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0">
         <div
           className="rounded-2xl"
           style={{
@@ -341,15 +354,15 @@ export default function BookingDetail() {
 
                 <div className="flex space-x-2 mt-3">
                   <div className="w-1/4 text-gray-700">{t("ho_va_ten")}</div>
-                  <div className="w-3/4 ">
+                  <div className="w-3/4">
                     <p className="font-bold">{data?.full_name}</p>
                   </div>
                 </div>
                 {data?.gender && (
                   <div className="flex space-x-2 mt-3">
                     <p className="w-1/4 text-gray-700">{t("gioi_tinh")}</p>
-                    <p className="w-3/4 font-medium" data-translate="true">
-                      {data?.gender === "male" ? "Nam" : "Nữ"}
+                    <p className="w-3/4 font-medium">
+                      {data?.gender === "male" ? t("nam") : t("nu")}
                     </p>
                   </div>
                 )}
@@ -363,17 +376,6 @@ export default function BookingDetail() {
                   <p className="w-1/4 text-gray-700">{t("email")}</p>
                   <p className="w-3/4 font-medium">{data?.email}</p>
                 </div>
-                {data?.message_requirement && (
-                  <div className="flex space-x-2 mt-3">
-                    <p className="w-1/4 text-gray-700">
-                      {t("yeu_cau_dac_biet")}
-                    </p>
-                    <p className="w-3/4 font-medium">
-                      {data?.message_requirement}
-                    </p>
-                  </div>
-                )}
-
                 {data?.note && (
                   <div className="flex space-x-2 mt-3">
                     <p className="w-1/4 text-gray-700">
@@ -479,35 +481,37 @@ export default function BookingDetail() {
                     </div>
                   )}
 
-                {/* Tickets Info */}
-                {data?.booking?.tickets && Array.isArray(data.booking.tickets) && data.booking.tickets.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-gray-300">
-                    <p className="w-full text-gray-700 font-semibold mb-2">
-                      {t("chi_tiet")}
-                    </p>
-                    {data.booking.tickets.map((ticket: any, index: number) => (
-                      <div key={index} className="mb-2 text-sm">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <span className="text-gray-600 font-medium">
-                              {ticket.name || `${t("ve")} ${index + 1}`}:
-                            </span>{" "}
-                            <span className="font-medium">
-                              {ticket.quantity} {t("ve")}
-                            </span>
+                {/* Thông tin vé đã chọn */}
+                {data?.booking?.tickets &&
+                  Array.isArray(data.booking.tickets) &&
+                  data.booking.tickets.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-300">
+                      <p className="w-full text-gray-700 font-semibold mb-2">
+                        {t("ve_da_chon")}
+                      </p>
+                      {data.booking.tickets.map((ticket: any, index: number) => (
+                        <div key={index} className="mb-2 text-sm">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="text-gray-600 font-medium">
+                                {ticket.name || `${t("ve")} ${index + 1}`}:
+                              </span>{" "}
+                              <span className="font-medium">
+                                {ticket.quantity} {t("ve")}
+                              </span>
+                            </div>
+                            {ticket.price && (
+                              <DisplayPrice
+                                className="!text-sm !font-semibold"
+                                price={ticket.price * ticket.quantity}
+                                currency={data?.product?.currency}
+                              />
+                            )}
                           </div>
-                          {ticket.price && (
-                            <DisplayPrice
-                              className="!text-sm !font-semibold"
-                              price={ticket.price * ticket.quantity}
-                              currency={data?.product?.currency}
-                            />
-                          )}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
 
                 {/* Phụ phí đã chọn */}
                 {data?.booking?.additional_fees &&
@@ -568,7 +572,7 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid && !isYacht && (
+        {!isPaid && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
@@ -594,7 +598,7 @@ export default function BookingDetail() {
                     <div className="font-normal">
                       <Image
                         src="/payment-method/transfer.svg"
-                        alt="Icon"
+                        alt="Chuyển khoản"
                         width={24}
                         height={24}
                         className="w-6 h-6"
@@ -628,7 +632,7 @@ export default function BookingDetail() {
                     <div className="font-normal">
                       <Image
                         src="/payment-method/visa.svg"
-                        alt="Icon"
+                        alt="Visa/MasterCard"
                         width={48}
                         height={28}
                         className="md:mt-1"
@@ -686,27 +690,18 @@ export default function BookingDetail() {
             />
           </form>
         )}
-
-        {isPaid && (
-          <Link
-            href="/"
-            className="block w-full bg-blue-600 text-white py-2.5 rounded-lg text-center cursor-pointer text__default_hover mt-6"
-          >
-            {t("tro_ve_trang_chu")}
-          </Link>
-        )}
       </div>
       <div
         className={`md:w-5/12 lg:w-4/12 bg-white rounded-3xl ${isStickySideBar
-          ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] w-full md:w-5/12 lg:w-4/12"
+          ? "sticky top-[1%] shadow-lg border-gray-200 border md:border-0 md:shadow-[unset] z-[99] md:top-20 lg:top-[140px] right:80px w-fit"
           : "w-full"
           }`}
       >
         <div className="overflow-hidden rounded-t-2xl">
-          {data?.product?.image_url && (
+          {data?.product?.image_location && (
             <Image
               src={`${data?.product?.image_url}/${data?.product?.image_location}`}
-              alt={data?.product?.name}
+              alt={data?.product?.name || "Phòng chờ thương gia"}
               width={600}
               height={450}
               className="w-full h-auto rounded-t-2xl hover:scale-110 ease-in duration-300"
@@ -714,7 +709,9 @@ export default function BookingDetail() {
           )}
         </div>
         <div className="py-3 px-5">
-          <h2 className="text-xl font-semibold">{data?.product?.name}</h2>
+          <h2 className="text-xl font-semibold" data-translate="true">
+            {renderTextContent(data?.product?.name)}
+          </h2>
           <div className="mt-4 pt-4 border-t border-t-gray-200">
             {onePayFee > 0 && (
               <div className="flex justify-between mb-1 text-red-600 font-semibold">
@@ -737,7 +734,7 @@ export default function BookingDetail() {
               totalPrice > 0 && (
                 <div className="w-full flex justify-between">
                   <DisplayPrice
-                    textPrefix={"Tổng cộng"}
+                    textPrefix={t("tong_cong")}
                     price={finalTotal}
                     currency={data?.product?.currency}
                   />
@@ -750,3 +747,4 @@ export default function BookingDetail() {
     </div>
   );
 }
+

@@ -11,7 +11,7 @@ export enum BlogTypes {
   YACHT = "du-thuyen",
   TICKET = "ve-vui-choi",
   FAST_TRACK = "fast-track",
-  BUSINESS_LOUNGE = "business-lounge",
+  BUSINESS_LOUNGE = "phong-cho-thuong-gia",
 }
 
 export enum ProductTypes {
