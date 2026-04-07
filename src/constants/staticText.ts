@@ -168,6 +168,13 @@ const headerStaticText: string[] = [
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
+  "Tiện ích",
+  "Dịch vụ tiện ích",
+  "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
+  "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
+  "Sim du lịch",
+  "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim",
+  "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
 ];
 
 const footerStaticText: string[] = [
@@ -259,6 +266,7 @@ const generalStaticText: string[] = [
   "Thông tin đơn hàng",
   "Tôi muốn xuất hóa đơn",
   "Fast track",
+  "Phòng chờ thương gia",
   "Mã đơn hàng",
   "Giới tính",
   "Năm sinh",

@@ -102,7 +102,8 @@ export default function ProductGallery({ product }: Props) {
     const prepareGallery = async () => {
       const items = await Promise.all(
         gallery.map(async (img: any) => {
-          const fullSrc = `${img.image_url}/${img.image}`;
+          const rawSrc = `${img.image_url || ""}/${img.image || ""}`;
+          const fullSrc = rawSrc.replace(/(^|[^:])\/\/+/g, "$1/");
           const isVideo = isVideoFile(fullSrc);
           const isImage = isImageFile(fullSrc);
           

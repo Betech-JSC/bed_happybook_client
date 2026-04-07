@@ -239,6 +239,12 @@ export default async function Footer() {
                 >
                   {t("fast_track")}
                 </Link>
+                <Link
+                  href="/phong-cho-thuong-gia"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                >
+                  {t("phong_cho_thuong_gia")}
+                </Link>
               </div>
             </div>
             <div>
