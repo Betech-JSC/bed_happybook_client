@@ -174,6 +174,8 @@ export default function SearchFilters({
                   >
                     <option value="id|desc">{textTranSlate("moi_nhat")}</option>
                     <option value="id|asc">{textTranSlate("cu_nhat")}</option>
+                    <option value="price|asc">{textTranSlate("gia_tu_thap_den_cao")}</option>
+                    <option value="price|desc">{textTranSlate("gia_tu_cao_xuong_thap")}</option>
                   </select>
                 </div>
               </div>

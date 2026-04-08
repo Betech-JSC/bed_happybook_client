@@ -66,6 +66,8 @@ export const visaStaticText: string[] = [
   "Dịch",
   "Xem thêm",
   "Không tìm thấy dữ liệu phù hợp",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp"
 ];
 
 export const labelRatingStaticText: string[] = [
@@ -89,6 +91,8 @@ export const dinhCuStaticText: string[] = [
   "Không tìm thấy dữ liệu phù hợp",
   "Đang tải dữ liệu",
   "Xem thêm",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp"
 ];
 
 export const comboStaticText: string[] = [
@@ -99,6 +103,8 @@ export const comboStaticText: string[] = [
   "Không tìm thấy dữ liệu phù hợp",
   "Đang tải dữ liệu",
   "Xem thêm",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp"
 ];
 
 export const ProductFilterStaticText: string[] = [
@@ -106,6 +112,8 @@ export const ProductFilterStaticText: string[] = [
   "Mới nhất",
   "Cũ nhất",
   "Không tìm thấy dữ liệu phù hợp",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp",
 ];
 
 const visaStaticText2: string[] = [
@@ -223,6 +231,8 @@ const generalStaticText: string[] = [
   "Sắp xếp",
   "Mới nhất",
   "Cũ nhất",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp",
   "Không tìm thấy dữ liệu phù hợp...",
   "Lựa Chọn Không Giới Hạn",
   "Vô vàn hành trình, triệu cảm hứng",

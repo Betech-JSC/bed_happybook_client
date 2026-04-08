@@ -147,6 +147,12 @@ export default function ListHotel({
             <option value="id|asc" data-translate="true">
               Cũ nhất
             </option>
+            <option value="price|asc" data-translate="true">
+              Giá từ thấp đến cao
+            </option>
+            <option value="price|desc" data-translate="true">
+              Giá từ cao xuống thấp
+            </option>
           </select>
         </div>
         <SideBarFilterProduct
