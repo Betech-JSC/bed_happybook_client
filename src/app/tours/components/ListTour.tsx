@@ -191,7 +191,7 @@ export default function ListTour({
                       alt={renderTextContent(tour?.product_name)}
                       width={360}
                       height={270}
-                      sizes="100vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     // style={{ height: 270 }}
                     />
                   </Link>
