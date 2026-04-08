@@ -66,6 +66,8 @@ export const visaStaticText: string[] = [
   "Dịch",
   "Xem thêm",
   "Không tìm thấy dữ liệu phù hợp",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp"
 ];
 
 export const labelRatingStaticText: string[] = [
@@ -89,6 +91,8 @@ export const dinhCuStaticText: string[] = [
   "Không tìm thấy dữ liệu phù hợp",
   "Đang tải dữ liệu",
   "Xem thêm",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp"
 ];
 
 export const comboStaticText: string[] = [
@@ -99,6 +103,8 @@ export const comboStaticText: string[] = [
   "Không tìm thấy dữ liệu phù hợp",
   "Đang tải dữ liệu",
   "Xem thêm",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp"
 ];
 
 export const ProductFilterStaticText: string[] = [
@@ -106,6 +112,8 @@ export const ProductFilterStaticText: string[] = [
   "Mới nhất",
   "Cũ nhất",
   "Không tìm thấy dữ liệu phù hợp",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp",
 ];
 
 const visaStaticText2: string[] = [
@@ -168,6 +176,13 @@ const headerStaticText: string[] = [
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
+  "Tiện ích",
+  "Dịch vụ tiện ích",
+  "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
+  "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
+  "Sim du lịch",
+  "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim",
+  "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
 ];
 
 const footerStaticText: string[] = [
@@ -216,6 +231,8 @@ const generalStaticText: string[] = [
   "Sắp xếp",
   "Mới nhất",
   "Cũ nhất",
+  "Giá từ thấp đến cao",
+  "Giá từ cao xuống thấp",
   "Không tìm thấy dữ liệu phù hợp...",
   "Lựa Chọn Không Giới Hạn",
   "Vô vàn hành trình, triệu cảm hứng",
@@ -259,6 +276,7 @@ const generalStaticText: string[] = [
   "Thông tin đơn hàng",
   "Tôi muốn xuất hóa đơn",
   "Fast track",
+  "Phòng chờ thương gia",
   "Mã đơn hàng",
   "Giới tính",
   "Năm sinh",

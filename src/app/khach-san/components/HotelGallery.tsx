@@ -87,7 +87,7 @@ export default function HotelGallery({ product }: any) {
               alt={product?.name || "Ảnh khách sạn"}
               width={700}
               height={450}
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </Link>
         )}
@@ -114,7 +114,7 @@ export default function HotelGallery({ product }: any) {
               alt={product?.name || "Ảnh khách sạn"}
               width={320}
               height={220}
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </Link>
         ))}

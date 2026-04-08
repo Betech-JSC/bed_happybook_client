@@ -161,6 +161,8 @@ export default function SearchResult({
               >
                 <option value="id|desc">{t("moi_nhat")}</option>
                 <option value="id|asc">{t("cu_nhat")}</option>
+                <option value="price|asc">{t("gia_tu_thap_den_cao")}</option>
+                <option value="price|desc">{t("gia_tu_cao_xuong_thap")}</option>
               </select>
             </div>
           </div>
@@ -181,7 +183,7 @@ export default function SearchResult({
                       alt={renderTextContent(item.name)}
                       width={360}
                       height={270}
-                      sizes="100vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       style={{ maxHeight: 270 }}
                     />
                   </Link>
