@@ -281,7 +281,7 @@ export default function ProductGallery({ product }: Props) {
                     alt={`Image ${index + 1}`}
                     width={845}
                     height={450}
-                    sizes="100vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </Link>
               )}

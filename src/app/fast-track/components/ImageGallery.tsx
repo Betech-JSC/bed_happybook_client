@@ -33,7 +33,7 @@ export default function ImageGallery({ detail }: any) {
               alt="Ảnh Fast Track"
               width={845}
               height={450}
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </SwiperSlide>
         ))}

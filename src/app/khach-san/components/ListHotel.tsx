@@ -184,7 +184,7 @@ export default function ListHotel({
                         alt={renderTextContent(item.name)}
                         width={450}
                         height={350}
-                        sizes="100vw"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         style={{ height: 275, width: "100%" }}
                       />
                     </Link>
