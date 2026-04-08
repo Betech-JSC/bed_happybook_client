@@ -26,7 +26,7 @@ export default async function HomeFastTrack() {
             width={1280}
             height={500}
             alt="Fast Track Happy Book"
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="w-full h-full rounded-3xl "
           />
         </div>

@@ -40,7 +40,7 @@ export default async function CompoHot() {
               alt="Combo siêu hot hôm nay"
               width={234}
               height={165}
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
           <div className="lg:w-3/4 mt-8 lg:mt-0 lg:ml-8 lg:mr-3 overflow-hidden">

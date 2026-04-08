@@ -30,7 +30,7 @@ export default async function Hotel() {
             src="/bg-img/hotel.png"
             alt="Khách sạn Happy Book"
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="rounded-3xl object-cover"
           />
         </div>

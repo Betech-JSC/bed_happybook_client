@@ -21,6 +21,8 @@ export default function TourItem({ tour }: any) {
             alt={tour.product_name || "Tour Happy Book"}
             width={320}
             height={320}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{ width: "100%", height: "220px", objectFit: "cover" }}
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">

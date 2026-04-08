@@ -24,7 +24,7 @@ export default async function VisaService() {
             src="/bg-img/visa.png"
             alt="Dịch vụ Visa Happy Book"
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="rounded-3xl object-cover"
           />
         </div>

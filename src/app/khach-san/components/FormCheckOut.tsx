@@ -537,7 +537,7 @@ export default function FormCheckOut({ data, room, detail }: any) {
             alt={renderTextContent(detail.name)}
             width={410}
             height={230}
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
 
