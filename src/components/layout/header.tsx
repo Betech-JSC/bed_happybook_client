@@ -357,7 +357,7 @@ export default function Header() {
             >
               {t("ve_may_bay")}
             </Link>
-            
+
             <Link
               href="/khach-san"
               className={clsx(styles.header__menu_item, {
@@ -414,13 +414,18 @@ export default function Header() {
             </Link>
 
             <div
-              className={clsx(`relative group cursor-pointer`, styles.header__menu_item, {
+              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/fast-track") || pathname.startsWith("/bao-hiem") || pathname.startsWith("/sim") || pathname.startsWith("/phong-cho-thuong-gia"),
               })}
             >
-              <span className="py-4 inline">
+              <span className="mr-1">
                 {t("tien_ich")}
               </span>
+              <div className="h-5 self-center">
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <div
                 className={`absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-5 w-[380px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4`}
               >
