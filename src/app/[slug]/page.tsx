@@ -29,6 +29,10 @@ import SideBar from "../tin-tuc/components/side-bar";
 import { getCachedNewsDetail } from "./utils/cached-api";
 import dynamic from "next/dynamic";
 
+const PLACEHOLDER = "/default-image.png";
+const getImageSrc = (url?: string | null, location?: string | null) =>
+  url && location ? url + location : PLACEHOLDER;
+
 const BlogContentSection = dynamic(() => import("./components/BlogContentSection"), {
   loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-2xl" />,
 });
@@ -37,11 +41,20 @@ type Props = {
   params: { slug: string };
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const news = await getCachedNewsDetail(params.slug, {});
+  const { getServerLang } = await import("@/lib/session");
+  const language = await getServerLang();
+  const news = await getCachedNewsDetail(params.slug, {}, language);
+
+  // Combine meta_robots + meta_ai_tag (same as evisa pattern)
+  const robotsParts: string[] = [];
+  if (news?.meta_robots) robotsParts.push(news.meta_robots);
+  if (news?.meta_ai_tag && news.meta_ai_tag !== "all") robotsParts.push(news.meta_ai_tag);
+  const robotsContent = robotsParts.join(", ") || "index, follow";
+
   return formatMetadata({
     title: news?.meta_title ?? news?.title,
     description: news?.meta_description,
-    robots: news?.meta_robots,
+    robots: robotsContent,
     keywords: news?.keywords,
     alternates: {
       canonical: news?.canonical_link ?? `/${news?.alias}`,
@@ -65,12 +78,13 @@ export default async function Posts({
   params: { slug: string };
   searchParams: SearchParamsProps;
 }) {
-  const detail = await getCachedNewsDetail(params.slug, searchParams);
+  const language = await getServerLang();
+  const detail = await getCachedNewsDetail(params.slug, searchParams, language);
   const relatedNews: PostType[] = detail?.new_relation ?? [];
   if (!detail) {
     notFound();
   }
-  const language = await getServerLang();
+
 
   return (
     <SeoSchema
@@ -158,7 +172,7 @@ export default async function Posts({
               <div className="my-6">
                 <Image
                   priority
-                  src={detail.image_url + detail.image_location}
+                  src={getImageSrc(detail.image_url, detail.image_location)}
                   width={900}
                   height={470}
                   className="max-w-full lg:h-[470px] w-full object-cover"
@@ -205,7 +219,7 @@ export default async function Posts({
                             <Link href={`/${post.alias}`}>
                               <Image
                                 className="ease-in duration-300 lg:h-[256px] object-cover"
-                                src={`${post.image_url}/${post.image_location}`}
+                                src={getImageSrc(post.image_url, post.image_location)}
                                 alt={post.title}
                                 width={410}
                                 height={272}
