@@ -11,6 +11,10 @@ import { toSnakeCase } from "@/utils/Helper";
 import { newsApi } from "@/api/news";
 import clsx from "clsx";
 
+const PLACEHOLDER = "/default-image.png";
+const getImageSrc = (url?: string | null, location?: string | null) =>
+  url && location ? url + location : PLACEHOLDER;
+
 export default async function NewsByPage({
   title,
   wrapperStyle = "pt-8 pb-12 bg-[#FCFCFD]",
@@ -75,7 +79,7 @@ export default async function NewsByPage({
           >
             <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
               <Image
-                src={`${firstItem.image_url}/${firstItem.image_location}`}
+                src={getImageSrc(firstItem.image_url, firstItem.image_location)}
                 width={500}
                 height={584}
                 className="w-full h-[280px] md:h-[500px] object-cover"
@@ -108,7 +112,7 @@ export default async function NewsByPage({
               >
                 <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
                   <Image
-                    src={`${item.image_url}/${item.image_location}`}
+                    src={getImageSrc(item.image_url, item.image_location)}
                     width={500}
                     height={280}
                     className="w-full h-[220px] object-cover"
@@ -150,7 +154,7 @@ export default async function NewsByPage({
                     >
                       <div className="absolute inset-0 transition-transform duration-500 ease-in-out scale-100 group-hover:scale-110">
                         <Image
-                          src={`${item.image_url}/${item.image_location}`}
+                          src={getImageSrc(item.image_url, item.image_location)}
                           width={500}
                           height={280}
                           className="rounded-xl w-full h-[200px] object-cover"

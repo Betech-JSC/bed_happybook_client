@@ -19,16 +19,33 @@ import SideBar from "../components/side-bar";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { isEmpty } from "lodash";
+import { getServerLang } from "@/lib/session";
+
+const PLACEHOLDER = "/default-image.png";
+
+const getImageSrc = (url?: string | null, location?: string | null): string => {
+  if (!url || !location) return PLACEHOLDER;
+  return url + location;
+};
 
 type Props = {
   params: { category: string };
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data = await fetchCategoryDetails(params.category, {});
+  const language = await getServerLang();
+  const data = await fetchCategoryDetails(params.category, { locale: language });
+
+  // Combine meta_robots + meta_ai_tag (same as evisa pattern)
+  const robotsParts: string[] = [];
+  if (data.category?.meta_robots) robotsParts.push(data.category.meta_robots);
+  if (data.category?.meta_ai_tag && data.category.meta_ai_tag !== "all")
+    robotsParts.push(data.category.meta_ai_tag);
+  const robotsContent = robotsParts.join(", ") || "index, follow";
+
   return formatMetadata({
     title: data.category?.meta_title ?? data.category?.name,
     description: data.category?.meta_description,
-    robots: data.category?.meta_robots,
+    robots: robotsContent,
     keywords: data.category?.meta_keywords,
     alternates: {
       canonical:
@@ -142,7 +159,7 @@ export default async function CategoryPosts({
                           <Link href={`/${item.alias}`}>
                             <Image
                               className="ease-in duration-300 object-cover"
-                              src={item.image_url + item.image_location}
+                              src={getImageSrc(item.image_url, item.image_location)}
                               alt={item.title}
                               width={140}
                               height={100}
