@@ -14,8 +14,13 @@ const request = async <Response>(
   timeCache: number = 0
 ) => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
+  const language =
+    typeof window !== "undefined"
+      ? localStorage.getItem("language") || "vi"
+      : "vi";
   const baseHeader = {
     "Content-type": "application/json",
+    language: language,
   };
 
   const baseUrl =
