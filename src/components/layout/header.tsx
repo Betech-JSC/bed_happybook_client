@@ -368,13 +368,18 @@ export default function Header() {
             </Link>
 
             <div
-              className={clsx(`relative`, styles.header__menu_item, {
+              className={clsx(`relative flex cursor-pointer`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/tours"),
               })}
             >
-              <Link href="/tours" className="py-4">
-                {t("Tours")}
-              </Link>
+              <span className="mr-1">
+                <Link href="/tours">{t("Tours")}</Link>
+              </span>
+              <div className="h-5 self-center">
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <div className={` ${styles.header__sub_menu_item}`}>
                 <Link href="/tours/tour-noi-dia">{t("tour_noi_dia")}</Link>
                 <Link href="/tours/tour-quoc-te">{t("tour_quoc_te")}</Link>
@@ -391,13 +396,18 @@ export default function Header() {
             </Link>
 
             <div
-              className={clsx(`relative`, styles.header__menu_item, {
+              className={clsx(`relative flex cursor-pointer`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/visa"),
               })}
             >
-              <Link href="/visa" className="py-4">
-                {t("visa")}
-              </Link>
+              <span className="mr-1">
+                <Link href="/visa">{t("visa")}</Link>
+              </span>
+              <div className="h-5 self-center">
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <div className={` ${styles.header__sub_menu_item}`}>
                 <Link href="/visa">{t("danh_sach_visa_cac_nuoc")}</Link>
                 <Link href="/tu-van-nhan-visa">{t("tu_van_visa_mien_phi")}</Link>
