@@ -21,6 +21,7 @@ export interface PostType {
   category: CategoryPostsType;
   new_relation: PostType[];
   categories_relation: CategoryPostsType[];
+  meta_ai_tag?: string;
 }
 export interface CategoryPostsType {
   id: number;
