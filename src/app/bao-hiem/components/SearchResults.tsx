@@ -10,6 +10,7 @@ import { ProductInsurance } from "@/api/ProductInsurance";
 import "@/styles/ckeditor-content.scss";
 import { handleScrollSmooth, renderTextContent } from "@/utils/Helper";
 import DisplayImage from "@/components/base/DisplayImage";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SearchResults() {
   const types = ["domestic", "international"];
@@ -25,6 +26,8 @@ export default function SearchResults() {
   const areaType = searchParams.get("type") ?? "";
   const [departDate, setDepartDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
+  const [sortOrder, setSortOrder] = useState<string>("id|desc");
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<SearchForm>({
     departurePlace: "",
     destinationPlace: "",
@@ -121,6 +124,24 @@ export default function SearchResults() {
     (value) => value === "" || value === null || value === undefined
   );
 
+  const getSortedData = () => {
+    if (!data || data.length === 0) return [];
+    const [sortCol, sortDir] = sortOrder.split("|");
+    return [...data].sort((a: any, b: any) => {
+      if (sortCol === "price") {
+        const getFee = (item: any) => {
+          const matched = item?.insurance_package_prices?.find(
+            (p: any) => diffDate >= p.day_start && diffDate <= p.day_end
+          );
+          return (parseInt(matched?.parsed_price) || 0) * (formData.guests ?? 1);
+        };
+        return sortDir === "asc" ? getFee(a) - getFee(b) : getFee(b) - getFee(a);
+      } else {
+        return sortDir === "asc" ? a.id - b.id : b.id - a.id;
+      }
+    });
+  };
+
   if (isFormDataEmpty) return;
 
   if (isLoading) {
@@ -137,28 +158,42 @@ export default function SearchResults() {
 
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] pt-3 max__screen pb-12">
-      <div>
-        <h2 className="text-2xl lg:text-32 font-bold !leading-tight">
-          Bảo hiểm du lịch{" "}
-          {/* {types.includes(areaType)
-            ? areaType === "domestic"
-              ? "nội địa"
-              : "quốc tế"
-            : ""} */}
-        </h2>
-        {departDate && returnDate && (
-          <p className="text-base font-normal leading-normal text-gray-500 mt-2">
-            {`${format(departDate, "dd/MM/yyyy")} - ${format(
-              returnDate,
-              "dd/MM/yyyy"
-            )}`}
-          </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+          <h2 className="text-2xl lg:text-32 font-bold !leading-tight">
+            Bảo hiểm du lịch{" "}
+          </h2>
+          {departDate && returnDate && (
+            <p className="text-base font-normal leading-normal text-gray-500 mt-2">
+              {`${format(departDate, "dd/MM/yyyy")} - ${format(
+                returnDate,
+                "dd/MM/yyyy"
+              )}`}
+            </p>
+          )}
+        </div>
+        {data?.length > 0 && (
+          <div className="flex my-4 md:my-0 space-x-3 items-center">
+            <span>{t("sap_xep")}</span>
+            <div className="w-52 bg-white border border-gray-200 rounded-lg">
+              <select
+                className="px-4 py-2 rounded-lg w-[95%] outline-none bg-white"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option value="id|desc">{t("moi_nhat")}</option>
+                <option value="id|asc">{t("cu_nhat")}</option>
+                <option value="price|asc">{t("gia_tu_thap_den_cao")}</option>
+                <option value="price|desc">{t("gia_tu_cao_xuong_thap")}</option>
+              </select>
+            </div>
+          </div>
         )}
       </div>
       <div className="mt-6">
         <div ref={resultsRef}>
-          {data?.length > 0 ? (
-            data.map((item: any, index: number) => {
+          {getSortedData()?.length > 0 ? (
+            getSortedData().map((item: any, index: number) => {
               const matchedInsurancePackagePrice =
                 item?.insurance_package_prices?.find(
                   (item: any) =>
