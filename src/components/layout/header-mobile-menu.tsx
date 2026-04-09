@@ -19,6 +19,9 @@ export default function HeaderMobileMenu() {
   const { isMenuMbOpen, setIsMenuMbOpen } = useMenu();
   const [menuHeight, setMenuHeight] = useState("0px");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isTienIchOpen, setIsTienIchOpen] = useState(false);
+  const [isVeHappyBookOpen, setIsVeHappyBookOpen] = useState(false);
+  const [isKhacOpen, setIsKhacOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
@@ -139,46 +142,10 @@ export default function HeaderMobileMenu() {
               {t("khach_san")}
             </Link>
             <Link
-              href="/visa"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("visa")}
-            </Link>
-            <Link
-              href="/du-thuyen"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("du_thuyen")}
-            </Link>
-            <Link
               href="/tours"
-              className="block mt-4 cursor-pointer hover:text-[#F27145]"
+              className="block mt-3 cursor-pointer hover:text-[#F27145]"
             >
               {t("tours")}
-            </Link>
-            <Link
-              href="/fast-track"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("fast_track")}
-            </Link>
-            <Link
-              href="/phong-cho-thuong-gia"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("phong_cho_thuong_gia")}
-            </Link>
-            <Link
-              href="/bao-hiem"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("bao_hiem")}
-            </Link>
-            <Link
-              href="/ve-vui-choi"
-              className="block mt-3 hover:text-[#F27145] cursor-pointer"
-            >
-              {t("ve_vui_choi")}
             </Link>
             <Link
               href="/combo"
@@ -186,47 +153,124 @@ export default function HeaderMobileMenu() {
             >
               {t("combo")}
             </Link>
+            <Link
+              href="/visa"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("visa")}
+            </Link>
+            <Link
+              href="/ve-vui-choi"
+              className="block mt-3 hover:text-[#F27145] cursor-pointer"
+            >
+              {t("ve_vui_choi")}
+            </Link>
           </div>
           <div className="mt-6">
-            <p>
-              <strong> {t("ve_happy_book")}</strong>
-            </p>
-            <p className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link href="/ve-chung-toi"> {t("ve_chung_toi")}</Link>
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/tin-tuc"> {t("tin_tuc")}</Link>
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/lien-he"> {t("lien_he_chung_toi")}</Link>
-            </p>
-            <p className="mt-3 hover:text-[#F27145] cursor-pointer">
-              <Link href="/dang-ky-ctv"> {t("dang_ky_ctv")}</Link>
-            </p>
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={() => setIsTienIchOpen(!isTienIchOpen)}
+              type="button"
+            >
+              <strong>{t("tien_ich")}</strong>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className={`transition-transform duration-300 ${isTienIchOpen ? "rotate-180" : ""}`}
+              >
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div
+              className="overflow-hidden transition-all duration-300"
+              style={{ maxHeight: isTienIchOpen ? "200px" : "0px", opacity: isTienIchOpen ? 1 : 0 }}
+            >
+              <Link
+                href="/fast-track"
+                className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer"
+              >
+                {t("fast_track")}
+              </Link>
+              <Link
+                href="/bao-hiem"
+                className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer"
+              >
+                {t("bao_hiem")}
+              </Link>
+              <Link
+                href="/phong-cho-thuong-gia"
+                className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer"
+              >
+                {t("phong_cho_thuong_gia")}
+              </Link>
+              <Link
+                href="/sim"
+                className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer"
+              >
+                {t("sim_du_lich")}
+              </Link>
+            </div>
+          </div>
+          <div className="mt-6">
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={() => setIsVeHappyBookOpen(!isVeHappyBookOpen)}
+              type="button"
+            >
+              <strong>{t("ve_happy_book")}</strong>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                className={`transition-transform duration-300 ${isVeHappyBookOpen ? "rotate-180" : ""}`}
+              >
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div
+              className="overflow-hidden transition-all duration-300"
+              style={{ maxHeight: isVeHappyBookOpen ? "200px" : "0px", opacity: isVeHappyBookOpen ? 1 : 0 }}
+            >
+              <Link href="/ve-chung-toi" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("ve_chung_toi")}</Link>
+              <Link href="/tin-tuc" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("tin_tuc")}</Link>
+              <Link href="/lien-he" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("lien_he_chung_toi")}</Link>
+              <Link href="/dang-ky-ctv" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("dang_ky_ctv")}</Link>
+            </div>
           </div>
           <div className="my-6">
-            <p>
-              <strong> {t("khac")}</strong>
-            </p>
-            <div className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link href="/visa"> {t("danh_sach_visa_cac_nuoc")}</Link>
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={() => setIsKhacOpen(!isKhacOpen)}
+              type="button"
+            >
+              <strong>{t("khac")}</strong>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                className={`transition-transform duration-300 ${isKhacOpen ? "rotate-180" : ""}`}
+              >
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div
+              className="overflow-hidden transition-all duration-300"
+              style={{ maxHeight: isKhacOpen ? "400px" : "0px", opacity: isKhacOpen ? 1 : 0 }}
+            >
+              <Link href="/visa" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("danh_sach_visa_cac_nuoc")}</Link>
+              <Link href="/tu-van-nhan-visa" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("tu_van_visa")}</Link>
+              {GeneralInforPaths.map(
+                (
+                  item: { title: string; slug: string; url: string },
+                  index: number
+                ) => (
+                  <Link
+                    key={index}
+                    href={item.url}
+                    className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer"
+                  >
+                    {t(toSnakeCase(item.title))}
+                  </Link>
+                )
+              )}
             </div>
-            <div className="mt-4 hover:text-[#F27145] cursor-pointer">
-              <Link href="/tu-van-nhan-visa"> {t("tu_van_visa")}</Link>
-            </div>
-            {GeneralInforPaths.map(
-              (
-                item: { title: string; slug: string; url: string },
-                index: number
-              ) => (
-                <div
-                  key={index}
-                  className="mt-4 hover:text-[#F27145] cursor-pointer"
-                >
-                  <Link href={item.url}>{t(toSnakeCase(item.title))}</Link>
-                </div>
-              )
-            )}
           </div>
         </div>
       </div>
