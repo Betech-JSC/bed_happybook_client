@@ -45,8 +45,8 @@ export default function SupportFloatingIcons() {
           <a href="tel:1900633437">
             <Image
               src="/gif/phone.gif"
-              width={60}
-              height={60}
+              width={55}
+              height={55}
               alt="Hotline hỗ trợ Happy Book"
               unoptimized={true}
             />
@@ -66,11 +66,11 @@ export default function SupportFloatingIcons() {
 
           <a
             href="mailto:cskh@happybooktravel.com"
-            className="mt-2 animate-email w-[50px] h-[50px] bg-[#1570ef] rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+            className="mt-2 animate-email w-[42px] h-[42px] bg-[#1570ef] rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
           >
             <svg
-              width="28"
-              height="28"
+              width="22"
+              height="22"
               viewBox="0 0 32 32"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"

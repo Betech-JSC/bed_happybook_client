@@ -132,7 +132,12 @@ export default function HeaderMobileMenu() {
               {t("khach_san")}
             </Link>
 
-            <p className="mt-3 font-medium">{t("tours")}</p>
+            <div className="flex items-center justify-between mt-3">
+              <span className="font-medium">{t("tours")}</span>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <Link href="/tours/tour-noi-dia" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("tour_noi_dia")}
             </Link>
@@ -144,7 +149,12 @@ export default function HeaderMobileMenu() {
               {t("combo")}
             </Link>
 
-            <p className="mt-3 font-medium">{t("visa")}</p>
+            <div className="flex items-center justify-between mt-3">
+              <span className="font-medium">{t("visa")}</span>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <Link href="/visa" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("danh_sach_visa_cac_nuoc")}
             </Link>
@@ -158,7 +168,12 @@ export default function HeaderMobileMenu() {
           </div>
 
           <div className="mt-6">
-            <p><strong>{t("tien_ich")}</strong></p>
+            <div className="flex items-center justify-between">
+              <strong>{t("tien_ich")}</strong>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <Link href="/fast-track" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("fast_track")}
             </Link>
@@ -174,7 +189,12 @@ export default function HeaderMobileMenu() {
           </div>
 
           <div className="mt-6">
-            <p><strong>{t("ve_happy_book")}</strong></p>
+            <div className="flex items-center justify-between">
+              <strong>{t("ve_happy_book")}</strong>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <Link href="/ve-chung-toi" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("ve_chung_toi")}</Link>
             <Link href="/tin-tuc" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("tin_tuc")}</Link>
             <Link href="/lien-he" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("lien_he_chung_toi")}</Link>
@@ -182,7 +202,12 @@ export default function HeaderMobileMenu() {
           </div>
 
           <div className="mt-6 mb-6">
-            <p><strong>{t("khac")}</strong></p>
+            <div className="flex items-center justify-between">
+              <strong>{t("khac")}</strong>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <Link href="/visa" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("danh_sach_visa_cac_nuoc")}</Link>
             <Link href="/tu-van-nhan-visa" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("tu_van_visa")}</Link>
             {GeneralInforPaths.map(
