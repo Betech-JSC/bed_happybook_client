@@ -23,7 +23,7 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 }
                 className="block text__default_hover text-sm font-medium mt-3 p-[6px] border-b-2 border-gray-300"
               >
-                <h2 data-translate="true">{item.name}</h2>
+                <h2>{item.name}</h2>
               </Link>
             ))
           ) : (
@@ -62,7 +62,6 @@ export default function SideBar({ categories, news }: SidebarProps) {
                 <div className="basis-[65%]">
                   <Link href={`/${item.alias}`}>
                     <h3
-                      data-translate="true"
                       className={`text-base ease-in duration-300 font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                     >
                       {item.title}

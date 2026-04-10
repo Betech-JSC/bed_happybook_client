@@ -134,7 +134,6 @@ export default async function Posts({
                     <Link
                       href={`/tin-tuc/${detail.category.alias}`}
                       className="text-blue-700"
-                      data-translate="true"
                     >
                       {detail.category.name}
                     </Link>
@@ -146,7 +145,6 @@ export default async function Posts({
                     <Link
                       href="#"
                       className="text-gray-700"
-                      data-translate="true"
                     >
                       {detail?.title}
                     </Link>
@@ -156,7 +154,6 @@ export default async function Posts({
             </Breadcrumb>
             <div className="h-6 cursor-pointer mt-8 rounded">
               <p
-                data-translate="true"
                 className="inline-block rounded text-blue-700 py-1 px-2 text-sm font-medium hover:bg-blue-200 duration-300 bg-[#EFF8FF]"
               >
                 {detail.category.name}
@@ -165,7 +162,6 @@ export default async function Posts({
             <div className="post__detail mt-4">
               <h1
                 className="text-gray-900 text-32 font-bold"
-                data-translate="true"
               >
                 {detail.title}
               </h1>
@@ -229,7 +225,6 @@ export default async function Posts({
                           </div>
                           <Link href={`/${post.alias}`}>
                             <p
-                              data-translate="true"
                               className={`min-h-12 ease-in duration-300 text-base font-semibold mt-3 line-clamp-2 ${Post.post__item_title}`}
                             >
                               {post.title}

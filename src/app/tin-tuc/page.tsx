@@ -101,13 +101,11 @@ export default async function Posts() {
                 </div>
                 <div className="my-3">
                   <p
-                    data-translate
                     className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-[#175CD3] font-medium hover:bg-blue-200 duration-300"
                   >
                     {lastestPosts[0].category.name ?? ""}
                   </p>
                   <h3
-                    data-translate
                     className={`text-2xl ease-in duration-300 font-semibold text-gray-900 leading-8 mt-2 ${Post.post__item_title}`}
                   >
                     <Link href={`/${lastestPosts[0].alias}`}>
@@ -115,7 +113,6 @@ export default async function Posts() {
                     </Link>
                   </h3>
                   <div
-                    data-translate
                     className="text-base mt-2 line-clamp-2"
                     dangerouslySetInnerHTML={{
                       __html: renderTextContent(lastestPosts[0].description),
@@ -144,7 +141,6 @@ export default async function Posts() {
                       </div>
                       <div className="mt-3">
                         <p
-                          data-translate
                           className="inline-block text-sm py-1 px-2 rounded-sm bg-[#EFF8FF] text-blue-700 font-medium hover:bg-blue-200 duration-300"
                         >
                           {item?.category?.name ?? ""}
@@ -153,7 +149,7 @@ export default async function Posts() {
                           href={`/${item.alias}`}
                           className={`text-base ease-in duration-300 line-clamp-2 font-semibold text-gray-900 mt-2 ${Post.post__item_title}`}
                         >
-                          <h3 data-translate>{item.title ?? ""}</h3>
+                          <h3>{item.title ?? ""}</h3>
                         </Link>
                       </div>
                     </div>
