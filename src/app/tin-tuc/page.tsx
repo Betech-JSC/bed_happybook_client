@@ -18,11 +18,21 @@ const getCachedPageContent = cache(async (language: string) => {
   return (await PageApi.getContent("tin-tuc", language))?.payload?.data as any;
 });
 
+const PLACEHOLDER = "/default-image.png";
+const getImageSrc = (url?: string | null, location?: string | null) =>
+  url && location ? url + location : PLACEHOLDER;
+
 function getMetadata(data: any) {
+  // Combine meta_robots + meta_ai_tag (same as evisa pattern)
+  const robotsParts: string[] = [];
+  if (data?.meta_robots) robotsParts.push(data.meta_robots);
+  if (data?.meta_ai_tag && data.meta_ai_tag !== "all") robotsParts.push(data.meta_ai_tag);
+  const robotsContent = robotsParts.join(", ") || "index, follow";
+
   return formatMetadata({
     title: data?.meta_title || data?.page_name,
     description: data?.meta_description,
-    robots: data?.meta_robots,
+    robots: robotsContent,
     keywords: data?.keywords,
     alternates: {
       canonical: data?.canonical_link || pageUrl("", BlogTypes.NEWS, true),
@@ -48,12 +58,12 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Posts() {
-  const response = await newsApi.fetchNewsIndex();
+  const language = await getServerLang();
+  const response = await newsApi.fetchNewsIndex(language);
   const lastestPosts: PostType[] = response?.payload.data.lastestPosts ?? [];
   const categoriesWithPosts: CategoryPostsType[] =
     response?.payload.data.categoriesWithPosts ?? [];
 
-  const language = await getServerLang();
   const contentPage = await getCachedPageContent(language);
   const metadata = getMetadata(contentPage);
 
@@ -76,10 +86,10 @@ export default async function Posts() {
                 <div className="overflow-hidden rounded-xl">
                   <Link href={`/${lastestPosts[0].alias}`}>
                     <Image
-                      src={
-                        lastestPosts[0].image_url +
+                      src={getImageSrc(
+                        lastestPosts[0].image_url,
                         lastestPosts[0].image_location
-                      }
+                      )}
                       alt={lastestPosts[0].title}
                       width={844}
                       height={545}
@@ -122,7 +132,7 @@ export default async function Posts() {
                       <div className="overflow-hidden rounded-xl">
                         <Link href={`/${item.alias}`}>
                           <Image
-                            src={item.image_url + item.image_location}
+                            src={getImageSrc(item.image_url, item.image_location)}
                             alt={item.title}
                             width={388}
                             height={240}
@@ -188,7 +198,7 @@ export default async function Posts() {
                           <Link href={`/${item.alias}`}>
                             <Image
                               className="block ease-in duration-300 object-cover w-full h-auto lg:h-[168px]"
-                              src={item.image_url + item.image_location}
+                              src={getImageSrc(item.image_url, item.image_location)}
                               alt={item.title}
                               width={252}
                               height={168}

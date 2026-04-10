@@ -357,6 +357,7 @@ export default function Header() {
             >
               {t("ve_may_bay")}
             </Link>
+
             <Link
               href="/khach-san"
               className={clsx(styles.header__menu_item, {
@@ -365,73 +366,26 @@ export default function Header() {
             >
               {t("khach_san")}
             </Link>
+
             <div
-              className={clsx(`relative`, styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/visa"),
-              })}
-            >
-              <Link href="/visa" className="py-4">
-                {t("visa")}
-              </Link>
-              <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/visa">{t("danh_sach_visa_cac_nuoc")}</Link>
-                <Link href="/tu-van-nhan-visa">{t("tu_van_visa_mien_phi")}</Link>
-              </div>
-            </div>
-            <div
-              className={clsx(`relative`, styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/du-thuyen"),
-              })}
-            >
-              <Link href="/du-thuyen" className="py-4">
-                {t("du_thuyen")}
-              </Link>
-              <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/du-thuyen/du-thuyen-sai-gon">
-                  {t("du_thuyen_sai_gon")}
-                </Link>
-                <Link href="/du-thuyen/du-thuyen-ha-long">
-                  {t("du_thuyen_ha_long")}
-                </Link>
-              </div>
-            </div>
-            <div
-              className={clsx(`relative`, styles.header__menu_item, {
+              className={clsx(`relative flex cursor-pointer`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/tours"),
               })}
             >
-              <Link href="/tours" className="py-4">
-                {t("Tours")}
-              </Link>
+              <span className="mr-1">
+                <Link href="/tours">{t("Tours")}</Link>
+              </span>
+              <div className="h-5 self-center">
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <div className={` ${styles.header__sub_menu_item}`}>
                 <Link href="/tours/tour-noi-dia">{t("tour_noi_dia")}</Link>
                 <Link href="/tours/tour-quoc-te">{t("tour_quoc_te")}</Link>
               </div>
             </div>
-            <Link
-              href="/fast-track"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/fast-track"),
-              })}
-            >
-              {t("fast_track")}
-            </Link>
-            <Link
-              href="/bao-hiem"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/bao-hiem"),
-              })}
-            >
-              {t("bao_hiem")}
-            </Link>
-            <Link
-              href="/ve-vui-choi"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/ve-vui-choi"),
-              })}
-            >
-              {t("ve_vui_choi")}
-            </Link>
+
             <Link
               href="/combo"
               className={clsx(styles.header__menu_item, {
@@ -440,6 +394,89 @@ export default function Header() {
             >
               {t("combo")}
             </Link>
+
+            <div
+              className={clsx(`relative flex cursor-pointer`, styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/visa"),
+              })}
+            >
+              <span className="mr-1">
+                <Link href="/visa">{t("visa")}</Link>
+              </span>
+              <div className="h-5 self-center">
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className={` ${styles.header__sub_menu_item}`}>
+                <Link href="/visa">{t("danh_sach_visa_cac_nuoc")}</Link>
+                <Link href="/tu-van-nhan-visa">{t("tu_van_visa_mien_phi")}</Link>
+              </div>
+            </div>
+
+            <Link
+              href="/ve-vui-choi"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/ve-vui-choi"),
+              })}
+            >
+              {t("ve_vui_choi")}
+            </Link>
+
+            <div
+              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/fast-track") || pathname.startsWith("/bao-hiem") || pathname.startsWith("/sim") || pathname.startsWith("/phong-cho-thuong-gia"),
+              })}
+            >
+              <span className="mr-1">
+                {t("tien_ich")}
+              </span>
+              <div className="h-5 self-center">
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div
+                className={`absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-5 w-[380px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4`}
+              >
+                <div className="text-gray-400 text-xs font-bold mb-4 uppercase tracking-wider block cursor-default text-left">
+                  {t("dich_vu_tien_ich")}
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/fast-track.png" alt="Fast Track" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("fast_track")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("ho_tro_lam_thu_tuc_nhanh_chong_tai_san_bay")}</div>
+                    </div>
+                  </Link>
+
+                  <Link href="/bao-hiem" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/insurance.png" alt="Bảo hiểm" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("bao_hiem")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("bao_ve_suc_khoe_va_tai_san_cho_toan_bo_chuyen_di_cua_ban")}</div>
+                    </div>
+                  </Link>
+
+                  <Link href="/sim" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("sim_du_lich")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("internet_toan_cau_voi_muc_gia_re_hon_data_roaming_khong_can_thao_lap_sim")}</div>
+                    </div>
+                  </Link>
+
+                  <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/lounge.png" alt="Phòng chờ thương gia" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("phong_cho_thuong_gia")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("tan_huong_khong_gian_thu_gian_cao_cap_va_tien_nghi_truoc_chuyen_hanh_trinh_sap_toi")}</div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </div>
             <div
               ref={subMenuRef}
               onClick={() => {

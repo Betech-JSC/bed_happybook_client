@@ -88,7 +88,7 @@ export default function OurTeam({ data }: any) {
                   alt={member.name}
                   width={100}
                   height={100}
-                  sizes="100vw"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className={`object-cover ${styles.member__img}`}
                   style={{ width: "90%", height: 255 }}
                 />

@@ -222,14 +222,11 @@ export default function ListFlightsInternaltion({
 
       // --- Filter điểm dừng---
       if (filters.stopNum.length) {
-        flights = flights
-          .map((flight: any) => {
-            const filteredTrips = flight.trips.filter((trip: any) => {
-              return filters.stopNum.includes(trip?.legs?.toString());
-            });
-            return { ...flight, trips: filteredTrips };
-          })
-          .filter((flight: any) => flight.trips.length > 0);
+        flights = flights.filter((flight: any) => {
+          return flight.trips.some((trip: any) =>
+            filters.stopNum.includes(trip?.legs?.toString())
+          );
+        });
       }
 
       // --- Filter giờ khởi hành ---

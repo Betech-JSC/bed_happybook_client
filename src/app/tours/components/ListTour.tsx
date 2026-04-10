@@ -170,6 +170,12 @@ export default function ListTour({
                 <option value="id|asc" data-translate="true">
                   Cũ nhất
                 </option>
+                <option value="price|asc" data-translate="true">
+                  Giá từ thấp đến cao
+                </option>
+                <option value="price|desc" data-translate="true">
+                  Giá từ cao xuống thấp
+                </option>
               </select>
             </div>
           </div>
@@ -191,7 +197,7 @@ export default function ListTour({
                       alt={renderTextContent(tour?.product_name)}
                       width={360}
                       height={270}
-                      sizes="100vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     // style={{ height: 270 }}
                     />
                   </Link>
