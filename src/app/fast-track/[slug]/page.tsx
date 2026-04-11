@@ -7,9 +7,11 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { ProductCategoryApi } from "@/api/ProductCategory";
 import FastTrackDetail from "../components/FastTrackDetail";
 import FastTrackCategory from "../components/FastTrackCategory";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
+  const language = await getServerLang();
   let data = null;
 
   data = (await ProductCategoryApi.detail("fast-track", slug))?.payload

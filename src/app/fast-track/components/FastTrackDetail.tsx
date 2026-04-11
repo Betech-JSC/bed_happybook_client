@@ -14,6 +14,7 @@ import { Fragment } from "react";
 import { getServerT } from "@/lib/i18n/getServerT";
 import FastTrackDetailInfor from "./FastTrackDetailInfor";
 import { ProductFastTrackApi } from "@/api/ProductFastTrack";
+import { getServerLang } from "@/lib/session";
 
 export default async function FastTrackDetail({
   alias,
@@ -23,7 +24,8 @@ export default async function FastTrackDetail({
   searchParams: { [key: string]: string | undefined };
 }) {
   const t = await getServerT();
-  const res = (await ProductFastTrackApi.detail(alias)) as any;
+  const language = await getServerLang();
+  const res = (await ProductFastTrackApi.detail(alias, undefined, language)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();
