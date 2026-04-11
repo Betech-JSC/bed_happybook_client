@@ -39,7 +39,7 @@ export default async function FastTrackCategory({ detail }: any) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-gray-700" data-translate="true">
+                  <p className="text-gray-700">
                     {detail?.name}
                   </p>
                 </BreadcrumbLink>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { isMatch, parse, isBefore, startOfDay } from "date-fns";
 import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 import CheckOutForm from "../../components/FormCheckOut";
+import { getServerLang } from "@/lib/session";
 
 export default async function TourCheckout({
   params,
@@ -22,9 +23,11 @@ export default async function TourCheckout({
     notFound();
   }
 
+  const locale = await getServerLang();
   const res = (await ProductFastTrackApi.detail(
     params.slug,
-    departDate
+    departDate,
+    locale
   )) as any;
   const detail = res?.payload?.data;
 

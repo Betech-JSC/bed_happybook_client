@@ -32,7 +32,6 @@ export default function Schedule({ schedule }: any) {
                   ></span>
                   <h3
                     className={`ml-5 font-18 font-semibold text-gray-900`}
-                    data-translate
                   >
                     {schedule.title}
                   </h3>
