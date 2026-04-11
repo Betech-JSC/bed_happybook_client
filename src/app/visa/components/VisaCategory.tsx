@@ -16,14 +16,16 @@ import { formatMetadata } from "@/lib/formatters";
 import ListVisa from "../components/ListVisa";
 import FAQ from "@/components/content-page/FAQ";
 import ContentByPage from "@/components/content-page/ContentByPage";
+import { getServerLang } from "@/lib/session";
 
 export default async function VisaCategory({ alias }: { alias: string }) {
-  const res = (await VisaApi.getCategory(alias)) as any;
+  const language = await getServerLang();
+  const res = (await VisaApi.getCategory(alias, null, language)) as any;
   const category = res?.payload?.data;
   if (!category.id) {
     notFound();
   }
-  const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
+  const optionsFilter = (await VisaApi.getOptionsFilter(undefined, language))?.payload
     ?.data as any;
 
   return (

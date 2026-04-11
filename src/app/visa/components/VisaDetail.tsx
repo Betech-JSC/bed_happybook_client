@@ -31,12 +31,12 @@ import Tabs from "./Tabs";
 import ProductGallery from "@/components/product/components/ProductGallery";
 
 export default async function VisaDetail({ alias }: { alias: string }) {
-  const response = await VisaApi.detail(alias);
+  const language = await getServerLang();
+  const response = await VisaApi.detail(alias, language);
   const detail = response?.payload.data;
   if (!detail.id) {
     notFound();
   }
-  const language = await getServerLang();
   const contentPage = (await PageApi.getContent("visa", language))?.payload
     ?.data as any;
   return (

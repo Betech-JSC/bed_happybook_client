@@ -2,11 +2,10 @@
 import { useState, useRef, useEffect } from "react";
 import "swiper/css";
 import CustomerRating from "@/components/product/CustomerRating";
-import { renderTextContent } from "@/utils/Helper";
-import { translateText } from "@/utils/translateApi";
 import { useLanguage } from "@/contexts/LanguageContext";
 import "@/styles/ckeditor-content.scss";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
+import { VisaApi } from "@/api/Visa";
 
 export default function Tabs({ detail }: any) {
   const { language } = useLanguage();
@@ -14,9 +13,9 @@ export default function Tabs({ detail }: any) {
   const [activeTab, setActiveTab] = useState(0);
   const [currentTabWidth, setCurrentTabWidth] = useState(0);
   const tabContainerRef = useRef<HTMLDivElement>(null);
-  const [translatedContent, setTranslatedContent] = useState<string[]>([]);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [openDropdown, setOpenDropdown] = useState(1);
+
   const toggleDropdown = (id: number) => {
     setOpenDropdown(openDropdown === id ? 0 : id);
   };
@@ -27,16 +26,24 @@ export default function Tabs({ detail }: any) {
   }, [activeTab]);
 
   useEffect(() => {
-    translateText(
-      [
-        renderTextContent(detail.product_visa.content_tim_hieu_visa),
-        renderTextContent(detail.product_visa.content_gia_dich_vu),
-      ],
-      language
-    ).then((dataTranslate) => {
-      setTranslatedContent(dataTranslate);
+    const slug = detailVisa?.slug;
+    if (!slug) return;
+
+    VisaApi.detail(slug, language).then((res: any) => {
+      const data = res?.payload?.data;
+      if (data) {
+        setDetailVisa(data);
+      }
     });
-  }, [detail, language]);
+  }, [language]);
+
+  const contentTimHieuVisa =
+    detailVisa?.product_visa?.content_tim_hieu_visa ?? "";
+  const contentGiaDichVu =
+    detailVisa?.product_visa?.content_gia_dich_vu ?? "";
+
+
+
   return (
     <div className="w-full mt-6">
       <div
@@ -49,9 +56,8 @@ export default function Tabs({ detail }: any) {
             ref={(el) => {
               tabRefs.current[index] = el;
             }}
-            className={`px-3 md:px-5 py-[10px] duration-300 font-semibold text__default_hover  ${
-              activeTab === index ? "text-primary" : ""
-            }`}
+            className={`px-3 md:px-5 py-[10px] duration-300 font-semibold text__default_hover  ${activeTab === index ? "text-primary" : ""
+              }`}
             onClick={() => setActiveTab(index)}
             data-translate="true"
           >
@@ -68,9 +74,8 @@ export default function Tabs({ detail }: any) {
       </div>
       <div className="mt-4 transition-all duration-300">
         <div
-          className={`bg-white rounded-2xl p-6 ${
-            activeTab === 0 ? "block" : "hidden"
-          }`}
+          className={`bg-white rounded-2xl p-6 ${activeTab === 0 ? "block" : "hidden"
+            }`}
         >
           <h2
             className="pl-2 border-l-4 border-[#F27145] text-22 font-bold"
@@ -79,14 +84,13 @@ export default function Tabs({ detail }: any) {
             Tìm hiểu Visa
           </h2>
           <div className="mt-4">
-            <DisplayContentEditor content={translatedContent[0]} />
+            <DisplayContentEditor content={contentTimHieuVisa} />
           </div>
         </div>
 
         <div
-          className={`bg-white rounded-2xl p-6 ${
-            activeTab === 1 ? "block" : "hidden"
-          }`}
+          className={`bg-white rounded-2xl p-6 ${activeTab === 1 ? "block" : "hidden"
+            }`}
         >
           <h2
             className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
@@ -95,14 +99,13 @@ export default function Tabs({ detail }: any) {
             Giá dịch vụ, phí nộp ĐSQ, chuẩn bị hồ sơ
           </h2>
           <div className="mt-4">
-            <DisplayContentEditor content={translatedContent[1]} />
+            <DisplayContentEditor content={contentGiaDichVu} />
           </div>
         </div>
 
         <div
-          className={`bg-white rounded-2xl p-6 ${
-            activeTab === 2 ? "block" : "hidden"
-          }`}
+          className={`bg-white rounded-2xl p-6 ${activeTab === 2 ? "block" : "hidden"
+            }`}
         >
           <CustomerRating
             product_id={detailVisa.id}
