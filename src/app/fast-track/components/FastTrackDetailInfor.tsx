@@ -16,6 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductGallery from "@/components/product/components/ProductGallery";
+import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 
 export default function FastTrackDetailInfor({ product }: any) {
   const today = new Date();
@@ -89,6 +90,17 @@ export default function FastTrackDetailInfor({ product }: any) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Re-fetch khi language thay đổi để lấy data đã localize (schedule, name, description...)
+  useEffect(() => {
+    if (!product?.slug) return;
+    ProductFastTrackApi.detail(product.slug, undefined, language)
+      .then((res: any) => {
+        const fresh = res?.payload?.data;
+        if (fresh) setDetail(fresh);
+      })
+      .catch(() => {});
+  }, [language, product?.slug]);
   return (
     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
@@ -313,7 +325,7 @@ export default function FastTrackDetailInfor({ product }: any) {
             {t("luu_y")}
           </h2>
           <div className="mt-4">
-            <DisplayContentEditor content={detail?.yacht?.note} />
+            <DisplayContentEditor content={detail?.fast_track?.note} />
           </div>
         </div>
       </div>
