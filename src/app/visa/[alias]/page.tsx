@@ -6,14 +6,16 @@ import { extractSlugAndId } from "@/utils/Helper";
 import type { Metadata } from "next";
 import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { alias } = params;
+  const language = await getServerLang();
   let data = null;
-  const resCategory = (await VisaApi.getCategory(alias)) as any;
+  const resCategory = (await VisaApi.getCategory(alias, null, language)) as any;
   data = resCategory?.payload.data;
   if (!data) {
-    const resDetail = await VisaApi.detail(alias);
+    const resDetail = await VisaApi.detail(alias, language);
     data = resDetail?.payload.data;
     if (data) data.alias = data?.slug;
   }
