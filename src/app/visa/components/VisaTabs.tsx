@@ -96,7 +96,6 @@ export default function VisaTabs({
                           setActiveTab(index);
                           setLinkCategory(`/visa/${tab.alias}`);
                         }}
-                        data-translate="true"
                       >
                         {tab.name}
                       </button>
@@ -145,7 +144,6 @@ export default function VisaTabs({
                               className={`text-base font-semibold ${styles.text_hover_default}`}
                             >
                               <h3
-                                data-translate="true"
                                 className="h-12 line-clamp-2"
                               >
                                 {visa.name}
