@@ -459,7 +459,7 @@ export default function Header() {
                     </div>
                   </Link>
 
-                  <Link href="/sim" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                  <Link href="/sim-du-lich" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                     <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                     <div className="flex flex-col items-start text-left group/item">
                       <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("sim_du_lich")}</div>

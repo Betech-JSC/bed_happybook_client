@@ -16,6 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductGallery from "@/components/product/components/ProductGallery";
+import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 
 export default function FastTrackDetailInfor({ product }: any) {
   const today = new Date();
@@ -89,6 +90,17 @@ export default function FastTrackDetailInfor({ product }: any) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Re-fetch khi language thay đổi để lấy data đã localize (schedule, name, description...)
+  useEffect(() => {
+    if (!product?.slug) return;
+    ProductFastTrackApi.detail(product.slug, undefined, language)
+      .then((res: any) => {
+        const fresh = res?.payload?.data;
+        if (fresh) setDetail(fresh);
+      })
+      .catch(() => {});
+  }, [language, product?.slug]);
   return (
     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
@@ -109,7 +121,6 @@ export default function FastTrackDetailInfor({ product }: any) {
                       <div className="flex gap-2 md:gap-3 flex-col md:flex-row justify-between items-start">
                         <p
                           className="text-blue-700 text-18 font-semibold"
-                          data-translate="true"
                         >
                           {option?.name}
                         </p>
@@ -131,13 +142,11 @@ export default function FastTrackDetailInfor({ product }: any) {
                           <div>
                             <div
                               className="font-semibold text-base"
-                              data-translate="true"
                             >
                               {renderTextContent(ticket?.type?.name)}
                             </div>
                             <div
                               className="text-sm text-gray-500 mt-1"
-                              data-translate="true"
                             >
                               {!isEmpty(ticket?.type?.description)
                                 ? renderTextContent(ticket?.type?.description)
@@ -173,14 +182,12 @@ export default function FastTrackDetailInfor({ product }: any) {
                             <div>
                               <div
                                 className="font-medium text-sm"
-                                data-translate="true"
                               >
                                 {renderTextContent(fee.name)}
                               </div>
                               {fee.description && (
                                 <div
                                   className="text-xs text-gray-500 mt-1"
-                                  data-translate="true"
                                   dangerouslySetInnerHTML={{ __html: fee.description }}
                                 >
 
@@ -222,7 +229,6 @@ export default function FastTrackDetailInfor({ product }: any) {
             </h2>
             <div className="ckeditor_container">
               <div
-                data-translate="true"
                 className="cke_editable"
                 dangerouslySetInnerHTML={{
                   __html: renderTextContent(product?.fast_track?.description),
@@ -237,7 +243,6 @@ export default function FastTrackDetailInfor({ product }: any) {
           <div>
             <h1
               className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-              data-translate="true"
             >
               {renderTextContent(product?.name)}
             </h1>
@@ -250,8 +255,11 @@ export default function FastTrackDetailInfor({ product }: any) {
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
-                Mở {displayTimeOpening ?? ""} | {displayDaysOpening ?? ""}
+              <span>
+                <span data-translate="true">Mở</span>{" "}
+                {displayTimeOpening ?? ""}
+                {" | "}
+                {isFullWeek ? <span data-translate="true">Mỗi ngày</span> : displayDaysOpening ?? ""}
               </span>
             </div>
 
@@ -263,7 +271,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
+              <span>
                 {renderTextContent(product?.fast_track?.address)}
               </span>
             </div>
@@ -317,7 +325,7 @@ export default function FastTrackDetailInfor({ product }: any) {
             {t("luu_y")}
           </h2>
           <div className="mt-4">
-            <DisplayContentEditor content={detail?.yacht?.note} />
+            <DisplayContentEditor content={detail?.fast_track?.note} />
           </div>
         </div>
       </div>

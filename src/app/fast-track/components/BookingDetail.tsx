@@ -709,7 +709,7 @@ export default function BookingDetail() {
           )}
         </div>
         <div className="py-3 px-5">
-          <h2 className="text-xl font-semibold" data-translate="true">
+          <h2 className="text-xl font-semibold">
             {renderTextContent(data?.product?.name)}
           </h2>
           <div className="mt-4 pt-4 border-t border-t-gray-200">

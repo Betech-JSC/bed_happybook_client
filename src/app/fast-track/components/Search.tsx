@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
 import { useSearchParams } from "next/navigation";
-import { translatePage } from "@/utils/translateDom";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -72,9 +71,7 @@ export default function Search({
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
-      translatePage("#wrapper-search-amusement-ticket", 10).then(() =>
-        setTranslatedText(true)
-      );
+      setTranslatedText(true);
     } catch (error) {
       console.log("Error search: " + error);
     } finally {
@@ -189,7 +186,6 @@ export default function Search({
                       <Link
                         href={`/fast-track/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
-                        data-translate="true"
                       >
                         {renderTextContent(item.name)}
                       </Link>

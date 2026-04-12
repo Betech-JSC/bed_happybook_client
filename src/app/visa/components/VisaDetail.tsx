@@ -31,12 +31,12 @@ import Tabs from "./Tabs";
 import ProductGallery from "@/components/product/components/ProductGallery";
 
 export default async function VisaDetail({ alias }: { alias: string }) {
-  const response = await VisaApi.detail(alias);
+  const language = await getServerLang();
+  const response = await VisaApi.detail(alias, language);
   const detail = response?.payload.data;
   if (!detail.id) {
     notFound();
   }
-  const language = await getServerLang();
   const contentPage = (await PageApi.getContent("visa", language))?.payload
     ?.data as any;
   return (
@@ -98,7 +98,6 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                   <Link
                     href="#"
                     className="text-gray-700"
-                    data-translate="true"
                   >
                     {renderTextContent(detail?.name)}
                   </Link>
@@ -121,7 +120,6 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                 <div>
                   <h1
                     className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-                    data-translate="true"
                   >
                     {renderTextContent(detail?.name)}
                   </h1>
@@ -131,7 +129,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                         <span className="font-semibold" data-translate="true">
                           Mã visa:
                         </span>{" "}
-                        <span data-translate="true">
+                        <span>
                           {renderTextContent(detail?.product_visa?.ma_visa)}
                         </span>
                       </div>
@@ -140,7 +138,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                       <span className="font-semibold" data-translate="true">
                         Loại Visa:
                       </span>{" "}
-                      <span data-translate="true">
+                      <span>
                         {renderTextContent(detail?.product_visa?.loai_visa)}
                       </span>
                     </div>
@@ -148,7 +146,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                       <span className="font-semibold" data-translate="true">
                         Điểm Đến:
                       </span>{" "}
-                      <span data-translate="true">
+                      <span>
                         {renderTextContent(detail?.product_visa?.diem_den)}
                       </span>
                     </div>
@@ -156,7 +154,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                       <span className="font-semibold" data-translate="true">
                         Thời gian làm Visa:
                       </span>{" "}
-                      <span data-translate="true">
+                      <span>
                         {renderTextContent(
                           detail?.product_visa?.thoi_gian_lam_visa
                         )}
@@ -166,7 +164,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                       <span className="font-semibold" data-translate="true">
                         Thời gian lưu trú:
                       </span>{" "}
-                      <span data-translate="true">
+                      <span>
                         {renderTextContent(
                           detail?.product_visa?.thoi_gian_luu_tru
                         )}
@@ -176,7 +174,7 @@ export default async function VisaDetail({ alias }: { alias: string }) {
                       <span className="font-semibold" data-translate="true">
                         Số lần nhập cảnh:
                       </span>{" "}
-                      <span data-translate="true">
+                      <span>
                         {renderTextContent(
                           detail?.product_visa?.so_lan_nhap_canh
                         )}

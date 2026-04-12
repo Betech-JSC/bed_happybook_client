@@ -46,11 +46,11 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Visa() {
-  const res = (await VisaApi.getAll()) as any;
-  const data = res?.payload?.data;
-  const optionsFilter = (await VisaApi.getOptionsFilter())?.payload
-    ?.data as any;
   const language = await getServerLang();
+  const res = (await VisaApi.getAll(language)) as any;
+  const data = res?.payload?.data;
+  const optionsFilter = (await VisaApi.getOptionsFilter(undefined, language))?.payload
+    ?.data as any;
   const contentPage = (await PageApi.getContent("visa", language))?.payload
     ?.data as any;
   const metadata = getMetadata(contentPage);

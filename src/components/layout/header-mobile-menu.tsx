@@ -183,7 +183,7 @@ export default function HeaderMobileMenu() {
             <Link href="/phong-cho-thuong-gia" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("phong_cho_thuong_gia")}
             </Link>
-            <Link href="/sim" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
+            <Link href="/sim-du-lich" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("sim_du_lich")}
             </Link>
           </div>
