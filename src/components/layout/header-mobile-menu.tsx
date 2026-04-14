@@ -144,6 +144,9 @@ export default function HeaderMobileMenu() {
             <Link href="/tours/tour-quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("tour_quoc_te")}
             </Link>
+            <Link href="/du-thuyen" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+              {t("du_thuyen")}
+            </Link>
 
             <Link href="/combo" className="block mt-3 hover:text-[#F27145] cursor-pointer">
               {t("combo")}
