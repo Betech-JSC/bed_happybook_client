@@ -19,6 +19,7 @@ export async function GET(request: Request) {
     "ticket",
     "yacht",
     "fast-track",
+    "business-lounge",
   ]) {
     sitemap.push(`${api}/sitemaps/sitemap_${type}.xml`);
   }
