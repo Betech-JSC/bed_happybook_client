@@ -14,6 +14,7 @@ import { Fragment } from "react";
 import { getServerT } from "@/lib/i18n/getServerT";
 import BusinessLoungeDetailInfor from "./BusinessLoungeDetailInfor";
 import { ProductBusinessLoungeApi } from "@/api/ProductBusinessLounge";
+import { getServerLang } from "@/lib/session";
 
 export default async function BusinessLoungeDetail({
   alias,
@@ -23,7 +24,8 @@ export default async function BusinessLoungeDetail({
   searchParams: { [key: string]: string | undefined };
 }) {
   const t = await getServerT();
-  const res = (await ProductBusinessLoungeApi.detail(alias)) as any;
+  const language = await getServerLang();
+  const res = (await ProductBusinessLoungeApi.detail(alias, undefined, language)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();

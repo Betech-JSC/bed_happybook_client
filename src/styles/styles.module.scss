@@ -88,7 +88,7 @@ $color-blue-700: #2e90fa;
 .header__menu_item {
   &:hover .header__sub_menu_item {
     color: #000;
-    max-height: 50px;
+    max-height: 300px;
     opacity: 1;
     z-index: 10;
     visibility: visible;
@@ -98,6 +98,7 @@ $color-blue-700: #2e90fa;
   .header__sub_menu_item {
     @apply transition-all duration-300;
     display: flex;
+    flex-direction: column;
     width: max-content;
     left: -20px;
     top: 40px;
@@ -113,7 +114,7 @@ $color-blue-700: #2e90fa;
     position: absolute;
 
     & a {
-      margin: 0 12px;
+      margin: 8px 12px;
 
       &:hover {
         @apply transition-colors duration-300 text-primary;
