@@ -23,9 +23,7 @@ export default function Header() {
   const router = useRouter();
   const [querySeach, setQuerySeach] = useState<string>("");
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isSticky, setSticky] = useState<boolean>(false);
-  const subMenuRef = useRef<HTMLDivElement>(null);
   const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
   const excludePaths = [
     "/",
@@ -61,7 +59,6 @@ export default function Header() {
       setSticky(false);
       setStickyHeader(true);
     }
-    setIsMenuOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -74,20 +71,7 @@ export default function Header() {
     }
   }, [isStickyHeader]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        subMenuRef.current &&
-        !subMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [subMenuRef]);
+
 
   return (
     <header
@@ -368,7 +352,7 @@ export default function Header() {
             </Link>
 
             <div
-              className={clsx(`relative flex cursor-pointer`, styles.header__menu_item, {
+              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/tours"),
               })}
             >
@@ -380,9 +364,24 @@ export default function Header() {
                   <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/tours/tour-noi-dia">{t("tour_noi_dia")}</Link>
-                <Link href="/tours/tour-quoc-te">{t("tour_quoc_te")}</Link>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+                  Tours
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <Link href="/tours/tour-noi-dia" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">✈️</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("tour_noi_dia")}</span>
+                  </Link>
+                  <Link href="/tours/tour-quoc-te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">✈️</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("tour_quoc_te")}</span>
+                  </Link>
+                  <Link href="/du-thuyen" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">🛥️</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("du_thuyen")}</span>
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -396,7 +395,7 @@ export default function Header() {
             </Link>
 
             <div
-              className={clsx(`relative flex cursor-pointer`, styles.header__menu_item, {
+              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/visa"),
               })}
             >
@@ -408,9 +407,20 @@ export default function Header() {
                   <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <div className={` ${styles.header__sub_menu_item}`}>
-                <Link href="/visa">{t("danh_sach_visa_cac_nuoc")}</Link>
-                <Link href="/tu-van-nhan-visa">{t("tu_van_visa_mien_phi")}</Link>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[240px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+                  Visa
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <Link href="/visa" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">🌏</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("danh_sach_visa_cac_nuoc")}</span>
+                  </Link>
+                  <Link href="/tu-van-nhan-visa" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">💬</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("tu_van_visa_mien_phi")}</span>
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -478,12 +488,7 @@ export default function Header() {
               </div>
             </div>
             <div
-              ref={subMenuRef}
-              onClick={() => {
-                setIsMenuOpen(!isMenuOpen);
-                return false;
-              }}
-              className={`relative flex cursor-pointer ${styles.header__menu_item}`}
+              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item)}
             >
               <span className="mr-1">{t("khac")}</span>
               <div className="h-5 self-center">
@@ -503,51 +508,32 @@ export default function Header() {
                   />
                 </svg>
               </div>
-              {/* Menu */}
-              <nav
-                className={`absolute -left-full top-12 z-10 ${styles.header__menu_sub_menu
-                  }  ${isMenuOpen
-                    ? "[&>a]:max-h-12 visible"
-                    : "[&>a]:max-h-0 invisible"
-                  }`}
-                style={{
-                  maxHeight: isMenuOpen ? "236px" : "0px ",
-                  opacity: isMenuOpen ? "1" : "0",
-                  zIndex: isMenuOpen ? "10" : "-1",
-                  transform: isMenuOpen ? "translateY(0)" : "translateY(-50px)",
-                }}
-              >
-                {/* <Link
-                  href="/fast-track"
-                  className={styles.text_hover_default}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  {t("fast_track")}
-                </Link> */}
-                <Link
-                  href="/dang-ky-ctv"
-                  className={styles.text_hover_default}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  {t("dang_ky_ctv")}
-                </Link>
-
-                {GeneralInforPaths.map(
-                  (
-                    item: { title: string; slug: string; url: string },
-                    index: number
-                  ) => (
-                    <Link
-                      key={index}
-                      href={item.url}
-                      className={styles.text_hover_default}
-                      onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
-                      {t(toSnakeCase(item.title))}
-                    </Link>
-                  )
-                )}
-              </nav>
+              <div className="absolute top-full right-0 bg-white rounded-xl shadow-xl p-4 w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+                  {t("khac")}
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <Link href="/dang-ky-ctv" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">📝</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("dang_ky_ctv")}</span>
+                  </Link>
+                  {GeneralInforPaths.map(
+                    (
+                      item: { title: string; slug: string; url: string },
+                      index: number
+                    ) => (
+                      <Link
+                        key={index}
+                        href={item.url}
+                        className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300"
+                      >
+                        <span className="text-xl">📄</span>
+                        <span className="text-[#101828] font-medium text-[14px]">{t(toSnakeCase(item.title))}</span>
+                      </Link>
+                    )
+                  )}
+                </div>
+              </div>
             </div>
           </nav>
         </div>
