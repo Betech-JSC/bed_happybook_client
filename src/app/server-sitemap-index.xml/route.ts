@@ -1,9 +1,9 @@
-// app/server-sitemap-index.xml/route.ts
 import { getServerSideSitemapIndex } from "next-sitemap";
 
-export async function GET(request: Request) {
-  const api =
-    process.env.NEXT_PUBLIC_API_URL || "http://api.happybooktravel.com";
+export async function GET() {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://happybooktravel.com";
+
   const sitemap = [];
 
   for (const type of [
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     "fast-track",
     "business-lounge",
   ]) {
-    sitemap.push(`${api}/sitemaps/sitemap_${type}.xml`);
+    sitemap.push(`${siteUrl}/sitemaps/sitemap_${type}.xml`);
   }
 
   return getServerSideSitemapIndex(sitemap);
