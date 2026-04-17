@@ -1,0 +1,979 @@
+/* =========================
+   HappyBook eSIM Module
+   Design System: Navy #1E40AF + Coral #F27145
+   Fonts: Rubik (headings), Nunito Sans (body), DM Mono (prices)
+   ========================= */
+
+// --- Color tokens ---
+$navy: #1e40af;
+$coral: #f27145;
+$coral-light: #fff7ed;
+$coral-pale: #fffbf7;
+$midnight: #1e293b;
+$steel: #64748b;
+$muted: #94a3b8;
+$whisper: #e2e8f0;
+$cloud: #f8fafc;
+$surface: #ffffff;
+$success: #16a34a;
+$error: #ef4444;
+$warning-bg: #fef3c7;
+$warning-text: #92400e;
+
+// --- Shadow ---
+$card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+$sticky-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+
+// --- Product Detail Page ---
+.esimPage {
+  background: $cloud;
+  min-height: 100dvh;
+  padding-bottom: 80px;
+
+  @media (min-width: 1024px) {
+    padding-bottom: 0;
+  }
+}
+
+.esimContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+
+  @media (min-width: 1024px) {
+    padding: 32px 24px;
+  }
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: $steel;
+  margin-bottom: 20px;
+
+  a {
+    color: $navy;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $coral;
+    }
+  }
+
+  span {
+    color: $muted;
+  }
+}
+
+// --- Two-column layout ---
+.productGrid {
+  display: grid;
+  gap: 24px;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1fr 400px;
+    gap: 32px;
+  }
+}
+
+// --- Hero image ---
+.heroImage {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, $navy 0%, #2563eb 100%);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .heroOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+    color: #fff;
+  }
+
+  .countryBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+  }
+}
+
+// --- Feature pills ---
+.featureRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.featurePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: $cloud;
+  border: 1px solid $whisper;
+  font-size: 0.8125rem;
+  color: $midnight;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: $navy;
+  }
+}
+
+// --- Chip groups ---
+.chipGroup {
+  margin-bottom: 16px;
+
+  .chipLabel {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $midnight;
+    margin-bottom: 8px;
+  }
+
+  .chipList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid $whisper;
+  background: $cloud;
+  font-size: 0.875rem;
+  color: $midnight;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  min-height: 44px;
+  user-select: none;
+
+  &:hover {
+    border-color: $muted;
+  }
+
+  &.chipActive {
+    background: $coral-light;
+    border: 2px solid $coral;
+    color: $coral;
+    font-weight: 600;
+  }
+}
+
+// --- Quantity selector ---
+.quantitySelector {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid $whisper;
+  border-radius: 8px;
+  overflow: hidden;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: $cloud;
+    cursor: pointer;
+    font-size: 1.125rem;
+    color: $midnight;
+    transition: background 0.15s;
+
+    &:hover {
+      background: $whisper;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  .quantityValue {
+    width: 48px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $midnight;
+    border-left: 1px solid $whisper;
+    border-right: 1px solid $whisper;
+    line-height: 40px;
+  }
+}
+
+// --- Sidebar / Order Summary ---
+.sidebar {
+  @media (min-width: 1024px) {
+    position: sticky;
+    top: 140px;
+    align-self: start;
+  }
+}
+
+.orderCard {
+  background: $surface;
+  border-radius: 12px;
+  border: 1px solid $whisper;
+  box-shadow: $card-shadow;
+  overflow: hidden;
+}
+
+.orderCardHeader {
+  padding: 20px;
+  border-bottom: 1px solid $whisper;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $midnight;
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.8125rem;
+    color: $steel;
+    margin: 4px 0 0;
+  }
+}
+
+.orderCardBody {
+  padding: 20px;
+}
+
+.orderLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.875rem;
+
+  .orderLineLabel {
+    color: $steel;
+  }
+
+  .orderLineValue {
+    font-weight: 500;
+    color: $midnight;
+  }
+}
+
+.orderDivider {
+  border: none;
+  border-top: 1px dashed $whisper;
+  margin: 8px 0;
+}
+
+.orderTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 0;
+
+  .orderTotalLabel {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $midnight;
+  }
+
+  .orderTotalValue {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $coral;
+    font-family: "DM Mono", monospace;
+  }
+}
+
+// --- Buttons ---
+.btnPrimary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: $coral;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 8px;
+
+  &:hover {
+    background: darken($coral, 8%);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (min-width: 1024px) {
+    height: 44px;
+  }
+}
+
+.btnSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  border: 1px solid $whisper;
+  border-radius: 12px;
+  background: transparent;
+  color: $midnight;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 8px;
+
+  &:hover {
+    border-color: $muted;
+    background: $cloud;
+  }
+}
+
+// --- Detail section ---
+.detailSection {
+  background: $surface;
+  border-radius: 12px;
+  border: 1px solid $whisper;
+  padding: 20px;
+  margin-top: 20px;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $midnight;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: $steel;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.noteBox {
+  background: $warning-bg;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+
+  .noteTitle {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $warning-text;
+    margin-bottom: 4px;
+  }
+
+  .noteText {
+    font-size: 0.8125rem;
+    color: $warning-text;
+    line-height: 1.5;
+  }
+}
+
+// --- Sticky mobile bottom bar ---
+.stickyBottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $surface;
+  border-top: 1px solid $whisper;
+  box-shadow: $sticky-shadow;
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+
+  .stickyPrice {
+    .stickyPriceLabel {
+      font-size: 0.75rem;
+      color: $steel;
+    }
+
+    .stickyPriceValue {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $coral;
+      font-family: "DM Mono", monospace;
+    }
+  }
+
+  .stickyBtn {
+    flex-shrink: 0;
+    height: 48px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 12px;
+    background: $coral;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+// --- Package Selector Modal ---
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalPanel {
+  background: $surface;
+  border-radius: 16px;
+  width: min(90vw, 560px);
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s ease-out;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 90vh;
+    animation: slideUpSheet 0.3s ease-out;
+  }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid $whisper;
+
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $midnight;
+    margin: 0;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: $cloud;
+    cursor: pointer;
+    color: $steel;
+    transition: background 0.15s;
+
+    &:hover {
+      background: $whisper;
+    }
+  }
+}
+
+.modalBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+.modalFooter {
+  padding: 16px 24px;
+  border-top: 1px solid $whisper;
+}
+
+// --- Radio card variant ---
+.radioCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid $whisper;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+
+  &:hover {
+    border-color: $muted;
+  }
+
+  &.radioCardActive {
+    border: 2px solid $coral;
+    background: $coral-pale;
+  }
+
+  .radioCardDot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid $whisper;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  &.radioCardActive .radioCardDot {
+    border-color: $coral;
+
+    &::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: $coral;
+    }
+  }
+
+  .radioCardContent {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .radioCardTitle {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $midnight;
+  }
+
+  .radioCardDesc {
+    font-size: 0.8125rem;
+    color: $steel;
+    margin-top: 2px;
+  }
+
+  .radioCardPrice {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $coral;
+    font-family: "DM Mono", monospace;
+    flex-shrink: 0;
+  }
+}
+
+// --- Checkout / Payment pages ---
+.checkoutPage {
+  background: $cloud;
+  min-height: 100dvh;
+}
+
+.progressBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 20px 16px;
+  background: $surface;
+  border-bottom: 1px solid $whisper;
+}
+
+.progressStep {
+  display: flex;
+  align-items: center;
+  gap: 0;
+
+  .stepCircle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    border: 2px solid $whisper;
+    background: $surface;
+    color: $muted;
+    transition: all 0.3s;
+
+    &.stepCompleted {
+      background: $success;
+      border-color: $success;
+      color: #fff;
+    }
+
+    &.stepActive {
+      background: $coral;
+      border-color: $coral;
+      color: #fff;
+    }
+  }
+
+  .stepLabel {
+    font-size: 0.8125rem;
+    color: $muted;
+    margin-left: 8px;
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+    }
+
+    &.stepLabelActive {
+      color: $midnight;
+      font-weight: 600;
+    }
+
+    &.stepLabelCompleted {
+      color: $success;
+    }
+  }
+
+  .stepConnector {
+    width: 40px;
+    height: 2px;
+    background: $whisper;
+    margin: 0 8px;
+    transition: background 0.4s ease-out;
+
+    @media (min-width: 768px) {
+      width: 64px;
+    }
+
+    &.stepConnectorDone {
+      background: $success;
+    }
+  }
+}
+
+.checkoutGrid {
+  display: grid;
+  gap: 24px;
+  padding: 24px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1fr 380px;
+    padding: 32px 24px;
+  }
+}
+
+// --- Form card ---
+.formCard {
+  background: $surface;
+  border-radius: 12px;
+  border: 1px solid $whisper;
+  box-shadow: $card-shadow;
+  padding: 24px;
+
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $midnight;
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.formGroup {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $midnight;
+    margin-bottom: 6px;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 48px;
+    border: 1px solid $whisper;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 0.875rem;
+    color: $midnight;
+    background: $surface;
+    transition: border-color 0.2s;
+    outline: none;
+
+    &::placeholder {
+      color: $muted;
+    }
+
+    &:focus {
+      border-color: $navy;
+      box-shadow: 0 0 0 2px rgba($navy, 0.2);
+    }
+
+    &.inputError {
+      border-color: $error;
+
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($error, 0.2);
+      }
+    }
+  }
+
+  .errorText {
+    font-size: 0.75rem;
+    color: $error;
+    margin-top: 4px;
+  }
+
+  .helperText {
+    font-size: 0.75rem;
+    color: $steel;
+    margin-top: 4px;
+  }
+}
+
+// --- Security badge ---
+.securityBadge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eff6ff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 16px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: $navy;
+    flex-shrink: 0;
+  }
+
+  .securityText {
+    font-size: 0.8125rem;
+    color: $navy;
+    font-weight: 500;
+  }
+}
+
+// --- Slide-over (contact info) ---
+.slideOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.slidePanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(90vw, 480px);
+  background: $surface;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.slideHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid $whisper;
+
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $midnight;
+    margin: 0;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: $cloud;
+    cursor: pointer;
+    color: $steel;
+
+    &:hover {
+      background: $whisper;
+    }
+  }
+}
+
+.slideBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.slideFooter {
+  padding: 16px 24px;
+  border-top: 1px solid $whisper;
+}
+
+// --- Payment method cards ---
+.paymentMethodCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid $whisper;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+
+  &:hover {
+    border-color: $muted;
+  }
+
+  &.paymentMethodActive {
+    border: 2px solid $coral;
+    background: $coral-pale;
+  }
+
+  .paymentMethodIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: $cloud;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .paymentMethodInfo {
+    flex: 1;
+
+    .paymentMethodName {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: $midnight;
+    }
+
+    .paymentMethodDesc {
+      font-size: 0.8125rem;
+      color: $steel;
+      margin-top: 2px;
+    }
+  }
+}
+
+// --- Countdown timer ---
+.countdownTimer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "DM Mono", monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $coral;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// --- Animations ---
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
