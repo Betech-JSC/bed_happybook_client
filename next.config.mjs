@@ -41,6 +41,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "cms.happybooktravel.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "storage.googleapis.com",
         pathname: "/**",
       },

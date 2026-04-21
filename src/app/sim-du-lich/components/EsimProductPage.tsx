@@ -11,12 +11,18 @@ import {
   Smartphone,
   Clock,
   ChevronRight,
+  ChevronDown,
   Minus,
   Plus,
   ShoppingCart,
   Share2,
   Zap,
   RefreshCw,
+  Star,
+  CheckCircle2,
+  BadgeCheck,
+  Headset,
+  Info
 } from "lucide-react";
 import {
   catalog,
@@ -28,7 +34,7 @@ import {
 import PackageSelectorModal from "./PackageSelectorModal";
 import s from "@/styles/esim.module.scss";
 
-export default function EsimProductPage() {
+export default function EsimProductPage({ footerContent }: { footerContent?: React.ReactNode }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("Tất cả");
@@ -98,345 +104,318 @@ export default function EsimProductPage() {
   }, [selectedPackage]);
 
   return (
-    <main className={s.esimPage}>
-      <div className={s.esimContainer}>
-        {/* Breadcrumb */}
-        <nav className={s.breadcrumb}>
-          <a href="/">Trang chủ</a>
-          <ChevronRight size={14} />
-          <a href="/sim-du-lich">Sim du lịch</a>
-          <ChevronRight size={14} />
-          <span>{selectedPackage.destination}</span>
-        </nav>
-
-        <div className={s.productGrid}>
-          {/* LEFT: Product content */}
-          <div>
-            {/* Hero */}
-            <div className={s.heroImage}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                  color: "#fff",
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  textAlign: "center",
-                  padding: "24px",
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: "2.5rem", marginBottom: 8 }}>
-                    {selectedPackage.destination}
-                  </div>
-                  <div style={{ fontSize: "1rem", fontWeight: 400, opacity: 0.9 }}>
-                    {selectedPackage.title} — {selectedPackage.subtitle}
-                  </div>
-                </div>
-              </div>
-              <div className={s.heroOverlay}>
-                <div className={s.countryBadge}>
-                  <Globe size={16} />
-                  {selectedPackage.coverage}
-                </div>
-              </div>
+    <main className="max-w-7xl mx-auto px-6 py-8 pb-32 pt-32 lg:pt-40">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+        
+        {/* Left Content Column */}
+        <div className="space-y-8">
+          
+          {/* Hero Section */}
+          <section className="relative aspect-[16/9] w-full overflow-hidden rounded-12px shadow-lg bg-hb-navy flex items-center justify-center">
+            {/* If there was a real image, we'd use <img /> but let's use the nice CSS gradient fallback with the new text location for now since no image is provided dynamically yet. */}
+            <div className="text-center z-10 px-6">
+              <h2 className="text-white text-4xl md:text-5xl font-bold mb-4 drop-shadow-md">{selectedPackage.destination}</h2>
+              <p className="text-white/90 text-lg md:text-xl font-medium drop-shadow">{selectedPackage.title} — {selectedPackage.network}</p>
             </div>
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-hb-navy/90 to-transparent"></div>
 
-            {/* Title */}
-            <h1
-              style={{
-                fontSize: "clamp(1.25rem, 3vw, 1.75rem)",
-                fontWeight: 700,
-                color: "#1e293b",
-                margin: "20px 0 8px",
-                lineHeight: 1.3,
-              }}
-            >
-              eSIM {selectedPackage.destination} | {selectedPackage.network}
+            <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-20">
+              <div className="bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
+                <Globe size={16} className="text-hb-navy" />
+                <span className="text-xs font-bold text-midnight-ink uppercase">{selectedPackage.coverage}</span>
+              </div>
+              <div className="bg-hb-navy px-3 py-1.5 rounded-lg text-white text-xs font-bold shadow-sm">eSIM</div>
+              <div className="bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg text-midnight-ink text-xs font-bold shadow-sm">{selectedPackage.network}</div>
+            </div>
+          </section>
+
+          {/* Product Info Header */}
+          <section>
+            <h1 className="text-3xl font-bold text-midnight-ink mb-2">
+              eSIM {selectedPackage.destination} | {selectedPackage.title}
             </h1>
 
-            {/* Feature pills */}
-            <div className={s.featureRow}>
-              <div className={s.featurePill}>
-                <Mail size={16} /> Nhận qua email tức thì
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+                <Mail className="w-6 h-6 text-hb-navy bg-blue-50 p-1.5 rounded-lg box-content" />
+                <div>
+                  <p className="text-xs text-steel-secondary">Giao hàng</p>
+                  <p className="text-sm font-semibold text-midnight-ink">Nhận qua email tức thì</p>
+                </div>
               </div>
-              <div className={s.featurePill}>
-                <Share2 size={16} /> Hỗ trợ hotspot
+              <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+                <Wifi className="w-6 h-6 text-hb-navy bg-blue-50 p-1.5 rounded-lg box-content" />
+                <div>
+                  <p className="text-xs text-steel-secondary">Chia sẻ</p>
+                  <p className="text-sm font-semibold text-midnight-ink">Hỗ trợ hotspot</p>
+                </div>
               </div>
-              <div className={s.featurePill}>
-                <RefreshCw size={16} /> Hoàn tiền đầy đủ
+              <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+                <Shield className="w-6 h-6 text-hb-navy bg-blue-50 p-1.5 rounded-lg box-content" />
+                <div>
+                  <p className="text-xs text-steel-secondary">Cam kết</p>
+                  <p className="text-sm font-semibold text-midnight-ink">Hoàn tiền đầy đủ</p>
+                </div>
               </div>
             </div>
+          </section>
 
-            {/* Chip groups — Loại gói / Hạn sử dụng / Gói Data */}
-            <div className={s.chipGroup}>
-              <div className={s.chipLabel}>Hạn sử dụng (Ngày)</div>
-              <div className={s.chipList}>
-                {validityOptions.map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    className={`${s.chip} ${
-                      selectedVariant.validity === v ? s.chipActive : ""
-                    }`}
-                    onClick={() => {
-                      const match = selectedPackage.variants.find(
-                        (vr) => vr.validity === v
-                      );
-                      if (match) setSelectedSku(match.sku);
-                    }}
-                  >
-                    {v} Ngày
+          {/* Package Selection Card */}
+          <section className="bg-white rounded-12px shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden">
+            <div className="p-6 space-y-8">
+              
+              {/* Loại gói Tabs */}
+              <div>
+                <p className="text-sm font-bold text-midnight-ink mb-4">Loại gói</p>
+                <div className="flex border-b border-slate-100">
+                  <button className="px-6 py-2 border-b-2 border-hb-coral text-hb-coral font-semibold text-sm">
+                    {selectedPackage.title}
                   </button>
-                ))}
-              </div>
-            </div>
-
-            <div className={s.chipGroup}>
-              <div className={s.chipLabel}>Gói Data</div>
-              <div className={s.chipList}>
-                {dataOptions.map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    className={`${s.chip} ${
-                      selectedVariant.data === d ? s.chipActive : ""
-                    }`}
-                    onClick={() => {
-                      const match = selectedPackage.variants.find(
-                        (vr) => vr.data === d
-                      );
-                      if (match) setSelectedSku(match.sku);
-                    }}
-                  >
-                    {d}
+                  <button onClick={() => setShowModal(true)} className="px-6 py-2 text-steel-secondary hover:text-midnight-ink transition-colors font-medium text-sm flex items-center gap-1">
+                    Xem gói khác <ChevronRight className="w-4 h-4" />
                   </button>
-                ))}
+                </div>
               </div>
-            </div>
 
-            {/* Quantity */}
-            <div className={s.chipGroup}>
-              <div className={s.chipLabel}>Số lượng</div>
-              <div className={s.quantitySelector}>
-                <button
-                  type="button"
-                  disabled={quantity <= 1}
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                >
-                  <Minus size={16} />
-                </button>
-                <div className={s.quantityValue}>{quantity}</div>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => q + 1)}
-                >
-                  <Plus size={16} />
-                </button>
+              {/* Hạn sử dụng Chips */}
+              <div>
+                <p className="text-sm font-bold text-midnight-ink mb-3">Hạn sử dụng (Ngày)</p>
+                <div className="flex flex-wrap gap-2">
+                  {validityOptions.map((v) => {
+                    const isActive = selectedVariant.validity === v;
+                    return (
+                      <button
+                        key={v}
+                        onClick={() => {
+                          const match = selectedPackage.variants.find((vr) => vr.validity === v);
+                          if (match) setSelectedSku(match.sku);
+                        }}
+                        className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                          isActive 
+                            ? "bg-[#FFF7ED] border-2 border-hb-coral text-hb-coral font-bold" 
+                            : "border border-slate-200 font-medium hover:border-hb-coral"
+                        }`}
+                      >
+                        {v} Ngày
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* Detail section */}
-            <div className={s.detailSection}>
-              <h3>
-                <Zap size={18} /> Chi tiết gói dịch vụ
+              {/* Gói Data Chips */}
+              <div>
+                <p className="text-sm font-bold text-midnight-ink mb-3">Gói Data</p>
+                <div className="flex flex-wrap gap-2">
+                  {dataOptions.map((d) => {
+                    const isActive = selectedVariant.data === d;
+                    return (
+                      <button
+                        key={d}
+                        onClick={() => {
+                          const match = selectedPackage.variants.find((vr) => vr.data === d);
+                          if (match) setSelectedSku(match.sku);
+                        }}
+                        className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                          isActive 
+                            ? "bg-[#FFF7ED] border-2 border-hb-coral text-hb-coral font-bold" 
+                            : "border border-slate-200 font-medium hover:border-hb-coral"
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Service Type & Quantity */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-4 border-t border-slate-100">
+                <div>
+                  <p className="text-sm font-bold text-midnight-ink mb-2">Loại dịch vụ</p>
+                  <div className="bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 inline-flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-hb-navy" />
+                    <span className="text-sm font-semibold text-midnight-ink">Chỉ internet</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-midnight-ink mb-2">Số lượng</p>
+                  <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden w-fit">
+                    <button 
+                      className="w-10 h-10 flex items-center justify-center hover:bg-slate-50 active:bg-slate-100 transition-colors disabled:opacity-50"
+                      disabled={quantity <= 1}
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    >
+                      <Minus className="w-5 h-5" />
+                    </button>
+                    <div className="w-12 h-10 flex items-center justify-center font-bold text-midnight-ink border-x border-slate-200">
+                      {quantity}
+                    </div>
+                    <button 
+                      className="w-10 h-10 flex items-center justify-center hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                      onClick={() => setQuantity((q) => q + 1)}
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </section>
+
+          {/* Chọn điểm đến khác (kept from old UI but adapted) */}
+          <div className="pt-8">
+              <h3 className="text-xl font-bold text-midnight-ink flex items-center gap-2 mb-4">
+                <Globe size={24} className="text-hb-navy" /> Chọn điểm đến khác
               </h3>
-              <p>
-                Dữ liệu sẽ được kích hoạt ngay khi bạn kết nối với mạng di động
-                tại {selectedPackage.destination}. Thời hạn sử dụng:{" "}
-                {selectedPackage.activation}.
-              </p>
-              <div className={s.noteBox}>
-                <div className={s.noteTitle}>Lưu ý vận hành</div>
-                <div className={s.noteText}>{selectedPackage.note}</div>
-              </div>
-            </div>
 
-            {/* Destination list (filterable) */}
-            <div className={s.detailSection} style={{ marginTop: 24 }}>
-              <h3>
-                <Globe size={18} /> Chọn điểm đến khác
-              </h3>
-
-              {/* Search */}
-              <div style={{ position: "relative", marginBottom: 12 }}>
-                <Search
-                  size={16}
-                  style={{
-                    position: "absolute",
-                    left: 12,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#94a3b8",
-                  }}
-                />
+              <div className="relative mb-6">
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Tìm theo quốc gia, khu vực..."
-                  style={{
-                    width: "100%",
-                    height: 44,
-                    border: "1px solid #e2e8f0",
-                    borderRadius: 8,
-                    paddingLeft: 36,
-                    paddingRight: 12,
-                    fontSize: "0.875rem",
-                    outline: "none",
-                  }}
+                  className="w-full h-12 border border-slate-200 rounded-xl pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-hb-coral focus:border-transparent transition-all"
                 />
               </div>
 
-              {/* Region filter */}
-              <div className={s.chipList} style={{ marginBottom: 16 }}>
+              <div className="flex flex-wrap gap-2 mb-6">
                 {regions.map((r) => (
                   <button
                     key={r}
-                    type="button"
-                    className={`${s.chip} ${region === r ? s.chipActive : ""}`}
                     onClick={() => setRegion(r)}
-                    style={{ padding: "6px 12px", minHeight: 36, fontSize: "0.8125rem" }}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      region === r ? "bg-hb-navy text-white" : "bg-white border border-slate-200 text-slate-600 hover:border-hb-navy hover:text-hb-navy"
+                    }`}
                   >
                     {r}
                   </button>
                 ))}
               </div>
 
-              {/* Package cards */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                  gap: 12,
-                }}
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {filteredCatalog.map((pkg) => {
-                  const cheapest = [...pkg.variants].sort(
-                    (a, b) => a.price - b.price
-                  )[0];
+                  const cheapest = [...pkg.variants].sort((a, b) => a.price - b.price)[0];
                   const isActive = pkg.id === selectedPackageId;
                   return (
                     <button
                       key={pkg.id}
-                      type="button"
                       onClick={() => handleSelectPackage(pkg)}
-                      className={s.radioCard + (isActive ? ` ${s.radioCardActive}` : "")}
-                      style={{ textAlign: "left" }}
+                      className={`text-left p-4 rounded-xl border transition-all ${
+                        isActive ? "border-hb-navy bg-blue-50/50 shadow-sm" : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-sm"
+                      }`}
                     >
-                      <div className={s.radioCardDot} />
-                      <div className={s.radioCardContent}>
-                        <div className={s.radioCardTitle}>{pkg.destination}</div>
-                        <div className={s.radioCardDesc}>
-                          {pkg.subtitle} — {pkg.network}
+                      <div className="flex items-start gap-3">
+                        <div className={`w-3 h-3 mt-1.5 rounded-full flex-shrink-0 ${isActive ? "bg-hb-coral" : "bg-slate-200"}`} />
+                        <div>
+                          <div className={`font-bold ${isActive ? "text-hb-navy" : "text-midnight-ink"}`}>{pkg.destination}</div>
+                          <div className="text-sm text-steel-secondary mt-1 line-clamp-1">{pkg.subtitle} — {pkg.network}</div>
+                          <div className="text-sm font-bold text-hb-coral mt-2">Từ {formatPrice(cheapest.price)}</div>
                         </div>
-                      </div>
-                      <div className={s.radioCardPrice}>
-                        {formatPrice(cheapest.price)}
                       </div>
                     </button>
                   );
                 })}
               </div>
-            </div>
           </div>
-
-          {/* RIGHT: Sidebar */}
-          <div className={s.sidebar}>
-            <div className={s.orderCard}>
-              <div className={s.orderCardHeader}>
-                <h3>
-                  eSIM {selectedPackage.destination}
-                </h3>
-                <p>{selectedVariant.desc}</p>
-              </div>
-              <div className={s.orderCardBody}>
-                <div className={s.orderLine}>
-                  <span className={s.orderLineLabel}>Gói dịch vụ</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(true)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      color: "#1e40af",
-                      fontSize: "0.875rem",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    Đổi gói <ChevronRight size={14} />
-                  </button>
-                </div>
-                <div className={s.orderLine}>
-                  <span className={s.orderLineLabel}>Đơn giá</span>
-                  <span className={s.orderLineValue}>
-                    {formatPrice(selectedVariant.price)}
-                  </span>
-                </div>
-                <div className={s.orderLine}>
-                  <span className={s.orderLineLabel}>Số lượng</span>
-                  <span className={s.orderLineValue}>{quantity}</span>
-                </div>
-                <div className={s.orderLine}>
-                  <span className={s.orderLineLabel}>Tạm tính</span>
-                  <span className={s.orderLineValue}>
-                    {formatPrice(subtotal)}
-                  </span>
-                </div>
-                <div className={s.orderLine}>
-                  <span className={s.orderLineLabel}>Phí xử lý</span>
-                  <span className={s.orderLineValue}>
-                    {serviceFee === 0 ? "Miễn phí" : formatPrice(serviceFee)}
-                  </span>
-                </div>
-
-                <hr className={s.orderDivider} />
-
-                <div className={s.orderTotal}>
-                  <span className={s.orderTotalLabel}>Tổng thanh toán</span>
-                  <span className={s.orderTotalValue}>
-                    {formatPrice(total)}
-                  </span>
-                </div>
-
-                <div style={{ marginTop: 16, display: "grid", gap: 8 }}>
-                  <button
-                    type="button"
-                    className={s.btnPrimary}
-                    onClick={handleBookNow}
-                  >
-                    <ShoppingCart size={18} /> Đặt ngay
-                  </button>
-                </div>
-
-                <div className={s.securityBadge}>
-                  <Shield size={20} />
-                  <span className={s.securityText}>
-                    Đã bao gồm thuế và phí dịch vụ
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
+
+        {/* Right Sidebar Column */}
+        <aside className="space-y-6 sticky top-32 lg:top-40 h-fit">
+          
+          {/* Price & CTA Card (Floating on Desktop) */}
+          <div className="bg-white rounded-12px p-6 shadow-lg border border-slate-100">
+            <div className="space-y-4">
+              <div className="flex items-end justify-between">
+                <span className="text-steel-secondary text-sm font-medium">Tổng cộng:</span>
+                <span className="text-3xl font-bold text-hb-coral">{formatPrice(total)}</span>
+              </div>
+              <p className="text-[10px] text-right text-steel-secondary">
+                {serviceFee > 0 ? "Đã bao gồm thuế và phí xử lý" : "Đã bao gồm thuế, Miễn phí xử lý"}
+              </p>
+              
+              <div className="pt-4 space-y-3">
+                <button onClick={handleBookNow} className="w-full bg-hb-coral hover:bg-orange-600 text-white font-bold h-12 rounded-xl active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2">
+                  <ShoppingCart className="w-5 h-5" /> Đặt ngay
+                </button>
+              </div>
+              
+              <div className="pt-4 flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-xs text-steel-secondary">
+                  <BadgeCheck className="w-4 h-4" />
+                  <span>Đảm bảo giá tốt nhất</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-steel-secondary">
+                  <Headset className="w-4 h-4" />
+                  <span>Hỗ trợ khách hàng 24/7</span>
+                </div>
+              </div>
+            </div>
+            
+            <hr className="my-6 border-slate-100" />
+            
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-midnight-ink">Chi tiết gói dịch vụ</h3>
+              <div className="space-y-3">
+                <div className="group border border-slate-100 rounded-lg overflow-hidden">
+                  <div className="w-full flex items-center justify-between p-3 text-left">
+                    <span className="text-xs font-semibold">Tóm tắt</span>
+                  </div>
+                  <div className="p-3 pt-0 text-xs text-steel-secondary leading-relaxed border-t border-slate-50 bg-slate-50/30">
+                    <span className="font-semibold block mb-1">{selectedVariant.desc}</span>
+                    Đơn giá: {formatPrice(selectedVariant.price)} x {quantity}
+                  </div>
+                </div>
+
+                <div className="group border border-slate-100 rounded-lg overflow-hidden">
+                  <button className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors">
+                    <span className="text-xs font-semibold">Khả năng tương thích thiết bị</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
+                </div>
+                
+                <div className="group border border-slate-100 rounded-lg overflow-hidden">
+                  <button className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors">
+                    <span className="text-xs font-semibold">Chính sách hoàn tiền</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
+                </div>
+                
+                <div className="group border border-slate-100 rounded-lg overflow-hidden">
+                  <button className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors">
+                    <span className="text-xs font-semibold">Câu hỏi thường gặp (FAQ)</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 rounded-12px p-4 border border-blue-100 flex gap-3">
+            <Info className="w-10 h-6 -translate-y-1 text-hb-navy" />
+            <p className="text-xs text-hb-navy leading-relaxed font-medium">
+              Dữ liệu sẽ được kích hoạt ngay khi bạn kết nối với mạng di động tại <strong>{selectedPackage.destination}</strong>. Thời hạn sử dụng tính theo chu kỳ {selectedPackage.activation.toLowerCase()}.<br/><br/>
+              <span className="opacity-80 block text-[11px] italic">{selectedPackage.note}</span>
+            </p>
+          </div>
+          
+        </aside>
       </div>
 
       {/* Sticky bottom bar (mobile) */}
-      <div className={s.stickyBottomBar}>
-        <div className={s.stickyPrice}>
-          <div className={s.stickyPriceLabel}>Tổng thanh toán</div>
-          <div className={s.stickyPriceValue}>{formatPrice(total)}</div>
+      <div className="lg:hidden fixed bottom-16 sm:bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-40 flex items-center justify-between">
+        <div>
+          <div className="text-xs text-steel-secondary">Tổng thanh toán</div>
+          <div className="text-xl font-bold text-hb-coral">{formatPrice(total)}</div>
         </div>
         <button
-          type="button"
-          className={s.stickyBtn}
           onClick={handleBookNow}
+          className="bg-hb-coral hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-xl transition-all"
         >
           Đặt ngay
         </button>
@@ -451,6 +430,9 @@ export default function EsimProductPage() {
           onClose={() => setShowModal(false)}
         />
       )}
+
+      {/* Chân trang passed from Server Component */}
+      {footerContent}
     </main>
   );
 }
