@@ -60,6 +60,13 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        "hb-navy": "#1e40af",
+        "hb-coral": "#f27145",
+        "midnight-ink": "#1e293b",
+        "steel-secondary": "#64748b",
+      },
+      borderRadius: {
+        "12px": "0.75rem",
       },
     },
   },

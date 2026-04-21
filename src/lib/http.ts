@@ -30,6 +30,8 @@ const request = async <Response>(
   const fullUrl = url.startsWith("/")
     ? `${baseUrl}${url}`
     : `${baseUrl}/${url}`;
+  
+  console.log("Making fetch request to:", fullUrl);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -67,10 +69,13 @@ const request = async <Response>(
       throw error;
     } else if (error instanceof Error) {
       if (error.name === "AbortError") {
+        console.error("fetch AbortError:", error);
         throw new HttpError({ status: 408, payload: "Request timeout" });
       }
+      console.error("fetch Error:", error.message, error, "url:", fullUrl);
       throw new HttpError({ status: 500, payload: "Server Error" });
     } else {
+      console.error("Unknown Error:", error, "url:", fullUrl);
       throw new HttpError({
         status: 500,
         payload: "Unknown server error",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Check,
@@ -9,17 +9,22 @@ import {
   Phone,
   Shield,
   ChevronRight,
+  ChevronDown,
   Clock,
   CreditCard,
   Wallet,
   Smartphone as SmartphoneIcon,
   ShoppingCart,
+  CheckCircle2,
+  Headphones,
+  ArrowLeft
 } from "lucide-react";
+import Image from "next/image";
 import { catalog, formatPrice } from "../data/esim-catalog";
 import ContactSlideOver from "./ContactSlideOver";
 import s from "@/styles/esim.module.scss";
 
-type PaymentMethod = "momo" | "paypal" | "card" | "gpay";
+type PaymentMethod = "vietqr" | "onepay";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -49,10 +54,29 @@ export default function CheckoutPage() {
   const [showContact, setShowContact] = useState(false);
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("momo");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("vietqr");
+  
+  // Step 3 UI states
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
-  // countdown
-  const [timeLeft] = useState("14:59");
+  // countdown: 59 mins = 3540 seconds
+  const [timeLeft, setTimeLeft] = useState(3540);
+
+  useEffect(() => {
+    if (step === 3) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [step]);
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
 
   const validateEmail = (val: string) => {
     if (!val) return "Vui lòng nhập email";
@@ -65,6 +89,7 @@ export default function CheckoutPage() {
     setEmailError(err);
     if (err) return;
     setStep(3);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [email]);
 
   const handlePay = useCallback(() => {
@@ -83,162 +108,29 @@ export default function CheckoutPage() {
     []
   );
 
-  const paymentMethods: {
-    id: PaymentMethod;
-    name: string;
-    desc: string;
-    icon: React.ReactNode;
-  }[] = [
-    {
-      id: "momo",
-      name: "MoMo",
-      desc: "Ví điện tử MoMo",
-      icon: <Wallet size={20} />,
-    },
-    {
-      id: "paypal",
-      name: "PayPal",
-      desc: "Tài khoản PayPal",
-      icon: <Wallet size={20} />,
-    },
-    {
-      id: "card",
-      name: "Thẻ tín dụng / Ghi nợ",
-      desc: "Visa, Mastercard, JCB",
-      icon: <CreditCard size={20} />,
-    },
-    {
-      id: "gpay",
-      name: "Google Pay",
-      desc: "Thanh toán nhanh",
-      icon: <SmartphoneIcon size={20} />,
-    },
-  ];
-
   return (
-    <main className={s.checkoutPage}>
-      {/* Progress bar */}
-      <div className={s.progressBar}>
-        <div className={s.progressStep}>
-          <div className={`${s.stepCircle} ${s.stepCompleted}`}>
-            <Check size={16} />
-          </div>
-          <span className={`${s.stepLabel} ${s.stepLabelCompleted}`}>
-            Chọn gói
-          </span>
-          <div className={`${s.stepConnector} ${s.stepConnectorDone}`} />
-        </div>
+    <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-32 pt-32 lg:pt-40 font-['Nunito_Sans']">
+      <button 
+        onClick={() => step === 3 ? setStep(2) : router.back()} 
+        className="flex items-center gap-2 text-slate-600 hover:text-midnight-ink font-semibold mb-8 transition-colors"
+      >
+        <ArrowLeft className="w-5 h-5" /> {step === 3 ? "Quay lại nhập thông tin" : "Quay lại chọn gói"}
+      </button>
 
-        <div className={s.progressStep}>
-          <div
-            className={`${s.stepCircle} ${
-              step === 2 ? s.stepActive : s.stepCompleted
-            }`}
-          >
-            {step > 2 ? <Check size={16} /> : "2"}
-          </div>
-          <span
-            className={`${s.stepLabel} ${
-              step === 2
-                ? s.stepLabelActive
-                : step > 2
-                ? s.stepLabelCompleted
-                : ""
-            }`}
-          >
-            Điền thông tin
-          </span>
-          <div
-            className={`${s.stepConnector} ${
-              step > 2 ? s.stepConnectorDone : ""
-            }`}
-          />
-        </div>
-
-        <div className={s.progressStep}>
-          <div
-            className={`${s.stepCircle} ${step === 3 ? s.stepActive : ""}`}
-          >
-            3
-          </div>
-          <span
-            className={`${s.stepLabel} ${
-              step === 3 ? s.stepLabelActive : ""
-            }`}
-          >
-            Thanh toán
-          </span>
-        </div>
-      </div>
-
-      <div className={s.checkoutGrid}>
-        {/* Left content */}
-        <div>
-          {step === 2 ? (
-            <>
-              {/* Order info card */}
-              <div className={s.formCard} style={{ marginBottom: 16 }}>
-                <h2>
-                  <ShoppingCart size={20} /> Thông tin đơn hàng
-                </h2>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 12,
-                    padding: 16,
-                    background: "#f8fafc",
-                    borderRadius: 12,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 8,
-                      background:
-                        "linear-gradient(135deg, #1e40af, #2563eb)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#fff",
-                      fontWeight: 700,
-                      fontSize: "0.875rem",
-                      flexShrink: 0,
-                    }}
-                  >
-                    eSIM
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontWeight: 700,
-                        color: "#1e293b",
-                        fontSize: "0.9375rem",
-                      }}
-                    >
-                      eSIM {pkg.destination} | {pkg.network}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "0.8125rem",
-                        color: "#64748b",
-                        marginTop: 4,
-                      }}
-                    >
-                      {variant.desc} &middot; x{qty}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contact info */}
-              <div className={s.formCard}>
-                <h2>
-                  <Mail size={20} /> Thông tin liên lạc
-                </h2>
-                <div className={s.formGroup}>
-                  <label>
-                    Địa chỉ email <span style={{ color: "#ef4444" }}>*</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* Left Column */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {step === 2 && (
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+              <h2 className="text-2xl font-bold text-midnight-ink mb-2">Thông tin liên lạc</h2>
+              <p className="text-slate-500 mb-8">Vui lòng cung cấp thông tin để chúng tôi gửi mã QR eSIM cho bạn.</p>
+              
+              <div className="space-y-6 max-w-2xl">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Địa chỉ email <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
@@ -248,317 +140,197 @@ export default function CheckoutPage() {
                       if (emailError) setEmailError("");
                     }}
                     placeholder="name@email.com"
-                    className={emailError ? s.inputError : ""}
+                    className={`w-full h-14 px-4 rounded-xl border ${emailError ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-200'} focus:ring-2 focus:ring-hb-navy focus:border-transparent outline-none transition-all text-lg`}
                   />
                   {emailError ? (
-                    <div className={s.errorText}>{emailError}</div>
+                    <p className="text-red-500 text-sm mt-2">{emailError}</p>
                   ) : (
-                    <div className={s.helperText}>
-                      Mã kích hoạt eSIM sẽ được gửi về địa chỉ email này.
-                    </div>
+                    <p className="text-slate-500 text-sm mt-2">Mã kích hoạt eSIM sẽ được gửi qua email này, hãy kiểm tra kỹ nhé.</p>
                   )}
                 </div>
 
                 {contactName ? (
-                  <div
-                    style={{
-                      background: "#f8fafc",
-                      borderRadius: 12,
-                      padding: 14,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div>
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          color: "#1e293b",
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {contactName}
+                    <div className="bg-blue-50 rounded-xl p-4 flex justify-between items-center border border-blue-100">
+                      <div>
+                        <div className="font-bold text-midnight-ink">{contactName}</div>
+                        <div className="text-slate-600 mt-1">{contactPhone}</div>
                       </div>
-                      <div style={{ fontSize: "0.8125rem", color: "#64748b" }}>
-                        {contactPhone}
-                      </div>
+                      <button onClick={() => setShowContact(true)} className="text-hb-navy text-sm font-bold hover:underline px-4 py-2">Sửa thông tin</button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowContact(true)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: "#1e40af",
-                        fontSize: "0.8125rem",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                      }}
-                    >
-                      Chỉnh sửa
-                    </button>
-                  </div>
                 ) : (
-                  <button
-                    type="button"
-                    className={s.btnSecondary}
-                    onClick={() => setShowContact(true)}
-                    style={{ marginTop: 4 }}
-                  >
-                    <User size={16} /> Thêm thông tin liên lạc
-                  </button>
+                    <button onClick={() => setShowContact(true)} className="flex items-center justify-center gap-2 w-full h-14 rounded-xl border-2 border-dashed border-slate-300 text-slate-600 font-bold hover:border-hb-navy hover:text-hb-navy hover:bg-blue-50 transition-colors">
+                      <User className="w-5 h-5" /> Thêm Họ tên & Số điện thoại (Tùy chọn)
+                    </button>
                 )}
+              </div>
+            </div>
+          )}
 
-                <div className={s.noteBox} style={{ marginTop: 16 }}>
-                  <div className={s.noteText}>
-                    Vui lòng điền thông tin chính xác. Thông tin không thể chỉnh
-                    sửa sau khi gửi.
-                  </div>
+          {step === 3 && (
+            <div className="space-y-6">
+              {/* Countdown Banner */}
+              <div className="bg-[#FFF7ED] border border-[#FED7AA] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <Clock className="text-[#92400E] w-5 h-5" />
+                  <span className="text-[#92400E] font-medium text-sm">Vui lòng hoàn tất thanh toán trong:</span>
                 </div>
+                <div className="font-mono text-[#F27145] text-xl font-bold tracking-wider">{formatTime(timeLeft)}</div>
               </div>
 
-              <div style={{ marginTop: 16 }}>
-                <button
-                  type="button"
-                  className={s.btnPrimary}
-                  onClick={handleContinue}
+              {/* Collapsible Step 2 Summary */}
+              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <button 
+                  onClick={() => setSummaryOpen(!summaryOpen)} 
+                  className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors"
                 >
-                  Tiếp tục thanh toán <ChevronRight size={18} />
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="text-green-600 w-5 h-5" />
+                    <span className="font-bold text-slate-800 text-lg">Thông tin khách hàng & Đơn hàng</span>
+                  </div>
+                  <ChevronDown className={`text-slate-400 transition-transform duration-300 ${summaryOpen ? 'rotate-180' : ''}`} />
                 </button>
-              </div>
-            </>
-          ) : (
-            /* Step 3 — Payment */
-            <>
-              <div className={s.formCard} style={{ marginBottom: 16 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    background: "#eff6ff",
-                    borderRadius: 12,
-                    padding: 14,
-                    marginBottom: 20,
-                  }}
-                >
-                  <Shield size={20} style={{ color: "#1e40af" }} />
-                  <div>
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        color: "#1e40af",
-                        fontSize: "0.875rem",
-                      }}
-                    >
-                      Giao dịch an toàn &amp; bảo mật
-                    </div>
-                    <div
-                      style={{ fontSize: "0.8125rem", color: "#1e40af" }}
-                    >
-                      Thông tin thanh toán được mã hóa 256-bit SSL
-                    </div>
-                  </div>
-                </div>
-
-                <h2>Phương thức thanh toán</h2>
-
-                {paymentMethods.map((pm) => (
-                  <button
-                    key={pm.id}
-                    type="button"
-                    className={`${s.paymentMethodCard} ${
-                      paymentMethod === pm.id ? s.paymentMethodActive : ""
-                    }`}
-                    onClick={() => setPaymentMethod(pm.id)}
-                    style={{ width: "100%", textAlign: "left" }}
-                  >
-                    <div className={s.paymentMethodIcon}>{pm.icon}</div>
-                    <div className={s.paymentMethodInfo}>
-                      <div className={s.paymentMethodName}>{pm.name}</div>
-                      <div className={s.paymentMethodDesc}>{pm.desc}</div>
-                    </div>
-                    <div className={s.radioCardDot} />
-                  </button>
-                ))}
-
-                {paymentMethod === "card" && (
-                  <div
-                    style={{
-                      marginTop: 12,
-                      padding: 16,
-                      background: "#f8fafc",
-                      borderRadius: 12,
-                    }}
-                  >
-                    <div className={s.formGroup}>
-                      <label>Số thẻ</label>
-                      <input
-                        type="text"
-                        placeholder="0000 0000 0000 0000"
-                        style={{ fontFamily: "'DM Mono', monospace" }}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: 12,
-                      }}
-                    >
-                      <div className={s.formGroup}>
-                        <label>Ngày hết hạn</label>
-                        <input type="text" placeholder="MM/YY" />
+                {summaryOpen && (
+                  <div className="px-6 pb-6 pt-2 border-t border-slate-100 text-sm text-slate-700 bg-slate-50/50">
+                    <div className="space-y-3 mt-4">
+                      <div className="flex border-b border-slate-200 pb-2">
+                        <span className="w-1/3 text-slate-500">Email nhận eSIM:</span> 
+                        <span className="w-2/3 font-bold text-midnight-ink">{email}</span>
                       </div>
-                      <div className={s.formGroup}>
-                        <label>CVV</label>
-                        <input type="text" placeholder="000" />
+                      <div className="flex border-b border-slate-200 pb-2">
+                        <span className="w-1/3 text-slate-500">Họ và tên:</span> 
+                        <span className="w-2/3 font-semibold text-midnight-ink">{contactName || 'Không có'}</span>
+                      </div>
+                      <div className="flex border-b border-slate-200 pb-2">
+                        <span className="w-1/3 text-slate-500">Số điện thoại:</span> 
+                        <span className="w-2/3 font-semibold text-midnight-ink">{contactPhone || 'Không có'}</span>
                       </div>
                     </div>
                   </div>
                 )}
+              </div>
 
-                <div
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "#64748b",
-                    marginTop: 16,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  Bằng việc nhấn &quot;Thanh toán ngay&quot;, bạn đồng ý với{" "}
-                  <a href="#" style={{ color: "#1e40af" }}>
-                    Điều khoản dịch vụ
-                  </a>{" "}
-                  và{" "}
-                  <a href="#" style={{ color: "#1e40af" }}>
-                    Chính sách bảo mật
-                  </a>{" "}
-                  của HappyBook Travel.
+              {/* Security Badge */}
+              <div className="bg-[#EFF6FF] rounded-xl p-4 flex items-center gap-4 border border-[#DBEAFE]">
+                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center flex-shrink-0 text-[#1E40AF]">
+                  <Shield className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#1E40AF] text-sm md:text-base">Giao dịch an toàn & bảo mật</h4>
+                  <p className="text-xs md:text-sm text-slate-600 leading-relaxed mt-1">Thông tin thanh toán của bạn được mã hóa 256-bit SSL để đảm bảo an toàn tuyệt đối.</p>
                 </div>
               </div>
 
-              <button
-                type="button"
-                className={s.btnPrimary}
-                onClick={handlePay}
-              >
-                Thanh toán ngay — {formatPrice(total)}
-              </button>
+              {/* Payment Methods Section */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <h3 className="text-xl font-bold text-midnight-ink">Phương thức thanh toán</h3>
+                <div className="space-y-4">
+                  {/* VietQR */}
+                  <label htmlFor="payment_vietqr" className={`flex items-center p-4 bg-white border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'vietqr' ? 'border-hb-coral bg-[#FFFBF7] shadow-[0_0_0_4px_rgba(242,113,69,0.1)]' : 'border-slate-200 hover:border-slate-300'}`}>
+                    <input
+                      type="radio"
+                      value="vietqr"
+                      id="payment_vietqr"
+                      checked={paymentMethod === "vietqr"}
+                      onChange={(e) => setPaymentMethod(e.target.value as "vietqr")}
+                      className="w-5 h-5 text-hb-coral focus:ring-hb-coral accent-hb-coral mr-4"
+                    />
+                    <Image src="/payment-method/transfer.svg" alt="Chuyển khoản" width={32} height={32} className="mr-3" />
+                    <span className="font-bold text-slate-800 text-lg">Thanh toán quét mã QR</span>
+                  </label>
 
-              <button
-                type="button"
-                className={s.btnSecondary}
-                onClick={() => setStep(2)}
-                style={{ marginTop: 8 }}
-              >
-                Quay lại
-              </button>
-            </>
+                  {/* OnePay */}
+                  <label htmlFor="payment_onepay" className={`flex items-center p-4 bg-white border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'onepay' ? 'border-hb-coral bg-[#FFFBF7] shadow-[0_0_0_4px_rgba(242,113,69,0.1)]' : 'border-slate-200 hover:border-slate-300'}`}>
+                    <input
+                      type="radio"
+                      value="onepay"
+                      id="payment_onepay"
+                      checked={paymentMethod === "onepay"}
+                      onChange={(e) => setPaymentMethod(e.target.value as "onepay")}
+                      className="w-5 h-5 text-hb-coral focus:ring-hb-coral accent-hb-coral mr-4"
+                    />
+                    <Image src="/payment-method/visa.svg" alt="Visa/MasterCard" width={54} height={32} className="mr-3 object-contain" />
+                    <span className="font-bold text-slate-800 text-lg">Thẻ tín dụng / Ghi nợ quốc tế</span>
+                  </label>
+                </div>
+                
+                <div className="pt-6 border-t border-slate-100">
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                      Bằng việc nhấn "Thanh toán ngay", bạn đồng ý với <a className="text-[#1E40AF] font-semibold hover:underline" href="#">Điều khoản dịch vụ</a> và <a className="text-[#1E40AF] font-semibold hover:underline" href="#">Chính sách bảo mật</a> của HappyBook.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Right: Order summary sidebar */}
-        <div className={s.sidebar}>
-          <div className={s.orderCard}>
-            <div className={s.orderCardHeader}>
-              <h3>Tóm tắt đơn hàng</h3>
-            </div>
-            <div className={s.orderCardBody}>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 12,
-                  marginBottom: 16,
-                  padding: 12,
-                  background: "#f8fafc",
-                  borderRadius: 12,
-                }}
-              >
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 8,
-                    background: "linear-gradient(135deg, #1e40af, #2563eb)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                    flexShrink: 0,
-                  }}
-                >
-                  eSIM
+        {/* Right Column: Order Summary Sticky */}
+        <div className="lg:col-span-4 lg:sticky lg:top-[140px] space-y-6 h-fit">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-100/50 overflow-hidden">
+            <div className="p-6 md:p-8 space-y-6">
+              <h3 className="text-xl font-bold text-midnight-ink">Tóm tắt đơn hàng</h3>
+              
+              {/* Product Item */}
+              <div className="flex gap-4 pb-6 border-b border-slate-100">
+                <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-hb-navy to-blue-500 flex-shrink-0 flex items-center justify-center text-white shadow-inner">
+                    <span className="font-bold text-lg">eSIM</span>
                 </div>
-                <div>
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      color: "#1e293b",
-                      fontSize: "0.875rem",
-                    }}
-                  >
-                    eSIM {pkg.destination}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "#64748b",
-                      marginTop: 2,
-                    }}
-                  >
-                    {variant.desc} &middot; x{qty}
-                  </div>
+                <div className="space-y-1">
+                  <h4 className="font-bold text-slate-800 leading-tight">eSIM {pkg.destination}</h4>
+                  <p className="text-sm text-slate-500 line-clamp-2">{variant.desc} - {pkg.network}</p>
+                  <p className="text-sm font-semibold text-slate-600 mt-2">Số lượng: {qty < 10 ? `0${qty}` : qty}</p>
                 </div>
               </div>
 
-              <div className={s.orderLine}>
-                <span className={s.orderLineLabel}>Tạm tính</span>
-                <span className={s.orderLineValue}>
-                  {formatPrice(subtotal)}
-                </span>
-              </div>
-              <div className={s.orderLine}>
-                <span className={s.orderLineLabel}>Phí xử lý</span>
-                <span className={s.orderLineValue}>
-                  {serviceFee === 0 ? "Miễn phí" : formatPrice(serviceFee)}
-                </span>
-              </div>
-
-              <hr className={s.orderDivider} />
-
-              <div className={s.orderTotal}>
-                <span className={s.orderTotalLabel}>Số tiền thanh toán</span>
-                <span className={s.orderTotalValue}>
-                  {formatPrice(total)}
-                </span>
-              </div>
-
-              {step === 3 && (
-                <div
-                  className={s.countdownTimer}
-                  style={{ marginTop: 16, justifyContent: "center" }}
-                >
-                  <Clock size={18} />
-                  Giữ chỗ: {timeLeft}
+              {/* Price Breakdown */}
+              <div className="space-y-3">
+                <div className="flex justify-between text-slate-600 font-medium">
+                  <span>Tạm tính</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
-              )}
+                <div className="flex justify-between text-slate-600 font-medium">
+                  <span>Phí dịch vụ</span>
+                  <span className={serviceFee === 0 ? "text-slate-400 italic font-normal" : ""}>
+                    {serviceFee === 0 ? "Miễn phí" : formatPrice(serviceFee)}
+                  </span>
+                </div>
+              </div>
 
-              <div className={s.securityBadge}>
-                <Shield size={20} />
-                <span className={s.securityText}>
-                  Thanh toán bảo mật — Dữ liệu mã hóa 256-bit PCI DSS
-                </span>
+              {/* Total Section */}
+              <div className="pt-6 border-t border-slate-100 space-y-6">
+                <div className="flex flex-col items-end">
+                  <span className="text-sm font-bold text-slate-500 mb-1">Số tiền thanh toán:</span>
+                  <span className="text-3xl font-bold text-[#F27145]">{formatPrice(total)}</span>
+                </div>
+                
+                {step === 3 && (
+                    <button 
+                      onClick={handlePay} 
+                      className="w-full bg-[#F27145] text-white h-14 rounded-xl font-bold text-lg hover:bg-[#E06138] active:scale-[0.98] transition-all shadow-lg shadow-[#F27145]/30 flex items-center justify-center gap-2"
+                    >
+                        Thanh toán ngay <ChevronRight className="w-5 h-5" />
+                    </button>
+                )}
+                {step === 2 && (
+                    <button 
+                      onClick={handleContinue} 
+                      className="w-full bg-hb-navy text-white h-14 rounded-xl font-bold text-lg hover:bg-blue-900 active:scale-[0.98] transition-all shadow-lg shadow-hb-navy/30 flex items-center justify-center gap-2"
+                    >
+                        Tới bước thanh toán <ChevronRight className="w-5 h-5" />
+                    </button>
+                )}
               </div>
             </div>
+          </div>
+
+          {/* Help Link */}
+          <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
+            <Headphones className="w-5 h-5" />
+            <span>Cần hỗ trợ? <a className="text-[#1E40AF] font-bold hover:underline" href="#">Chat với chúng tôi</a></span>
           </div>
         </div>
       </div>
 
-      {/* Contact slide-over */}
+      {/* Contact slide-over for collecting name/phone */}
       {showContact && (
         <ContactSlideOver
           initialName={contactName}
@@ -570,4 +342,3 @@ export default function CheckoutPage() {
     </main>
   );
 }
-
