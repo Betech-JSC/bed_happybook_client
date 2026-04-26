@@ -2,22 +2,34 @@
 
 import { useEffect } from "react";
 import { X } from "lucide-react";
-import { formatPrice, type EsimPackage, type EsimVariant } from "../data/esim-catalog";
+import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  formatEsimMoney,
+  getEsimVariantMoney,
+  type EsimPackageView,
+  type EsimVariantView,
+} from "../lib/esim";
+import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 import s from "@/styles/esim.module.scss";
 
 interface Props {
-  pkg: EsimPackage;
+  pkg: EsimPackageView;
   currentSku: string;
-  onSelect: (variant: EsimVariant) => void;
+  locale?: string;
+  onSelect: (variant: EsimVariantView) => void;
   onClose: () => void;
 }
 
 export default function PackageSelectorModal({
   pkg,
   currentSku,
+  locale = "vi",
   onSelect,
   onClose,
 }: Props) {
+  const { language } = useLanguage();
+  const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+
   // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -39,8 +51,8 @@ export default function PackageSelectorModal({
     <div className={s.modalOverlay} onClick={onClose}>
       <div className={s.modalPanel} onClick={(e) => e.stopPropagation()}>
         <div className={s.modalHeader}>
-          <h2>Chọn gói dịch vụ — {pkg.destination}</h2>
-          <button type="button" onClick={onClose} aria-label="Đóng">
+          <h2>{t("Chọn gói dịch vụ —")} {pkg.destination}</h2>
+          <button type="button" onClick={onClose} aria-label={t("Đóng")}>
             <X size={20} />
           </button>
         </div>
@@ -54,11 +66,12 @@ export default function PackageSelectorModal({
               lineHeight: 1.5,
             }}
           >
-            Nhà mạng: {pkg.network} — {pkg.activation}
+            {t("Nhà mạng:")} {pkg.network || "N/A"} — {pkg.activation || "N/A"}
           </p>
 
           {pkg.variants.map((variant) => {
             const isActive = variant.sku === currentSku;
+            const money = getEsimVariantMoney(variant, locale);
             return (
               <button
                 key={variant.sku}
@@ -73,7 +86,7 @@ export default function PackageSelectorModal({
                   <div className={s.radioCardDesc}>SKU: {variant.sku}</div>
                 </div>
                 <div className={s.radioCardPrice}>
-                  {formatPrice(variant.price)}
+                  {formatEsimMoney(money.price, money.currency)}
                 </div>
               </button>
             );
@@ -82,7 +95,7 @@ export default function PackageSelectorModal({
 
         <div className={s.modalFooter}>
           <button type="button" className={s.btnPrimary} onClick={onClose}>
-            Xác nhận
+            {t("Xác nhận")}
           </button>
         </div>
       </div>
