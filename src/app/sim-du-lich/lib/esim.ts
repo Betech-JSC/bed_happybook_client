@@ -69,6 +69,9 @@ export interface ApiEsimPackage {
   network?: string;
   activation?: string;
   note?: string;
+  device_compatibility?: string;
+  refund_policy?: string;
+  footer_content?: string;
   status?: string;
   is_featured?: boolean | number | string;
   sort_order?: number | string;
@@ -117,6 +120,9 @@ export interface EsimPackageView {
   network: string;
   activation: string;
   note: string;
+  deviceCompatibility: string;
+  refundPolicy: string;
+  footerContent: string;
   isFeatured: boolean;
   variants: EsimVariantView[];
 }
@@ -259,6 +265,9 @@ export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
     network: toString(item.network),
     activation: toString(item.activation),
     note: toString(item.note),
+    deviceCompatibility: toString(item.device_compatibility),
+    refundPolicy: toString(item.refund_policy),
+    footerContent: toString(item.footer_content),
     isFeatured: toBoolean(item.is_featured),
     variants: variants.sort((a, b) => {
       if (a.validity !== b.validity) return a.validity - b.validity;

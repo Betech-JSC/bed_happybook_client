@@ -2,7 +2,7 @@
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { EsimCmsPageContent } from "../lib/cms-content";
+import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
 import { loadAllEsimPackages, loadEsimOptions } from "../lib/esim-loader";
 import {
   getEsimVariantMoney,
@@ -18,10 +18,11 @@ type DetailAccordionKey = "compatibility" | "refund" | "faq";
 
 type Args = {
   cmsPageContent: EsimCmsPageContent | null | undefined;
+  faqItems?: EsimCmsFaqItem[];
   activeLocale: Locale;
 };
 
-export function useEsimCatalog({ cmsPageContent, activeLocale }: Args) {
+export function useEsimCatalog({ cmsPageContent, faqItems, activeLocale }: Args) {
   const router = useRouter();
   const t = useSimDuLichStaticText(activeLocale);
   const [query, setQuery] = useState("");
@@ -229,9 +230,7 @@ export function useEsimCatalog({ cmsPageContent, activeLocale }: Args) {
   const detailSections = useEsimDetailSections({
     cmsPageContent,
     selectedPackage,
-    selectedVariant,
-    activeRegionLabel,
-    serviceTypeLabel,
+    faqItems,
     activeLocale,
   });
 

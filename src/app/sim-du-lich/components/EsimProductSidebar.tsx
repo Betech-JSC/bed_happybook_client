@@ -126,16 +126,20 @@ export default function EsimProductSidebar({
 
       <div className="bg-blue-50 rounded-12px p-4 border border-blue-100 flex gap-3">
         <Info className="w-10 h-6 -translate-y-1 text-hb-navy" />
-        <p className="text-xs text-hb-navy leading-relaxed font-medium">
-          {t("Dữ liệu sẽ được kích hoạt ngay khi bạn kết nối với mạng di động tại")}{" "}
-          <strong>{selectedPackage?.destination || activeRegionLabel}</strong>. Thời hạn sử dụng tính theo
-          {t("chu kỳ")} {selectedPackage?.activation ? selectedPackage.activation.toLowerCase() : t("gói dịch vụ")}.
-          <br />
-          <br />
-          <span className="opacity-80 block text-[11px] italic">
-            {selectedPackage?.note || t("Đang tải dữ liệu gói eSIM.")}
-          </span>
-        </p>
+        <div className="text-xs text-hb-navy leading-relaxed font-medium space-y-2">
+          <p>
+            <span className="font-semibold">{t("Điểm đến:")}</span>{" "}
+            <strong>{selectedPackage?.destination || activeRegionLabel}</strong>
+          </p>
+          {selectedPackage?.activation ? (
+            <p>
+              <span className="font-semibold">{t("Kích hoạt:")}</span> {selectedPackage.activation}
+            </p>
+          ) : null}
+          {selectedPackage?.note ? (
+            <p className="opacity-80 text-[11px]">{selectedPackage.note}</p>
+          ) : null}
+        </div>
       </div>
     </aside>
   );

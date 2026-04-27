@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
-import type { EsimCmsPageContent } from "../lib/cms-content";
+import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
 import EsimHeroSection from "./EsimHeroSection";
 import EsimPackageExplorer from "./EsimPackageExplorer";
 import EsimProductSidebar from "./EsimProductSidebar";
@@ -14,15 +14,18 @@ import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 export default function EsimProductPage({
   footerContent,
   cmsPageContent,
+  faqItems,
 }: {
   footerContent?: ReactNode;
   cmsPageContent?: EsimCmsPageContent | null;
+  faqItems?: EsimCmsFaqItem[];
 }) {
   const { language } = useLanguage();
   const activeLocale = language === "en" ? "en" : "vi";
   const t = useSimDuLichStaticText(activeLocale);
 
-  const catalog = useEsimCatalog({ cmsPageContent, activeLocale });
+  const catalog = useEsimCatalog({ cmsPageContent, faqItems, activeLocale });
+  const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 pb-32 pt-32 lg:pt-40">
@@ -70,6 +73,16 @@ export default function EsimProductPage({
           setOpenDetailSection={catalog.setOpenDetailSection}
         />
       </div>
+
+      {packageFooterContent ? (
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="mb-3 text-sm font-bold text-midnight-ink">{t("Nội dung")}</h3>
+          <div
+            className="space-y-3 text-sm leading-relaxed text-steel-secondary"
+            dangerouslySetInnerHTML={{ __html: packageFooterContent }}
+          />
+        </section>
+      ) : null}
 
       <div className="lg:hidden fixed bottom-16 sm:bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-40 flex items-center justify-between">
         <div>

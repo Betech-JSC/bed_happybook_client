@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import EsimProductPage from "./components/EsimProductPage";
 import FAQ from "@/components/content-page/FAQ";
+import { FaqApi } from "@/api/Faq";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { PageApi } from "@/api/Page";
 import { getServerLang } from "@/lib/session";
@@ -30,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SimDuLichPage() {
   const language = await getServerLang();
   const contentPage = (await PageApi.getContent("sim-du-lich", language))?.payload?.data as any;
+  const esimFaqItems = ((await FaqApi.list(2, language, "esim"))?.payload?.data as any[]) || [];
   const footerContent = (
     <div className="mt-16 sm:mt-24">
       <div className="mb-8 p-1 sm:p-8 bg-gray-50 rounded-3xl">
@@ -41,5 +43,11 @@ export default async function SimDuLichPage() {
     </div>
   );
 
-  return <EsimProductPage footerContent={footerContent} cmsPageContent={contentPage} />;
+  return (
+    <EsimProductPage
+      footerContent={footerContent}
+      cmsPageContent={contentPage}
+      faqItems={esimFaqItems}
+    />
+  );
 }
