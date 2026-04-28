@@ -18,6 +18,7 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "12px": "0.75rem",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -64,9 +65,6 @@ const config: Config = {
         "hb-coral": "#f27145",
         "midnight-ink": "#1e293b",
         "steel-secondary": "#64748b",
-      },
-      borderRadius: {
-        "12px": "0.75rem",
       },
     },
   },
