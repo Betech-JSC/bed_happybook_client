@@ -376,6 +376,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     orderCode,
     checkoutData,
     isPaid,
+    setIsPaid,
     pollingStatus,
     formatCheckoutAmount,
     formatTime,

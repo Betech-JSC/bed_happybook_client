@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import { CheckCircle2, ChevronDown, Clock, Shield } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { isEmpty } from "lodash";
+import { toast } from "react-hot-toast";
+import QRCodeDisplay from "@/components/Payment/QRCodeDisplay";
+import { PaymentApi } from "@/api/Payment";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { EsimCheckoutData, PaymentMethod } from "../types";
 import { useSimDuLichStaticText } from "../../hooks/useSimDuLichStaticText";
@@ -13,6 +17,7 @@ type Props = {
   setPaymentMethod: Dispatch<SetStateAction<PaymentMethod>>;
   checkoutData: EsimCheckoutData | null;
   isPaid: boolean;
+  setIsPaid: Dispatch<SetStateAction<boolean>>;
   orderCode: string;
   summaryOpen: boolean;
   setSummaryOpen: Dispatch<SetStateAction<boolean>>;
@@ -23,38 +28,13 @@ type Props = {
   formatTime: (seconds: number) => string;
 };
 
-function normalizeQrImageSrc(src?: string | null): string | null {
-  if (!src) {
-    return null;
-  }
-
-  const value = src.trim().replace(/^['"]|['"]$/g, "");
-  if (!value) {
-    return null;
-  }
-
-  const compactValue = value.replace(/\s+/g, "");
-  if (compactValue.startsWith("data:image/")) {
-    return compactValue;
-  }
-
-  if (compactValue.startsWith("http://") || compactValue.startsWith("https://") || compactValue.startsWith("/")) {
-    return compactValue;
-  }
-
-  if (/^[A-Za-z0-9+/=]+$/.test(compactValue)) {
-    return `data:image/png;base64,${compactValue}`;
-  }
-
-  return compactValue;
-}
-
 export default function CheckoutPaymentSection({
   isEnglish,
   paymentMethod,
   setPaymentMethod,
   checkoutData,
   isPaid,
+  setIsPaid,
   orderCode,
   summaryOpen,
   setSummaryOpen,
@@ -66,7 +46,64 @@ export default function CheckoutPaymentSection({
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
-  const qrImageSrc = normalizeQrImageSrc(checkoutData?.qr_display?.image_url);
+  const [vietQrData, setVietQrData] = useState<any>({});
+  const [qrCodeGenerated, setQrCodeGenerated] = useState(false);
+
+  useEffect(() => {
+    if (paymentMethod !== "vietqr") {
+      setVietQrData({});
+      setQrCodeGenerated(false);
+      return;
+    }
+
+    if (qrCodeGenerated) {
+      return;
+    }
+
+    const totalAmount = checkoutData?.payable_amount ?? 0;
+    if (!orderCode || totalAmount <= 0) {
+      return;
+    }
+
+    let active = true;
+
+    const createReceipt = async () => {
+      try {
+        const receiptResult = await PaymentApi.createReceipt({
+          payment_method_id: 5,
+          total_amount: totalAmount,
+          description: "Thu đơn hàng",
+          note: "KH chuyển khoản",
+          allocations: [
+            {
+              ref_type: "order",
+              ref_code: orderCode,
+              amount: totalAmount,
+            },
+          ],
+        });
+
+        if (!active) return;
+
+        if (receiptResult?.data) {
+          setVietQrData(receiptResult.data);
+          setQrCodeGenerated(true);
+        } else {
+          throw new Error("Không thể tạo receipt");
+        }
+      } catch (error) {
+        if (!active) return;
+        console.error("Error creating eSIM QR receipt:", error);
+        toast.error(t("khong_the_tao_ma_qr_thanh_toan"));
+      }
+    };
+
+    void createReceipt();
+
+    return () => {
+      active = false;
+    };
+  }, [checkoutData?.payable_amount, orderCode, paymentMethod, qrCodeGenerated, t]);
 
   return (
     <div className="space-y-6">
@@ -235,7 +272,7 @@ export default function CheckoutPaymentSection({
           </p>
         </div>
 
-        {paymentMethod === "vietqr" && checkoutData?.qr_display && (
+        {paymentMethod === "vietqr" && (
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-4">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -253,41 +290,18 @@ export default function CheckoutPaymentSection({
               </div>
             </div>
 
-            {qrImageSrc ? (
-              <div className="w-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={qrImageSrc}
-                  alt="QR thanh toán eSIM"
-                  className="block h-56 w-56 rounded-xl object-contain"
-                />
+            {!isEmpty(vietQrData) ? (
+              <QRCodeDisplay
+                vietQrData={vietQrData}
+                order={{ sku: orderCode }}
+                isPaid={isPaid}
+                setIsPaid={setIsPaid}
+              />
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+                {t("Đang tạo mã QR thanh toán...")}
               </div>
-            ) : null}
-
-            <div className="grid gap-3 text-sm text-slate-700">
-              <div className="flex justify-between gap-6">
-                <span className="text-slate-500">{t("Số tài khoản")}</span>
-                <span className="font-semibold text-right">
-                  {checkoutData.qr_display.bank_account_number || "-"}
-                </span>
-              </div>
-              <div className="flex justify-between gap-6">
-                <span className="text-slate-500">{t("Chủ tài khoản")}</span>
-                <span className="font-semibold text-right">
-                  {checkoutData.qr_display.bank_account_name || "-"}
-                </span>
-              </div>
-              <div className="flex justify-between gap-6">
-                <span className="text-slate-500">{t("Ngân hàng")}</span>
-                <span className="font-semibold text-right">{checkoutData.qr_display.bank_name || "-"}</span>
-              </div>
-              <div className="flex justify-between gap-6">
-                <span className="text-slate-500">{t("Nội dung chuyển khoản")}</span>
-                <span className="font-semibold text-right">
-                  {checkoutData.qr_display.transaction_note || orderCode || "-"}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
         )}
       </div>
