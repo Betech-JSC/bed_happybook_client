@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { X, User, Phone } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 import s from "@/styles/esim.module.scss";
 
 interface Props {
@@ -17,6 +19,9 @@ export default function ContactSlideOver({
   onSave,
   onClose,
 }: Props) {
+  const { language } = useLanguage();
+  const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);
   const [nameError, setNameError] = useState("");
@@ -43,17 +48,17 @@ export default function ContactSlideOver({
     let valid = true;
 
     if (!name.trim()) {
-      setNameError("Vui lòng nhập họ tên");
+      setNameError(t("Vui lòng nhập họ tên"));
       valid = false;
     } else {
       setNameError("");
     }
 
     if (!phone.trim()) {
-      setPhoneError("Vui lòng nhập số điện thoại");
+      setPhoneError(t("Vui lòng nhập số điện thoại"));
       valid = false;
     } else if (!/^[0-9+\-\s()]{8,15}$/.test(phone.trim())) {
-      setPhoneError("Số điện thoại không hợp lệ");
+      setPhoneError(t("Số điện thoại không hợp lệ"));
       valid = false;
     } else {
       setPhoneError("");
@@ -62,15 +67,15 @@ export default function ContactSlideOver({
     if (valid) {
       onSave(name.trim(), phone.trim());
     }
-  }, [name, phone, onSave]);
+  }, [name, onSave, phone, t]);
 
   return (
     <>
       <div className={s.slideOverlay} onClick={onClose} />
       <div className={s.slidePanel}>
         <div className={s.slideHeader}>
-          <h2>Thêm thông tin liên lạc</h2>
-          <button type="button" onClick={onClose} aria-label="Đóng">
+          <h2>{t("Thêm thông tin liên lạc")}</h2>
+          <button type="button" onClick={onClose} aria-label={t("Đóng")}>
             <X size={20} />
           </button>
         </div>
@@ -84,8 +89,7 @@ export default function ContactSlideOver({
               lineHeight: 1.6,
             }}
           >
-            Thông tin liên lạc sẽ được sử dụng trong trường hợp cần hỗ trợ kỹ
-            thuật hoặc xử lý sự cố với eSIM của bạn.
+            {t("Thông tin liên lạc sẽ được sử dụng trong trường hợp cần hỗ trợ kỹ thuật hoặc xử lý sự cố với eSIM của bạn.")}
           </p>
 
           <div className={s.formGroup}>
@@ -94,7 +98,7 @@ export default function ContactSlideOver({
                 size={14}
                 style={{ display: "inline", marginRight: 6, verticalAlign: "middle" }}
               />
-              Họ và tên <span style={{ color: "#ef4444" }}>*</span>
+              {t("Họ và tên")} <span style={{ color: "#ef4444" }}>*</span>
             </label>
             <input
               type="text"
@@ -103,7 +107,7 @@ export default function ContactSlideOver({
                 setName(e.target.value);
                 if (nameError) setNameError("");
               }}
-              placeholder="Ví dụ: Nguyen Van A"
+              placeholder={t("Ví dụ: Nguyen Van A")}
               className={nameError ? s.inputError : ""}
             />
             {nameError && <div className={s.errorText}>{nameError}</div>}
@@ -115,7 +119,7 @@ export default function ContactSlideOver({
                 size={14}
                 style={{ display: "inline", marginRight: 6, verticalAlign: "middle" }}
               />
-              Số điện thoại <span style={{ color: "#ef4444" }}>*</span>
+              {t("Số điện thoại")} <span style={{ color: "#ef4444" }}>*</span>
             </label>
             <input
               type="tel"
@@ -124,7 +128,7 @@ export default function ContactSlideOver({
                 setPhone(e.target.value);
                 if (phoneError) setPhoneError("");
               }}
-              placeholder="Ví dụ: 0909 123 456"
+              placeholder={t("Ví dụ: 0909 123 456")}
               className={phoneError ? s.inputError : ""}
             />
             {phoneError && <div className={s.errorText}>{phoneError}</div>}
@@ -133,7 +137,7 @@ export default function ContactSlideOver({
 
         <div className={s.slideFooter}>
           <button type="button" className={s.btnPrimary} onClick={handleSave}>
-            Lưu thông tin
+            {t("Lưu thông tin")}
           </button>
           <button
             type="button"
@@ -141,7 +145,7 @@ export default function ContactSlideOver({
             onClick={onClose}
             style={{ marginTop: 8 }}
           >
-            Huỷ bỏ
+            {t("Huỷ bỏ")}
           </button>
         </div>
       </div>

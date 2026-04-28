@@ -1,49 +1,74 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
   const status = searchParams.get("status");
+  const paymentMethod = (searchParams.get("payment_method") || "").toLowerCase();
+  const orderCode = searchParams.get("id") || searchParams.get("order_code") || "";
 
   const isSuccess = status === "success";
+  const isEnglish = paymentMethod === "paypal";
+
+  const successTitle = isEnglish ? "Payment successful!" : "Thanh toán thành công!";
+  const successBodyTop = isEnglish
+    ? "Thank you for your order."
+    : "Cảm ơn bạn đã đặt hàng.";
+  const successBodyBottom = isEnglish
+    ? "Your eSIM order will be processed shortly."
+    : "Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.";
+  const errorTitle = isEnglish ? "Payment failed" : "Thanh toán thất bại";
+  const errorBodyTop = isEnglish
+    ? "An error occurred during payment."
+    : "Đã xảy ra lỗi trong quá trình thanh toán.";
+  const errorBodyBottom = isEnglish
+    ? "Please try again or contact support for assistance."
+    : "Vui lòng thử lại hoặc liên hệ CSKH để được hỗ trợ.";
+  const homeLabel = isEnglish ? "Back to home" : "Quay về trang chủ";
 
   return (
-    <div className="pt-[90px] lg:min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
+      <div className="w-full max-w-2xl rounded-[28px] bg-white px-6 py-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.12)]">
         {isSuccess ? (
           <>
-            <CheckCircle className="text-green-500 w-16 h-16 mx-auto" />
-            <h2 className="text-2xl font-semibold text-green-700 mt-4">
-              Thanh toán thành công!
+            <CheckCircle className="mx-auto h-20 w-20 text-green-500" strokeWidth={1.8} />
+            <h2 className="mt-6 text-3xl font-semibold text-green-700">
+              {successTitle}
             </h2>
-            <p className="text-gray-600 mt-2">Cảm ơn bạn đã đặt hàng.</p>{" "}
-            <p className="text-gray-600">
-              Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.
+            <p className="mt-4 text-xl text-slate-600 leading-relaxed">
+              {successBodyTop}
+              <br />
+              {successBodyBottom}
             </p>
+            {orderCode ? (
+              <p className="mt-6 text-lg text-slate-500">
+                {isEnglish ? "Order code: " : "Mã đơn: "}
+                <span className="font-medium text-slate-700">{orderCode}</span>
+              </p>
+            ) : null}
           </>
         ) : (
           <>
-            <XCircle className="text-red-500 w-16 h-16 mx-auto" />
-            <h2 className="text-2xl font-semibold text-red-700 mt-4">
-              Thanh toán thất bại
+            <XCircle className="mx-auto h-20 w-20 text-red-500" strokeWidth={1.8} />
+            <h2 className="mt-6 text-3xl font-semibold text-red-700">
+              {errorTitle}
             </h2>
-            <p className="text-gray-600 mt-2">
-              Đã xảy ra lỗi trong quá trình thanh toán.
-            </p>
-            <p className="text-gray-600">
-              Vui lòng thử lại hoặc liên hệ CSKH để được hỗ trợ.
+            <p className="mt-4 text-xl text-slate-600 leading-relaxed">
+              {errorBodyTop}
+              <br />
+              {errorBodyBottom}
             </p>
           </>
         )}
 
         <Link
           href="/"
-          className="inline-block mt-6 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="mt-8 inline-flex min-w-[260px] items-center justify-center rounded-2xl bg-blue-600 px-8 py-4 text-xl font-medium text-white shadow-lg transition hover:bg-blue-700"
         >
-          Quay về trang chủ
+          {homeLabel}
         </Link>
       </div>
     </div>

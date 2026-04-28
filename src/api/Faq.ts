@@ -2,9 +2,10 @@ import { arrLanguages } from "@/constants/language";
 import http from "@/lib/http";
 
 const FaqApi = {
-  list: (attribute_id: number = 2, locale?: string) => {
+  list: (attribute_id: number = 2, locale?: string, site?: string) => {
     locale = locale && arrLanguages.includes(locale) ? locale : "vi";
-    return http.get<any>(`/faqs?attribute_id=${attribute_id}&locale=${locale}`);
+    const siteQuery = site ? `&site=${encodeURIComponent(site)}` : "";
+    return http.get<any>(`/faqs?attribute_id=${attribute_id}&locale=${locale}${siteQuery}`);
   },
 };
 
