@@ -17,6 +17,7 @@ const FlightInternational1GDetail = ({
   setFlightDetail,
   fareData,
   airports,
+  isCheapest,
 }: any) => {
   const { t } = useTranslation();
 
@@ -34,6 +35,11 @@ const FlightInternational1GDetail = ({
     <Fragment>
       {journey.length > 0 && (
         <div className="h-fit p-2 pb-0">
+          {isCheapest && (
+            <div className="mb-2 inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold text-amber-700 shadow-sm">
+              {t("re_nhat")}
+            </div>
+          )}
           {journey.map((flight: any, key: number) => (
             <div
               key={key}

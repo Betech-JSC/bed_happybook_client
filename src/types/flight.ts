@@ -139,6 +139,10 @@ export interface ListFlight {
   flightStopNum: number[];
   translatedStaticText: any;
   isReady: boolean;
+  StartPoint?: string;
+  EndPoint?: string;
+  departDayPrices?: Record<string, number | null>;
+  returnDayPrices?: Record<string, number | null>;
 }
 export interface FlightDetailPopupProps {
   isOpen: boolean;
@@ -173,6 +177,7 @@ export interface FlightDetailProps {
   selectedFlight: any;
   totalPassengers: number;
   onSelectFlight: (flight: any, fareOptionIndex: number) => void;
+  isCheapest?: boolean;
   setFlightDetail: (
     flight: any,
     indexFareOption: number,

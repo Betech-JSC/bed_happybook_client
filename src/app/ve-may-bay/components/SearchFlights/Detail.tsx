@@ -23,6 +23,7 @@ const FlightDomesticDetail = ({
   onSelectFlight,
   selectedFlight,
   filters,
+  isCheapest,
   setFlightDetail,
   totalPassengers,
   translatedStaticText,
@@ -70,7 +71,12 @@ const FlightDomesticDetail = ({
   return (
     <Fragment>
       {flight && (
-        <div className="h-fit">
+        <div className={`h-fit ${isCheapest ? "relative" : ""}`}>
+          {isCheapest && (
+            <div className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold text-amber-700 shadow-sm">
+              {t("re_nhat")}
+            </div>
+          )}
           <div className="grid grid-cols-5 md:grid-cols-6 items-center justify-between gap-8 bg-white p-3 rounded-lg mt-2 relative">
             <div className="col-span-1 md:col-span-2">
               <div className="grid grid-cols-2 gap-2 md:gap-12">
