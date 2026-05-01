@@ -37,6 +37,7 @@ export default function ListFlights1GInternaltion({
   handleCheckout,
   isCheckOut,
   filters,
+  isCheapest,
 }: any) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -143,6 +144,7 @@ export default function ListFlights1GInternaltion({
                     fareData={flightsData}
                     selectedFareDataId={selectedFareDataId}
                     airports={airportsData}
+                    isCheapest={isCheapest}
                   />
                 </div>
               );

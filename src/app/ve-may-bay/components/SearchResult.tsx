@@ -517,6 +517,8 @@ export default function SearchFlightsResult({
         <ListFlights
           from={from}
           to={to}
+          StartPoint={StartPoint}
+          EndPoint={EndPoint}
           airportsData={airportsData}
           flightsData={flightsData}
           airlineData={airlineData}

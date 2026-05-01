@@ -1,8 +1,19 @@
 "use client";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { differenceInHours, format, isSameDay, parseISO } from "date-fns";
 import Image from "next/image";
-import { formatTimeFromHour, pareseDateFromString } from "@/lib/formatters";
+import {
+  formatCurrency,
+  formatTimeFromHour,
+  pareseDateFromString,
+} from "@/lib/formatters";
 import {
   getCurrentLanguage,
   handleScrollSmooth,
@@ -19,6 +30,11 @@ import FlightDomesticDetail from "./Detail";
 import TimeRangeSlider from "@/components/base/TimeRangeSlider";
 import SideBarFilterFlights from "../SideBarFilter";
 import { useTranslation } from "@/hooks/useTranslation";
+import {
+  getCheapestComparablePrice,
+  getDomesticDisplayedPrice,
+} from "../../lib/cheapest";
+import { buildCheapestFareMap } from "../../lib/day-prices";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -39,6 +55,8 @@ export default function ListFlights({
   isFullFlightResource,
   from,
   to,
+  StartPoint,
+  EndPoint,
   returnDate,
   departDate,
   currentDate,
@@ -72,6 +90,12 @@ export default function ListFlights({
   const [departLimit, setDepartLimit] = useState(INITIAL_LIMIT);
   const [returnLimit, setReturnLimit] = useState(INITIAL_LIMIT);
   const [filters, setFilters] = useState(defaultFilers);
+  const [departDayPrices, setDepartDayPrices] = useState<
+    Record<string, number | null>
+  >({});
+  const [returnDayPrices, setReturnDayPrices] = useState<
+    Record<string, number | null>
+  >({});
   // AOS is handled globally via AosProvider IntersectionObserver
   const scrollToRef = (ref: any) => {
     if (ref.current) {
@@ -281,7 +305,8 @@ export default function ListFlights({
     isRoundTrip,
   ]);
   // Group Flights
-  const groupFlights = (flights: any[]) => {
+  const groupFlights = useCallback(
+    (flights: any[]) => {
     if (flights.length < 1) {
       return isRoundTrip ? { 0: [], 1: [] } : { 0: [] };
     }
@@ -298,7 +323,9 @@ export default function ListFlights({
       listFlights[1] = [];
     }
     return listFlights;
-  };
+    },
+    [isRoundTrip]
+  );
 
   // Select Depart and Return Flight
   const handleSelectDepartFlight = (flight: any, fareOptionIndex: number) => {
@@ -338,6 +365,63 @@ export default function ListFlights({
       setIsCheckOut(true);
     }
   }, [isRoundTrip, selectedReturnFlight, selectedDepartFlight]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchCheapestPrices = async () => {
+      try {
+        if (!departDays?.length || !StartPoint || !EndPoint) return;
+
+        const departStartDate = format(departDays[0].date, "yyyy-MM-dd");
+        const departEndDate = format(
+          departDays[departDays.length - 1].date,
+          "yyyy-MM-dd"
+        );
+        const departResponse = await FlightApi.searchCheapestFare({
+          departure: StartPoint,
+          arrival: EndPoint,
+          startDate: departStartDate,
+          endDate: departEndDate,
+        });
+        const departList = departResponse?.payload?.data?.listMinPrice ?? [];
+        if (!cancelled) {
+          setDepartDayPrices(buildCheapestFareMap(departList));
+        }
+
+        if (isRoundTrip && returnDays?.length) {
+          const returnStartDate = format(returnDays[0].date, "yyyy-MM-dd");
+          const returnEndDate = format(
+            returnDays[returnDays.length - 1].date,
+            "yyyy-MM-dd"
+          );
+          const returnResponse = await FlightApi.searchCheapestFare({
+            departure: EndPoint,
+            arrival: StartPoint,
+            startDate: returnStartDate,
+            endDate: returnEndDate,
+          });
+          const returnList = returnResponse?.payload?.data?.listMinPrice ?? [];
+          if (!cancelled) {
+            setReturnDayPrices(buildCheapestFareMap(returnList));
+          }
+        } else if (!cancelled) {
+          setReturnDayPrices({});
+        }
+      } catch {
+        if (!cancelled) {
+          setDepartDayPrices({});
+          setReturnDayPrices({});
+        }
+      }
+    };
+
+    fetchCheapestPrices();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [departDays, returnDays, StartPoint, EndPoint, isRoundTrip]);
 
   const handleCheckout = useCallback(async () => {
     const res = await fetch("/api/set-session", {
@@ -381,11 +465,38 @@ export default function ListFlights({
     handleCheckout,
   ]);
 
-  let flightsGroup: any = groupFlights(filteredFlightsData);
-  let departFlightsData = flightsGroup[0] ?? [];
-  let returnFlightsData = flightsGroup[1] ?? [];
+  const flightsGroup: any = useMemo(
+    () => groupFlights(filteredFlightsData),
+    [filteredFlightsData, groupFlights]
+  );
+  const rawDepartFlightsData = useMemo(
+    () => flightsGroup[0] ?? [],
+    [flightsGroup]
+  );
+  const rawReturnFlightsData = useMemo(
+    () => flightsGroup[1] ?? [],
+    [flightsGroup]
+  );
+  let departFlightsData = rawDepartFlightsData;
+  let returnFlightsData = rawReturnFlightsData;
   if (selectedDepartFlight) departFlightsData = [selectedDepartFlight];
   if (selectedReturnFlight) returnFlightsData = [selectedReturnFlight];
+
+  const cheapestDepartPrice = useMemo(
+    () =>
+      getCheapestComparablePrice(rawDepartFlightsData, (flight: any) =>
+        getDomesticDisplayedPrice(flight, filters.priceWithoutTax)
+      ),
+    [rawDepartFlightsData, filters.priceWithoutTax]
+  );
+
+  const cheapestReturnPrice = useMemo(
+    () =>
+      getCheapestComparablePrice(rawReturnFlightsData, (flight: any) =>
+        getDomesticDisplayedPrice(flight, filters.priceWithoutTax)
+      ),
+    [rawReturnFlightsData, filters.priceWithoutTax]
+  );
 
   // Load more depart flights
   const visibleDepartData = departFlightsData.slice(0, departLimit);
@@ -447,6 +558,24 @@ export default function ListFlights({
       if (timeoutReturnId.current) clearTimeout(timeoutReturnId.current);
     };
   }, [returnLimit, returnFlightsData.length]);
+
+  const cheapestDepartIndex = useMemo(() => {
+    if (cheapestDepartPrice == null) return -1;
+    return visibleDepartData.findIndex(
+      (item: any) =>
+        getDomesticDisplayedPrice(item, filters.priceWithoutTax) ===
+        cheapestDepartPrice
+    );
+  }, [visibleDepartData, cheapestDepartPrice, filters.priceWithoutTax]);
+
+  const cheapestReturnIndex = useMemo(() => {
+    if (cheapestReturnPrice == null) return -1;
+    return visibleReturnData.findIndex(
+      (item: any) =>
+        getDomesticDisplayedPrice(item, filters.priceWithoutTax) ===
+        cheapestReturnPrice
+    );
+  }, [visibleReturnData, cheapestReturnPrice, filters.priceWithoutTax]);
 
   return (
     <Fragment>
@@ -515,6 +644,13 @@ export default function ListFlights({
                       <div className="text-xs md:text-sm mt-2">
                         {format(day.date, "dd/MM")}
                       </div>
+                      {departDayPrices[format(day.date, "yyyy-MM-dd")] != null && (
+                        <div className="mt-1 text-[11px] font-semibold text-orange-500">
+                          {formatCurrency(
+                            departDayPrices[format(day.date, "yyyy-MM-dd")] ?? 0
+                          )}
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -528,6 +664,7 @@ export default function ListFlights({
                           selectedFlight={selectedDepartFlight}
                           setFlightDetail={handleShowPopupFlightDetail}
                           filters={filters}
+                          isCheapest={index === cheapestDepartIndex}
                           totalPassengers={totalPassengers}
                           translatedStaticText={translatedStaticText}
                         />
@@ -610,6 +747,14 @@ export default function ListFlights({
                         <div className="text-xs md:text-sm mt-2">
                           {format(day.date, "dd/MM")}
                         </div>
+                        {returnDayPrices[format(day.date, "yyyy-MM-dd")] != null && (
+                          <div className="mt-1 text-[11px] font-semibold text-orange-500">
+                            {formatCurrency(
+                              returnDayPrices[format(day.date, "yyyy-MM-dd")] ??
+                                0
+                            )}
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -623,6 +768,7 @@ export default function ListFlights({
                             selectedFlight={selectedReturnFlight}
                             setFlightDetail={handleShowPopupFlightDetail}
                             filters={filters}
+                            isCheapest={index === cheapestReturnIndex}
                             totalPassengers={totalPassengers}
                             translatedStaticText={translatedStaticText}
                           />

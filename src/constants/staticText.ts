@@ -22,6 +22,7 @@ export const flightStaticText: string[] = [
   "Chuyến bay thẳng",
   "Bay thẳng",
   "Chọn",
+  "Rẻ nhất",
   "Hiển thị giá",
   "Giá chưa bao gồm thuế phí",
   "Thời gian khởi hành",
