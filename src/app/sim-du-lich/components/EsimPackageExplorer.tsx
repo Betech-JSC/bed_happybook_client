@@ -2,9 +2,7 @@
 
 import EsimPackageControls from "./EsimPackageControls";
 import EsimPackageDiscovery from "./EsimPackageDiscovery";
-import type { EsimPackageView, EsimVariantView } from "../lib/esim";
-
-type RegionOption = { value: string; label: string };
+import type { EsimFilterOption, EsimPackageView, EsimVariantView } from "../lib/esim";
 
 type Props = {
   selectedPackage: EsimPackageView | null;
@@ -13,13 +11,21 @@ type Props = {
   quantity: number;
   query: string;
   onQueryChange: (value: string) => void;
-  regionOptions: RegionOption[];
-  selectedRegionId: string;
-  onSelectRegion: (value: string) => void;
   loading: boolean;
   error: string;
   packages: EsimPackageView[];
   activeLocale: "vi" | "en";
+  showInternationalFilters?: boolean;
+  destinationOptions?: EsimFilterOption[];
+  selectedDestinationLabels?: string[];
+  onToggleDestinationLabel?: (label: string) => void;
+  onSelectDestinationLabel?: (label: string | null) => void;
+  onSelectPackageFilterSku?: (sku: string | null) => void;
+  packageQuery?: string;
+  onPackageQueryChange?: (value: string) => void;
+  priceRange?: [number, number];
+  priceBounds?: { min: number; max: number };
+  onPriceRangeChange?: (range: [number, number]) => void;
   onOpenModal: () => void;
   onSelectPackage: (pkg: EsimPackageView) => void;
   onSelectSkuByValidity: (validity: number) => void;
@@ -35,13 +41,21 @@ export default function EsimPackageExplorer({
   quantity,
   query,
   onQueryChange,
-  regionOptions,
-  selectedRegionId,
-  onSelectRegion,
   loading,
   error,
   packages,
   activeLocale,
+  showInternationalFilters = false,
+  destinationOptions = [],
+  selectedDestinationLabels = [],
+  onToggleDestinationLabel,
+  onSelectDestinationLabel,
+  onSelectPackageFilterSku,
+  packageQuery,
+  onPackageQueryChange,
+  priceRange,
+  priceBounds,
+  onPriceRangeChange,
   onOpenModal,
   onSelectPackage,
   onSelectSkuByValidity,
@@ -66,15 +80,23 @@ export default function EsimPackageExplorer({
       <EsimPackageDiscovery
         query={query}
         onQueryChange={onQueryChange}
-        regionOptions={regionOptions}
-        selectedRegionId={selectedRegionId}
-        onSelectRegion={onSelectRegion}
         loading={loading}
         error={error}
         packages={packages}
         activeLocale={activeLocale}
         selectedPackageSlug={selectedPackage?.slug || ""}
         onSelectPackage={onSelectPackage}
+        showInternationalFilters={showInternationalFilters}
+        destinationOptions={destinationOptions}
+        selectedDestinationLabels={selectedDestinationLabels}
+        onToggleDestinationLabel={onToggleDestinationLabel}
+        onSelectDestinationLabel={onSelectDestinationLabel}
+        onSelectPackageFilterSku={onSelectPackageFilterSku}
+        packageQuery={packageQuery}
+        onPackageQueryChange={onPackageQueryChange}
+        priceRange={priceRange}
+        priceBounds={priceBounds}
+        onPriceRangeChange={onPriceRangeChange}
       />
     </div>
   );
