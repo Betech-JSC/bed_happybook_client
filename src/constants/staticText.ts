@@ -145,6 +145,8 @@ const homeStaticText: string[] = [
   "Trải nghiệm sắc vàng và khám phá văn hóa mùa thu!",
   "Đa dạng lựa chọn khách sạn",
   "Bạn muốn đi đâu chơi?",
+  "Sim nổi bật",
+  "Chọn nhanh các gói eSIM nổi bật cho hành trình Việt Nam và quốc tế",
   "Cẩm nang du lịch",
   "Đối Tác Hàng Không",
   "Chúng tôi tự hào là đại lý cấp 1 của các hãng hàng không uy tín tại Việt Nam như:",
@@ -186,6 +188,8 @@ const headerStaticText: string[] = [
   "Sim du lịch",
   "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim",
   "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
+  "Sim du lịch Việt Nam",
+  "Sim du lịch quốc tế",
 ];
 
 const footerStaticText: string[] = [
@@ -447,10 +451,18 @@ const simDuLichStaticText: string[] = [
   "Chia sẻ",
   "Hỗ trợ hotspot",
   "Không hỗ trợ hotspot",
-  "Cam kết",
-  "Hoàn tiền đầy đủ",
+  "Kích hoạt",
+  "Kích hoạt dễ dàng",
+  "Sẵn sàng",
+  "Internet sẵn sàng ngay khi hạ cánh",
   "Chọn điểm đến khác",
+  "Quốc gia",
+  "Mức giá",
+  "Chọn quốc gia...",
+  "Không tìm thấy quốc gia",
   "Tìm theo quốc gia, khu vực...",
+  "Tìm theo hạn sử dụng, gói data...",
+  "Chọn hạn sử dụng, gói data...",
   "Không tìm thấy gói eSIM phù hợp.",
   "Từ",
   "Tổng cộng:",
@@ -463,6 +475,9 @@ const simDuLichStaticText: string[] = [
   "Tóm tắt",
   "Chưa chọn gói",
   "Đơn giá:",
+  "Chưa có dữ liệu mức giá.",
+  "Đặt lại",
+  "Câu hỏi thường gặp (FAQ)",
   "Thiếu thông tin gói eSIM.",
   "Không tìm thấy gói eSIM bạn đã chọn.",
   "Không thể tải chi tiết gói eSIM. Vui lòng thử lại sau.",
@@ -705,14 +720,18 @@ export const unifiedStaticText: string[] = [
 
 const staticTextTranslationCache = new Map<string, Promise<Record<string, string>>>();
 
+const getStaticTextCacheKey = (lang: string) => `${lang}:${unifiedStaticText.join("\u0001")}`;
+
 export async function getStaticTextTranslationMap(
   lang: string = "vi"
 ): Promise<Record<string, string>> {
+  const cacheKey = getStaticTextCacheKey(lang);
+
   if (lang === "vi") {
     return formatTranslationMap(unifiedStaticText);
   }
 
-  const cached = staticTextTranslationCache.get(lang);
+  const cached = staticTextTranslationCache.get(cacheKey);
   if (cached) return cached;
 
   const pending = (async () => {
@@ -720,6 +739,6 @@ export async function getStaticTextTranslationMap(
     return formatTranslationMap(unifiedStaticText, translated);
   })();
 
-  staticTextTranslationCache.set(lang, pending);
+  staticTextTranslationCache.set(cacheKey, pending);
   return pending;
 }

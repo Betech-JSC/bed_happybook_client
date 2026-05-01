@@ -1,5 +1,6 @@
 import { formatCurrency } from "@/lib/formatters";
 import { displayProductPrice } from "@/utils/Helper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function DisplayPriceWithDiscount({
   price,
@@ -10,6 +11,7 @@ export default function DisplayPriceWithDiscount({
   totalDiscount?: number;
   currency?: any;
 }) {
+  const { language } = useLanguage();
   const finalPrice =
     totalDiscount > 0 && price < totalDiscount ? 0 : price - totalDiscount;
   return (
@@ -23,7 +25,7 @@ export default function DisplayPriceWithDiscount({
             <p className="font-medium">
               {currency
                 ? displayProductPrice(price, currency)
-                : formatCurrency(price)}
+                : formatCurrency(price, language)}
             </p>
           </div>
           <div className="flex py-4 justify-between">
@@ -34,7 +36,7 @@ export default function DisplayPriceWithDiscount({
               {" "}
               {currency
                 ? displayProductPrice(totalDiscount, currency)
-                : formatCurrency(totalDiscount)}
+                : formatCurrency(totalDiscount, language)}
             </p>
           </div>
         </div>
@@ -46,7 +48,7 @@ export default function DisplayPriceWithDiscount({
         <p className="text-base lg:text-xl text-primary">
           {currency
             ? displayProductPrice(finalPrice, currency)
-            : formatCurrency(finalPrice)}
+            : formatCurrency(finalPrice, language)}
         </p>
       </div>
     </div>

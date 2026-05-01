@@ -26,6 +26,7 @@ const TouristSuggest = dynamic(() => import("@/components/home/tourist-suggest")
 const Flight = dynamic(() => import("@/components/home/flight"));
 const HomeYacht = dynamic(() => import("@/components/home/Yacht"));
 const HomeAmusementTicket = dynamic(() => import("@/components/home/AmusementTicket"));
+const HomeSimFeatured = dynamic(() => import("@/components/home/SimFeatured"));
 const HomeFastTrack = dynamic(() => import("@/components/home/FastTrack"));
 const HomeBusinessLounge = dynamic(() => import("@/components/home/BusinessLounge"));
 const FormContact = dynamic(() => import("./lien-he/form"));
@@ -164,6 +165,12 @@ export default async function Home() {
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <HomeBusinessLounge />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <HomeSimFeatured />
           </AosAnimate>
         </Suspense>
 

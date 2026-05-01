@@ -15,48 +15,110 @@ export default function EsimProductPage({
   footerContent,
   cmsPageContent,
   faqItems,
+  initialCategory,
+  initialPackageSlug,
 }: {
   footerContent?: ReactNode;
   cmsPageContent?: EsimCmsPageContent | null;
   faqItems?: EsimCmsFaqItem[];
+  initialCategory?: string;
+  initialPackageSlug?: string;
 }) {
   const { language } = useLanguage();
   const activeLocale = language === "en" ? "en" : "vi";
   const t = useSimDuLichStaticText(activeLocale);
 
-  const catalog = useEsimCatalog({ cmsPageContent, faqItems, activeLocale });
+  const catalog = useEsimCatalog({
+    cmsPageContent,
+    faqItems,
+    activeLocale,
+    initialCategory,
+    initialPackageSlug,
+  });
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
+  const isInternationalPage = initialCategory === "quoc-te";
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 pb-32 pt-32 lg:pt-40">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
         <div className="space-y-8">
-          <EsimHeroSection
-            selectedPackage={catalog.selectedPackage}
-            selectedVariant={catalog.selectedVariant}
-          />
+          {isInternationalPage ? (
+            <EsimPackageExplorer
+              selectedPackage={catalog.selectedPackage}
+              selectedVariant={catalog.selectedVariant}
+              serviceTypeLabel={catalog.serviceTypeLabel}
+              quantity={catalog.quantity}
+              query={catalog.query}
+              onQueryChange={catalog.setQuery}
+              loading={catalog.loading}
+              error={catalog.error}
+              packages={catalog.visiblePackages}
+              activeLocale={activeLocale}
+              showInternationalFilters={initialCategory === "quoc-te"}
+              destinationOptions={catalog.filters.destinations}
+              selectedDestinationLabels={catalog.selectedDestinationLabels}
+              onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
+              onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
+              onSelectPackageFilterSku={catalog.handleSelectPackageFilterSku}
+              packageQuery={catalog.packageQuery}
+              onPackageQueryChange={catalog.setPackageQuery}
+              priceRange={catalog.priceRange}
+              priceBounds={catalog.priceBounds}
+              onPriceRangeChange={catalog.setPriceRange}
+              onOpenModal={() => catalog.setShowModal(true)}
+              onSelectPackage={catalog.handleSelectPackage}
+              onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
+              onSelectSkuByData={catalog.handleSelectSkuByData}
+              onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
+              onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
+            />
+          ) : null}
 
-          <EsimPackageExplorer
-            selectedPackage={catalog.selectedPackage}
-            selectedVariant={catalog.selectedVariant}
-            serviceTypeLabel={catalog.serviceTypeLabel}
-            quantity={catalog.quantity}
-            query={catalog.query}
-            onQueryChange={catalog.setQuery}
-            regionOptions={catalog.regionOptions}
-            selectedRegionId={catalog.selectedRegionId}
-            onSelectRegion={catalog.setSelectedRegionId}
-            loading={catalog.loading}
-            error={catalog.error}
-            packages={catalog.packages}
-            activeLocale={activeLocale}
-            onOpenModal={() => catalog.setShowModal(true)}
-            onSelectPackage={catalog.handleSelectPackage}
-            onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
-            onSelectSkuByData={catalog.handleSelectSkuByData}
-            onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
-            onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
-          />
+          {!isInternationalPage ? (
+            <EsimHeroSection
+              selectedPackage={catalog.selectedPackage}
+              selectedVariant={catalog.selectedVariant}
+            />
+          ) : null}
+
+          {!isInternationalPage ? (
+            <EsimPackageExplorer
+              selectedPackage={catalog.selectedPackage}
+              selectedVariant={catalog.selectedVariant}
+              serviceTypeLabel={catalog.serviceTypeLabel}
+              quantity={catalog.quantity}
+              query={catalog.query}
+              onQueryChange={catalog.setQuery}
+              loading={catalog.loading}
+              error={catalog.error}
+              packages={catalog.visiblePackages}
+              activeLocale={activeLocale}
+              showInternationalFilters={initialCategory === "quoc-te"}
+              destinationOptions={catalog.filters.destinations}
+              selectedDestinationLabels={catalog.selectedDestinationLabels}
+              onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
+              onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
+              onSelectPackageFilterSku={catalog.handleSelectPackageFilterSku}
+              packageQuery={catalog.packageQuery}
+              onPackageQueryChange={catalog.setPackageQuery}
+              priceRange={catalog.priceRange}
+              priceBounds={catalog.priceBounds}
+              onPriceRangeChange={catalog.setPriceRange}
+              onOpenModal={() => catalog.setShowModal(true)}
+              onSelectPackage={catalog.handleSelectPackage}
+              onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
+              onSelectSkuByData={catalog.handleSelectSkuByData}
+              onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
+              onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
+            />
+          ) : null}
+
+          {isInternationalPage ? (
+            <EsimHeroSection
+              selectedPackage={catalog.selectedPackage}
+              selectedVariant={catalog.selectedVariant}
+            />
+          ) : null}
         </div>
 
         <EsimProductSidebar

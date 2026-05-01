@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Mail, Shield, Wifi } from "lucide-react";
+import { Globe, Mail, Wifi, Zap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { EsimPackageView, EsimVariantView } from "../lib/esim";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
@@ -49,7 +49,7 @@ export default function EsimHeroSection({ selectedPackage, selectedVariant }: Pr
           eSIM {selectedPackage?.destination || ""} {selectedPackage?.title ? `| ${selectedPackage.title}` : ""}
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
           <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
             <Mail className="w-6 h-6 text-hb-navy bg-blue-50 p-1.5 rounded-lg box-content" />
             <div>
@@ -67,10 +67,17 @@ export default function EsimHeroSection({ selectedPackage, selectedVariant }: Pr
             </div>
           </div>
           <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
-            <Shield className="w-6 h-6 text-hb-navy bg-blue-50 p-1.5 rounded-lg box-content" />
+            <Zap className="w-6 h-6 text-hb-navy bg-blue-50 p-1.5 rounded-lg box-content" />
             <div>
-              <p className="text-xs text-steel-secondary">{t("Cam kết")}</p>
-              <p className="text-sm font-semibold text-midnight-ink">{t("Hoàn tiền đầy đủ")}</p>
+              <p className="text-xs text-steel-secondary">{t("Kích hoạt")}</p>
+              <p className="text-sm font-semibold text-midnight-ink">{t("Kích hoạt dễ dàng")}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+            <Globe className="w-6 h-6 text-hb-navy bg-blue-50 p-1.5 rounded-lg box-content" />
+            <div>
+              <p className="text-xs text-steel-secondary">{t("Sẵn sàng")}</p>
+              <p className="text-sm font-semibold text-midnight-ink">{t("Internet sẵn sàng ngay khi hạ cánh")}</p>
             </div>
           </div>
         </div>

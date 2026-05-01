@@ -4,8 +4,8 @@ import { displayProductPrice, toSnakeCase } from "@/utils/Helper";
 import { isEmpty } from "lodash";
 import { Fragment } from "react";
 import { cn } from "@/lib/utils";
-import { getServerT } from "@/lib/i18n/getServerT";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function DisplayPrice({
   price,
@@ -19,6 +19,7 @@ export default function DisplayPrice({
   currency?: any;
 }) {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   return (
     <Fragment>
       {price > 0 ? (
@@ -35,7 +36,7 @@ export default function DisplayPrice({
             {!isEmpty(currency) ? (
               <>{displayProductPrice(price, currency)}</>
             ) : (
-              <>{formatCurrency(price)}</>
+              <>{formatCurrency(price, language)}</>
             )}
           </span>
         </>

@@ -57,7 +57,7 @@ export const loadAllEsimPackages = async (params?: {
 
 export const loadEsimOptions = async (locale?: string): Promise<EsimFilterOptions> => {
   const response = await ProductEsimApi.getOptionsFilter(locale);
-  return normalizeFilterOptions(unwrapResponseData(response?.payload));
+  return normalizeFilterOptions(unwrapResponseData(response?.payload), locale === "en" ? "en" : "vi");
 };
 
 export const loadEsimPackageBySlug = async (slug: string, locale?: string): Promise<EsimPackageView | null> => {

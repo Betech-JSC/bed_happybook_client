@@ -83,7 +83,6 @@ export default function PackageSelectorModal({
                 <div className={s.radioCardDot} />
                 <div className={s.radioCardContent}>
                   <div className={s.radioCardTitle}>{variant.desc}</div>
-                  <div className={s.radioCardDesc}>SKU: {variant.sku}</div>
                 </div>
                 <div className={s.radioCardPrice}>
                   {formatEsimMoney(money.price, money.currency)}

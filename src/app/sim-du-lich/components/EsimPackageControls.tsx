@@ -66,11 +66,10 @@ export default function EsimPackageControls({
                 <button
                   key={validity}
                   onClick={() => onSelectSkuByValidity(validity)}
-                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                    isActive
+                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${isActive
                       ? "bg-[#FFF7ED] border-2 border-hb-coral text-hb-coral font-bold"
                       : "border border-slate-200 font-medium hover:border-hb-coral"
-                  }`}
+                    }`}
                 >
                   {validity} {t("Ngày")}
                 </button>
@@ -88,11 +87,10 @@ export default function EsimPackageControls({
                 <button
                   key={data}
                   onClick={() => onSelectSkuByData(data)}
-                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                    isActive
+                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${isActive
                       ? "bg-[#FFF7ED] border-2 border-hb-coral text-hb-coral font-bold"
                       : "border border-slate-200 font-medium hover:border-hb-coral"
-                  }`}
+                    }`}
                 >
                   {data}
                 </button>
