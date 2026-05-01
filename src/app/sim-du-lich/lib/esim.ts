@@ -138,6 +138,8 @@ export interface EsimFilterOptions {
   operators: EsimFilterOption[];
 }
 
+type Locale = "vi" | "en";
+
 const toBoolean = (value: unknown): boolean =>
   value === true || value === 1 || value === "1" || value === "true";
 
@@ -152,6 +154,33 @@ const toNumber = (value: unknown, fallback = 0): number => {
 
 const toString = (value: unknown): string =>
   typeof value === "string" ? value : value === null || value === undefined ? "" : String(value);
+
+const pickTranslatedValue = (
+  translations: ApiEsimTranslation[] | undefined,
+  locale: Locale,
+  fallback: string
+): string => {
+  if (!translations?.length) return fallback;
+
+  const matched = translations.find((item) => item?.locale === locale && item?.value?.trim());
+  return matched?.value?.trim() || fallback;
+};
+
+const pickOptionLabel = (
+  item: any,
+  locale: Locale,
+  fallbackKeys: (string | undefined)[]
+): string => {
+  const translationValue = pickTranslatedValue(item?.translations, locale, "");
+  if (translationValue) return translationValue;
+
+  for (const key of fallbackKeys) {
+    const value = toString(key || "");
+    if (value.trim()) return value.trim();
+  }
+
+  return "";
+};
 
 export const formatPrice = (value: number): string =>
   new Intl.NumberFormat("vi-VN").format(value) + "đ";
@@ -187,13 +216,19 @@ export const getEsimVariantMoney = (
   };
 };
 
-export const normalizeFilterOptions = (payload: any): EsimFilterOptions => {
+export const normalizeFilterOptions = (payload: any, locale: Locale = "vi"): EsimFilterOptions => {
   const mapOptions = (items: any[] = []): EsimFilterOption[] =>
     items
       .filter(Boolean)
       .map((item) => ({
-        value: toString(item.value ?? item.id ?? ""),
-        label: toString(item.label ?? item.name ?? item.code ?? ""),
+        value: toString(item.code ?? item.slug ?? item.value ?? item.id ?? ""),
+        label: pickOptionLabel(item, locale, [
+          item.label,
+          item.name,
+          item.code,
+          item.value,
+          item.id,
+        ]),
       }))
       .filter((item) => item.value !== "" || item.label !== "");
 
@@ -287,3 +322,74 @@ export const findCheapestVariant = (
   pkg?.variants
     ?.slice()
     .sort((a, b) => getEsimVariantMoney(a, locale).price - getEsimVariantMoney(b, locale).price)[0];
+
+const normalizePreset = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+export const resolveEsimRegionPreset = (
+  options: EsimFilterOption[] = [],
+  preset?: string
+): string => {
+  const normalizedPreset = normalizePreset(preset ?? "");
+
+  if (!normalizedPreset || normalizedPreset === "all" || normalizedPreset === "tat-ca") {
+    return "";
+  }
+
+  const normalizedOptions = options.map((option) => ({
+    ...option,
+    normalizedValue: normalizePreset(option.value),
+    normalizedLabel: normalizePreset(option.label),
+  }));
+
+  const directMatch = normalizedOptions.find(
+    (option) =>
+      option.normalizedValue === normalizedPreset ||
+      option.normalizedLabel === normalizedPreset
+  );
+  if (directMatch) return directMatch.value;
+
+  if (
+    normalizedPreset.includes("viet-nam") ||
+    normalizedPreset.includes("vietnam") ||
+    normalizedPreset.includes("domestic") ||
+    normalizedPreset.includes("noi-dia")
+  ) {
+    const domesticMatch = normalizedOptions.find((option) => {
+      const label = option.normalizedLabel;
+      return (
+        label.includes("viet-nam") ||
+        label.includes("vietnam") ||
+        label.includes("domestic") ||
+        label.includes("noi-dia")
+      );
+    });
+
+    if (domesticMatch) return domesticMatch.value;
+  }
+
+  if (
+    normalizedPreset.includes("quoc-te") ||
+    normalizedPreset.includes("international") ||
+    normalizedPreset.includes("nuoc-ngoai")
+  ) {
+    const internationalMatch = normalizedOptions.find((option) => {
+      const label = option.normalizedLabel;
+      return (
+        label.includes("quoc-te") ||
+        label.includes("international") ||
+        label.includes("nuoc-ngoai")
+      );
+    });
+
+    if (internationalMatch) return internationalMatch.value;
+  }
+
+  return "";
+};

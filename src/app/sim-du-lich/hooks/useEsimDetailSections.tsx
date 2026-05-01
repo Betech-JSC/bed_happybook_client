@@ -93,6 +93,7 @@ export function useEsimDetailSections({
       return sections;
     },
     [
+      t,
       cmsSections.compatibility?.content,
       cmsSections.compatibility?.title,
       selectedPackage?.deviceCompatibility,

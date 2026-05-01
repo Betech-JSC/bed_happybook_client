@@ -12,6 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { AuthApi } from "@/api/Auth";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toSnakeCase } from "@/utils/Helper";
+import { useSimDuLichRegions } from "@/hooks/useSimDuLichRegions";
 
 export default function Header() {
   const { t } = useTranslation();
@@ -24,6 +25,9 @@ export default function Header() {
   const [querySeach, setQuerySeach] = useState<string>("");
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isSticky, setSticky] = useState<boolean>(false);
+  const [isSimDuLichOpen, setIsSimDuLichOpen] = useState(false);
+  const simDuLichRef = useRef<HTMLDivElement>(null);
+  const simDuLichRegions = useSimDuLichRegions(language);
   const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
   const excludePaths = [
     "/",
@@ -70,6 +74,28 @@ export default function Header() {
       };
     }
   }, [isStickyHeader]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (simDuLichRef.current && !simDuLichRef.current.contains(event.target as Node)) {
+        setIsSimDuLichOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  useEffect(() => {
+    setIsSimDuLichOpen(false);
+  }, [pathname]);
+
+  const activeSimCategory =
+    pathname.startsWith("/sim-du-lich/viet-nam")
+      ? "viet-nam"
+      : pathname.startsWith("/sim-du-lich/quoc-te")
+        ? "quoc-te"
+        : "";
 
 
 
@@ -469,13 +495,56 @@ export default function Header() {
                     </div>
                   </Link>
 
-                  <Link href="/sim-du-lich" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                    <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("sim_du_lich")}</div>
-                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("internet_toan_cau_voi_muc_gia_re_hon_data_roaming_khong_can_thao_lap_sim")}</div>
-                    </div>
-                  </Link>
+                  <div ref={simDuLichRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsSimDuLichOpen((current) => !current)}
+                      className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto text-left"
+                    >
+                      <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                      <div className="flex flex-col items-start text-left">
+                        <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 transition-colors">
+                          {t("sim_du_lich")}
+                        </div>
+                        <div className="text-gray-500 text-xs leading-relaxed font-normal">
+                          {t("internet_toan_cau_voi_muc_gia_re_hon_data_roaming_khong_can_thao_lap_sim")}
+                        </div>
+                      </div>
+                    </button>
+
+                    {isSimDuLichOpen ? (
+                      <div className="absolute left-full top-0 ml-3 w-[330px] rounded-3xl border border-slate-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] z-50">
+                        <div className="flex flex-col gap-2">
+                          {simDuLichRegions.length > 0 ? (
+                            simDuLichRegions.map((item) => {
+                              const isActive =
+                                activeSimCategory &&
+                                item.href.toLowerCase().includes(activeSimCategory);
+
+                              return (
+                                <Link
+                                  key={item.href}
+                                  href={item.href}
+                                  onClick={() => setIsSimDuLichOpen(false)}
+                                  className={`rounded-2xl px-4 py-4 text-[18px] font-medium transition-colors ${
+                                    isActive
+                                      ? "bg-[#EEF4FF] text-blue-600"
+                                      : "text-[#101828] hover:bg-[#EEF4FF] hover:text-blue-600"
+                                  }`}
+                                >
+                                  {item.label}
+                                </Link>
+                              );
+                            })
+                          ) : (
+                            <div className="px-4 py-4 text-sm text-slate-500">
+                              {t("Đang tải dữ liệu...")}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
 
                   <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                     <img src="/icon/lounge.png" alt="Phòng chờ thương gia" className="w-[42px] h-[42px] object-contain flex-shrink-0" />

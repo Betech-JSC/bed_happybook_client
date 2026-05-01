@@ -2,12 +2,12 @@
 "use client";
 
 import { useContext } from "react";
-import { getCurrentLanguage } from "@/utils/Helper";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { TranslationContext } from "@/contexts/TranslationContext";
 
 export function useTranslation() {
   const translations = useContext(TranslationContext);
-  const lang = getCurrentLanguage();
+  const { language: lang } = useLanguage();
 
   const t = (key: string) => {
     return translations[key] ?? key;

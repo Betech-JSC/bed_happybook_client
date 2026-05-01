@@ -85,6 +85,7 @@ export default function CheckoutPage() {
               setPaymentMethod={checkout.setPaymentMethod}
               checkoutData={checkout.checkoutData}
               isPaid={checkout.isPaid}
+              setIsPaid={checkout.setIsPaid}
               orderCode={checkout.orderCode}
               summaryOpen={checkout.summaryOpen}
               setSummaryOpen={checkout.setSummaryOpen}
