@@ -12,7 +12,6 @@ import AccountDropdownMobile from "./AccountDropdownMobile";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toSnakeCase } from "@/utils/Helper";
 import { useMenu } from "@/contexts/MenuContext";
-import { useSimDuLichRegions } from "@/hooks/useSimDuLichRegions";
 
 export default function HeaderMobileMenu() {
   const { t } = useTranslation();
@@ -21,7 +20,6 @@ export default function HeaderMobileMenu() {
   const [menuHeight, setMenuHeight] = useState("0px");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage } = useLanguage();
-  const simDuLichRegions = useSimDuLichRegions(language);
 
   useEffect(() => {
     if (dropdownRef.current) {
@@ -31,7 +29,7 @@ export default function HeaderMobileMenu() {
         setMenuHeight("0px");
       }
     }
-  }, [isMenuMbOpen, simDuLichRegions.length]);
+  }, [isMenuMbOpen]);
 
   useEffect(() => {
     setIsMenuMbOpen(false);
@@ -188,36 +186,19 @@ export default function HeaderMobileMenu() {
             <Link href="/phong-cho-thuong-gia" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("phong_cho_thuong_gia")}
             </Link>
-            <div className="mt-4 rounded-3xl bg-white border border-slate-200 p-3 shadow-sm">
-              <Link href="/sim-du-lich" className="flex items-start gap-4 rounded-2xl bg-[#EEF4FF] px-4 py-4">
-                <img src="/icon/sim.png" alt="Sim du lịch" className="w-12 h-12 object-contain flex-shrink-0" />
-                <div>
-                  <div className="text-blue-600 font-bold text-[20px] leading-tight mb-2">
-                    {t("sim_du_lich")}
-                  </div>
-                  <div className="text-[#667085] text-sm leading-relaxed font-medium">
-                    {t("internet_toan_cau_voi_muc_gia_re_hon_data_roaming_khong_can_thao_lap_sim")}
-                  </div>
-                </div>
-              </Link>
-
-              <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-2">
-                <div className="flex flex-col">
-                  {simDuLichRegions.length > 0 ? (
-                    simDuLichRegions.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="rounded-xl px-4 py-4 text-[18px] font-medium text-[#101828] hover:bg-[#EEF4FF] hover:text-blue-600"
-                      >
-                        {item.label}
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="px-4 py-4 text-sm text-slate-500">{t("Đang tải dữ liệu...")}</div>
-                  )}
-                </div>
+            <div className="mt-3">
+              <div className="flex items-center justify-between">
+                <strong>{t("sim_du_lich")}</strong>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
+              <Link href="/sim-du-lich/quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+                {t("sim_du_lich_quoc_te")}
+              </Link>
+              <Link href="/sim-du-lich/viet-nam" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+                {t("sim_du_lich_viet_nam")}
+              </Link>
             </div>
           </div>
 
