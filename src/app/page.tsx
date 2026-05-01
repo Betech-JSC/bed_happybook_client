@@ -3,7 +3,6 @@ import Banner from "@/components/home/banner";
 import AosAnimate from "@/components/layout/aos-animate";
 import Search from "@/components/home/search";
 import type { Metadata } from "next";
-import Image from "next/image";
 import SearchMobile from "@/components/home/search-mobile";
 import { FlightApi } from "@/api/Flight";
 import { siteUrl } from "@/constants";
@@ -12,6 +11,10 @@ import { formatMetadata } from "@/lib/formatters";
 import { settingApi } from "@/api/Setting";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import { getServerT } from "@/lib/i18n/getServerT";
+import {
+  HomeHeroDesktopBackground,
+  HomeHeroMobileBackground,
+} from "@/components/home/HomeHeroBackground";
 import dynamic from "next/dynamic";
 // import SentryTestButton from "@/components/dev/SentryTestButton";
 
@@ -68,23 +71,7 @@ export default async function Home() {
       <h1 className="sr-only">{seo?.seo_title || "Happy Book - Dịch vụ du lịch hàng đầu"}</h1>
 
       {/* Search Desktop Background - Moved to Server Component for LCP optimization */}
-      <div className="hidden lg:block absolute inset-0 h-[694px]">
-        <Image
-          priority
-          src="/bg-image.webp"
-          fill
-          sizes="100vw"
-          className="object-cover"
-          alt="Tìm kiếm tour và vé máy bay Happy Book"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-          }}
-        ></div>
-      </div>
+      <HomeHeroDesktopBackground />
 
       <Suspense fallback={null}>
         <Search airportsData={airportsData} />
@@ -93,23 +80,7 @@ export default async function Home() {
       {/* Search Mobile */}
       <div className="mt-[68px] block lg:hidden relative h-max pb-10">
         <div className="mt-4 h-full">
-          <div className="absolute inset-0 h-full">
-            <Image
-              priority
-              src="/bg-image.webp"
-              fill
-              sizes="100vw"
-              className="object-cover"
-              alt="Hỗ trợ tìm kiếm du lịch Happy Book"
-            />
-          </div>
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-            }}
-          ></div>
+          <HomeHeroMobileBackground />
           <div className="relative">
             <Suspense fallback={null}>
               <SearchMobile airportsData={airportsData} />
