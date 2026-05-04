@@ -195,9 +195,9 @@ return (
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <Link href="/sim-quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("sim_du_lich_quoc_te")}
-            </Link>
+          <Link href="/sim-du-lich/quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+            {t("sim_du_lich_quoc_te")}
+          </Link>
             <Link href="/sim-viet-nam" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("sim_du_lich_viet_nam")}
             </Link>

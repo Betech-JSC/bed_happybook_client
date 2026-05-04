@@ -45,7 +45,7 @@ export default async function SimFeatured() {
     {
       key: "quoc-te" as const,
       labelKey: "sim_du_lich_quoc_te",
-      href: "/sim-quoc-te",
+      href: "/sim-du-lich/quoc-te",
       accentClassName: "bg-gradient-to-br from-blue-700 via-indigo-600 to-cyan-500",
       items: limitFeaturedPackages(internationalPackages),
     },

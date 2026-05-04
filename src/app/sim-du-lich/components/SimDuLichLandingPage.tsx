@@ -76,7 +76,7 @@ export default async function SimDuLichLandingPage({
                 {t("sim_du_lich_viet_nam", "Sim du lịch Việt Nam")}
               </Link>
               <Link
-                href="/sim-quoc-te"
+                href="/sim-du-lich/quoc-te"
                 className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-midnight-ink transition-colors hover:border-slate-300 hover:bg-slate-50"
               >
                 {t("sim_du_lich_quoc_te", "Sim du lịch quốc tế")}

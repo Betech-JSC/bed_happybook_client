@@ -18,6 +18,7 @@ export async function GET() {
     "combo",
     "ticket",
     "yacht",
+    "sim-du-lich",
     "fast-track",
     "business-lounge",
   ]) {

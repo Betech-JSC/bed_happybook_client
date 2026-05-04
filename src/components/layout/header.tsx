@@ -93,7 +93,7 @@ export default function Header() {
   const activeSimCategory =
     pathname.startsWith("/sim-viet-nam")
       ? "viet-nam"
-      : pathname.startsWith("/sim-quoc-te")
+      : pathname.startsWith("/sim-quoc-te") || pathname.startsWith("/sim-du-lich/quoc-te")
         ? "quoc-te"
         : "";
 

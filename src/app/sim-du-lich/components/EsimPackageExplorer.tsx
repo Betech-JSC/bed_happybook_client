@@ -32,6 +32,7 @@ type Props = {
   onSelectSkuByData: (data: string) => void;
   onDecreaseQuantity: () => void;
   onIncreaseQuantity: () => void;
+  showPackageControls?: boolean;
 };
 
 export default function EsimPackageExplorer({
@@ -62,20 +63,23 @@ export default function EsimPackageExplorer({
   onSelectSkuByData,
   onDecreaseQuantity,
   onIncreaseQuantity,
+  showPackageControls = true,
 }: Props) {
   return (
     <div className="space-y-8">
-      <EsimPackageControls
-        selectedPackage={selectedPackage}
-        selectedVariant={selectedVariant}
-        serviceTypeLabel={serviceTypeLabel}
-        quantity={quantity}
-        onOpenModal={onOpenModal}
-        onSelectSkuByValidity={onSelectSkuByValidity}
-        onSelectSkuByData={onSelectSkuByData}
-        onDecreaseQuantity={onDecreaseQuantity}
-        onIncreaseQuantity={onIncreaseQuantity}
-      />
+      {showPackageControls ? (
+        <EsimPackageControls
+          selectedPackage={selectedPackage}
+          selectedVariant={selectedVariant}
+          serviceTypeLabel={serviceTypeLabel}
+          quantity={quantity}
+          onOpenModal={onOpenModal}
+          onSelectSkuByValidity={onSelectSkuByValidity}
+          onSelectSkuByData={onSelectSkuByData}
+          onDecreaseQuantity={onDecreaseQuantity}
+          onIncreaseQuantity={onIncreaseQuantity}
+        />
+      ) : null}
 
       <EsimPackageDiscovery
         query={query}
