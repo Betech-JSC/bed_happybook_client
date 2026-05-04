@@ -7,7 +7,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { differenceInHours, format, isSameDay, parseISO } from "date-fns";
+import {
+  addDays,
+  differenceInHours,
+  format,
+  isSameDay,
+  parseISO,
+} from "date-fns";
 import Image from "next/image";
 import {
   formatCurrency,
@@ -30,6 +36,7 @@ import FlightDomesticDetail from "./Detail";
 import TimeRangeSlider from "@/components/base/TimeRangeSlider";
 import SideBarFilterFlights from "../SideBarFilter";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   getCheapestComparablePrice,
   getDomesticDisplayedPrice,
@@ -96,6 +103,44 @@ export default function ListFlights({
   const [returnDayPrices, setReturnDayPrices] = useState<
     Record<string, number | null>
   >({});
+  const cheapestDepartDayKeys = useMemo(() => {
+    let cheapestKeys: string[] = [];
+    let cheapestPrice: number | null = null;
+
+    departDays.forEach((day) => {
+      const dayKey = format(day.date, "yyyy-MM-dd");
+      const price = departDayPrices[dayKey];
+      if (price == null) return;
+
+      if (cheapestPrice == null || price < cheapestPrice) {
+        cheapestPrice = price;
+        cheapestKeys = [dayKey];
+      } else if (price === cheapestPrice) {
+        cheapestKeys.push(dayKey);
+      }
+    });
+
+    return new Set(cheapestKeys);
+  }, [departDays, departDayPrices]);
+  const cheapestReturnDayKeys = useMemo(() => {
+    let cheapestKeys: string[] = [];
+    let cheapestPrice: number | null = null;
+
+    returnDays.forEach((day) => {
+      const dayKey = format(day.date, "yyyy-MM-dd");
+      const price = returnDayPrices[dayKey];
+      if (price == null) return;
+
+      if (cheapestPrice == null || price < cheapestPrice) {
+        cheapestPrice = price;
+        cheapestKeys = [dayKey];
+      } else if (price === cheapestPrice) {
+        cheapestKeys.push(dayKey);
+      }
+    });
+
+    return new Set(cheapestKeys);
+  }, [returnDays, returnDayPrices]);
   // AOS is handled globally via AosProvider IntersectionObserver
   const scrollToRef = (ref: any) => {
     if (ref.current) {
@@ -620,39 +665,69 @@ export default function ListFlights({
                   </div>
                 </div>
                 {/* Tabs day */}
-                <div className="grid grid-cols-7 items-center bg-white rounded-b-2xl">
-                  {departDays.map((day, index) => (
-                    <button
-                      key={index}
-                      onClick={() =>
-                        !day.disabled && handleClickDate(day.date, 0)
-                      }
-                      className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentDate)
-                        ? "border-b-2 border-b-primary text-primary"
-                        : "text-gray-700"
-                        } ${day.disabled
-                          ? "text-gray-700 opacity-50 cursor-not-allowed"
-                          : "text-black"
-                        }`}
-                    >
-                      <div
-                        className="text-sm md:text-base font-semibold"
-                        data-translate
-                      >
-                        {day.label}
-                      </div>
-                      <div className="text-xs md:text-sm mt-2">
-                        {format(day.date, "dd/MM")}
-                      </div>
-                      {departDayPrices[format(day.date, "yyyy-MM-dd")] != null && (
-                        <div className="mt-1 text-[11px] font-semibold text-orange-500">
-                          {formatCurrency(
-                            departDayPrices[format(day.date, "yyyy-MM-dd")] ?? 0
-                          )}
-                        </div>
-                      )}
-                    </button>
-                  ))}
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label="Ngày trước"
+                    onClick={() => handleClickDate(addDays(currentDate, -1), 0)}
+                    className="absolute left-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Ngày sau"
+                    onClick={() => handleClickDate(addDays(currentDate, 1), 0)}
+                    className="absolute right-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <div className="grid grid-cols-7 items-center bg-white rounded-b-2xl px-10">
+                    {departDays.map((day, index) => (
+                      (() => {
+                        const dayKey = format(day.date, "yyyy-MM-dd");
+                        const isCheapestDay = cheapestDepartDayKeys.has(dayKey);
+                        const isSelectedDay = isSameDay(day.date, currentDate);
+                        return (
+                          <button
+                            key={index}
+                            onClick={() =>
+                              !day.disabled && handleClickDate(day.date, 0)
+                            }
+                            className={`flex flex-col items-center p-3 border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentDate)
+                                ? "border-b-2 border-b-primary text-primary"
+                                : "text-gray-700"
+                              } ${day.disabled
+                                ? "text-gray-700 opacity-50 cursor-not-allowed"
+                                : "text-black"
+                              }`}
+                          >
+                            <div
+                              className="text-sm md:text-base font-semibold"
+                              data-translate
+                            >
+                              {day.label}
+                            </div>
+                            <div className="text-xs md:text-sm mt-2">
+                              {format(day.date, "dd/MM")}
+                            </div>
+                            {departDayPrices[dayKey] != null && (
+                              <div className="mt-1 text-[11px] font-semibold text-orange-500">
+                                {formatCurrency(
+                                  departDayPrices[dayKey] ?? 0
+                                )}
+                              </div>
+                            )}
+                            {isCheapestDay && !isSelectedDay && (
+                              <div className="mt-1 text-[10px] font-semibold text-emerald-600">
+                                Rẻ nhất
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })()
+                    ))}
+                  </div>
                 </div>
                 {visibleDepartData.length > 0 ? (
                   <div className="mt-6">
@@ -726,37 +801,71 @@ export default function ListFlights({
                     </div>
                   </div>
                   {/* Tabs day */}
-                  <div className="grid grid-cols-7 items-center bg-white px-3 rounded-b-2xl">
-                    {returnDays.map((day, index) => (
-                      <button
-                        key={index}
-                        onClick={() =>
-                          !day.disabled && handleClickDate(day.date, 1)
-                        }
-                        className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentReturnDay)
-                          ? "border-b-2 border-b-primary text-primary"
-                          : "text-gray-700"
-                          } ${day.disabled
-                            ? "text-gray-700 opacity-50 cursor-not-allowed"
-                            : "text-black"
-                          }`}
-                      >
-                        <div className="text-sm md:text-base font-semibold">
-                          {day.label}
-                        </div>
-                        <div className="text-xs md:text-sm mt-2">
-                          {format(day.date, "dd/MM")}
-                        </div>
-                        {returnDayPrices[format(day.date, "yyyy-MM-dd")] != null && (
-                          <div className="mt-1 text-[11px] font-semibold text-orange-500">
-                            {formatCurrency(
-                              returnDayPrices[format(day.date, "yyyy-MM-dd")] ??
-                              0
-                            )}
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      aria-label="Ngày trước"
+                      onClick={() =>
+                        handleClickDate(addDays(currentReturnDay, -1), 1)
+                      }
+                      className="absolute left-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Ngày sau"
+                      onClick={() =>
+                        handleClickDate(addDays(currentReturnDay, 1), 1)
+                      }
+                      className="absolute right-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                    <div className="grid grid-cols-7 items-center bg-white px-10 rounded-b-2xl">
+                      {returnDays.map((day, index) => (
+                        (() => {
+                          const dayKey = format(day.date, "yyyy-MM-dd");
+                          const isCheapestDay = cheapestReturnDayKeys.has(dayKey);
+                          const isSelectedDay = isSameDay(day.date, currentReturnDay);
+                          return (
+                            <button
+                              key={index}
+                              onClick={() =>
+                                !day.disabled && handleClickDate(day.date, 1)
+                              }
+                              className={`flex flex-col items-center p-3 border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentReturnDay)
+                                  ? "border-b-2 border-b-primary text-primary"
+                                  : "text-gray-700"
+                                } ${day.disabled
+                                  ? "text-gray-700 opacity-50 cursor-not-allowed"
+                                  : "text-black"
+                                }`}
+                            >
+                              <div className="text-sm md:text-base font-semibold">
+                                {day.label}
+                              </div>
+                              <div className="text-xs md:text-sm mt-2">
+                                {format(day.date, "dd/MM")}
+                              </div>
+                              {returnDayPrices[dayKey] != null && (
+                                <div className="mt-1 text-[11px] font-semibold text-orange-500">
+                                  {formatCurrency(
+                                    returnDayPrices[dayKey] ??
+                                    0
+                                  )}
+                                </div>
+                              )}
+                              {isCheapestDay && !isSelectedDay && (
+                                <div className="mt-1 text-[10px] font-semibold text-emerald-600">
+                                  Rẻ nhất
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })()
+                      ))}
+                    </div>
                   </div>
                   {visibleReturnData.length > 0 ? (
                     <div className="my-6">

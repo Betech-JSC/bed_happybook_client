@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   generateMonth,
@@ -53,6 +53,40 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
     flight.totalFare < lowest.totalFare ? flight : lowest
   );
 };
+
+const getCheapestDayKeys = (
+  days: Array<number | null>,
+  cheapestFareDepart: Record<number, { flights: any[] } | undefined>,
+  airlineFilter: string | null,
+  year: number,
+  month: number
+) => {
+  let cheapestDays: number[] = [];
+  let cheapestPrice: number | null = null;
+
+  days.forEach((day) => {
+    if (!day) return;
+
+    const flightData = cheapestFareDepart[day];
+    const flightLowestPrice = flightData
+      ? getLowestPrice(flightData.flights, airlineFilter)
+      : null;
+    const price = flightLowestPrice?.totalFare;
+
+    if (!Number.isFinite(price)) return;
+
+    if (cheapestPrice == null || price < cheapestPrice) {
+      cheapestPrice = price;
+      cheapestDays = [day];
+    } else if (price === cheapestPrice) {
+      cheapestDays.push(day);
+    }
+  });
+
+  return new Set(
+    cheapestDays.map((cheapestDay) => `${year}-${month}-${cheapestDay}`)
+  );
+};
 const listNextMonth = generateMonth(10);
 
 export default function FlightCalendar({
@@ -89,6 +123,17 @@ export default function FlightCalendar({
     }
   };
   const [airLines, setAirLines] = useState<AirlineType[]>([]);
+  const cheapestDayKeys = useMemo(
+    () =>
+      getCheapestDayKeys(
+        daysInMonth,
+        cheapestFareDepart,
+        airlineFilter,
+        year,
+        month
+      ),
+    [daysInMonth, cheapestFareDepart, airlineFilter, year, month]
+  );
 
   useEffect(() => {
     const totalDays = getDaysInMonth(year, month);
@@ -432,12 +477,20 @@ export default function FlightCalendar({
               flightData && getLowestPrice(flightData.flights, airlineFilter);
             const disabled = isDisabled(day ?? 0);
             const isActive = day === activeDay;
+            const isCheapestDay =
+              day != null &&
+              cheapestDayKeys.has(`${year}-${month}-${day}`);
 
             return day ? (
               <div
                 key={day !== null ? day : `empty-${index}`}
-                className={`p-1 md:p-2 min-h-12 border rounded-lg md:rounded-xl lg:h-28 border-gray-200 transition-all duration-300 ${disabled ? "opacity-50 cursor-not-allowed bg-gray-200" : ""
-                  } ${isActive ? "bg-primary text-white" : ""}`}
+                className={`p-1 md:p-2 min-h-12 border rounded-lg md:rounded-xl lg:h-28 transition-all duration-300 ${
+                  disabled
+                    ? "opacity-50 cursor-not-allowed bg-gray-200 border-gray-200"
+                    : isActive
+                      ? "bg-primary text-white border-primary"
+                      : "border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/40"
+                }`}
               >
                 {!disabled && (
                   <div
@@ -445,7 +498,7 @@ export default function FlightCalendar({
                     onClick={() => handleDayClick(day)}
                   >
                     <div className="flex justify-between w-full items-start">
-                      <span className="text-xs font-semibold md:font-normal  md:text-base">
+                      <span className="text-xs font-semibold md:font-normal md:text-base">
                         {day.toString().padStart(2, "0")}
                       </span>
                       {flightLowestPrice &&
@@ -488,6 +541,11 @@ export default function FlightCalendar({
                         </Fragment>
                       )}
                     </div>
+                    {isCheapestDay && !isActive && (
+                      <div className="mt-1 text-[10px] font-semibold text-emerald-600">
+                        Rẻ nhất
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
