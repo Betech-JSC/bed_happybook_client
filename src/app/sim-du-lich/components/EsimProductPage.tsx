@@ -5,6 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
 import EsimHeroSection from "./EsimHeroSection";
+import SimDuLichBreadcrumbs from "./SimDuLichBreadcrumbs";
 import EsimPackageExplorer from "./EsimPackageExplorer";
 import EsimProductSidebar from "./EsimProductSidebar";
 import PackageSelectorModal from "./PackageSelectorModal";
@@ -37,9 +38,49 @@ export default function EsimProductPage({
   });
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
   const isInternationalPage = initialCategory === "quoc-te";
+  const breadcrumbItems = (() => {
+    const baseItems = [{ href: "/", label: t("Trang chủ", "Homepage") }];
+
+    if (initialCategory === "quoc-te") {
+      const categoryItem = {
+        href: initialPackageSlug ? "/sim-quoc-te" : undefined,
+        label: t("Sim du lịch quốc tế", "Sim du lịch quốc tế"),
+      };
+
+      return initialPackageSlug && catalog.selectedPackage?.title
+        ? [
+          ...baseItems,
+          categoryItem,
+          { label: catalog.selectedPackage.title },
+        ]
+        : [...baseItems, categoryItem];
+    }
+
+    if (initialCategory === "viet-nam") {
+      const categoryItem = {
+        href: initialPackageSlug ? "/sim-viet-nam" : undefined,
+        label: t("Sim du lịch Việt Nam", "Sim du lịch Việt Nam"),
+      };
+
+      return initialPackageSlug && catalog.selectedPackage?.title
+        ? [
+          ...baseItems,
+          categoryItem,
+          { label: catalog.selectedPackage.title },
+        ]
+        : [...baseItems, categoryItem];
+    }
+
+    return [];
+  })();
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 pb-32 pt-32 lg:pt-40">
+      {breadcrumbItems.length ? (
+        <div className="mb-6">
+          <SimDuLichBreadcrumbs items={breadcrumbItems} />
+        </div>
+      ) : null}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
         <div className="space-y-8">
           {isInternationalPage ? (

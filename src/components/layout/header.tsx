@@ -91,9 +91,9 @@ export default function Header() {
   }, [pathname]);
 
   const activeSimCategory =
-    pathname.startsWith("/sim-du-lich/viet-nam")
+    pathname.startsWith("/sim-viet-nam")
       ? "viet-nam"
-      : pathname.startsWith("/sim-du-lich/quoc-te")
+      : pathname.startsWith("/sim-quoc-te")
         ? "quoc-te"
         : "";
 
@@ -496,21 +496,40 @@ export default function Header() {
                   </Link>
 
                   <div ref={simDuLichRef} className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setIsSimDuLichOpen((current) => !current)}
-                      className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto text-left"
-                    >
-                      <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                      <div className="flex flex-col items-start text-left">
-                        <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 transition-colors">
-                          {t("sim_du_lich")}
+                    <div className="!flex items-start gap-4 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto text-left hover:bg-blue-50">
+                      <Link
+                        href="/sim-du-lich"
+                        className="flex min-w-0 flex-1 items-start gap-4 text-left"
+                        onClick={() => setIsSimDuLichOpen(false)}
+                      >
+                        <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                        <div className="flex flex-col items-start text-left min-w-0">
+                          <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 transition-colors">
+                            {t("sim_du_lich")}
+                          </div>
+                          <div className="text-gray-500 text-xs leading-relaxed font-normal">
+                            {t("internet_toan_cau_voi_muc_gia_re_hon_data_roaming_khong_can_thao_lap_sim")}
+                          </div>
                         </div>
-                        <div className="text-gray-500 text-xs leading-relaxed font-normal">
-                          {t("internet_toan_cau_voi_muc_gia_re_hon_data_roaming_khong_can_thao_lap_sim")}
-                        </div>
-                      </div>
-                    </button>
+                      </Link>
+
+                      <button
+                        type="button"
+                        aria-label={isSimDuLichOpen ? "Đóng submenu sim du lịch" : "Mở submenu sim du lịch"}
+                        onClick={() => setIsSimDuLichOpen((current) => !current)}
+                        className="mt-1 flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-white/80 hover:text-slate-700"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M5 7.5L10 12.5L15 7.5"
+                            stroke="currentColor"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
 
                     {isSimDuLichOpen ? (
                       <div className="absolute left-full top-0 ml-3 w-[330px] rounded-3xl border border-slate-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] z-50">
@@ -526,11 +545,10 @@ export default function Header() {
                                   key={item.href}
                                   href={item.href}
                                   onClick={() => setIsSimDuLichOpen(false)}
-                                  className={`rounded-2xl px-4 py-4 text-[18px] font-medium transition-colors ${
-                                    isActive
-                                      ? "bg-[#EEF4FF] text-blue-600"
-                                      : "text-[#101828] hover:bg-[#EEF4FF] hover:text-blue-600"
-                                  }`}
+                                  className={`rounded-2xl px-4 py-4 text-[18px] font-medium transition-colors ${isActive
+                                    ? "bg-[#EEF4FF] text-blue-600"
+                                    : "text-[#101828] hover:bg-[#EEF4FF] hover:text-blue-600"
+                                    }`}
                                 >
                                   {item.label}
                                 </Link>

@@ -18,6 +18,7 @@ import { useSimDuLichStaticText } from "./useSimDuLichStaticText";
 
 type Locale = "vi" | "en";
 type DetailAccordionKey = "compatibility" | "refund" | "faq";
+const PRICE_FILTER_CAP = 10_000_000;
 
 type Args = {
   cmsPageContent: EsimCmsPageContent | null | undefined;
@@ -208,7 +209,7 @@ export function useEsimCatalog({
 
     return {
       min: Math.min(...prices),
-      max: Math.max(...prices),
+      max: PRICE_FILTER_CAP,
     };
   }, [activeLocale, packages]);
 

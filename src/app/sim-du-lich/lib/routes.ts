@@ -33,11 +33,12 @@ export const normalizeSimDuLichCategory = (value: string) => {
 };
 
 export const getSimDuLichCategoryHref = (value: string, label: string) =>
-  `/sim-du-lich/${
+  `/sim-${normalizeSimDuLichCategory(
     /^\d+$/.test(normalizeSlug(value))
       ? normalizeSimDuLichCategory(label)
       : normalizeSimDuLichCategory(value || label)
+  )
   }`;
 
 export const getSimDuLichDetailHref = (category: string, slug: string) =>
-  `/sim-du-lich/${normalizeSimDuLichCategory(category)}/${slug}`;
+  `/sim-${normalizeSimDuLichCategory(category)}/${slug}`;
