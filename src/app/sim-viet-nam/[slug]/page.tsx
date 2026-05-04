@@ -21,7 +21,13 @@ export async function generateMetadata({
   const detail = await loadEsimPackageBySlug(slug, language);
   if (!detail) notFound();
 
-  return buildSimDuLichMetadata(language, "viet-nam", detail?.title || detail?.destination || undefined);
+  return buildSimDuLichMetadata(
+    language,
+    "viet-nam",
+    detail?.title || detail?.destination || undefined,
+    `/sim-viet-nam/${slug}`,
+    detail as any
+  );
 }
 
 export default async function SimVietNamDetailPage({

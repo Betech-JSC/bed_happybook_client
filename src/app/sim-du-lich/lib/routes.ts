@@ -32,13 +32,17 @@ export const normalizeSimDuLichCategory = (value: string) => {
   return compact;
 };
 
-export const getSimDuLichCategoryHref = (value: string, label: string) =>
-  `/sim-${normalizeSimDuLichCategory(
+export const getSimDuLichCategoryHref = (value: string, label: string) => {
+  const category = normalizeSimDuLichCategory(
     /^\d+$/.test(normalizeSlug(value))
       ? normalizeSimDuLichCategory(label)
       : normalizeSimDuLichCategory(value || label)
-  )
-  }`;
+  );
+
+  return category === "quoc-te" ? "/sim-du-lich/quoc-te" : `/sim-${category}`;
+};
 
 export const getSimDuLichDetailHref = (category: string, slug: string) =>
-  `/sim-${normalizeSimDuLichCategory(category)}/${slug}`;
+  normalizeSimDuLichCategory(category) === "quoc-te"
+    ? `/sim-du-lich/quoc-te/${slug}`
+    : `/sim-${normalizeSimDuLichCategory(category)}/${slug}`;

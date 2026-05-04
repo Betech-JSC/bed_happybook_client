@@ -26,6 +26,8 @@ type Props = {
   detailSections: DetailSection[];
   openDetailSection: DetailAccordionKey | null;
   setOpenDetailSection: Dispatch<SetStateAction<DetailAccordionKey | null>>;
+  sticky?: boolean;
+  showDetailHeader?: boolean;
 };
 
 export default function EsimProductSidebar({
@@ -40,14 +42,58 @@ export default function EsimProductSidebar({
   detailSections,
   openDetailSection,
   setOpenDetailSection,
+  sticky = true,
+  showDetailHeader = false,
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
 
   return (
-    <aside className="space-y-6 sticky top-32 lg:top-40 h-fit">
+    <aside className={`${sticky ? "space-y-6 sticky top-32 lg:top-40 h-fit" : "space-y-6 h-fit"}`}>
       <div className="bg-white rounded-12px p-6 shadow-lg border border-slate-100">
         <div className="space-y-4">
+          {showDetailHeader ? (
+            <div className="space-y-3 pb-2 border-b border-slate-100">
+              <div>
+                <h1 className="text-[28px] lg:text-[32px] font-bold text-midnight-ink leading-tight">
+                  {selectedPackage?.title || t("eSIM du lịch quốc tế")}
+                </h1>
+                <p className="mt-2 text-sm text-steel-secondary">
+                  {selectedPackage?.destination || activeRegionLabel}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                <span className="text-steel-secondary">0 {t("đánh giá")}</span>
+                {selectedVariant?.validity ? (
+                  <span className="flex items-center gap-1 text-midnight-ink">
+                    <span>•</span>
+                    <span>{selectedVariant.validity} {t("ngày")}</span>
+                  </span>
+                ) : null}
+                {selectedPackage?.network ? (
+                  <span className="flex items-center gap-1 text-midnight-ink">
+                    <span>•</span>
+                    <span>{selectedPackage.network}</span>
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-xs">
+                {selectedPackage?.activation ? (
+                  <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
+                    {selectedPackage.activation}
+                  </span>
+                ) : null}
+                {selectedVariant?.data ? (
+                  <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
+                    {selectedVariant.data}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
           <div className="flex items-end justify-between">
             <span className="text-steel-secondary text-sm font-medium">{t("Tổng cộng:")}</span>
             <span className="text-3xl font-bold text-hb-coral">
