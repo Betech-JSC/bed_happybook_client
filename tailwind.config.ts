@@ -18,6 +18,7 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "12px": "0.75rem",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -60,6 +61,10 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        "hb-navy": "#1e40af",
+        "hb-coral": "#f27145",
+        "midnight-ink": "#1e293b",
+        "steel-secondary": "#64748b",
       },
     },
   },

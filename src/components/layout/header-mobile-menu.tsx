@@ -33,7 +33,7 @@ export default function HeaderMobileMenu() {
 
   useEffect(() => {
     setIsMenuMbOpen(false);
-  }, [pathname]);
+  }, [pathname, setIsMenuMbOpen]);
 
   return (
     <Fragment>
@@ -186,9 +186,22 @@ export default function HeaderMobileMenu() {
             <Link href="/phong-cho-thuong-gia" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("phong_cho_thuong_gia")}
             </Link>
-            <Link href="/sim-du-lich" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("sim_du_lich")}
-            </Link>
+            <div className="mt-3">
+              <div className="flex items-center justify-between">
+                <Link href="/sim-du-lich" className="font-semibold hover:text-[#F27145] cursor-pointer">
+                  {t("sim_du_lich")}
+                </Link>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <Link href="/sim-du-lich/quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+                {t("sim_du_lich_quoc_te")}
+              </Link>
+              <Link href="/sim-viet-nam" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+                {t("sim_du_lich_viet_nam")}
+              </Link>
+            </div>
           </div>
 
           <div className="mt-6">

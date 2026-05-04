@@ -18,6 +18,7 @@ const FlightInternationDetail = ({
   flightLeg,
   HPB_ID,
   airports,
+  isCheapest,
 }: any) => {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = React.useState<boolean>(false);
@@ -40,6 +41,11 @@ const FlightInternationDetail = ({
   return (
     <Fragment>
       <div className="h-fit p-2 pb-0">
+        {isCheapest && (
+          <div className="mb-2 inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold text-amber-700 shadow-sm">
+            {t("re_nhat")}
+          </div>
+        )}
         <div className="grid grid-cols-8 mb-2 last:mb-0 items-center justify-between rounded-lg bg-white p-2 md:py-2 md:px-4 border border-gray-200">
           <div className="col-span-2">
             <div className="flex flex-row items-center gap-2 md:gap-4 text-left">

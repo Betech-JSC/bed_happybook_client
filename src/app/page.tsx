@@ -3,7 +3,6 @@ import Banner from "@/components/home/banner";
 import AosAnimate from "@/components/layout/aos-animate";
 import Search from "@/components/home/search";
 import type { Metadata } from "next";
-import Image from "next/image";
 import SearchMobile from "@/components/home/search-mobile";
 import { FlightApi } from "@/api/Flight";
 import { siteUrl } from "@/constants";
@@ -12,6 +11,10 @@ import { formatMetadata } from "@/lib/formatters";
 import { settingApi } from "@/api/Setting";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import { getServerT } from "@/lib/i18n/getServerT";
+import {
+  HomeHeroDesktopBackground,
+  HomeHeroMobileBackground,
+} from "@/components/home/HomeHeroBackground";
 import dynamic from "next/dynamic";
 // import SentryTestButton from "@/components/dev/SentryTestButton";
 
@@ -26,6 +29,7 @@ const TouristSuggest = dynamic(() => import("@/components/home/tourist-suggest")
 const Flight = dynamic(() => import("@/components/home/flight"));
 const HomeYacht = dynamic(() => import("@/components/home/Yacht"));
 const HomeAmusementTicket = dynamic(() => import("@/components/home/AmusementTicket"));
+const HomeSimFeatured = dynamic(() => import("@/components/home/SimFeatured"));
 const HomeFastTrack = dynamic(() => import("@/components/home/FastTrack"));
 const HomeBusinessLounge = dynamic(() => import("@/components/home/BusinessLounge"));
 const FormContact = dynamic(() => import("./lien-he/form"));
@@ -67,23 +71,7 @@ export default async function Home() {
       <h1 className="sr-only">{seo?.seo_title || "Happy Book - Dịch vụ du lịch hàng đầu"}</h1>
 
       {/* Search Desktop Background - Moved to Server Component for LCP optimization */}
-      <div className="hidden lg:block absolute inset-0 h-[694px]">
-        <Image
-          priority
-          src="/bg-image.webp"
-          fill
-          sizes="100vw"
-          className="object-cover"
-          alt="Tìm kiếm tour và vé máy bay Happy Book"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-          }}
-        ></div>
-      </div>
+      <HomeHeroDesktopBackground />
 
       <Suspense fallback={null}>
         <Search airportsData={airportsData} />
@@ -92,23 +80,7 @@ export default async function Home() {
       {/* Search Mobile */}
       <div className="mt-[68px] block lg:hidden relative h-max pb-10">
         <div className="mt-4 h-full">
-          <div className="absolute inset-0 h-full">
-            <Image
-              priority
-              src="/bg-image.webp"
-              fill
-              sizes="100vw"
-              className="object-cover"
-              alt="Hỗ trợ tìm kiếm du lịch Happy Book"
-            />
-          </div>
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(180deg, #04349A 0%, rgba(23, 85, 220, 0.5) 100%)",
-            }}
-          ></div>
+          <HomeHeroMobileBackground />
           <div className="relative">
             <Suspense fallback={null}>
               <SearchMobile airportsData={airportsData} />
@@ -116,7 +88,7 @@ export default async function Home() {
           </div>
         </div>
       </div>
-      <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
+      <main className="w-full bg-white relative z-2 rounded-2xl">
         <Suspense fallback={<SkeletonProductTabs />}>
           <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <Banner></Banner>
@@ -164,6 +136,14 @@ export default async function Home() {
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
             <HomeBusinessLounge />
+          </AosAnimate>
+        </Suspense>
+
+        <Suspense fallback={<SkeletonProductTabs />}>
+          <AosAnimate>
+            <div className="mt-12 lg:mt-16">
+              <HomeSimFeatured />
+            </div>
           </AosAnimate>
         </Suspense>
 

@@ -18,6 +18,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 import SideBarFilterFlights from "../../SideBarFilter";
 import ListFlightsInternationalNormal from "./Normal/List";
 import ListFlights1GInternaltion from "./1G/List";
+import {
+  getCheapestComparablePrice,
+  getInternationalPackagePrice,
+} from "../../../lib/cheapest";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -315,6 +319,13 @@ export default function ListFlightsInternaltion({
     setIsCheckOut(false);
   }, [filters]);
   // End filter
+  const cheapestPackagePrice = useMemo(
+    () =>
+      getCheapestComparablePrice(filteredData, (flight: any) =>
+        getInternationalPackagePrice(flight)
+      ),
+    [filteredData]
+  );
   const handleCheckout = async () => {
     if (isCheckOut) {
       handleSessionStorage("save", "departFlight", selectedDepartFlight);
@@ -619,6 +630,10 @@ export default function ListFlightsInternaltion({
                         selectedFareDataId={selectedFareDataId}
                         handleCheckout={handleCheckout}
                         isCheckOut={isCheckOut}
+                        isCheapest={
+                          getInternationalPackagePrice(flightsItem) ===
+                          cheapestPackagePrice
+                        }
                       />
                     ) : (
                       <ListFlightsInternationalNormal
@@ -639,6 +654,10 @@ export default function ListFlightsInternaltion({
                         selectedFareDataId={selectedFareDataId}
                         handleCheckout={handleCheckout}
                         isCheckOut={isCheckOut}
+                        isCheapest={
+                          getInternationalPackagePrice(flightsItem) ===
+                          cheapestPackagePrice
+                        }
                       />
                     )}
                   </Fragment>

@@ -30,6 +30,7 @@ export default function ListFlightsInternationalNormal({
   handleCheckout,
   isCheckOut,
   filters,
+  isCheapest,
 }: any) {
   const { t } = useTranslation();
   const [showDetail, setShowDetail] = useState<boolean>(false);
@@ -146,6 +147,7 @@ export default function ListFlightsInternationalNormal({
               flightLeg={0}
               HPB_ID={flightsData.hpb_id}
               airports={airportsData}
+              isCheapest={isCheapest}
             />
           ))}
         </div>
@@ -188,6 +190,7 @@ export default function ListFlightsInternationalNormal({
               flightLeg={1}
               HPB_ID={flightsData.hpb_id}
               airports={airportsData}
+              isCheapest={isCheapest}
             />
           ))}
         </div>
