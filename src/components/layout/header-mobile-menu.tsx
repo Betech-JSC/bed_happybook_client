@@ -30,7 +30,6 @@ export default function HeaderMobileMenu() {
       }
     }
   }, [isMenuMbOpen]);
-}, [isMenuMbOpen]);
 
 useEffect(() => {
   setIsMenuMbOpen(false);
