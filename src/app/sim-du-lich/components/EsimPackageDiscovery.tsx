@@ -19,6 +19,7 @@ import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 
 type DestinationSelectOption = EsimFilterOption & {
   flag: string;
+  displayLabel: string;
 };
 
 type PackageSelectOption = {
@@ -87,6 +88,80 @@ const resolveDestinationFlag = (option: EsimFilterOption) => {
   return matchedCountry ? getFlagEmoji(matchedCountry.iso2) : "🌐";
 };
 
+const COUNTRY_LABEL_ALIASES: Array<{ pattern: RegExp; label: string }> = [
+  { pattern: /\busa\b|\bunited states\b|\bunited states of america\b/, label: "USA" },
+  { pattern: /\buk\b|\bunited kingdom\b|\bgreat britain\b/, label: "UK" },
+  { pattern: /\buae\b|\bunited arab emirates\b/, label: "UAE" },
+  { pattern: /\bkorea\b|\bsouth korea\b|\brepublic of korea\b/, label: "Korea" },
+  { pattern: /\bhong kong\b/, label: "Hong Kong" },
+  { pattern: /\btaiwan\b/, label: "Taiwan" },
+  { pattern: /\bmacau\b|\bmacao\b/, label: "Macau" },
+];
+
+const COUNTRY_FILTER_BLACKLIST = [
+  "local",
+  "mobifone",
+  "wintel",
+  "skyfi",
+  "countries",
+  "country",
+  "asia",
+  "europe",
+  "world",
+  "global",
+  "package",
+  "packages",
+  "sim",
+];
+
+const getCountryDisplayLabel = (option: EsimFilterOption) => {
+  const normalizedLabel = normalizeText(option.label);
+  const normalizedValue = normalizeText(option.value);
+  const alias = COUNTRY_LABEL_ALIASES.find((item) => item.pattern.test(normalizedLabel) || item.pattern.test(normalizedValue));
+
+  if (alias) return alias.label;
+
+  const matchedCountry = allCountries.find((country) => {
+    const normalizedCountryName = normalizeText(country.name);
+    return (
+      normalizedCountryName === normalizedLabel ||
+      normalizedCountryName === normalizedValue ||
+      normalizedCountryName.includes(normalizedLabel) ||
+      normalizedCountryName.includes(normalizedValue) ||
+      normalizedLabel.includes(normalizedCountryName) ||
+      normalizedValue.includes(normalizedCountryName)
+    );
+  });
+
+  return matchedCountry?.name || option.label;
+};
+
+const isCountryOption = (option: EsimFilterOption) => {
+  const normalizedLabel = normalizeText(option.label);
+  const normalizedValue = normalizeText(option.value);
+  const normalizedCombined = `${normalizedLabel} ${normalizedValue}`.trim();
+
+  if (COUNTRY_FILTER_BLACKLIST.some((term) => normalizedCombined.includes(term))) {
+    return false;
+  }
+
+  if (COUNTRY_LABEL_ALIASES.some((item) => item.pattern.test(normalizedLabel) || item.pattern.test(normalizedValue))) {
+    return true;
+  }
+
+  return allCountries.some((country) => {
+    const normalizedCountryName = normalizeText(country.name);
+    return (
+      normalizedCountryName === normalizedLabel ||
+      normalizedCountryName === normalizedValue ||
+      normalizedCountryName.includes(normalizedLabel) ||
+      normalizedCountryName.includes(normalizedValue) ||
+      normalizedLabel.includes(normalizedCountryName) ||
+      normalizedValue.includes(normalizedCountryName)
+    );
+  });
+};
+
 export default function EsimPackageDiscovery({
   query,
   onQueryChange,
@@ -112,17 +187,33 @@ export default function EsimPackageDiscovery({
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
   const [showAllDestinations, setShowAllDestinations] = useState(false);
   const [sortMode, setSortMode] = useState("newest");
-  const visibleDestinations = showAllDestinations ? destinationOptions : destinationOptions.slice(0, 5);
-  const destinationSelectOptions = useMemo<DestinationSelectOption[]>(
-    () =>
-      destinationOptions.map((option) => ({
-        ...option,
-        flag: resolveDestinationFlag(option),
-      })),
-    [destinationOptions]
-  );
+  const countryDestinationOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const next: DestinationSelectOption[] = [];
+
+    destinationOptions
+      .filter(isCountryOption)
+      .forEach((option) => {
+        const displayLabel = getCountryDisplayLabel(option);
+        const normalizedKey = normalizeText(displayLabel);
+        if (!displayLabel || seen.has(normalizedKey)) return;
+        seen.add(normalizedKey);
+
+        next.push({
+          ...option,
+          displayLabel,
+          flag: resolveDestinationFlag({ ...option, label: displayLabel }),
+        });
+      });
+
+    return next.sort((a, b) => a.displayLabel.localeCompare(b.displayLabel, "vi"));
+  }, [destinationOptions]);
+  const visibleDestinations = showAllDestinations
+    ? countryDestinationOptions
+    : countryDestinationOptions.slice(0, 5);
+  const destinationSelectOptions = useMemo<DestinationSelectOption[]>(() => countryDestinationOptions, [countryDestinationOptions]);
   const selectedDestinationOption =
-    destinationSelectOptions.find((option) => selectedDestinationLabels.includes(option.label)) || null;
+    destinationSelectOptions.find((option) => selectedDestinationLabels.includes(option.displayLabel)) || null;
   const packageSelectOptions = useMemo<PackageSelectOption[]>(() => {
     const seen = new Set<string>();
     const nextOptions: PackageSelectOption[] = [];
@@ -174,7 +265,7 @@ export default function EsimPackageDiscovery({
   }, [activeLocale, packages, showInternationalFilters, sortMode]);
 
   const handleDestinationChange = (option: SingleValue<DestinationSelectOption>) => {
-    onSelectDestinationLabel?.(option?.label ?? null);
+    onSelectDestinationLabel?.(option?.displayLabel ?? null);
     onSelectPackageFilterSku?.(null);
   };
 
@@ -186,7 +277,7 @@ export default function EsimPackageDiscovery({
   const formatDestinationOption = (option: DestinationSelectOption) => (
     <div className="flex items-center gap-3">
       <span className="text-base leading-none">{option.flag}</span>
-      <span className="truncate">{option.label}</span>
+      <span className="truncate">{option.displayLabel}</span>
     </div>
   );
 
@@ -246,69 +337,98 @@ export default function EsimPackageDiscovery({
                 key={pkg.slug}
                 type="button"
                 onClick={() => onSelectPackage(pkg)}
-                className={`block w-full text-left overflow-hidden rounded-[30px] border bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl ${
+                className={`group block w-full text-left overflow-hidden rounded-[32px] border bg-white p-4 lg:p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,0.14)] ${
                   isActive ? "border-[#F27145] ring-2 ring-orange-100" : "border-slate-100"
                 }`}
               >
-                <div className="flex flex-col lg:flex-row gap-5 items-stretch">
-                  <div className="relative overflow-hidden rounded-[22px] lg:w-[360px] lg:min-w-[360px] aspect-[4/3]">
+                <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-5 lg:gap-8 items-stretch">
+                  <div className="relative overflow-hidden rounded-[28px] min-h-[250px] lg:min-h-[340px] bg-[#2D49C7]">
                     <Image
                       src="/bg-image-2.webp"
                       alt={pkg.destination || "eSIM quốc tế"}
                       fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 360px"
+                      className="object-cover opacity-[0.28] transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 1024px) 100vw, 58vw"
                     />
-                    <div className="absolute bottom-0 left-0 rounded-tr-2xl bg-[#4E6EB3] px-4 py-2 text-white text-sm font-medium">
-                      eSIM quốc tế
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#2147D8]/95 via-[#3157D8]/80 to-[#2D49C7]/95" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.16),_transparent_42%)]" />
+                    <div className="absolute left-5 right-5 top-5 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-2 rounded-[22px] bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
+                        <Globe className="h-4 w-4 text-[#1D4ED8]" />
+                        <span className="uppercase tracking-wide">{pkg.destination || pkg.title}</span>
+                      </span>
+                      <span className="inline-flex items-center rounded-[22px] bg-[#1E3A8A] px-4 py-3 text-sm font-extrabold text-white shadow-sm">
+                        eSIM
+                      </span>
+                      <span className="inline-flex items-center rounded-[22px] bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
+                        {pkg.network || "Network"}
+                      </span>
+                    </div>
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-white">
+                      <h3 className="max-w-[16ch] text-[34px] font-black leading-none tracking-tight drop-shadow-md lg:text-[54px]">
+                        {pkg.destination || pkg.title}
+                      </h3>
+                      <p className="mt-5 max-w-[20ch] text-lg font-semibold leading-tight text-white/90 drop-shadow-sm lg:text-2xl">
+                        {pkg.subtitle || pkg.network || pkg.coverage}
+                      </p>
+                    </div>
+                    <div className="absolute bottom-5 left-5 inline-flex items-center gap-2 rounded-full bg-[#4E6EB3] px-4 py-2 text-sm font-semibold text-white shadow-md">
+                      <Globe className="h-4 w-4" />
+                      <span>eSIM quốc tế</span>
                     </div>
                   </div>
 
-                  <div className="flex-1 min-w-0 flex flex-col justify-between py-1 lg:py-2">
-                    <div>
-                      <h3 className="text-[22px] lg:text-[26px] font-bold text-midnight-ink line-clamp-2">
-                        {pkg.destination || pkg.title}
-                      </h3>
-                      <p className="mt-2 text-sm text-slate-500">
+                  <div className="min-w-0 flex flex-col justify-between py-1 lg:py-3 lg:pr-1">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hb-coral">
+                          eSIM
+                        </p>
+                        <h3 className="mt-2 text-[24px] lg:text-[34px] font-extrabold leading-tight text-midnight-ink line-clamp-2">
+                          {pkg.destination || pkg.title}
+                        </h3>
+                      </div>
+
+                      <p className="text-sm lg:text-[17px] leading-7 text-slate-500">
                         {pkg.subtitle || pkg.network || pkg.coverage}
                       </p>
 
-                      <div className="mt-4 space-y-3 text-[15px] lg:text-[17px] text-midnight-ink">
+                      <div className="space-y-4 text-[15px] lg:text-[18px] text-midnight-ink">
                         <div className="flex items-center gap-3 text-slate-500">
                           <span className="text-lg leading-none">0</span>
                           <span>{t("đánh giá")}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Clock3 className="h-5 w-5 text-slate-500" />
+                          <Clock3 className="h-5 w-5 shrink-0 text-slate-500" />
                           <span>{cheapest?.validity ? `${cheapest.validity} ngày` : pkg.coverage}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <MapPin className="h-5 w-5 text-slate-500" />
+                          <MapPin className="h-5 w-5 shrink-0 text-slate-500" />
                           <span>{pkg.regionLabel || pkg.destination}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Wifi className="h-5 w-5 text-slate-500" />
+                          <Wifi className="h-5 w-5 shrink-0 text-slate-500" />
                           <span className="line-clamp-1">{pkg.network || pkg.coverage}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-6 flex items-end justify-between gap-4">
-                      <div className="flex flex-wrap gap-2">
+                    <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
+                      <div className="flex flex-wrap gap-2 max-w-full">
                         {cheapest?.data ? (
-                          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
                             {cheapest.data}
                           </span>
                         ) : null}
                         {pkg.activation ? (
-                          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
                             {pkg.activation}
                           </span>
                         ) : null}
                       </div>
 
-                      <div className="text-right">
-                        <div className="text-2xl lg:text-[30px] font-extrabold text-[#F27145]">
+                      <div className="text-right shrink-0">
+                        <div className="text-3xl lg:text-[34px] font-extrabold tracking-tight text-[#F27145]">
                           {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
                         </div>
                       </div>
@@ -371,16 +491,16 @@ export default function EsimPackageDiscovery({
           <h4 className="text-2xl font-bold text-midnight-ink mb-4">{t("Quốc gia")}</h4>
           <div className="space-y-3">
             {visibleDestinations.map((option) => {
-              const checked = selectedDestinationLabels.includes(option.label);
+              const checked = selectedDestinationLabels.includes(option.displayLabel);
               return (
-                <label key={option.label} className="flex items-center gap-3 cursor-pointer">
+                <label key={option.value} className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={checked}
-                    onChange={() => onToggleDestinationLabel?.(option.label)}
+                    onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
                     className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
                   />
-                  <span className="text-[15px] text-midnight-ink">{option.label}</span>
+                  <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>
                 </label>
               );
             })}
