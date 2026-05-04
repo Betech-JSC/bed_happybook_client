@@ -188,15 +188,17 @@ export default function HeaderMobileMenu() {
             </Link>
             <div className="mt-3">
               <div className="flex items-center justify-between">
-                <strong>{t("sim_du_lich")}</strong>
+                <Link href="/sim-du-lich" className="font-semibold hover:text-[#F27145] cursor-pointer">
+                  {t("sim_du_lich")}
+                </Link>
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <Link href="/sim-du-lich/quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+              <Link href="/sim-quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
                 {t("sim_du_lich_quoc_te")}
               </Link>
-              <Link href="/sim-du-lich/viet-nam" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+              <Link href="/sim-viet-nam" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
                 {t("sim_du_lich_viet_nam")}
               </Link>
             </div>

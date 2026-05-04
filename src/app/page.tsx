@@ -88,7 +88,7 @@ export default async function Home() {
           </div>
         </div>
       </div>
-      <main className="w-full bg-white relative z-2 rounded-2xl top-[-12px]">
+      <main className="w-full bg-white relative z-2 rounded-2xl">
         <Suspense fallback={<SkeletonProductTabs />}>
           <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
             <Banner></Banner>
@@ -141,7 +141,9 @@ export default async function Home() {
 
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
-            <HomeSimFeatured />
+            <div className="mt-12 lg:mt-16">
+              <HomeSimFeatured />
+            </div>
           </AosAnimate>
         </Suspense>
 
