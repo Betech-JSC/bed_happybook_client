@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useRef } from "react";
 import type { ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
@@ -45,6 +46,16 @@ export default function EsimProductPage({
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
   const isInternationalPage = initialCategory === "quoc-te";
   const showInternationalListExtras = isInternationalPage && !initialPackageSlug;
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollSidebarIntoView = useCallback(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+
+    window.requestAnimationFrame(() => {
+      sidebarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
 
   const breadcrumbItems = (() => {
     const baseItems = [{ href: "/", label: t("Trang chủ", "Homepage") }];
@@ -104,8 +115,14 @@ export default function EsimProductPage({
                 serviceTypeLabel={catalog.serviceTypeLabel}
                 quantity={catalog.quantity}
                 onOpenModal={() => catalog.setShowModal(true)}
-                onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
-                onSelectSkuByData={catalog.handleSelectSkuByData}
+                onSelectSkuByValidity={(validity) => {
+                  catalog.handleSelectSkuByValidity(validity);
+                  scrollSidebarIntoView();
+                }}
+                onSelectSkuByData={(data) => {
+                  catalog.handleSelectSkuByData(data);
+                  scrollSidebarIntoView();
+                }}
                 onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
                 onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
               />
@@ -120,7 +137,7 @@ export default function EsimProductPage({
               </div>
             </div>
 
-            <div className="w-full lg:w-4/12">
+            <div ref={sidebarRef} className="w-full lg:w-4/12 lg:sticky lg:top-[148px] lg:self-start">
               <EsimProductSidebar
                 selectedPackage={catalog.selectedPackage}
                 selectedVariant={catalog.selectedVariant}
@@ -180,7 +197,7 @@ export default function EsimProductPage({
             showPackageControls={false}
           />
 
-          <div className="mt-8 pb-8">
+          <div ref={sidebarRef} className="mt-8 pb-8 lg:sticky lg:top-[148px] lg:self-start">
             <EsimProductSidebar
               selectedPackage={catalog.selectedPackage}
               selectedVariant={catalog.selectedVariant}
@@ -243,19 +260,21 @@ export default function EsimProductPage({
         />
       </div>
 
-      <EsimProductSidebar
-        selectedPackage={catalog.selectedPackage}
-        selectedVariant={catalog.selectedVariant}
-        selectedVariantMoney={catalog.selectedVariantMoney}
-        activeRegionLabel={catalog.activeRegionLabel}
-        serviceTypeLabel={catalog.serviceTypeLabel}
-        quantity={catalog.quantity}
-        total={catalog.total}
-        onBookNow={catalog.handleBookNow}
-        detailSections={catalog.detailSections}
-        openDetailSection={catalog.openDetailSection}
-        setOpenDetailSection={catalog.setOpenDetailSection}
-      />
+      <div className="lg:sticky lg:top-[148px] lg:self-start">
+        <EsimProductSidebar
+          selectedPackage={catalog.selectedPackage}
+          selectedVariant={catalog.selectedVariant}
+          selectedVariantMoney={catalog.selectedVariantMoney}
+          activeRegionLabel={catalog.activeRegionLabel}
+          serviceTypeLabel={catalog.serviceTypeLabel}
+          quantity={catalog.quantity}
+          total={catalog.total}
+          onBookNow={catalog.handleBookNow}
+          detailSections={catalog.detailSections}
+          openDetailSection={catalog.openDetailSection}
+          setOpenDetailSection={catalog.setOpenDetailSection}
+        />
+      </div>
     </div>
   );
 

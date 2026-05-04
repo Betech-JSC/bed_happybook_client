@@ -55,7 +55,7 @@ export default function EsimProductSidebar({
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
 
   return (
-    <aside className={`${sticky ? "space-y-6 sticky top-32 lg:top-40 h-fit" : "space-y-6 h-fit"}`}>
+    <aside className={`${sticky ? "space-y-6 lg:sticky lg:top-40 lg:h-fit" : "space-y-6 h-fit"}`}>
       <div className="bg-white rounded-12px p-6 shadow-lg border border-slate-100">
         <div className="space-y-4">
           {showDetailHeader ? (
