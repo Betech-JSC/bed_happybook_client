@@ -546,8 +546,8 @@ export default function Header() {
                                   href={item.href}
                                   onClick={() => setIsSimDuLichOpen(false)}
                                   className={`rounded-2xl px-4 py-4 text-[18px] font-medium transition-colors ${isActive
-                                      ? "bg-[#EEF4FF] text-blue-600"
-                                      : "text-[#101828] hover:bg-[#EEF4FF] hover:text-blue-600"
+                                    ? "bg-[#EEF4FF] text-blue-600"
+                                    : "text-[#101828] hover:bg-[#EEF4FF] hover:text-blue-600"
                                     }`}
                                 >
                                   {item.label}
