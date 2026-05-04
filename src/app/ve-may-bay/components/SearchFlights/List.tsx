@@ -307,22 +307,22 @@ export default function ListFlights({
   // Group Flights
   const groupFlights = useCallback(
     (flights: any[]) => {
-    if (flights.length < 1) {
-      return isRoundTrip ? { 0: [], 1: [] } : { 0: [] };
-    }
-    const listFlights = flights.reduce((acc, flight) => {
-      const leg = flight.flightLeg;
-      if (!acc[leg]) {
-        acc[leg] = [];
+      if (flights.length < 1) {
+        return isRoundTrip ? { 0: [], 1: [] } : { 0: [] };
       }
-      acc[leg].push(flight);
-      return acc;
-    }, {} as { [key: string]: any[] });
+      const listFlights = flights.reduce((acc, flight) => {
+        const leg = flight.flightLeg;
+        if (!acc[leg]) {
+          acc[leg] = [];
+        }
+        acc[leg].push(flight);
+        return acc;
+      }, {} as { [key: string]: any[] });
 
-    if (isRoundTrip && !listFlights[1]) {
-      listFlights[1] = [];
-    }
-    return listFlights;
+      if (isRoundTrip && !listFlights[1]) {
+        listFlights[1] = [];
+      }
+      return listFlights;
     },
     [isRoundTrip]
   );
@@ -751,7 +751,7 @@ export default function ListFlights({
                           <div className="mt-1 text-[11px] font-semibold text-orange-500">
                             {formatCurrency(
                               returnDayPrices[format(day.date, "yyyy-MM-dd")] ??
-                                0
+                              0
                             )}
                           </div>
                         )}

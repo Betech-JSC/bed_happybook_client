@@ -30,7 +30,7 @@ const request = async <Response>(
   const fullUrl = url.startsWith("/")
     ? `${baseUrl}${url}`
     : `${baseUrl}/${url}`;
-  
+
   console.log("Making fetch request to:", fullUrl);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
