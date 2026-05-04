@@ -40,6 +40,7 @@ export default function EsimProductPage({
   });
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
   const isInternationalPage = initialCategory === "quoc-te";
+  const showInternationalListExtras = isInternationalPage && !initialPackageSlug;
 
   const breadcrumbItems = (() => {
     const baseItems = [{ href: "/", label: t("Trang chủ", "Homepage") }];
@@ -189,6 +190,9 @@ export default function EsimProductPage({
               openDetailSection={catalog.openDetailSection}
               setOpenDetailSection={catalog.setOpenDetailSection}
               sticky={false}
+              showDetailSections={false}
+              showActionBlock={false}
+              showInfoBlock={false}
             />
           </div>
         </div>
@@ -259,7 +263,7 @@ export default function EsimProductPage({
         renderDomesticShell()
       )}
 
-      {packageFooterContent ? (
+      {!showInternationalListExtras && packageFooterContent ? (
         <section
           className={
             isInternationalPage
