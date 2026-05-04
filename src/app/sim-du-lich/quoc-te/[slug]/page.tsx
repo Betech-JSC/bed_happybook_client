@@ -64,6 +64,7 @@ export default async function SimDuLichQuocTeDetailPage({
         faqItems={faqItems}
         initialCategory="quoc-te"
         initialPackageSlug={slug}
+        initialSelectedPackage={detail}
       />
     </>
   );

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
+import type { EsimPackageView } from "../lib/esim";
 import EsimHeroSection from "./EsimHeroSection";
 import EsimInternationalDetailGallery from "./EsimInternationalDetailGallery";
 import EsimPackageControls from "./EsimPackageControls";
@@ -20,12 +21,14 @@ export default function EsimProductPage({
   faqItems,
   initialCategory,
   initialPackageSlug,
+  initialSelectedPackage,
 }: {
   footerContent?: ReactNode;
   cmsPageContent?: EsimCmsPageContent | null;
   faqItems?: EsimCmsFaqItem[];
   initialCategory?: string;
   initialPackageSlug?: string;
+  initialSelectedPackage?: EsimPackageView | null;
 }) {
   const { language } = useLanguage();
   const activeLocale = language === "en" ? "en" : "vi";
@@ -37,6 +40,7 @@ export default function EsimProductPage({
     activeLocale,
     initialCategory,
     initialPackageSlug,
+    initialSelectedPackage,
   });
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
   const isInternationalPage = initialCategory === "quoc-te";

@@ -47,13 +47,13 @@ const ProductEsimApi = {
     operator?: string;
     page_size?: number;
     page?: number;
-  }, locale?: string) => http.get<any>(`${path}/search${buildSearchQuery(params)}`, langHeader(locale)),
+  }, locale?: string) => http.get<any>(`${path}/search${buildSearchQuery(params)}`, langHeader(locale), 10000, 0),
   detail: (slug: string, locale?: string) =>
-    http.get<any>(`${path}/detail/${slug}`, langHeader(locale)),
+    http.get<any>(`${path}/detail/${slug}`, langHeader(locale), 10000, 0),
   detailBySlug: (slug: string, locale?: string) =>
-    http.get<any>(`${path}/detail-by-slug/${slug}`, langHeader(locale)),
+    http.get<any>(`${path}/detail-by-slug/${slug}`, langHeader(locale), 10000, 0),
   getOptionsFilter: (locale?: string) =>
-    http.get<any>(`${path}/options-filter`, langHeader(locale)),
+    http.get<any>(`${path}/options-filter`, langHeader(locale), 10000, 0),
   quote: (body: {
     variant_id: string | number;
     quantity?: number;
