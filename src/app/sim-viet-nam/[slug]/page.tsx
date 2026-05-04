@@ -64,6 +64,7 @@ export default async function SimVietNamDetailPage({
         faqItems={faqItems}
         initialCategory="viet-nam"
         initialPackageSlug={slug}
+        initialSelectedPackage={detail}
       />
     </>
   );

@@ -26,6 +26,7 @@ type Args = {
   activeLocale: Locale;
   initialCategory?: string;
   initialPackageSlug?: string;
+  initialSelectedPackage?: EsimPackageView | null;
 };
 
 export function useEsimCatalog({
@@ -34,6 +35,7 @@ export function useEsimCatalog({
   activeLocale,
   initialCategory,
   initialPackageSlug,
+  initialSelectedPackage,
 }: Args) {
   const router = useRouter();
   const t = useSimDuLichStaticText(activeLocale);
@@ -146,6 +148,9 @@ export function useEsimCatalog({
         const preferredPackage =
           items.find((item) => item.slug === initialPackageSlug) ||
           items.find((item) => item.slug === currentPackageSlug) ||
+          (initialPackageSlug && initialSelectedPackage?.slug === initialPackageSlug
+            ? initialSelectedPackage
+            : null) ||
           items[0];
 
         const nextPackage = preferredPackage;
@@ -181,7 +186,7 @@ export function useEsimCatalog({
       active = false;
       clearTimeout(timer);
     };
-  }, [activeLocale, debouncedQuery, initialPackageSlug, selectedRegionId, t]);
+  }, [activeLocale, debouncedQuery, initialPackageSlug, initialSelectedPackage, selectedRegionId, t]);
 
   const normalizeText = useCallback(
     (value: string) =>
@@ -270,8 +275,13 @@ export function useEsimCatalog({
 
   const selectedPackage = useMemo<EsimPackageView | null>(() => {
     if (!visiblePackages.length) return null;
-    return visiblePackages.find((item) => item.slug === selectedPackageSlug) || visiblePackages[0];
-  }, [selectedPackageSlug, visiblePackages]);
+    return (
+      visiblePackages.find((item) => item.slug === selectedPackageSlug) ||
+      visiblePackages.find((item) => item.slug === initialPackageSlug) ||
+      (initialPackageSlug && initialSelectedPackage?.slug === initialPackageSlug ? initialSelectedPackage : null) ||
+      visiblePackages[0]
+    );
+  }, [initialPackageSlug, initialSelectedPackage, selectedPackageSlug, visiblePackages]);
 
   const selectedVariant = useMemo<EsimVariantView | null>(() => {
     if (!selectedPackage?.variants.length) return null;
