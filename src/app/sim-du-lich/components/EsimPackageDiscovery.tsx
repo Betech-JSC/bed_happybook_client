@@ -347,8 +347,8 @@ export default function EsimPackageDiscovery({
                   isActive ? "border-[#F27145] ring-2 ring-orange-100" : "border-slate-100"
                 } ${!isSelectable ? "opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[0_10px_30px_rgba(15,23,42,0.08)]" : ""}`}
               >
-                <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-5 lg:gap-8 items-stretch">
-                  <div className="relative overflow-hidden rounded-[28px] min-h-[250px] lg:min-h-[340px] bg-[#2D49C7]">
+                <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)] lg:gap-6">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-[28px] bg-[#2D49C7]">
                     <Image
                       src="/bg-image-2.webp"
                       alt={pkg.destination || "eSIM quốc tế"}
@@ -358,59 +358,59 @@ export default function EsimPackageDiscovery({
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-[#2147D8]/95 via-[#3157D8]/80 to-[#2D49C7]/95" />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.16),_transparent_42%)]" />
-                    <div className="absolute left-5 right-5 top-5 flex flex-wrap gap-2">
-                      <span className="inline-flex items-center gap-2 rounded-[22px] bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
-                        <Globe className="h-4 w-4 text-[#1D4ED8]" />
+                    <div className="absolute left-4 right-4 top-4 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-2 rounded-[20px] bg-white px-3 py-2 text-xs font-extrabold text-midnight-ink shadow-sm lg:px-4 lg:text-sm">
+                        <Globe className="h-3.5 w-3.5 text-[#1D4ED8] lg:h-4 lg:w-4" />
                         <span className="uppercase tracking-wide">{pkg.destination || pkg.title}</span>
                       </span>
-                      <span className="inline-flex items-center rounded-[22px] bg-[#1E3A8A] px-4 py-3 text-sm font-extrabold text-white shadow-sm">
+                      <span className="inline-flex items-center rounded-[20px] bg-[#1E3A8A] px-3 py-2 text-xs font-extrabold text-white shadow-sm lg:px-4 lg:text-sm">
                         eSIM
                       </span>
-                      <span className="inline-flex items-center rounded-[22px] bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
+                      <span className="inline-flex max-w-full items-center rounded-[20px] bg-white px-3 py-2 text-xs font-extrabold text-midnight-ink shadow-sm lg:px-4 lg:text-sm">
                         {pkg.network || "Network"}
                       </span>
                     </div>
-                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-white">
-                      <h3 className="max-w-[16ch] text-[34px] font-black leading-none tracking-tight drop-shadow-md lg:text-[54px]">
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-white lg:px-10">
+                      <h3 className="max-w-[14ch] text-[28px] font-black leading-[0.95] tracking-tight drop-shadow-md lg:text-[44px]">
                         {pkg.destination || pkg.title}
                       </h3>
-                      <p className="mt-5 max-w-[20ch] text-lg font-semibold leading-tight text-white/90 drop-shadow-sm lg:text-2xl">
+                      <p className="mt-3 max-w-[22ch] line-clamp-2 text-sm font-semibold leading-snug text-white/90 drop-shadow-sm lg:mt-4 lg:text-xl">
                         {pkg.subtitle || pkg.network || pkg.coverage}
                       </p>
                     </div>
-                    <div className="absolute bottom-5 left-5 inline-flex items-center gap-2 rounded-full bg-[#4E6EB3] px-4 py-2 text-sm font-semibold text-white shadow-md">
-                      <Globe className="h-4 w-4" />
+                    <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-[#4E6EB3] px-3 py-1.5 text-xs font-semibold text-white shadow-md lg:px-4 lg:py-2 lg:text-sm">
+                      <Globe className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                       <span>eSIM quốc tế</span>
                     </div>
                   </div>
 
-                  <div className="min-w-0 flex flex-col justify-between py-1 lg:py-3 lg:pr-1">
-                    <div className="space-y-4">
+                  <div className="min-w-0 flex flex-col justify-between gap-5 py-1 lg:py-2 lg:pr-1">
+                    <div className="space-y-3">
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hb-coral">
                           eSIM
                         </p>
-                        <h3 className="mt-2 text-[24px] lg:text-[34px] font-extrabold leading-tight text-midnight-ink line-clamp-2">
+                        <h3 className="mt-2 line-clamp-2 text-[22px] font-extrabold leading-tight text-midnight-ink lg:text-[30px]">
                           {pkg.destination || pkg.title}
                         </h3>
                       </div>
 
-                      <p className="text-sm lg:text-[17px] leading-7 text-slate-500">
+                      <p className="line-clamp-2 text-sm leading-6 text-slate-500 lg:text-base">
                         {pkg.subtitle || pkg.network || pkg.coverage}
                       </p>
 
-                      <div className="space-y-4 text-[15px] lg:text-[18px] text-midnight-ink">
+                      <div className="grid gap-3 text-[15px] text-midnight-ink lg:text-base">
                         <div className="flex items-center gap-3 text-slate-500">
                           <span className="text-lg leading-none">0</span>
                           <span>{t("đánh giá")}</span>
                         </div>
                         <div className="flex items-center gap-3">
                           <Clock3 className="h-5 w-5 shrink-0 text-slate-500" />
-                          <span>{cheapest?.validity ? `${cheapest.validity} ngày` : pkg.coverage}</span>
+                          <span className="line-clamp-1">{cheapest?.validity ? `${cheapest.validity} ngày` : pkg.coverage}</span>
                         </div>
                         <div className="flex items-center gap-3">
                           <MapPin className="h-5 w-5 shrink-0 text-slate-500" />
-                          <span>{pkg.regionLabel || pkg.destination}</span>
+                          <span className="line-clamp-1">{pkg.regionLabel || pkg.destination}</span>
                         </div>
                         <div className="flex items-center gap-3">
                           <Wifi className="h-5 w-5 shrink-0 text-slate-500" />
@@ -419,7 +419,7 @@ export default function EsimPackageDiscovery({
                       </div>
                     </div>
 
-                    <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
+                    <div className="flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-4">
                       <div className="flex flex-wrap gap-2 max-w-full">
                         {cheapest?.data ? (
                           <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
@@ -427,14 +427,16 @@ export default function EsimPackageDiscovery({
                           </span>
                         ) : null}
                         {pkg.activation ? (
-                          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
-                            {pkg.activation}
+                          <span className="inline-flex max-w-full rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
+                            <span className="block max-w-[220px] truncate lg:max-w-[280px]">
+                              {pkg.activation}
+                            </span>
                           </span>
                         ) : null}
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="text-3xl lg:text-[34px] font-extrabold tracking-tight text-[#F27145]">
+                        <div className="text-[30px] font-extrabold tracking-tight text-[#F27145] lg:text-[32px]">
                           {isSelectable
                             ? formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)
                             : t("Chưa có giá khả dụng")}

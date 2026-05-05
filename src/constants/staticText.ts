@@ -191,6 +191,8 @@ const headerStaticText: string[] = [
   "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
   "Sim du lịch Việt Nam",
   "Sim du lịch quốc tế",
+  "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
+  "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
 ];
 
 const footerStaticText: string[] = [
