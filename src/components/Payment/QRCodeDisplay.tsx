@@ -2,9 +2,8 @@ import { PaymentApi } from "@/api/Payment";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages } from "@/lib/messages";
 import { translatePage } from "@/utils/translateDom";
-import Image from "next/image";
 import QRCode from "qrcode";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 
 interface QRCodeDisplayProps {
@@ -14,6 +13,86 @@ interface QRCodeDisplayProps {
   setIsPaid: (paid: boolean) => void;
 }
 
+type QrResolution = {
+  src: string;
+  payload: string;
+};
+
+const isLikelyImageBase64 = (value: string) =>
+  value.startsWith("iVBOR") ||
+  value.startsWith("/9j/") ||
+  value.startsWith("R0lGOD") ||
+  value.startsWith("PHN2Zy");
+
+const normalizeQrSrc = (value?: string | null) => {
+  if (!value) return "";
+
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "undefined" || trimmed === "null") return "";
+
+  if (trimmed.startsWith("//")) {
+    return encodeURI(`https:${trimmed}`);
+  }
+
+  if (
+    trimmed.startsWith("data:image/") ||
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("/")
+  ) {
+    return trimmed.startsWith("data:image/") ? trimmed : encodeURI(trimmed);
+  }
+
+  return trimmed;
+};
+
+const resolveQrData = (vietQrData: any): QrResolution => {
+  const candidates = [
+    vietQrData?.qr_code_url,
+    vietQrData?.image_url,
+    vietQrData?.qrcode_base64,
+    vietQrData?.qr_code,
+    vietQrData?.qrcode,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string") continue;
+
+    const trimmed = candidate.trim();
+    if (!trimmed || trimmed === "undefined" || trimmed === "null") continue;
+
+    if (
+      trimmed.startsWith("data:image/") ||
+      trimmed.startsWith("http://") ||
+      trimmed.startsWith("https://") ||
+      trimmed.startsWith("//") ||
+      trimmed.startsWith("/")
+    ) {
+      return { src: normalizeQrSrc(trimmed), payload: "" };
+    }
+
+    const compact = trimmed.replace(/\s+/g, "");
+    if (
+      compact.startsWith("<svg") ||
+      compact.startsWith("<?xml") ||
+      isLikelyImageBase64(compact)
+    ) {
+      if (compact.startsWith("<svg") || compact.startsWith("<?xml")) {
+        return {
+          src: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(trimmed)}`,
+          payload: "",
+        };
+      }
+
+      return { src: `data:image/png;base64,${compact}`, payload: "" };
+    }
+
+    return { src: "", payload: trimmed };
+  }
+
+  return { src: "", payload: "" };
+};
+
 export default function QRCodeDisplay({
   vietQrData,
   order,
@@ -22,6 +101,8 @@ export default function QRCodeDisplay({
 }: QRCodeDisplayProps) {
   const { language } = useLanguage();
   const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const [imgSrc, setImgSrc] = useState("");
+  const qrData = useMemo(() => resolveQrData(vietQrData), [vietQrData]);
 
 
   useEffect(() => {
@@ -49,6 +130,63 @@ export default function QRCodeDisplay({
     }
   }, [isPaid]);
 
+  useEffect(() => {
+    let active = true;
+
+    const loadQr = async () => {
+      if (qrData.src) {
+        if (!active) return;
+        setImgSrc(qrData.src);
+        return;
+      }
+
+      if (qrData.payload) {
+        try {
+          const dataUrl = await QRCode.toDataURL(qrData.payload, {
+            width: 240,
+            margin: 1,
+            errorCorrectionLevel: "M",
+          });
+
+          if (!active) return;
+          setImgSrc(dataUrl);
+          return;
+        } catch (error) {
+          console.error("Failed to generate QR image from payload:", error);
+        }
+      }
+
+      if (active) {
+        setImgSrc("");
+      }
+    };
+
+    void loadQr();
+
+    return () => {
+      active = false;
+    };
+  }, [qrData]);
+
+  const handleImgError = () => {
+    if (imgSrc.startsWith("http://")) {
+      setImgSrc((current) => current.replace(/^http:\/\//, "https://"));
+      return;
+    }
+
+    if (qrData.payload && !imgSrc.startsWith("data:image/")) {
+      QRCode.toDataURL(qrData.payload, {
+        width: 240,
+        margin: 1,
+        errorCorrectionLevel: "M",
+      })
+        .then((dataUrl) => setImgSrc(dataUrl))
+        .catch((error) => {
+          console.error("Fallback QR generation failed:", error);
+        });
+    }
+  };
+
   return (
     <div
       id="wrapper-payment-transfer"
@@ -59,12 +197,15 @@ export default function QRCodeDisplay({
       </p>
       <div className="mt-3 flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-5 justify-between items-start lg:p-2">
         <div className="w-[250px] lg:w-1/3">
-          <Image
-            src={vietQrData.qrcode_base64}
-            alt="QR Code"
-            width={200}
-            height={200}
-          />
+          {imgSrc ? (
+            // QR data may be a remote URL from the payment service, so use a plain image tag here.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={imgSrc} alt="QR Code" width={200} height={200} onError={handleImgError} />
+          ) : (
+            <div className="flex h-[200px] w-[200px] items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">
+              Đang tải mã QR...
+            </div>
+          )}
         </div>
         <div className="lg:w-2/3 bg-gray-50 p-2 text-sm rounded-xl">
           <div className="flex space-x-2">
