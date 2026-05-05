@@ -195,12 +195,49 @@ export default function HeaderMobileMenu() {
                   <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <Link href="/sim-du-lich/quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-                {t("sim_du_lich_quoc_te")}
-              </Link>
-              <Link href="/sim-viet-nam" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-                {t("sim_du_lich_viet_nam")}
-              </Link>
+              <div className="mt-3 space-y-3 pl-3">
+                <Link
+                  href="/sim-du-lich/quoc-te"
+                  className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 hover:border-[#F27145] hover:bg-white transition-all duration-300"
+                >
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white">
+                    <Image
+                      src="/icon/map-pinned.svg"
+                      alt="Quốc tế"
+                      width={22}
+                      height={22}
+                      className="h-[22px] w-[22px] object-contain"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-[#101828]">{t("sim_du_lich_quoc_te")}</div>
+                    <div className="mt-1 text-xs leading-relaxed text-slate-500">
+                      {t(toSnakeCase("Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh."))}
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/sim-viet-nam"
+                  className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 hover:border-[#F27145] hover:bg-white transition-all duration-300"
+                >
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white">
+                    <Image
+                      src="/icon/VN flag.svg"
+                      alt="Việt Nam"
+                      width={22}
+                      height={22}
+                      className="h-[22px] w-[22px] object-contain"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-[#101828]">{t("sim_du_lich_viet_nam")}</div>
+                    <div className="mt-1 text-xs leading-relaxed text-slate-500">
+                      {t(toSnakeCase("Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam."))}
+                    </div>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
 

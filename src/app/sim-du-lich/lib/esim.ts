@@ -378,6 +378,12 @@ export const resolveEsimRegionPreset = (
     normalizedValue: normalizePreset(option.value),
     normalizedLabel: normalizePreset(option.label),
   }));
+  const findExactLabelMatch = (aliases: string[]) =>
+    normalizedOptions.find((option) => aliases.includes(option.normalizedLabel));
+  const findIncludesLabelMatch = (aliases: string[]) =>
+    normalizedOptions.find((option) =>
+      aliases.some((alias) => option.normalizedLabel.includes(alias))
+    );
 
   const directMatch = normalizedOptions.find(
     (option) =>
@@ -392,16 +398,11 @@ export const resolveEsimRegionPreset = (
     normalizedPreset.includes("domestic") ||
     normalizedPreset.includes("noi-dia")
   ) {
-    const domesticMatch = normalizedOptions.find((option) => {
-      const label = option.normalizedLabel;
-      return (
-        label.includes("viet-nam") ||
-        label.includes("vietnam") ||
-        label.includes("domestic") ||
-        label.includes("noi-dia")
-      );
-    });
+    const domesticAliases = ["viet-nam", "vietnam", "domestic", "noi-dia"];
+    const domesticExactMatch = findExactLabelMatch(domesticAliases);
+    if (domesticExactMatch) return domesticExactMatch.value;
 
+    const domesticMatch = findIncludesLabelMatch(domesticAliases);
     if (domesticMatch) return domesticMatch.value;
   }
 
@@ -410,15 +411,11 @@ export const resolveEsimRegionPreset = (
     normalizedPreset.includes("international") ||
     normalizedPreset.includes("nuoc-ngoai")
   ) {
-    const internationalMatch = normalizedOptions.find((option) => {
-      const label = option.normalizedLabel;
-      return (
-        label.includes("quoc-te") ||
-        label.includes("international") ||
-        label.includes("nuoc-ngoai")
-      );
-    });
+    const internationalAliases = ["quoc-te", "international", "nuoc-ngoai"];
+    const internationalExactMatch = findExactLabelMatch(internationalAliases);
+    if (internationalExactMatch) return internationalExactMatch.value;
 
+    const internationalMatch = findIncludesLabelMatch(internationalAliases);
     if (internationalMatch) return internationalMatch.value;
   }
 

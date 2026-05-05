@@ -12,7 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { AuthApi } from "@/api/Auth";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toSnakeCase } from "@/utils/Helper";
-import { useSimDuLichRegions } from "@/hooks/useSimDuLichRegions";
+import { normalizeSimDuLichCategory, useSimDuLichRegions } from "@/hooks/useSimDuLichRegions";
 
 export default function Header() {
   const { t } = useTranslation();
@@ -96,6 +96,26 @@ export default function Header() {
       : pathname.startsWith("/sim-quoc-te") || pathname.startsWith("/sim-du-lich/quoc-te")
         ? "quoc-te"
         : "";
+
+  const simRegionMenuMeta: Record<
+    string,
+    { icon: string; iconAlt: string; description: string }
+  > = {
+    "viet-nam": {
+      icon: "/icon/VN flag.svg",
+      iconAlt: "Việt Nam",
+      description: t(
+        toSnakeCase("Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.")
+      ),
+    },
+    "quoc-te": {
+      icon: "/icon/map-pinned.svg",
+      iconAlt: "Quốc tế",
+      description: t(
+        toSnakeCase("Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.")
+      ),
+    },
+  };
 
 
 
@@ -536,6 +556,16 @@ export default function Header() {
                         <div className="flex flex-col gap-2">
                           {simDuLichRegions.length > 0 ? (
                             simDuLichRegions.map((item) => {
+                              const category = normalizeSimDuLichCategory(item.label);
+                              const itemMeta = simRegionMenuMeta[category] ?? {
+                                icon: "/icon/sim.png",
+                                iconAlt: item.label,
+                                description: t(
+                                  toSnakeCase(
+                                    "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim"
+                                  )
+                                ),
+                              };
                               const isActive =
                                 activeSimCategory &&
                                 item.href.toLowerCase().includes(activeSimCategory);
@@ -545,12 +575,40 @@ export default function Header() {
                                   key={item.href}
                                   href={item.href}
                                   onClick={() => setIsSimDuLichOpen(false)}
-                                  className={`rounded-2xl px-4 py-4 text-[18px] font-medium transition-colors ${isActive
-                                    ? "bg-[#EEF4FF] text-blue-600"
-                                    : "text-[#101828] hover:bg-[#EEF4FF] hover:text-blue-600"
-                                    }`}
+                                  className={`group/link flex items-start gap-4 rounded-2xl border px-4 py-4 transition-all duration-300 ${
+                                    isActive
+                                      ? "border-blue-200 bg-[#EEF4FF]"
+                                      : "border-transparent hover:border-slate-200 hover:bg-slate-50"
+                                  }`}
                                 >
-                                  {item.label}
+                                  <div
+                                    className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl ${
+                                      isActive ? "bg-white" : "bg-slate-100"
+                                    }`}
+                                  >
+                                    <Image
+                                      src={itemMeta.icon}
+                                      alt={itemMeta.iconAlt}
+                                      width={24}
+                                      height={24}
+                                      className="h-6 w-6 object-contain"
+                                    />
+                                  </div>
+
+                                  <div className="min-w-0 text-left">
+                                    <div
+                                      className={`text-[15px] font-semibold leading-tight transition-colors ${
+                                        isActive
+                                          ? "text-blue-600"
+                                          : "text-[#101828] group-hover/link:text-blue-600"
+                                      }`}
+                                    >
+                                      {item.label}
+                                    </div>
+                                    <div className="mt-1 text-xs leading-relaxed text-slate-500">
+                                      {itemMeta.description}
+                                    </div>
+                                  </div>
                                 </Link>
                               );
                             })
