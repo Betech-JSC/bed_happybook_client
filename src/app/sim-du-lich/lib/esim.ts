@@ -217,7 +217,9 @@ export const getEsimVariantMoney = (
   const currency = isEnglish ? "USD" : (variant?.currency || "VND");
 
   return {
-    price: isEnglish ? (variant?.priceUsd ?? variant?.price ?? 0) : (variant?.price ?? 0),
+    price: isEnglish
+      ? (variant?.priceUsd ?? 0)
+      : (variant?.price ?? 0),
     originalPrice: isEnglish
       ? (variant?.originalPriceUsd ?? variant?.originalPrice ?? 0)
       : (variant?.originalPrice ?? 0),
@@ -227,6 +229,17 @@ export const getEsimVariantMoney = (
     currency,
   };
 };
+
+export const isEsimVariantSelectable = (
+  variant?: EsimVariantView | null,
+  locale: string = "vi"
+): boolean => getEsimVariantMoney(variant, locale).price > 0;
+
+export const getSelectableEsimVariants = (
+  pkg?: EsimPackageView | null,
+  locale: string = "vi"
+): EsimVariantView[] =>
+  (pkg?.variants ?? []).filter((variant) => isEsimVariantSelectable(variant, locale));
 
 export const normalizeFilterOptions = (payload: any, locale: Locale = "vi"): EsimFilterOptions => {
   const mapOptions = (items: any[] = []): EsimFilterOption[] =>
@@ -337,7 +350,7 @@ export const findCheapestVariant = (
   pkg?: EsimPackageView | null,
   locale: string = "vi"
 ): EsimVariantView | undefined =>
-  pkg?.variants
+  getSelectableEsimVariants(pkg, locale)
     ?.slice()
     .sort((a, b) => getEsimVariantMoney(a, locale).price - getEsimVariantMoney(b, locale).price)[0];
 

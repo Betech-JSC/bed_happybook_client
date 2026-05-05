@@ -114,6 +114,7 @@ export default function EsimProductPage({
                 selectedVariant={catalog.selectedVariant}
                 serviceTypeLabel={catalog.serviceTypeLabel}
                 quantity={catalog.quantity}
+                locale={activeLocale}
                 onOpenModal={() => catalog.setShowModal(true)}
                 onSelectSkuByValidity={(validity) => {
                   catalog.handleSelectSkuByValidity(validity);
@@ -314,7 +315,11 @@ export default function EsimProductPage({
         </div>
         <button
           onClick={catalog.handleBookNow}
-          disabled={!catalog.selectedPackage || !catalog.selectedVariant}
+          disabled={
+            !catalog.selectedPackage ||
+            !catalog.selectedVariant ||
+            catalog.selectedVariantMoney.price <= 0
+          }
           className="bg-hb-coral hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold px-8 py-3 rounded-xl transition-all"
         >
           {t("Đặt ngay")}

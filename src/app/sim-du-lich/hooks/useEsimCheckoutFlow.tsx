@@ -4,7 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { formatEsimMoney, getEsimVariantMoney, type EsimPackageView, type EsimVariantView } from "../lib/esim";
+import {
+  formatEsimMoney,
+  getEsimVariantMoney,
+  getSelectableEsimVariants,
+  isEsimVariantSelectable,
+  type EsimPackageView,
+  type EsimVariantView,
+} from "../lib/esim";
 import { loadEsimPackageBySlug } from "../lib/esim-loader";
 import { ProductEsimApi } from "@/api/ProductEsim";
 import type { EsimCheckoutData, EsimQuoteData, PaymentMethod } from "../checkout/types";
@@ -95,8 +102,22 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
         }
 
         setPackageData(detail);
-        const matchedSku = detail.variants.find((variant) => variant.sku === skuFromQuery)?.sku;
-        setSelectedSku(matchedSku || detail.variants[0]?.sku || "");
+
+        const selectableVariants = getSelectableEsimVariants(detail, activeLocale);
+        const matchedVariant = detail.variants.find((variant) => variant.sku === skuFromQuery) || null;
+
+        if (matchedVariant && isEsimVariantSelectable(matchedVariant, activeLocale)) {
+          setSelectedSku(matchedVariant.sku);
+          return;
+        }
+
+        if (skuFromQuery) {
+          setSelectedSku("");
+          setError(t("Gói eSIM này hiện chưa có giá khả dụng."));
+          return;
+        }
+
+        setSelectedSku(selectableVariants[0]?.sku || "");
       } catch (err) {
         if (!active) return;
         console.error("Failed to load eSIM checkout package", err);
@@ -119,12 +140,10 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
 
   const selectedVariant = useMemo<EsimVariantView | null>(() => {
     if (!packageData?.variants.length) return null;
-    return (
-      packageData.variants.find((variant) => variant.sku === selectedSku) ||
-      packageData.variants[0] ||
-      null
-    );
-  }, [packageData, selectedSku]);
+    const matchedVariant = packageData.variants.find((variant) => variant.sku === selectedSku) || null;
+    if (!matchedVariant) return null;
+    return isEsimVariantSelectable(matchedVariant, activeLocale) ? matchedVariant : null;
+  }, [activeLocale, packageData, selectedSku]);
 
   const selectedVariantMoney = useMemo(
     () => getEsimVariantMoney(selectedVariant, activeLocale),
@@ -135,7 +154,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     let active = true;
 
     const loadQuote = async () => {
-      if (!selectedVariant?.id) {
+      if (!selectedVariant?.id || !isEsimVariantSelectable(selectedVariant, activeLocale)) {
         if (!active) return;
         setQuote(null);
         setQuoteError("");
@@ -174,13 +193,13 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     return () => {
       active = false;
     };
-  }, [activeLocale, paymentMethod, qty, selectedVariant?.id, t]);
+  }, [activeLocale, paymentMethod, qty, selectedVariant, t]);
 
   const subtotal = quote?.subtotal_amount ?? (selectedVariant ? selectedVariantMoney.price * qty : 0);
   const serviceFee = quote?.service_fee_amount ?? (selectedVariant ? selectedVariantMoney.serviceFeeAmount * qty : 0);
   const total = checkoutData?.payable_amount ?? quote?.total_amount ?? subtotal + serviceFee;
   const currency = quote?.currency || checkoutData?.currency || selectedVariantMoney.currency || (isEnglish ? "USD" : "VND");
-  const quoteIsAvailable = quote?.is_available !== false;
+  const quoteIsAvailable = selectedVariant ? quote?.is_available !== false : false;
 
   useEffect(() => {
     setPaymentMethod(isEnglish ? "paypal" : "vietqr");
@@ -214,13 +233,17 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     const err = validateEmail(email);
     setEmailError(err);
     if (err) return;
+    if (!selectedVariant || !isEsimVariantSelectable(selectedVariant, activeLocale)) {
+      toast.error(t("Gói eSIM này hiện chưa có giá khả dụng."));
+      return;
+    }
     if (!quoteIsAvailable) {
       toast.error(t("Gói eSIM hiện không khả dụng để thanh toán."));
       return;
     }
     setStep(3);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [email, quoteIsAvailable, t, validateEmail]);
+  }, [activeLocale, email, quoteIsAvailable, selectedVariant, t, validateEmail]);
 
   useEffect(() => {
     let interval: number | undefined;
@@ -264,7 +287,10 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
   }, [isPaid, orderCode, pollingStatus, paymentMethod, router, t]);
 
   const handlePay = useCallback(async () => {
-    if (!packageData || !selectedVariant?.id) return;
+    if (!packageData || !selectedVariant?.id || !isEsimVariantSelectable(selectedVariant, activeLocale)) {
+      toast.error(t("Gói eSIM này hiện chưa có giá khả dụng."));
+      return;
+    }
 
     const err = validateEmail(email);
     setEmailError(err);
@@ -331,7 +357,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     } finally {
       setSubmitting(false);
     }
-  }, [activeLocale, contactName, contactPhone, email, packageData, paymentMethod, qty, selectedVariant?.id, t, validateEmail]);
+  }, [activeLocale, contactName, contactPhone, email, packageData, paymentMethod, qty, selectedVariant, t, validateEmail]);
 
   const handleContactSave = useCallback((name: string, phone: string) => {
     setContactName(name);

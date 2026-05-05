@@ -12,6 +12,7 @@ import {
   formatEsimMoney,
   findCheapestVariant,
   getEsimVariantMoney,
+  getSelectableEsimVariants,
   type EsimFilterOption,
   type EsimPackageView,
 } from "../lib/esim";
@@ -219,7 +220,7 @@ export default function EsimPackageDiscovery({
     const nextOptions: PackageSelectOption[] = [];
 
     packages.forEach((pkg) => {
-      pkg.variants.forEach((variant) => {
+      getSelectableEsimVariants(pkg, activeLocale).forEach((variant) => {
         if (!variant.sku || seen.has(variant.sku)) return;
         seen.add(variant.sku);
         nextOptions.push({
@@ -238,7 +239,7 @@ export default function EsimPackageDiscovery({
       if (a.validity !== b.validity) return a.validity - b.validity;
       return a.label.localeCompare(b.label);
     });
-  }, [packages]);
+  }, [activeLocale, packages]);
   const selectedPackageOption =
     packageSelectOptions.find((option) => option.value === packageQuery) || null;
   const priceCurrency = activeLocale === "en" ? "USD" : "VND";
@@ -250,7 +251,7 @@ export default function EsimPackageDiscovery({
 
     const getPrice = (pkg: EsimPackageView) => {
       const cheapest = findCheapestVariant(pkg, activeLocale);
-      return getEsimVariantMoney(cheapest, activeLocale).price;
+      return cheapest ? getEsimVariantMoney(cheapest, activeLocale).price : Number.POSITIVE_INFINITY;
     };
 
     switch (sortMode) {
@@ -330,16 +331,21 @@ export default function EsimPackageDiscovery({
           {sortedPackages.map((pkg) => {
             const cheapest = findCheapestVariant(pkg, activeLocale);
             const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
+            const isSelectable = Boolean(cheapest && cheapestMoney.price > 0);
             const isActive = pkg.slug === selectedPackageSlug;
 
             return (
               <button
                 key={pkg.slug}
                 type="button"
-                onClick={() => onSelectPackage(pkg)}
+                onClick={() => {
+                  if (!isSelectable) return;
+                  onSelectPackage(pkg);
+                }}
+                disabled={!isSelectable}
                 className={`group block w-full text-left overflow-hidden rounded-[32px] border bg-white p-4 lg:p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,0.14)] ${
                   isActive ? "border-[#F27145] ring-2 ring-orange-100" : "border-slate-100"
-                }`}
+                } ${!isSelectable ? "opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[0_10px_30px_rgba(15,23,42,0.08)]" : ""}`}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-5 lg:gap-8 items-stretch">
                   <div className="relative overflow-hidden rounded-[28px] min-h-[250px] lg:min-h-[340px] bg-[#2D49C7]">
@@ -429,7 +435,9 @@ export default function EsimPackageDiscovery({
 
                       <div className="text-right shrink-0">
                         <div className="text-3xl lg:text-[34px] font-extrabold tracking-tight text-[#F27145]">
-                          {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                          {isSelectable
+                            ? formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)
+                            : t("Chưa có giá khả dụng")}
                         </div>
                       </div>
                     </div>
@@ -447,17 +455,22 @@ export default function EsimPackageDiscovery({
         {sortedPackages.map((pkg) => {
           const cheapest = findCheapestVariant(pkg, activeLocale);
           const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
+          const isSelectable = Boolean(cheapest && cheapestMoney.price > 0);
           const isActive = pkg.slug === selectedPackageSlug;
 
           return (
             <button
               key={pkg.slug}
-              onClick={() => onSelectPackage(pkg)}
+              onClick={() => {
+                if (!isSelectable) return;
+                onSelectPackage(pkg);
+              }}
+              disabled={!isSelectable}
               className={`text-left p-4 rounded-xl border transition-all ${
                 isActive
                   ? "border-hb-navy bg-blue-50/50 shadow-sm"
                   : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-sm"
-              }`}
+              } ${!isSelectable ? "opacity-50 cursor-not-allowed hover:shadow-none" : ""}`}
             >
               <div className="flex items-start gap-3">
                 <div
@@ -473,7 +486,9 @@ export default function EsimPackageDiscovery({
                     {pkg.subtitle} — {pkg.network}
                   </div>
                   <div className="text-sm font-bold text-hb-coral mt-2">
-                    {t("Từ")} {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                    {isSelectable
+                      ? `${t("Từ")} ${formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}`
+                      : t("Chưa có giá khả dụng")}
                   </div>
                 </div>
               </div>

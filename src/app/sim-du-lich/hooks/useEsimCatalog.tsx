@@ -7,6 +7,8 @@ import { loadAllEsimPackages, loadEsimOptions } from "../lib/esim-loader";
 import {
   findCheapestVariant,
   getEsimVariantMoney,
+  getSelectableEsimVariants,
+  isEsimVariantSelectable,
   resolveEsimRegionPreset,
   type EsimFilterOptions,
   type EsimPackageView,
@@ -159,12 +161,16 @@ export function useEsimCatalog({
           setSelectedPackageSlug(nextPackage.slug);
         }
 
+        const selectableVariants = getSelectableEsimVariants(nextPackage, activeLocale);
         const nextVariant =
-          nextPackage.variants.find((variant) => variant.sku === currentSku) ||
-          nextPackage.variants[0];
+          selectableVariants.find((variant) => variant.sku === currentSku) ||
+          selectableVariants[0] ||
+          null;
 
         if (nextVariant && nextVariant.sku !== currentSku) {
           setSelectedSku(nextVariant.sku);
+        } else if (!nextVariant) {
+          setSelectedSku("");
         }
       } catch (err) {
         if (!active) return;
@@ -206,9 +212,9 @@ export function useEsimCatalog({
     const prices = packages
       .map((pkg) => {
         const cheapest = findCheapestVariant(pkg, activeLocale);
-        return cheapest ? getEsimVariantMoney(cheapest, activeLocale).price : 0;
+        return cheapest ? getEsimVariantMoney(cheapest, activeLocale).price : null;
       })
-      .filter((price) => Number.isFinite(price));
+      .filter((price): price is number => typeof price === "number" && Number.isFinite(price) && price > 0);
 
     if (!prices.length) return { min: 0, max: 0 };
 
@@ -249,7 +255,7 @@ export function useEsimCatalog({
       const titleText = normalizeText(pkg.title || "");
       const matchesVariantInfo =
         selectedVariantSku === "" ||
-        pkg.variants.some((variant) => variant.sku === selectedVariantSku);
+        getSelectableEsimVariants(pkg, activeLocale).some((variant) => variant.sku === selectedVariantSku);
       const matchesDestination =
         selectedDestinationSet.size === 0 ||
         Array.from(selectedDestinationSet).some(
@@ -285,12 +291,15 @@ export function useEsimCatalog({
 
   const selectedVariant = useMemo<EsimVariantView | null>(() => {
     if (!selectedPackage?.variants.length) return null;
-    return (
-      selectedPackage.variants.find((variant) => variant.sku === selectedSku) ||
-      selectedPackage.variants[0] ||
-      null
-    );
-  }, [selectedPackage, selectedSku]);
+    const matchedVariant =
+      selectedPackage.variants.find((variant) => variant.sku === selectedSku) || null;
+    if (matchedVariant && isEsimVariantSelectable(matchedVariant, activeLocale)) {
+      return matchedVariant;
+    }
+
+    const fallbackVariant = getSelectableEsimVariants(selectedPackage, activeLocale)[0] || null;
+    return fallbackVariant;
+  }, [activeLocale, selectedPackage, selectedSku]);
 
   const selectedVariantMoney = useMemo(
     () => getEsimVariantMoney(selectedVariant, activeLocale),
@@ -308,11 +317,16 @@ export function useEsimCatalog({
       setSelectedPackageSlug(selectedPackage.slug);
     }
 
-    const currentVariant = selectedPackage.variants.find((variant) => variant.sku === selectedSku);
-    if (!currentVariant) {
-      setSelectedSku(selectedPackage.variants[0].sku);
+    const selectableVariants = getSelectableEsimVariants(selectedPackage, activeLocale);
+    const nextSku =
+      selectableVariants.find((variant) => variant.sku === selectedSku)?.sku ||
+      selectableVariants[0]?.sku ||
+      "";
+
+    if (nextSku !== selectedSku) {
+      setSelectedSku(nextSku);
     }
-  }, [selectedPackage, selectedPackageSlug, selectedSku, visiblePackages]);
+  }, [activeLocale, selectedPackage, selectedPackageSlug, selectedSku, visiblePackages]);
 
   const handleSelectPackage = useCallback((pkg: EsimPackageView) => {
     if (routeCategory) {
@@ -320,44 +334,56 @@ export function useEsimCatalog({
       return;
     }
 
+    const selectableVariants = getSelectableEsimVariants(pkg, activeLocale);
     setSelectedPackageSlug(pkg.slug);
-    setSelectedSku(pkg.variants[0]?.sku || "");
+    setSelectedSku(selectableVariants[0]?.sku || "");
     setShowModal(false);
-  }, [routeCategory, router]);
+  }, [activeLocale, routeCategory, router]);
 
   const handleSelectVariant = useCallback((variant: EsimVariantView) => {
+    if (!isEsimVariantSelectable(variant, activeLocale)) return;
     setSelectedSku(variant.sku);
     setShowModal(false);
-  }, []);
+  }, [activeLocale]);
 
   const handleSelectSkuByValidity = useCallback(
     (validity: number) => {
       if (!selectedPackage) return;
-      const match = selectedPackage.variants.find((variant) => variant.validity === validity);
+      const selectableVariants = getSelectableEsimVariants(selectedPackage, activeLocale);
+      const match =
+        selectableVariants.find(
+          (variant) => variant.validity === validity && variant.data === selectedVariant?.data
+        ) ||
+        selectableVariants.find((variant) => variant.validity === validity);
       if (match) setSelectedSku(match.sku);
     },
-    [selectedPackage]
+    [activeLocale, selectedPackage, selectedVariant?.data]
   );
 
   const handleSelectSkuByData = useCallback(
     (data: string) => {
       if (!selectedPackage) return;
-      const match = selectedPackage.variants.find((variant) => variant.data === data);
+      const selectableVariants = getSelectableEsimVariants(selectedPackage, activeLocale);
+      const match =
+        selectableVariants.find(
+          (variant) => variant.data === data && variant.validity === selectedVariant?.validity
+        ) ||
+        selectableVariants.find((variant) => variant.data === data);
       if (match) setSelectedSku(match.sku);
     },
-    [selectedPackage]
+    [activeLocale, selectedPackage, selectedVariant?.validity]
   );
 
   const handleBookNow = useCallback(() => {
-    if (!selectedPackage || !selectedVariant) return;
+    if (!selectedPackage || !selectedVariant || !isEsimVariantSelectable(selectedVariant, activeLocale)) return;
 
     const params = new URLSearchParams({
       pkg: selectedPackage.slug,
-      sku: selectedSku,
+      sku: selectedVariant.sku,
       qty: String(quantity),
     });
     router.push(`/sim-du-lich/checkout?${params.toString()}`);
-  }, [quantity, router, selectedPackage, selectedSku, selectedVariant]);
+  }, [activeLocale, quantity, router, selectedPackage, selectedVariant]);
 
   const regionOptions = useMemo(
     () => [{ value: "", label: t("Tất cả") }, ...filters.regions],
@@ -389,11 +415,13 @@ export function useEsimCatalog({
         setSelectedPackageSlug(matchedPackage.slug);
       }
 
-      if (matchedVariant) {
+      if (matchedVariant && isEsimVariantSelectable(matchedVariant, activeLocale)) {
         setSelectedSku(matchedVariant.sku);
+      } else {
+        setSelectedSku("");
       }
     },
-    [packages]
+    [activeLocale, packages]
   );
 
   const activeRegionLabel =

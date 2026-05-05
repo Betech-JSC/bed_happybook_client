@@ -2,7 +2,7 @@
 
 import { Globe, Minus, Plus } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { EsimPackageView, EsimVariantView } from "../lib/esim";
+import { isEsimVariantSelectable, type EsimPackageView, type EsimVariantView } from "../lib/esim";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
   selectedVariant: EsimVariantView | null;
   serviceTypeLabel: string;
   quantity: number;
+  locale: "vi" | "en";
   onOpenModal: () => void;
   onSelectSkuByValidity: (validity: number) => void;
   onSelectSkuByData: (data: string) => void;
@@ -22,6 +23,7 @@ export default function EsimPackageControls({
   selectedVariant,
   serviceTypeLabel,
   quantity,
+  locale,
   onOpenModal,
   onSelectSkuByValidity,
   onSelectSkuByData,
@@ -31,13 +33,42 @@ export default function EsimPackageControls({
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
 
+  const variants = selectedPackage?.variants ?? [];
+  const selectedValidity = selectedVariant?.validity ?? null;
+  const selectedData = selectedVariant?.data ?? "";
+
   const validityOptions = selectedPackage
-    ? Array.from(new Set(selectedPackage.variants.map((variant) => variant.validity))).sort((a, b) => a - b)
+    ? Array.from(new Set(variants.map((variant) => variant.validity))).sort((a, b) => a - b)
     : [];
 
   const dataOptions = selectedPackage
-    ? Array.from(new Set(selectedPackage.variants.map((variant) => variant.data)))
+    ? Array.from(new Set(variants.map((variant) => variant.data)))
     : [];
+
+  const canSelectValidity = (validity: number) =>
+    variants.some(
+      (variant) =>
+        variant.validity === validity &&
+        (!selectedData || variant.data === selectedData) &&
+        isEsimVariantSelectable(variant, locale)
+    );
+
+  const canSelectData = (data: string) =>
+    variants.some(
+      (variant) =>
+        variant.data === data &&
+        (selectedValidity === null || variant.validity === selectedValidity) &&
+        isEsimVariantSelectable(variant, locale)
+    );
+
+  const optionClassName = (isActive: boolean, isDisabled: boolean) =>
+    `px-4 py-2 rounded-lg text-sm transition-colors disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-200 ${
+      isActive
+        ? "bg-[#FFF7ED] border-2 border-hb-coral text-hb-coral font-bold"
+        : isDisabled
+          ? "border border-slate-200 font-medium"
+          : "border border-slate-200 font-medium hover:border-hb-coral"
+    }`;
 
   return (
     <section className="bg-white rounded-12px shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden">
@@ -62,14 +93,15 @@ export default function EsimPackageControls({
           <div className="flex flex-wrap gap-2">
             {validityOptions.map((validity) => {
               const isActive = selectedVariant?.validity === validity;
+              const isDisabled = !canSelectValidity(validity);
               return (
                 <button
                   key={validity}
+                  type="button"
+                  disabled={isDisabled}
+                  aria-disabled={isDisabled}
                   onClick={() => onSelectSkuByValidity(validity)}
-                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${isActive
-                      ? "bg-[#FFF7ED] border-2 border-hb-coral text-hb-coral font-bold"
-                      : "border border-slate-200 font-medium hover:border-hb-coral"
-                    }`}
+                  className={optionClassName(isActive, isDisabled)}
                 >
                   {validity} {t("Ngày")}
                 </button>
@@ -83,14 +115,15 @@ export default function EsimPackageControls({
           <div className="flex flex-wrap gap-2">
             {dataOptions.map((data) => {
               const isActive = selectedVariant?.data === data;
+              const isDisabled = !canSelectData(data);
               return (
                 <button
                   key={data}
+                  type="button"
+                  disabled={isDisabled}
+                  aria-disabled={isDisabled}
                   onClick={() => onSelectSkuByData(data)}
-                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${isActive
-                      ? "bg-[#FFF7ED] border-2 border-hb-coral text-hb-coral font-bold"
-                      : "border border-slate-200 font-medium hover:border-hb-coral"
-                    }`}
+                  className={optionClassName(isActive, isDisabled)}
                 >
                   {data}
                 </button>

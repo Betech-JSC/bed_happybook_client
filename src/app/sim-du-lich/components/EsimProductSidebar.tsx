@@ -53,6 +53,7 @@ export default function EsimProductSidebar({
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+  const canBook = Boolean(selectedPackage && selectedVariant && selectedVariantMoney.price > 0);
 
   return (
     <aside className={`${sticky ? "space-y-6 lg:sticky lg:top-40 lg:h-fit" : "space-y-6 h-fit"}`}>
@@ -115,10 +116,10 @@ export default function EsimProductSidebar({
               <button
                 type="button"
                 onClick={onBookNow}
-                disabled={!selectedPackage || !selectedVariant}
+                disabled={!canBook}
                 className="w-full bg-hb-coral hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold h-12 rounded-xl active:scale-[0.98] transition-all shadow-md"
               >
-                {t("Đặt ngay")}
+                {canBook ? t("Đặt ngay") : t("Chưa có giá khả dụng")}
               </button>
 
               <div className="pt-4 flex flex-col gap-2">
