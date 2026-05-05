@@ -197,26 +197,6 @@ export default function EsimProductPage({
             onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
             showPackageControls={false}
           />
-
-          <div ref={sidebarRef} className="mt-8 pb-8 lg:sticky lg:top-[148px] lg:self-start">
-            <EsimProductSidebar
-              selectedPackage={catalog.selectedPackage}
-              selectedVariant={catalog.selectedVariant}
-              selectedVariantMoney={catalog.selectedVariantMoney}
-              activeRegionLabel={catalog.activeRegionLabel}
-              serviceTypeLabel={catalog.serviceTypeLabel}
-              quantity={catalog.quantity}
-              total={catalog.total}
-              onBookNow={catalog.handleBookNow}
-              detailSections={catalog.detailSections}
-              openDetailSection={catalog.openDetailSection}
-              setOpenDetailSection={catalog.setOpenDetailSection}
-              sticky={false}
-              showDetailSections={false}
-              showActionBlock={false}
-              showInfoBlock={false}
-            />
-          </div>
         </div>
       </div>
     )
