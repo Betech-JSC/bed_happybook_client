@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import {
   formatEsimMoney,
   getEsimVariantMoney,
+  isEsimVariantSelectable,
   type EsimPackageView,
   type EsimVariantView,
 } from "../lib/esim";
@@ -72,20 +73,30 @@ export default function PackageSelectorModal({
           {pkg.variants.map((variant) => {
             const isActive = variant.sku === currentSku;
             const money = getEsimVariantMoney(variant, locale);
+            const isSelectable = isEsimVariantSelectable(variant, locale);
             return (
               <button
                 key={variant.sku}
                 type="button"
                 className={`${s.radioCard} ${isActive ? s.radioCardActive : ""}`}
-                onClick={() => onSelect(variant)}
-                style={{ width: "100%", textAlign: "left" }}
+                onClick={() => {
+                  if (!isSelectable) return;
+                  onSelect(variant);
+                }}
+                disabled={!isSelectable}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  opacity: isSelectable ? 1 : 0.45,
+                  cursor: isSelectable ? "pointer" : "not-allowed",
+                }}
               >
                 <div className={s.radioCardDot} />
                 <div className={s.radioCardContent}>
                   <div className={s.radioCardTitle}>{variant.desc}</div>
                 </div>
                 <div className={s.radioCardPrice}>
-                  {formatEsimMoney(money.price, money.currency)}
+                  {isSelectable ? formatEsimMoney(money.price, money.currency) : t("Chưa khả dụng")}
                 </div>
               </button>
             );

@@ -9,8 +9,10 @@ const sortFeaturedPackages = (items: any[]) =>
     const featuredB = Number(Boolean(b.isFeatured));
     if (featuredA !== featuredB) return featuredB - featuredA;
 
-    const priceA = getEsimVariantMoney(findCheapestVariant(a, "vi"), "vi").price ?? 0;
-    const priceB = getEsimVariantMoney(findCheapestVariant(b, "vi"), "vi").price ?? 0;
+    const cheapestA = findCheapestVariant(a, "vi");
+    const cheapestB = findCheapestVariant(b, "vi");
+    const priceA = cheapestA ? getEsimVariantMoney(cheapestA, "vi").price : Number.POSITIVE_INFINITY;
+    const priceB = cheapestB ? getEsimVariantMoney(cheapestB, "vi").price : Number.POSITIVE_INFINITY;
     if (priceA !== priceB) return priceA - priceB;
 
     return String(a.slug || "").localeCompare(String(b.slug || ""));
