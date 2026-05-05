@@ -103,44 +103,6 @@ export default function ListFlights({
   const [returnDayPrices, setReturnDayPrices] = useState<
     Record<string, number | null>
   >({});
-  const cheapestDepartDayKeys = useMemo(() => {
-    let cheapestKeys: string[] = [];
-    let cheapestPrice: number | null = null;
-
-    departDays.forEach((day) => {
-      const dayKey = format(day.date, "yyyy-MM-dd");
-      const price = departDayPrices[dayKey];
-      if (price == null) return;
-
-      if (cheapestPrice == null || price < cheapestPrice) {
-        cheapestPrice = price;
-        cheapestKeys = [dayKey];
-      } else if (price === cheapestPrice) {
-        cheapestKeys.push(dayKey);
-      }
-    });
-
-    return new Set(cheapestKeys);
-  }, [departDays, departDayPrices]);
-  const cheapestReturnDayKeys = useMemo(() => {
-    let cheapestKeys: string[] = [];
-    let cheapestPrice: number | null = null;
-
-    returnDays.forEach((day) => {
-      const dayKey = format(day.date, "yyyy-MM-dd");
-      const price = returnDayPrices[dayKey];
-      if (price == null) return;
-
-      if (cheapestPrice == null || price < cheapestPrice) {
-        cheapestPrice = price;
-        cheapestKeys = [dayKey];
-      } else if (price === cheapestPrice) {
-        cheapestKeys.push(dayKey);
-      }
-    });
-
-    return new Set(cheapestKeys);
-  }, [returnDays, returnDayPrices]);
   // AOS is handled globally via AosProvider IntersectionObserver
   const scrollToRef = (ref: any) => {
     if (ref.current) {
@@ -685,9 +647,6 @@ export default function ListFlights({
                   <div className="grid grid-cols-7 items-center bg-white rounded-b-2xl px-10">
                     {departDays.map((day, index) => (
                       (() => {
-                        const dayKey = format(day.date, "yyyy-MM-dd");
-                        const isCheapestDay = cheapestDepartDayKeys.has(dayKey);
-                        const isSelectedDay = isSameDay(day.date, currentDate);
                         return (
                           <button
                             key={index}
@@ -711,18 +670,6 @@ export default function ListFlights({
                             <div className="text-xs md:text-sm mt-2">
                               {format(day.date, "dd/MM")}
                             </div>
-                            {departDayPrices[dayKey] != null && (
-                              <div className="mt-1 text-[11px] font-semibold text-orange-500">
-                                {formatCurrency(
-                                  departDayPrices[dayKey] ?? 0
-                                )}
-                              </div>
-                            )}
-                            {isCheapestDay && !isSelectedDay && (
-                              <div className="mt-1 text-[10px] font-semibold text-emerald-600">
-                                Rẻ nhất
-                              </div>
-                            )}
                           </button>
                         );
                       })()
@@ -825,9 +772,6 @@ export default function ListFlights({
                     <div className="grid grid-cols-7 items-center bg-white px-10 rounded-b-2xl">
                       {returnDays.map((day, index) => (
                         (() => {
-                          const dayKey = format(day.date, "yyyy-MM-dd");
-                          const isCheapestDay = cheapestReturnDayKeys.has(dayKey);
-                          const isSelectedDay = isSameDay(day.date, currentReturnDay);
                           return (
                             <button
                               key={index}
@@ -848,19 +792,6 @@ export default function ListFlights({
                               <div className="text-xs md:text-sm mt-2">
                                 {format(day.date, "dd/MM")}
                               </div>
-                              {returnDayPrices[dayKey] != null && (
-                                <div className="mt-1 text-[11px] font-semibold text-orange-500">
-                                  {formatCurrency(
-                                    returnDayPrices[dayKey] ??
-                                    0
-                                  )}
-                                </div>
-                              )}
-                              {isCheapestDay && !isSelectedDay && (
-                                <div className="mt-1 text-[10px] font-semibold text-emerald-600">
-                                  Rẻ nhất
-                                </div>
-                              )}
                             </button>
                           );
                         })()
