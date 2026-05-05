@@ -72,6 +72,12 @@ export interface ApiEsimPackage {
   device_compatibility?: string;
   refund_policy?: string;
   footer_content?: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  meta_robots?: string;
+  canonical_link?: string;
+  meta_image?: string;
   status?: string;
   is_featured?: boolean | number | string;
   sort_order?: number | string;
@@ -123,6 +129,12 @@ export interface EsimPackageView {
   deviceCompatibility: string;
   refundPolicy: string;
   footerContent: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  meta_robots?: string;
+  canonical_link?: string;
+  meta_image?: string;
   isFeatured: boolean;
   variants: EsimVariantView[];
 }
@@ -303,6 +315,12 @@ export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
     deviceCompatibility: toString(item.device_compatibility),
     refundPolicy: toString(item.refund_policy),
     footerContent: toString(item.footer_content),
+    meta_title: toString(item.meta_title),
+    meta_description: toString(item.meta_description),
+    meta_keywords: toString(item.meta_keywords),
+    meta_robots: toString(item.meta_robots),
+    canonical_link: toString(item.canonical_link),
+    meta_image: toString(item.meta_image),
     isFeatured: toBoolean(item.is_featured),
     variants: variants.sort((a, b) => {
       if (a.validity !== b.validity) return a.validity - b.validity;

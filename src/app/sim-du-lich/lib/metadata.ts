@@ -17,6 +17,8 @@ type SimDuLichSeoSource = {
   page_name?: string | null;
   title?: string | null;
   description?: string | null;
+  subtitle?: string | null;
+  note?: string | null;
 };
 
 const resolveImageUrl = (source?: SimDuLichSeoSource | null) => {
@@ -41,6 +43,9 @@ const resolveCanonicalUrl = (value?: string | null) => {
   return `${siteUrl}${canonical.startsWith("/") ? "" : "/"}${canonical}`;
 };
 
+const firstNonEmptyText = (...values: Array<string | null | undefined>) =>
+  values.map((value) => value?.trim()).find((value) => Boolean(value)) || "";
+
 export async function buildSimDuLichMetadata(
   language: string,
   category: SimDuLichCategory = "root",
@@ -51,19 +56,6 @@ export async function buildSimDuLichMetadata(
   const translations = await getServerTranslations(language);
   const t = (key: string, fallback: string) => translations[key] || fallback;
 
-  const defaultPageTitle =
-    category === "viet-nam"
-      ? "Sim du lịch Việt Nam eSIM | HappyBook Travel"
-      : category === "quoc-te"
-        ? "Sim du lịch quốc tế eSIM | HappyBook Travel"
-        : "Sim du lịch eSIM | HappyBook Travel";
-
-  const defaultPageDescription =
-    category === "viet-nam"
-      ? "Mua eSIM du lịch Việt Nam giá tốt, nhận QR qua email tức thì."
-      : category === "quoc-te"
-        ? "Mua eSIM du lịch quốc tế giá tốt, nhận QR qua email tức thì. Phủ sóng Nhật Bản, Hàn Quốc, Thái Lan, Trung Quốc, Châu Âu, Mỹ và hơn 30 quốc gia."
-        : "Mua eSIM du lịch giá tốt, nhận QR qua email tức thì.";
   const defaultCanonical =
     category === "viet-nam"
       ? "/sim-viet-nam"
@@ -71,13 +63,23 @@ export async function buildSimDuLichMetadata(
         ? "/sim-du-lich/quoc-te"
         : "/sim-du-lich";
 
-  const title =
-    seoSource?.meta_title?.trim() ||
-    (detailTitle ? `${detailTitle} | ${defaultPageTitle}` : defaultPageTitle);
-  const description =
-    seoSource?.meta_description?.trim() ||
-    seoSource?.description?.trim() ||
-    defaultPageDescription;
+  const title = firstNonEmptyText(
+    seoSource?.meta_title,
+    seoSource?.title,
+    seoSource?.page_name,
+    detailTitle,
+    "HappyBook Travel"
+  );
+  const description = firstNonEmptyText(
+    seoSource?.meta_description,
+    seoSource?.description,
+    seoSource?.subtitle,
+    seoSource?.note,
+    seoSource?.page_name,
+    seoSource?.title,
+    detailTitle,
+    title
+  );
   const canonical =
     resolveCanonicalUrl(seoSource?.canonical_link) ||
     resolveCanonicalUrl(canonicalPath) ||
@@ -85,9 +87,9 @@ export async function buildSimDuLichMetadata(
   const image = resolveImageUrl(seoSource);
 
   return formatMetadata({
-    title: t(title, title),
-    description: t(description, description),
-    keywords: seoSource?.meta_keywords?.trim() || undefined,
+      title: t(title, title),
+      description: t(description, description),
+      keywords: seoSource?.meta_keywords?.trim() || undefined,
     robots: seoSource?.meta_robots?.trim() || "index, follow",
     alternates: {
       canonical,

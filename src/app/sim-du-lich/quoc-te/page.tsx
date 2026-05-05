@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import EsimProductPage from "../components/EsimProductPage";
 import SimDuLichFooter from "../components/SimDuLichFooter";
 import { getServerLang } from "@/lib/session";
-import { loadSimDuLichPageData } from "../lib/page-data";
+import { loadSimDuLichContentPage, loadSimDuLichPageData } from "../lib/page-data";
 import { buildSimDuLichMetadata } from "../lib/metadata";
 import SimDuLichBreadcrumbSchema from "../components/SimDuLichBreadcrumbSchema";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
@@ -11,7 +11,8 @@ import { toSnakeCase } from "@/utils/Helper";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getServerLang();
-  return buildSimDuLichMetadata(language, "quoc-te");
+  const contentPage = await loadSimDuLichContentPage(language);
+  return buildSimDuLichMetadata(language, "quoc-te", undefined, "/sim-du-lich/quoc-te", contentPage);
 }
 
 export default async function SimDuLichQuocTePage() {

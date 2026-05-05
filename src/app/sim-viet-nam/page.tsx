@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import EsimProductPage from "../sim-du-lich/components/EsimProductPage";
 import SimDuLichFooter from "../sim-du-lich/components/SimDuLichFooter";
 import { getServerLang } from "@/lib/session";
-import { loadSimDuLichPageData } from "../sim-du-lich/lib/page-data";
+import { loadSimDuLichContentPage, loadSimDuLichPageData } from "../sim-du-lich/lib/page-data";
 import { buildSimDuLichMetadata } from "../sim-du-lich/lib/metadata";
 import SimDuLichBreadcrumbSchema from "../sim-du-lich/components/SimDuLichBreadcrumbSchema";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
@@ -11,7 +11,8 @@ import { toSnakeCase } from "@/utils/Helper";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getServerLang();
-  return buildSimDuLichMetadata(language, "viet-nam");
+  const contentPage = await loadSimDuLichContentPage(language);
+  return buildSimDuLichMetadata(language, "viet-nam", undefined, "/sim-viet-nam", contentPage);
 }
 
 export default async function SimVietNamPage() {

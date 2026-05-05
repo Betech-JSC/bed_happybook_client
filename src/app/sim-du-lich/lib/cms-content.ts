@@ -11,6 +11,12 @@ export type EsimCmsAccordionSection = {
 
 export type EsimCmsPageContent = {
   page_name?: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  meta_robots?: string;
+  canonical_link?: string;
+  meta_image?: string;
   content?: string;
   extras?: unknown;
   locale_vi?: unknown;
