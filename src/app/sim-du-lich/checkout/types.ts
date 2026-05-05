@@ -28,7 +28,9 @@ export type EsimCheckoutData = {
   payment_fee_amount?: number;
   currency?: string;
   qr_display?: {
+    qrcode_base64?: string | null;
     image_url?: string | null;
+    qr_code_url?: string | null;
     bank_account_number?: string | null;
     bank_account_name?: string | null;
     bank_name?: string | null;
