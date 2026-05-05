@@ -26,7 +26,7 @@ export async function generateMetadata({
     "quoc-te",
     detail?.title || detail?.destination || undefined,
     `/sim-du-lich/quoc-te/${slug}`,
-    detail as any
+    detail
   );
 }
 

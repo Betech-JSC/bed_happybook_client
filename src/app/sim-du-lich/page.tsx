@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import SimDuLichLandingPage from "./components/SimDuLichLandingPage";
 import { getServerLang } from "@/lib/session";
-import { PageApi } from "@/api/Page";
-import { loadSimDuLichPageData } from "./lib/page-data";
+import { loadSimDuLichContentPage, loadSimDuLichPageData } from "./lib/page-data";
 import { buildSimDuLichMetadata } from "./lib/metadata";
 import SimDuLichBreadcrumbSchema from "./components/SimDuLichBreadcrumbSchema";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
@@ -11,10 +10,9 @@ import { toSnakeCase } from "@/utils/Helper";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("sim-du-lich", language))?.payload
-    ?.data as any;
+  const contentPage = await loadSimDuLichContentPage(language);
 
-  return buildSimDuLichMetadata(language, "root", undefined, undefined, contentPage);
+  return buildSimDuLichMetadata(language, "root", undefined, "/sim-du-lich", contentPage);
 }
 
 export default async function SimDuLichPage() {
