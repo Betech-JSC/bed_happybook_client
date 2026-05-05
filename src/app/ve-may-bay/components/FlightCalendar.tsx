@@ -25,7 +25,6 @@ import {
 } from "@/types/flight";
 import { HttpError } from "@/lib/error";
 import { translatePage } from "@/utils/translateDom";
-import { formatCurrency } from "@/lib/formatters";
 import DisplayImage from "@/components/base/DisplayImage";
 
 const mapDataByDay = (data: any[]) => {
@@ -54,39 +53,6 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
   );
 };
 
-const getCheapestDayKeys = (
-  days: Array<number | null>,
-  cheapestFareDepart: Record<number, { flights: any[] } | undefined>,
-  airlineFilter: string | null,
-  year: number,
-  month: number
-) => {
-  let cheapestDays: number[] = [];
-  let cheapestPrice: number | null = null;
-
-  days.forEach((day) => {
-    if (!day) return;
-
-    const flightData = cheapestFareDepart[day];
-    const flightLowestPrice = flightData
-      ? getLowestPrice(flightData.flights, airlineFilter)
-      : null;
-    const price = flightLowestPrice?.totalFare;
-
-    if (!Number.isFinite(price)) return;
-
-    if (cheapestPrice == null || price < cheapestPrice) {
-      cheapestPrice = price;
-      cheapestDays = [day];
-    } else if (price === cheapestPrice) {
-      cheapestDays.push(day);
-    }
-  });
-
-  return new Set(
-    cheapestDays.map((cheapestDay) => `${year}-${month}-${cheapestDay}`)
-  );
-};
 const listNextMonth = generateMonth(10);
 
 export default function FlightCalendar({
@@ -123,17 +89,6 @@ export default function FlightCalendar({
     }
   };
   const [airLines, setAirLines] = useState<AirlineType[]>([]);
-  const cheapestDayKeys = useMemo(
-    () =>
-      getCheapestDayKeys(
-        daysInMonth,
-        cheapestFareDepart,
-        airlineFilter,
-        year,
-        month
-      ),
-    [daysInMonth, cheapestFareDepart, airlineFilter, year, month]
-  );
 
   useEffect(() => {
     const totalDays = getDaysInMonth(year, month);
@@ -477,10 +432,6 @@ export default function FlightCalendar({
               flightData && getLowestPrice(flightData.flights, airlineFilter);
             const disabled = isDisabled(day ?? 0);
             const isActive = day === activeDay;
-            const isCheapestDay =
-              day != null &&
-              cheapestDayKeys.has(`${year}-${month}-${day}`);
-
             return day ? (
               <div
                 key={day !== null ? day : `empty-${index}`}
@@ -526,26 +477,6 @@ export default function FlightCalendar({
                           </div>
                         ))}
                     </div>
-                    <div className="font-semibold text-left">
-                      {flightLowestPrice && (
-                        <Fragment>
-                          <div className="font-semibold hidden lg:block">
-                            {formatCurrency(flightLowestPrice.totalFare)}
-                          </div>
-                          <div className="text-sm md:text-base md:text-left text-center font-semibold block lg:hidden">
-                            {`${Math.floor(
-                              flightLowestPrice.totalFare / 1000
-                            )}`}
-                            <span className="text-xs font-semibold">K</span>
-                          </div>
-                        </Fragment>
-                      )}
-                    </div>
-                    {isCheapestDay && !isActive && (
-                      <div className="mt-1 text-[10px] font-semibold text-emerald-600">
-                        Rẻ nhất
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
