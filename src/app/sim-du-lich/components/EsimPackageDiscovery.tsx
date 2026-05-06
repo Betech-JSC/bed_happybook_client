@@ -347,27 +347,31 @@ export default function EsimPackageDiscovery({
                   isActive ? "border-[#F27145] ring-2 ring-orange-100" : "border-slate-100"
                 } ${!isSelectable ? "opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[0_10px_30px_rgba(15,23,42,0.08)]" : ""}`}
               >
-                <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)] lg:gap-6">
-                  <div className="relative aspect-[16/9] overflow-hidden rounded-[28px] bg-[#2D49C7]">
+                <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-6">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-[#2D49C7]">
                     <Image
                       src="/bg-image-2.webp"
                       alt={pkg.destination || "eSIM quốc tế"}
                       fill
                       className="object-cover opacity-[0.28] transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 1024px) 100vw, 58vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-[#2147D8]/95 via-[#3157D8]/80 to-[#2D49C7]/95" />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.16),_transparent_42%)]" />
-                    <div className="absolute left-4 right-4 top-4 flex flex-wrap gap-2">
-                      <span className="inline-flex items-center gap-2 rounded-[20px] bg-white px-3 py-2 text-xs font-extrabold text-midnight-ink shadow-sm lg:px-4 lg:text-sm">
+                    <div className="absolute left-4 right-4 top-4 flex flex-nowrap gap-2 overflow-hidden">
+                      <span className="inline-flex min-w-0 max-w-[58%] items-center gap-2 rounded-[20px] bg-white px-3 py-2 text-xs font-extrabold text-midnight-ink shadow-sm lg:px-4 lg:text-sm">
                         <Globe className="h-3.5 w-3.5 text-[#1D4ED8] lg:h-4 lg:w-4" />
-                        <span className="uppercase tracking-wide">{pkg.destination || pkg.title}</span>
+                        <span className="block min-w-0 truncate whitespace-nowrap uppercase tracking-wide">
+                          {pkg.destination || pkg.title}
+                        </span>
                       </span>
-                      <span className="inline-flex items-center rounded-[20px] bg-[#1E3A8A] px-3 py-2 text-xs font-extrabold text-white shadow-sm lg:px-4 lg:text-sm">
+                      <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-[20px] bg-[#1E3A8A] px-3 py-2 text-xs font-extrabold text-white shadow-sm lg:px-4 lg:text-sm">
                         eSIM
                       </span>
-                      <span className="inline-flex max-w-full items-center rounded-[20px] bg-white px-3 py-2 text-xs font-extrabold text-midnight-ink shadow-sm lg:px-4 lg:text-sm">
-                        {pkg.network || "Network"}
+                      <span className="inline-flex min-w-0 max-w-[34%] items-center rounded-[20px] bg-white px-3 py-2 text-xs font-extrabold text-midnight-ink shadow-sm lg:px-4 lg:text-sm">
+                        <span className="block min-w-0 truncate whitespace-nowrap">
+                          {pkg.network || "Network"}
+                        </span>
                       </span>
                     </div>
                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-white lg:px-10">
@@ -378,9 +382,12 @@ export default function EsimPackageDiscovery({
                         {pkg.subtitle || pkg.network || pkg.coverage}
                       </p>
                     </div>
-                    <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-[#4E6EB3] px-3 py-1.5 text-xs font-semibold text-white shadow-md lg:px-4 lg:py-2 lg:text-sm">
+                    <div
+                      className="absolute bottom-4 left-4 inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#4E6EB3] text-white shadow-md lg:h-10 lg:w-10"
+                      aria-label="eSIM quốc tế"
+                      title="eSIM quốc tế"
+                    >
                       <Globe className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                      <span>eSIM quốc tế</span>
                     </div>
                   </div>
 

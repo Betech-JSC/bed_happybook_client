@@ -40,16 +40,20 @@ export default function EsimInternationalDetailGallery({ selectedPackage }: Prop
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_45%)]" />
         <div className="absolute inset-0 opacity-10 bg-[linear-gradient(135deg,rgba(255,255,255,0.35)_0%,transparent_35%,transparent_65%,rgba(255,255,255,0.18)_100%)]" />
 
-        <div className="absolute left-4 right-4 top-4 z-10 flex flex-wrap gap-2">
-          <span className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
+        <div className="absolute left-4 right-4 top-4 z-10 flex flex-nowrap gap-2 overflow-hidden">
+          <span className="inline-flex min-w-0 max-w-[58%] items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
             <Globe className="h-5 w-5 text-[#1D4ED8]" />
-            <span className="uppercase tracking-wide">{selectedPackage?.destination || t("eSIM quốc tế")}</span>
+            <span className="block min-w-0 truncate whitespace-nowrap uppercase tracking-wide">
+              {selectedPackage?.destination || t("eSIM quốc tế")}
+            </span>
           </span>
-          <span className="inline-flex items-center rounded-2xl bg-[#1E3A8A] px-4 py-3 text-sm font-extrabold text-white shadow-sm">
+          <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-2xl bg-[#1E3A8A] px-4 py-3 text-sm font-extrabold text-white shadow-sm">
             eSIM
           </span>
-          <span className="inline-flex items-center rounded-2xl bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
-            {selectedPackage?.network || t("Network")}
+          <span className="inline-flex min-w-0 max-w-[34%] items-center rounded-2xl bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
+            <span className="block min-w-0 truncate whitespace-nowrap">
+              {selectedPackage?.network || t("Network")}
+            </span>
           </span>
         </div>
 
