@@ -16,7 +16,6 @@ import {
 } from "date-fns";
 import Image from "next/image";
 import {
-  formatCurrency,
   formatTimeFromHour,
   pareseDateFromString,
 } from "@/lib/formatters";
@@ -41,7 +40,6 @@ import {
   getCheapestComparablePrice,
   getDomesticDisplayedPrice,
 } from "../../lib/cheapest";
-import { buildCheapestFareMap } from "../../lib/day-prices";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -97,12 +95,6 @@ export default function ListFlights({
   const [departLimit, setDepartLimit] = useState(INITIAL_LIMIT);
   const [returnLimit, setReturnLimit] = useState(INITIAL_LIMIT);
   const [filters, setFilters] = useState(defaultFilers);
-  const [departDayPrices, setDepartDayPrices] = useState<
-    Record<string, number | null>
-  >({});
-  const [returnDayPrices, setReturnDayPrices] = useState<
-    Record<string, number | null>
-  >({});
   // AOS is handled globally via AosProvider IntersectionObserver
   const scrollToRef = (ref: any) => {
     if (ref.current) {
@@ -373,63 +365,6 @@ export default function ListFlights({
     }
   }, [isRoundTrip, selectedReturnFlight, selectedDepartFlight]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchCheapestPrices = async () => {
-      try {
-        if (!departDays?.length || !StartPoint || !EndPoint) return;
-
-        const departStartDate = format(departDays[0].date, "yyyy-MM-dd");
-        const departEndDate = format(
-          departDays[departDays.length - 1].date,
-          "yyyy-MM-dd"
-        );
-        const departResponse = await FlightApi.searchCheapestFare({
-          departure: StartPoint,
-          arrival: EndPoint,
-          startDate: departStartDate,
-          endDate: departEndDate,
-        });
-        const departList = departResponse?.payload?.data?.listMinPrice ?? [];
-        if (!cancelled) {
-          setDepartDayPrices(buildCheapestFareMap(departList));
-        }
-
-        if (isRoundTrip && returnDays?.length) {
-          const returnStartDate = format(returnDays[0].date, "yyyy-MM-dd");
-          const returnEndDate = format(
-            returnDays[returnDays.length - 1].date,
-            "yyyy-MM-dd"
-          );
-          const returnResponse = await FlightApi.searchCheapestFare({
-            departure: EndPoint,
-            arrival: StartPoint,
-            startDate: returnStartDate,
-            endDate: returnEndDate,
-          });
-          const returnList = returnResponse?.payload?.data?.listMinPrice ?? [];
-          if (!cancelled) {
-            setReturnDayPrices(buildCheapestFareMap(returnList));
-          }
-        } else if (!cancelled) {
-          setReturnDayPrices({});
-        }
-      } catch {
-        if (!cancelled) {
-          setDepartDayPrices({});
-          setReturnDayPrices({});
-        }
-      }
-    };
-
-    fetchCheapestPrices();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [departDays, returnDays, StartPoint, EndPoint, isRoundTrip]);
-
   const handleCheckout = useCallback(async () => {
     const res = await fetch("/api/set-session", {
       method: "POST",
@@ -627,54 +562,32 @@ export default function ListFlights({
                   </div>
                 </div>
                 {/* Tabs day */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    aria-label="Ngày trước"
-                    onClick={() => handleClickDate(addDays(currentDate, -1), 0)}
-                    className="absolute left-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Ngày sau"
-                    onClick={() => handleClickDate(addDays(currentDate, 1), 0)}
-                    className="absolute right-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                  <div className="grid grid-cols-7 items-center bg-white rounded-b-2xl px-10">
-                    {departDays.map((day, index) => (
-                      (() => {
-                        return (
-                          <button
-                            key={index}
-                            onClick={() =>
-                              !day.disabled && handleClickDate(day.date, 0)
-                            }
-                            className={`flex flex-col items-center p-3 border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentDate)
-                                ? "border-b-2 border-b-primary text-primary"
-                                : "text-gray-700"
-                              } ${day.disabled
-                                ? "text-gray-700 opacity-50 cursor-not-allowed"
-                                : "text-black"
-                              }`}
-                          >
-                            <div
-                              className="text-sm md:text-base font-semibold"
-                              data-translate
-                            >
-                              {day.label}
-                            </div>
-                            <div className="text-xs md:text-sm mt-2">
-                              {format(day.date, "dd/MM")}
-                            </div>
-                          </button>
-                        );
-                      })()
-                    ))}
-                  </div>
+                <div className="grid grid-cols-7 items-center bg-white rounded-b-2xl">
+                  {departDays.map((day, index) => (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        !day.disabled && handleClickDate(day.date, 0)
+                      }
+                      className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentDate)
+                        ? "border-b-2 border-b-primary text-primary"
+                        : "text-gray-700"
+                        } ${day.disabled
+                          ? "text-gray-700 opacity-50 cursor-not-allowed"
+                          : "text-black"
+                        }`}
+                    >
+                      <div
+                        className="text-sm md:text-base font-semibold"
+                        data-translate
+                      >
+                        {day.label}
+                      </div>
+                      <div className="text-xs md:text-sm mt-2">
+                        {format(day.date, "dd/MM")}
+                      </div>
+                    </button>
+                  ))}
                 </div>
                 {visibleDepartData.length > 0 ? (
                   <div className="mt-6">
@@ -748,55 +661,29 @@ export default function ListFlights({
                     </div>
                   </div>
                   {/* Tabs day */}
-                  <div className="relative">
-                    <button
-                      type="button"
-                      aria-label="Ngày trước"
-                      onClick={() =>
-                        handleClickDate(addDays(currentReturnDay, -1), 1)
-                      }
-                      className="absolute left-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Ngày sau"
-                      onClick={() =>
-                        handleClickDate(addDays(currentReturnDay, 1), 1)
-                      }
-                      className="absolute right-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600"
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                    <div className="grid grid-cols-7 items-center bg-white px-10 rounded-b-2xl">
-                      {returnDays.map((day, index) => (
-                        (() => {
-                          return (
-                            <button
-                              key={index}
-                              onClick={() =>
-                                !day.disabled && handleClickDate(day.date, 1)
-                              }
-                              className={`flex flex-col items-center p-3 border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentReturnDay)
-                                  ? "border-b-2 border-b-primary text-primary"
-                                  : "text-gray-700"
-                                } ${day.disabled
-                                  ? "text-gray-700 opacity-50 cursor-not-allowed"
-                                  : "text-black"
-                                }`}
-                            >
-                              <div className="text-sm md:text-base font-semibold">
-                                {day.label}
-                              </div>
-                              <div className="text-xs md:text-sm mt-2">
-                                {format(day.date, "dd/MM")}
-                              </div>
-                            </button>
-                          );
-                        })()
-                      ))}
-                    </div>
+                  <div className="grid grid-cols-7 items-center bg-white px-3 rounded-b-2xl">
+                    {returnDays.map((day, index) => (
+                      <button
+                        key={index}
+                        onClick={() =>
+                          !day.disabled && handleClickDate(day.date, 1)
+                        }
+                        className={`flex flex-col items-center p-3  border-r border-gray-200 last:border-r-0 ${isSameDay(day.date, currentReturnDay)
+                          ? "border-b-2 border-b-primary text-primary"
+                          : "text-gray-700"
+                          } ${day.disabled
+                            ? "text-gray-700 opacity-50 cursor-not-allowed"
+                            : "text-black"
+                          }`}
+                      >
+                        <div className="text-sm md:text-base font-semibold">
+                          {day.label}
+                        </div>
+                        <div className="text-xs md:text-sm mt-2">
+                          {format(day.date, "dd/MM")}
+                        </div>
+                      </button>
+                    ))}
                   </div>
                   {visibleReturnData.length > 0 ? (
                     <div className="my-6">
