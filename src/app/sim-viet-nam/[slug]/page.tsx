@@ -26,7 +26,7 @@ export async function generateMetadata({
     "viet-nam",
     detail?.title || detail?.destination || undefined,
     `/sim-viet-nam/${slug}`,
-    detail as any
+    detail
   );
 }
 

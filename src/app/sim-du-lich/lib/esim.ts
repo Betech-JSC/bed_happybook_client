@@ -72,6 +72,12 @@ export interface ApiEsimPackage {
   device_compatibility?: string;
   refund_policy?: string;
   footer_content?: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  meta_robots?: string;
+  canonical_link?: string;
+  meta_image?: string;
   status?: string;
   is_featured?: boolean | number | string;
   sort_order?: number | string;
@@ -123,6 +129,12 @@ export interface EsimPackageView {
   deviceCompatibility: string;
   refundPolicy: string;
   footerContent: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  meta_robots?: string;
+  canonical_link?: string;
+  meta_image?: string;
   isFeatured: boolean;
   variants: EsimVariantView[];
 }
@@ -205,7 +217,9 @@ export const getEsimVariantMoney = (
   const currency = isEnglish ? "USD" : (variant?.currency || "VND");
 
   return {
-    price: isEnglish ? (variant?.priceUsd ?? variant?.price ?? 0) : (variant?.price ?? 0),
+    price: isEnglish
+      ? (variant?.priceUsd ?? 0)
+      : (variant?.price ?? 0),
     originalPrice: isEnglish
       ? (variant?.originalPriceUsd ?? variant?.originalPrice ?? 0)
       : (variant?.originalPrice ?? 0),
@@ -215,6 +229,17 @@ export const getEsimVariantMoney = (
     currency,
   };
 };
+
+export const isEsimVariantSelectable = (
+  variant?: EsimVariantView | null,
+  locale: string = "vi"
+): boolean => getEsimVariantMoney(variant, locale).price > 0;
+
+export const getSelectableEsimVariants = (
+  pkg?: EsimPackageView | null,
+  locale: string = "vi"
+): EsimVariantView[] =>
+  (pkg?.variants ?? []).filter((variant) => isEsimVariantSelectable(variant, locale));
 
 export const normalizeFilterOptions = (payload: any, locale: Locale = "vi"): EsimFilterOptions => {
   const mapOptions = (items: any[] = []): EsimFilterOption[] =>
@@ -303,6 +328,12 @@ export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
     deviceCompatibility: toString(item.device_compatibility),
     refundPolicy: toString(item.refund_policy),
     footerContent: toString(item.footer_content),
+    meta_title: toString(item.meta_title),
+    meta_description: toString(item.meta_description),
+    meta_keywords: toString(item.meta_keywords),
+    meta_robots: toString(item.meta_robots),
+    canonical_link: toString(item.canonical_link),
+    meta_image: toString(item.meta_image),
     isFeatured: toBoolean(item.is_featured),
     variants: variants.sort((a, b) => {
       if (a.validity !== b.validity) return a.validity - b.validity;
@@ -319,7 +350,7 @@ export const findCheapestVariant = (
   pkg?: EsimPackageView | null,
   locale: string = "vi"
 ): EsimVariantView | undefined =>
-  pkg?.variants
+  getSelectableEsimVariants(pkg, locale)
     ?.slice()
     .sort((a, b) => getEsimVariantMoney(a, locale).price - getEsimVariantMoney(b, locale).price)[0];
 
@@ -347,6 +378,12 @@ export const resolveEsimRegionPreset = (
     normalizedValue: normalizePreset(option.value),
     normalizedLabel: normalizePreset(option.label),
   }));
+  const findExactLabelMatch = (aliases: string[]) =>
+    normalizedOptions.find((option) => aliases.includes(option.normalizedLabel));
+  const findIncludesLabelMatch = (aliases: string[]) =>
+    normalizedOptions.find((option) =>
+      aliases.some((alias) => option.normalizedLabel.includes(alias))
+    );
 
   const directMatch = normalizedOptions.find(
     (option) =>
@@ -361,16 +398,11 @@ export const resolveEsimRegionPreset = (
     normalizedPreset.includes("domestic") ||
     normalizedPreset.includes("noi-dia")
   ) {
-    const domesticMatch = normalizedOptions.find((option) => {
-      const label = option.normalizedLabel;
-      return (
-        label.includes("viet-nam") ||
-        label.includes("vietnam") ||
-        label.includes("domestic") ||
-        label.includes("noi-dia")
-      );
-    });
+    const domesticAliases = ["viet-nam", "vietnam", "domestic", "noi-dia"];
+    const domesticExactMatch = findExactLabelMatch(domesticAliases);
+    if (domesticExactMatch) return domesticExactMatch.value;
 
+    const domesticMatch = findIncludesLabelMatch(domesticAliases);
     if (domesticMatch) return domesticMatch.value;
   }
 
@@ -379,15 +411,11 @@ export const resolveEsimRegionPreset = (
     normalizedPreset.includes("international") ||
     normalizedPreset.includes("nuoc-ngoai")
   ) {
-    const internationalMatch = normalizedOptions.find((option) => {
-      const label = option.normalizedLabel;
-      return (
-        label.includes("quoc-te") ||
-        label.includes("international") ||
-        label.includes("nuoc-ngoai")
-      );
-    });
+    const internationalAliases = ["quoc-te", "international", "nuoc-ngoai"];
+    const internationalExactMatch = findExactLabelMatch(internationalAliases);
+    if (internationalExactMatch) return internationalExactMatch.value;
 
+    const internationalMatch = findIncludesLabelMatch(internationalAliases);
     if (internationalMatch) return internationalMatch.value;
   }
 

@@ -114,6 +114,7 @@ export default function EsimProductPage({
                 selectedVariant={catalog.selectedVariant}
                 serviceTypeLabel={catalog.serviceTypeLabel}
                 quantity={catalog.quantity}
+                locale={activeLocale}
                 onOpenModal={() => catalog.setShowModal(true)}
                 onSelectSkuByValidity={(validity) => {
                   catalog.handleSelectSkuByValidity(validity);
@@ -196,26 +197,6 @@ export default function EsimProductPage({
             onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
             showPackageControls={false}
           />
-
-          <div ref={sidebarRef} className="mt-8 pb-8 lg:sticky lg:top-[148px] lg:self-start">
-            <EsimProductSidebar
-              selectedPackage={catalog.selectedPackage}
-              selectedVariant={catalog.selectedVariant}
-              selectedVariantMoney={catalog.selectedVariantMoney}
-              activeRegionLabel={catalog.activeRegionLabel}
-              serviceTypeLabel={catalog.serviceTypeLabel}
-              quantity={catalog.quantity}
-              total={catalog.total}
-              onBookNow={catalog.handleBookNow}
-              detailSections={catalog.detailSections}
-              openDetailSection={catalog.openDetailSection}
-              setOpenDetailSection={catalog.setOpenDetailSection}
-              sticky={false}
-              showDetailSections={false}
-              showActionBlock={false}
-              showInfoBlock={false}
-            />
-          </div>
         </div>
       </div>
     )
@@ -314,7 +295,11 @@ export default function EsimProductPage({
         </div>
         <button
           onClick={catalog.handleBookNow}
-          disabled={!catalog.selectedPackage || !catalog.selectedVariant}
+          disabled={
+            !catalog.selectedPackage ||
+            !catalog.selectedVariant ||
+            catalog.selectedVariantMoney.price <= 0
+          }
           className="bg-hb-coral hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold px-8 py-3 rounded-xl transition-all"
         >
           {t("Đặt ngay")}

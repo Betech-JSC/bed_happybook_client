@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   generateMonth,
@@ -52,6 +52,7 @@ const getLowestPrice = (flights: any[], airlineFilter: string | null) => {
     flight.totalFare < lowest.totalFare ? flight : lowest
   );
 };
+
 const listNextMonth = generateMonth(10);
 
 export default function FlightCalendar({
@@ -431,12 +432,16 @@ export default function FlightCalendar({
               flightData && getLowestPrice(flightData.flights, airlineFilter);
             const disabled = isDisabled(day ?? 0);
             const isActive = day === activeDay;
-
             return day ? (
               <div
                 key={day !== null ? day : `empty-${index}`}
-                className={`p-1 md:p-2 min-h-12 border rounded-lg md:rounded-xl lg:h-28 border-gray-200 transition-all duration-300 ${disabled ? "opacity-50 cursor-not-allowed bg-gray-200" : ""
-                  } ${isActive ? "bg-primary text-white" : ""}`}
+                className={`p-1 md:p-2 min-h-12 border rounded-lg md:rounded-xl lg:h-28 transition-all duration-300 ${
+                  disabled
+                    ? "opacity-50 cursor-not-allowed bg-gray-200 border-gray-200"
+                    : isActive
+                      ? "bg-primary text-white border-primary"
+                      : "border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/40"
+                }`}
               >
                 {!disabled && (
                   <div
@@ -444,7 +449,7 @@ export default function FlightCalendar({
                     onClick={() => handleDayClick(day)}
                   >
                     <div className="flex justify-between w-full items-start">
-                      <span className="text-xs font-semibold md:font-normal  md:text-base">
+                      <span className="text-xs font-semibold md:font-normal md:text-base">
                         {day.toString().padStart(2, "0")}
                       </span>
                       {flightLowestPrice &&

@@ -24,10 +24,17 @@ type Props = {
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await fetchCategoryDetails(params.subCategory, {});
+  const robotsParts: string[] = [];
+  if (data.category?.meta_robots) robotsParts.push(data.category.meta_robots);
+  if (data.category?.meta_ai_tag && data.category.meta_ai_tag !== "all") {
+    robotsParts.push(data.category.meta_ai_tag);
+  }
+  const robotsContent = robotsParts.join(", ") || "index, follow";
+
   return formatMetadata({
     title: data.category?.meta_title ?? data.category?.name,
     description: data.category?.meta_description,
-    robots: data.category?.meta_robots,
+    robots: robotsContent,
     keywords: data.category?.meta_keywords,
     alternates: {
       canonical:

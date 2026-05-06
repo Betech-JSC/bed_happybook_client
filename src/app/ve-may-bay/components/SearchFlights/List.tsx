@@ -7,10 +7,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { differenceInHours, format, isSameDay, parseISO } from "date-fns";
+import {
+  addDays,
+  differenceInHours,
+  format,
+  isSameDay,
+  parseISO,
+} from "date-fns";
 import Image from "next/image";
 import {
-  formatCurrency,
   formatTimeFromHour,
   pareseDateFromString,
 } from "@/lib/formatters";
@@ -30,6 +35,7 @@ import FlightDomesticDetail from "./Detail";
 import TimeRangeSlider from "@/components/base/TimeRangeSlider";
 import SideBarFilterFlights from "../SideBarFilter";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   getCheapestComparablePrice,
   getDomesticDisplayedPrice,

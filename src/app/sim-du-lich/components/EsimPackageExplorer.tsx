@@ -73,6 +73,7 @@ export default function EsimPackageExplorer({
           selectedVariant={selectedVariant}
           serviceTypeLabel={serviceTypeLabel}
           quantity={quantity}
+          locale={activeLocale}
           onOpenModal={onOpenModal}
           onSelectSkuByValidity={onSelectSkuByValidity}
           onSelectSkuByData={onSelectSkuByData}
