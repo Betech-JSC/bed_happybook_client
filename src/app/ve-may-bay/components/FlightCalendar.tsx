@@ -25,7 +25,6 @@ import {
 } from "@/types/flight";
 import { HttpError } from "@/lib/error";
 import { translatePage } from "@/utils/translateDom";
-import { formatCurrency } from "@/lib/formatters";
 import DisplayImage from "@/components/base/DisplayImage";
 
 const mapDataByDay = (data: any[]) => {
@@ -472,21 +471,6 @@ export default function FlightCalendar({
                             />
                           </div>
                         ))}
-                    </div>
-                    <div className="font-semibold text-left">
-                      {flightLowestPrice && (
-                        <Fragment>
-                          <div className="font-semibold hidden lg:block">
-                            {formatCurrency(flightLowestPrice.totalFare)}
-                          </div>
-                          <div className="text-sm md:text-base md:text-left text-center font-semibold block lg:hidden">
-                            {`${Math.floor(
-                              flightLowestPrice.totalFare / 1000
-                            )}`}
-                            <span className="text-xs font-semibold">K</span>
-                          </div>
-                        </Fragment>
-                      )}
                     </div>
                   </div>
                 )}
