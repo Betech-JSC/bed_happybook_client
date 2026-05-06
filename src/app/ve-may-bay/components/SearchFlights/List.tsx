@@ -16,7 +16,6 @@ import {
 } from "date-fns";
 import Image from "next/image";
 import {
-  formatCurrency,
   formatTimeFromHour,
   pareseDateFromString,
 } from "@/lib/formatters";
@@ -587,13 +586,6 @@ export default function ListFlights({
                       <div className="text-xs md:text-sm mt-2">
                         {format(day.date, "dd/MM")}
                       </div>
-                      {departDayPrices[format(day.date, "yyyy-MM-dd")] != null && (
-                        <div className="mt-1 text-[11px] font-semibold text-orange-500">
-                          {formatCurrency(
-                            departDayPrices[format(day.date, "yyyy-MM-dd")] ?? 0
-                          )}
-                        </div>
-                      )}
                     </button>
                   ))}
                 </div>
@@ -690,14 +682,6 @@ export default function ListFlights({
                         <div className="text-xs md:text-sm mt-2">
                           {format(day.date, "dd/MM")}
                         </div>
-                        {returnDayPrices[format(day.date, "yyyy-MM-dd")] != null && (
-                          <div className="mt-1 text-[11px] font-semibold text-orange-500">
-                            {formatCurrency(
-                              returnDayPrices[format(day.date, "yyyy-MM-dd")] ??
-                              0
-                            )}
-                          </div>
-                        )}
                       </button>
                     ))}
                   </div>
