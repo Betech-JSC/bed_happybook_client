@@ -16,6 +16,9 @@ type Props = {
   packages: EsimPackageView[];
   activeLocale: "vi" | "en";
   showInternationalFilters?: boolean;
+  pageTitle?: string;
+  sidebarTitle?: string;
+  sidebarMode?: "country" | "generic";
   destinationOptions?: EsimFilterOption[];
   selectedDestinationLabels?: string[];
   onToggleDestinationLabel?: (label: string) => void;
@@ -47,6 +50,9 @@ export default function EsimPackageExplorer({
   packages,
   activeLocale,
   showInternationalFilters = false,
+  pageTitle,
+  sidebarTitle,
+  sidebarMode = "country",
   destinationOptions = [],
   selectedDestinationLabels = [],
   onToggleDestinationLabel,
@@ -92,6 +98,9 @@ export default function EsimPackageExplorer({
         selectedPackageSlug={selectedPackage?.slug || ""}
         onSelectPackage={onSelectPackage}
         showInternationalFilters={showInternationalFilters}
+        pageTitle={pageTitle}
+        sidebarTitle={sidebarTitle}
+        sidebarMode={sidebarMode}
         destinationOptions={destinationOptions}
         selectedDestinationLabels={selectedDestinationLabels}
         onToggleDestinationLabel={onToggleDestinationLabel}

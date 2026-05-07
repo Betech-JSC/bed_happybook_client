@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Select, { components, type SingleValue } from "react-select";
@@ -33,6 +33,12 @@ type PackageSelectOption = {
   flag: string;
 };
 
+type PricePreset = {
+  key: string;
+  label: string;
+  range: [number, number];
+};
+
 type Props = {
   query: string;
   onQueryChange: (value: string) => void;
@@ -45,6 +51,9 @@ type Props = {
   selectedPackageSlug: string;
   onSelectPackage: (pkg: EsimPackageView) => void;
   showInternationalFilters?: boolean;
+  pageTitle?: string;
+  sidebarTitle?: string;
+  sidebarMode?: "country" | "generic";
   destinationOptions?: EsimFilterOption[];
   selectedDestinationLabels?: string[];
   onToggleDestinationLabel?: (label: string) => void;
@@ -163,6 +172,18 @@ const isCountryOption = (option: EsimFilterOption) => {
   });
 };
 
+const isVietnamDomesticOption = (option: EsimFilterOption) => {
+  const normalizedLabel = normalizeText(option.label);
+  const normalizedValue = normalizeText(option.value);
+  const normalizedCombined = `${normalizedLabel} ${normalizedValue}`.trim();
+
+  return (
+    normalizedCombined.includes("vietnam") ||
+    normalizedCombined.includes("viet nam") ||
+    normalizedCombined.includes("domestic")
+  );
+};
+
 export default function EsimPackageDiscovery({
   query,
   onQueryChange,
@@ -174,6 +195,9 @@ export default function EsimPackageDiscovery({
   selectedPackageSlug,
   onSelectPackage,
   showInternationalFilters = false,
+  pageTitle,
+  sidebarTitle,
+  sidebarMode = "country",
   destinationOptions = [],
   selectedDestinationLabels = [],
   onToggleDestinationLabel,
@@ -209,10 +233,93 @@ export default function EsimPackageDiscovery({
 
     return next.sort((a, b) => a.displayLabel.localeCompare(b.displayLabel, "vi"));
   }, [destinationOptions]);
-  const visibleDestinations = showAllDestinations
-    ? countryDestinationOptions
-    : countryDestinationOptions.slice(0, 5);
-  const destinationSelectOptions = useMemo<DestinationSelectOption[]>(() => countryDestinationOptions, [countryDestinationOptions]);
+  const genericDestinationOptions = useMemo<DestinationSelectOption[]>(() => {
+    const seen = new Set<string>();
+
+    return destinationOptions
+      .map((option) => {
+        const displayLabel = option.label?.trim() || option.value?.trim() || "";
+        return {
+          ...option,
+          displayLabel,
+          flag: resolveDestinationFlag({ ...option, label: displayLabel, value: option.value || displayLabel }),
+        };
+      })
+      .filter((option) => {
+        const key = normalizeText(option.displayLabel || option.value || "");
+        if (!key || seen.has(key)) return Boolean(option.displayLabel || option.value);
+        seen.add(key);
+        return true;
+      });
+  }, [destinationOptions]);
+  const comboDestinationOptions = useMemo<DestinationSelectOption[]>(() => {
+    const seen = new Set<string>();
+    const comboOptions = destinationOptions
+      .filter((option) => !isCountryOption(option) && !isVietnamDomesticOption(option))
+      .map((option) => {
+        const displayLabel = option.label?.trim() || option.value?.trim() || "";
+        return {
+          ...option,
+          displayLabel,
+          flag: resolveDestinationFlag({ ...option, label: displayLabel, value: option.value || displayLabel }),
+        };
+      })
+      .filter((option) => {
+        const key = normalizeText(option.displayLabel || option.value || "");
+        if (!key || seen.has(key)) return Boolean(option.displayLabel || option.value);
+        seen.add(key);
+        return true;
+      });
+
+    if (comboOptions.length > 0) {
+      return comboOptions.sort((a, b) => a.displayLabel.localeCompare(b.displayLabel, "vi"));
+    }
+
+    const looksLikeComboPackage = (pkg: EsimPackageView) => {
+      const text = normalizeText([pkg.destination, pkg.title, pkg.coverage, pkg.regionLabel].filter(Boolean).join(" "));
+      const rawText = `${pkg.coverage || ""} ${pkg.destination || ""}`.toLowerCase();
+
+      if (!text) return false;
+      if (/[,&]/.test(rawText) || /\band\b/.test(rawText)) return true;
+      if (/\b\d+\s*countries?\b/.test(rawText)) return true;
+
+      return /\b(regional|global|america|europe|asia|world)\b/.test(text);
+    };
+
+    packages.forEach((pkg) => {
+      if (!looksLikeComboPackage(pkg)) return;
+
+      const displayLabel =
+        pkg.destination?.trim() ||
+        pkg.title?.trim() ||
+        pkg.coverage?.trim() ||
+        pkg.regionLabel?.trim() ||
+        "";
+      const normalizedDisplayLabel = normalizeText(displayLabel);
+      if (
+        normalizedDisplayLabel.includes("vietnam") ||
+        normalizedDisplayLabel.includes("viet nam") ||
+        normalizedDisplayLabel.includes("domestic")
+      ) {
+        return;
+      }
+      const value = displayLabel;
+      const key = normalizeText(displayLabel || value);
+
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      comboOptions.push({
+        value,
+        label: displayLabel,
+        displayLabel,
+        flag: resolveDestinationFlag({ label: displayLabel, value }),
+      });
+    });
+
+    return comboOptions.sort((a, b) => a.displayLabel.localeCompare(b.displayLabel, "vi"));
+  }, [destinationOptions, packages]);
+  const sidebarOptions = sidebarMode === "generic" ? genericDestinationOptions : countryDestinationOptions;
+  const destinationSelectOptions = useMemo<DestinationSelectOption[]>(() => sidebarOptions, [sidebarOptions]);
   const selectedDestinationOption =
     destinationSelectOptions.find((option) => selectedDestinationLabels.includes(option.displayLabel)) || null;
   const packageSelectOptions = useMemo<PackageSelectOption[]>(() => {
@@ -244,7 +351,77 @@ export default function EsimPackageDiscovery({
     packageSelectOptions.find((option) => option.value === packageQuery) || null;
   const priceCurrency = activeLocale === "en" ? "USD" : "VND";
   const hasPriceBounds = priceBounds.max > priceBounds.min;
-  const isPackageSearchDisabled = showInternationalFilters && selectedDestinationLabels.length === 0;
+  const priceStep = useMemo(() => {
+    if (!hasPriceBounds) return 0;
+
+    const span = priceBounds.max - priceBounds.min;
+    if (span <= 200_000) return 10_000;
+    if (span <= 750_000) return 25_000;
+    return 50_000;
+  }, [hasPriceBounds, priceBounds.max, priceBounds.min]);
+  const pricePresets = useMemo<PricePreset[]>(() => {
+    if (!hasPriceBounds) return [];
+
+    const clamp = (value: number) => Math.max(priceBounds.min, Math.min(value, priceBounds.max));
+    const presetRanges: Array<{ key: string; label: string; range: [number, number] }> = [
+      {
+        key: "all",
+        label: t("Tất cả mức giá", "All prices"),
+        range: [priceBounds.min, priceBounds.max],
+      },
+      {
+        key: "under-100k",
+        label: `${t("Dưới", "Under")} ${formatEsimMoney(100_000, priceCurrency)}`,
+        range: [priceBounds.min, clamp(100_000)],
+      },
+      {
+        key: "100k-300k",
+        label: `${formatEsimMoney(100_000, priceCurrency)} - ${formatEsimMoney(300_000, priceCurrency)}`,
+        range: [clamp(100_000), clamp(300_000)],
+      },
+      {
+        key: "300k-500k",
+        label: `${formatEsimMoney(300_000, priceCurrency)} - ${formatEsimMoney(500_000, priceCurrency)}`,
+        range: [clamp(300_000), clamp(500_000)],
+      },
+      {
+        key: "500k-1m",
+        label: `${formatEsimMoney(500_000, priceCurrency)} - ${formatEsimMoney(1_000_000, priceCurrency)}`,
+        range: [clamp(500_000), clamp(1_000_000)],
+      },
+      {
+        key: "1m-plus",
+        label: `${t("Từ", "From")} ${formatEsimMoney(1_000_000, priceCurrency)}`,
+        range: [clamp(1_000_000), priceBounds.max],
+      },
+    ];
+
+    return presetRanges
+      .map((preset) => ({
+        ...preset,
+        range: [Math.min(preset.range[0], preset.range[1]), Math.max(preset.range[0], preset.range[1])] as [
+          number,
+          number,
+        ],
+      }))
+      .filter((preset) => preset.range[1] > preset.range[0]);
+  }, [hasPriceBounds, priceBounds.max, priceBounds.min, priceCurrency, t]);
+
+  const isPricePresetActive = useCallback(
+    (range: [number, number]) => priceRange[0] === range[0] && priceRange[1] === range[1],
+    [priceRange]
+  );
+  const visibleSidebarOptions = showAllDestinations ? sidebarOptions : sidebarOptions.slice(0, 5);
+  const visibleCountryDestinations = showAllDestinations
+    ? countryDestinationOptions
+    : countryDestinationOptions.slice(0, 5);
+  const visibleComboDestinations = showAllDestinations
+    ? comboDestinationOptions
+    : comboDestinationOptions.slice(0, 5);
+  const hasTruncatedDestinationOptions =
+    sidebarMode === "generic"
+      ? sidebarOptions.length > 5
+      : countryDestinationOptions.length > 5 || comboDestinationOptions.length > 5;
   const sortedPackages = useMemo(() => {
     const next = [...packages];
     if (!showInternationalFilters) return next;
@@ -509,47 +686,144 @@ export default function EsimPackageDiscovery({
   };
 
   const renderSidebar = () => (
-    <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="space-y-6">
-        <div>
-          <h4 className="text-2xl font-bold text-midnight-ink mb-4">{t("Quốc gia")}</h4>
-          <div className="space-y-3">
-            {visibleDestinations.map((option) => {
-              const checked = selectedDestinationLabels.includes(option.displayLabel);
-              return (
-                <label key={option.value} className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
-                    className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
-                  />
-                  <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>
-                </label>
-              );
-            })}
-          </div>
+    <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:h-[calc(100vh-10rem)] lg:max-h-[calc(100vh-10rem)] lg:flex lg:flex-col lg:overflow-hidden">
+      <div className="space-y-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-2 lg:overscroll-contain">
+        {sidebarMode === "generic" ? (
+          <div>
+            <h4 className="mb-4 text-2xl font-bold text-midnight-ink">{sidebarTitle || t("Nhà mạng")}</h4>
+            <div className="space-y-3">
+              {visibleSidebarOptions.map((option) => {
+                const checked = selectedDestinationLabels.includes(option.displayLabel);
+                return (
+                  <label key={option.value} className="flex cursor-pointer items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
+                      className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
+                    />
+                    <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>
+                  </label>
+                );
+              })}
+            </div>
 
-          {destinationOptions.length > 5 ? (
-            <button
-              type="button"
-              onClick={() => setShowAllDestinations((current) => !current)}
-              className="mt-4 text-sm font-medium text-hb-navy hover:text-hb-coral transition-colors"
-            >
-              {showAllDestinations ? t("Thu gọn") : t("Xem thêm")}
-            </button>
-          ) : null}
-        </div>
+            {hasTruncatedDestinationOptions ? (
+              <button
+                type="button"
+                onClick={() => setShowAllDestinations((current) => !current)}
+                className="mt-4 text-sm font-medium text-hb-navy hover:text-hb-coral transition-colors"
+              >
+                {showAllDestinations ? t("Thu gọn") : t("Xem thêm")}
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <>
+            {showInternationalFilters && comboDestinationOptions.length > 0 ? (
+              <div>
+                <h4 className="mb-4 text-2xl font-bold text-midnight-ink">{t("Cụm quốc gia")}</h4>
+                <div className="space-y-3">
+                  {visibleComboDestinations.map((option) => {
+                    const checked = selectedDestinationLabels.includes(option.displayLabel);
+                    return (
+                      <label key={option.value} className="flex cursor-pointer items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
+                          className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
+                        />
+                        <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            <div>
+              <h4 className="mb-4 text-2xl font-bold text-midnight-ink">{sidebarTitle || t("Quốc gia")}</h4>
+              <div className="space-y-3">
+                {visibleCountryDestinations.map((option) => {
+                  const checked = selectedDestinationLabels.includes(option.displayLabel);
+                  return (
+                    <label key={option.value} className="flex cursor-pointer items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
+                        className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
+                      />
+                      <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>
+                    </label>
+                  );
+                })}
+              </div>
+
+              {hasTruncatedDestinationOptions ? (
+                <button
+                  type="button"
+                  onClick={() => setShowAllDestinations((current) => !current)}
+                  className="mt-4 text-sm font-medium text-hb-navy hover:text-hb-coral transition-colors"
+                >
+                  {showAllDestinations ? t("Thu gọn") : t("Xem thêm")}
+                </button>
+              ) : null}
+            </div>
+          </>
+        )}
 
         <div className="border-t border-slate-100 pt-6">
-          <h4 className="text-2xl font-bold text-midnight-ink mb-4">{t("Mức giá")}</h4>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h4 className="text-2xl font-bold text-midnight-ink">{t("Mức giá")}</h4>
+            {hasPriceBounds ? (
+              <button
+                type="button"
+                onClick={() => onPriceRangeChange?.([priceBounds.min, priceBounds.max])}
+                className="rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-hb-navy transition-colors hover:border-hb-coral hover:text-hb-coral"
+              >
+                {t("Đặt lại")}
+              </button>
+            ) : null}
+          </div>
+
           {hasPriceBounds ? (
             <>
+              {pricePresets.length ? (
+                <div className="mb-4">
+                  <div className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
+                    {t("Chọn nhanh", "Quick ranges")}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {pricePresets.map((preset) => {
+                      const active = isPricePresetActive(preset.range);
+
+                      return (
+                        <button
+                          key={preset.key}
+                          type="button"
+                          onClick={() => onPriceRangeChange?.(preset.range)}
+                          className={`rounded-full border px-3 py-2 text-xs font-medium transition-colors ${
+                            active
+                              ? "border-hb-coral bg-orange-50 text-hb-coral"
+                              : "border-slate-200 bg-white text-midnight-ink hover:border-hb-coral hover:text-hb-coral"
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
+
               <div className="px-2 py-4">
                 <Slider
                   range
                   min={priceBounds.min}
                   max={priceBounds.max}
+                  step={priceStep || undefined}
                   allowCross={false}
                   value={priceRange}
                   onChange={(value) => onPriceRangeChange?.(value as [number, number])}
@@ -571,16 +845,6 @@ export default function EsimPackageDiscovery({
               {t("Chưa có dữ liệu mức giá.")}
             </div>
           )}
-
-          {hasPriceBounds ? (
-            <button
-              type="button"
-              onClick={() => onPriceRangeChange?.([priceBounds.min, priceBounds.max])}
-              className="mt-4 text-sm font-medium text-hb-navy hover:text-hb-coral transition-colors"
-            >
-              {t("Đặt lại")}
-            </button>
-          ) : null}
         </div>
       </div>
     </aside>
@@ -596,7 +860,7 @@ export default function EsimPackageDiscovery({
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
                 <h1 className="text-3xl lg:text-4xl font-bold text-midnight-ink">
-                  {t("Sim du lịch quốc tế")}
+                  {pageTitle || t("Sim du lịch quốc tế")}
                 </h1>
               </div>
               <div className="hidden lg:flex items-center gap-3">

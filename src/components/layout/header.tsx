@@ -27,6 +27,7 @@ export default function Header() {
   const [isSticky, setSticky] = useState<boolean>(false);
   const [isSimDuLichOpen, setIsSimDuLichOpen] = useState(false);
   const simDuLichRef = useRef<HTMLDivElement>(null);
+  const simDuLichHoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const simDuLichRegions = useSimDuLichRegions(language);
   const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
   const excludePaths = [
@@ -87,8 +88,21 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    if (simDuLichHoverTimeoutRef.current) {
+      clearTimeout(simDuLichHoverTimeoutRef.current);
+      simDuLichHoverTimeoutRef.current = null;
+    }
     setIsSimDuLichOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    return () => {
+      if (simDuLichHoverTimeoutRef.current) {
+        clearTimeout(simDuLichHoverTimeoutRef.current);
+        simDuLichHoverTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const activeSimCategory =
     pathname.startsWith("/sim-viet-nam")
@@ -109,12 +123,31 @@ export default function Header() {
       ),
     },
     "quoc-te": {
-      icon: "/icon/map-pinned.svg",
+      icon: "/sim-du-lich/esim-international-icon.svg",
       iconAlt: "Quốc tế",
       description: t(
         toSnakeCase("Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.")
       ),
     },
+  };
+
+  const openSimDuLichMenu = () => {
+    if (simDuLichHoverTimeoutRef.current) {
+      clearTimeout(simDuLichHoverTimeoutRef.current);
+      simDuLichHoverTimeoutRef.current = null;
+    }
+    setIsSimDuLichOpen(true);
+  };
+
+  const closeSimDuLichMenu = () => {
+    if (simDuLichHoverTimeoutRef.current) {
+      clearTimeout(simDuLichHoverTimeoutRef.current);
+    }
+
+    simDuLichHoverTimeoutRef.current = setTimeout(() => {
+      setIsSimDuLichOpen(false);
+      simDuLichHoverTimeoutRef.current = null;
+    }, 150);
   };
 
 
@@ -515,12 +548,24 @@ export default function Header() {
                     </div>
                   </Link>
 
-                  <div ref={simDuLichRef} className="relative">
+                  <div
+                    ref={simDuLichRef}
+                    className="relative"
+                    onMouseEnter={openSimDuLichMenu}
+                    onMouseLeave={closeSimDuLichMenu}
+                    onFocusCapture={openSimDuLichMenu}
+                    onBlurCapture={(event) => {
+                      const nextFocusedNode = event.relatedTarget;
+
+                      if (!nextFocusedNode || !simDuLichRef.current?.contains(nextFocusedNode as Node)) {
+                        closeSimDuLichMenu();
+                      }
+                    }}
+                  >
                     <div className="!flex items-start gap-4 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto text-left hover:bg-blue-50">
                       <Link
                         href="/sim-du-lich"
                         className="flex min-w-0 flex-1 items-start gap-4 text-left"
-                        onClick={() => setIsSimDuLichOpen(false)}
                       >
                         <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                         <div className="flex flex-col items-start text-left min-w-0">
@@ -533,11 +578,13 @@ export default function Header() {
                         </div>
                       </Link>
 
-                      <button
-                        type="button"
-                        aria-label={isSimDuLichOpen ? "Đóng submenu sim du lịch" : "Mở submenu sim du lịch"}
-                        onClick={() => setIsSimDuLichOpen((current) => !current)}
-                        className="mt-1 flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-white/80 hover:text-slate-700"
+                      <div
+                        aria-hidden="true"
+                        className={`mt-1 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 pointer-events-none ${
+                          isSimDuLichOpen
+                            ? "rotate-180 bg-white/80 text-slate-700"
+                            : "text-slate-500"
+                        }`}
                       >
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
@@ -548,78 +595,85 @@ export default function Header() {
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </button>
+                      </div>
                     </div>
 
-                    {isSimDuLichOpen ? (
-                      <div className="absolute left-full top-0 ml-3 w-[330px] rounded-3xl border border-slate-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] z-50">
-                        <div className="flex flex-col gap-2">
-                          {simDuLichRegions.length > 0 ? (
-                            simDuLichRegions.map((item) => {
-                              const category = normalizeSimDuLichCategory(item.label);
-                              const itemMeta = simRegionMenuMeta[category] ?? {
-                                icon: "/icon/sim.png",
-                                iconAlt: item.label,
-                                description: t(
-                                  toSnakeCase(
-                                    "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim"
-                                  )
-                                ),
-                              };
-                              const isActive =
-                                activeSimCategory &&
-                                item.href.toLowerCase().includes(activeSimCategory);
+                    <div
+                      aria-hidden={!isSimDuLichOpen}
+                      className={`absolute left-full top-0 ml-3 w-[330px] rounded-3xl border border-slate-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] z-50 transform-gpu origin-top-left transition-[opacity,transform] duration-200 ease-out before:absolute before:-left-3 before:top-0 before:h-full before:w-3 before:content-[''] before:bg-transparent ${
+                        isSimDuLichOpen
+                          ? "pointer-events-auto opacity-100 translate-x-0 translate-y-0 scale-100"
+                          : "pointer-events-none opacity-0 translate-x-0 translate-y-2 scale-[0.98]"
+                      }`}
+                      onMouseEnter={openSimDuLichMenu}
+                      onMouseLeave={closeSimDuLichMenu}
+                    >
+                      <div className="flex flex-col gap-2">
+                        {simDuLichRegions.length > 0 ? (
+                          simDuLichRegions.map((item) => {
+                            const category = normalizeSimDuLichCategory(item.label);
+                            const itemMeta = simRegionMenuMeta[category] ?? {
+                              icon: "/icon/sim.png",
+                              iconAlt: item.label,
+                              description: t(
+                                toSnakeCase(
+                                  "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim"
+                                )
+                              ),
+                            };
+                            const isActive =
+                              activeSimCategory &&
+                              item.href.toLowerCase().includes(activeSimCategory);
 
-                              return (
-                                <Link
-                                  key={item.href}
-                                  href={item.href}
-                                  onClick={() => setIsSimDuLichOpen(false)}
-                                  className={`group/link flex items-start gap-4 rounded-2xl border px-4 py-4 transition-all duration-300 ${
-                                    isActive
-                                      ? "border-blue-200 bg-[#EEF4FF]"
-                                      : "border-transparent hover:border-slate-200 hover:bg-slate-50"
+                            return (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setIsSimDuLichOpen(false)}
+                                className={`group/link flex items-start gap-4 rounded-2xl border px-4 py-4 transition-all duration-300 ${
+                                  isActive
+                                    ? "border-blue-200 bg-[#EEF4FF]"
+                                    : "border-transparent hover:border-slate-200 hover:bg-slate-50"
+                                }`}
+                              >
+                                <div
+                                  className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl ${
+                                    isActive ? "bg-white" : "bg-slate-100"
                                   }`}
                                 >
+                                  <Image
+                                    src={itemMeta.icon}
+                                    alt={itemMeta.iconAlt}
+                                    width={24}
+                                    height={24}
+                                    className="h-6 w-6 object-contain"
+                                  />
+                                </div>
+
+                                <div className="min-w-0 text-left">
                                   <div
-                                    className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl ${
-                                      isActive ? "bg-white" : "bg-slate-100"
+                                    className={`text-[15px] font-semibold leading-tight transition-colors ${
+                                      isActive
+                                        ? "text-blue-600"
+                                        : "text-[#101828] group-hover/link:text-blue-600"
                                     }`}
                                   >
-                                    <Image
-                                      src={itemMeta.icon}
-                                      alt={itemMeta.iconAlt}
-                                      width={24}
-                                      height={24}
-                                      className="h-6 w-6 object-contain"
-                                    />
+                                    {item.label}
                                   </div>
-
-                                  <div className="min-w-0 text-left">
-                                    <div
-                                      className={`text-[15px] font-semibold leading-tight transition-colors ${
-                                        isActive
-                                          ? "text-blue-600"
-                                          : "text-[#101828] group-hover/link:text-blue-600"
-                                      }`}
-                                    >
-                                      {item.label}
-                                    </div>
-                                    <div className="mt-1 text-xs leading-relaxed text-slate-500">
-                                      {itemMeta.description}
-                                    </div>
+                                  <div className="mt-1 text-xs leading-relaxed text-slate-500">
+                                    {itemMeta.description}
                                   </div>
-                                </Link>
-                              );
-                            })
-                          ) : (
-                            <div className="px-4 py-4 text-sm text-slate-500">
-                              {t("Đang tải dữ liệu...")}
-                            </div>
-                          )}
-                        </div>
+                                </div>
+                              </Link>
+                            );
+                          })
+                        ) : (
+                          <div className="px-4 py-4 text-sm text-slate-500">
+                            {t("Đang tải dữ liệu...")}
+                          </div>
+                        )}
                       </div>
-                    ) : null}
+                    </div>
                   </div>
 
                   <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">

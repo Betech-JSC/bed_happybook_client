@@ -460,6 +460,7 @@ const simDuLichStaticText: string[] = [
   "Internet sẵn sàng ngay khi hạ cánh",
   "Chọn điểm đến khác",
   "Quốc gia",
+  "Cụm quốc gia",
   "Mức giá",
   "Chọn quốc gia...",
   "Không tìm thấy quốc gia",
