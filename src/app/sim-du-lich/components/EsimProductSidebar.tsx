@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, ChevronDown, Headset, Info, Shield } from "lucide-react";
+import { BadgeCheck, ChevronDown, Headset, Info } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { formatEsimMoney, type EsimPackageView, type EsimVariantView } from "../lib/esim";
@@ -20,6 +20,7 @@ type Props = {
   selectedVariantMoney: { price: number; currency: string };
   activeRegionLabel: string;
   serviceTypeLabel: string;
+  titleFallback: string;
   quantity: number;
   total: number;
   onBookNow: () => void;
@@ -39,6 +40,7 @@ export default function EsimProductSidebar({
   selectedVariantMoney,
   activeRegionLabel,
   serviceTypeLabel,
+  titleFallback,
   quantity,
   total,
   onBookNow,
@@ -63,7 +65,7 @@ export default function EsimProductSidebar({
             <div className="space-y-3 pb-2 border-b border-slate-100">
               <div>
                 <h1 className="text-[28px] lg:text-[32px] font-bold text-midnight-ink leading-tight">
-                  {selectedPackage?.title || t("eSIM du lịch quốc tế")}
+                  {selectedPackage?.title || titleFallback}
                 </h1>
                 <p className="mt-2 text-sm text-steel-secondary">
                   {selectedPackage?.destination || activeRegionLabel}

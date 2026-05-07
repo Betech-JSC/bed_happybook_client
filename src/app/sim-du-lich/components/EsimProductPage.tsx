@@ -6,7 +6,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
 import type { EsimPackageView } from "../lib/esim";
-import EsimHeroSection from "./EsimHeroSection";
 import EsimInternationalDetailGallery from "./EsimInternationalDetailGallery";
 import EsimPackageControls from "./EsimPackageControls";
 import SimDuLichBreadcrumbs from "./SimDuLichBreadcrumbs";
@@ -15,6 +14,35 @@ import EsimProductSidebar from "./EsimProductSidebar";
 import PackageSelectorModal from "./PackageSelectorModal";
 import { useEsimCatalog } from "../hooks/useEsimCatalog";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+
+type SimDuLichCategory = "quoc-te" | "viet-nam";
+
+const resolveCategoryLabel = (category: SimDuLichCategory, t: (text: string, fallback?: string) => string) =>
+  category === "viet-nam"
+    ? t("Sim du lịch Việt Nam", "Sim du lịch Việt Nam")
+    : t("Sim du lịch quốc tế", "Sim du lịch quốc tế");
+
+const resolveCategoryTitleFallback = (
+  category: SimDuLichCategory,
+  t: (text: string, fallback?: string) => string
+) =>
+  category === "viet-nam"
+    ? t("eSIM du lịch Việt Nam", "eSIM du lịch Việt Nam")
+    : t("eSIM du lịch quốc tế", "eSIM du lịch quốc tế");
+
+const resolveCategoryImageFallbackLabel = (
+  category: SimDuLichCategory,
+  t: (text: string, fallback?: string) => string
+) =>
+  category === "viet-nam"
+    ? t("Ảnh eSIM du lịch Việt Nam", "Ảnh eSIM du lịch Việt Nam")
+    : t("Ảnh eSIM du lịch quốc tế", "Ảnh eSIM du lịch quốc tế");
+
+const resolveCategoryHref = (category: SimDuLichCategory) =>
+  category === "viet-nam" ? "/sim-viet-nam" : "/sim-du-lich/quoc-te";
+
+const resolveSidebarTitle = (category: SimDuLichCategory, t: (text: string, fallback?: string) => string) =>
+  category === "viet-nam" ? t("Nhà mạng", "Nhà mạng") : t("Quốc gia", "Quốc gia");
 
 export default function EsimProductPage({
   footerContent,
@@ -35,6 +63,22 @@ export default function EsimProductPage({
   const activeLocale = language === "en" ? "en" : "vi";
   const t = useSimDuLichStaticText(activeLocale);
 
+  const category =
+    initialCategory === "viet-nam"
+      ? "viet-nam"
+      : initialCategory === "quoc-te"
+        ? "quoc-te"
+        : null;
+  const isDetailPage = Boolean(initialPackageSlug);
+  const categoryLabel = category ? resolveCategoryLabel(category, t) : "";
+  const categoryTitleFallback = category ? resolveCategoryTitleFallback(category, t) : t("eSIM du lịch");
+  const categoryImageFallbackLabel = category
+    ? resolveCategoryImageFallbackLabel(category, t)
+    : t("Ảnh eSIM du lịch");
+  const categorySidebarTitle = category ? resolveSidebarTitle(category, t) : t("Quốc gia");
+  const sidebarFilterMode = category === "viet-nam" ? "operator" : "destination";
+  const categoryHref = category ? resolveCategoryHref(category) : "";
+
   const catalog = useEsimCatalog({
     cmsPageContent,
     faqItems,
@@ -42,10 +86,10 @@ export default function EsimProductPage({
     initialCategory,
     initialPackageSlug,
     initialSelectedPackage,
+    sidebarFilterMode,
   });
+
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
-  const isInternationalPage = initialCategory === "quoc-te";
-  const showInternationalListExtras = isInternationalPage && !initialPackageSlug;
   const sidebarRef = useRef<HTMLDivElement | null>(null);
 
   const scrollSidebarIntoView = useCallback(() => {
@@ -57,158 +101,35 @@ export default function EsimProductPage({
     });
   }, []);
 
-  const breadcrumbItems = (() => {
-    const baseItems = [{ href: "/", label: t("Trang chủ", "Homepage") }];
+  const breadcrumbItems = category
+    ? isDetailPage
+      ? [
+          { href: "/", label: t("Trang chủ", "Homepage") },
+          { href: "/sim-du-lich", label: t("Sim du lịch", "Sim du lịch") },
+          { href: categoryHref, label: categoryLabel },
+          {
+            label:
+              catalog.selectedPackage?.title ||
+              catalog.selectedPackage?.destination ||
+              initialPackageSlug ||
+              categoryLabel,
+          },
+        ]
+      : [
+          { href: "/", label: t("Trang chủ", "Homepage") },
+          { href: "/sim-du-lich", label: t("Sim du lịch", "Sim du lịch") },
+          { label: categoryLabel },
+        ]
+    : [];
 
-    if (initialCategory === "quoc-te") {
-      const categoryItem = {
-        href: "/sim-du-lich",
-        label: t("Sim du lịch", "Sim du lịch"),
-      };
-      const subCategoryItem = {
-        href: initialPackageSlug ? "/sim-du-lich/quoc-te" : undefined,
-        label: t("Sim du lịch quốc tế", "Sim du lịch quốc tế"),
-      };
-
-      return initialPackageSlug && catalog.selectedPackage?.title
-        ? [...baseItems, categoryItem, subCategoryItem, { label: catalog.selectedPackage.title }]
-        : [...baseItems, categoryItem, subCategoryItem];
-    }
-
-    if (initialCategory === "viet-nam") {
-      const categoryItem = {
-        href: "/sim-du-lich",
-        label: t("Sim du lịch", "Sim du lịch"),
-      };
-      const subCategoryItem = {
-        href: initialPackageSlug ? "/sim-viet-nam" : undefined,
-        label: t("Sim du lịch Việt Nam", "Sim du lịch Việt Nam"),
-      };
-
-      return initialPackageSlug && catalog.selectedPackage?.title
-        ? [...baseItems, categoryItem, subCategoryItem, { label: catalog.selectedPackage.title }]
-        : [...baseItems, categoryItem, subCategoryItem];
-    }
-
-    return [];
-  })();
-
-  const isInternationalDetail = initialCategory === "quoc-te" && Boolean(initialPackageSlug);
-
-  const renderInternationalShell = () => (
-    isInternationalDetail ? (
-      <div className="bg-gray-100">
-        <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
-          {breadcrumbItems.length ? (
-            <div className="pt-3">
-              <SimDuLichBreadcrumbs items={breadcrumbItems} />
-            </div>
-          ) : null}
-
-          <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6">
-            <div className="w-full lg:w-8/12 mt-4 lg:mt-0 space-y-4">
-              <EsimInternationalDetailGallery selectedPackage={catalog.selectedPackage} />
-
-              <EsimPackageControls
-                selectedPackage={catalog.selectedPackage}
-                selectedVariant={catalog.selectedVariant}
-                serviceTypeLabel={catalog.serviceTypeLabel}
-                quantity={catalog.quantity}
-                locale={activeLocale}
-                onOpenModal={() => catalog.setShowModal(true)}
-                onSelectSkuByValidity={(validity) => {
-                  catalog.handleSelectSkuByValidity(validity);
-                  scrollSidebarIntoView();
-                }}
-                onSelectSkuByData={(data) => {
-                  catalog.handleSelectSkuByData(data);
-                  scrollSidebarIntoView();
-                }}
-                onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
-                onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
-              />
-
-              <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-100">
-                <h2 className="text-xl font-bold text-midnight-ink">
-                  {catalog.selectedPackage?.destination || t("Thông tin gói")}
-                </h2>
-                <p className="mt-2 text-sm leading-7 text-steel-secondary">
-                  {catalog.selectedPackage?.subtitle || catalog.selectedPackage?.coverage || ""}
-                </p>
-              </div>
-            </div>
-
-            <div ref={sidebarRef} className="w-full lg:w-4/12 lg:sticky lg:top-[148px] lg:self-start">
-              <EsimProductSidebar
-                selectedPackage={catalog.selectedPackage}
-                selectedVariant={catalog.selectedVariant}
-                selectedVariantMoney={catalog.selectedVariantMoney}
-                activeRegionLabel={catalog.activeRegionLabel}
-                serviceTypeLabel={catalog.serviceTypeLabel}
-                quantity={catalog.quantity}
-                total={catalog.total}
-                onBookNow={catalog.handleBookNow}
-                detailSections={catalog.detailSections}
-                openDetailSection={catalog.openDetailSection}
-                setOpenDetailSection={catalog.setOpenDetailSection}
-                sticky={false}
-                showDetailHeader
-              />
-            </div>
+  const renderListingShell = () => (
+    <div className="bg-gray-100">
+      <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
+        {breadcrumbItems.length ? (
+          <div className="pt-3">
+            <SimDuLichBreadcrumbs items={breadcrumbItems} />
           </div>
-        </div>
-      </div>
-    ) : (
-      <div className="bg-gray-100">
-        <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
-          {breadcrumbItems.length ? (
-            <div className="pt-3">
-              <SimDuLichBreadcrumbs items={breadcrumbItems} />
-            </div>
-          ) : null}
-
-          <EsimPackageExplorer
-            selectedPackage={catalog.selectedPackage}
-            selectedVariant={catalog.selectedVariant}
-            serviceTypeLabel={catalog.serviceTypeLabel}
-            quantity={catalog.quantity}
-            query={catalog.query}
-            onQueryChange={catalog.setQuery}
-            loading={catalog.loading}
-            error={catalog.error}
-            packages={catalog.visiblePackages}
-            activeLocale={activeLocale}
-            showInternationalFilters={initialCategory === "quoc-te"}
-            destinationOptions={catalog.filters.destinations}
-            selectedDestinationLabels={catalog.selectedDestinationLabels}
-            onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
-            onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
-            onSelectPackageFilterSku={catalog.handleSelectPackageFilterSku}
-            packageQuery={catalog.packageQuery}
-            onPackageQueryChange={catalog.setPackageQuery}
-            priceRange={catalog.priceRange}
-            priceBounds={catalog.priceBounds}
-            onPriceRangeChange={catalog.setPriceRange}
-            onOpenModal={() => catalog.setShowModal(true)}
-            onSelectPackage={catalog.handleSelectPackage}
-            onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
-            onSelectSkuByData={catalog.handleSelectSkuByData}
-            onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
-            onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
-            showPackageControls={false}
-          />
-        </div>
-      </div>
-    )
-  );
-
-  const renderDomesticShell = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
-      <div className="space-y-8">
-        <EsimHeroSection
-          selectedPackage={catalog.selectedPackage}
-          selectedVariant={catalog.selectedVariant}
-        />
+        ) : null}
 
         <EsimPackageExplorer
           selectedPackage={catalog.selectedPackage}
@@ -221,8 +142,11 @@ export default function EsimProductPage({
           error={catalog.error}
           packages={catalog.visiblePackages}
           activeLocale={activeLocale}
-          showInternationalFilters={initialCategory === "quoc-te"}
-          destinationOptions={catalog.filters.destinations}
+          showInternationalFilters
+          pageTitle={categoryLabel || t("Sim du lịch")}
+          sidebarTitle={categorySidebarTitle}
+          sidebarMode={category === "quoc-te" ? "country" : "generic"}
+          destinationOptions={catalog.sidebarOptions}
           selectedDestinationLabels={catalog.selectedDestinationLabels}
           onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
           onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
@@ -238,43 +162,88 @@ export default function EsimProductPage({
           onSelectSkuByData={catalog.handleSelectSkuByData}
           onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
           onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
-        />
-      </div>
-
-      <div className="lg:sticky lg:top-[148px] lg:self-start">
-        <EsimProductSidebar
-          selectedPackage={catalog.selectedPackage}
-          selectedVariant={catalog.selectedVariant}
-          selectedVariantMoney={catalog.selectedVariantMoney}
-          activeRegionLabel={catalog.activeRegionLabel}
-          serviceTypeLabel={catalog.serviceTypeLabel}
-          quantity={catalog.quantity}
-          total={catalog.total}
-          onBookNow={catalog.handleBookNow}
-          detailSections={catalog.detailSections}
-          openDetailSection={catalog.openDetailSection}
-          setOpenDetailSection={catalog.setOpenDetailSection}
+          showPackageControls={false}
         />
       </div>
     </div>
   );
 
-  return (
-    <main className={isInternationalPage ? "w-full pb-32" : "max-w-7xl mx-auto px-6 py-8 pb-32 pt-32 lg:pt-40"}>
-      {isInternationalPage ? (
-        renderInternationalShell()
-      ) : (
-        renderDomesticShell()
-      )}
+  const renderDetailShell = () => (
+    <div className="bg-gray-100">
+      <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
+        {breadcrumbItems.length ? (
+          <div className="pt-3">
+            <SimDuLichBreadcrumbs items={breadcrumbItems} />
+          </div>
+        ) : null}
 
-      {!showInternationalListExtras && packageFooterContent ? (
-        <section
-          className={
-            isInternationalPage
-              ? "mx-3 lg:mx-[50px] xl:mx-[80px] max__screen mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-              : "mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          }
-        >
+        <div className="flex flex-col-reverse items-start mt-6 lg:flex-row lg:space-x-8">
+          <div className="w-full space-y-4 lg:w-8/12 mt-4 lg:mt-0">
+            <EsimInternationalDetailGallery
+              selectedPackage={catalog.selectedPackage}
+              categoryLabel={categoryLabel}
+              titleFallback={categoryTitleFallback}
+              imageFallbackLabel={categoryImageFallbackLabel}
+            />
+
+            <EsimPackageControls
+              selectedPackage={catalog.selectedPackage}
+              selectedVariant={catalog.selectedVariant}
+              serviceTypeLabel={catalog.serviceTypeLabel}
+              quantity={catalog.quantity}
+              locale={activeLocale}
+              onOpenModal={() => catalog.setShowModal(true)}
+              onSelectSkuByValidity={(validity) => {
+                catalog.handleSelectSkuByValidity(validity);
+                scrollSidebarIntoView();
+              }}
+              onSelectSkuByData={(data) => {
+                catalog.handleSelectSkuByData(data);
+                scrollSidebarIntoView();
+              }}
+              onDecreaseQuantity={() => catalog.setQuantity((current) => Math.max(1, current - 1))}
+              onIncreaseQuantity={() => catalog.setQuantity((current) => current + 1)}
+            />
+
+            <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-midnight-ink">
+                {catalog.selectedPackage?.destination || t("Thông tin gói")}
+              </h2>
+              <p className="mt-2 text-sm leading-7 text-steel-secondary">
+                {catalog.selectedPackage?.subtitle || catalog.selectedPackage?.coverage || ""}
+              </p>
+            </div>
+          </div>
+
+          <div ref={sidebarRef} className="w-full lg:w-4/12 lg:sticky lg:top-[148px] lg:self-start">
+            <EsimProductSidebar
+              selectedPackage={catalog.selectedPackage}
+              selectedVariant={catalog.selectedVariant}
+              selectedVariantMoney={catalog.selectedVariantMoney}
+              activeRegionLabel={catalog.activeRegionLabel}
+              serviceTypeLabel={catalog.serviceTypeLabel}
+              titleFallback={categoryTitleFallback}
+              quantity={catalog.quantity}
+              total={catalog.total}
+              onBookNow={catalog.handleBookNow}
+              detailSections={catalog.detailSections}
+              openDetailSection={catalog.openDetailSection}
+              setOpenDetailSection={catalog.setOpenDetailSection}
+              sticky={false}
+              showDetailHeader
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <main className="w-full pb-32">
+      {isDetailPage ? renderDetailShell() : renderListingShell()}
+
+      {isDetailPage && packageFooterContent ? (
+        <section className="mx-3 mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:mx-[50px] xl:mx-[80px] max__screen">
           <h3 className="mb-3 text-sm font-bold text-midnight-ink">{t("Nội dung")}</h3>
           <div
             className="space-y-3 text-sm leading-relaxed text-steel-secondary"
@@ -283,7 +252,7 @@ export default function EsimProductPage({
         </section>
       ) : null}
 
-      <div className="lg:hidden fixed bottom-16 sm:bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-40 flex items-center justify-between">
+      <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
         <div>
           <div className="text-xs text-steel-secondary">{t("Tổng thanh toán")}</div>
           <div className="text-xl font-bold text-hb-coral">
@@ -300,13 +269,13 @@ export default function EsimProductPage({
             !catalog.selectedVariant ||
             catalog.selectedVariantMoney.price <= 0
           }
-          className="bg-hb-coral hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold px-8 py-3 rounded-xl transition-all"
+          className="rounded-xl bg-hb-coral px-8 py-3 font-bold text-white transition-all hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {t("Đặt ngay")}
         </button>
       </div>
 
-      {catalog.showModal && catalog.selectedPackage && (
+      {catalog.showModal && catalog.selectedPackage ? (
         <PackageSelectorModal
           pkg={catalog.selectedPackage}
           currentSku={catalog.selectedSku}
@@ -314,7 +283,7 @@ export default function EsimProductPage({
           onSelect={catalog.handleSelectVariant}
           onClose={() => catalog.setShowModal(false)}
         />
-      )}
+      ) : null}
 
       {footerContent}
     </main>

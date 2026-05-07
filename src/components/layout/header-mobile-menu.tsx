@@ -18,7 +18,6 @@ export default function HeaderMobileMenu() {
   const pathname = usePathname();
   const { isMenuMbOpen, setIsMenuMbOpen } = useMenu();
   const [menuHeight, setMenuHeight] = useState("0px");
-  const [isSimDuLichOpen, setIsSimDuLichOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage } = useLanguage();
 
@@ -30,18 +29,11 @@ export default function HeaderMobileMenu() {
         setMenuHeight("0px");
       }
     }
-  }, [isMenuMbOpen, isSimDuLichOpen, language]);
+  }, [isMenuMbOpen, language]);
 
   useEffect(() => {
     setIsMenuMbOpen(false);
-    setIsSimDuLichOpen(false);
   }, [pathname, setIsMenuMbOpen]);
-
-  useEffect(() => {
-    if (!isMenuMbOpen) {
-      setIsSimDuLichOpen(false);
-    }
-  }, [isMenuMbOpen]);
 
   return (
     <Fragment>
@@ -195,94 +187,19 @@ export default function HeaderMobileMenu() {
               {t("phong_cho_thuong_gia")}
             </Link>
             <div className="mt-3">
-              <div className="flex items-center justify-between gap-3">
-                <Link href="/sim-du-lich" className="font-semibold hover:text-[#F27145] cursor-pointer">
-                  {t("sim_du_lich")}
-                </Link>
-                <button
-                  type="button"
-                  aria-expanded={isSimDuLichOpen}
-                  aria-controls="sim-du-lich-mobile-submenu"
-                  aria-label={
-                    isSimDuLichOpen
-                      ? "Đóng submenu sim du lịch"
-                      : "Mở submenu sim du lịch"
-                  }
-                  onClick={() => setIsSimDuLichOpen((current) => !current)}
-                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-slate-500 transition-all duration-300 hover:bg-slate-100 hover:text-slate-700"
-                >
-                  <svg
-                    className={`transition-transform duration-300 ${
-                      isSimDuLichOpen ? "rotate-180" : ""
-                    }`}
-                    width="16"
-                    height="16"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="currentColor"
-                      strokeWidth="1.66667"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
+              <div className="flex items-center justify-between mt-3">
+                <strong>{t("sim_du_lich")}</strong>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
-              <div
-                id="sim-du-lich-mobile-submenu"
-                className="overflow-hidden transition-all duration-300 ease-in-out"
-                style={{
-                  maxHeight: isSimDuLichOpen ? 500 : 0,
-                  opacity: isSimDuLichOpen ? 1 : 0,
-                  pointerEvents: isSimDuLichOpen ? "auto" : "none",
-                }}
-              >
-                <div className="mt-3 space-y-3 pl-3">
-                  <Link
-                    href="/sim-du-lich/quoc-te"
-                    className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 hover:border-[#F27145] hover:bg-white transition-all duration-300"
-                  >
-                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white">
-                      <Image
-                        src="/icon/map-pinned.svg"
-                        alt="Quốc tế"
-                        width={22}
-                        height={22}
-                        className="h-[22px] w-[22px] object-contain"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-semibold text-[#101828]">{t("sim_du_lich_quoc_te")}</div>
-                      <div className="mt-1 text-xs leading-relaxed text-slate-500">
-                        {t(toSnakeCase("Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh."))}
-                      </div>
-                    </div>
-                  </Link>
-
-                  <Link
-                    href="/sim-viet-nam"
-                    className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 hover:border-[#F27145] hover:bg-white transition-all duration-300"
-                  >
-                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white">
-                      <Image
-                        src="/icon/VN flag.svg"
-                        alt="Việt Nam"
-                        width={22}
-                        height={22}
-                        className="h-[22px] w-[22px] object-contain"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-semibold text-[#101828]">{t("sim_du_lich_viet_nam")}</div>
-                      <div className="mt-1 text-xs leading-relaxed text-slate-500">
-                        {t(toSnakeCase("Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam."))}
-                      </div>
-                    </div>
-                  </Link>
-                </div>
+              <div className="mt-2 pl-3">
+                <Link href="/sim-du-lich/quoc-te" className="block mt-2 hover:text-[#F27145] cursor-pointer">
+                  {t("sim_du_lich_quoc_te")}
+                </Link>
+                <Link href="/sim-viet-nam" className="block mt-2 hover:text-[#F27145] cursor-pointer">
+                  {t("sim_du_lich_viet_nam")}
+                </Link>
               </div>
             </div>
           </div>
