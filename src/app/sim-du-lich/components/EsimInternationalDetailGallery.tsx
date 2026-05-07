@@ -9,6 +9,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 type Props = {
   selectedPackage: EsimPackageView | null;
+  categoryLabel: string;
+  titleFallback: string;
+  imageFallbackLabel: string;
 };
 
 const GALLERY = [
@@ -18,7 +21,12 @@ const GALLERY = [
   "/tour/detail/gallery/5.png",
 ];
 
-export default function EsimInternationalDetailGallery({ selectedPackage }: Props) {
+export default function EsimInternationalDetailGallery({
+  selectedPackage,
+  categoryLabel,
+  titleFallback,
+  imageFallbackLabel,
+}: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -44,7 +52,7 @@ export default function EsimInternationalDetailGallery({ selectedPackage }: Prop
           <span className="inline-flex min-w-0 max-w-[58%] items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-extrabold text-midnight-ink shadow-sm">
             <Globe className="h-5 w-5 text-[#1D4ED8]" />
             <span className="block min-w-0 truncate whitespace-nowrap uppercase tracking-wide">
-              {selectedPackage?.destination || t("eSIM quốc tế")}
+              {selectedPackage?.destination || categoryLabel}
             </span>
           </span>
           <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-2xl bg-[#1E3A8A] px-4 py-3 text-sm font-extrabold text-white shadow-sm">
@@ -59,10 +67,13 @@ export default function EsimInternationalDetailGallery({ selectedPackage }: Prop
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
           <p className="text-4xl font-black tracking-tight drop-shadow-md md:text-5xl lg:text-6xl">
-            {selectedPackage?.title || t("eSIM du lịch quốc tế")}
+            {selectedPackage?.title || titleFallback}
           </p>
           <p className="mt-5 max-w-2xl text-lg font-semibold text-white/90 drop-shadow-sm md:text-2xl">
-            {selectedPackage?.subtitle || selectedPackage?.coverage || selectedPackage?.destination || t("Kết nối ổn định khi di chuyển")}
+            {selectedPackage?.subtitle ||
+              selectedPackage?.coverage ||
+              selectedPackage?.destination ||
+              categoryLabel}
           </p>
         </div>
 
@@ -70,7 +81,7 @@ export default function EsimInternationalDetailGallery({ selectedPackage }: Prop
 
         <Image
           src={activeImage}
-          alt={selectedPackage?.title || t("Ảnh eSIM quốc tế")}
+          alt={selectedPackage?.title || imageFallbackLabel}
           fill
           className="object-cover opacity-[0.14]"
           sizes="(max-width: 1024px) 100vw, 66vw"
@@ -95,7 +106,7 @@ export default function EsimInternationalDetailGallery({ selectedPackage }: Prop
             >
               <Image
                 src={src}
-                alt={`${selectedPackage?.title || t("Ảnh eSIM quốc tế")} ${index + 1}`}
+                alt={`${selectedPackage?.title || imageFallbackLabel} ${index + 1}`}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 25vw, 140px"

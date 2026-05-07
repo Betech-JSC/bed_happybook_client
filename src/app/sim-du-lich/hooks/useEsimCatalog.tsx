@@ -10,6 +10,7 @@ import {
   getSelectableEsimVariants,
   isEsimVariantSelectable,
   resolveEsimRegionPreset,
+  type EsimFilterOption,
   type EsimFilterOptions,
   type EsimPackageView,
   type EsimVariantView,
@@ -20,7 +21,8 @@ import { useSimDuLichStaticText } from "./useSimDuLichStaticText";
 
 type Locale = "vi" | "en";
 type DetailAccordionKey = "compatibility" | "refund" | "faq";
-const PRICE_FILTER_CAP = 10_000_000;
+type SidebarFilterMode = "destination" | "operator";
+const PRICE_FILTER_CAP = 2_000_000;
 
 type Args = {
   cmsPageContent: EsimCmsPageContent | null | undefined;
@@ -29,6 +31,7 @@ type Args = {
   initialCategory?: string;
   initialPackageSlug?: string;
   initialSelectedPackage?: EsimPackageView | null;
+  sidebarFilterMode?: SidebarFilterMode;
 };
 
 export function useEsimCatalog({
@@ -38,6 +41,7 @@ export function useEsimCatalog({
   initialCategory,
   initialPackageSlug,
   initialSelectedPackage,
+  sidebarFilterMode = "destination",
 }: Args) {
   const router = useRouter();
   const t = useSimDuLichStaticText(activeLocale);
@@ -251,16 +255,23 @@ export function useEsimCatalog({
     return packages.filter((pkg) => {
       const cheapest = findCheapestVariant(pkg, activeLocale);
       const money = getEsimVariantMoney(cheapest, activeLocale);
-      const destinationText = normalizeText(pkg.destination || pkg.title || pkg.regionLabel || "");
-      const titleText = normalizeText(pkg.title || "");
+      const sidebarText =
+        sidebarFilterMode === "operator"
+          ? normalizeText(
+              [pkg.operator, pkg.network, pkg.title, pkg.destination, pkg.regionLabel]
+                .filter(Boolean)
+                .join(" ")
+            )
+          : normalizeText([pkg.destination, pkg.title, pkg.regionLabel, pkg.coverage].filter(Boolean).join(" "));
       const matchesVariantInfo =
         selectedVariantSku === "" ||
         getSelectableEsimVariants(pkg, activeLocale).some((variant) => variant.sku === selectedVariantSku);
       const matchesDestination =
         selectedDestinationSet.size === 0 ||
-        Array.from(selectedDestinationSet).some(
-          (label) => destinationText.includes(label) || titleText.includes(label) || label.includes(destinationText)
-        );
+        (sidebarText !== "" &&
+          Array.from(selectedDestinationSet).some(
+            (label) => sidebarText.includes(label) || label.includes(sidebarText)
+          ));
       const matchesPrice =
         priceBounds.min === 0 && priceBounds.max === 0
           ? true
@@ -276,8 +287,40 @@ export function useEsimCatalog({
     priceRange,
     priceBounds.max,
     priceBounds.min,
+    sidebarFilterMode,
     selectedDestinationLabels,
   ]);
+
+  const sidebarOptions = useMemo<EsimFilterOption[]>(() => {
+    if (sidebarFilterMode !== "operator") {
+      return filters.destinations;
+    }
+
+    const fromPackages: EsimFilterOption[] = [];
+    const seen = new Set<string>();
+
+    packages.forEach((pkg) => {
+      const label =
+        pkg.title?.trim() ||
+        pkg.network?.trim() ||
+        pkg.operator?.trim() ||
+        pkg.destination?.trim() ||
+        pkg.regionLabel?.trim() ||
+        "";
+      const value = pkg.operator?.trim() || pkg.network?.trim() || label;
+      const normalizedKey = normalizeText(label || value);
+
+      if (!normalizedKey || seen.has(normalizedKey)) return;
+      seen.add(normalizedKey);
+      fromPackages.push({ label, value });
+    });
+
+    if (fromPackages.length > 0) {
+      return fromPackages.sort((a, b) => a.label.localeCompare(b.label, "vi"));
+    }
+
+    return filters.operators;
+  }, [filters.destinations, filters.operators, normalizeText, packages, sidebarFilterMode]);
 
   const selectedPackage = useMemo<EsimPackageView | null>(() => {
     if (!visiblePackages.length) return null;
@@ -478,6 +521,7 @@ export function useEsimCatalog({
     total,
     regionOptions,
     activeRegionLabel,
+    sidebarOptions,
     serviceTypeLabel,
     detailSections,
     handleSelectPackage,
