@@ -20,7 +20,11 @@ const sortFeaturedPackages = (items: any[]) =>
 
 const limitFeaturedPackages = (items: any[], size = 8) => sortFeaturedPackages(items).slice(0, size);
 
-export default async function SimFeatured() {
+type Props = {
+  showTabButtons?: boolean;
+};
+
+export default async function SimFeatured({ showTabButtons = true }: Props) {
   const language = await getServerLang();
   const options = await loadEsimOptions(language);
 
@@ -56,19 +60,17 @@ export default async function SimFeatured() {
   if (!tabs.length) return null;
 
   return (
-    <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
-      <section
-        className="relative overflow-hidden rounded-3xl border border-[#DCE7FF] px-4 py-6 lg:px-8 lg:py-10"
-        style={{
-          background:
-            "linear-gradient(180deg, #FCFCFD 0%, rgba(230, 238, 255, 0.92) 100%)",
-        }}
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(23,85,220,0.08),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(242,113,69,0.10),_transparent_30%)]" />
-        <div className="relative z-10">
-          <SimFeaturedTabs tabs={tabs} language={language} />
-        </div>
-      </section>
-    </div>
+    <section
+      className="relative overflow-hidden rounded-3xl border border-[#DCE7FF] px-4 py-6 lg:px-8 lg:py-10"
+      style={{
+        background:
+          "linear-gradient(180deg, #FCFCFD 0%, rgba(230, 238, 255, 0.92) 100%)",
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(23,85,220,0.08),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(242,113,69,0.10),_transparent_30%)]" />
+      <div className="relative z-10">
+        <SimFeaturedTabs tabs={tabs} language={language} showTabButtons={showTabButtons} />
+      </div>
+    </section>
   );
 }

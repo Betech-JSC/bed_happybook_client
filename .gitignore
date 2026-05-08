@@ -28,7 +28,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+.env
+.env.*
 
 # vercel
 .vercel
@@ -39,3 +40,7 @@ next-env.d.ts
 
 yarn.lock
 config.bat
+
+# AI Agent config & files
+.agent/
+openspec/
