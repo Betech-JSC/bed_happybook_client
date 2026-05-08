@@ -34,15 +34,7 @@ jobs:
           port: ${{ vars.VPS_PORT }}
           script: |
             cd /var/www/bed_happybook_client
-
-            # Force sync code từ GitHub (tránh conflict)
-            git fetch origin master
-            git reset --hard origin/master
-            git clean -fd -e .env -e .env.local -e node_modules/
-
-            # Cài đặt dependencies và build
+            git pull origin master
             yarn install
             yarn build
-
-            # Restart PM2
             pm2 restart happybook
