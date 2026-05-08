@@ -141,7 +141,7 @@ export default async function Home() {
 
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>
-            <div className="mt-12 lg:mt-16">
+            <div className="mt-12 lg:mt-16 px-3 lg:px-[50px] xl:px-[80px] max__screen">
               <HomeSimFeatured />
             </div>
           </AosAnimate>

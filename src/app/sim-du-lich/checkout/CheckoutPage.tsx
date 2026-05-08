@@ -15,6 +15,8 @@ export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+  const pageShellClassName =
+    "w-full max__screen px-3 lg:px-[50px] xl:px-[80px] py-8 pb-32 pt-32 lg:pt-40 font-['Nunito_Sans']";
 
   const pkgSlug = searchParams.get("pkg") || "";
   const skuFromQuery = searchParams.get("sku") || "";
@@ -24,7 +26,7 @@ export default function CheckoutPage() {
 
   if (checkout.loading) {
     return (
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-32 pt-32 lg:pt-40 font-['Nunito_Sans']">
+      <main className={pageShellClassName}>
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-slate-600 hover:text-midnight-ink font-semibold mb-8 transition-colors"
@@ -40,7 +42,7 @@ export default function CheckoutPage() {
 
   if (checkout.error || !checkout.packageData || !checkout.selectedVariant) {
     return (
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-32 pt-32 lg:pt-40 font-['Nunito_Sans']">
+      <main className={pageShellClassName}>
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-slate-600 hover:text-midnight-ink font-semibold mb-8 transition-colors"
@@ -55,7 +57,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-32 pt-32 lg:pt-40 font-['Nunito_Sans']">
+    <main className={pageShellClassName}>
       <button
         onClick={() => (checkout.step === 3 ? checkout.setStep(2) : router.back())}
         className="flex items-center gap-2 text-slate-600 hover:text-midnight-ink font-semibold mb-8 transition-colors"

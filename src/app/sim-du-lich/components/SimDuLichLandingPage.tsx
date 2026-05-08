@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Globe, Mail, Wifi, Zap } from "lucide-react";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
 import ContentByPage from "@/components/content-page/ContentByPage";
@@ -45,7 +44,7 @@ export default async function SimDuLichLandingPage({
         />
 
         <div className="px-3 lg:px-[50px] xl:px-[80px] pt-[112px] lg:pt-[150px] max__screen">
-          <div className="mt-0 lg:mt-20 lg:mb-12 p-6 lg:p-10 bg-white rounded-2xl shadow-lg relative lg:w-[760px] max-w-full">
+          <div className="mt-0 lg:mt-20 lg:mb-12 w-full p-6 lg:p-10 bg-white rounded-2xl shadow-lg relative">
             <div className="flex items-start justify-between gap-6">
               <div className="min-w-0">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-hb-coral">
@@ -67,21 +66,6 @@ export default async function SimDuLichLandingPage({
             </div>
 
             <SimDuLichHeroFilters />
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href="/sim-viet-nam"
-                className="inline-flex items-center justify-center rounded-xl bg-hb-navy px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-              >
-                {t("sim_du_lich_viet_nam", "Sim du lịch Việt Nam")}
-              </Link>
-              <Link
-                href="/sim-du-lich/quoc-te"
-                className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-midnight-ink transition-colors hover:border-slate-300 hover:bg-slate-50"
-              >
-                {t("sim_du_lich_quoc_te", "Sim du lịch quốc tế")}
-              </Link>
-            </div>
           </div>
         </div>
       </section>
