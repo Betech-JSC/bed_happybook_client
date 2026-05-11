@@ -30,6 +30,7 @@ type FeaturedTab = {
 type Props = {
   tabs: FeaturedTab[];
   language: string;
+  showTabButtons?: boolean;
 };
 
 const normalizeText = (value: string) =>
@@ -77,7 +78,11 @@ const resolveFlagEmoji = (label: string) => {
   return matched.code === "EU" ? "🌍" : getFlagEmoji(matched.code);
 };
 
-export default function SimFeaturedTabs({ tabs, language }: Props) {
+export default function SimFeaturedTabs({
+  tabs,
+  language,
+  showTabButtons = true,
+}: Props) {
   const { t, lang } = useTranslation();
   const [activeTab, setActiveTab] = useState<FeaturedTab["key"]>(tabs[0]?.key ?? "viet-nam");
   const pricingLanguage = language || lang;
@@ -110,24 +115,26 @@ export default function SimFeaturedTabs({ tabs, language }: Props) {
         </Link>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        {tabs.map((tab) => {
-          const isActive = tab.key === activeTab;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`rounded-xl border px-5 py-3 text-sm lg:text-base font-semibold transition-all duration-300 ${
-                isActive
-                  ? "border-transparent bg-[#1570EF] text-white shadow-sm"
-                  : "border-[#D0D5DD] bg-white text-steel-secondary hover:border-[#9FB3D9] hover:bg-slate-50"
-              }`}
-            >
-              {t(tab.labelKey)}
-            </button>
-          );
-        })}
-      </div>
+      {showTabButtons ? (
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          {tabs.map((tab) => {
+            const isActive = tab.key === activeTab;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`rounded-xl border px-5 py-3 text-sm lg:text-base font-semibold transition-all duration-300 ${
+                  isActive
+                    ? "border-transparent bg-[#1570EF] text-white shadow-sm"
+                    : "border-[#D0D5DD] bg-white text-steel-secondary hover:border-[#9FB3D9] hover:bg-slate-50"
+                }`}
+              >
+                {t(tab.labelKey)}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
 
       <Link
         href={activeTabData.href}

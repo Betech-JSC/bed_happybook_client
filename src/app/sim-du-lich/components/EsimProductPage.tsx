@@ -17,6 +17,10 @@ import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 
 type SimDuLichCategory = "quoc-te" | "viet-nam";
 
+const pageContainerClassName = "px-3 lg:px-[50px] xl:px-[80px] max__screen";
+const detailContainerClassName = "px-3 lg:px-[80px] max__screen";
+const pageShellClassName = "bg-gray-100";
+
 const resolveCategoryLabel = (category: SimDuLichCategory, t: (text: string, fallback?: string) => string) =>
   category === "viet-nam"
     ? t("Sim du lịch Việt Nam", "Sim du lịch Việt Nam")
@@ -29,14 +33,6 @@ const resolveCategoryTitleFallback = (
   category === "viet-nam"
     ? t("eSIM du lịch Việt Nam", "eSIM du lịch Việt Nam")
     : t("eSIM du lịch quốc tế", "eSIM du lịch quốc tế");
-
-const resolveCategoryImageFallbackLabel = (
-  category: SimDuLichCategory,
-  t: (text: string, fallback?: string) => string
-) =>
-  category === "viet-nam"
-    ? t("Ảnh eSIM du lịch Việt Nam", "Ảnh eSIM du lịch Việt Nam")
-    : t("Ảnh eSIM du lịch quốc tế", "Ảnh eSIM du lịch quốc tế");
 
 const resolveCategoryHref = (category: SimDuLichCategory) =>
   category === "viet-nam" ? "/sim-viet-nam" : "/sim-du-lich/quoc-te";
@@ -72,9 +68,6 @@ export default function EsimProductPage({
   const isDetailPage = Boolean(initialPackageSlug);
   const categoryLabel = category ? resolveCategoryLabel(category, t) : "";
   const categoryTitleFallback = category ? resolveCategoryTitleFallback(category, t) : t("eSIM du lịch");
-  const categoryImageFallbackLabel = category
-    ? resolveCategoryImageFallbackLabel(category, t)
-    : t("Ảnh eSIM du lịch");
   const categorySidebarTitle = category ? resolveSidebarTitle(category, t) : t("Quốc gia");
   const sidebarFilterMode = category === "viet-nam" ? "operator" : "destination";
   const categoryHref = category ? resolveCategoryHref(category) : "";
@@ -123,8 +116,8 @@ export default function EsimProductPage({
     : [];
 
   const renderListingShell = () => (
-    <div className="bg-gray-100">
-      <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
+    <div className={pageShellClassName}>
+      <div className={`mt-[68px] lg:mt-0 lg:pt-[132px] ${pageContainerClassName}`}>
         {breadcrumbItems.length ? (
           <div className="pt-3">
             <SimDuLichBreadcrumbs items={breadcrumbItems} />
@@ -156,6 +149,7 @@ export default function EsimProductPage({
           priceRange={catalog.priceRange}
           priceBounds={catalog.priceBounds}
           onPriceRangeChange={catalog.setPriceRange}
+          showPricePresetFilters={false}
           onOpenModal={() => catalog.setShowModal(true)}
           onSelectPackage={catalog.handleSelectPackage}
           onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
@@ -169,8 +163,8 @@ export default function EsimProductPage({
   );
 
   const renderDetailShell = () => (
-    <div className="bg-gray-100">
-      <div className="mt-[68px] px-3 lg:mt-0 lg:pt-[132px] lg:px-[80px] max__screen">
+    <div className={pageShellClassName}>
+      <div className={`mt-[68px] lg:mt-0 lg:pt-[132px] ${detailContainerClassName}`}>
         {breadcrumbItems.length ? (
           <div className="pt-3">
             <SimDuLichBreadcrumbs items={breadcrumbItems} />
@@ -183,7 +177,6 @@ export default function EsimProductPage({
               selectedPackage={catalog.selectedPackage}
               categoryLabel={categoryLabel}
               titleFallback={categoryTitleFallback}
-              imageFallbackLabel={categoryImageFallbackLabel}
             />
 
             <EsimPackageControls
@@ -242,14 +235,22 @@ export default function EsimProductPage({
     <main className="w-full pb-32">
       {isDetailPage ? renderDetailShell() : renderListingShell()}
 
-      {isDetailPage && packageFooterContent ? (
-        <section className="mx-3 mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:mx-[50px] xl:mx-[80px] max__screen">
-          <h3 className="mb-3 text-sm font-bold text-midnight-ink">{t("Nội dung")}</h3>
-          <div
-            className="space-y-3 text-sm leading-relaxed text-steel-secondary"
-            dangerouslySetInnerHTML={{ __html: packageFooterContent }}
-          />
-        </section>
+      {isDetailPage ? (
+        <div className="bg-white">
+          <div className={detailContainerClassName}>
+            {packageFooterContent ? (
+              <section className="mt-8 rounded-2xl border border-slate-200 bg-gray-50 p-8">
+                <h3 className="mb-3 text-sm font-bold text-midnight-ink">{t("Nội dung")}</h3>
+                <div
+                  className="space-y-3 text-sm leading-relaxed text-steel-secondary"
+                  dangerouslySetInnerHTML={{ __html: packageFooterContent }}
+                />
+              </section>
+            ) : null}
+
+            {footerContent ? <div className="my-8">{footerContent}</div> : null}
+          </div>
+        </div>
       ) : null}
 
       <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
@@ -285,7 +286,7 @@ export default function EsimProductPage({
         />
       ) : null}
 
-      {footerContent}
+      {!isDetailPage && footerContent ? <div className={pageContainerClassName}>{footerContent}</div> : null}
     </main>
   );
 }

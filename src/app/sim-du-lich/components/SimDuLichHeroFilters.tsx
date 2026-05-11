@@ -6,24 +6,14 @@ import Select, { components, type SingleValue } from "react-select";
 import { ChevronDown } from "lucide-react";
 import { allCountries } from "country-telephone-data";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getSimDuLichDetailHref } from "../lib/routes";
 import { useEsimCatalog } from "../hooks/useEsimCatalog";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 import type { EsimFilterOption } from "../lib/esim";
+import { resolveDefaultSimDuLichPackageHref } from "../lib/default-package";
 
 type DestinationSelectOption = EsimFilterOption & {
   flag: string;
-};
-
-type PackageSelectOption = {
-  value: string;
-  label: string;
-  validity: number;
-  data: string;
-  destination: string;
-  network: string;
-  routeCategory: "quoc-te" | "viet-nam";
-  flag: string;
+  displayLabel: string;
 };
 
 const normalizeText = (value: string) =>
@@ -60,13 +50,80 @@ const resolveDestinationFlag = (option: EsimFilterOption) => {
   return matchedCountry ? getFlagEmoji(matchedCountry.iso2) : "🌐";
 };
 
-const resolveRouteCategory = (value: string) => {
-  const normalized = normalizeText(value);
-  if (normalized.includes("viet nam") || normalized.includes("vietnam") || normalized.includes("domestic")) {
-    return "viet-nam";
+const COUNTRY_LABEL_ALIASES: Array<{ pattern: RegExp; label: string }> = [
+  { pattern: /\busa\b|\bunited states\b|\bunited states of america\b/, label: "USA" },
+  { pattern: /\buk\b|\bunited kingdom\b|\bgreat britain\b/, label: "UK" },
+  { pattern: /\buae\b|\bunited arab emirates\b/, label: "UAE" },
+  { pattern: /\bkorea\b|\bsouth korea\b|\brepublic of korea\b/, label: "Korea" },
+  { pattern: /\bhong kong\b/, label: "Hong Kong" },
+  { pattern: /\btaiwan\b/, label: "Taiwan" },
+  { pattern: /\bmacau\b|\bmacao\b/, label: "Macau" },
+];
+
+const COUNTRY_FILTER_BLACKLIST = [
+  "local",
+  "mobifone",
+  "wintel",
+  "skyfi",
+  "countries",
+  "country",
+  "asia",
+  "europe",
+  "world",
+  "global",
+  "package",
+  "packages",
+  "sim",
+];
+
+const getCountryDisplayLabel = (option: EsimFilterOption) => {
+  const normalizedLabel = normalizeText(option.label);
+  const normalizedValue = normalizeText(option.value);
+  const alias = COUNTRY_LABEL_ALIASES.find(
+    (item) => item.pattern.test(normalizedLabel) || item.pattern.test(normalizedValue)
+  );
+
+  if (alias) return alias.label;
+
+  const matchedCountry = allCountries.find((country) => {
+    const normalizedCountryName = normalizeText(country.name);
+    return (
+      normalizedCountryName === normalizedLabel ||
+      normalizedCountryName === normalizedValue ||
+      normalizedCountryName.includes(normalizedLabel) ||
+      normalizedCountryName.includes(normalizedValue) ||
+      normalizedLabel.includes(normalizedCountryName) ||
+      normalizedValue.includes(normalizedCountryName)
+    );
+  });
+
+  return matchedCountry?.name || option.label;
+};
+
+const isCountryOption = (option: EsimFilterOption) => {
+  const normalizedLabel = normalizeText(option.label);
+  const normalizedValue = normalizeText(option.value);
+  const normalizedCombined = `${normalizedLabel} ${normalizedValue}`.trim();
+
+  if (COUNTRY_FILTER_BLACKLIST.some((term) => normalizedCombined.includes(term))) {
+    return false;
   }
 
-  return "quoc-te";
+  if (COUNTRY_LABEL_ALIASES.some((item) => item.pattern.test(normalizedLabel) || item.pattern.test(normalizedValue))) {
+    return true;
+  }
+
+  return allCountries.some((country) => {
+    const normalizedCountryName = normalizeText(country.name);
+    return (
+      normalizedCountryName === normalizedLabel ||
+      normalizedCountryName === normalizedValue ||
+      normalizedCountryName.includes(normalizedLabel) ||
+      normalizedCountryName.includes(normalizedValue) ||
+      normalizedLabel.includes(normalizedCountryName) ||
+      normalizedValue.includes(normalizedCountryName)
+    );
+  });
 };
 
 export default function SimDuLichHeroFilters() {
@@ -76,12 +133,10 @@ export default function SimDuLichHeroFilters() {
   const t = useSimDuLichStaticText(activeLocale);
 
   const {
-    visiblePackages,
+    packages,
     filters,
     selectedDestinationLabels,
     handleSelectDestinationLabel,
-    handleSelectPackageFilterSku,
-    packageQuery,
   } = useEsimCatalog({
     cmsPageContent: null,
     faqItems: [],
@@ -89,65 +144,46 @@ export default function SimDuLichHeroFilters() {
   });
 
   const destinationSelectOptions = useMemo<DestinationSelectOption[]>(
-    () =>
-      filters.destinations.map((option) => ({
-        ...option,
-        flag: resolveDestinationFlag(option),
-      })),
+    () => {
+      const seen = new Set<string>();
+
+      return filters.destinations
+        .filter(isCountryOption)
+        .map((option) => {
+          const displayLabel = getCountryDisplayLabel(option);
+          const key = normalizeText(displayLabel || option.value || option.label);
+          if (!key || seen.has(key)) return null;
+          seen.add(key);
+
+          return {
+            ...option,
+            label: displayLabel,
+            displayLabel,
+            flag: resolveDestinationFlag({ ...option, label: displayLabel, value: option.value || displayLabel }),
+          };
+        })
+        .filter((option): option is DestinationSelectOption => option !== null)
+        .sort((a, b) => a.displayLabel.localeCompare(b.displayLabel, "vi"));
+    },
     [filters.destinations]
   );
 
   const selectedDestinationOption =
-    destinationSelectOptions.find((option) => selectedDestinationLabels.includes(option.label)) || null;
-
-  const packageSelectOptions = useMemo<PackageSelectOption[]>(() => {
-    const seen = new Set<string>();
-    const nextOptions: PackageSelectOption[] = [];
-
-    visiblePackages.forEach((pkg) => {
-      pkg.variants.forEach((variant) => {
-        if (!variant.sku || seen.has(variant.sku)) return;
-        seen.add(variant.sku);
-        nextOptions.push({
-          value: variant.sku,
-          label: `${variant.validity ? `${variant.validity} ngày` : "Gói"} · ${variant.data || "Không rõ"}`,
-          validity: variant.validity,
-          data: variant.data,
-          destination: pkg.destination,
-          network: pkg.network,
-          routeCategory: resolveRouteCategory(pkg.regionLabel || pkg.destination || ""),
-          flag: resolveDestinationFlag({ label: pkg.destination, value: pkg.destination }),
-        });
-      });
-    });
-
-    return nextOptions.sort((a, b) => {
-      if (a.validity !== b.validity) return a.validity - b.validity;
-      return a.label.localeCompare(b.label);
-    });
-  }, [visiblePackages]);
-
-  const selectedPackageOption =
-    packageSelectOptions.find((option) => option.value === packageQuery) || null;
-  const isPackageSearchDisabled = selectedDestinationLabels.length === 0;
+    destinationSelectOptions.find((option) => selectedDestinationLabels.includes(option.displayLabel)) || null;
 
   const handleDestinationChange = (option: SingleValue<DestinationSelectOption>) => {
-    handleSelectDestinationLabel(option?.label ?? null);
-  };
+    const selectedLabel = option?.displayLabel ?? null;
+    handleSelectDestinationLabel(selectedLabel);
 
-  const handlePackageChange = (option: SingleValue<PackageSelectOption>) => {
-    const sku = option?.value ?? "";
-    handleSelectPackageFilterSku(sku || null);
+    if (!selectedLabel) return;
 
-    if (!option) return;
-
-    const matchedPackage = visiblePackages.find((pkg) => pkg.variants.some((variant) => variant.sku === sku));
-    const routeCategory = matchedPackage
-      ? option.routeCategory || resolveRouteCategory(matchedPackage.regionLabel || matchedPackage.destination || "")
-      : option.routeCategory;
-
-    if (matchedPackage) {
-      router.push(getSimDuLichDetailHref(routeCategory, matchedPackage.slug));
+    const href = resolveDefaultSimDuLichPackageHref(
+      { value: option?.value ?? "", label: selectedLabel },
+      packages,
+      activeLocale
+    );
+    if (href) {
+      router.push(href);
     }
   };
 
@@ -155,19 +191,6 @@ export default function SimDuLichHeroFilters() {
     <div className="flex items-center gap-3">
       <span className="text-base leading-none">{option.flag}</span>
       <span className="truncate">{option.label}</span>
-    </div>
-  );
-
-  const formatPackageOption = (option: PackageSelectOption) => (
-    <div className="flex items-start gap-3">
-      <span className="text-base leading-none mt-0.5">{option.flag}</span>
-      <div className="min-w-0">
-        <div className="truncate font-medium text-slate-900">{option.label}</div>
-        <div className="truncate text-xs text-slate-500">
-          {option.destination}
-          {option.network ? ` · ${option.network}` : ""}
-        </div>
-      </div>
     </div>
   );
 
@@ -209,94 +232,6 @@ export default function SimDuLichHeroFilters() {
             borderRadius: 14,
             borderColor: state.isFocused ? "#f97316" : "#cbd5e1",
             boxShadow: state.isFocused ? "0 0 0 2px rgba(249, 115, 22, 0.15)" : "none",
-            "&:hover": {
-              borderColor: state.isFocused ? "#f97316" : "#94a3b8",
-            },
-          }),
-          valueContainer: (base) => ({
-            ...base,
-            paddingLeft: 18,
-            paddingRight: 8,
-            gap: 8,
-          }),
-          placeholder: (base) => ({
-            ...base,
-            color: "#94a3b8",
-          }),
-          singleValue: (base) => ({
-            ...base,
-            color: "#1e293b",
-            fontWeight: 600,
-          }),
-          menu: (base) => ({
-            ...base,
-            zIndex: 40,
-            overflow: "hidden",
-            borderRadius: 14,
-          }),
-          menuList: (base) => ({
-            ...base,
-            paddingTop: 8,
-            paddingBottom: 8,
-          }),
-          option: (base, state) => ({
-            ...base,
-            backgroundColor: state.isSelected ? "#eff6ff" : state.isFocused ? "#f8fafc" : "white",
-            color: "#1e293b",
-            cursor: "pointer",
-          }),
-          input: (base) => ({
-            ...base,
-            margin: 0,
-            padding: 0,
-          }),
-        }}
-        className="w-full text-sm"
-      />
-
-      <Select<PackageSelectOption, false>
-        value={selectedPackageOption}
-        options={packageSelectOptions}
-        onChange={handlePackageChange}
-        isClearable
-        isSearchable
-        isDisabled={isPackageSearchDisabled}
-        filterOption={(candidate, inputValue) => {
-          const normalizedInput = normalizeText(inputValue);
-          if (!normalizedInput) return true;
-
-          const optionData = candidate.data;
-          return (
-            normalizeText(candidate.label).includes(normalizedInput) ||
-            normalizeText(optionData.data).includes(normalizedInput) ||
-            normalizeText(String(optionData.validity)).includes(normalizedInput) ||
-            normalizeText(optionData.destination).includes(normalizedInput) ||
-            normalizeText(optionData.network).includes(normalizedInput)
-          );
-        }}
-        placeholder={t("Chọn hạn sử dụng, gói data...")}
-        noOptionsMessage={() => t("Không tìm thấy gói eSIM phù hợp.")}
-        formatOptionLabel={formatPackageOption}
-        getOptionLabel={(option) => option.label}
-        getOptionValue={(option) => option.value}
-        components={{
-          IndicatorSeparator: () => null,
-          DropdownIndicator: (props) => (
-            <components.DropdownIndicator {...props}>
-              <ChevronDown size={16} className="text-slate-400" />
-            </components.DropdownIndicator>
-          ),
-          ClearIndicator: (props) => <components.ClearIndicator {...props} />,
-        }}
-        styles={{
-          control: (base, state) => ({
-            ...base,
-            minHeight: 52,
-            borderRadius: 14,
-            borderColor: state.isFocused ? "#f97316" : "#cbd5e1",
-            boxShadow: state.isFocused ? "0 0 0 2px rgba(249, 115, 22, 0.15)" : "none",
-            opacity: isPackageSearchDisabled ? 0.7 : 1,
-            backgroundColor: isPackageSearchDisabled ? "#f8fafc" : base.backgroundColor,
             "&:hover": {
               borderColor: state.isFocused ? "#f97316" : "#94a3b8",
             },

@@ -29,6 +29,8 @@ type Props = {
   priceRange?: [number, number];
   priceBounds?: { min: number; max: number };
   onPriceRangeChange?: (range: [number, number]) => void;
+  showPriceFilters?: boolean;
+  showPricePresetFilters?: boolean;
   onOpenModal: () => void;
   onSelectPackage: (pkg: EsimPackageView) => void;
   onSelectSkuByValidity: (validity: number) => void;
@@ -63,6 +65,8 @@ export default function EsimPackageExplorer({
   priceRange,
   priceBounds,
   onPriceRangeChange,
+  showPriceFilters = true,
+  showPricePresetFilters = true,
   onOpenModal,
   onSelectPackage,
   onSelectSkuByValidity,
@@ -111,6 +115,8 @@ export default function EsimPackageExplorer({
         priceRange={priceRange}
         priceBounds={priceBounds}
         onPriceRangeChange={onPriceRangeChange}
+        showPriceFilters={showPriceFilters}
+        showPricePresetFilters={showPricePresetFilters}
       />
     </div>
   );

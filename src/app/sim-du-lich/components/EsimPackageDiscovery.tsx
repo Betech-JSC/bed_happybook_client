@@ -62,6 +62,8 @@ type Props = {
   priceRange?: [number, number];
   priceBounds?: { min: number; max: number };
   onPriceRangeChange?: (range: [number, number]) => void;
+  showPriceFilters?: boolean;
+  showPricePresetFilters?: boolean;
 };
 
 const normalizeText = (value: string) =>
@@ -207,6 +209,8 @@ export default function EsimPackageDiscovery({
   priceRange = [0, 0],
   priceBounds = { min: 0, max: 0 },
   onPriceRangeChange,
+  showPriceFilters = true,
+  showPricePresetFilters = true,
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
@@ -603,7 +607,7 @@ export default function EsimPackageDiscovery({
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3 border-t border-slate-100 pt-4">
                       <div className="flex flex-wrap gap-2 max-w-full">
                         {cheapest?.data ? (
                           <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
@@ -619,8 +623,8 @@ export default function EsimPackageDiscovery({
                         ) : null}
                       </div>
 
-                      <div className="text-right shrink-0">
-                        <div className="text-[30px] font-extrabold tracking-tight text-[#F27145] lg:text-[32px]">
+                      <div className="w-full text-left mt-3">
+                        <div className="text-[28px] font-extrabold tracking-tight text-[#F27145] lg:text-[32px]">
                           {isSelectable
                             ? formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)
                             : t("Chưa có giá khả dụng")}
@@ -774,78 +778,84 @@ export default function EsimPackageDiscovery({
           </>
         )}
 
-        <div className="border-t border-slate-100 pt-6">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h4 className="text-2xl font-bold text-midnight-ink">{t("Mức giá")}</h4>
-            {hasPriceBounds ? (
-              <button
-                type="button"
-                onClick={() => onPriceRangeChange?.([priceBounds.min, priceBounds.max])}
-                className="rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-hb-navy transition-colors hover:border-hb-coral hover:text-hb-coral"
-              >
-                {t("Đặt lại")}
-              </button>
+        {showPriceFilters ? (
+          <div className="border-t border-slate-100 pt-6">
+            {showPricePresetFilters ? (
+              <>
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h4 className="text-2xl font-bold text-midnight-ink">{t("Mức giá")}</h4>
+                  {hasPriceBounds ? (
+                    <button
+                      type="button"
+                      onClick={() => onPriceRangeChange?.([priceBounds.min, priceBounds.max])}
+                      className="rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-hb-navy transition-colors hover:border-hb-coral hover:text-hb-coral"
+                    >
+                      {t("Đặt lại")}
+                    </button>
+                  ) : null}
+                </div>
+
+                {hasPriceBounds && pricePresets.length ? (
+                  <div className="mb-4">
+                    <div className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
+                      {t("Chọn nhanh", "Quick ranges")}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {pricePresets.map((preset) => {
+                        const active = isPricePresetActive(preset.range);
+
+                        return (
+                          <button
+                            key={preset.key}
+                            type="button"
+                            onClick={() => onPriceRangeChange?.(preset.range)}
+                            className={`rounded-full border px-3 py-2 text-xs font-medium transition-colors ${
+                              active
+                                ? "border-hb-coral bg-orange-50 text-hb-coral"
+                                : "border-slate-200 bg-white text-midnight-ink hover:border-hb-coral hover:text-hb-coral"
+                            }`}
+                          >
+                            {preset.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+              </>
             ) : null}
+
+            {hasPriceBounds ? (
+              <>
+                <div className="px-2 py-4">
+                  <Slider
+                    range
+                    min={priceBounds.min}
+                    max={priceBounds.max}
+                    step={priceStep || undefined}
+                    allowCross={false}
+                    value={priceRange}
+                    onChange={(value) => onPriceRangeChange?.(value as [number, number])}
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-midnight-ink">
+                    {formatEsimMoney(priceRange[0], priceCurrency)}
+                  </div>
+                  <span className="text-slate-400">-</span>
+                  <div className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-midnight-ink">
+                    {formatEsimMoney(priceRange[1], priceCurrency)}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+                {t("Chưa có dữ liệu mức giá.")}
+              </div>
+            )}
           </div>
-
-          {hasPriceBounds ? (
-            <>
-              {pricePresets.length ? (
-                <div className="mb-4">
-                  <div className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
-                    {t("Chọn nhanh", "Quick ranges")}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {pricePresets.map((preset) => {
-                      const active = isPricePresetActive(preset.range);
-
-                      return (
-                        <button
-                          key={preset.key}
-                          type="button"
-                          onClick={() => onPriceRangeChange?.(preset.range)}
-                          className={`rounded-full border px-3 py-2 text-xs font-medium transition-colors ${
-                            active
-                              ? "border-hb-coral bg-orange-50 text-hb-coral"
-                              : "border-slate-200 bg-white text-midnight-ink hover:border-hb-coral hover:text-hb-coral"
-                          }`}
-                        >
-                          {preset.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="px-2 py-4">
-                <Slider
-                  range
-                  min={priceBounds.min}
-                  max={priceBounds.max}
-                  step={priceStep || undefined}
-                  allowCross={false}
-                  value={priceRange}
-                  onChange={(value) => onPriceRangeChange?.(value as [number, number])}
-                />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-midnight-ink">
-                  {formatEsimMoney(priceRange[0], priceCurrency)}
-                </div>
-                <span className="text-slate-400">-</span>
-                <div className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-midnight-ink">
-                  {formatEsimMoney(priceRange[1], priceCurrency)}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-              {t("Chưa có dữ liệu mức giá.")}
-            </div>
-          )}
-        </div>
+        ) : null}
       </div>
     </aside>
   );
