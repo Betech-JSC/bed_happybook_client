@@ -607,7 +607,7 @@ export default function EsimPackageDiscovery({
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3 border-t border-slate-100 pt-4">
                       <div className="flex flex-wrap gap-2 max-w-full">
                         {cheapest?.data ? (
                           <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
@@ -623,8 +623,8 @@ export default function EsimPackageDiscovery({
                         ) : null}
                       </div>
 
-                      <div className="text-right shrink-0">
-                        <div className="text-[30px] font-extrabold tracking-tight text-[#F27145] lg:text-[32px]">
+                      <div className="w-full text-left mt-3">
+                        <div className="text-[28px] font-extrabold tracking-tight text-[#F27145] lg:text-[32px]">
                           {isSelectable
                             ? formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)
                             : t("Chưa có giá khả dụng")}
