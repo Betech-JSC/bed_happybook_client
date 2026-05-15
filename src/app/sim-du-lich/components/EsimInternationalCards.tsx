@@ -18,11 +18,18 @@ import {
 } from "../lib/esim";
 import { getSimDuLichDetailHref } from "../lib/routes";
 
+type FlagResult = {
+  type: "svg" | "emoji";
+  value: string;
+};
+
 type Props = {
   packages: EsimPackageView[];
   selectedPackageSlug?: string;
   activeLocale: "vi" | "en";
 };
+
+const ESCAPE_REGEX = /[|\\{}()[\]^$+*?.]/g;
 
 const normalizeText = (value: string) =>
   value
@@ -34,33 +41,138 @@ const normalizeText = (value: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const getFlagEmoji = (countryCode: string) =>
-  countryCode
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+const escapeRegex = (str: string) => str.replace(ESCAPE_REGEX, "\\$&");
 
-const resolveCountryEmoji = (pkg: EsimPackageView) => {
-  const text = normalizeText(`${pkg.destination} ${pkg.regionLabel} ${pkg.coverage}`);
-  const countryMap = [
-    { name: "vietnam", code: "VN" },
-    { name: "japan", code: "JP" },
-    { name: "korea", code: "KR" },
-    { name: "china", code: "CN" },
-    { name: "thailand", code: "TH" },
-    { name: "thai lan", code: "TH" },
-    { name: "singapore", code: "SG" },
-    { name: "malaysia", code: "MY" },
-    { name: "hong kong", code: "HK" },
-    { name: "usa", code: "US" },
-    { name: "united states", code: "US" },
-    { name: "canada", code: "CA" },
-    { name: "australia", code: "AU" },
-    { name: "europe", code: "EU" },
-  ];
+const DESTINATION_FLAG_MAP: Array<{ patterns: string[]; iso2: string }> = [
+  { patterns: ["usa", "united states", "hoa ky", "hoaỳ kỳ"], iso2: "US" },
+  { patterns: ["uk", "united kingdom", "vương quốc anh", "great britain", "britain"], iso2: "GB" },
+  { patterns: ["uae", "united arab emirates", "ấn rập", "dubai"], iso2: "AE" },
+  { patterns: ["korea", "south korea", "hàn quốc", "republic of korea"], iso2: "KR" },
+  { patterns: ["hong kong", "hồng kông"], iso2: "HK" },
+  { patterns: ["taiwan", "đài loan"], iso2: "TW" },
+  { patterns: ["macau", "macao", "ma cao"], iso2: "MO" },
+  { patterns: ["vietnam", "việt nam", "viet nam"], iso2: "VN" },
+  { patterns: ["japan", "nhật bản", "nhat ban"], iso2: "JP" },
+  { patterns: ["china", "trung quốc", "trung quoc"], iso2: "CN" },
+  { patterns: ["thailand", "thai lan", "thái lan"], iso2: "TH" },
+  { patterns: ["singapore"], iso2: "SG" },
+  { patterns: ["malaysia"], iso2: "MY" },
+  { patterns: ["indonesia"], iso2: "ID" },
+  { patterns: ["laos", "lào", "lao"], iso2: "LA" },
+  { patterns: ["australia", "úc"], iso2: "AU" },
+  { patterns: ["new zealand", "new zealan"], iso2: "NZ" },
+  { patterns: ["india", "ấn độ", "inđộ"], iso2: "IN" },
+  { patterns: ["philippines", "filipin"], iso2: "PH" },
+  { patterns: ["cambodia", "campuchia", "km"], iso2: "KH" },
+  { patterns: ["brunei"], iso2: "BN" },
+  { patterns: ["bangladesh"], iso2: "BD" },
+  { patterns: ["russia", "nga", "russian"], iso2: "RU" },
+  { patterns: ["turkey", "thổ nhĩ kỳ", "to nhi ky"], iso2: "TR" },
+  { patterns: ["france", "pháp"], iso2: "FR" },
+  { patterns: ["germany", "đức", "deutschland"], iso2: "DE" },
+  { patterns: ["italy", "ý", "italia"], iso2: "IT" },
+  { patterns: ["spain", "tây ban nha", "espana"], iso2: "ES" },
+  { patterns: ["netherlands", "hà lan", "holland"], iso2: "NL" },
+  { patterns: ["switzerland", "thụy sĩ", "schweiz"], iso2: "CH" },
+  { patterns: ["portugal", "bồ đào nha"], iso2: "PT" },
+  { patterns: ["poland", "ba lan"], iso2: "PL" },
+  { patterns: ["austria", "áo"], iso2: "AT" },
+  { patterns: ["belgium", "bỉ"], iso2: "BE" },
+  { patterns: ["greece", "hy lạp"], iso2: "GR" },
+  { patterns: ["czech", "cộng hòa séc"], iso2: "CZ" },
+  { patterns: ["hungary", "hungari"], iso2: "HU" },
+  { patterns: ["romania", "rumani"], iso2: "RO" },
+  { patterns: ["sweden", "thụy điển"], iso2: "SE" },
+  { patterns: ["norway", "na uy"], iso2: "NO" },
+  { patterns: ["denmark", "đan mạch"], iso2: "DK" },
+  { patterns: ["finland", "phần lan"], iso2: "FI" },
+  { patterns: ["ireland", "ai len"], iso2: "IE" },
+  { patterns: ["brazil", "brazil"], iso2: "BR" },
+  { patterns: ["argentina", "argentin"], iso2: "AR" },
+  { patterns: ["chile", "chile"], iso2: "CL" },
+  { patterns: ["mexico", "mexico"], iso2: "MX" },
+  { patterns: ["canada", "canada"], iso2: "CA" },
+  { patterns: ["saudi", "saudi"], iso2: "SA" },
+  { patterns: ["israel", "israel"], iso2: "IL" },
+  { patterns: ["egypt", "egypt"], iso2: "EG" },
+  { patterns: ["south africa", "nam phi"], iso2: "ZA" },
+  { patterns: ["pakistan", "pakistan"], iso2: "PK" },
+  { patterns: ["nepal", "nepal"], iso2: "NP" },
+  { patterns: ["sri lanka", "sri lanka"], iso2: "LK" },
+  { patterns: ["malta", "malta"], iso2: "MT" },
+  { patterns: ["cyprus", "cyprus"], iso2: "CY" },
+  { patterns: ["iceland", "iceland"], iso2: "IS" },
+  { patterns: ["luxembourg", "luxembourg"], iso2: "LU" },
+  { patterns: ["latvia", "latvia"], iso2: "LV" },
+  { patterns: ["lithuania", "lithuania"], iso2: "LT" },
+  { patterns: ["estonia", "estonia"], iso2: "EE" },
+  { patterns: ["slovenia", "slovenia"], iso2: "SI" },
+  { patterns: ["slovakia", "slovakia"], iso2: "SK" },
+  { patterns: ["croatia", "croatia"], iso2: "HR" },
+  { patterns: ["bulgaria", "bulgaria"], iso2: "BG" },
+  { patterns: ["serbia", "serbia"], iso2: "RS" },
+  { patterns: ["qatar", "qatar"], iso2: "QA" },
+  { patterns: ["kuwait", "kuwait"], iso2: "KW" },
+  { patterns: ["bahrain", "bahrain"], iso2: "BH" },
+  { patterns: ["thailand dtac"], iso2: "TH" },
+  { patterns: ["usa data", "usa &", "hoa ky &", "hỏa kỳ &"], iso2: "US" },
+  { patterns: ["usa & canada"], iso2: "US" },
+  { patterns: ["north america", "bắc mỹ"], iso2: "US" },
+  { patterns: ["south america", "nam mỹ"], iso2: "BR" },
+];
 
-  const matched = countryMap.find((item) => text.includes(item.name));
-  if (!matched) return "🌐";
-  return matched.code === "EU" ? "🌍" : getFlagEmoji(matched.code);
+const FLAGCDN_BASE = "https://flagcdn.com/w80";
+
+const resolveFlag = (label: string): FlagResult => {
+  const normalized = normalizeText(label);
+
+  for (const entry of DESTINATION_FLAG_MAP) {
+    for (const pattern of entry.patterns) {
+      const normalizedPattern = normalizeText(pattern);
+      if (
+        normalized === normalizedPattern ||
+        normalized.includes(normalizedPattern) ||
+        new RegExp(`\\b${escapeRegex(normalizedPattern)}\\b`).test(normalized)
+      ) {
+        return { type: "svg", value: `${FLAGCDN_BASE}/${entry.iso2.toLowerCase()}.png` };
+      }
+    }
+  }
+
+  if (/\beurope\b|\beu\b|\b châu âu\b|eu 33 countries|eu 40 countries|euro\b/i.test(normalized)) {
+    return { type: "emoji", value: "🌍" };
+  }
+  if (/\basia\b|\b châu á\b|\basian\b/i.test(normalized)) {
+    return { type: "emoji", value: "🌏" };
+  }
+  if (/\bamerica\b|\b châu mỹ\b/i.test(normalized)) {
+    return { type: "emoji", value: "🌎" };
+  }
+  if (/\bafrica\b|\b châu phi\b/i.test(normalized)) {
+    return { type: "emoji", value: "🌍" };
+  }
+
+  return { type: "emoji", value: "🌐" };
+};
+
+const resolveCountryFlag = (pkg: EsimPackageView): FlagResult => {
+  return resolveFlag(`${pkg.destination} ${pkg.regionLabel} ${pkg.coverage}`);
+};
+
+const FlagDisplay = ({ flag, size = 28 }: { flag: FlagResult; size?: number }) => {
+  if (flag.type === "svg") {
+    return (
+      <img
+        src={flag.value}
+        alt=""
+        width={size}
+        height={Math.round(size * 0.75)}
+        className="rounded-sm object-cover"
+        style={{ width: size, height: "auto", imageRendering: "crisp-edges" }}
+      />
+    );
+  }
+  return <span style={{ fontSize: size }}>{flag.value}</span>;
 };
 
 export default function EsimInternationalCards({
@@ -107,18 +219,19 @@ export default function EsimInternationalCards({
       </Link>
 
       <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="overflow-visible"
+          opts={{
+            align: "start",
+            loop: true,
+            containScroll: "trimSnaps",
+          }}
+          className="overflow-hidden"
       >
         <CarouselContent>
           {packages.map((pkg) => {
             const cheapest = findCheapestVariant(pkg, activeLocale);
             const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
             const isActive = selectedPackageSlug === pkg.slug;
-            const flag = resolveCountryEmoji(pkg);
+            const flag = resolveCountryFlag(pkg);
 
             return (
               <CarouselItem
@@ -145,7 +258,7 @@ export default function EsimInternationalCards({
                         <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
                           eSIM
                         </span>
-                        <span className="text-3xl leading-none">{flag}</span>
+                        <span className="text-3xl leading-none"><FlagDisplay flag={flag} size={28} /></span>
                       </div>
 
                       <div className="mt-8 space-y-2">
@@ -202,8 +315,8 @@ export default function EsimInternationalCards({
             );
           })}
         </CarouselContent>
-        <CarouselPrevious className="hidden lg:inline-flex -left-6 bg-white shadow-md hover:bg-slate-50" />
-        <CarouselNext className="hidden lg:inline-flex -right-6 bg-white shadow-md hover:bg-slate-50" />
+        <CarouselPrevious className="-left-2 lg:-left-3 bg-white shadow-md hover:bg-slate-50 border border-slate-200" />
+        <CarouselNext className="-right-2 lg:-right-3 bg-white shadow-md hover:bg-slate-50 border border-slate-200" />
       </Carousel>
     </section>
   );

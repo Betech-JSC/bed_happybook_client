@@ -10,6 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { ChevronRight } from "lucide-react";
 
 export type SimDuLichBreadcrumbItem = {
   href?: string;
@@ -45,7 +46,11 @@ export default function SimDuLichBreadcrumbs({ items, className }: Props) {
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
-              {!isLast ? <BreadcrumbSeparator /> : null}
+              {!isLast ? (
+                <BreadcrumbSeparator className="[&>svg]:size-4">
+                  <ChevronRight className="h-4 w-4 text-slate-400" />
+                </BreadcrumbSeparator>
+              ) : null}
             </Fragment>
           );
         })}
