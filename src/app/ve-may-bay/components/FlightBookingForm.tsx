@@ -35,9 +35,39 @@ import { useUser } from "@/contexts/UserContext";
 import { isEmpty, isNumber } from "lodash";
 import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
+import type { FlightBookFlightResponse } from "@/types/flightBooking";
+import {
+  isBookingDeadlineExpired,
+  mergeBookFlightIntoSession,
+} from "@/utils/flightBookingFlow";
+import {
+  buildCombinedSelectionFingerprint,
+  updateFlightDraftMeta,
+} from "@/utils/flightDraftSession";
+import {
+  flightBookingErrorToastText,
+  formatFlightBookingError,
+  isFlightDepartureError,
+  type FlightBookingErrorDisplay,
+} from "@/utils/formatFlightBookingError";
 import { useVoucherManager } from "@/hooks/useVoucherManager";
 import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
 import PhoneInput from "@/components/form/PhoneInput";
+import FlightConfirmPriceReview from "./FlightConfirmPriceReview";
+import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
+import {
+  buildFlightConfirmPricePayloadFromSelections,
+  buildPassengersFromForm,
+  normalizeConfirmPriceResponse,
+} from "@/utils/buildFlightConfirmPricePayload";
+import { buildConfirmPriceSelectionRequest } from "@/utils/buildConfirmPriceSelection";
+import { usesFullConfirmItinerariesPayload } from "@/utils/mapSegmentForConfirm";
+import {
+  loadSelectedFlightsForBooking,
+  tripFromSelection,
+} from "@/utils/selectedFlightStorage";
+import { verifySelectedFlights } from "@/utils/verifySelectedFlight";
+import type { SelectedFlight } from "@/types/selectedFlight";
 
 export default function FlightBookForm({ airportsData }: any) {
   const router = useRouter();
@@ -45,6 +75,9 @@ export default function FlightBookForm({ airportsData }: any) {
   const { language } = useLanguage();
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
+  const lang = language as "vi" | "en";
+  const [bookingError, setBookingError] =
+    useState<FlightBookingErrorDisplay | null>(null);
   const [generateInvoice, setGenerateInvoice] = useState<boolean>(false);
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,6 +96,14 @@ export default function FlightBookForm({ airportsData }: any) {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
+  const [confirmStep, setConfirmStep] = useState<"form" | "review">("form");
+  const [confirmData, setConfirmData] = useState<ConfirmPriceResponse | null>(
+    null
+  );
+  const [confirmExpired, setConfirmExpired] = useState(false);
+  const [proceedingPayment, setProceedingPayment] = useState(false);
+  const [pendingBookingPayload, setPendingBookingPayload] = useState<any>(null);
+  const [selectedFlights, setSelectedFlights] = useState<SelectedFlight[]>([]);
   const { userInfo } = useUser();
   // Handle Voucher
   const {
@@ -121,8 +162,19 @@ export default function FlightBookForm({ airportsData }: any) {
       checkBoxGenerateInvoice: false,
     },
   });
-  const onSubmit = (data: FlightBookingInforType) => {
-    // setLoading(true);
+  const showFlightBookingError = (
+    payload: unknown,
+    fallback: string
+  ): FlightBookingErrorDisplay => {
+    const display = formatFlightBookingError(payload, lang);
+    setBookingError(display);
+    toast.error(flightBookingErrorToastText(payload, lang, fallback), {
+      duration: 7000,
+    });
+    return display;
+  };
+
+  const buildBookingPayload = (data: FlightBookingInforType) => {
     const adtArr = data.atd.map((item, index) => {
       if (listBaggagePassenger.atd && listBaggagePassenger.atd[index]) {
         item.baggages = listBaggagePassenger.atd[index];
@@ -202,7 +254,7 @@ export default function FlightBookForm({ airportsData }: any) {
     if (!generateInvoice) {
       delete formatData.invoice;
     }
-    let finalData = {
+    return {
       ...formatData,
       ticket_object_list: dropdown,
       totalBaggages,
@@ -217,74 +269,299 @@ export default function FlightBookForm({ airportsData }: any) {
       customer_id: userInfo?.id,
       voucher_program_ids: voucherProgramIds,
     };
-    const bookFlight = async () => {
-      try {
-        setLoading(true);
-        const respon = await FlightApi.bookFlight(
-          `/flights-v2/book-flight`,
-          finalData
-        );
-        if (respon?.status === 200) {
-          reset();
-          const resData = respon?.payload?.data;
-          resData.flights = flights;
-          toast.success(toaStrMsg.sendSuccess);
-          handleSessionStorage("save", "bookingFlight", resData);
-          handleSessionStorage("remove", [
-            "flightSession",
-            "departFlight",
-            "returnFlight",
-            "flightType",
-          ]);
-          setTimeout(() => {
-            router.push("/ve-may-bay/thong-tin-dat-cho");
-          }, 1000);
-        } else {
-          toast.error(toaStrMsg.sendFailed);
-        }
-      } catch (error: any) {
-        if (
-          error instanceof HttpError &&
-          error.payload?.errors?.voucher_programs
-        ) {
-          setVoucherErrors(error.payload.errors.voucher_programs);
-          toast.error(toaStrMsg.inValidVouchers);
-        } else {
-          toast.error(toaStrMsg.error);
-        }
-      } finally {
-        setLoading(false);
-      }
+  };
+
+  const onSubmit = async (data: FlightBookingInforType) => {
+    if (confirmStep === "review") return;
+
+    const selections =
+      selectedFlights.length > 0
+        ? selectedFlights
+        : loadSelectedFlightsForBooking();
+
+    const verifyErrors = verifySelectedFlights(selections);
+    if (verifyErrors.length) {
+      toast.error(verifyErrors[0]);
+      return;
+    }
+
+    const confirmPassengers = buildPassengersFromForm(
+      data,
+      listBaggagePassenger
+    );
+
+    const contact = {
+      full_name: data.contact.full_name,
+      gender:
+        data.contact.gender === true || data.contact.gender === "male"
+          ? "male"
+          : data.contact.gender === false || data.contact.gender === "female"
+            ? "female"
+            : String(data.contact.gender ?? "male"),
+      phone: data.contact.phone,
+      email: data.contact.email,
+      address: "",
     };
-    if (finalData) {
-      bookFlight();
+
+    const useFullItineraries = selections.some((sel) =>
+      usesFullConfirmItinerariesPayload(sel.trip.source)
+    );
+
+    const confirmPayload = useFullItineraries
+      ? buildFlightConfirmPricePayloadFromSelections({
+          selections,
+          passengers: confirmPassengers,
+          contact: {
+            phone: contact.phone,
+            email: contact.email,
+            full_name: contact.full_name,
+          },
+        })
+      : buildConfirmPriceSelectionRequest({
+          selections,
+          passengers: confirmPassengers,
+          contact,
+          tripKind: selections.length > 1 ? "round_trip" : "one_way",
+        });
+
+    const finalData = buildBookingPayload(data);
+    if (!finalData) return;
+
+    try {
+      setLoading(true);
+      const respon = await FlightApi.confirmPrice(confirmPayload);
+      if (respon?.status === 200) {
+        setBookingError(null);
+        const confirmResult =
+          (respon?.payload?.data as ConfirmPriceResponse) ?? respon?.payload;
+        setConfirmData(confirmResult);
+        setConfirmExpired(false);
+        setPendingBookingPayload(finalData);
+        setConfirmStep("review");
+        const normalizedConfirm =
+          normalizeConfirmPriceResponse(confirmResult);
+        handleSessionStorage("save", "flightConfirmPrice", {
+          confirm: confirmResult,
+          request: confirmPayload,
+          bookingDraft: finalData,
+        });
+        const confirmSelections =
+          selectedFlights.length > 0
+            ? selectedFlights
+            : loadSelectedFlightsForBooking();
+        const selectionFingerprint = buildCombinedSelectionFingerprint({
+          depart: confirmSelections[0]
+            ? {
+                flight: {
+                  ...confirmSelections[0].trip,
+                  flightCode: (confirmSelections[0].trip as { flightCode?: string })
+                    .flightCode,
+                  fareOptions: [confirmSelections[0].fareOption],
+                  selectedTicketClass: confirmSelections[0].fareOption,
+                } as Record<string, unknown>,
+                fareOptionIndex: 0,
+              }
+            : null,
+          return: confirmSelections[1]
+            ? {
+                flight: {
+                  ...confirmSelections[1].trip,
+                  flightCode: (confirmSelections[1].trip as { flightCode?: string })
+                    .flightCode,
+                  fareOptions: [confirmSelections[1].fareOption],
+                  selectedTicketClass: confirmSelections[1].fareOption,
+                } as Record<string, unknown>,
+                fareOptionIndex: 0,
+              }
+            : null,
+        });
+        updateFlightDraftMeta({
+          stage: "price_confirmed",
+          resumeUrl: "/ve-may-bay/thong-tin-hanh-khach",
+          orderCode: normalizedConfirm.orderCode || undefined,
+          bookingDeadline: normalizedConfirm.bookingDeadline,
+          selectionFingerprint,
+        });
+        toast.success("Đã xác nhận giá. Vui lòng kiểm tra trước khi thanh toán.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const errDisplay = showFlightBookingError(
+          respon?.payload,
+          toaStrMsg.sendFailed
+        );
+        if (isFlightDepartureError(errDisplay.code)) {
+          setConfirmStep("form");
+          setConfirmData(null);
+          handleSessionStorage("remove", "flightConfirmPrice");
+        }
+      }
+    } catch (error: any) {
+      if (
+        error instanceof HttpError &&
+        error.payload?.errors?.voucher_programs
+      ) {
+        setVoucherErrors(error.payload.errors.voucher_programs);
+        toast.error(toaStrMsg.inValidVouchers);
+      } else {
+        const payload =
+          error instanceof HttpError ? error.payload : error?.payload ?? error;
+        const errDisplay = showFlightBookingError(payload, toaStrMsg.error);
+        if (isFlightDepartureError(errDisplay.code)) {
+          setConfirmStep("form");
+          setConfirmData(null);
+          handleSessionStorage("remove", "flightConfirmPrice");
+        }
+      }
+    } finally {
+      setLoading(false);
     }
   };
-  useEffect(() => {
-    let flightData = [];
-    let flightDetailData: any = [];
-    const departFlight = handleSessionStorage("get", "departFlight");
-    const returnFlight = handleSessionStorage("get", "returnFlight");
-    const flightSession = handleSessionStorage("get", "flightSession");
 
-    if (departFlight) {
-      flightData.push(departFlight);
-      flightDetailData.push(departFlight);
+  const handleProceedToPayment = async () => {
+    if (!confirmData || !pendingBookingPayload || confirmExpired) return;
+
+    const normalized = normalizeConfirmPriceResponse(confirmData);
+
+    if (isBookingDeadlineExpired(normalized.bookingDeadline)) {
+      setConfirmExpired(true);
+      toast.error("Đã hết thời gian giữ giá. Vui lòng chọn lại chuyến bay.");
+      return;
     }
-    if (returnFlight) {
-      flightData.push(returnFlight);
-      flightDetailData.push(returnFlight);
+
+    const requestId =
+      normalized.bookingFlightRequestId ?? confirmData.booking_flight_request_id;
+
+    if (!requestId) {
+      toast.error("Thiếu mã đơn giữ giá. Vui lòng xác nhận giá lại.");
+      return;
     }
-    if (!flightData.length) {
+
+    const bookPayload = {
+      ...pendingBookingPayload,
+      booking_flight_request_id: requestId,
+    };
+
+    try {
+      setProceedingPayment(true);
+      const respon = await FlightApi.bookFlightDomestic(bookPayload);
+
+      if (respon?.status !== 200) {
+        showFlightBookingError(respon?.payload, toaStrMsg.sendFailed);
+        return;
+      }
+
+      const bookData = (respon?.payload?.data ??
+        respon?.payload) as FlightBookFlightResponse;
+
+      const storedConfirmRequest = handleSessionStorage("get", "flightConfirmPrice")
+        ?.request as Record<string, unknown> | undefined;
+
+      const draftSession = {
+        ...pendingBookingPayload,
+        flights,
+        booking_flight_request_id: requestId,
+        confirmPrice: confirmData,
+        confirmPriceRequest: storedConfirmRequest,
+        bookingId: normalized.bookingId,
+        airdata_booking_id:
+          confirmData.airdata_booking_id ?? normalized.bookingId,
+        order_code: normalized.orderCode,
+      };
+
+      const bookingFlight = mergeBookFlightIntoSession(
+        draftSession,
+        bookData,
+        confirmData
+      );
+
+      if (totalDiscount > 0 && bookingFlight.orderInfo) {
+        (bookingFlight.orderInfo as { total_discount?: number }).total_discount =
+          totalDiscount;
+      }
+
+      handleSessionStorage("save", "bookingFlight", bookingFlight);
+      handleSessionStorage("save", "flightBookingDraft", pendingBookingPayload);
+      const orderSku =
+        (bookingFlight.orderInfo as { sku?: string })?.sku ??
+        normalized.orderCode;
+      updateFlightDraftMeta({
+        stage: "pending_payment",
+        resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
+        orderCode: orderSku,
+        bookingDeadline:
+          (bookingFlight.orderInfo as { booking_deadline?: string })
+            ?.booking_deadline ?? normalized.bookingDeadline,
+      });
+      handleSessionStorage("remove", [
+        "selectedFlightDepart",
+        "selectedFlightReturn",
+        "departFlight",
+        "returnFlight",
+        "flightConfirmPrice",
+      ]);
+      setBookingError(null);
+      router.push("/ve-may-bay/thong-tin-dat-cho");
+    } catch (error: unknown) {
+      const httpErr = error instanceof HttpError ? error : null;
+      const message =
+        (httpErr?.payload as { message?: string })?.message ||
+        (error as Error)?.message ||
+        toaStrMsg.error;
+
+      if (
+        message.includes("expired") ||
+        message.includes("Booking hold has expired")
+      ) {
+        setConfirmExpired(true);
+        toast.error(
+          "Đã hết thời gian giữ giá. Vui lòng quay lại và xác nhận giá lại."
+        );
+      } else if (message.includes("not ready for passenger")) {
+        toast.error(
+          "Đơn chưa sẵn sàng. Vui lòng xác nhận giá lại trước khi tiếp tục."
+        );
+      } else {
+        showFlightBookingError(httpErr?.payload ?? error, toaStrMsg.error);
+      }
+    } finally {
+      setProceedingPayment(false);
+    }
+  };
+
+  const handleBackFromConfirm = () => {
+    setConfirmStep("form");
+    setConfirmData(null);
+    setConfirmExpired(false);
+    setBookingError(null);
+    handleSessionStorage("remove", "flightConfirmPrice");
+  };
+
+  const handleConfirmExpired = () => {
+    setConfirmExpired(true);
+    toast.error("Đã hết thời gian giữ giá. Vui lòng chọn lại chuyến bay.");
+  };
+  useEffect(() => {
+    const selections = loadSelectedFlightsForBooking();
+    if (!selections.length) {
       router.push("/ve-may-bay");
       return;
     }
 
-    if (departFlight && returnFlight) setIsRoundTrip(true);
+    const flightData = selections.map(tripFromSelection);
+    const flightSession = handleSessionStorage("get", "flightSession");
+
+    if (selections.length > 1) setIsRoundTrip(true);
+    setSelectedFlights(selections);
     setFlights(flightData);
-    setFlightType(departFlight.domestic ? "domestic" : "international");
-    setFlightsDetail(flightDetailData);
-    setFlightSession(flightSession);
+    setFlightType(selections[0].trip.domestic ? "domestic" : "international");
+    setFlightsDetail(flightData);
+    setFlightSession(flightSession ?? selections[0].searchId);
+    const savedConfirm = handleSessionStorage("get", "flightConfirmPrice");
+    if (savedConfirm?.confirm && savedConfirm?.bookingDraft) {
+      setConfirmData(savedConfirm.confirm);
+      setPendingBookingPayload(savedConfirm.bookingDraft);
+      setConfirmStep("review");
+    }
     setDocumentReady(true);
   }, [router]);
 
@@ -1411,13 +1688,42 @@ export default function FlightBookForm({ airportsData }: any) {
                   </div>
                 ))}
             </div>
-            <div className="mt-6">
-              <LoadingButton
-                isLoading={loading}
-                text="Tiếp tục"
-                disabled={false}
+            {bookingError && (
+              <div
+                role="alert"
+                className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+              >
+                <p className="font-semibold">{bookingError.message}</p>
+                {bookingError.details.length > 0 && (
+                  <ul className="mt-2 list-disc space-y-1 pl-5">
+                    {bookingError.details.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            {confirmStep === "review" && confirmData && (
+              <FlightConfirmPriceReview
+                confirmData={confirmData}
+                estimatedTotal={finalPrice}
+                totalDiscount={totalDiscount}
+                onBack={handleBackFromConfirm}
+                onProceedPayment={handleProceedToPayment}
+                isProceeding={proceedingPayment}
+                isExpired={confirmExpired}
+                onExpired={handleConfirmExpired}
               />
-            </div>
+            )}
+            {confirmStep === "form" && (
+              <div className="mt-6">
+                <LoadingButton
+                  isLoading={loading}
+                  text="Tiếp tục"
+                  disabled={false}
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 ">

@@ -26,6 +26,16 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { translateText } from "@/utils/translateApi";
 import { useTranslation } from "@/hooks/useTranslation";
+import { HttpError } from "@/lib/error";
+import type { FlightBookingOrderStatus } from "@/types/flightBooking";
+import { useFlightBookingStatusPoll } from "@/hooks/useFlightBookingStatusPoll";
+import {
+  computeFlightCheckoutGrandTotal,
+  isBookingDeadlineExpired,
+  isFlightBookingSuccess,
+  resolveAuthoritativeFareTotal,
+} from "@/utils/flightBookingFlow";
+import { getTripClientId } from "@/utils/normalizeFlightTrip";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const { t } = useTranslation();
@@ -57,11 +67,26 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [isOrderCashSuccess, setIsOrderCashSuccess] = useState<boolean>(false);
   const messages = validationMessages[language as "vi" | "en"];
   const toaStrMsg = toastMessages[language as "vi" | "en"];
-  const [onePayTriggered, setOnePayTriggered] = useState(false);
   const [pollingStatus, setPollingStatus] = useState<boolean>(false);
+  const [paymentStarted, setPaymentStarted] = useState(false);
+  const [orderStatus, setOrderStatus] = useState<
+    FlightBookingOrderStatus | undefined
+  >();
   const [isOpenBookingDetail, setIsOpenBookingDetail] = useState(false);
   const [onePayFee, setOnePayFee] = useState<number>(0);
   const [isOpenPriceDetail, setIsOpenPriceDetail] = useState(false);
+
+  const orderCode = data?.orderInfo?.sku as string | undefined;
+  const {
+    status: polledStatus,
+    pnrNumber,
+    isPolling: isBookingStatusPolling,
+    setPnrNumber,
+  } = useFlightBookingStatusPoll(
+    orderCode,
+    paymentStarted && pollingStatus,
+    orderStatus
+  );
   const toggleDropdownPriceDetail = () => {
     setIsOpenPriceDetail(!isOpenPriceDetail);
   };
@@ -80,10 +105,16 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     },
   });
   const onSubmit = (dataForm: CheckOutBodyType) => {
+    if (ticketPaymentTimeout || isBookingDeadlineExpired(data?.orderInfo?.booking_deadline)) {
+      toast.error("Đã hết thời gian giữ giá / thanh toán.");
+      return;
+    }
+
     const finalData = {
       ...dataForm,
       sku: data?.orderInfo.sku,
     } as CheckOutBodyType & { sku: string };
+
     const updatePaymentMethod = async () => {
       try {
         setLoadingSubmitForm(true);
@@ -91,16 +122,19 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         if (respon?.status === 200) {
           reset();
           toast.success(toaStrMsg.sendSuccess);
+          setPaymentStarted(true);
+          handleSessionStorage("save", "flightPaymentPending", {
+            orderCode: data.orderInfo.sku,
+          });
 
           if (selectedPaymentMethod === "onepay") {
-            PaymentApi.onePay(data.orderInfo.sku).then((result: any) => {
-              if (result?.payment_url) {
-                // Redirect đến trang thanh toán OnePay (Mở tab mới)
-                window.open(result.payment_url, '_blank');
-                setPollingStatus(true);
-                toast.success(t("da_mo_trang_thanh_toan_o_tab_moi"));
-              }
-            });
+            const result = await PaymentApi.onePay(data.orderInfo.sku);
+            if (result?.payment_url) {
+              setPollingStatus(true);
+              window.location.href = result.payment_url;
+              return;
+            }
+            toast.error(toaStrMsg.sendFailed);
           }
           if (selectedPaymentMethod === "cash") {
             setIsOrderCashSuccess(true);
@@ -109,8 +143,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         } else {
           toast.error(toaStrMsg.sendFailed);
         }
-      } catch (error: any) {
-        toast.error(toaStrMsg.error);
+      } catch (error: unknown) {
+        const message =
+          error instanceof HttpError
+            ? (error.payload as { message?: string })?.message
+            : undefined;
+        toast.error(message || toaStrMsg.error);
       } finally {
         setLoadingSubmitForm(false);
       }
@@ -187,29 +225,92 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     });
   }
 
+  const authoritativeFareTotal = data
+    ? resolveAuthoritativeFareTotal({
+        confirmPrice: data.confirmPrice,
+        orderInfo: data.orderInfo,
+        summedFromFlights: totalPrice,
+      })
+    : totalPrice;
+  const checkoutGrandTotal = data
+    ? computeFlightCheckoutGrandTotal({
+        fareTotal: authoritativeFareTotal,
+        baggagePrice: totalBaggages.price,
+        discount: Number(data?.orderInfo?.total_discount ?? 0),
+        onePayFee,
+      })
+    : 0;
+
   //   toast.dismiss();
   useEffect(() => {
     const bookingData = handleSessionStorage("get", "bookingFlight");
     setLoading(false);
-    if (bookingData) {
-      setData(bookingData);
-      if (bookingData.passengers.length) {
-        const accumulated = bookingData.passengers.reduce(
-          (acc: { price: number; quantity: number }, item: any) => {
-            if (Array.isArray(item.baggages)) {
-              item.baggages.forEach((bag: any) => {
-                acc.price += bag.price;
-                acc.quantity++;
-              });
-            }
-            return acc;
-          },
-          { price: 0, quantity: 0 },
-        );
-        setTotalBaggages(accumulated);
+    if (!bookingData) return;
+
+    const status = bookingData.status as FlightBookingOrderStatus | undefined;
+    const orderInfoStatus = bookingData.orderInfo?.status as
+      | FlightBookingOrderStatus
+      | undefined;
+    const effectiveStatus = status ?? orderInfoStatus;
+
+    if (effectiveStatus === "price_confirmed") {
+      router.replace("/ve-may-bay/thong-tin-hanh-khach");
+      return;
+    }
+
+    setOrderStatus(effectiveStatus);
+    if (effectiveStatus === "issued") {
+      setIsPaid(true);
+      if (bookingData.pnr_number) {
+        setPnrNumber(bookingData.pnr_number);
       }
     }
-  }, []);
+
+    const pendingPayment = handleSessionStorage("get", "flightPaymentPending");
+    if (pendingPayment?.orderCode === bookingData.orderInfo?.sku) {
+      setPaymentStarted(true);
+      setPollingStatus(true);
+    }
+
+    setData(bookingData);
+    if (bookingData.passengers?.length) {
+      const accumulated = bookingData.passengers.reduce(
+        (acc: { price: number; quantity: number }, item: any) => {
+          if (Array.isArray(item.baggages)) {
+            item.baggages.forEach((bag: any) => {
+              acc.price += bag.price;
+              acc.quantity++;
+            });
+          }
+          return acc;
+        },
+        { price: 0, quantity: 0 }
+      );
+      setTotalBaggages(accumulated);
+    }
+  }, [router, setPnrNumber]);
+
+  useEffect(() => {
+    if (!polledStatus) return;
+    setOrderStatus(polledStatus);
+    if (polledStatus === "paid" || polledStatus === "issuing") {
+      setIsPaid(true);
+    }
+    if (isFlightBookingSuccess(polledStatus)) {
+      setIsPaid(true);
+      setPollingStatus(false);
+      handleSessionStorage("remove", "flightPaymentPending");
+      handleSessionStorage("save", "bookingFlight", {
+        ...data,
+        status: polledStatus,
+        pnr_number: pnrNumber,
+        orderInfo: { ...data?.orderInfo, status: polledStatus },
+      });
+    }
+    if (polledStatus === "paid_book_failed") {
+      setPollingStatus(false);
+    }
+  }, [polledStatus, pnrNumber, data]);
 
   const fetchFareRules = useCallback(
     async (flight: any) => {
@@ -217,7 +318,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         setIsLoadingRules(true);
         const params = {
           source: flight.source,
-          clientId: flight.clientId,
+          clientId: getTripClientId(flight),
           itinerary: {
             airline: flight.airline,
             departDate: format(parseISO(flight.departure.at), "yyyy-MM-dd"),
@@ -241,31 +342,6 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     },
     [language],
   );
-
-  useEffect(() => {
-    let interval: any;
-    if (data?.orderInfo?.sku && !isPaid) {
-      const checkStatus = () => {
-        PaymentApi.checkPaymentStatus(data.orderInfo.sku).then((response) => {
-          if (response?.payload?.data?.paid === true) {
-            setIsPaid(true);
-            setPollingStatus(false);
-          }
-        });
-      };
-
-      // Check immediately
-      checkStatus();
-
-      // Set up polling if needed (e.g., when OnePay is opened)
-      if (pollingStatus) {
-        interval = setInterval(checkStatus, 5000);
-      }
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [data?.orderInfo?.sku, isPaid, pollingStatus]);
 
   const toggleShowRuleTicket = useCallback(
     async (FareData: any) => {
@@ -301,18 +377,37 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
 
   useEffect(() => {
     if (selectedPaymentMethod === "onepay") {
-      setOnePayFee(
-        (totalPrice + totalBaggages.price - data?.orderInfo?.total_discount) *
-        0.025,
-      );
+      const base =
+        authoritativeFareTotal +
+        totalBaggages.price -
+        Number(data?.orderInfo?.total_discount ?? 0);
+      setOnePayFee(base * 0.025);
     } else {
       setOnePayFee(0);
       if (selectedPaymentMethod === "vietqr" && !qrCodeGenerated) {
+        setPaymentStarted(true);
+        setPollingStatus(true);
         PaymentApi.generateQrCodeAirlineTicket(data.orderInfo.sku)
           .then((qrResult: any) => {
-            let total =
-              qrResult.data["total_price"] - qrResult.data["total_discount"];
-            let sku = qrResult.data["sku"];
+            const qrPayload = qrResult?.data ?? qrResult;
+            const hasDirectQr =
+              qrPayload?.qr_code_url ||
+              qrPayload?.qr_code ||
+              qrPayload?.qrcode ||
+              qrPayload?.bank_account_number;
+
+            if (hasDirectQr) {
+              setQrCodeGenerated(true);
+              setVietQrData(qrPayload);
+              return null;
+            }
+
+            const total =
+              Number(qrPayload?.total_price ?? data?.orderInfo?.total_price) -
+              Number(
+                qrPayload?.total_discount ?? data?.orderInfo?.total_discount ?? 0
+              );
+            const sku = qrPayload?.sku ?? data.orderInfo.sku;
 
             return PaymentApi.createReceipt({
               payment_method_id: 5,
@@ -329,18 +424,27 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             });
           })
           .then((receiptResult: any) => {
-            setQrCodeGenerated(true);
-            setVietQrData(receiptResult?.data);
+            if (receiptResult?.data) {
+              setQrCodeGenerated(true);
+              setVietQrData(receiptResult.data);
+            }
           })
           .catch((error) => {
             console.error(
               "Error generating QR code or creating receipt:",
               error,
             );
+            toast.error(toaStrMsg.error);
           });
       }
     }
-  }, [selectedPaymentMethod, qrCodeGenerated, data, totalPrice, totalBaggages]);
+  }, [
+    selectedPaymentMethod,
+    qrCodeGenerated,
+    data,
+    totalBaggages,
+    authoritativeFareTotal,
+  ]);
 
   // useEffect(() => {
   //   if (
@@ -428,14 +532,52 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             )}
           </div>
         </div>
-        {pollingStatus && !isPaid && (
+        {(pollingStatus || isBookingStatusPolling) &&
+          !isFlightBookingSuccess(orderStatus ?? polledStatus) &&
+          orderStatus !== "paid_book_failed" &&
+          polledStatus !== "paid_book_failed" && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
             <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
-            <p>{t("dang_cho_thanh_toan")}</p>
+            <p>
+              {orderStatus === "paid" ||
+              orderStatus === "issuing" ||
+              polledStatus === "paid" ||
+              polledStatus === "issuing"
+                ? "Đã thanh toán. Đang xuất vé, vui lòng chờ..."
+                : t("dang_cho_thanh_toan")}
+            </p>
           </div>
         )}
 
-        {isPaid && (
+        {(orderStatus === "paid_book_failed" ||
+          polledStatus === "paid_book_failed") && (
+          <div className="mt-6 bg-red-50 text-red-800 font-medium px-4 py-3 rounded w-full text-base border border-red-200">
+            <p className="font-bold">
+              Thanh toán thành công nhưng xuất vé thất bại.
+            </p>
+            <p className="mt-1 text-sm">
+              Vui lòng liên hệ bộ phận chăm sóc khách hàng với mã đơn{" "}
+              {data?.orderInfo?.sku}.
+            </p>
+          </div>
+        )}
+
+        {isFlightBookingSuccess(orderStatus ?? polledStatus) && (
+          <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base border border-green-200">
+            <p>Đặt vé thành công — mã đơn: {data?.orderInfo?.sku}</p>
+            {pnrNumber && (
+              <p className="mt-2 text-xl">
+                Mã đặt chỗ (PNR):{" "}
+                <span className="text-[#0C4089]">{pnrNumber}</span>
+              </p>
+            )}
+          </div>
+        )}
+
+        {isPaid &&
+          !isFlightBookingSuccess(orderStatus ?? polledStatus) &&
+          orderStatus !== "paid_book_failed" &&
+          polledStatus !== "paid_book_failed" && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
             <p>
               {isOrderCashSuccess
@@ -443,8 +585,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 : t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
               {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
             </p>
-
-            <p>
+            <p className="mt-1 text-sm font-normal text-gray-600">
               {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24_h")}
             </p>
           </div>
@@ -847,9 +988,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </div>
           </div>
         </div>
-        {!isPaid && (
+        {!isPaid &&
+          !isFlightBookingSuccess(orderStatus ?? polledStatus) &&
+          orderStatus !== "paid_book_failed" &&
+          polledStatus !== "paid_book_failed" && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
-            {!ticketPaymentTimeout && (
+            {!ticketPaymentTimeout &&
+              !isBookingDeadlineExpired(data?.orderInfo?.booking_deadline) && (
               <>
                 <div className="mt-6">
                   <p className="font-bold text-18">
@@ -1140,12 +1285,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           <div className="flex justify-between gap-2 mt-2 pt-2 md:mt-4 md:pt-4 md:pb-6 border-t border-t-gray-200">
             <span className="text-gray-700 font-bold">{t("tong_cong")}</span>
             <p className="font-bold text-primary">
-              {formatCurrency(
-                totalPrice +
-                onePayFee +
-                totalBaggages.price -
-                data?.orderInfo?.total_discount,
-              )}
+              {formatCurrency(checkoutGrandTotal)}
             </p>
           </div>
         </div>
