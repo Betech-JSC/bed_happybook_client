@@ -18,7 +18,14 @@ export function createSelectedFlight(
   const fareOptions = trip.fareOptions as Record<string, unknown>[] | undefined;
   if (!fareOptions?.[fareOptionIndex]) return null;
 
-  const fareOption = { ...fareOptions[fareOptionIndex] };
+  const sourceFare = fareOptions[fareOptionIndex] as Record<string, unknown>;
+  const fareOption = {
+    ...sourceFare,
+    fareValue:
+      typeof sourceFare.fareValue === "string"
+        ? sourceFare.fareValue.trim()
+        : sourceFare.fareValue,
+  };
   const normalizedTrip = normalizeFlightTrip({
     ...trip,
     selectedTicketClass: fareOption,

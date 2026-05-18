@@ -60,12 +60,11 @@ import {
   buildPassengersFromForm,
   normalizeConfirmPriceResponse,
 } from "@/utils/buildFlightConfirmPricePayload";
-import { buildConfirmPriceSelectionRequest } from "@/utils/buildConfirmPriceSelection";
-import { usesFullConfirmItinerariesPayload } from "@/utils/mapSegmentForConfirm";
 import {
   loadSelectedFlightsForBooking,
   tripFromSelection,
 } from "@/utils/selectedFlightStorage";
+import { isConfirmPriceSoftFailure } from "@/utils/fareValueToken";
 import { verifySelectedFlights } from "@/utils/verifySelectedFlight";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
@@ -303,26 +302,11 @@ export default function FlightBookForm({ airportsData }: any) {
       address: "",
     };
 
-    const useFullItineraries = selections.some((sel) =>
-      usesFullConfirmItinerariesPayload(sel.trip.source)
-    );
-
-    const confirmPayload = useFullItineraries
-      ? buildFlightConfirmPricePayloadFromSelections({
-          selections,
-          passengers: confirmPassengers,
-          contact: {
-            phone: contact.phone,
-            email: contact.email,
-            full_name: contact.full_name,
-          },
-        })
-      : buildConfirmPriceSelectionRequest({
-          selections,
-          passengers: confirmPassengers,
-          contact,
-          tripKind: selections.length > 1 ? "round_trip" : "one_way",
-        });
+    const confirmPayload = buildFlightConfirmPricePayloadFromSelections({
+      selections,
+      passengers: confirmPassengers,
+      contact,
+    });
 
     const finalData = buildBookingPayload(data);
     if (!finalData) return;
@@ -331,9 +315,25 @@ export default function FlightBookForm({ airportsData }: any) {
       setLoading(true);
       const respon = await FlightApi.confirmPrice(confirmPayload);
       if (respon?.status === 200) {
-        setBookingError(null);
         const confirmResult =
-          (respon?.payload?.data as ConfirmPriceResponse) ?? respon?.payload;
+          (respon?.payload?.data as ConfirmPriceResponse) ??
+          (respon?.payload as ConfirmPriceResponse);
+        const resultRecord = confirmResult as Record<string, unknown>;
+
+        if (isConfirmPriceSoftFailure(resultRecord)) {
+          setBookingError({
+            code: "fare_token_invalid",
+            message:
+              "VietJet/Airdata không giữ được giá (token hết hạn hoặc không khớp phiên tìm kiếm). Vui lòng tìm chuyến bay lại và xác nhận giá ngay.",
+            details: [],
+          });
+          toast.error(
+            "Token giá không hợp lệ hoặc đã hết hạn. Vui lòng tìm kiếm lại."
+          );
+          return;
+        }
+
+        setBookingError(null);
         setConfirmData(confirmResult);
         setConfirmExpired(false);
         setPendingBookingPayload(finalData);

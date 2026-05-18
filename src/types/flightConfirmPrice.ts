@@ -42,8 +42,8 @@ export interface ConfirmPriceItinerary {
   domestic: boolean;
   source: string;
   airline: string;
-  clientId: string;
-  bookingKey: string;
+  /** Omit when search trip has no clientId; send "" when search returns empty. */
+  clientId?: string;
   itineraryId: string;
   fareBreakdowns: ConfirmPriceFareBreakdown[];
   segments: unknown[];
@@ -51,13 +51,24 @@ export interface ConfirmPriceItinerary {
   paxSeat?: unknown[];
 }
 
+export interface ConfirmPriceContact {
+  full_name: string;
+  gender: string;
+  phone: string;
+  email: string;
+  address: string;
+}
+
 export interface ConfirmPriceRequest {
   type: string;
   flightType: FlightTripType;
+  splitItineraries: boolean;
   airlineContact: ConfirmPriceAirlineContact;
   paxLists: ConfirmPricePaxApiItem[];
   itineraries: ConfirmPriceItinerary[];
-  splitItineraries: boolean;
+  contact?: ConfirmPriceContact;
+  booking_flight_request_id?: number | null;
+  trip?: string | null;
   session?: string | null;
 }
 

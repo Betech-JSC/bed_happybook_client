@@ -23,6 +23,7 @@ import {
   getCurrentLanguage,
   getDayLabel,
   handleScrollSmooth,
+  handleSessionStorage,
 } from "@/utils/Helper";
 import { HttpError } from "@/lib/error";
 import { ListFilghtProps, TabDays } from "@/types/flight";
@@ -262,6 +263,13 @@ export default function SearchFlightsResult({
         setFlightItineraryResource([]);
         setAirlineData([]);
         setError("");
+        handleSessionStorage("remove", [
+          "selectedFlightDepart",
+          "selectedFlightReturn",
+          "departFlight",
+          "returnFlight",
+          "flightConfirmPrice",
+        ]);
         if (StartPoint && EndPoint && DepartDate) {
           const response = await FlightApi.search({
             ...params,

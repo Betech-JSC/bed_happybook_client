@@ -1,7 +1,7 @@
 import { handleSessionStorage } from "@/utils/Helper";
 import type { FlightSearchContext } from "@/types/selectedFlight";
 import type { SelectedFlight } from "@/types/selectedFlight";
-import { legacyTripToSelectedFlight } from "@/utils/buildConfirmPriceSelection";
+import { legacyTripToSelectedFlight } from "@/utils/legacyTripToSelectedFlight";
 
 const KEYS = {
   context: "flightSearchContext",

@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import type {
   ConfirmPaxType,
+  ConfirmPriceContact,
   ConfirmPriceFareBreakdown,
   ConfirmPriceItinerary,
   ConfirmPricePaxApiItem,
@@ -8,11 +9,9 @@ import type {
   ConfirmPriceRequest,
   FlightTripType,
 } from "@/types/flightConfirmPrice";
-import { getTripClientId } from "@/utils/normalizeFlightTrip";
-import {
-  mapSegmentsForConfirm,
-  resolveBookingKey,
-} from "@/utils/mapSegmentForConfirm";
+import { handleSessionStorage } from "@/utils/Helper";
+import { copyFareValueRaw } from "@/utils/fareValueToken";
+import { mapSegmentsForConfirm } from "@/utils/mapSegmentForConfirm";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
 const PAX_TYPE_MAP: Record<string, ConfirmPaxType> = {
@@ -43,35 +42,27 @@ const FARE_BREAKDOWN_CONFIG: Array<{
   netKeys: string[];
   discountKeys: string[];
   taxKeys: string[];
-  totalKeys: string[];
-  fareValueKeys: string[];
 }> = [
   {
     paxType: "ADULT",
     countKey: "numberAdt",
-    netKeys: ["fareAdult", "fareAdultFinal"],
+    netKeys: ["fareAdult"],
     discountKeys: ["discountAdult", "discountAmountAdult"],
-    taxKeys: ["taxAdult", "totalTaxAdt"],
-    totalKeys: ["totalAdult"],
-    fareValueKeys: ["fareValueAdult", "adultFareValue", "fareValueADT"],
+    taxKeys: ["taxAdult"],
   },
   {
     paxType: "CHILD",
     countKey: "numberChd",
-    netKeys: ["fareChild", "fareChildFinal"],
+    netKeys: ["fareChild"],
     discountKeys: ["discountChild", "discountAmountChild"],
-    taxKeys: ["taxChild", "totalTaxChd"],
-    totalKeys: ["totalChild"],
-    fareValueKeys: ["fareValueChild", "childFareValue", "fareValueCHD"],
+    taxKeys: ["taxChild"],
   },
   {
     paxType: "INFANT",
     countKey: "numberInf",
-    netKeys: ["fareInfant", "fareInfantFinal"],
+    netKeys: ["fareInfant"],
     discountKeys: ["discountInfant", "discountAmountInfant"],
-    taxKeys: ["taxInfant", "totalTaxInf"],
-    totalKeys: ["totalInfant"],
-    fareValueKeys: ["fareValueInfant", "infantFareValue", "fareValueINF"],
+    taxKeys: ["taxInfant"],
   },
 ];
 
@@ -98,24 +89,8 @@ function pickString(source: Record<string, unknown>, keys: string[]): string {
   return "";
 }
 
-/** Decode fareOptions.fareValue → bookingKey (VJ Base64 JSON, 9G FLN token, …). */
-export function decodeFareValueBookingKey(fareValue: unknown): string {
-  return resolveBookingKey(fareValue);
-}
-
-function resolveBreakdownFareValue(
-  fare: Record<string, unknown>,
-  config: (typeof FARE_BREAKDOWN_CONFIG)[number]
-): string {
-  const typed = pickString(fare, config.fareValueKeys);
-  if (typed) return typed;
-
-  const raw = fare.fareValue;
-  if (typeof raw === "string" && raw.trim()) {
-    return raw.trim();
-  }
-
-  return "";
+function resolveBreakdownFareValue(fare: Record<string, unknown>): string {
+  return copyFareValueRaw(fare.fareValue);
 }
 
 export function buildFareBreakdowns(
@@ -134,8 +109,8 @@ export function buildFareBreakdowns(
 
     const netFare = pickNumber(fare, config.netKeys, 0);
     const tax = pickNumber(fare, config.taxKeys, 0);
-    const total =
-      pickNumber(fare, config.totalKeys, 0) || netFare + tax;
+    /** Airdata: total = netFare + tax — không dùng totalAdult (đã cộng phí DV). */
+    const total = netFare + tax;
 
     breakdowns.push({
       paxType: config.paxType,
@@ -144,7 +119,7 @@ export function buildFareBreakdowns(
       discountAmountParent: 0,
       tax,
       total,
-      fareValue: resolveBreakdownFareValue(fare, config),
+      fareValue: resolveBreakdownFareValue(fare),
     });
   }
 
@@ -153,6 +128,21 @@ export function buildFareBreakdowns(
 
 function resolvePaxTitle(gender?: boolean): string {
   return gender === false ? "MS" : "MR";
+}
+
+function normalizePaxName(value: string | undefined): string {
+  return (value ?? "").trim().toUpperCase();
+}
+
+/** Pass-through clientId from search trip (spec §5). */
+function itineraryClientIdField(
+  trip: Record<string, unknown>
+): Pick<ConfirmPriceItinerary, "clientId"> | Record<string, never> {
+  const hasKey = "clientId" in trip || "client_id" in trip;
+  if (!hasKey) return {};
+  const raw = trip.clientId ?? trip.client_id;
+  if (raw === null || raw === undefined) return { clientId: "" };
+  return { clientId: String(raw) };
 }
 
 /** ADT → CHD → INF; paxId = "1", "2", …; INF links to first ADULT via childPaxId. */
@@ -170,8 +160,8 @@ export function buildPaxLists(
     return {
       paxId: String(nextId++),
       paxType,
-      firstName: pax.firstName ?? "",
-      lastName: pax.lastName ?? "",
+      firstName: normalizePaxName(pax.firstName),
+      lastName: normalizePaxName(pax.lastName),
       title: resolvePaxTitle(pax.gender),
       PaxDocuments: [],
     };
@@ -198,6 +188,7 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
 
   return mapSegmentsForConfirm(flight.segments, {
     airline,
+    source: copyTripField(flight.source),
     fareType: defaultFareType,
     fareBasisCode: copyTripField(ticketClass?.fareBasisCode),
     bookingClass: copyTripField(ticketClass?.bookingClass),
@@ -206,20 +197,15 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
 }
 
 function buildItineraries(flights: Record<string, unknown>[]): ConfirmPriceItinerary[] {
-  return flights.map((flight) => {
-    const ticketClass =
-      (flight.selectedTicketClass as Record<string, unknown>) ?? {};
-    const bookingKey = decodeFareValueBookingKey(ticketClass.fareValue);
-
+  return flights.map((flight, index) => {
     const airline = copyTripField(flight.airline) || copyTripField(flight.airLineCode);
 
     return {
       domestic: Boolean(flight.domestic),
       source: copyTripField(flight.source),
       airline,
-      clientId: getTripClientId(flight),
-      bookingKey,
-      itineraryId: flight.itineraryId ? String(flight.itineraryId) : "1",
+      ...itineraryClientIdField(flight),
+      itineraryId: String(flight.itineraryId ?? index + 1),
       fareBreakdowns: buildFareBreakdowns(flight),
       segments: buildConfirmSegments(flight),
       paxssr: [],
@@ -239,20 +225,42 @@ function collectPaxSsr(passengers: ConfirmPricePaxListItem[]): unknown[] {
   return ssr;
 }
 
-export function buildFlightConfirmPricePayload(input: {
-  flights: Record<string, unknown>[];
-  passengers: ConfirmPricePaxListItem[];
-  contact: {
+function buildConfirmContact(
+  contact: Partial<ConfirmPriceContact> & {
     phone?: string;
     email?: string;
     full_name?: string;
+    gender?: string;
+    address?: string;
+  }
+): ConfirmPriceContact {
+  return {
+    full_name: contact.full_name ?? "",
+    gender: contact.gender ?? "male",
+    phone: contact.phone ?? "",
+    email: contact.email ?? "",
+    address: contact.address ?? "",
+  };
+}
+
+export function buildFlightConfirmPricePayload(input: {
+  flights: Record<string, unknown>[];
+  passengers: ConfirmPricePaxListItem[];
+  contact: Partial<ConfirmPriceContact> & {
+    phone?: string;
+    email?: string;
+    full_name?: string;
+    gender?: string;
+    address?: string;
   };
   flightSession?: string | null;
+  bookingFlightRequestId?: number | null;
 }): ConfirmPriceRequest {
-  const { flights, passengers, contact, flightSession } = input;
+  const { flights, passengers, contact, flightSession, bookingFlightRequestId } =
+    input;
   const primaryFlight = flights[0] ?? {};
   const flightType: FlightTripType = flights.length > 1 ? "RT" : "OW";
-  const sourceType = String(primaryFlight.source ?? "VN1A");
+  const sourceType = String(primaryFlight.source ?? "");
 
   const paxLists = buildPaxLists(passengers);
   const itineraries = buildItineraries(flights);
@@ -267,17 +275,21 @@ export function buildFlightConfirmPricePayload(input: {
   const payload: ConfirmPriceRequest = {
     type: sourceType,
     flightType,
+    splitItineraries: false,
     airlineContact: {
       phoneNumber: contact.phone ?? "",
       email: contact.email ?? "",
     },
     paxLists,
     itineraries,
-    splitItineraries: false,
+    contact: buildConfirmContact(contact),
   };
 
   if (flightSession) {
     payload.session = flightSession;
+  }
+  if (bookingFlightRequestId != null) {
+    payload.booking_flight_request_id = bookingFlightRequestId;
   }
 
   return payload;
@@ -286,25 +298,36 @@ export function buildFlightConfirmPricePayload(input: {
 export function buildFlightConfirmPricePayloadFromSelections(input: {
   selections: SelectedFlight[];
   passengers: ConfirmPricePaxListItem[];
-  contact: {
+  contact: Partial<ConfirmPriceContact> & {
     phone?: string;
     email?: string;
     full_name?: string;
+    gender?: string;
+    address?: string;
   };
+  bookingFlightRequestId?: number | null;
 }): ConfirmPriceRequest {
-  const flights = input.selections.map((sel) => ({
+  const flights = input.selections.map((sel, index) => ({
     ...(sel.trip as Record<string, unknown>),
     selectedTicketClass: sel.fareOption,
-    itineraryId: sel.itineraryId,
+    itineraryId: sel.itineraryId || String(index + 1),
     numberAdt: sel.paxCounts.adult,
     numberChd: sel.paxCounts.child,
     numberInf: sel.paxCounts.infant,
   }));
 
+  const sessionId =
+    input.selections[0]?.searchId ||
+    (typeof window !== "undefined"
+      ? (handleSessionStorage("get", "flightSession") as string | null)
+      : null);
+
   return buildFlightConfirmPricePayload({
     flights,
     passengers: input.passengers,
     contact: input.contact,
+    flightSession: sessionId,
+    bookingFlightRequestId: input.bookingFlightRequestId,
   });
 }
 

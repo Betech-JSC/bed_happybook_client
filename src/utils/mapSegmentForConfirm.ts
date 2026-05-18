@@ -6,10 +6,23 @@
 export type MapSegmentDefaults = {
   fareType?: string;
   airline?: string;
+  source?: string;
   fareBasisCode?: string;
   bookingClass?: string;
   groupClass?: string;
 };
+
+function resolveOperatingForConfirm(
+  operatingRaw: string,
+  airline: string,
+  source?: string
+): string {
+  const src = String(source ?? "").toUpperCase();
+  if (src === "VJ" || src.includes("VIETJET")) {
+    return "";
+  }
+  return operatingRaw || airline;
+}
 
 function airportCode(departureOrArrival: unknown): string {
   if (typeof departureOrArrival === "string") return departureOrArrival;
@@ -20,7 +33,20 @@ function airportCode(departureOrArrival: unknown): string {
   return "";
 }
 
-/** Airdata confirm-price: YYYY-MM-DDTHH:mm:ssZ (or +07:00). */
+const VN_OFFSET = "+07:00";
+
+function pad2(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
+/** Format UTC instant as Vietnam local time with +07:00 suffix. */
+function formatAsVietnamOffset(date: Date): string {
+  const vnMs = date.getTime() + 7 * 60 * 60 * 1000;
+  const vn = new Date(vnMs);
+  return `${vn.getUTCFullYear()}-${pad2(vn.getUTCMonth() + 1)}-${pad2(vn.getUTCDate())}T${pad2(vn.getUTCHours())}:${pad2(vn.getUTCMinutes())}:${pad2(vn.getUTCSeconds())}${VN_OFFSET}`;
+}
+
+/** Airdata confirm-price: YYYY-MM-DDTHH:mm:ss+07:00 (prefer VN local, not Z). */
 export function normalizeConfirmDateTime(raw: string): string {
   const trimmed = raw.trim();
   if (!trimmed) return "";
@@ -31,6 +57,24 @@ export function normalizeConfirmDateTime(raw: string): string {
   );
 
   value = value.replace(/(\d{2}:\d{2}:\d{2})\.\d+(Z|[+-]\d{2}:\d{2})$/, "$1$2");
+
+  if (/Z$/i.test(value)) {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return formatAsVietnamOffset(parsed);
+    }
+  }
+
+  if (/[+-]\d{2}:\d{2}$/.test(value) && !value.endsWith(VN_OFFSET)) {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return formatAsVietnamOffset(parsed);
+    }
+  }
+
+  if (/[+-]\d{2}:\d{2}$/.test(value)) {
+    return value;
+  }
 
   return value;
 }
@@ -77,21 +121,47 @@ export function resolveBookingKey(fareValue: unknown): string {
   return trimmed;
 }
 
+function isNumericSegmentKey(value: string): boolean {
+  return /^\d+$/.test(value);
+}
+
+/** segmentId/segmentValue = "1","2"… — không dùng hash/token lạ từ search. */
+function resolveSegmentKeys(
+  seg: Record<string, unknown>,
+  leg: number
+): { segmentId: string; segmentValue: string } {
+  const legKey = String(leg);
+  const fromValue = stringField(seg.segmentValue);
+  const fromId = stringField(seg.segmentId);
+  if (isNumericSegmentKey(fromValue)) {
+    return { segmentId: fromValue, segmentValue: fromValue };
+  }
+  if (isNumericSegmentKey(fromId)) {
+    return { segmentId: fromId, segmentValue: fromId };
+  }
+  return { segmentId: legKey, segmentValue: legKey };
+}
+
 export function mapSegmentForConfirm(
   seg: Record<string, unknown>,
-  defaults?: MapSegmentDefaults
+  defaults?: MapSegmentDefaults,
+  legOverride?: number
 ): Record<string, unknown> {
   const airline =
     stringField(seg.airline) || defaults?.airline || "";
-  const legKey = String(typeof seg.leg === "number" ? seg.leg : 1);
-  /** From search / flight-resource — passthrough, do not synthesize composite ids. */
-  const segmentId = stringField(seg.segmentId) || legKey;
-  const segmentValue = stringField(seg.segmentValue) || legKey;
+  const leg =
+    typeof legOverride === "number"
+      ? legOverride
+      : typeof seg.leg === "number"
+        ? seg.leg
+        : 1;
+  const { segmentId, segmentValue } = resolveSegmentKeys(seg, leg);
+  const operatingRaw = stringField(seg.operating);
 
   return {
-    leg: seg.leg ?? 1,
+    leg,
     airline,
-    operating: stringField(seg.operating, airline),
+    operating: resolveOperatingForConfirm(operatingRaw, airline, defaults?.source),
     departure: airportCode(seg.departure),
     arrival: airportCode(seg.arrival),
     departureTime: segmentDateTime(seg.departureTime, seg.departure),
@@ -125,8 +195,14 @@ export function mapSegmentsForConfirm(
   defaults?: MapSegmentDefaults
 ): Record<string, unknown>[] {
   if (!Array.isArray(segments)) return [];
-  return segments.map((seg) =>
-    mapSegmentForConfirm(seg as Record<string, unknown>, defaults)
+  return segments.map((seg, index) =>
+    mapSegmentForConfirm(
+      seg as Record<string, unknown>,
+      defaults,
+      typeof (seg as Record<string, unknown>).leg === "number"
+        ? ((seg as Record<string, unknown>).leg as number)
+        : index + 1
+    )
   );
 }
 

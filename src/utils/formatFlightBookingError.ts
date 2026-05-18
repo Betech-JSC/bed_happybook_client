@@ -110,13 +110,13 @@ export function formatFlightBookingError(
     };
   }
 
-  if (code === "confirm_price_failed") {
+  if (code === "confirm_price_failed" || code === "fare_token_invalid") {
     return {
       code,
       message:
         language === "vi"
-          ? "Giá hoặc phiên đặt vé đã hết hạn. Vui lòng tìm và chọn chuyến bay lại."
-          : "Price or session expired. Please search and select a flight again.",
+          ? "Token giá hoặc phiên tìm kiếm không còn hợp lệ (thường gặp với VietJet). Vui lòng tìm chuyến bay lại và xác nhận giá trong vài phút."
+          : "Fare token or search session is invalid. Please search again and confirm promptly.",
       details: [],
     };
   }

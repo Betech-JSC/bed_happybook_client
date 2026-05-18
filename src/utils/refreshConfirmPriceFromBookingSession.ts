@@ -8,8 +8,6 @@ import {
   buildFlightConfirmPricePayloadFromSelections,
   normalizeConfirmPriceResponse,
 } from "@/utils/buildFlightConfirmPricePayload";
-import { buildConfirmPriceSelectionRequest } from "@/utils/buildConfirmPriceSelection";
-import { usesFullConfirmItinerariesPayload } from "@/utils/mapSegmentForConfirm";
 import type { ConfirmPricePaxListItem } from "@/types/flightConfirmPrice";
 import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import type { SelectedFlight, TripsSource } from "@/types/selectedFlight";
@@ -127,34 +125,18 @@ function buildConfirmPricePayload(
   );
   const contact = contactFromBooking(draft?.contact ?? bookingFlight.contact);
 
-  const useFullItineraries = selections.some((sel) =>
-    usesFullConfirmItinerariesPayload(sel.trip.source)
-  );
-
-  const payload = useFullItineraries
-    ? (buildFlightConfirmPricePayloadFromSelections({
-        selections,
-        passengers,
-        contact: {
-          phone: contact.phone,
-          email: contact.email,
-          full_name: contact.full_name,
-        },
-      }) as unknown as Record<string, unknown>)
-    : buildConfirmPriceSelectionRequest({
-        selections,
-        passengers,
-        contact,
-        tripKind: selections.length > 1 ? "round_trip" : "one_way",
-      });
-
   const requestId =
     bookingFlight.booking_flight_request_id ??
     (bookingFlight.confirmPrice as ConfirmPriceResponse | undefined)
       ?.booking_flight_request_id;
-  if (requestId) {
-    payload.booking_flight_request_id = requestId;
-  }
+
+  const payload = buildFlightConfirmPricePayloadFromSelections({
+    selections,
+    passengers,
+    contact,
+    bookingFlightRequestId:
+      typeof requestId === "number" ? requestId : undefined,
+  }) as unknown as Record<string, unknown>;
 
   return payload;
 }
