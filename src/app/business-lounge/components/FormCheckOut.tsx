@@ -59,6 +59,33 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
+  const [flightNumber, setFlightNumber] = useState<string>("");
+  const [flightTime, setFlightTime] = useState<string>("");
+  const [flightArrivalTime, setFlightArrivalTime] = useState<string>("");
+  const [flightDate, setFlightDate] = useState<string>("");
+
+  const formatTime24h = (time: string): string => {
+    if (!time) return "";
+    const parts = time.split(":");
+    if (parts.length >= 2) {
+      const hours = parts[0].padStart(2, "0");
+      const minutes = parts[1].padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+    return time;
+  };
+
+  const handleFlightTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const formatted = formatTime24h(value);
+    setFlightTime(formatted);
+  };
+
+  const handleFlightArrivalTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const formatted = formatTime24h(value);
+    setFlightArrivalTime(formatted);
+  };
 
   const {
     totalDiscount,
@@ -188,6 +215,10 @@ export default function CheckOutForm({
           departure_date: format(data.depart_date, "yyyy-MM-dd"),
           ticket_option_id: ticketOptionId,
           tickets: ticketsBooking,
+          ...(flightNumber && { flight_number: flightNumber }),
+          ...(flightTime && { flight_time: flightTime }),
+          ...(flightArrivalTime && { flight_arrival_time: flightArrivalTime }),
+          ...(flightDate && { flight_date: flightDate }),
         },
         contact: {
           email: data.email,
@@ -439,6 +470,75 @@ export default function CheckOutForm({
                 </div>
               </div>
             </div>
+
+            {/* Flight Information - Optional */}
+            <div className="mt-6 pt-5 border-t border-dashed border-gray-200">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-cyan-50 flex items-center justify-center flex-shrink-0">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#0891B2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points="3.29 7 12 12 20.71 7" stroke="#0891B2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <line x1="12" y1="22" x2="12" y2="12" stroke="#0891B2" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800" data-translate="true">
+                    {t("Thông tin chuyến bay")}
+                  </h3>
+                  <p className="text-xs text-gray-500" data-translate="true">Tùy chọn</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Số hiệu chuyến bay</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={flightNumber}
+                    onChange={(e) => setFlightNumber(e.target.value)}
+                    placeholder="VD: VN123"
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Giờ bay</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={flightTime}
+                    onChange={handleFlightTimeChange}
+                    step="60"
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Giờ đáp</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={flightArrivalTime}
+                    onChange={handleFlightArrivalTimeChange}
+                    step="60"
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+                <div className="relative">
+                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
+                    <span data-translate="true">Ngày bay</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={flightDate}
+                    onChange={(e) => setFlightDate(e.target.value)}
+                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="mt-6 pt-5 border-t border-dashed border-gray-200">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
