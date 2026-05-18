@@ -1,7 +1,7 @@
 "use client";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
@@ -9,7 +9,9 @@ import { useSearchParams } from "next/navigation";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { ProductFastTrackApi } from "@/api/ProductFastTrack";
+import { translateText } from "@/utils/translateApi";
 
 type optionFilterType = {
   label: string;
@@ -42,8 +44,10 @@ export default function Search({
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  const { language } = useLanguage();
   const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
+  const [translatedOptions, setTranslatedOptions] = useState<optionFilterType[]>(optionsFilter);
 
   const loadData = useCallback(async () => {
     try {
@@ -116,6 +120,36 @@ export default function Search({
     loadData();
   }, [query, loadData]);
 
+  // Translate filter options when language changes
+  useEffect(() => {
+    if (language === "vi") {
+      setTranslatedOptions(optionsFilter);
+      return;
+    }
+
+    const allLabels = optionsFilter.flatMap((group) =>
+      [group.label, ...group.option.map((o) => o.label)].filter(Boolean) as string[]
+    );
+
+    translateText(allLabels, language).then((translated) => {
+      const translatedMap = new Map<string, string>();
+      allLabels.forEach((label, i) => {
+        translatedMap.set(label, translated[i] ?? label);
+      });
+
+      const result: optionFilterType[] = optionsFilter.map((group) => ({
+        ...group,
+        label: translatedMap.get(group.label) ?? group.label,
+        option: group.option.map((o) => ({
+          ...o,
+          label: translatedMap.get(o.label ?? "") ?? o.label,
+        })),
+      }));
+
+      setTranslatedOptions(result);
+    });
+  }, [language, optionsFilter]);
+
   if (firstLoad) {
     return (
       <div
@@ -133,7 +167,7 @@ export default function Search({
           setQuery={setQuery}
           query={query}
           isDisabled={isDisabled}
-          options={optionsFilter}
+          options={translatedOptions}
           handleFilterChange={handleFilterChange}
           handleSortData={handleSortData}
           showFilterDate={false}
