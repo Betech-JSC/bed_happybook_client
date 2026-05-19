@@ -29,9 +29,9 @@ export default function FlightConfirmPriceReview({
 }: FlightConfirmPriceReviewProps) {
   const normalized = normalizeConfirmPriceResponse(confirmData);
   const confirmedTotal = normalized.totalPrice ?? estimatedTotal - totalDiscount;
-  const deadline = normalized.bookingDeadline
-    ? new Date(normalized.bookingDeadline)
-    : null;
+  const holdIso =
+    normalized.holdExpiresAt ?? normalized.bookingDeadline ?? null;
+  const deadline = holdIso ? new Date(holdIso) : null;
   const hasValidDeadline = deadline && !Number.isNaN(deadline.getTime());
 
   return (
@@ -115,7 +115,7 @@ export default function FlightConfirmPriceReview({
 
       {isExpired && (
         <p className="text-sm text-red-600 font-medium" data-translate="true">
-          Đã hết thời gian giữ giá. Vui lòng quay lại và chọn lại chuyến bay.
+          Phiên đặt vé đã hết hạn. Vui lòng quay lại và tìm chuyến bay khác.
         </p>
       )}
 

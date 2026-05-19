@@ -533,7 +533,7 @@ export default function SearchFlightsResult({
   }, [flightsData]);
 
   const refreshMatchingDraft = useCallback(() => {
-    if (!isReady || flightType === "international") {
+    if (!isReady) {
       setMatchingDraft(null);
       return;
     }
@@ -544,7 +544,21 @@ export default function SearchFlightsResult({
       departDate: DepartDate,
       returnDate: ReturnDate,
     });
-    setMatchingDraft(findMatchingFlightDraft(searchRoute));
+    const match = findMatchingFlightDraft(searchRoute);
+    if (!match) {
+      setMatchingDraft(null);
+      return;
+    }
+    const expectedFlow =
+      flightType === "international" ? "international" : "domestic";
+    if (
+      match.meta.flow === expectedFlow ||
+      (flightType === "international" && match.meta.flow === "1g")
+    ) {
+      setMatchingDraft(match);
+    } else {
+      setMatchingDraft(null);
+    }
   }, [
     isReady,
     flightType,

@@ -29,12 +29,18 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { HttpError } from "@/lib/error";
 import type { FlightBookingOrderStatus } from "@/types/flightBooking";
 import { useFlightBookingStatusPoll } from "@/hooks/useFlightBookingStatusPoll";
+import PostPaymentSuccessBanner from "@/components/flight/PostPaymentSuccessBanner";
 import {
   computeFlightCheckoutGrandTotal,
   isBookingDeadlineExpired,
-  isFlightBookingSuccess,
+  isFlightPaymentConfirmed,
   resolveAuthoritativeFareTotal,
 } from "@/utils/flightBookingFlow";
+import {
+  buildFlightSearchUrlFromDraft,
+  isHoldExpired,
+  resolveHoldExpiresAt,
+} from "@/utils/flightHoldExpiry";
 import { getTripClientId } from "@/utils/normalizeFlightTrip";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
@@ -77,9 +83,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [isOpenPriceDetail, setIsOpenPriceDetail] = useState(false);
 
   const orderCode = data?.orderInfo?.sku as string | undefined;
+  const holdExpiresAt = resolveHoldExpiresAt(data?.orderInfo ?? data);
   const {
     status: polledStatus,
-    pnrNumber,
     isPolling: isBookingStatusPolling,
     setPnrNumber,
   } = useFlightBookingStatusPoll(
@@ -105,7 +111,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     },
   });
   const onSubmit = (dataForm: CheckOutBodyType) => {
-    if (ticketPaymentTimeout || isBookingDeadlineExpired(data?.orderInfo?.booking_deadline)) {
+    if (
+      ticketPaymentTimeout ||
+      isHoldExpired(holdExpiresAt) ||
+      isBookingDeadlineExpired(data?.orderInfo?.booking_deadline)
+    ) {
       toast.error("Đã hết thời gian giữ giá / thanh toán.");
       return;
     }
@@ -259,11 +269,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     }
 
     setOrderStatus(effectiveStatus);
-    if (effectiveStatus === "issued") {
+    if (isFlightPaymentConfirmed(effectiveStatus)) {
       setIsPaid(true);
-      if (bookingData.pnr_number) {
-        setPnrNumber(bookingData.pnr_number);
-      }
     }
 
     const pendingPayment = handleSessionStorage("get", "flightPaymentPending");
@@ -293,24 +300,19 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   useEffect(() => {
     if (!polledStatus) return;
     setOrderStatus(polledStatus);
-    if (polledStatus === "paid" || polledStatus === "issuing") {
-      setIsPaid(true);
-    }
-    if (isFlightBookingSuccess(polledStatus)) {
+    if (isFlightPaymentConfirmed(polledStatus)) {
       setIsPaid(true);
       setPollingStatus(false);
       handleSessionStorage("remove", "flightPaymentPending");
-      handleSessionStorage("save", "bookingFlight", {
-        ...data,
-        status: polledStatus,
-        pnr_number: pnrNumber,
-        orderInfo: { ...data?.orderInfo, status: polledStatus },
-      });
+      if (data) {
+        handleSessionStorage("save", "bookingFlight", {
+          ...data,
+          status: polledStatus,
+          orderInfo: { ...data?.orderInfo, status: polledStatus },
+        });
+      }
     }
-    if (polledStatus === "paid_book_failed") {
-      setPollingStatus(false);
-    }
-  }, [polledStatus, pnrNumber, data]);
+  }, [polledStatus, data]);
 
   const fetchFareRules = useCallback(
     async (flight: any) => {
@@ -357,6 +359,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
 
   const handleTicketPaymentTimeout = () => {
     setTicketPaymentTimeout(true);
+    toast.error("Phiên đặt vé đã hết hạn");
+    router.push(buildFlightSearchUrlFromDraft());
   };
 
   const handleScroll = () => {
@@ -507,9 +511,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 <p className="text-22 font-bold text-white">
                   {t("hoan_tat_don_hang_cua_ban_de_giu_gia_tot_nhat")}{" "}
                 </p>
-                {!ticketPaymentTimeout && data.orderInfo.booking_deadline ? (
+                {!ticketPaymentTimeout && holdExpiresAt ? (
                   <CountDownCheckOut
-                    timeCountDown={data.orderInfo.booking_deadline}
+                    timeCountDown={holdExpiresAt}
                     handleTicketPaymentTimeout={handleTicketPaymentTimeout}
                   />
                 ) : (
@@ -533,19 +537,11 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           </div>
         </div>
         {(pollingStatus || isBookingStatusPolling) &&
-          !isFlightBookingSuccess(orderStatus ?? polledStatus) &&
-          orderStatus !== "paid_book_failed" &&
-          polledStatus !== "paid_book_failed" && (
+          !isPaid &&
+          !isFlightPaymentConfirmed(orderStatus ?? polledStatus) && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
             <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
-            <p>
-              {orderStatus === "paid" ||
-              orderStatus === "issuing" ||
-              polledStatus === "paid" ||
-              polledStatus === "issuing"
-                ? "Đã thanh toán. Đang xuất vé, vui lòng chờ..."
-                : t("dang_cho_thanh_toan")}
-            </p>
+            <p>{t("dang_cho_thanh_toan")}</p>
           </div>
         )}
 
@@ -553,7 +549,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           polledStatus === "paid_book_failed") && (
           <div className="mt-6 bg-red-50 text-red-800 font-medium px-4 py-3 rounded w-full text-base border border-red-200">
             <p className="font-bold">
-              Thanh toán thành công nhưng xuất vé thất bại.
+              Thanh toán thành công nhưng xử lý đơn gặp sự cố.
             </p>
             <p className="mt-1 text-sm">
               Vui lòng liên hệ bộ phận chăm sóc khách hàng với mã đơn{" "}
@@ -562,33 +558,8 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           </div>
         )}
 
-        {isFlightBookingSuccess(orderStatus ?? polledStatus) && (
-          <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base border border-green-200">
-            <p>Đặt vé thành công — mã đơn: {data?.orderInfo?.sku}</p>
-            {pnrNumber && (
-              <p className="mt-2 text-xl">
-                Mã đặt chỗ (PNR):{" "}
-                <span className="text-[#0C4089]">{pnrNumber}</span>
-              </p>
-            )}
-          </div>
-        )}
-
-        {isPaid &&
-          !isFlightBookingSuccess(orderStatus ?? polledStatus) &&
-          orderStatus !== "paid_book_failed" &&
-          polledStatus !== "paid_book_failed" && (
-          <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
-            <p>
-              {isOrderCashSuccess
-                ? t("happybook_da_nhan_duoc_don_hang")
-                : t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
-              {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
-            </p>
-            <p className="mt-1 text-sm font-normal text-gray-600">
-              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24_h")}
-            </p>
-          </div>
+        {isPaid && isFlightPaymentConfirmed(orderStatus ?? polledStatus) && (
+          <PostPaymentSuccessBanner orderCode={data?.orderInfo?.sku} />
         )}
 
         <div className="mt-6">
@@ -989,11 +960,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           </div>
         </div>
         {!isPaid &&
-          !isFlightBookingSuccess(orderStatus ?? polledStatus) &&
+          !isFlightPaymentConfirmed(orderStatus ?? polledStatus) &&
           orderStatus !== "paid_book_failed" &&
           polledStatus !== "paid_book_failed" && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             {!ticketPaymentTimeout &&
+              !isHoldExpired(holdExpiresAt) &&
               !isBookingDeadlineExpired(data?.orderInfo?.booking_deadline) && (
               <>
                 <div className="mt-6">

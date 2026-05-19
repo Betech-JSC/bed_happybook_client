@@ -41,7 +41,22 @@ export function shouldPollFlightBookingStatus(
 ): boolean {
   if (!paymentStarted) return false;
   if (!status) return true;
-  return status === "paid" || status === "issuing" || status === "pending_payment";
+  // Stop after payment is confirmed — no polling for ticket issuance.
+  if (status === "paid" || status === "issuing" || status === "issued") {
+    return false;
+  }
+  return status === "pending_payment";
+}
+
+export function isFlightPaymentConfirmed(
+  status: FlightBookingOrderStatus | undefined
+): boolean {
+  return (
+    status === "paid" ||
+    status === "issuing" ||
+    status === "issued" ||
+    status === "paid_book_failed"
+  );
 }
 
 export function isFlightBookingTerminal(
@@ -89,6 +104,10 @@ export function mergeBookFlightIntoSession(
         orderInfo.booking_deadline ??
         normalized?.bookingDeadline ??
         (existingOrderInfo.booking_deadline as string | undefined),
+      hold_expires_at:
+        (orderInfo as Record<string, unknown>).hold_expires_at ??
+        normalized?.holdExpiresAt ??
+        (existingOrderInfo.hold_expires_at as string | undefined),
       total_price:
         orderInfo.total_price ??
         normalized?.totalPrice ??

@@ -6,6 +6,19 @@ export interface ConfirmPriceAirlineContact {
   email: string;
 }
 
+/** Airdata PaxDocuments[] entry (Postman). */
+export interface AirdataPaxDocument {
+  paxId: string;
+  docType: "P" | "C";
+  number: string;
+  nationality?: string;
+  isCountry?: string;
+  endDate?: string;
+  gender?: "MALE" | "FEMALE";
+  birthday?: string;
+  residence?: string;
+}
+
 /** Internal shape from booking form (before mapping to API paxLists). */
 export interface ConfirmPricePaxListItem {
   index?: number;
@@ -15,6 +28,12 @@ export interface ConfirmPricePaxListItem {
   gender?: boolean;
   birthday?: string;
   baggages?: unknown[];
+  passport?: string;
+  nationality?: string;
+  passport_country?: string;
+  passport_expiry_date?: string | Date;
+  cccd?: string;
+  cccd_date?: string | Date;
 }
 
 export interface ConfirmPricePaxApiItem {
@@ -23,7 +42,8 @@ export interface ConfirmPricePaxApiItem {
   firstName: string;
   lastName: string;
   title: string;
-  PaxDocuments: unknown[];
+  birthday?: string;
+  PaxDocuments: AirdataPaxDocument[];
   /** Only when an infant is linked to this adult (form-built, not from search API). */
   childPaxId?: string;
 }

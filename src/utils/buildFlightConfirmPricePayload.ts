@@ -9,6 +9,11 @@ import type {
   ConfirmPriceRequest,
   FlightTripType,
 } from "@/types/flightConfirmPrice";
+import {
+  buildPaxDocumentsForPassenger,
+  isInternationalItineraries,
+  toAirdataBirthdayIso,
+} from "@/utils/buildPaxDocuments";
 import { handleSessionStorage } from "@/utils/Helper";
 import { copyFareValueRaw } from "@/utils/fareValueToken";
 import { mapSegmentsForConfirm } from "@/utils/mapSegmentForConfirm";
@@ -147,8 +152,13 @@ function itineraryClientIdField(
 
 /** ADT → CHD → INF; paxId = "1", "2", …; INF links to first ADULT via childPaxId. */
 export function buildPaxLists(
-  passengers: ConfirmPricePaxListItem[]
+  passengers: ConfirmPricePaxListItem[],
+  options?: { flights?: Record<string, unknown>[] }
 ): ConfirmPricePaxApiItem[] {
+  const isInternational = options?.flights
+    ? isInternationalItineraries(options.flights)
+    : false;
+
   const adults = passengers.filter((p) => PAX_TYPE_MAP[p.type] === "ADULT");
   const children = passengers.filter((p) => PAX_TYPE_MAP[p.type] === "CHILD");
   const infants = passengers.filter((p) => PAX_TYPE_MAP[p.type] === "INFANT");
@@ -157,13 +167,15 @@ export function buildPaxLists(
   let nextId = 1;
   const apiPax: ConfirmPricePaxApiItem[] = ordered.map((pax) => {
     const paxType = PAX_TYPE_MAP[pax.type] ?? "ADULT";
+    const paxId = String(nextId++);
     return {
-      paxId: String(nextId++),
+      paxId,
       paxType,
       firstName: normalizePaxName(pax.firstName),
       lastName: normalizePaxName(pax.lastName),
       title: resolvePaxTitle(pax.gender),
-      PaxDocuments: [],
+      birthday: toAirdataBirthdayIso(pax.birthday),
+      PaxDocuments: buildPaxDocumentsForPassenger(paxId, pax, isInternational),
     };
   });
 
@@ -262,7 +274,7 @@ export function buildFlightConfirmPricePayload(input: {
   const flightType: FlightTripType = flights.length > 1 ? "RT" : "OW";
   const sourceType = String(primaryFlight.source ?? "");
 
-  const paxLists = buildPaxLists(passengers);
+  const paxLists = buildPaxLists(passengers, { flights });
   const itineraries = buildItineraries(flights);
   const allSsr = collectPaxSsr(passengers);
 
@@ -359,6 +371,15 @@ export function buildPassengersFromForm(
         birthday: item.value.birthday
           ? format(new Date(item.value.birthday as string | Date), "yyyy-MM-dd")
           : "",
+        passport: item.value.passport as string | undefined,
+        nationality: item.value.nationality as string | undefined,
+        passport_country: (item.value.nationality as string | undefined) ?? "VNM",
+        passport_expiry_date: item.value.passport_expiry_date as
+          | string
+          | Date
+          | undefined,
+        cccd: item.value.cccd as string | undefined,
+        cccd_date: item.value.cccd_date as string | Date | undefined,
         baggages,
       };
     });
@@ -385,6 +406,7 @@ export function normalizeConfirmPriceResponse(
   orderCode: string;
   bookingFlightRequestId?: number;
   bookingDeadline: string | null;
+  holdExpiresAt: string | null;
   totalPrice: number | null;
   totalTax: number | null;
   breakdown: Record<string, number | undefined>;
@@ -402,7 +424,14 @@ export function normalizeConfirmPriceResponse(
     ((data.orderInfo as Record<string, unknown>)?.sku as string) ||
     "";
 
+  const holdExpiresAt =
+    (data.hold_expires_at as string) ||
+    (data.holdExpiresAt as string) ||
+    ((data.orderInfo as Record<string, unknown>)?.hold_expires_at as string) ||
+    null;
+
   const bookingDeadline =
+    holdExpiresAt ||
     (data.booking_deadline as string) ||
     (data.bookingDeadline as string) ||
     ((data.orderInfo as Record<string, unknown>)?.booking_deadline as string) ||
@@ -418,6 +447,7 @@ export function normalizeConfirmPriceResponse(
     orderCode,
     bookingFlightRequestId: data.booking_flight_request_id as number | undefined,
     bookingDeadline,
+    holdExpiresAt: holdExpiresAt || bookingDeadline,
     totalPrice:
       (data.total_price as number) ??
       (pricing.total as number) ??

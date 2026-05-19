@@ -27,17 +27,20 @@ export interface FlightSearchRoute {
   returnDate: string;
 }
 
+export type FlightDraftFlow = "domestic" | "international" | "1g";
+
 export interface FlightDraftMeta extends FlightSearchRoute {
   stage: FlightDraftStage;
   resumeUrl: string;
   orderCode?: string;
   bookingDeadline?: string | null;
+  holdExpiresAt?: string | null;
   fromLabel?: string;
   toLabel?: string;
   /** depart:code|fareIdx|… or depart:…|return:… */
   selectionFingerprint?: string;
   updatedAt: number;
-  flow: "domestic";
+  flow: FlightDraftFlow;
 }
 
 export type FlightSelectionLeg = "depart" | "return";
@@ -154,21 +157,20 @@ export function getFlightDraftMeta(): FlightDraftMeta | null {
 export function saveFlightDraftMeta(meta: FlightDraftMeta): void {
   handleSessionStorage("save", FLIGHT_DRAFT_META_KEY, {
     ...meta,
-    flow: "domestic",
     updatedAt: Date.now(),
   });
   removeDismissForRoute(buildFlightDraftRouteKey(meta));
 }
 
 export function updateFlightDraftMeta(
-  patch: Partial<Omit<FlightDraftMeta, "flow">>
+  patch: Partial<FlightDraftMeta>
 ): FlightDraftMeta | null {
   const current = getFlightDraftMeta();
   if (!current) return null;
   const next: FlightDraftMeta = {
     ...current,
     ...patch,
-    flow: "domestic",
+    flow: patch.flow ?? current.flow,
     updatedAt: Date.now(),
   };
   saveFlightDraftMeta(next);
@@ -287,6 +289,7 @@ export function applyNewFlightSelectionDraft(input: {
   selectionFingerprint: string;
   fromLabel?: string;
   toLabel?: string;
+  flow?: FlightDraftFlow;
 }): void {
   clearFlightDraftBookingState();
   saveFlightDraftMeta({
@@ -299,7 +302,7 @@ export function applyNewFlightSelectionDraft(input: {
     orderCode: undefined,
     bookingDeadline: null,
     updatedAt: Date.now(),
-    flow: "domestic",
+    flow: input.flow ?? "domestic",
   });
 }
 
@@ -527,10 +530,22 @@ function inferMetaFromLegacySessions(): FlightDraftMeta | null {
 }
 
 function isTerminalOrExpired(meta: FlightDraftMeta): boolean {
-  if (meta.bookingDeadline && isBookingDeadlineExpired(meta.bookingDeadline)) {
+  const deadline =
+    meta.holdExpiresAt ?? meta.bookingDeadline ?? null;
+  if (deadline && isBookingDeadlineExpired(deadline)) {
     return true;
   }
   return false;
+}
+
+export function findMatchingFlightDraftForFlow(
+  search: FlightSearchRoute,
+  flow?: FlightDraftFlow
+): FlightDraftMatch | null {
+  const match = findMatchingFlightDraft(search);
+  if (!match) return null;
+  if (flow && match.meta.flow !== flow) return null;
+  return match;
 }
 
 export function findMatchingFlightDraft(
@@ -582,7 +597,9 @@ export function saveFlightDraftMetaForSearch(input: {
   resumeUrl: string;
   orderCode?: string;
   bookingDeadline?: string | null;
+  holdExpiresAt?: string | null;
   selectionFingerprint?: string;
+  flow?: FlightDraftFlow;
 }): FlightDraftMeta {
   const route = buildSearchRouteFromParams(input);
   const meta: FlightDraftMeta = {
@@ -591,11 +608,13 @@ export function saveFlightDraftMetaForSearch(input: {
     resumeUrl: input.resumeUrl,
     orderCode: input.orderCode,
     bookingDeadline: input.bookingDeadline ?? null,
+    holdExpiresAt:
+      input.holdExpiresAt ?? input.bookingDeadline ?? null,
     fromLabel: input.fromLabel,
     toLabel: input.toLabel,
     selectionFingerprint: input.selectionFingerprint,
     updatedAt: Date.now(),
-    flow: "domestic",
+    flow: input.flow ?? "domestic",
   };
   saveFlightDraftMeta(meta);
   return meta;

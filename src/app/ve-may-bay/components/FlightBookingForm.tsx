@@ -15,7 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -42,8 +42,13 @@ import {
 } from "@/utils/flightBookingFlow";
 import {
   buildCombinedSelectionFingerprint,
+  buildSearchRouteFromParams,
+  findMatchingFlightDraft,
   updateFlightDraftMeta,
+  type FlightDraftMatch,
 } from "@/utils/flightDraftSession";
+import ResumeFlightDraftModal from "@/components/flight/ResumeFlightDraftModal";
+import { FLIGHT_NATIONALITIES } from "@/constants/countries";
 import {
   flightBookingErrorToastText,
   formatFlightBookingError,
@@ -66,6 +71,8 @@ import {
 } from "@/utils/selectedFlightStorage";
 import { isConfirmPriceSoftFailure } from "@/utils/fareValueToken";
 import { verifySelectedFlights } from "@/utils/verifySelectedFlight";
+import { appendBookFlightPassportFields } from "@/utils/buildPaxDocuments";
+import InternationalPassportFields from "./InternationalPassportFields";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
 export default function FlightBookForm({ airportsData }: any) {
@@ -103,7 +110,21 @@ export default function FlightBookForm({ airportsData }: any) {
   const [proceedingPayment, setProceedingPayment] = useState(false);
   const [pendingBookingPayload, setPendingBookingPayload] = useState<any>(null);
   const [selectedFlights, setSelectedFlights] = useState<SelectedFlight[]>([]);
+  const [draftModal, setDraftModal] = useState<FlightDraftMatch | null>(null);
   const { userInfo } = useUser();
+
+  const earliestDepartureDate = useMemo(() => {
+    let earliest: Date | undefined;
+    for (const flight of flights) {
+      const at = (flight.departure as { at?: string } | undefined)?.at;
+      if (!at) continue;
+      const d = new Date(at);
+      if (!Number.isNaN(d.getTime()) && (!earliest || d < earliest)) {
+        earliest = d;
+      }
+    }
+    return earliest;
+  }, [flights]);
   // Handle Voucher
   const {
     totalDiscount,
@@ -121,7 +142,12 @@ export default function FlightBookForm({ airportsData }: any) {
   };
 
   const [schemaForm, setSchemaForm] = useState(() =>
-    FlightBookingInforBody(messages, generateInvoice, flightType)
+    FlightBookingInforBody(
+      messages,
+      generateInvoice,
+      flightType,
+      earliestDepartureDate
+    )
   );
 
   useEffect(() => {
@@ -132,9 +158,14 @@ export default function FlightBookForm({ airportsData }: any) {
 
   useEffect(() => {
     setSchemaForm(
-      FlightBookingInforBody(messages, generateInvoice, flightType)
+      FlightBookingInforBody(
+        messages,
+        generateInvoice,
+        flightType,
+        earliestDepartureDate
+      )
     );
-  }, [flightType, generateInvoice, messages]);
+  }, [flightType, generateInvoice, messages, earliestDepartureDate]);
 
   const {
     register,
@@ -205,12 +236,10 @@ export default function FlightBookForm({ airportsData }: any) {
             ? format(new Date(item.value.birthday), "yyyy-MM-dd")
             : "",
         };
-        if (item.Type === "ADT") {
-          passengerObj.cccd = item.value.cccd ? item.value.cccd : "";
-          passengerObj.cccd_date = item.value.cccd_date
-            ? format(new Date(item.value.cccd_date), "yyyy-MM-dd")
-            : "";
-        }
+        appendBookFlightPassportFields(passengerObj, item.value, {
+          isInternational: flightType === "international",
+          paxType: item.Type as "ADT" | "CHD" | "INF",
+        });
         if (item.value.baggages && item.value.baggages.length > 0) {
           passengerObj.baggages = item.value.baggages;
         }
@@ -380,6 +409,9 @@ export default function FlightBookForm({ airportsData }: any) {
           resumeUrl: "/ve-may-bay/thong-tin-hanh-khach",
           orderCode: normalizedConfirm.orderCode || undefined,
           bookingDeadline: normalizedConfirm.bookingDeadline,
+          holdExpiresAt:
+            normalizedConfirm.holdExpiresAt ?? normalizedConfirm.bookingDeadline,
+          flow: flightType === "international" ? "international" : "domestic",
           selectionFingerprint,
         });
         toast.success("Đã xác nhận giá. Vui lòng kiểm tra trước khi thanh toán.");
@@ -491,6 +523,12 @@ export default function FlightBookForm({ airportsData }: any) {
         bookingDeadline:
           (bookingFlight.orderInfo as { booking_deadline?: string })
             ?.booking_deadline ?? normalized.bookingDeadline,
+        holdExpiresAt:
+          (bookingFlight.orderInfo as { hold_expires_at?: string })
+            ?.hold_expires_at ??
+          normalized.holdExpiresAt ??
+          normalized.bookingDeadline,
+        flow: flightType === "international" ? "international" : "domestic",
       });
       handleSessionStorage("remove", [
         "selectedFlightDepart",
@@ -538,7 +576,8 @@ export default function FlightBookForm({ airportsData }: any) {
 
   const handleConfirmExpired = () => {
     setConfirmExpired(true);
-    toast.error("Đã hết thời gian giữ giá. Vui lòng chọn lại chuyến bay.");
+    toast.error("Phiên đặt vé đã hết hạn");
+    router.push("/ve-may-bay/tim-kiem-ve");
   };
   useEffect(() => {
     const selections = loadSelectedFlightsForBooking();
@@ -563,6 +602,38 @@ export default function FlightBookForm({ airportsData }: any) {
       setConfirmStep("review");
     }
     setDocumentReady(true);
+
+    if (selections[0] && !selections[0].trip.domestic) {
+      const depart = selections[0].trip.departure as {
+        IATACode?: string;
+        at?: string;
+      };
+      const arrival = selections[0].trip.arrival as { IATACode?: string };
+      if (depart?.IATACode && arrival?.IATACode && depart.at) {
+        const d = new Date(depart.at);
+        const departDate = format(d, "ddMMyyyy");
+        const searchRoute = buildSearchRouteFromParams({
+          startPoint: depart.IATACode,
+          endPoint: arrival.IATACode,
+          tripType: selections.length > 1 ? "roundTrip" : "oneWay",
+          departDate,
+          returnDate:
+            selections.length > 1
+              ? format(
+                  new Date(
+                    (selections[1].trip.departure as { at?: string }).at ??
+                      depart.at
+                  ),
+                  "ddMMyyyy"
+                )
+              : departDate,
+        });
+        const match = findMatchingFlightDraft(searchRoute);
+        if (match?.meta.flow === "international") {
+          setDraftModal(match);
+        }
+      }
+    }
   }, [router]);
 
   let totalPrice = 0;
@@ -1159,10 +1230,39 @@ export default function FlightBookForm({ airportsData }: any) {
                           </div>
                           <div className="relative">
                             <label
+                              htmlFor={`atd.${index}.nationality`}
+                              className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                            >
+                              <span data-translate="true">Quốc tịch</span>
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              id={`atd.${index}.nationality`}
+                              {...register(`atd.${index}.nationality`)}
+                              className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
+                              defaultValue=""
+                            >
+                              <option value="" disabled>
+                                Chọn quốc tịch
+                              </option>
+                              {FLIGHT_NATIONALITIES.map((c) => (
+                                <option key={c.code} value={c.code}>
+                                  {c.label}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.atd?.[index]?.nationality && (
+                              <p className="text-red-600">
+                                {errors.atd?.[index]?.nationality?.message}
+                              </p>
+                            )}
+                          </div>
+                          <div className="relative">
+                            <label
                               id={`atd.${index}.passport_expiry_date`}
                               className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                             >
-                              <span data-translate="true">Ngày hết hạn</span>
+                              <span data-translate="true">Ngày hết hạn hộ chiếu</span>
                               <span className="text-red-500">*</span>
                             </label>
                             <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1454,6 +1554,16 @@ export default function FlightBookForm({ airportsData }: any) {
                           </p>
                         )}
                       </div>
+                      {flightType === "international" && (
+                        <InternationalPassportFields
+                          segment="chd"
+                          index={index}
+                          register={register}
+                          control={control}
+                          errors={errors}
+                          language={language}
+                        />
+                      )}
                       {Object.keys(listBaggageGrouped).length > 0 &&
                         Object.entries(listBaggageGrouped).map(
                           ([flightLeg, items]) => {
@@ -2019,6 +2129,12 @@ export default function FlightBookForm({ airportsData }: any) {
           isOpen={showFlightDetail}
           onClose={handleClosePopupFlightDetail}
           isLoadingFareRules={false}
+        />
+      )}
+      {draftModal && (
+        <ResumeFlightDraftModal
+          match={draftModal}
+          onClose={() => setDraftModal(null)}
         />
       )}
     </form>

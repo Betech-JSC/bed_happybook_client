@@ -15,7 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -40,6 +40,11 @@ import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
 import PhoneInput from "@/components/form/PhoneInput";
 import { useTranslation } from "@/hooks/useTranslation";
 import Flight1GDetailPopup from "./FlightDetailPopup";
+import { FLIGHT_NATIONALITIES } from "@/constants/countries";
+import { saveFlightDraftMetaForSearch } from "@/utils/flightDraftSession";
+import { resolveHoldExpiresAt } from "@/utils/flightHoldExpiry";
+import { appendBookFlightPassportFields } from "@/utils/buildPaxDocuments";
+import InternationalPassportFields from "../../../InternationalPassportFields";
 
 export default function Flight1GBookForm({ airportsData }: any) {
   const router = useRouter();
@@ -82,8 +87,26 @@ export default function Flight1GBookForm({ airportsData }: any) {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
+  const earliestDepartureDate = useMemo(() => {
+    let earliest: Date | undefined;
+    for (const flight of flights) {
+      const at = (flight.departure as { at?: string } | undefined)?.at;
+      if (!at) continue;
+      const d = new Date(at);
+      if (!Number.isNaN(d.getTime()) && (!earliest || d < earliest)) {
+        earliest = d;
+      }
+    }
+    return earliest;
+  }, [flights]);
+
   const [schemaForm, setSchemaForm] = useState(() =>
-    FlightBookingInforBody(messages, generateInvoice, flightType)
+    FlightBookingInforBody(
+      messages,
+      generateInvoice,
+      "international",
+      earliestDepartureDate
+    )
   );
 
   useEffect(() => {
@@ -94,9 +117,14 @@ export default function Flight1GBookForm({ airportsData }: any) {
 
   useEffect(() => {
     setSchemaForm(
-      FlightBookingInforBody(messages, generateInvoice, flightType)
+      FlightBookingInforBody(
+        messages,
+        generateInvoice,
+        flightType || "international",
+        earliestDepartureDate
+      )
     );
-  }, [flightType, generateInvoice, messages]);
+  }, [flightType, generateInvoice, messages, earliestDepartureDate]);
 
   const {
     register,
@@ -156,12 +184,10 @@ export default function Flight1GBookForm({ airportsData }: any) {
             ? format(new Date(item.value.birthday), "yyyy-MM-dd")
             : "",
         };
-        if (item.Type === "ADT") {
-          passengerObj.cccd = item.value.cccd ? item.value.cccd : "";
-          passengerObj.cccd_date = item.value.cccd_date
-            ? format(new Date(item.value.cccd_date), "yyyy-MM-dd")
-            : "";
-        }
+        appendBookFlightPassportFields(passengerObj, item.value, {
+          isInternational: true,
+          paxType: item.Type as "ADT" | "CHD" | "INF",
+        });
         if (item.value.baggages && item.value.baggages.length > 0) {
           passengerObj.baggages = item.value.baggages;
         }
@@ -224,6 +250,38 @@ export default function Flight1GBookForm({ airportsData }: any) {
           resData.flights = flights;
           toast.success(toaStrMsg.sendSuccess);
           handleSessionStorage("save", "bookingFlight", resData);
+          const holdExpires = resolveHoldExpiresAt(
+            (resData.orderInfo ?? resData) as Record<string, unknown>
+          );
+          const depart = flights[0]?.departure as {
+            IATACode?: string;
+            at?: string;
+          };
+          const arrival = flights[0]?.arrival as { IATACode?: string };
+          if (depart?.IATACode && arrival?.IATACode && depart.at) {
+            saveFlightDraftMetaForSearch({
+              startPoint: depart.IATACode,
+              endPoint: arrival.IATACode,
+              tripType: flights.length > 1 ? "roundTrip" : "oneWay",
+              departDate: format(new Date(depart.at), "ddMMyyyy"),
+              returnDate:
+                flights.length > 1
+                  ? format(
+                      new Date(
+                        (flights[1]?.departure as { at?: string })?.at ??
+                          depart.at
+                      ),
+                      "ddMMyyyy"
+                    )
+                  : format(new Date(depart.at), "ddMMyyyy"),
+              stage: "pending_payment",
+              resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
+              orderCode: resData?.orderInfo?.sku,
+              bookingDeadline: holdExpires,
+              holdExpiresAt: holdExpires,
+              flow: "1g",
+            });
+          }
           handleSessionStorage("remove", [
             "flightSession",
             "departFlight",
@@ -794,10 +852,39 @@ export default function Flight1GBookForm({ airportsData }: any) {
                           </div>
                           <div className="relative">
                             <label
+                              htmlFor={`atd.${index}.nationality`}
+                              className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                            >
+                              <span data-translate="true">Quốc tịch</span>
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              id={`atd.${index}.nationality`}
+                              {...register(`atd.${index}.nationality`)}
+                              className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 focus:outline-none focus:border-primary indent-3.5"
+                              defaultValue=""
+                            >
+                              <option value="" disabled>
+                                Chọn quốc tịch
+                              </option>
+                              {FLIGHT_NATIONALITIES.map((c) => (
+                                <option key={c.code} value={c.code}>
+                                  {c.label}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.atd?.[index]?.nationality && (
+                              <p className="text-red-600">
+                                {errors.atd?.[index]?.nationality?.message}
+                              </p>
+                            )}
+                          </div>
+                          <div className="relative">
+                            <label
                               id={`atd.${index}.passport_expiry_date`}
                               className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                             >
-                              <span data-translate="true">Ngày hết hạn</span>
+                              <span data-translate="true">Ngày hết hạn hộ chiếu</span>
                               <span className="text-red-500">*</span>
                             </label>
                             <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1089,6 +1176,14 @@ export default function Flight1GBookForm({ airportsData }: any) {
                           </p>
                         )}
                       </div>
+                      <InternationalPassportFields
+                        segment="chd"
+                        index={index}
+                        register={register}
+                        control={control}
+                        errors={errors}
+                        language={language}
+                      />
                       {Object.keys(listBaggageGrouped).length > 0 &&
                         Object.entries(listBaggageGrouped).map(
                           ([flightLeg, items]) => {

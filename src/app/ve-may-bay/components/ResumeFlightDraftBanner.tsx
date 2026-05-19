@@ -53,9 +53,8 @@ export default function ResumeFlightDraftBanner({
     meta.tripType === "roundTrip"
       ? `${departLabel} – ${formatDraftDateLabel(meta.returnDate)}`
       : departLabel;
-  const deadline = meta.bookingDeadline
-    ? new Date(meta.bookingDeadline)
-    : null;
+  const holdIso = meta.holdExpiresAt ?? meta.bookingDeadline ?? null;
+  const deadline = holdIso ? new Date(holdIso) : null;
   const hasValidDeadline =
     deadline &&
     !Number.isNaN(deadline.getTime()) &&
