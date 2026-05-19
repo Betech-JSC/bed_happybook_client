@@ -16,6 +16,7 @@ import { loadEsimPackageBySlug } from "../lib/esim-loader";
 import { ProductEsimApi } from "@/api/ProductEsim";
 import type { EsimCheckoutData, EsimQuoteData, PaymentMethod } from "../checkout/types";
 import { useSimDuLichStaticText } from "./useSimDuLichStaticText";
+import { useUser } from "@/contexts/UserContext";
 
 const unwrapResponseData = (payload: unknown): any => {
   if (!payload || typeof payload !== "object") return {};
@@ -35,6 +36,7 @@ type Args = {
 export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
   const router = useRouter();
   const { language } = useLanguage();
+  const { userInfo } = useUser();
   const isEnglish = language === "en";
   const activeLocale = isEnglish ? "en" : "vi";
   const t = useSimDuLichStaticText(activeLocale);
@@ -310,6 +312,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
           delivery_email: email,
           delivery_phone: contactPhone || undefined,
           payment_method: paymentMethod,
+          customer_id: userInfo?.id,
           source: "website",
         },
         activeLocale
@@ -357,7 +360,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     } finally {
       setSubmitting(false);
     }
-  }, [activeLocale, contactName, contactPhone, email, packageData, paymentMethod, qty, selectedVariant, t, validateEmail]);
+  }, [activeLocale, contactName, contactPhone, email, packageData, paymentMethod, qty, selectedVariant, t, userInfo?.id, validateEmail]);
 
   const handleContactSave = useCallback((name: string, phone: string) => {
     setContactName(name);

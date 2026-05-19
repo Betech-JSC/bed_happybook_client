@@ -5,8 +5,11 @@ import Pagination from "@/components/base/pagination";
 import { SearchParamsProps } from "@/types/post";
 import AccountSidebar from "../../components/AccountSidebar";
 import OrderHistory from "../components/OrderHistory";
-import { BookingProductApi } from "@/api/BookingProduct";
+import { BookingProductApi, EsimApi } from "@/api/BookingProduct";
 import { getServerT } from "@/lib/i18n/getServerT";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type ProductType =
   | "khach-san"
@@ -16,19 +19,23 @@ type ProductType =
   | "ve-vui-choi"
   | "combo"
   | "bao-hiem"
-  | "fast-track";
+  | "fast-track"
+  | "phong-cho-thuong-gia"
+  | "esim";
 
 interface ProductItem {
   label: string;
   type:
-    | "hotel"
-    | "tour"
-    | "visa"
-    | "yacht"
-    | "ticket"
-    | "combo"
-    | "insurance"
-    | "fast-track";
+  | "hotel"
+  | "tour"
+  | "visa"
+  | "yacht"
+  | "ticket"
+  | "combo"
+  | "insurance"
+  | "fast-track"
+  | "business-lounge"
+  | "esim";
   path: string;
   page: string;
 }
@@ -82,6 +89,18 @@ const products: Record<ProductType, ProductItem> = {
     path: "/lich-su-dat-hang/combo",
     page: "/combo",
   },
+  "phong-cho-thuong-gia": {
+    label: "Phòng chờ thương gia",
+    type: "business-lounge",
+    path: "/lich-su-dat-hang/phong-cho-thuong-gia",
+    page: "/phong-cho-thuong-gia",
+  },
+  esim: {
+    label: "Sim Du Lịch",
+    type: "esim",
+    path: "/lich-su-dat-hang/esim",
+    page: "/sim-du-lich",
+  },
 };
 
 export default async function FlightBookingHistory({
@@ -102,11 +121,10 @@ export default async function FlightBookingHistory({
   }
   const t = await getServerT();
   const currentPage = parseInt(searchParams?.page || "1");
-  const response = await BookingProductApi.History(
-    token,
-    product.type,
-    currentPage
-  );
+  const response =
+    product.type === "esim"
+      ? await EsimApi.History(token, currentPage)
+      : await BookingProductApi.History(token, product.type, currentPage);
   if (response?.status === 401) {
     redirect("/dang-nhap");
   }
