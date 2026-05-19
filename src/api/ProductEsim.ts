@@ -69,6 +69,7 @@ const ProductEsimApi = {
     delivery_email?: string;
     delivery_phone?: string;
     payment_method: "vietqr" | "onepay" | "paypal";
+    customer_id?: number;
     source?: string;
     notes?: string;
   }, locale?: string) => http.post<any>(`${path}/checkout`, body, langHeader(locale)),

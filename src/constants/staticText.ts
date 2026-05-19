@@ -289,6 +289,8 @@ const generalStaticText: string[] = [
   "Fast track",
   "Phòng chờ thương gia",
   "Mã đơn hàng",
+  "Gói dữ liệu",
+  "Khách hàng",
   "Giới tính",
   "Năm sinh",
   "Thông tin hành khách",

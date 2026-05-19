@@ -32,6 +32,8 @@ export default function AccountSidebar({ userInfo }: any) {
     { name: "Khách sạn", type: "khach-san" },
     { name: "Bảo hiểm", type: "bao-hiem" },
     { name: "Combo", type: "combo" },
+    { name: "Phòng chờ thương gia", type: "phong-cho-thuong-gia" },
+    { name: "Sim Du Lịch", type: "esim" },
   ];
   return (
     <div className="w-full max-w-full lg:max-w-xs flex gap-4 flex-col">
