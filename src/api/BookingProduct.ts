@@ -2,6 +2,16 @@ import http from "@/lib/http";
 
 const path = "booking";
 
+const EsimApi = {
+  History: (token: string | undefined, page: number) =>
+    http.get<any>(`${path}/esim/history?page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }, 10000, 0),
+};
+
 const BookingProductApi = {
   Tour: (data: any) => http.post<any>(`${path}/tour`, data),
   Hotel: (data: any) => http.post<any>(`${path}/hotel`, data),
@@ -22,4 +32,4 @@ const BookingProductApi = {
     }),
 };
 
-export { BookingProductApi };
+export { BookingProductApi, EsimApi };
