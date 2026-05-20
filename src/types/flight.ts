@@ -143,6 +143,9 @@ export interface ListFlight {
   EndPoint?: string;
   departDayPrices?: Record<string, number | null>;
   returnDayPrices?: Record<string, number | null>;
+  tripsSource?: "search" | "resource";
+  paxCounts?: { adult: number; child: number; infant: number };
+  onDraftChange?: () => void;
 }
 export interface FlightDetailPopupProps {
   isOpen: boolean;
