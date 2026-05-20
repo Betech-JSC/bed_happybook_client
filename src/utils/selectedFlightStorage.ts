@@ -1,6 +1,7 @@
 import { handleSessionStorage } from "@/utils/Helper";
 import type { FlightSearchContext } from "@/types/selectedFlight";
 import type { SelectedFlight } from "@/types/selectedFlight";
+import { healInternationalSelection } from "@/utils/healInternationalSelection";
 import { legacyTripToSelectedFlight } from "@/utils/legacyTripToSelectedFlight";
 
 const KEYS = {
@@ -23,11 +24,12 @@ export function saveSelectedFlight(
   leg: "depart" | "return",
   selection: SelectedFlight
 ) {
+  const healed = healInternationalSelection(selection);
   const key = leg === "depart" ? KEYS.depart : KEYS.return;
-  handleSessionStorage("save", key, selection);
+  handleSessionStorage("save", key, healed);
   const legacyTrip = {
-    ...selection.trip,
-    selectedTicketClass: selection.fareOption,
+    ...healed.trip,
+    selectedTicketClass: healed.fareOption,
   };
   handleSessionStorage(
     "save",
@@ -42,7 +44,7 @@ export function getSelectedFlight(
   const key = leg === "depart" ? KEYS.depart : KEYS.return;
   const stored = handleSessionStorage("get", key);
   if (stored?.trip && stored?.fareOption) {
-    return stored as SelectedFlight;
+    return healInternationalSelection(stored as SelectedFlight);
   }
   return null;
 }
@@ -65,7 +67,9 @@ export function loadSelectedFlightsForBooking(): SelectedFlight[] {
         searchId,
         tripsSource,
         paxCounts,
-        itineraryId: "1",
+        resourceId:
+          (legacy._resourceFetchId as string | undefined) ??
+          (legacy._resourceId as string | undefined),
       });
       if (converted) legs.push(converted);
     }
@@ -81,13 +85,15 @@ export function loadSelectedFlightsForBooking(): SelectedFlight[] {
         searchId,
         tripsSource,
         paxCounts,
-        itineraryId: "2",
+        resourceId:
+          (legacy._resourceFetchId as string | undefined) ??
+          (legacy._resourceId as string | undefined),
       });
       if (converted) legs.push(converted);
     }
   }
 
-  return legs;
+  return legs.map((sel) => healInternationalSelection(sel));
 }
 
 export function tripFromSelection(sel: SelectedFlight): Record<string, unknown> {

@@ -3,6 +3,7 @@ import {
   fareValueValidationMessage,
   validateFareValueForConfirm,
 } from "@/utils/fareValueToken";
+import { verifyInternationalSegments } from "@/utils/internationalConfirmPrice";
 import { getFlightSearchContext } from "@/utils/selectedFlightStorage";
 import { handleSessionStorage } from "@/utils/Helper";
 
@@ -15,6 +16,7 @@ export function verifySelectedFlight(sel: SelectedFlight | null | undefined): st
 
   const { trip, fareOption, paxCounts, searchId } = sel;
   const source = String(trip?.source ?? "");
+  const tripRecord = trip as Record<string, unknown>;
 
   if (!searchId) errors.push("searchId is required");
 
@@ -39,6 +41,14 @@ export function verifySelectedFlight(sel: SelectedFlight | null | undefined): st
   if (!Array.isArray(trip?.segments) || (trip.segments as unknown[]).length === 0) {
     errors.push("trip.segments must be a non-empty array");
   }
+
+  const tripForIntlVerify = {
+    ...tripRecord,
+    selectedTicketClass:
+      (tripRecord.selectedTicketClass as Record<string, unknown> | undefined) ??
+      (fareOption as Record<string, unknown> | undefined),
+  };
+  errors.push(...verifyInternationalSegments(tripForIntlVerify, "Chuyến đã chọn"));
 
   if (!fareOption) errors.push("fareOption is required");
 

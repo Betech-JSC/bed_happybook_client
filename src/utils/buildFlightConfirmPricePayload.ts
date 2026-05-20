@@ -15,7 +15,14 @@ import {
   toAirdataBirthdayIso,
 } from "@/utils/buildPaxDocuments";
 import { handleSessionStorage } from "@/utils/Helper";
-import { copyFareValueRaw } from "@/utils/fareValueToken";
+import {
+  pickFareValueForPaxBreakdown,
+  resolveDomesticConfirmItineraryId,
+} from "@/utils/domesticConfirmFields";
+import {
+  isInternationalConfirmTrip,
+  resolveItineraryIdFromTrip,
+} from "@/utils/internationalConfirmPrice";
 import { mapSegmentsForConfirm } from "@/utils/mapSegmentForConfirm";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
@@ -94,10 +101,6 @@ function pickString(source: Record<string, unknown>, keys: string[]): string {
   return "";
 }
 
-function resolveBreakdownFareValue(fare: Record<string, unknown>): string {
-  return copyFareValueRaw(fare.fareValue);
-}
-
 export function buildFareBreakdowns(
   flight: Record<string, unknown>
 ): ConfirmPriceFareBreakdown[] {
@@ -116,6 +119,11 @@ export function buildFareBreakdowns(
     const tax = pickNumber(fare, config.taxKeys, 0);
     /** Airdata: total = netFare + tax — không dùng totalAdult (đã cộng phí DV). */
     const total = netFare + tax;
+    const fareValue = pickFareValueForPaxBreakdown(
+      fare,
+      flight,
+      config.paxType
+    );
 
     breakdowns.push({
       paxType: config.paxType,
@@ -124,14 +132,20 @@ export function buildFareBreakdowns(
       discountAmountParent: 0,
       tax,
       total,
-      fareValue: resolveBreakdownFareValue(fare),
+      fareValue,
     });
   }
 
   return breakdowns;
 }
 
-function resolvePaxTitle(gender?: boolean): string {
+function resolvePaxTitle(
+  gender: boolean | undefined,
+  paxType: ConfirmPaxType
+): string {
+  if (paxType === "CHILD" || paxType === "INFANT") {
+    return gender === false ? "MISS" : "MSTR";
+  }
   return gender === false ? "MS" : "MR";
 }
 
@@ -150,7 +164,7 @@ function itineraryClientIdField(
   return { clientId: String(raw) };
 }
 
-/** ADT → CHD → INF; paxId = "1", "2", …; INF links to first ADULT via childPaxId. */
+/** ADT → CHD → INF; paxId = "1", "2", …; nội địa: childPaxId + parentPaxId, PaxDocuments []. */
 export function buildPaxLists(
   passengers: ConfirmPricePaxListItem[],
   options?: { flights?: Record<string, unknown>[] }
@@ -168,21 +182,41 @@ export function buildPaxLists(
   const apiPax: ConfirmPricePaxApiItem[] = ordered.map((pax) => {
     const paxType = PAX_TYPE_MAP[pax.type] ?? "ADULT";
     const paxId = String(nextId++);
-    return {
+    const docs = buildPaxDocumentsForPassenger(paxId, pax, isInternational);
+
+    const item: ConfirmPricePaxApiItem = {
       paxId,
       paxType,
       firstName: normalizePaxName(pax.firstName),
       lastName: normalizePaxName(pax.lastName),
-      title: resolvePaxTitle(pax.gender),
+      title: resolvePaxTitle(pax.gender, paxType),
       birthday: toAirdataBirthdayIso(pax.birthday),
-      PaxDocuments: buildPaxDocumentsForPassenger(paxId, pax, isInternational),
     };
+
+    if (isInternational) {
+      if (docs.length > 0) {
+        item.PaxDocuments = docs;
+      }
+    } else {
+      item.PaxDocuments = [];
+    }
+
+    return item;
   });
 
   const firstAdult = apiPax.find((p) => p.paxType === "ADULT");
+  const firstChild = apiPax.find((p) => p.paxType === "CHILD");
   const firstInfant = apiPax.find((p) => p.paxType === "INFANT");
-  if (firstAdult && firstInfant) {
-    firstAdult.childPaxId = firstInfant.paxId;
+
+  if (firstInfant && firstAdult) {
+    if (isInternational) {
+      firstInfant.parentPaxId = firstAdult.paxId;
+    } else {
+      firstAdult.childPaxId = firstInfant.paxId;
+      firstInfant.parentPaxId = firstAdult.paxId;
+    }
+  } else if (firstChild && firstAdult) {
+    firstAdult.childPaxId = firstChild.paxId;
   }
 
   return apiPax;
@@ -198,26 +232,39 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
     ticketClass?.fareType ?? ticketClass?.groupClass ?? ""
   );
 
-  return mapSegmentsForConfirm(flight.segments, {
-    airline,
-    source: copyTripField(flight.source),
-    fareType: defaultFareType,
-    fareBasisCode: copyTripField(ticketClass?.fareBasisCode),
-    bookingClass: copyTripField(ticketClass?.bookingClass),
-    groupClass: copyTripField(ticketClass?.groupClass),
-  });
+  return mapSegmentsForConfirm(
+    flight.segments,
+    {
+      airline,
+      source: copyTripField(flight.source),
+      fareType: defaultFareType,
+      fareBasisCode: copyTripField(ticketClass?.fareBasisCode),
+      bookingClass: copyTripField(ticketClass?.bookingClass),
+      groupClass: copyTripField(ticketClass?.groupClass),
+    },
+    flight
+  );
 }
 
 function buildItineraries(flights: Record<string, unknown>[]): ConfirmPriceItinerary[] {
   return flights.map((flight, index) => {
     const airline = copyTripField(flight.airline) || copyTripField(flight.airLineCode);
+    const intlTrip = isInternationalConfirmTrip(flight);
+    const legIndex = flight.selectedJourneyLeg as number | undefined;
+    const itineraryId = intlTrip
+      ? resolveItineraryIdFromTrip(flight, {
+          allowLegFallback: false,
+          tripsSource: flight._tripsSource as "search" | "resource" | undefined,
+          legIndex,
+        })
+      : resolveDomesticConfirmItineraryId(flight);
 
     return {
       domestic: Boolean(flight.domestic),
       source: copyTripField(flight.source),
       airline,
       ...itineraryClientIdField(flight),
-      itineraryId: String(flight.itineraryId ?? index + 1),
+      itineraryId,
       fareBreakdowns: buildFareBreakdowns(flight),
       segments: buildConfirmSegments(flight),
       paxssr: [],
@@ -319,14 +366,33 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
   };
   bookingFlightRequestId?: number | null;
 }): ConfirmPriceRequest {
-  const flights = input.selections.map((sel, index) => ({
-    ...(sel.trip as Record<string, unknown>),
-    selectedTicketClass: sel.fareOption,
-    itineraryId: sel.itineraryId || String(index + 1),
-    numberAdt: sel.paxCounts.adult,
-    numberChd: sel.paxCounts.child,
-    numberInf: sel.paxCounts.infant,
-  }));
+  const flights = input.selections.map((sel, index) => {
+    const trip = sel.trip as Record<string, unknown>;
+    const intlTrip = isInternationalConfirmTrip(trip);
+    const legIndex = trip.selectedJourneyLeg as number | undefined;
+    const itineraryId = intlTrip
+      ? sel.itineraryId ||
+        resolveItineraryIdFromTrip(trip, {
+          allowLegFallback: false,
+          tripsSource: sel.tripsSource,
+          legIndex,
+        })
+      : resolveDomesticConfirmItineraryId(trip);
+
+    const fareOption = sel.fareOption as Record<string, unknown>;
+    return {
+      ...trip,
+      selectedTicketClass: fareOption,
+      fareOptions: (trip.fareOptions as unknown[])?.length
+        ? trip.fareOptions
+        : [fareOption],
+      itineraryId,
+      _tripsSource: sel.tripsSource,
+      numberAdt: sel.paxCounts.adult,
+      numberChd: sel.paxCounts.child,
+      numberInf: sel.paxCounts.infant,
+    };
+  });
 
   const sessionId =
     input.selections[0]?.searchId ||
@@ -373,6 +439,12 @@ export function buildPassengersFromForm(
           : "",
         passport: item.value.passport as string | undefined,
         nationality: item.value.nationality as string | undefined,
+        residence: item.value.birthday
+          ? format(
+              new Date(item.value.birthday as string | Date),
+              "yyyy-MM-dd"
+            )
+          : undefined,
         passport_country: (item.value.nationality as string | undefined) ?? "VNM",
         passport_expiry_date: item.value.passport_expiry_date as
           | string
@@ -421,6 +493,7 @@ export function normalizeConfirmPriceResponse(
   const orderCode =
     (data.order_code as string) ||
     (data.orderCode as string) ||
+    (data.booking_ref as string) ||
     ((data.orderInfo as Record<string, unknown>)?.sku as string) ||
     "";
 

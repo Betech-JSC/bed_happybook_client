@@ -59,6 +59,7 @@ export function validateFareValueForConfirm(
 
   const src = String(source ?? "").toUpperCase();
   const isVj = src === "VJ" || src.includes("VIETJET");
+  const is1G = src === "1G";
 
   if (isVj) {
     if (!BASE64_URL_SAFE.test(raw)) {
@@ -70,6 +71,15 @@ export function validateFareValueForConfirm(
     }
     if (isFareValueExpired(raw)) {
       return { ok: false, code: "expired" };
+    }
+  }
+
+  if (is1G) {
+    if (/^\d+$/.test(raw) || raw.length < 50) {
+      return { ok: false, code: "invalid_format" };
+    }
+    if (!BASE64_URL_SAFE.test(raw)) {
+      return { ok: false, code: "invalid_format" };
     }
   }
 
@@ -111,7 +121,10 @@ export function isConfirmPriceSoftFailure(
     Boolean(data.bookingId) ||
     Boolean(data.booking_id) ||
     Boolean(data.airdata_booking_id);
-  const hasOrder = Boolean(data.order_code) || Boolean(data.sku);
+  const hasOrder =
+    Boolean(data.order_code) ||
+    Boolean(data.sku) ||
+    Boolean(data.booking_ref);
   if (hasRequest || hasBooking || hasOrder) return false;
   if (Array.isArray(data.paxLists) && data.paxLists.length > 0) return true;
   return true;
