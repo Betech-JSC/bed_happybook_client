@@ -6,6 +6,37 @@ type httpMethod = "GET" | "POST" | "PUT" | "DELETE";
 // This is the key fix for "Document request latency" Lighthouse issue
 const DEFAULT_GET_CACHE = 60 * 5;
 
+/** Next.js warns if both `cache: no-store` and `revalidate: 0` are set. */
+function resolveFetchCache(
+  timeCache: number,
+  options?: RequestInit
+): { cache?: RequestCache; next?: { revalidate: number } } {
+  if (options?.cache === "no-store" || timeCache === 0) {
+    return { cache: "no-store" };
+  }
+  return { next: { revalidate: timeCache } };
+}
+
+/** PHP display_errors may prepend HTML before JSON in local dev. */
+function parseResponseJson<Response>(raw: string): Response {
+  const trimmed = raw.trim();
+  if (!trimmed) return {} as Response;
+
+  try {
+    return JSON.parse(trimmed) as Response;
+  } catch {
+    const jsonStart = trimmed.search(/[{[]/);
+    if (jsonStart > 0) {
+      try {
+        return JSON.parse(trimmed.slice(jsonStart)) as Response;
+      } catch {
+        /* fall through */
+      }
+    }
+    throw new SyntaxError("Response is not valid JSON");
+  }
+}
+
 function defaultHttpTimeoutMs(): number {
   const fromEnv = Number(process.env.NEXT_PUBLIC_HTTP_TIMEOUT_MS);
   if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
@@ -41,9 +72,12 @@ const request = async <Response>(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+  const cacheOptions = resolveFetchCache(timeCache, options);
+  const { cache: _cache, next: _next, ...restOptions } = options ?? {};
+
   try {
     const response = await fetch(fullUrl, {
-      ...options,
+      ...restOptions,
       headers: {
         ...baseHeader,
         ...options?.headers,
@@ -51,7 +85,7 @@ const request = async <Response>(
       body,
       method,
       signal: controller.signal,
-      next: { revalidate: timeCache },
+      ...cacheOptions,
     });
     clearTimeout(timeoutId);
 
@@ -60,12 +94,7 @@ const request = async <Response>(
     let payload: Response;
 
     try {
-      const trimmed = raw.trim();
-      if (!trimmed) {
-        payload = {} as Response;
-      } else {
-        payload = JSON.parse(raw) as Response;
-      }
+      payload = parseResponseJson<Response>(raw);
     } catch {
       const preview = raw.replace(/\s+/g, " ").slice(0, 280);
       console.error("[http] Response is not valid JSON", {
