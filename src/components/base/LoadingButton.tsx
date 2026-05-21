@@ -4,6 +4,7 @@ interface LoadingButtonProps {
   disabled?: boolean;
   onClick?: () => void;
   style?: string;
+  type?: "button" | "submit";
 }
 
 export default function LoadingButton({
@@ -12,9 +13,11 @@ export default function LoadingButton({
   disabled,
   onClick,
   style,
+  type = "submit",
 }: LoadingButtonProps) {
   return (
     <button
+      type={type}
       className={`mt-2 w-full bg-blue-600 text-white py-2.5 rounded-lg text-center cursor-pointer text__default_hover ${style}`}
       onClick={onClick}
       disabled={disabled || isLoading}

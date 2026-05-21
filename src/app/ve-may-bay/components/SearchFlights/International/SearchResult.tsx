@@ -23,7 +23,13 @@ import {
   getCurrentLanguage,
   getDayLabel,
   handleScrollSmooth,
+  handleSessionStorage,
 } from "@/utils/Helper";
+import { saveFlightSearchContext } from "@/utils/selectedFlightStorage";
+import {
+  merge1GPackageFromResourceResponse,
+  pick1GResourceFetchId,
+} from "@/utils/international1G";
 import { HttpError } from "@/lib/error";
 import { ListFilghtProps, TabDays } from "@/types/flight";
 import { formatTranslationMap, translatePage } from "@/utils/translateDom";
@@ -33,6 +39,12 @@ import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import ListFlightsInternaltion from "./List";
+import ResumeFlightDraftBanner from "../../ResumeFlightDraftBanner";
+import {
+  buildSearchRouteFromParams,
+  findMatchingFlightDraft,
+  type FlightDraftMatch,
+} from "@/utils/flightDraftSession";
 
 export default function SearchFlightsInternationalResult({
   airportsData,
@@ -76,6 +88,9 @@ export default function SearchFlightsInternationalResult({
   const [airlineData, setAirlineData] = useState<
     { id: number; name: string; code: string; logo: string }[]
   >([]);
+  const [matchingDraft, setMatchingDraft] = useState<FlightDraftMatch | null>(
+    null
+  );
 
   const params = useMemo(() => {
     let flightType: string = "RT";
@@ -243,6 +258,13 @@ export default function SearchFlightsInternationalResult({
         setFlightItineraryResource([]);
         setAirlineData([]);
         setError("");
+        handleSessionStorage("remove", [
+          "selectedFlightDepart",
+          "selectedFlightReturn",
+          "departFlight",
+          "returnFlight",
+          "flightConfirmPrice",
+        ]);
         if (StartPoint && EndPoint && DepartDate) {
           const response = await FlightApi.search({
             ...params,
@@ -253,6 +275,15 @@ export default function SearchFlightsInternationalResult({
           const resources: any = responseData?.resources ?? [];
           if (responseData?.searchId) {
             setSearchId(responseData?.searchId);
+            saveFlightSearchContext({
+              searchId: responseData.searchId,
+              tripsSource: resources.length ? "resource" : "search",
+              paxCounts: {
+                adult: passengerAdt,
+                child: passengerChd,
+                infant: passengerInf,
+              },
+            });
           } else {
             throw new Error("Search Error");
           }
@@ -388,9 +419,15 @@ export default function SearchFlightsInternationalResult({
 
         const flightsData: any[] = [];
 
-        results.forEach((res) => {
+        results.forEach((res, index) => {
           if (res.status === "fulfilled") {
-            const flightTrips = res?.value?.payload?.data?.trips ?? [];
+            const resourceKey = unprocessed[index]?.key;
+            const flightTrips = (res.value?.payload?.data?.trips ?? []).map(
+              (trip: Record<string, unknown>) => ({
+                ...trip,
+                _resourceFetchId: resourceKey,
+              })
+            );
             if (flightTrips.length) {
               flightsData.push(...flightTrips);
             }
@@ -415,6 +452,84 @@ export default function SearchFlightsInternationalResult({
     passengerInf,
     stopNumFilters,
     toaStrMsg.errorConnectApiFlight,
+    StartPoint,
+    EndPoint,
+  ]);
+
+  // 1G: GET /search/resources/{id} → journeys[].segments[].segmentValue
+  useEffect(() => {
+    if (!searchId || !flightsData?.length) return;
+
+    const pending = flightsData.filter(
+      (pkg: { source?: string; _journeysEnriched?: boolean }) =>
+        pkg?.source === "1G" &&
+        !pkg._journeysEnriched &&
+        pick1GResourceFetchId(pkg as Record<string, unknown>)
+    );
+    if (!pending.length) return;
+
+    let cancelled = false;
+
+    const enrich = async () => {
+      const results = await Promise.allSettled(
+        pending.map(async (pkg: Record<string, unknown>) => {
+          const rid = pick1GResourceFetchId(pkg)!;
+          const res = await FlightApi.getFlightResource({
+            resource_id: rid,
+            passengers: {
+              adt: passengerAdt,
+              chd: passengerChd,
+              inf: passengerInf,
+            },
+            locations: { from: StartPoint, to: EndPoint },
+          });
+          return {
+            rid,
+            data: (res?.payload?.data ?? {}) as Record<string, unknown>,
+          };
+        })
+      );
+
+      if (cancelled) return;
+
+      setFlightsData((prev: Record<string, unknown>[]) =>
+        prev.map((item) => {
+          if (item.source !== "1G" || item._journeysEnriched) return item;
+          const rid = pick1GResourceFetchId(item);
+          const hit = results.find(
+            (r) => r.status === "fulfilled" && r.value.rid === rid
+          );
+          if (hit?.status !== "fulfilled") return item;
+          return merge1GPackageFromResourceResponse(
+            item,
+            hit.value.data,
+            hit.value.rid
+          );
+        })
+      );
+
+      saveFlightSearchContext({
+        searchId,
+        tripsSource: "resource",
+        paxCounts: {
+          adult: passengerAdt,
+          child: passengerChd,
+          infant: passengerInf,
+        },
+      });
+    };
+
+    enrich().catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    flightsData,
+    searchId,
+    passengerAdt,
+    passengerChd,
+    passengerInf,
     StartPoint,
     EndPoint,
   ]);
@@ -485,6 +600,29 @@ export default function SearchFlightsInternationalResult({
       setIsReady(false);
     }
   }, [loading, flights1G, flightsNormalGroupped]);
+
+  useEffect(() => {
+    if (!isReady) {
+      setMatchingDraft(null);
+      return;
+    }
+    const searchRoute = buildSearchRouteFromParams({
+      startPoint: StartPoint,
+      endPoint: EndPoint,
+      tripType,
+      departDate: DepartDate,
+      returnDate: ReturnDate,
+    });
+    const match = findMatchingFlightDraft(searchRoute);
+    if (
+      match &&
+      (match.meta.flow === "international" || match.meta.flow === "1g")
+    ) {
+      setMatchingDraft(match);
+    } else {
+      setMatchingDraft(null);
+    }
+  }, [isReady, StartPoint, EndPoint, tripType, DepartDate, ReturnDate]);
 
   if (!isReady) {
     return (
@@ -619,9 +757,18 @@ export default function SearchFlightsInternationalResult({
   }
 
   const finalFlightsData = [...flights1G, ...flightsNormalGroupped];
+
   return (
     <Fragment>
       <div ref={resultsRef}>
+        {matchingDraft && (
+          <ResumeFlightDraftBanner
+            match={matchingDraft}
+            fromLabel={from}
+            toLabel={to}
+            onClose={() => setMatchingDraft(null)}
+          />
+        )}
         <ListFlightsInternaltion
           from={from}
           to={to}
