@@ -6,11 +6,48 @@ type httpMethod = "GET" | "POST" | "PUT" | "DELETE";
 // This is the key fix for "Document request latency" Lighthouse issue
 const DEFAULT_GET_CACHE = 60 * 5;
 
+/** Next.js warns if both `cache: no-store` and `revalidate: 0` are set. */
+function resolveFetchCache(
+  timeCache: number,
+  options?: RequestInit
+): { cache?: RequestCache; next?: { revalidate: number } } {
+  if (options?.cache === "no-store" || timeCache === 0) {
+    return { cache: "no-store" };
+  }
+  return { next: { revalidate: timeCache } };
+}
+
+/** PHP display_errors may prepend HTML before JSON in local dev. */
+function parseResponseJson<Response>(raw: string): Response {
+  const trimmed = raw.trim();
+  if (!trimmed) return {} as Response;
+
+  try {
+    return JSON.parse(trimmed) as Response;
+  } catch {
+    const jsonStart = trimmed.search(/[{[]/);
+    if (jsonStart > 0) {
+      try {
+        return JSON.parse(trimmed.slice(jsonStart)) as Response;
+      } catch {
+        /* fall through */
+      }
+    }
+    throw new SyntaxError("Response is not valid JSON");
+  }
+}
+
+function defaultHttpTimeoutMs(): number {
+  const fromEnv = Number(process.env.NEXT_PUBLIC_HTTP_TIMEOUT_MS);
+  if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
+  return 10000;
+}
+
 const request = async <Response>(
   method: httpMethod,
   url: string,
   options?: RequestInit | undefined,
-  timeout: number = 10000,
+  timeout: number = defaultHttpTimeoutMs(),
   timeCache: number = 0
 ) => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
@@ -35,9 +72,12 @@ const request = async <Response>(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+  const cacheOptions = resolveFetchCache(timeCache, options);
+  const { cache: _cache, next: _next, ...restOptions } = options ?? {};
+
   try {
     const response = await fetch(fullUrl, {
-      ...options,
+      ...restOptions,
       headers: {
         ...baseHeader,
         ...options?.headers,
@@ -45,11 +85,36 @@ const request = async <Response>(
       body,
       method,
       signal: controller.signal,
-      next: { revalidate: timeCache },
+      ...cacheOptions,
     });
     clearTimeout(timeoutId);
 
-    const payload: Response = await response.json();
+    const contentType = response.headers.get("content-type") || "";
+    const raw = await response.text();
+    let payload: Response;
+
+    try {
+      payload = parseResponseJson<Response>(raw);
+    } catch {
+      const preview = raw.replace(/\s+/g, " ").slice(0, 280);
+      console.error("[http] Response is not valid JSON", {
+        url: fullUrl,
+        status: response.status,
+        contentType,
+        preview,
+      });
+      throw new HttpError({
+        status: response.ok ? 502 : response.status,
+        payload: {
+          code: "INVALID_JSON_RESPONSE",
+          message:
+            "API returned a non-JSON body (often HTML). Backend should return application/json for this route.",
+          url: fullUrl,
+          httpStatus: response.status,
+        },
+      });
+    }
+
     const data = {
       status: response.status,
       payload: payload,
@@ -68,7 +133,10 @@ const request = async <Response>(
     if (error instanceof HttpError) {
       throw error;
     } else if (error instanceof Error) {
-      if (error.name === "AbortError") {
+      const isAbort =
+        error.name === "AbortError" ||
+        ("code" in error && (error as DOMException).code === DOMException.ABORT_ERR);
+      if (isAbort) {
         console.error("fetch AbortError:", error);
         throw new HttpError({ status: 408, payload: "Request timeout" });
       }
@@ -89,7 +157,7 @@ const http = {
   get<Response>(
     url: string,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = 10000,
+    timeout: number = defaultHttpTimeoutMs(),
     // ✅ Fixed: was always 0 (no cache). Now defaults to 5 min.
     // This is the root cause of the 3,820ms document latency.
     timeCache: number = DEFAULT_GET_CACHE
@@ -100,7 +168,7 @@ const http = {
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = 10000,
+    timeout: number = defaultHttpTimeoutMs(),
     timeCache: number = 0 // POST: never cache
   ) {
     return request<Response>("POST", url, { ...options, body }, timeout, timeCache);
@@ -109,7 +177,7 @@ const http = {
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = 10000,
+    timeout: number = defaultHttpTimeoutMs(),
     timeCache: number = 0
   ) {
     return request<Response>("PUT", url, { ...options, body }, timeout, timeCache);
@@ -118,7 +186,7 @@ const http = {
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = 10000,
+    timeout: number = defaultHttpTimeoutMs(),
     timeCache: number = 0
   ) {
     return request<Response>("DELETE", url, { ...options, body }, timeout, timeCache);

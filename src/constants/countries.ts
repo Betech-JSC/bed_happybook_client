@@ -1,0 +1,21 @@
+/** Common nationalities for international flight booking (ISO 3166-1 alpha-3). */
+export const FLIGHT_NATIONALITIES = [
+  { code: "VNM", label: "Việt Nam" },
+  { code: "USA", label: "Hoa Kỳ" },
+  { code: "GBR", label: "Anh" },
+  { code: "AUS", label: "Úc" },
+  { code: "JPN", label: "Nhật Bản" },
+  { code: "KOR", label: "Hàn Quốc" },
+  { code: "CHN", label: "Trung Quốc" },
+  { code: "SGP", label: "Singapore" },
+  { code: "THA", label: "Thái Lan" },
+  { code: "MYS", label: "Malaysia" },
+  { code: "IDN", label: "Indonesia" },
+  { code: "PHL", label: "Philippines" },
+  { code: "FRA", label: "Pháp" },
+  { code: "DEU", label: "Đức" },
+  { code: "CAN", label: "Canada" },
+  { code: "IND", label: "Ấn Độ" },
+  { code: "TWN", label: "Đài Loan" },
+  { code: "HKG", label: "Hồng Kông" },
+] as const;

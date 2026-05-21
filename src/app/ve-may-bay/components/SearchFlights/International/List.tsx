@@ -12,6 +12,16 @@ import { differenceInHours, format, isSameDay, parseISO } from "date-fns";
 import Image from "next/image";
 import { pareseDateFromString } from "@/lib/formatters";
 import { handleSessionStorage } from "@/utils/Helper";
+import {
+  getFlightSearchContext,
+  saveSelectedFlight,
+} from "@/utils/selectedFlightStorage";
+import { legacy1GPackageToSelectedFlight } from "@/utils/legacy1GPackageToSelectedFlight";
+import {
+  ensure1GPackageEnriched,
+  pick1GResourceFetchId,
+} from "@/utils/international1G";
+import { legacyTripToSelectedFlight } from "@/utils/legacyTripToSelectedFlight";
 import { filtersFlight, ListFlight } from "@/types/flight";
 import _ from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -326,11 +336,61 @@ export default function ListFlightsInternaltion({
       ),
     [filteredData]
   );
+  const persistSelection = (
+    leg: "depart" | "return",
+    stored: Record<string, unknown> | null
+  ) => {
+    if (!stored || !flightSession) return;
+    const ctx = getFlightSearchContext();
+    const base = {
+      searchId: ctx?.searchId ?? flightSession,
+      tripsSource: ctx?.tripsSource ?? ("search" as const),
+      paxCounts: ctx?.paxCounts ?? {
+        adult: Number(stored.numberAdt ?? 1),
+        child: Number(stored.numberChd ?? 0),
+        infant: Number(stored.numberInf ?? 0),
+      },
+      resourceId:
+        pick1GResourceFetchId(stored) ??
+        (stored._resourceFetchId as string | undefined),
+    };
+    const selection =
+      String(stored.source ?? "").toUpperCase() === SOURCE_1G
+        ? legacy1GPackageToSelectedFlight(stored, base)
+        : legacyTripToSelectedFlight(stored, base);
+    if (selection) saveSelectedFlight(leg, selection);
+  };
+
   const handleCheckout = async () => {
     if (isCheckOut) {
-      handleSessionStorage("save", "departFlight", selectedDepartFlight);
-      handleSessionStorage("save", "returnFlight", selectedReturnFlight);
+      const ctx = getFlightSearchContext();
+      const enrichParams = {
+        passengers: {
+          adt: ctx?.paxCounts?.adult ?? Number(selectedDepartFlight?.numberAdt ?? 1),
+          chd: ctx?.paxCounts?.child ?? Number(selectedDepartFlight?.numberChd ?? 0),
+          inf: ctx?.paxCounts?.infant ?? Number(selectedDepartFlight?.numberInf ?? 0),
+        },
+        locations: { from, to },
+        getFlightResource: (body: Record<string, unknown>) =>
+          FlightApi.getFlightResource(body),
+      };
+
+      let departPkg = selectedDepartFlight;
+      let returnPkg = selectedReturnFlight;
+      if (departPkg?.source === SOURCE_1G) {
+        departPkg = await ensure1GPackageEnriched(departPkg, enrichParams);
+      }
+      if (returnPkg?.source === SOURCE_1G) {
+        returnPkg = await ensure1GPackageEnriched(returnPkg, enrichParams);
+      }
+
+      handleSessionStorage("save", "departFlight", departPkg);
+      handleSessionStorage("save", "returnFlight", returnPkg);
       handleSessionStorage("save", "flightSession", flightSession);
+      persistSelection("depart", departPkg);
+      if (returnPkg) {
+        persistSelection("return", returnPkg);
+      }
       const res = await fetch("/api/set-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

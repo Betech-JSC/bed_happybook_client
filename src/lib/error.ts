@@ -3,7 +3,16 @@ export class HttpError extends Error {
   payload: any;
 
   constructor({ status, payload }: { status: number; payload: any }) {
-    super(payload);
+    const message =
+      typeof payload === "string"
+        ? payload
+        : typeof payload?.message === "string"
+          ? payload.message
+          : typeof payload?.code === "string"
+            ? payload.code
+            : "HTTP request failed";
+    super(message);
+    this.name = "HttpError";
     this.status = status;
     this.payload = payload;
   }

@@ -10,6 +10,11 @@ import _ from "lodash";
 import DisplayImage from "@/components/base/DisplayImage";
 import { useTranslation } from "@/hooks/useTranslation";
 import FlightInfo from "@/components/FlightInfo";
+import {
+  enrich1GPackageSelection,
+  package1GHasSearchSegmentTokens,
+  pick1GResourceFetchId,
+} from "@/utils/international1G";
 
 const FlightInternational1GDetail = ({
   journey,
@@ -18,18 +23,31 @@ const FlightInternational1GDetail = ({
   fareData,
   airports,
   isCheapest,
+  legIndex = 0,
 }: any) => {
   const { t } = useTranslation();
 
   const [expandedFlightIndex, setExpandedFlightIndex] = React.useState<number | null>(null);
 
+  const needsResourceEnrich =
+    Boolean(pick1GResourceFetchId(fareData)) &&
+    !fareData?._journeysEnriched &&
+    !package1GHasSearchSegmentTokens(fareData);
+
   const handleSelectFlight = (
     flightSelected: any,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const fareDataClone = _.cloneDeep(fareData);
-    fareDataClone.selectedTicketClass = flightSelected;
-    onSelectFlight(_.cloneDeep(fareDataClone), fareData?.hpb_id, e);
+    if (needsResourceEnrich) {
+      e.preventDefault();
+      return;
+    }
+    const enriched = enrich1GPackageSelection(
+      _.cloneDeep(fareData),
+      _.cloneDeep(flightSelected),
+      legIndex
+    );
+    onSelectFlight(enriched, fareData?.hpb_id, e);
   };
   return (
     <Fragment>
@@ -136,7 +154,17 @@ const FlightInternational1GDetail = ({
                     name={`flight[${flight.sequence === 1 ? 0 : 1}]`}
                     onChange={(e) => handleSelectFlight(flight, e)}
                     type="radio"
-                    className="w-4 h-4 md:w-5 md:h-5 cursor-pointer"
+                    disabled={needsResourceEnrich}
+                    title={
+                      needsResourceEnrich
+                        ? "Đang tải giá chi tiết, vui lòng đợi vài giây"
+                        : undefined
+                    }
+                    className={`w-4 h-4 md:w-5 md:h-5 ${
+                      needsResourceEnrich
+                        ? "cursor-not-allowed opacity-50"
+                        : "cursor-pointer"
+                    }`}
                   />
                 </div>
                 <button
