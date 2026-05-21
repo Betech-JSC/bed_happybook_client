@@ -6,7 +6,7 @@ import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
-import { notFound, useRouter } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/base/LoadingButton";
 import { FlightApi } from "@/api/Flight";
@@ -187,10 +187,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     });
   }
 
+  const searchParams = useSearchParams();
+
   //   toast.dismiss();
   useEffect(() => {
     const bookingData = handleSessionStorage("get", "bookingFlight");
-    setLoading(false);
+    const orderCodeFromQuery = searchParams.get("order_code");
+
     if (bookingData) {
       setData(bookingData);
       if (bookingData.passengers.length) {
@@ -208,8 +211,52 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         );
         setTotalBaggages(accumulated);
       }
+      setLoading(false);
+      return;
     }
-  }, []);
+
+    if (orderCodeFromQuery) {
+      FlightApi.paymentInfo(orderCodeFromQuery)
+        .then((response: any) => {
+          const info = response?.payload?.data ?? response?.payload?.payload?.data;
+          if (info) {
+            setData({
+              orderInfo: {
+                sku: info.order_code,
+                total_price: info.total_price ?? 0,
+                total_discount: info.total_discount ?? 0,
+                booking_deadline: info.deadline,
+                payment_method: info.payment_method,
+              },
+              contact: {
+                full_name: info.customer_name ?? "",
+                email: info.customer_email ?? "",
+                phone: info.customer_phone ?? "",
+                gender: null,
+              },
+              passengers: [],
+              flights: [],
+              isEmailRecovery: true,
+            });
+
+            if (info.status === "paid") {
+              setIsPaid(true);
+            }
+          } else {
+            toast.error(t("khong_tim_thay_don_hang"));
+          }
+        })
+        .catch(() => {
+          toast.error(t("co_loi_xay_ra"));
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
+    }
+
+    setLoading(false);
+  }, [searchParams, t]);
 
   const fetchFareRules = useCallback(
     async (flight: any) => {

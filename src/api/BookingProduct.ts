@@ -24,6 +24,8 @@ const BookingProductApi = {
   BusinessLounge: (data: any) => http.post<any>(`${path}/business-lounge`, data),
   updatePaymentMethod: (data: any) =>
     http.post<any>(`${path}/update-payment-method`, data),
+  paymentInfo: (orderCode: string) =>
+    http.get<any>(`${path}/payment-info/${encodeURIComponent(orderCode)}`, {}, 10000, 0),
   History: (token: string | undefined, productType: string, page: number) =>
     http.get<any>(`${path}/${productType}/history?page=${page}`, {
       headers: {
