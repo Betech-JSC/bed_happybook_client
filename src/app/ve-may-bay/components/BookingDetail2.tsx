@@ -6,7 +6,7 @@ import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
-import { notFound, useRouter } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/base/LoadingButton";
 import { FlightApi } from "@/api/Flight";
@@ -235,6 +235,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     });
   }
 
+  const searchParams = useSearchParams();
   const authoritativeFareTotal = data
     ? resolveAuthoritativeFareTotal({
         confirmPrice: data.confirmPrice,
@@ -254,48 +255,100 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   //   toast.dismiss();
   useEffect(() => {
     const bookingData = handleSessionStorage("get", "bookingFlight");
-    setLoading(false);
-    if (!bookingData) return;
+    const orderCodeFromQuery = searchParams.get("order_code");
 
-    const status = bookingData.status as FlightBookingOrderStatus | undefined;
-    const orderInfoStatus = bookingData.orderInfo?.status as
-      | FlightBookingOrderStatus
-      | undefined;
-    const effectiveStatus = status ?? orderInfoStatus;
+    if (bookingData) {
+      const status = bookingData.status as FlightBookingOrderStatus | undefined;
+      const orderInfoStatus = bookingData.orderInfo?.status as
+        | FlightBookingOrderStatus
+        | undefined;
+      const effectiveStatus = status ?? orderInfoStatus;
 
-    if (effectiveStatus === "price_confirmed") {
-      router.replace("/ve-may-bay/thong-tin-hanh-khach");
+      if (effectiveStatus === "price_confirmed") {
+        setLoading(false);
+        router.replace("/ve-may-bay/thong-tin-hanh-khach");
+        return;
+      }
+
+      setOrderStatus(effectiveStatus);
+      if (isFlightPaymentConfirmed(effectiveStatus)) {
+        setIsPaid(true);
+      }
+
+      const pendingPayment = handleSessionStorage("get", "flightPaymentPending");
+      if (pendingPayment?.orderCode === bookingData.orderInfo?.sku) {
+        setPaymentStarted(true);
+        setPollingStatus(true);
+      }
+
+      setData(bookingData);
+      if (bookingData.passengers?.length) {
+        const accumulated = bookingData.passengers.reduce(
+          (acc: { price: number; quantity: number }, item: any) => {
+            if (Array.isArray(item.baggages)) {
+              item.baggages.forEach((bag: any) => {
+                acc.price += bag.price;
+                acc.quantity++;
+              });
+            }
+            return acc;
+          },
+          { price: 0, quantity: 0 },
+        );
+        setTotalBaggages(accumulated);
+      }
+
+      setLoading(false);
       return;
     }
 
-    setOrderStatus(effectiveStatus);
-    if (isFlightPaymentConfirmed(effectiveStatus)) {
-      setIsPaid(true);
-    }
-
-    const pendingPayment = handleSessionStorage("get", "flightPaymentPending");
-    if (pendingPayment?.orderCode === bookingData.orderInfo?.sku) {
-      setPaymentStarted(true);
-      setPollingStatus(true);
-    }
-
-    setData(bookingData);
-    if (bookingData.passengers?.length) {
-      const accumulated = bookingData.passengers.reduce(
-        (acc: { price: number; quantity: number }, item: any) => {
-          if (Array.isArray(item.baggages)) {
-            item.baggages.forEach((bag: any) => {
-              acc.price += bag.price;
-              acc.quantity++;
+    if (orderCodeFromQuery) {
+      FlightApi.paymentInfo(orderCodeFromQuery)
+        .then((response: any) => {
+          const info = response?.payload?.data ?? response?.payload?.payload?.data;
+          if (info) {
+            const recoveryStatus =
+              info.status as FlightBookingOrderStatus | undefined;
+            setData({
+              orderInfo: {
+                sku: info.order_code,
+                total_price: info.total_price ?? 0,
+                total_discount: info.total_discount ?? 0,
+                booking_deadline: info.deadline,
+                payment_method: info.payment_method,
+                status: recoveryStatus,
+              },
+              contact: {
+                full_name: info.customer_name ?? "",
+                email: info.customer_email ?? "",
+                phone: info.customer_phone ?? "",
+                gender: null,
+              },
+              passengers: [],
+              flights: [],
+              isEmailRecovery: true,
+              status: recoveryStatus,
             });
+
+            setOrderStatus(recoveryStatus);
+            if (isFlightPaymentConfirmed(recoveryStatus)) {
+              setIsPaid(true);
+            }
+          } else {
+            toast.error(t("khong_tim_thay_don_hang"));
           }
-          return acc;
-        },
-        { price: 0, quantity: 0 }
-      );
-      setTotalBaggages(accumulated);
+        })
+        .catch(() => {
+          toast.error(t("co_loi_xay_ra"));
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
     }
-  }, [router, setPnrNumber]);
+
+    setLoading(false);
+  }, [router, searchParams, t]);
 
   useEffect(() => {
     if (!polledStatus) return;
@@ -311,6 +364,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
           orderInfo: { ...data?.orderInfo, status: polledStatus },
         });
       }
+      setLoading(false);
     }
   }, [polledStatus, data]);
 

@@ -6,7 +6,7 @@ import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
-import { notFound, useRouter } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/base/LoadingButton";
 import { FlightApi } from "@/api/Flight";
@@ -34,6 +34,7 @@ import {
 
 export default function BookingDetail1G({ airports }: BookingDetailProps) {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { language } = useLanguage();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -123,6 +124,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   };
 
   let keyLoopDropdown = 1;
+  const isEmailRecovery = data?.isEmailRecovery;
   let totalPrice = 0;
   let totalAdt = 1;
   let totalChd = 0;
@@ -138,7 +140,9 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   let totalTaxInf = 0;
   let dropdown: any = [];
   let fareData: any = [];
-  if (data?.flights?.length) {
+  if (data?.isEmailRecovery) {
+    totalPrice = data?.orderInfo?.total_price ?? 0;
+  } else if (data?.flights?.length) {
     data.flights.map((flightItem: any, index: number) => {
       fareData.push(flightItem);
       totalPrice = flightItem.totalPrice;
@@ -191,7 +195,8 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   //   toast.dismiss();
   useEffect(() => {
     const bookingData = handleSessionStorage("get", "bookingFlight");
-    setLoading(false);
+    const orderCodeFromQuery = searchParams.get("order_code");
+
     if (bookingData) {
       setData(bookingData);
       if (bookingData.passengers.length) {
@@ -209,8 +214,52 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
         );
         setTotalBaggages(accumulated);
       }
+      setLoading(false);
+      return;
     }
-  }, []);
+
+    if (orderCodeFromQuery) {
+      FlightApi.paymentInfo(orderCodeFromQuery)
+        .then((response: any) => {
+          const info = response?.payload?.data ?? response?.payload?.payload?.data;
+          if (info) {
+            setData({
+              orderInfo: {
+                sku: info.order_code,
+                total_price: info.total_price ?? 0,
+                total_discount: info.total_discount ?? 0,
+                booking_deadline: info.deadline,
+                payment_method: info.payment_method,
+              },
+              contact: {
+                full_name: info.customer_name ?? "",
+                email: info.customer_email ?? "",
+                phone: info.customer_phone ?? "",
+                gender: null,
+              },
+              passengers: [],
+              flights: [],
+              isEmailRecovery: true,
+            });
+
+            if (info.status === "paid") {
+              setIsPaid(true);
+            }
+          } else {
+            toast.error(t("khong_tim_thay_don_hang"));
+          }
+        })
+        .catch(() => {
+          toast.error(t("co_loi_xay_ra"));
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
+    }
+
+    setLoading(false);
+  }, [searchParams, t]);
 
   useEffect(() => {
     let interval: any;

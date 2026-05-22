@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
 import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
-import { notFound, useRouter } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -95,13 +95,60 @@ export default function BookingDetail() {
     },
   });
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   useEffect(() => {
     const bookingData = handleSessionStorage("get", "bookingData");
-    setLoading(false);
+    const orderCodeFromQuery = searchParams.get("order_code");
+
     if (bookingData) {
       setData(bookingData);
+      setLoading(false);
+      return;
     }
-  }, []);
+
+    if (orderCodeFromQuery) {
+      BookingProductApi.paymentInfo(orderCodeFromQuery)
+        .then((response: any) => {
+          const info = response?.payload?.data ?? response?.payload?.payload?.data;
+          if (info) {
+            setData({
+              code: info.order_code,
+              full_name: info.full_name ?? info.customer_name ?? "",
+              phone: info.phone ?? info.customer_phone ?? "",
+              email: info.email ?? info.customer_email ?? "",
+              total_price: info.total_price ?? 0,
+              total_discount: info.total_discount ?? 0,
+              product: {
+                name: info.service_name ?? "Dịch vụ",
+                currency: info.currency ?? "VND",
+              },
+              booking: {},
+              status: info.status,
+              payment_method: info.payment_method,
+              deadline: info.deadline,
+              isEmailRecovery: true,
+            });
+
+            if (info.status === "paid") {
+              setIsPaid(true);
+            }
+          } else {
+            toast.error(t("khong_tim_thay_don_hang"));
+          }
+        })
+        .catch(() => {
+          toast.error(t("co_loi_xay_ra"));
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
+    }
+
+    setLoading(false);
+  }, [searchParams, t]);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -282,6 +329,12 @@ export default function BookingDetail() {
             </p>
           </div>
         </div>
+
+        {data?.isEmailRecovery && (
+          <div className="mt-4 bg-amber-50 text-amber-800 font-medium px-4 py-3 rounded w-full text-base border border-amber-200">
+            <p>Đang xem thông tin đơn hàng từ email. Một số thông tin có thể bị ẩn để bảo mật.</p>
+          </div>
+        )}
 
         {pollingStatus && !isPaid && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
@@ -702,6 +755,7 @@ export default function BookingDetail() {
           : "w-full"
           }`}
       >
+        {!data?.isEmailRecovery && (
         <div className="overflow-hidden rounded-t-2xl">
           {data?.product?.image_url && (
             <Image
@@ -713,7 +767,8 @@ export default function BookingDetail() {
             />
           )}
         </div>
-        <div className="py-3 px-5">
+        )}
+        <div className={`py-3 px-5 ${data?.isEmailRecovery ? 'pt-5' : ''}`}>
           <h2 className="text-xl font-semibold">{data?.product?.name}</h2>
           <div className="mt-4 pt-4 border-t border-t-gray-200">
             {onePayFee > 0 && (
