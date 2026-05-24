@@ -38,20 +38,7 @@ const NewsByPage = dynamic(() => import("@/components/content-page/NewsByPage"))
 const FooterMenu = dynamic(() => import("@/components/content-page/footer-menu"));
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  type SeoMeta = {
-    seo_title?: string;
-    seo_description?: string;
-    seo_keywords?: string | string[];
-    image?: string;
-  };
-  let seo: SeoMeta = {};
-  try {
-    seo = (await settingApi.getCachedMetaSeo()) as SeoMeta;
-  } catch (e) {
-    console.warn("[Home generateMetadata] getCachedMetaSeo failed:", e);
-  }
-
-  const ogImageUrl = seo?.image ?? siteUrl;
+  const seo = await settingApi.getCachedMetaSeo();
 
   return formatMetadata({
     robots: "index, follow",
@@ -64,8 +51,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     openGraph: {
       images: [
         {
-          url: ogImageUrl,
-          alt: seo?.seo_title ?? "HappyBook Travel",
+          url: seo?.image,
+          alt: seo?.seo_title,
         },
       ],
     },
@@ -74,14 +61,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
 export default async function Home() {
   const [airportsData, seo, t] = await Promise.all([
-    FlightApi.getCachedAirports().catch((e) => {
-      console.warn("[Home] getCachedAirports failed:", e);
-      return [];
-    }),
-    settingApi.getCachedMetaSeo().catch((e) => {
-      console.warn("[Home] getCachedMetaSeo failed:", e);
-      return {};
-    }),
+    FlightApi.getCachedAirports(),
+    settingApi.getCachedMetaSeo(),
     getServerT(),
   ]);
   return (

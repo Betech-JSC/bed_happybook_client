@@ -23,7 +23,6 @@ import {
   getCurrentLanguage,
   getDayLabel,
   handleScrollSmooth,
-  handleSessionStorage,
 } from "@/utils/Helper";
 import { HttpError } from "@/lib/error";
 import { ListFilghtProps, TabDays } from "@/types/flight";
@@ -33,16 +32,8 @@ import { translateText } from "@/utils/translateApi";
 import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ListFlights from "./SearchFlights/List";
-import { saveFlightSearchContext } from "@/utils/selectedFlightStorage";
-import type { TripsSource } from "@/types/selectedFlight";
 import { useTranslation } from "@/hooks/useTranslation";
 import ListFlightsInternaltion from "./SearchFlights/International/List";
-import ResumeFlightDraftBanner from "./ResumeFlightDraftBanner";
-import {
-  buildSearchRouteFromParams,
-  findMatchingFlightDraft,
-  type FlightDraftMatch,
-} from "@/utils/flightDraftSession";
 
 export default function SearchFlightsResult({
   airportsData,
@@ -77,7 +68,6 @@ export default function SearchFlightsResult({
   const resultsRef = useRef<HTMLDivElement>(null);
   const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
   const [searchId, setSearchId] = useState<string | null>(null);
-  const [tripsSource, setTripsSource] = useState<TripsSource>("resource");
   const [flightItineraryResource, setFlightItineraryResource] = useState<
     Array<{ key: string; value: number }>
   >([]);
@@ -87,9 +77,6 @@ export default function SearchFlightsResult({
   const [airlineData, setAirlineData] = useState<
     { id: number; name: string; code: string; logo: string }[]
   >([]);
-  const [matchingDraft, setMatchingDraft] = useState<FlightDraftMatch | null>(
-    null
-  );
 
   const params = useMemo(() => {
     let flightType: string = "OW";
@@ -263,13 +250,6 @@ export default function SearchFlightsResult({
         setFlightItineraryResource([]);
         setAirlineData([]);
         setError("");
-        handleSessionStorage("remove", [
-          "selectedFlightDepart",
-          "selectedFlightReturn",
-          "departFlight",
-          "returnFlight",
-          "flightConfirmPrice",
-        ]);
         if (StartPoint && EndPoint && DepartDate) {
           const response = await FlightApi.search({
             ...params,
@@ -284,28 +264,13 @@ export default function SearchFlightsResult({
           } else {
             throw new Error("Search Error");
           }
-          if (resources.length) {
-            setFlightItineraryResource(resources);
-            setTripsSource("resource");
-          } else {
-            const flightsData: any = responseData?.trips ?? [];
-            if (flightsData.length) {
-              setFlightsData(flightsData);
-              setTripsSource("search");
-            }
+          if (resources.length) setFlightItineraryResource(resources);
+
+          const flightsData: any = responseData?.trips ?? [];
+          if (flightsData.length) {
+            setFlightsData(flightsData);
           }
           if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
-          if (responseData?.searchId) {
-            saveFlightSearchContext({
-              searchId: responseData.searchId,
-              tripsSource: resources.length ? "resource" : "search",
-              paxCounts: {
-                adult: passengerAdt,
-                child: passengerChd,
-                infant: passengerInf,
-              },
-            });
-          }
         } else {
           router.push("/ve-may-bay");
           setSearchId(null);
@@ -431,34 +396,17 @@ export default function SearchFlightsResult({
 
         const flightsData: any[] = [];
 
-        results.forEach((res, idx) => {
+        results.forEach((res) => {
           if (res.status === "fulfilled") {
-            const resourceId = unprocessed[idx]?.key;
             const flightTrips = res?.value?.payload?.data?.trips ?? [];
-            flightTrips.forEach((trip: Record<string, unknown>) => {
-              flightsData.push({
-                ...trip,
-                _resourceId: resourceId,
-              });
-            });
+            if (flightTrips.length) {
+              flightsData.push(...flightTrips);
+            }
           }
         });
 
         if (flightsData.length) {
-          setTripsSource("resource");
-          setFlightsData((prev: any) => {
-            const merged = [...prev, ...flightsData];
-            saveFlightSearchContext({
-              searchId: searchId ?? "",
-              tripsSource: "resource",
-              paxCounts: {
-                adult: passengerAdt,
-                child: passengerChd,
-                infant: passengerInf,
-              },
-            });
-            return merged;
-          });
+          setFlightsData((prev: any) => [...prev, ...flightsData]);
         }
       } catch (err) {
         setIsFullFlightResource(true);
@@ -532,47 +480,6 @@ export default function SearchFlightsResult({
     return () => clearTimeout(timeout);
   }, [flightsData]);
 
-  const refreshMatchingDraft = useCallback(() => {
-    if (!isReady) {
-      setMatchingDraft(null);
-      return;
-    }
-    const searchRoute = buildSearchRouteFromParams({
-      startPoint: StartPoint,
-      endPoint: EndPoint,
-      tripType,
-      departDate: DepartDate,
-      returnDate: ReturnDate,
-    });
-    const match = findMatchingFlightDraft(searchRoute);
-    if (!match) {
-      setMatchingDraft(null);
-      return;
-    }
-    const expectedFlow =
-      flightType === "international" ? "international" : "domestic";
-    if (
-      match.meta.flow === expectedFlow ||
-      (flightType === "international" && match.meta.flow === "1g")
-    ) {
-      setMatchingDraft(match);
-    } else {
-      setMatchingDraft(null);
-    }
-  }, [
-    isReady,
-    flightType,
-    StartPoint,
-    EndPoint,
-    tripType,
-    DepartDate,
-    ReturnDate,
-  ]);
-
-  useEffect(() => {
-    refreshMatchingDraft();
-  }, [refreshMatchingDraft]);
-
   if (!isReady) {
     return (
       <div
@@ -607,14 +514,6 @@ export default function SearchFlightsResult({
   return (
     <Fragment>
       <div ref={resultsRef}>
-        {matchingDraft && (
-          <ResumeFlightDraftBanner
-            match={matchingDraft}
-            fromLabel={from}
-            toLabel={to}
-            onClose={() => setMatchingDraft(null)}
-          />
-        )}
         <ListFlights
           from={from}
           to={to}
@@ -632,19 +531,12 @@ export default function SearchFlightsResult({
           departDays={days}
           handleClickDate={handleClickDate}
           flightSession={searchId}
-          tripsSource={tripsSource}
-          paxCounts={{
-            adult: passengerAdt,
-            child: passengerChd,
-            infant: passengerInf,
-          }}
           isRoundTrip={isRoundTrip}
           totalPassengers={totalPassengers}
           flightType={flightType}
           flightStopNum={stopNumFilters}
           translatedStaticText={[]}
           isReady={isReady}
-          onDraftChange={refreshMatchingDraft}
         />
       </div>
     </Fragment>

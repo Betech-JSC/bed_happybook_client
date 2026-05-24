@@ -1,62 +1,12 @@
 import { ValidationMessages } from "@/lib/messages";
 import z from "zod";
 
-function internationalPassportFields(
-  messages: ValidationMessages,
-  flightType: string
-) {
-  const isIntl = flightType === "international";
-  return {
-    passport: isIntl
-      ? z.string().min(1, { message: messages.required })
-      : z.string().optional(),
-    nationality: isIntl
-      ? z.string().min(1, { message: messages.required })
-      : z.string().optional(),
-    passport_expiry_date: isIntl
-      ? z.date({
-          required_error: messages.required,
-          invalid_type_error: messages.inValid,
-        })
-      : z.date().optional(),
-  };
-}
-
-function validatePassportExpiryBeforeDeparture(
-  data: {
-    atd?: { passport_expiry_date?: Date }[];
-    chd?: { passport_expiry_date?: Date }[];
-  },
-  ctx: z.RefinementCtx,
-  earliestDepartureDate: Date,
-  segment: "atd" | "chd"
-) {
-  const list = segment === "atd" ? data.atd : data.chd;
-  const departDay = new Date(earliestDepartureDate);
-  departDay.setHours(0, 0, 0, 0);
-
-  list?.forEach((pax, index) => {
-    if (!pax.passport_expiry_date) return;
-    const expiry = new Date(pax.passport_expiry_date);
-    expiry.setHours(0, 0, 0, 0);
-    if (expiry < departDay) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Hộ chiếu không được hết hạn trước ngày bay",
-        path: [segment, index, "passport_expiry_date"],
-      });
-    }
-  });
-}
-
 export const FlightBookingInforBody = (
   messages: ValidationMessages,
   checkBoxGenerateInvoice: boolean,
-  flightType: string,
-  earliestDepartureDate?: Date
+  flightType: string
 ) =>
-  z
-    .object({
+  z.object({
     atd: z.array(
       z.object({
         firstName: z
@@ -89,7 +39,25 @@ export const FlightBookingInforBody = (
           required_error: messages.required,
           invalid_type_error: messages.inValidBirthDay,
         }),
-        ...internationalPassportFields(messages, flightType),
+        passport:
+          flightType === "international"
+            ? z
+                .string()
+                .min(1, {
+                  message: messages.required,
+                })
+                // .max(10, {
+                //   message: messages.inValid,
+                // })
+                .optional()
+            : z.string().optional(),
+        passport_expiry_date:
+          flightType === "international"
+            ? z.date({
+                required_error: messages.required,
+                invalid_type_error: messages.inValid,
+              })
+            : z.date().optional(),
         baggages: z
           .array(
             z
@@ -134,7 +102,6 @@ export const FlightBookingInforBody = (
             required_error: messages.required,
             invalid_type_error: messages.inValidBirthDay,
           }),
-          ...internationalPassportFields(messages, flightType),
           baggages: z
             .array(
               z
@@ -263,22 +230,7 @@ export const FlightBookingInforBody = (
           .optional(),
 
     checkBoxGenerateInvoice: z.boolean(),
-  })
-    .superRefine((data, ctx) => {
-      if (flightType !== "international" || !earliestDepartureDate) return;
-      validatePassportExpiryBeforeDeparture(
-        data,
-        ctx,
-        earliestDepartureDate,
-        "atd"
-      );
-      validatePassportExpiryBeforeDeparture(
-        data,
-        ctx,
-        earliestDepartureDate,
-        "chd"
-      );
-    });
+  });
 
 export type FlightBookingInforType = z.infer<
   ReturnType<typeof FlightBookingInforBody>

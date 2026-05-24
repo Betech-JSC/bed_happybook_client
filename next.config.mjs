@@ -29,18 +29,6 @@ const nextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '8001',
-        pathname: '/**',
-      },
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '8001',
-        pathname: '/**',
-      },
-      {
         protocol: process.env.NEXT_PUBLIC_PROTOCAL,
         hostname: process.env.NEXT_PUBLIC_HOSTNAME,
         port: "",

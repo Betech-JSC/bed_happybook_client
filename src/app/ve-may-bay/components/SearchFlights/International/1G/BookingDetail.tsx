@@ -26,11 +26,6 @@ import { toastMessages, validationMessages } from "@/lib/messages";
 import { translateText } from "@/utils/translateApi";
 import { useTranslation } from "@/hooks/useTranslation";
 import CountDownCheckOut from "../../../CountDownCheckOut";
-import PostPaymentSuccessBanner from "@/components/flight/PostPaymentSuccessBanner";
-import {
-  buildFlightSearchUrlFromDraft,
-  resolveHoldExpiresAt,
-} from "@/utils/flightHoldExpiry";
 
 export default function BookingDetail1G({ airports }: BookingDetailProps) {
   const { t } = useTranslation();
@@ -288,11 +283,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
 
   const handleTicketPaymentTimeout = () => {
     setTicketPaymentTimeout(true);
-    toast.error("Phiên đặt vé đã hết hạn");
-    router.push(buildFlightSearchUrlFromDraft());
   };
-
-  const holdExpiresAt = resolveHoldExpiresAt(data?.orderInfo ?? data);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -376,9 +367,9 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                 <p className="text-22 font-bold text-white">
                   {t("hoan_tat_don_hang_cua_ban_de_giu_gia_tot_nhat")}{" "}
                 </p>
-                {!ticketPaymentTimeout && holdExpiresAt ? (
+                {!ticketPaymentTimeout && data.orderInfo.booking_deadline ? (
                   <CountDownCheckOut
-                    timeCountDown={holdExpiresAt}
+                    timeCountDown={data.orderInfo.booking_deadline}
                     handleTicketPaymentTimeout={handleTicketPaymentTimeout}
                   />
                 ) : (
@@ -409,7 +400,15 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
         )}
 
         {isPaid && (
-          <PostPaymentSuccessBanner orderCode={data?.orderInfo?.sku} />
+          <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
+            <p>
+              {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
+              {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
+            </p>
+            <p>
+              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24_h")}
+            </p>
+          </div>
         )}
         <div className="mt-6">
           <button

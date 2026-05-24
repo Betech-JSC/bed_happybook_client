@@ -1,31 +1,11 @@
 import http from "@/lib/http";
 
 const API_PAYMENT_URL = process.env.NEXT_PUBLIC_PAYMENT_API_ENDPOINT;
-
-/** Main API: POST /api/payment/generate-qr-code/airline-ticket (spec domestic flow). */
-async function generateQrCodeAirlineTicketMainApi(orderCode: string) {
-  return http.post<{ status?: string; data?: unknown }>(
-    "payment/generate-qr-code/airline-ticket",
-    { order_code: orderCode }
-  );
-}
 const PAYMENT_TW_API_ENDPOINT = process.env.NEXT_PUBLIC_PAYMENT_TW_API_ENDPOINT;
 const PAYMENT_TW_BEARER_TOKEN = process.env.NEXT_PUBLIC_PAYMENT_TW_BEARER_TOKEN;
 
 const PaymentApi = {
   generateQrCodeAirlineTicket: async (orderCode: string) => {
-    try {
-      const mainApi = await generateQrCodeAirlineTicketMainApi(orderCode);
-      const data =
-        (mainApi?.payload as { data?: unknown })?.data ??
-        (mainApi?.payload as { data?: unknown });
-      if (data) {
-        return { data, status: "success" };
-      }
-    } catch (error) {
-      console.warn("[Payment] Main API QR failed, trying payment host:", error);
-    }
-
     try {
       const response = await fetch(
         `${API_PAYMENT_URL}/api/generate-qr-code/airline-ticket`,

@@ -17,7 +17,6 @@ import { AuthApi } from "@/api/Auth";
 import { useUser } from "@/contexts/UserContext";
 import { isEmpty } from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
-import { resolveSafeAuthRedirect } from "@/utils/authRedirect";
 
 export default function FormLogin() {
   const { t } = useTranslation();
@@ -55,13 +54,11 @@ export default function FormLogin() {
       }
       reset();
       toast.success(resData.message);
-      const redirectUrl = resolveSafeAuthRedirect(
-        searchParams.get("redirect")
-      );
+      const redirectUrl = searchParams.get("redirect") ?? "";
       setTimeout(() => {
         toast.dismiss();
         setUserInfo(resData.user_info);
-        if (redirectUrl) router.push(redirectUrl);
+        if (!isEmpty(redirectUrl)) router.push(redirectUrl);
         else router.push("/");
       }, 500);
     } catch (error: any) {

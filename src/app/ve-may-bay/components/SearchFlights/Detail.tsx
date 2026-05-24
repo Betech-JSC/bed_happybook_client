@@ -34,23 +34,11 @@ const FlightDomesticDetail = ({
   const [height, setHeight] = useState<number | string>(0);
   const [hasHeight, setHasHeight] = useState<boolean>(false);
 
-  let flight = FareData ?? null;
-
-  if (
-    selectedFlight &&
-    flight &&
-    selectedFlight.flightCode === flight.flightCode
-  ) {
-    flight = {
-      ...flight,
-      selectedTicketClass:
-        selectedFlight.selectedTicketClass ?? flight.selectedTicketClass,
-    };
+  if (selectedFlight) {
+    FareData = selectedFlight;
   }
 
-  const fareOptions = Array.isArray(flight?.fareOptions)
-    ? flight.fareOptions
-    : [];
+  let flight = FareData ?? null;
 
   const toggleShowDetails = useCallback(
     (flightCode: any, flightSelected: any) => {
@@ -73,8 +61,8 @@ const FlightDomesticDetail = ({
     setHasHeight(true);
   }, [showDetails]);
 
-  if (!flight || fareOptions.length < 1) {
-    return null;
+  if (flight?.fareOptions?.length < 1) {
+    return;
   }
 
   const startOperating = !isEmpty(flight.segments?.[0]?.operating)
@@ -150,7 +138,7 @@ const FlightDomesticDetail = ({
                           ? flight.selectedTicketClass.totalPriceWithOutTax.toLocaleString(
                             "vi-VN"
                           )
-                          : fareOptions[0].totalPriceWithOutTax.toLocaleString(
+                          : flight.fareOptions[0].totalPriceWithOutTax.toLocaleString(
                             "vi-VN"
                           )
                         : flight.selectedTicketClass
@@ -159,8 +147,8 @@ const FlightDomesticDetail = ({
                             flight.selectedTicketClass.taxAdult
                           ).toLocaleString("vi-VN")
                           : (
-                            fareOptions[0].fareAdultFinal +
-                            fareOptions[0].taxAdult
+                            flight.fareOptions[0].fareAdultFinal +
+                            flight.fareOptions[0].taxAdult
                           ).toLocaleString("vi-VN")}{" "}
                     </div>
                     <div className="col-span-1 flex items-center justify-end ">
@@ -187,7 +175,7 @@ const FlightDomesticDetail = ({
               </div>
             </div>
           </div>
-          {fareOptions.length > 0 && (
+          {flight.fareOptions.length > 0 && (
             <div
               ref={contentRef}
               style={{
@@ -202,10 +190,10 @@ const FlightDomesticDetail = ({
                 <div
                   className={`inline-grid w-max gap-3`}
                   style={{
-                    gridTemplateColumns: `repeat(${fareOptions.length}, minmax(0, 1fr)`,
+                    gridTemplateColumns: `repeat(${flight.fareOptions.length}, minmax(0, 1fr)`,
                   }}
                 >
-                  {fareOptions.map((ticket: any, index: number) => {
+                  {flight.fareOptions.map((ticket: any, index: number) => {
                     return (
                       <div
                         key={index}

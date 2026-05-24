@@ -33,12 +33,6 @@ import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import ListFlightsInternaltion from "./List";
-import ResumeFlightDraftBanner from "../../ResumeFlightDraftBanner";
-import {
-  buildSearchRouteFromParams,
-  findMatchingFlightDraft,
-  type FlightDraftMatch,
-} from "@/utils/flightDraftSession";
 
 export default function SearchFlightsInternationalResult({
   airportsData,
@@ -82,9 +76,6 @@ export default function SearchFlightsInternationalResult({
   const [airlineData, setAirlineData] = useState<
     { id: number; name: string; code: string; logo: string }[]
   >([]);
-  const [matchingDraft, setMatchingDraft] = useState<FlightDraftMatch | null>(
-    null
-  );
 
   const params = useMemo(() => {
     let flightType: string = "RT";
@@ -495,29 +486,6 @@ export default function SearchFlightsInternationalResult({
     }
   }, [loading, flights1G, flightsNormalGroupped]);
 
-  useEffect(() => {
-    if (!isReady) {
-      setMatchingDraft(null);
-      return;
-    }
-    const searchRoute = buildSearchRouteFromParams({
-      startPoint: StartPoint,
-      endPoint: EndPoint,
-      tripType,
-      departDate: DepartDate,
-      returnDate: ReturnDate,
-    });
-    const match = findMatchingFlightDraft(searchRoute);
-    if (
-      match &&
-      (match.meta.flow === "international" || match.meta.flow === "1g")
-    ) {
-      setMatchingDraft(match);
-    } else {
-      setMatchingDraft(null);
-    }
-  }, [isReady, StartPoint, EndPoint, tripType, DepartDate, ReturnDate]);
-
   if (!isReady) {
     return (
       <div
@@ -651,18 +619,9 @@ export default function SearchFlightsInternationalResult({
   }
 
   const finalFlightsData = [...flights1G, ...flightsNormalGroupped];
-
   return (
     <Fragment>
       <div ref={resultsRef}>
-        {matchingDraft && (
-          <ResumeFlightDraftBanner
-            match={matchingDraft}
-            fromLabel={from}
-            toLabel={to}
-            onClose={() => setMatchingDraft(null)}
-          />
-        )}
         <ListFlightsInternaltion
           from={from}
           to={to}

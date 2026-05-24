@@ -40,19 +40,6 @@ import {
   getCheapestComparablePrice,
   getDomesticDisplayedPrice,
 } from "../../lib/cheapest";
-import { createSelectedFlight } from "@/utils/createSelectedFlight";
-import { saveSelectedFlight } from "@/utils/selectedFlightStorage";
-import {
-  buildCombinedSelectionFingerprint,
-  buildLegSelectionFingerprint,
-  buildSearchRouteFromParams,
-  evaluateFlightSelectionChange,
-  replaceDraftLegSelection,
-  saveFlightDraftMetaForSearch,
-  type FlightSelectionLeg,
-} from "@/utils/flightDraftSession";
-import { toast } from "react-hot-toast";
-import ReplaceFlightDraftDialog from "../ReplaceFlightDraftDialog";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -83,15 +70,12 @@ export default function ListFlights({
   returnDays,
   handleClickDate,
   flightSession,
-  tripsSource = "resource",
-  paxCounts = { adult: 1, child: 0, infant: 0 },
   isRoundTrip,
   totalPassengers,
   flightType,
   flightStopNum,
   translatedStaticText,
   isReady,
-  onDraftChange,
 }: ListFlight) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -111,38 +95,6 @@ export default function ListFlights({
   const [departLimit, setDepartLimit] = useState(INITIAL_LIMIT);
   const [returnLimit, setReturnLimit] = useState(INITIAL_LIMIT);
   const [filters, setFilters] = useState(defaultFilers);
-  const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
-  const [replaceDialogMessage, setReplaceDialogMessage] = useState("");
-  const pendingSelectRef = useRef<(() => void) | null>(null);
-
-  const searchRoute = useMemo(
-    () =>
-      buildSearchRouteFromParams({
-        startPoint: StartPoint ?? "",
-        endPoint: EndPoint ?? "",
-        tripType: isRoundTrip ? "roundTrip" : "oneWay",
-        departDate: departDate ?? "",
-        returnDate: isRoundTrip
-          ? (returnDate ?? departDate ?? "")
-          : (departDate ?? ""),
-      }),
-    [StartPoint, EndPoint, isRoundTrip, departDate, returnDate]
-  );
-
-  const notifyDraftChange = useCallback(() => {
-    onDraftChange?.();
-  }, [onDraftChange]);
-
-  const getFareIndexFromFlight = (flight: {
-    fareOptions?: { fareValue?: string }[];
-    selectedTicketClass?: { fareValue?: string };
-  }): number => {
-    const selectedFv = flight.selectedTicketClass?.fareValue;
-    if (!selectedFv || !flight.fareOptions?.length) return 0;
-    const idx = flight.fareOptions.findIndex((f) => f.fareValue === selectedFv);
-    return idx >= 0 ? idx : 0;
-  };
-
   // AOS is handled globally via AosProvider IntersectionObserver
   const scrollToRef = (ref: any) => {
     if (ref.current) {
@@ -375,160 +327,32 @@ export default function ListFlights({
   );
 
   // Select Depart and Return Flight
-  const buildSelection = (flight: any, fareOptionIndex: number) => {
-    if (!flightSession) return null;
-    return createSelectedFlight(flight, fareOptionIndex, {
-      searchId: flightSession,
-      tripsSource,
-      paxCounts,
-      resourceId: flight._resourceId,
-    });
-  };
-
-  const applyDepartSelection = (flight: any, fareOptionIndex: number) => {
-    const selection = buildSelection(flight, fareOptionIndex);
-    if (!selection) return;
-    saveSelectedFlight("depart", selection);
-    const legacyTrip = {
-      ...flight,
-      ...selection.trip,
-      fareOptions: flight.fareOptions ?? selection.trip.fareOptions,
-      selectedTicketClass: selection.fareOption,
-      flightCode: flight.flightCode,
-    };
-    setSelectedDepartFlight(legacyTrip);
-    if (isRoundTrip && !selectedReturnFlight) {
-      setTimeout(() => scrollToRef(returnFlightRef), 100);
-    }
-  };
-
-  const applyReturnSelection = (flight: any, fareOptionIndex: number) => {
-    const selection = buildSelection(flight, fareOptionIndex);
-    if (!selection) return;
-    saveSelectedFlight("return", selection);
-    const legacyTrip = {
-      ...flight,
-      ...selection.trip,
-      fareOptions: flight.fareOptions ?? selection.trip.fareOptions,
-      selectedTicketClass: selection.fareOption,
-      flightCode: flight.flightCode,
-    };
-    setSelectedReturnFlight(legacyTrip);
-    if (isRoundTrip && !selectedDepartFlight) {
-      setTimeout(() => scrollToRef(departFlightRef), 100);
-    }
-  };
-
-  const runSelectionWithDraftGate = (
-    leg: FlightSelectionLeg,
-    flight: any,
-    fareOptionIndex: number,
-    isDeselect: boolean,
-    applyFn: () => void
-  ) => {
-    if (isDeselect) {
-      applyFn();
-      notifyDraftChange();
-      return;
-    }
-
-    const newLegFp = buildLegSelectionFingerprint(
-      flight as Record<string, unknown>,
-      fareOptionIndex,
-      leg
-    );
-    const action = evaluateFlightSelectionChange({
-      searchRoute,
-      leg,
-      newLegFingerprint: newLegFp,
-      isDeselect: false,
-    });
-
-    if (action.type === "block_pending_payment") {
-      toast.error(
-        action.orderCode
-          ? `Đơn ${action.orderCode} đang chờ thanh toán. Vui lòng hoàn tất hoặc hủy đơn trước khi chọn chuyến khác.`
-          : "Đơn đang chờ thanh toán. Vui lòng hoàn tất thanh toán trước."
-      );
-      return;
-    }
-
-    if (action.type === "confirm_replace") {
-      pendingSelectRef.current = () => {
-        replaceDraftLegSelection({
-          searchRoute,
-          leg,
-          newLegFingerprint: newLegFp,
-          fromLabel: from ?? undefined,
-          toLabel: to ?? undefined,
-        });
-        applyFn();
-        toast.success("Đã chuyển sang chuyến mới");
-        notifyDraftChange();
-      };
-      setReplaceDialogMessage(action.message);
-      setReplaceDialogOpen(true);
-      return;
-    }
-
-    if (action.type === "auto_replaced") {
-      replaceDraftLegSelection({
-        searchRoute,
-        leg,
-        newLegFingerprint: newLegFp,
-        fromLabel: from ?? undefined,
-        toLabel: to ?? undefined,
-      });
-      toast.success("Đã chuyển sang chuyến mới", { duration: 2500 });
-    }
-
-    applyFn();
-    notifyDraftChange();
-  };
-
   const handleSelectDepartFlight = (flight: any, fareOptionIndex: number) => {
-    const isDeselect = selectedDepartFlight?.flightCode === flight.flightCode;
-    runSelectionWithDraftGate(
-      "depart",
-      flight,
-      fareOptionIndex,
-      isDeselect,
-      () => {
-        if (isDeselect) {
-          setSelectedDepartFlight(null);
-        } else {
-          applyDepartSelection(flight, fareOptionIndex);
-        }
+    if (selectedDepartFlight?.flightCode === flight.flightCode) {
+      setSelectedDepartFlight(null);
+    } else {
+      flight.selectedTicketClass = flight.fareOptions[fareOptionIndex];
+      setSelectedDepartFlight(flight);
+      if (isRoundTrip && !selectedReturnFlight) {
+        setTimeout(() => {
+          scrollToRef(returnFlightRef);
+        }, 100);
       }
-    );
+    }
   };
 
   const handleSelectReturnFlight = (flight: any, fareOptionIndex: number) => {
-    const isDeselect = selectedReturnFlight?.flightCode === flight.flightCode;
-    runSelectionWithDraftGate(
-      "return",
-      flight,
-      fareOptionIndex,
-      isDeselect,
-      () => {
-        if (isDeselect) {
-          setSelectedReturnFlight(null);
-        } else {
-          applyReturnSelection(flight, fareOptionIndex);
-        }
+    if (selectedReturnFlight?.flightCode === flight.flightCode) {
+      setSelectedReturnFlight(null);
+    } else {
+      flight.selectedTicketClass = flight.fareOptions[fareOptionIndex];
+      setSelectedReturnFlight(flight);
+      if (isRoundTrip && !selectedDepartFlight) {
+        setTimeout(() => {
+          scrollToRef(departFlightRef);
+        }, 100);
       }
-    );
-  };
-
-  const handleConfirmReplaceDraft = () => {
-    setReplaceDialogOpen(false);
-    pendingSelectRef.current?.();
-    pendingSelectRef.current = null;
-  };
-
-  const handleCancelReplaceDraft = () => {
-    setReplaceDialogOpen(false);
-    pendingSelectRef.current = null;
+    }
   };
 
   useEffect(() => {
@@ -557,9 +381,13 @@ export default function ListFlights({
 
   useEffect(() => {
     if (isCheckOut && typeof window !== "undefined") {
-      if (!selectedReturnFlight) {
+      if (selectedDepartFlight) {
+        handleSessionStorage("save", "departFlight", selectedDepartFlight);
+      }
+      if (selectedReturnFlight) {
+        handleSessionStorage("save", "returnFlight", selectedReturnFlight);
+      } else {
         handleSessionStorage("remove", "returnFlight");
-        handleSessionStorage("remove", "selectedFlightReturn");
       }
       if (flightSession) {
         handleSessionStorage("save", "flightSession", flightSession);
@@ -567,32 +395,6 @@ export default function ListFlights({
       if (flightType) {
         handleSessionStorage("save", "flightType", flightType);
       }
-      const selectionFingerprint = buildCombinedSelectionFingerprint({
-        depart: selectedDepartFlight
-          ? {
-              flight: selectedDepartFlight,
-              fareOptionIndex: getFareIndexFromFlight(selectedDepartFlight),
-            }
-          : null,
-        return: selectedReturnFlight
-          ? {
-              flight: selectedReturnFlight,
-              fareOptionIndex: getFareIndexFromFlight(selectedReturnFlight),
-            }
-          : null,
-      });
-      saveFlightDraftMetaForSearch({
-        startPoint: StartPoint ?? "",
-        endPoint: EndPoint ?? "",
-        tripType: isRoundTrip ? "roundTrip" : "oneWay",
-        departDate: departDate ?? "",
-        returnDate: isRoundTrip ? (returnDate ?? departDate ?? "") : (departDate ?? ""),
-        fromLabel: from ?? undefined,
-        toLabel: to ?? undefined,
-        stage: "selecting",
-        resumeUrl: "/ve-may-bay/thong-tin-hanh-khach",
-        selectionFingerprint,
-      });
       handleCheckout();
     }
   }, [
@@ -603,13 +405,6 @@ export default function ListFlights({
     flightType,
     flightSession,
     handleCheckout,
-    StartPoint,
-    EndPoint,
-    departDate,
-    returnDate,
-    from,
-    to,
-    isRoundTrip,
   ]);
 
   const flightsGroup: any = useMemo(
@@ -943,12 +738,6 @@ export default function ListFlights({
           isOpen={showDetail}
           onClose={handleClosePopupFlightDetail}
           isLoadingFareRules={isLoadingFareRules}
-        />
-        <ReplaceFlightDraftDialog
-          open={replaceDialogOpen}
-          message={replaceDialogMessage}
-          onCancel={handleCancelReplaceDraft}
-          onConfirm={handleConfirmReplaceDraft}
         />
       </div>
     </Fragment>

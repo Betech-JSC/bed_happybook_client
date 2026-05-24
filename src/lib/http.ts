@@ -6,17 +6,11 @@ type httpMethod = "GET" | "POST" | "PUT" | "DELETE";
 // This is the key fix for "Document request latency" Lighthouse issue
 const DEFAULT_GET_CACHE = 60 * 5;
 
-function defaultHttpTimeoutMs(): number {
-  const fromEnv = Number(process.env.NEXT_PUBLIC_HTTP_TIMEOUT_MS);
-  if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
-  return 10000;
-}
-
 const request = async <Response>(
   method: httpMethod,
   url: string,
   options?: RequestInit | undefined,
-  timeout: number = defaultHttpTimeoutMs(),
+  timeout: number = 10000,
   timeCache: number = 0
 ) => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
@@ -55,37 +49,7 @@ const request = async <Response>(
     });
     clearTimeout(timeoutId);
 
-    const contentType = response.headers.get("content-type") || "";
-    const raw = await response.text();
-    let payload: Response;
-
-    try {
-      const trimmed = raw.trim();
-      if (!trimmed) {
-        payload = {} as Response;
-      } else {
-        payload = JSON.parse(raw) as Response;
-      }
-    } catch {
-      const preview = raw.replace(/\s+/g, " ").slice(0, 280);
-      console.error("[http] Response is not valid JSON", {
-        url: fullUrl,
-        status: response.status,
-        contentType,
-        preview,
-      });
-      throw new HttpError({
-        status: response.ok ? 502 : response.status,
-        payload: {
-          code: "INVALID_JSON_RESPONSE",
-          message:
-            "API returned a non-JSON body (often HTML). Backend should return application/json for this route.",
-          url: fullUrl,
-          httpStatus: response.status,
-        },
-      });
-    }
-
+    const payload: Response = await response.json();
     const data = {
       status: response.status,
       payload: payload,
@@ -104,10 +68,7 @@ const request = async <Response>(
     if (error instanceof HttpError) {
       throw error;
     } else if (error instanceof Error) {
-      const isAbort =
-        error.name === "AbortError" ||
-        ("code" in error && (error as DOMException).code === DOMException.ABORT_ERR);
-      if (isAbort) {
+      if (error.name === "AbortError") {
         console.error("fetch AbortError:", error);
         throw new HttpError({ status: 408, payload: "Request timeout" });
       }
@@ -128,7 +89,7 @@ const http = {
   get<Response>(
     url: string,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = defaultHttpTimeoutMs(),
+    timeout: number = 10000,
     // ✅ Fixed: was always 0 (no cache). Now defaults to 5 min.
     // This is the root cause of the 3,820ms document latency.
     timeCache: number = DEFAULT_GET_CACHE
@@ -139,7 +100,7 @@ const http = {
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = defaultHttpTimeoutMs(),
+    timeout: number = 10000,
     timeCache: number = 0 // POST: never cache
   ) {
     return request<Response>("POST", url, { ...options, body }, timeout, timeCache);
@@ -148,7 +109,7 @@ const http = {
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = defaultHttpTimeoutMs(),
+    timeout: number = 10000,
     timeCache: number = 0
   ) {
     return request<Response>("PUT", url, { ...options, body }, timeout, timeCache);
@@ -157,7 +118,7 @@ const http = {
     url: string,
     body: any,
     options?: Omit<RequestInit, "body"> | undefined,
-    timeout: number = defaultHttpTimeoutMs(),
+    timeout: number = 10000,
     timeCache: number = 0
   ) {
     return request<Response>("DELETE", url, { ...options, body }, timeout, timeCache);

@@ -49,9 +49,7 @@ export default async function BookingFlight({
   const session = await getSession();
   const token = session.access_token;
   if (isEmpty(token)) {
-    redirect(
-      `/dang-nhap?redirect=${encodeURIComponent(`/lich-su-dat-ve/${orderCode}`)}`
-    );
+    redirect("/dang-nhap");
   }
 
   const language = await getServerLang();
@@ -60,9 +58,7 @@ export default async function BookingFlight({
   const metadata = getMetadata(contentPage);
   const response = await FlightApi.bookingDetail(token, orderCode);
   if (response?.status === 401) {
-    redirect(
-      `/dang-nhap?redirect=${encodeURIComponent(`/lich-su-dat-ve/${orderCode}`)}`
-    );
+    redirect("/dang-nhap");
   }
   const detail = response?.payload?.data;
 
