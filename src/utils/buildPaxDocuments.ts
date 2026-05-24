@@ -4,12 +4,11 @@
  * - B3 book-flight: passport_number, passport_expiry, nationality, doc_type → BE lưu DB + rebuild hold
  * - INF: không gửi passport (BE bỏ bắt buộc INFANT)
  * - CHD: passport bắt buộc khi quốc tế (FE validate + map)
- * - residence: ngày YYYY-MM-DD (Postman 1G), thường = birthday
+ * - residence: chưa map (chờ field UI)
  */
 import { format } from "date-fns";
 import type { ConfirmPricePaxListItem } from "@/types/flightConfirmPrice";
 import type { AirdataPaxDocument } from "@/types/flightConfirmPrice";
-import { normalizeNationalityIso3 } from "@/utils/internationalConfirmPrice";
 
 const PAX_TYPE_MAP: Record<string, string> = {
   ADT: "ADULT",
@@ -71,16 +70,12 @@ export function buildPaxDocumentsForPassenger(
     const number = (pax.passport ?? "").trim();
     if (!number) return [];
 
-    const nationality = normalizeNationalityIso3(pax.nationality);
-    const isCountry = normalizeNationalityIso3(
-      pax.passport_country ?? pax.nationality
-    );
-
-    /** Postman 1G: residence = ngày ISO (YYYY-MM-DD), không phải mã quốc gia. */
-    const residence =
-      toAirdataEndDate(pax.residence) ??
-      toAirdataEndDate(pax.birthday) ??
-      "";
+    const nationality = (pax.nationality ?? "VNM").trim().toUpperCase();
+    const isCountry = (
+      pax.passport_country ?? pax.nationality ?? "VNM"
+    )
+      .trim()
+      .toUpperCase();
 
     const doc: AirdataPaxDocument = {
       paxId,
@@ -88,7 +83,6 @@ export function buildPaxDocumentsForPassenger(
       number,
       nationality,
       isCountry: isCountry || nationality,
-      residence,
       endDate: toAirdataEndDate(pax.passport_expiry_date) ?? "",
       gender: genderToAirdata(pax.gender),
       birthday: toAirdataBirthdayIso(pax.birthday) ?? "",
@@ -122,7 +116,9 @@ export function appendBookFlightPassportFields(
   }
 
   const passport = String(formValue.passport ?? "").trim();
-  const nationality = normalizeNationalityIso3(formValue.nationality);
+  const nationality = String(formValue.nationality ?? "VNM")
+    .trim()
+    .toUpperCase();
   const expiry = formValue.passport_expiry_date
     ? format(new Date(formValue.passport_expiry_date as string | Date), "yyyy-MM-dd")
     : "";

@@ -66,16 +66,12 @@ import {
   normalizeConfirmPriceResponse,
 } from "@/utils/buildFlightConfirmPricePayload";
 import {
-  getFlightSearchContext,
   loadSelectedFlightsForBooking,
   tripFromSelection,
 } from "@/utils/selectedFlightStorage";
 import { isConfirmPriceSoftFailure } from "@/utils/fareValueToken";
-import {
-  appendBookFlightPassportFields,
-  isInternationalItineraries,
-} from "@/utils/buildPaxDocuments";
-import { verifyInternationalPassengers } from "@/utils/internationalConfirmPrice";
+import { verifySelectedFlights } from "@/utils/verifySelectedFlight";
+import { appendBookFlightPassportFields } from "@/utils/buildPaxDocuments";
 import InternationalPassportFields from "./InternationalPassportFields";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
@@ -208,9 +204,6 @@ export default function FlightBookForm({ airportsData }: any) {
     return display;
   };
 
-  const is1GBookingFlow = (flightRows: Record<string, unknown>[]) =>
-    flightRows.some((f) => String(f.source ?? "").toUpperCase() === "1G");
-
   const buildBookingPayload = (data: FlightBookingInforType) => {
     const adtArr = data.atd.map((item, index) => {
       if (listBaggagePassenger.atd && listBaggagePassenger.atd[index]) {
@@ -255,8 +248,7 @@ export default function FlightBookForm({ airportsData }: any) {
       },
       []
     );
-    const use1G = is1GBookingFlow(flights);
-    data.book_type = use1G ? "1G" : "book-normal";
+    data.book_type = "book-normal";
     data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
     let fare_data: any = [];
@@ -265,44 +257,26 @@ export default function FlightBookForm({ airportsData }: any) {
     let total_fee_service = 0;
     let total_price = 0;
 
-    if (use1G) {
-      flights.forEach((item) => {
-        total_price_net += Number(item.totalPrice ?? 0);
-        total_tax +=
-          Number(item.totalTaxAdt ?? 0) +
-          Number(item.totalTaxChd ?? 0) +
-          Number(item.totalTaxInf ?? 0);
-        total_price += Number(item.totalPrice ?? 0);
-        total_fee_service += Number(item.totalServiceFee ?? 0);
-      });
+    flights.map((item) => {
+      total_price_net += item.selectedTicketClass.totalPriceWithOutTax;
+      total_tax +=
+        item.selectedTicketClass.totalTaxAdt +
+        item.selectedTicketClass.totalTaxChd +
+        item.selectedTicketClass.totalTaxInf;
+      total_price += item.selectedTicketClass.totalPrice;
+      total_fee_service += item.selectedTicketClass.totalServiceFee;
       fare_data.push({
         session: flightSession,
-        fare_data_id_api: flights[0]?.hpb_id ?? flights[0]?.flightId,
-        source: "1G",
-        flights,
+        fare_data_id_api: item.flightId,
+        source: item.source,
+        flights: [
+          {
+            flight_value: item.selectedTicketClass.fareValue,
+            detail: item,
+          },
+        ],
       });
-    } else {
-      flights.map((item) => {
-        total_price_net += item.selectedTicketClass.totalPriceWithOutTax;
-        total_tax +=
-          item.selectedTicketClass.totalTaxAdt +
-          item.selectedTicketClass.totalTaxChd +
-          item.selectedTicketClass.totalTaxInf;
-        total_price += item.selectedTicketClass.totalPrice;
-        total_fee_service += item.selectedTicketClass.totalServiceFee;
-        fare_data.push({
-          session: flightSession,
-          fare_data_id_api: item.flightId,
-          source: item.source,
-          flights: [
-            {
-              flight_value: item.selectedTicketClass.fareValue,
-              detail: item,
-            },
-          ],
-        });
-      });
-    }
+    });
     formatData.contact.gender =
       formatData.contact.gender === "male" ? true : false;
     if (!generateInvoice) {
@@ -333,28 +307,16 @@ export default function FlightBookForm({ airportsData }: any) {
         ? selectedFlights
         : loadSelectedFlightsForBooking();
 
+    const verifyErrors = verifySelectedFlights(selections);
+    if (verifyErrors.length) {
+      toast.error(verifyErrors[0]);
+      return;
+    }
+
     const confirmPassengers = buildPassengersFromForm(
       data,
       listBaggagePassenger
     );
-
-    const flightsForIntl = selections.map((sel, index) => ({
-      ...(sel.trip as Record<string, unknown>),
-      selectedTicketClass: sel.fareOption,
-      itineraryId: sel.itineraryId || String(index + 1),
-      numberAdt: sel.paxCounts.adult,
-      numberChd: sel.paxCounts.child,
-      numberInf: sel.paxCounts.infant,
-    }));
-
-    const passportErrors = verifyInternationalPassengers(
-      confirmPassengers,
-      flightsForIntl
-    );
-    if (passportErrors.length) {
-      toast.error(passportErrors[0]);
-      return;
-    }
 
     const contact = {
       full_name: data.contact.full_name,
@@ -388,17 +350,14 @@ export default function FlightBookForm({ airportsData }: any) {
         const resultRecord = confirmResult as Record<string, unknown>;
 
         if (isConfirmPriceSoftFailure(resultRecord)) {
-          const intlHint = isInternationalItineraries(flightsForIntl)
-            ? " Kiểm tra segmentValue/bookingClassId từ search và hộ chiếu."
-            : "";
           setBookingError({
             code: "fare_token_invalid",
             message:
-              `Airdata không giữ được giá (token hoặc segment không khớp phiên tìm kiếm).${intlHint} Vui lòng tìm chuyến bay lại và xác nhận giá ngay.`,
+              "VietJet/Airdata không giữ được giá (token hết hạn hoặc không khớp phiên tìm kiếm). Vui lòng tìm chuyến bay lại và xác nhận giá ngay.",
             details: [],
           });
           toast.error(
-            `Xác nhận giá thất bại.${intlHint} Vui lòng tìm kiếm lại và chọn vé mới.`
+            "Token giá không hợp lệ hoặc đã hết hạn. Vui lòng tìm kiếm lại."
           );
           return;
         }
@@ -452,12 +411,7 @@ export default function FlightBookForm({ airportsData }: any) {
           bookingDeadline: normalizedConfirm.bookingDeadline,
           holdExpiresAt:
             normalizedConfirm.holdExpiresAt ?? normalizedConfirm.bookingDeadline,
-          flow:
-            selections[0]?.trip?.source === "1G"
-              ? "1g"
-              : flightType === "international"
-                ? "international"
-                : "domestic",
+          flow: flightType === "international" ? "international" : "domestic",
           selectionFingerprint,
         });
         toast.success("Đã xác nhận giá. Vui lòng kiểm tra trước khi thanh toán.");
@@ -521,10 +475,7 @@ export default function FlightBookForm({ airportsData }: any) {
 
     try {
       setProceedingPayment(true);
-      const use1G = is1GBookingFlow(flights);
-      const respon = use1G
-        ? await FlightApi.bookFlight("/flights-v2/book-flight-1G", bookPayload)
-        : await FlightApi.bookFlightDomestic(bookPayload);
+      const respon = await FlightApi.bookFlightDomestic(bookPayload);
 
       if (respon?.status !== 200) {
         showFlightBookingError(respon?.payload, toaStrMsg.sendFailed);
@@ -565,11 +516,6 @@ export default function FlightBookForm({ airportsData }: any) {
       const orderSku =
         (bookingFlight.orderInfo as { sku?: string })?.sku ??
         normalized.orderCode;
-      const draftFlow = use1G
-        ? "1g"
-        : flightType === "international"
-          ? "international"
-          : "domestic";
       updateFlightDraftMeta({
         stage: "pending_payment",
         resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
@@ -582,7 +528,7 @@ export default function FlightBookForm({ airportsData }: any) {
             ?.hold_expires_at ??
           normalized.holdExpiresAt ??
           normalized.bookingDeadline,
-        flow: draftFlow,
+        flow: flightType === "international" ? "international" : "domestic",
       });
       handleSessionStorage("remove", [
         "selectedFlightDepart",
@@ -642,16 +588,6 @@ export default function FlightBookForm({ airportsData }: any) {
 
     const flightData = selections.map(tripFromSelection);
     const flightSession = handleSessionStorage("get", "flightSession");
-    const liveSearchId =
-      getFlightSearchContext()?.searchId ??
-      (typeof flightSession === "string" ? flightSession : null);
-    if (
-      liveSearchId &&
-      selections[0]?.searchId &&
-      liveSearchId !== selections[0].searchId
-    ) {
-      handleSessionStorage("remove", "flightConfirmPrice");
-    }
 
     if (selections.length > 1) setIsRoundTrip(true);
     setSelectedFlights(selections);

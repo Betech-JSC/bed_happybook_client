@@ -1,7 +1,6 @@
 import { handleSessionStorage } from "@/utils/Helper";
 import type { FlightSearchContext } from "@/types/selectedFlight";
 import type { SelectedFlight } from "@/types/selectedFlight";
-import { healInternationalSelection } from "@/utils/healInternationalSelection";
 import { legacyTripToSelectedFlight } from "@/utils/legacyTripToSelectedFlight";
 
 const KEYS = {
@@ -24,12 +23,11 @@ export function saveSelectedFlight(
   leg: "depart" | "return",
   selection: SelectedFlight
 ) {
-  const healed = healInternationalSelection(selection);
   const key = leg === "depart" ? KEYS.depart : KEYS.return;
-  handleSessionStorage("save", key, healed);
+  handleSessionStorage("save", key, selection);
   const legacyTrip = {
-    ...healed.trip,
-    selectedTicketClass: healed.fareOption,
+    ...selection.trip,
+    selectedTicketClass: selection.fareOption,
   };
   handleSessionStorage(
     "save",
@@ -44,7 +42,7 @@ export function getSelectedFlight(
   const key = leg === "depart" ? KEYS.depart : KEYS.return;
   const stored = handleSessionStorage("get", key);
   if (stored?.trip && stored?.fareOption) {
-    return healInternationalSelection(stored as SelectedFlight);
+    return stored as SelectedFlight;
   }
   return null;
 }
@@ -67,9 +65,7 @@ export function loadSelectedFlightsForBooking(): SelectedFlight[] {
         searchId,
         tripsSource,
         paxCounts,
-        resourceId:
-          (legacy._resourceFetchId as string | undefined) ??
-          (legacy._resourceId as string | undefined),
+        itineraryId: "1",
       });
       if (converted) legs.push(converted);
     }
@@ -85,15 +81,13 @@ export function loadSelectedFlightsForBooking(): SelectedFlight[] {
         searchId,
         tripsSource,
         paxCounts,
-        resourceId:
-          (legacy._resourceFetchId as string | undefined) ??
-          (legacy._resourceId as string | undefined),
+        itineraryId: "2",
       });
       if (converted) legs.push(converted);
     }
   }
 
-  return legs.map((sel) => healInternationalSelection(sel));
+  return legs;
 }
 
 export function tripFromSelection(sel: SelectedFlight): Record<string, unknown> {

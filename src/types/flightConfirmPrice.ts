@@ -30,8 +30,6 @@ export interface ConfirmPricePaxListItem {
   baggages?: unknown[];
   passport?: string;
   nationality?: string;
-  /** Quốc gia cư trú (ISO3) — Postman PaxDocuments.residence. */
-  residence?: string;
   passport_country?: string;
   passport_expiry_date?: string | Date;
   cccd?: string;
@@ -45,12 +43,9 @@ export interface ConfirmPricePaxApiItem {
   lastName: string;
   title: string;
   birthday?: string;
-  /** Quốc tế: passport khi có. Nội địa: gửi `[]` trên mọi pax (Postman). */
-  PaxDocuments?: AirdataPaxDocument[];
-  /** Trẻ em gắn người lớn — không dùng cho INFANT. */
+  PaxDocuments: AirdataPaxDocument[];
+  /** Only when an infant is linked to this adult (form-built, not from search API). */
   childPaxId?: string;
-  /** Em bé → người lớn đi kèm (Airdata 9G). */
-  parentPaxId?: string;
 }
 
 export interface ConfirmPriceFareBreakdown {

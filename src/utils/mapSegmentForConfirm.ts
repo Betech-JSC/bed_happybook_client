@@ -3,15 +3,6 @@
  * not nested departure/arrival objects from search / flight-resource.
  */
 
-import { fixDomesticSegmentKeys } from "@/utils/domesticConfirmFields";
-import {
-  copyAirdataTokenRaw,
-  copySegmentField,
-  isInternationalConfirmTrip,
-  normalizeIntlFareBasisCode,
-  normalizeIntlFareType,
-} from "@/utils/internationalConfirmPrice";
-
 export type MapSegmentDefaults = {
   fareType?: string;
   airline?: string;
@@ -27,7 +18,7 @@ function resolveOperatingForConfirm(
   source?: string
 ): string {
   const src = String(source ?? "").toUpperCase();
-  if (src === "1G" || src === "VJ" || src.includes("VIETJET")) {
+  if (src === "VJ" || src.includes("VIETJET")) {
     return "";
   }
   return operatingRaw || airline;
@@ -88,11 +79,9 @@ export function normalizeConfirmDateTime(raw: string): string {
   return value;
 }
 
-/** Quốc tế: giữ nguyên offset từ search (+08:00), không đổi sang +07:00. */
 function segmentDateTime(
   flatField: unknown,
-  nestedPoint: unknown,
-  passthrough = false
+  nestedPoint: unknown
 ): string {
   let raw = "";
   if (typeof flatField === "string" && flatField.trim()) {
@@ -100,12 +89,6 @@ function segmentDateTime(
   } else if (nestedPoint && typeof nestedPoint === "object") {
     const at = (nestedPoint as { at?: string }).at;
     if (typeof at === "string" && at.trim()) raw = at.trim();
-  }
-  if (passthrough && raw) {
-    return raw.replace(
-      /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/,
-      "$1T$2"
-    );
   }
   return normalizeConfirmDateTime(raw);
 }
@@ -115,41 +98,54 @@ function stringField(value: unknown, fallback = ""): string {
   return String(value);
 }
 
-/**
- * segmentValue: bắt buộc copy từ search (base64).
- * segmentId: giữ từ search ("1", "2", …) — khác segmentValue.
- */
-function resolveSegmentKeys(
-  seg: Record<string, unknown>,
-  leg: number,
-  tripContext?: Record<string, unknown>
-): { segmentId: string; segmentValue: string } {
-  const legKey = String(leg);
-  const intlTrip =
-    tripContext && isInternationalConfirmTrip(tripContext);
-  if (intlTrip) {
-    const fromSearchValue = copyAirdataTokenRaw(
-      seg.segmentValue ?? seg.segment_value
-    );
-    const segmentId =
-      copyAirdataTokenRaw(seg.segmentId ?? seg.segment_id) || legKey;
-    return {
-      segmentId,
-      segmentValue: fromSearchValue,
-    };
+/** bookingKey from fareOption.fareValue — VJ Base64 JSON, 9G FLN token, etc. */
+export function resolveBookingKey(fareValue: unknown): string {
+  if (typeof fareValue !== "string" || !fareValue.trim()) return "";
+
+  const trimmed = fareValue.trim();
+
+  try {
+    const decoded = atob(trimmed);
+    const parsed = JSON.parse(decoded) as { bookingKey?: string };
+    if (parsed?.bookingKey && typeof parsed.bookingKey === "string") {
+      return parsed.bookingKey;
+    }
+  } catch {
+    // not Base64 JSON
   }
 
-  const rawValue = copySegmentField(seg.segmentValue ?? seg.segment_value);
-  const rawId =
-    copySegmentField(seg.segmentId ?? seg.segment_id) || legKey;
-  return fixDomesticSegmentKeys(rawValue, rawId, legKey);
+  if (trimmed.startsWith("eyJ")) {
+    return "";
+  }
+
+  return trimmed;
+}
+
+function isNumericSegmentKey(value: string): boolean {
+  return /^\d+$/.test(value);
+}
+
+/** segmentId/segmentValue = "1","2"… — không dùng hash/token lạ từ search. */
+function resolveSegmentKeys(
+  seg: Record<string, unknown>,
+  leg: number
+): { segmentId: string; segmentValue: string } {
+  const legKey = String(leg);
+  const fromValue = stringField(seg.segmentValue);
+  const fromId = stringField(seg.segmentId);
+  if (isNumericSegmentKey(fromValue)) {
+    return { segmentId: fromValue, segmentValue: fromValue };
+  }
+  if (isNumericSegmentKey(fromId)) {
+    return { segmentId: fromId, segmentValue: fromId };
+  }
+  return { segmentId: legKey, segmentValue: legKey };
 }
 
 export function mapSegmentForConfirm(
   seg: Record<string, unknown>,
   defaults?: MapSegmentDefaults,
-  legOverride?: number,
-  tripContext?: Record<string, unknown>
+  legOverride?: number
 ): Record<string, unknown> {
   const airline =
     stringField(seg.airline) || defaults?.airline || "";
@@ -159,54 +155,30 @@ export function mapSegmentForConfirm(
       : typeof seg.leg === "number"
         ? seg.leg
         : 1;
-  const ctx =
-    tripContext ??
-    (defaults?.source
-      ? ({ source: defaults.source, domestic: undefined } as Record<
-          string,
-          unknown
-        >)
-      : undefined);
-  const { segmentId, segmentValue } = resolveSegmentKeys(seg, leg, ctx);
+  const { segmentId, segmentValue } = resolveSegmentKeys(seg, leg);
   const operatingRaw = stringField(seg.operating);
-  const intlTrip = ctx && isInternationalConfirmTrip(ctx);
-
-  const fareTypeRaw =
-    stringField(seg.fareType) ||
-    defaults?.fareType ||
-    stringField(seg.groupClass) ||
-    defaults?.groupClass ||
-    "";
 
   return {
     leg,
     airline,
-    operating: resolveOperatingForConfirm(
-      operatingRaw,
-      airline,
-      defaults?.source
-    ),
+    operating: resolveOperatingForConfirm(operatingRaw, airline, defaults?.source),
     departure: airportCode(seg.departure),
     arrival: airportCode(seg.arrival),
-    departureTime: segmentDateTime(
-      seg.departureTime,
-      seg.departure,
-      intlTrip
-    ),
-    arrivalTime: segmentDateTime(seg.arrivalTime, seg.arrival, intlTrip),
+    departureTime: segmentDateTime(seg.departureTime, seg.departure),
+    arrivalTime: segmentDateTime(seg.arrivalTime, seg.arrival),
     flightNumber: String(seg.flightNumber ?? ""),
-    fareType: intlTrip ? normalizeIntlFareType(fareTypeRaw) : fareTypeRaw,
-    fareBasisCode: intlTrip
-      ? normalizeIntlFareBasisCode(
-          seg.fareBasisCode ??
-            defaults?.fareBasisCode ??
-            seg.bookingClass
-        )
-      : stringField(seg.fareBasisCode) ||
-        defaults?.fareBasisCode ||
-        stringField(seg.bookingClass) ||
-        defaults?.bookingClass ||
-        "",
+    fareType:
+      stringField(seg.fareType) ||
+      defaults?.fareType ||
+      stringField(seg.groupClass) ||
+      defaults?.groupClass ||
+      "",
+    fareBasisCode:
+      stringField(seg.fareBasisCode) ||
+      defaults?.fareBasisCode ||
+      stringField(seg.bookingClass) ||
+      defaults?.bookingClass ||
+      "",
     bookingClass:
       stringField(seg.bookingClass) || defaults?.bookingClass || "",
     groupClass:
@@ -214,16 +186,13 @@ export function mapSegmentForConfirm(
     marriageGrp: stringField(seg.marriageGrp),
     segmentValue,
     segmentId,
-    bookingClassId: intlTrip
-      ? copyAirdataTokenRaw(seg.bookingClassId ?? seg.booking_class_id)
-      : copySegmentField(seg.bookingClassId),
+    bookingClassId: stringField(seg.bookingClassId),
   };
 }
 
 export function mapSegmentsForConfirm(
   segments: unknown,
-  defaults?: MapSegmentDefaults,
-  tripContext?: Record<string, unknown>
+  defaults?: MapSegmentDefaults
 ): Record<string, unknown>[] {
   if (!Array.isArray(segments)) return [];
   return segments.map((seg, index) =>
@@ -232,13 +201,12 @@ export function mapSegmentsForConfirm(
       defaults,
       typeof (seg as Record<string, unknown>).leg === "number"
         ? ((seg as Record<string, unknown>).leg as number)
-        : index + 1,
-      tripContext
+        : index + 1
     )
   );
 }
 
-/** Confirm-price uses full itineraries + flat segments for all sources. */
+/** Confirm-price uses full itineraries + flat segments for all sources (Postman). */
 export function usesFullConfirmItinerariesPayload(_source?: unknown): boolean {
   return true;
 }
