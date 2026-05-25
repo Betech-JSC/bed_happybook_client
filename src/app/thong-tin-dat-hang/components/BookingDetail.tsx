@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
 import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
-import { notFound, useRouter } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +26,7 @@ import { toast } from "react-hot-toast";
 export default function BookingDetail() {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const searchParams = useSearchParams();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isStickySideBar, setStickySideBar] = useState<boolean>(false);
@@ -42,6 +43,9 @@ export default function BookingDetail() {
   const [vietQrData, setVietQrData] = useState<any>({});
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
   const [pollingStatus, setPollingStatus] = useState<boolean>(false);
+
+  // Lấy order_code từ URL
+  const orderCodeFromUrl = searchParams.get("order_code");
 
   // Xác định phụ phí giờ bay thêm từ additional_fees
   const nightTimeSurchargeFee = useMemo(() => {
@@ -96,12 +100,36 @@ export default function BookingDetail() {
   });
 
   useEffect(() => {
-    const bookingData = handleSessionStorage("get", "bookingData");
-    setLoading(false);
-    if (bookingData) {
-      setData(bookingData);
-    }
-  }, []);
+    const fetchOrderData = async () => {
+      // Ưu tiên đọc từ sessionStorage trước
+      const bookingData = handleSessionStorage("get", "bookingData");
+      if (bookingData) {
+        setData(bookingData);
+        setLoading(false);
+        return;
+      }
+
+      // Nếu không có sessionStorage, thử đọc từ URL
+      if (orderCodeFromUrl) {
+        try {
+          const response = await BookingProductApi.getByCode(orderCodeFromUrl);
+          if (response?.payload?.data) {
+            setData(response.payload.data);
+          } else {
+            setData(null);
+          }
+        } catch (error) {
+          console.error("Error fetching order:", error);
+          setData(null);
+        }
+      } else {
+        setData(null);
+      }
+      setLoading(false);
+    };
+
+    fetchOrderData();
+  }, [orderCodeFromUrl]);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
