@@ -18,6 +18,7 @@ import { formatCurrency } from "@/lib/formatters";
 const STAGE_COPY: Record<FlightDraftStage, { title: string; cta: string }> = {
   selecting: { title: "Đang chọn vé", cta: "Tiếp tục" },
   price_confirmed: { title: "Giá đã giữ", cta: "Tiếp tục đặt vé" },
+  held: { title: "Đã giữ chỗ", cta: "Thanh toán" },
   pending_payment: { title: "Chờ thanh toán", cta: "Thanh toán" },
 };
 
@@ -62,6 +63,15 @@ export default function ResumeFlightDraftBanner({
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handleContinue = async () => {
+    if (meta.stage === "held") {
+      if (meta.bookingDeadline && isBookingDeadlineExpired(meta.bookingDeadline)) {
+        toast.error("Đã hết thời gian giữ chỗ.");
+        return;
+      }
+      router.push(meta.resumeUrl);
+      return;
+    }
+
     if (meta.stage !== "pending_payment") {
       router.push(meta.resumeUrl);
       return;

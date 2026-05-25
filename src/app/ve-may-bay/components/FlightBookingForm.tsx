@@ -108,6 +108,8 @@ export default function FlightBookForm({ airportsData }: any) {
   );
   const [confirmExpired, setConfirmExpired] = useState(false);
   const [proceedingPayment, setProceedingPayment] = useState(false);
+  const [isHeld, setIsHeld] = useState(false);
+  const [pnrNumber, setPnrNumber] = useState<string | null>(null);
   const [pendingBookingPayload, setPendingBookingPayload] = useState<any>(null);
   const [selectedFlights, setSelectedFlights] = useState<SelectedFlight[]>([]);
   const [draftModal, setDraftModal] = useState<FlightDraftMatch | null>(null);
@@ -366,14 +368,126 @@ export default function FlightBookForm({ airportsData }: any) {
         setConfirmData(confirmResult);
         setConfirmExpired(false);
         setPendingBookingPayload(finalData);
-        setConfirmStep("review");
+
         const normalizedConfirm =
           normalizeConfirmPriceResponse(confirmResult);
+        const requestId =
+          normalizedConfirm.bookingFlightRequestId ??
+          (confirmResult as any).booking_flight_request_id;
+
         handleSessionStorage("save", "flightConfirmPrice", {
           confirm: confirmResult,
           request: confirmPayload,
           bookingDraft: finalData,
         });
+
+        // Gọi hold-flight để giữ PNR ngay sau khi confirm giá
+        if (requestId) {
+          const holdPayload = {
+            ...finalData,
+            booking_flight_request_id: requestId,
+          };
+          try {
+            const holdRes = await FlightApi.holdFlight(holdPayload);
+            if (holdRes?.status === 200) {
+              const holdData = (holdRes?.payload?.data ??
+                holdRes?.payload) as FlightBookFlightResponse;
+              const holdOrderInfo = holdData.orderInfo as Record<string, unknown> | undefined;
+
+              setIsHeld(true);
+              setPnrNumber(
+                (holdOrderInfo?.pnr_number as string) ?? null
+              );
+
+              const storedConfirmRequest = handleSessionStorage("get", "flightConfirmPrice")
+                ?.request as Record<string, unknown> | undefined;
+
+              const draftSession = {
+                ...finalData,
+                flights,
+                booking_flight_request_id: requestId,
+                confirmPrice: confirmResult,
+                confirmPriceRequest: storedConfirmRequest,
+                bookingId: normalizedConfirm.bookingId,
+                airdata_booking_id:
+                  (confirmResult as any).airdata_booking_id ?? normalizedConfirm.bookingId,
+                order_code: normalizedConfirm.orderCode,
+              };
+
+              const bookingFlight = mergeBookFlightIntoSession(
+                draftSession,
+                holdData,
+                confirmResult
+              );
+
+              if (totalDiscount > 0 && bookingFlight.orderInfo) {
+                (bookingFlight.orderInfo as { total_discount?: number }).total_discount =
+                  totalDiscount;
+              }
+
+              handleSessionStorage("save", "bookingFlight", bookingFlight);
+              handleSessionStorage("save", "flightBookingDraft", finalData);
+
+              const confirmSelections =
+                selectedFlights.length > 0
+                  ? selectedFlights
+                  : loadSelectedFlightsForBooking();
+              const selectionFingerprint = buildCombinedSelectionFingerprint({
+                depart: confirmSelections[0]
+                  ? {
+                      flight: {
+                        ...confirmSelections[0].trip,
+                        flightCode: (confirmSelections[0].trip as { flightCode?: string })
+                          .flightCode,
+                        fareOptions: [confirmSelections[0].fareOption],
+                        selectedTicketClass: confirmSelections[0].fareOption,
+                      } as Record<string, unknown>,
+                      fareOptionIndex: 0,
+                    }
+                  : null,
+                return: confirmSelections[1]
+                  ? {
+                      flight: {
+                        ...confirmSelections[1].trip,
+                        flightCode: (confirmSelections[1].trip as { flightCode?: string })
+                          .flightCode,
+                        fareOptions: [confirmSelections[1].fareOption],
+                        selectedTicketClass: confirmSelections[1].fareOption,
+                      } as Record<string, unknown>,
+                      fareOptionIndex: 0,
+                    }
+                  : null,
+              });
+              updateFlightDraftMeta({
+                stage: "held",
+                resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
+                orderCode:
+                  (holdOrderInfo?.sku as string) ?? normalizedConfirm.orderCode ?? undefined,
+                bookingDeadline:
+                  (holdOrderInfo?.booking_deadline as string) ??
+                  normalizedConfirm.bookingDeadline,
+                holdExpiresAt:
+                  (holdOrderInfo?.hold_expires_at as string) ??
+                  (holdOrderInfo?.booking_deadline as string) ??
+                  normalizedConfirm.holdExpiresAt ??
+                  normalizedConfirm.bookingDeadline,
+                flow: flightType === "international" ? "international" : "domestic",
+                selectionFingerprint,
+              });
+              setConfirmStep("review");
+              toast.success("Đã giữ chỗ thành công. Vui lòng thanh toán để xác nhận vé.");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              return;
+            }
+            // Hold failed — fall through to show confirm-only UI
+            toast.error("Không thể giữ chỗ. Vui lòng thử lại hoặc tiếp tục đặt vé.");
+          } catch {
+            toast.error("Lỗi giữ chỗ. Vui lòng thử lại.");
+          }
+        }
+
+        // Fallback: hold không thành công hoặc không có requestId — show confirm review
+        setConfirmStep("review");
         const confirmSelections =
           selectedFlights.length > 0
             ? selectedFlights
@@ -453,10 +567,29 @@ export default function FlightBookForm({ airportsData }: any) {
     if (!confirmData || !pendingBookingPayload || confirmExpired) return;
 
     const normalized = normalizeConfirmPriceResponse(confirmData);
+    const deadline = normalized.holdExpiresAt ?? normalized.bookingDeadline;
 
-    if (isBookingDeadlineExpired(normalized.bookingDeadline)) {
+    if (isBookingDeadlineExpired(deadline)) {
       setConfirmExpired(true);
-      toast.error("Đã hết thời gian giữ giá. Vui lòng chọn lại chuyến bay.");
+      toast.error(
+        isHeld
+          ? "Đã hết thời gian giữ chỗ. Vui lòng chọn lại chuyến bay."
+          : "Đã hết thời gian giữ giá. Vui lòng chọn lại chuyến bay."
+      );
+      return;
+    }
+
+    // Đã hold PNR trước đó — chỉ redirect, không cần gọi API
+    if (isHeld) {
+      handleSessionStorage("remove", [
+        "selectedFlightDepart",
+        "selectedFlightReturn",
+        "departFlight",
+        "returnFlight",
+        "flightConfirmPrice",
+      ]);
+      setBookingError(null);
+      router.push("/ve-may-bay/thong-tin-dat-cho");
       return;
     }
 
@@ -570,6 +703,8 @@ export default function FlightBookForm({ airportsData }: any) {
     setConfirmStep("form");
     setConfirmData(null);
     setConfirmExpired(false);
+    setIsHeld(false);
+    setPnrNumber(null);
     setBookingError(null);
     handleSessionStorage("remove", "flightConfirmPrice");
   };
@@ -1823,6 +1958,8 @@ export default function FlightBookForm({ airportsData }: any) {
                 isProceeding={proceedingPayment}
                 isExpired={confirmExpired}
                 onExpired={handleConfirmExpired}
+                isHeld={isHeld}
+                pnrNumber={pnrNumber}
               />
             )}
             {confirmStep === "form" && (

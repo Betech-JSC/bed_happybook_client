@@ -32,6 +32,8 @@ const FlightApi = {
   bookFlight: (url: string, data: any) => http.post<any>(url, data),
   bookFlightDomestic: (data: unknown) =>
     http.post<any>(`${path}/book-flight`, data),
+  holdFlight: (data: unknown) =>
+    http.post<any>(`${path}/hold-flight`, data),
   bookingStatus: (orderCode: string) =>
     http.get<any>(
       `${path}/booking-status/${encodeURIComponent(orderCode)}`,

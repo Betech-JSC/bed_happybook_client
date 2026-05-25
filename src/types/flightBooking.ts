@@ -2,6 +2,8 @@
 export type FlightBookingOrderStatus =
   | "price_confirmed"
   | "pending_payment"
+  | "held"
+  | "holding"
   | "paid"
   | "issuing"
   | "issued"
@@ -25,6 +27,8 @@ export interface FlightBookFlightOrderInfo {
   status?: FlightBookingOrderStatus;
   total_price?: number;
   booking_deadline?: string;
+  hold_expires_at?: string;
+  pnr_number?: string;
   total_discount?: number;
 }
 

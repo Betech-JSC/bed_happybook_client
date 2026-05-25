@@ -17,6 +17,7 @@ export type FlightDraftTripType = "oneWay" | "roundTrip";
 export type FlightDraftStage =
   | "selecting"
   | "price_confirmed"
+  | "held"
   | "pending_payment";
 
 export interface FlightSearchRoute {
@@ -259,7 +260,7 @@ export function evaluateFlightSelectionChange(input: {
   if (!meta) return { type: "allow" };
   if (!routesMatchStrict(input.searchRoute, meta)) return { type: "allow" };
 
-  if (meta.stage === "pending_payment") {
+  if (meta.stage === "pending_payment" || meta.stage === "held") {
     return {
       type: "block_pending_payment",
       orderCode: meta.orderCode,
@@ -438,6 +439,7 @@ function inferMetaFromLegacySessions(): FlightDraftMeta | null {
         bookingFlight.status) as string | undefined;
       let stage: FlightDraftStage = "pending_payment";
       if (status === "price_confirmed") stage = "price_confirmed";
+      if (status === "held" || status === "holding") stage = "held";
 
       return {
         startPoint: route.startPoint,
@@ -450,7 +452,7 @@ function inferMetaFromLegacySessions(): FlightDraftMeta | null {
             : route.departDate,
         stage,
         resumeUrl:
-          stage === "pending_payment"
+          stage === "pending_payment" || stage === "held"
             ? "/ve-may-bay/thong-tin-dat-cho"
             : "/ve-may-bay/thong-tin-hanh-khach",
         orderCode: orderInfo?.sku,

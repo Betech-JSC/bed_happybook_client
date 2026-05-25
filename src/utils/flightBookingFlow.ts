@@ -41,8 +41,8 @@ export function shouldPollFlightBookingStatus(
 ): boolean {
   if (!paymentStarted) return false;
   if (!status) return true;
-  // Stop after payment is confirmed — no polling for ticket issuance.
-  if (status === "paid" || status === "issuing" || status === "issued") {
+  // Stop after payment is confirmed or PNR is held — no polling for ticket issuance.
+  if (status === "held" || status === "paid" || status === "issuing" || status === "issued") {
     return false;
   }
   return status === "pending_payment";

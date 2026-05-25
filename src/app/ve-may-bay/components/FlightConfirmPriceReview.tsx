@@ -15,6 +15,8 @@ interface FlightConfirmPriceReviewProps {
   isProceeding: boolean;
   isExpired: boolean;
   onExpired: () => void;
+  isHeld?: boolean;
+  pnrNumber?: string | null;
 }
 
 export default function FlightConfirmPriceReview({
@@ -26,6 +28,8 @@ export default function FlightConfirmPriceReview({
   isProceeding,
   isExpired,
   onExpired,
+  isHeld = false,
+  pnrNumber = null,
 }: FlightConfirmPriceReviewProps) {
   const normalized = normalizeConfirmPriceResponse(confirmData);
   const confirmedTotal = normalized.totalPrice ?? estimatedTotal - totalDiscount;
@@ -40,16 +44,18 @@ export default function FlightConfirmPriceReview({
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm font-medium text-[#175CD3]" data-translate="true">
-              Giá đã được xác nhận
+              {isHeld ? "Đã giữ chỗ thành công" : "Giá đã được xác nhận"}
             </p>
             <p className="mt-1 text-22 font-bold text-[#0C4089]" data-translate="true">
-              Vui lòng kiểm tra trước khi thanh toán
+              {isHeld
+                ? "Vui lòng thanh toán để xác nhận vé"
+                : "Vui lòng kiểm tra trước khi thanh toán"}
             </p>
           </div>
           {hasValidDeadline && !isExpired && (
             <div className="flex flex-col items-start md:items-end">
               <span className="text-sm text-gray-600" data-translate="true">
-                Thời gian giữ giá
+                {isHeld ? "Thời gian giữ chỗ" : "Thời gian giữ giá"}
               </span>
               <CountDownCheckOut
                 timeCountDown={deadline}
@@ -58,7 +64,13 @@ export default function FlightConfirmPriceReview({
             </div>
           )}
         </div>
-        {normalized.bookingId && (
+        {pnrNumber && isHeld && (
+          <p className="mt-3 text-sm text-gray-600">
+            Mã đặt chỗ (PNR):{" "}
+            <span className="font-semibold text-gray-900">{pnrNumber}</span>
+          </p>
+        )}
+        {normalized.bookingId && !isHeld && (
           <p className="mt-3 text-sm text-gray-600">
             Mã giữ chỗ:{" "}
             <span className="font-semibold text-gray-900">{normalized.bookingId}</span>
@@ -132,7 +144,7 @@ export default function FlightConfirmPriceReview({
           type="button"
           style="mt-0"
           isLoading={isProceeding}
-          text="Xác nhận và thanh toán"
+          text={isHeld ? "Thanh toán ngay" : "Xác nhận và thanh toán"}
           disabled={isExpired}
           onClick={onProceedPayment}
         />
