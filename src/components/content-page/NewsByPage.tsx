@@ -7,6 +7,7 @@ import {
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { getServerLang } from "@/lib/session";
 import { toSnakeCase } from "@/utils/Helper";
 import { newsApi } from "@/api/news";
 import clsx from "clsx";
@@ -24,8 +25,9 @@ export default async function NewsByPage({
   wrapperStyle?: string;
   page?: string;
 }) {
+  const language = await getServerLang();
   const data =
-    ((await newsApi.getLastedNewsByPage(page))?.payload?.data as any) ?? [];
+    ((await newsApi.getLastedNewsByPage(page, language))?.payload?.data as any) ?? [];
   if (!data?.length) return;
   const [firstItem, ...news] = data;
   const t = await getServerT();
