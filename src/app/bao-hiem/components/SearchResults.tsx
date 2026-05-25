@@ -26,7 +26,7 @@ export default function SearchResults() {
   const areaType = searchParams.get("type") ?? "";
   const [departDate, setDepartDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
-  const [sortOrder, setSortOrder] = useState<string>("id|desc");
+  const [sortOrder, setSortOrder] = useState<string>("price|asc");
   const { t } = useTranslation();
   const [formData, setFormData] = useState<SearchForm>({
     departurePlace: "",

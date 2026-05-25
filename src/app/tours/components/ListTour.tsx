@@ -156,13 +156,13 @@ export default function ListTour({
           </h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span data-translate="true">Sắp xếp</span>
-            <div className="w-40 bg-white border border-gray-200 rounded-lg">
+            <div className="w-auto min-w-[180px] bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
                 onChange={(e) => {
                   handleSortData(e.target.value);
                 }}
-                defaultValue={"id|desc"}
+                defaultValue={"price|asc"}
               >
                 <option value="id|desc" data-translate="true">
                   Mới nhất

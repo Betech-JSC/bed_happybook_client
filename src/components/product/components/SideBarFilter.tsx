@@ -333,7 +333,7 @@ export default function SideBarFilterProduct({
                     onChange={(e) => {
                       handleSortData(e.target.value);
                     }}
-                    defaultValue={"id|desc"}
+                    defaultValue={"price|asc"}
                   >
                     <option value="id|desc">{t("moi_nhat")}</option>
                     <option value="id|asc">{t("cu_nhat")}</option>

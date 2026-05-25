@@ -138,7 +138,7 @@ export default function ListHotel({
             onChange={(e) => {
               handleSortData(e.target.value);
             }}
-            defaultValue={"id|desc"}
+            defaultValue={"price|asc"}
             className="py-3 px-4 border border-gray-300 w-full rounded-lg mt-3 outline-none font-semibold"
           >
             <option value="id|desc" data-translate="true">

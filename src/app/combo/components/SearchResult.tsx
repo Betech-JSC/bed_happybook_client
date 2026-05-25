@@ -151,13 +151,13 @@ export default function SearchResult({
           <h1 className="text-32 font-bold">{t("tim_kiem")}</h1>
           <div className="flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
-            <div className="w-40 bg-white border border-gray-200 rounded-lg">
+            <div className="w-auto min-w-[180px] bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
                 onChange={(e) => {
                   handleSortData(e.target.value);
                 }}
-                defaultValue={"id|desc"}
+                defaultValue={"price|asc"}
               >
                 <option value="id|desc">{t("moi_nhat")}</option>
                 <option value="id|asc">{t("cu_nhat")}</option>
