@@ -7,7 +7,7 @@ export default function CountDownCheckOut({
   timeCountDown,
   handleTicketPaymentTimeout,
 }: {
-  timeCountDown: Date;
+  timeCountDown: Date | string;
   handleTicketPaymentTimeout: () => void;
 }) {
   const calculateTimeLeft = useCallback(
@@ -29,7 +29,7 @@ export default function CountDownCheckOut({
     [handleTicketPaymentTimeout]
   );
 
-  const [targetTime] = useState(new Date(timeCountDown));
+  const [targetTime] = useState(() => new Date(timeCountDown));
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(targetTime));
 
   useEffect(() => {

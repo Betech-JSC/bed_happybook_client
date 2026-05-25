@@ -37,7 +37,11 @@ const WhyChooseHappyBook = dynamic(
 );
 
 const getCachedAirports = cache(async () => {
-  return (await FlightApi.airPorts())?.payload.data ?? [];
+  try {
+    return (await FlightApi.getCachedAirports()) ?? [];
+  } catch {
+    return [];
+  }
 });
 
 const getCachedPageContent = cache(async (language: string) => {
@@ -45,7 +49,11 @@ const getCachedPageContent = cache(async (language: string) => {
 });
 
 const getCachedFlightType = cache(async (startPoint: string, endPoint: string) => {
-  return (await FlightApi.getFlightType(startPoint, endPoint))?.payload?.data as any;
+  try {
+    return (await FlightApi.getFlightType(startPoint, endPoint))?.payload?.data as any;
+  } catch {
+    return null;
+  }
 });
 
 export const metadata: Metadata = formatMetadata({
