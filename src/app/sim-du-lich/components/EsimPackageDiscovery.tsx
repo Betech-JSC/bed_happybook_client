@@ -214,7 +214,7 @@ export default function EsimPackageDiscovery({
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
   const [showAllDestinations, setShowAllDestinations] = useState(false);
-  const [sortMode, setSortMode] = useState("newest");
+  const [sortMode, setSortMode] = useState("price-asc");
   const countryDestinationOptions = useMemo(() => {
     const seen = new Set<string>();
     const next: DestinationSelectOption[] = [];
