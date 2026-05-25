@@ -14,7 +14,7 @@ export default function FAQ() {
   };
   const [data, setData] = useState<any[]>([]);
   const loadData = useCallback(async () => {
-    const faqData = (await FaqApi.list(2, language))?.payload?.data as any;
+    const faqData = (await FaqApi.list(2, language, 'happybook'))?.payload?.data as any;
     setData(faqData);
   }, [language]);
 
