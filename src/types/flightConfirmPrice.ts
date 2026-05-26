@@ -114,6 +114,8 @@ export interface ConfirmPriceResponse {
   booking_flight_request_id?: number;
   booking_deadline?: string;
   bookingDeadline?: string;
+  hold_expires_at?: string;
+  holdExpiresAt?: string;
   price_confirmed_at?: string;
   status?: string;
   total_price?: number;

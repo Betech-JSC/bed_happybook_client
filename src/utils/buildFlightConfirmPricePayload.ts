@@ -431,7 +431,6 @@ export function normalizeConfirmPriceResponse(
     null;
 
   const bookingDeadline =
-    holdExpiresAt ||
     (data.booking_deadline as string) ||
     (data.bookingDeadline as string) ||
     ((data.orderInfo as Record<string, unknown>)?.booking_deadline as string) ||
@@ -447,7 +446,7 @@ export function normalizeConfirmPriceResponse(
     orderCode,
     bookingFlightRequestId: data.booking_flight_request_id as number | undefined,
     bookingDeadline,
-    holdExpiresAt: holdExpiresAt || bookingDeadline,
+    holdExpiresAt,
     totalPrice:
       (data.total_price as number) ??
       (pricing.total as number) ??

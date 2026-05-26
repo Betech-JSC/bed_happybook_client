@@ -33,8 +33,7 @@ export default function FlightConfirmPriceReview({
 }: FlightConfirmPriceReviewProps) {
   const normalized = normalizeConfirmPriceResponse(confirmData);
   const confirmedTotal = normalized.totalPrice ?? estimatedTotal - totalDiscount;
-  const holdIso =
-    normalized.holdExpiresAt ?? normalized.bookingDeadline ?? null;
+  const holdIso = normalized.holdExpiresAt ?? null;
   const deadline = holdIso ? new Date(holdIso) : null;
   const hasValidDeadline = deadline && !Number.isNaN(deadline.getTime());
 

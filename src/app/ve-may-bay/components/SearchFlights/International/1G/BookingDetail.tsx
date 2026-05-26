@@ -29,7 +29,7 @@ import CountDownCheckOut from "../../../CountDownCheckOut";
 import PostPaymentSuccessBanner from "@/components/flight/PostPaymentSuccessBanner";
 import {
   buildFlightSearchUrlFromDraft,
-  resolveHoldExpiresAt,
+  resolvePriceHoldExpiresAt,
 } from "@/utils/flightHoldExpiry";
 
 export default function BookingDetail1G({ airports }: BookingDetailProps) {
@@ -292,7 +292,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
     router.push(buildFlightSearchUrlFromDraft());
   };
 
-  const holdExpiresAt = resolveHoldExpiresAt(data?.orderInfo ?? data);
+  const holdExpiresAt = resolvePriceHoldExpiresAt(data);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {

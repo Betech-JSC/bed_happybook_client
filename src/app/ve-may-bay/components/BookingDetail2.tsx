@@ -32,14 +32,13 @@ import { useFlightBookingStatusPoll } from "@/hooks/useFlightBookingStatusPoll";
 import PostPaymentSuccessBanner from "@/components/flight/PostPaymentSuccessBanner";
 import {
   computeFlightCheckoutGrandTotal,
-  isBookingDeadlineExpired,
   isFlightPaymentConfirmed,
   resolveAuthoritativeFareTotal,
 } from "@/utils/flightBookingFlow";
 import {
   buildFlightSearchUrlFromDraft,
-  isHoldExpired,
-  resolveHoldExpiresAt,
+  isPriceHoldExpired,
+  resolvePriceHoldExpiresAt,
 } from "@/utils/flightHoldExpiry";
 import { getTripClientId } from "@/utils/normalizeFlightTrip";
 
@@ -83,7 +82,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   const [isOpenPriceDetail, setIsOpenPriceDetail] = useState(false);
 
   const orderCode = data?.orderInfo?.sku as string | undefined;
-  const holdExpiresAt = resolveHoldExpiresAt(data?.orderInfo ?? data);
+  const holdExpiresAt = resolvePriceHoldExpiresAt(data);
   const {
     status: polledStatus,
     isPolling: isBookingStatusPolling,
@@ -111,11 +110,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     },
   });
   const onSubmit = (dataForm: CheckOutBodyType) => {
-    if (
-      ticketPaymentTimeout ||
-      isHoldExpired(holdExpiresAt) ||
-      isBookingDeadlineExpired(data?.orderInfo?.booking_deadline)
-    ) {
+    if (ticketPaymentTimeout || isPriceHoldExpired(holdExpiresAt)) {
       toast.error("Đã hết thời gian giữ giá / thanh toán.");
       return;
     }
@@ -251,6 +246,18 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         onePayFee,
       })
     : 0;
+
+  const holdExpired = Boolean(holdExpiresAt) && isPriceHoldExpired(holdExpiresAt);
+  const paymentConfirmed = isFlightPaymentConfirmed(
+    orderStatus ?? polledStatus
+  );
+  const canSelectPaymentMethod =
+    !isPaid &&
+    !paymentConfirmed &&
+    orderStatus !== "paid_book_failed" &&
+    polledStatus !== "paid_book_failed" &&
+    !ticketPaymentTimeout &&
+    !holdExpired;
 
   //   toast.dismiss();
   useEffect(() => {
@@ -413,8 +420,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
 
   const handleTicketPaymentTimeout = () => {
     setTicketPaymentTimeout(true);
-    toast.error("Phiên đặt vé đã hết hạn");
-    router.push(buildFlightSearchUrlFromDraft());
+    toast.error("Phiên giữ giá / thanh toán đã hết hạn");
   };
 
   const handleScroll = () => {
@@ -675,7 +681,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         )}
                       </div>
                     </div>
-                    {flight.segments.map(
+                    {(flight.segments ?? []).map(
                       (segment: any, segmentIndex: number) => {
                         const fromSegmenOption = airports
                           .flatMap((country) => country.airports)
@@ -954,7 +960,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </div>
             <div className="mt-6">
               <p className="font-bold text-18">{t("thong_tin_hanh_khach")}</p>
-              {data.passengers.map((passenger: any, index: number) => (
+              {(data.passengers ?? []).map((passenger: any, index: number) => (
                 <div
                   key={index}
                   className="bg-white rounded-xl p-3 md:p-6 mt-3 break-words border"
@@ -1013,20 +1019,21 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             </div>
           </div>
         </div>
-        {!isPaid &&
-          !isFlightPaymentConfirmed(orderStatus ?? polledStatus) &&
-          orderStatus !== "paid_book_failed" &&
-          polledStatus !== "paid_book_failed" && (
+        {canSelectPaymentMethod || holdExpired || ticketPaymentTimeout ? (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
-            {!ticketPaymentTimeout &&
-              !isHoldExpired(holdExpiresAt) &&
-              !isBookingDeadlineExpired(data?.orderInfo?.booking_deadline) && (
-              <>
-                <div className="mt-6">
-                  <p className="font-bold text-18">
-                    {t("hinh_thuc_thanh_toan")}
-                  </p>
-                  <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
+            <div className="mt-6">
+              <p className="font-bold text-18">{t("hinh_thuc_thanh_toan")}</p>
+              {(holdExpired || ticketPaymentTimeout) && (
+                <div
+                  role="alert"
+                  className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                >
+                  Phiên giữ giá / thanh toán đã hết hạn. Vui lòng quay lại tìm
+                  chuyến và đặt vé lại.
+                </div>
+              )}
+              {canSelectPaymentMethod && (
+              <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
                     <div className="flex space-x-3 items-start mt-4">
                       <input
                         type="radio"
@@ -1131,46 +1138,45 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                         {errors.payment_method.message}
                       </p>
                     )}
-                  </div>
-                </div>
-                {!isEmpty(vietQrData) && selectedPaymentMethod === "vietqr" && (
-                  <QRCodeDisplay
-                    vietQrData={vietQrData}
-                    order={data?.orderInfo}
-                    isPaid={isPaid}
-                    setIsPaid={(paid) => setIsPaid(paid)}
-                  />
-                )}
-              </>
-            )}
+              </div>
+              )}
+            </div>
+            {!isEmpty(vietQrData) &&
+              selectedPaymentMethod === "vietqr" &&
+              canSelectPaymentMethod && (
+                <QRCodeDisplay
+                  vietQrData={vietQrData}
+                  order={data?.orderInfo}
+                  isPaid={isPaid}
+                  setIsPaid={(paid) => setIsPaid(paid)}
+                />
+              )}
             <div className="mt-4">
               <LoadingButton
                 isLoading={loadingSubmitForm}
                 text={
-                  ticketPaymentTimeout
+                  holdExpired || ticketPaymentTimeout
                     ? "Đã hết thời gian thanh toán"
                     : isPaid
                       ? "Hoàn tất thanh toán"
                       : "Xác nhận thanh toán"
                 }
                 disabled={
-                  ticketPaymentTimeout ||
-                    !selectedPaymentMethod ||
-                    (selectedPaymentMethod === "vietqr" && !isPaid)
-                    ? true
-                    : false
+                  !canSelectPaymentMethod ||
+                  !selectedPaymentMethod ||
+                  (selectedPaymentMethod === "vietqr" && !isPaid)
                 }
                 style={
-                  ticketPaymentTimeout ||
-                    !selectedPaymentMethod ||
-                    (selectedPaymentMethod === "vietqr" && !isPaid)
+                  !canSelectPaymentMethod ||
+                  !selectedPaymentMethod ||
+                  (selectedPaymentMethod === "vietqr" && !isPaid)
                     ? "bg-gray-300 disabled:cursor-not-allowed"
                     : ""
                 }
               />
             </div>
           </form>
-        )}
+        ) : null}
       </div>
       <div className="w-full md:w-5/12 lg:w-4/12 bg-white p-5 md:p-3 lg:p-6 fixed md:sticky md:top-20 lg:top-[140px] max-md:left-0 rounded-t-3xl md:rounded-3xl max-md:bottom-0 z-[2147483648] md:z-10 max-md:shadow-lg border-gray-200 border md:border-0">
         <div className="md:p-3 lg:py-4 lg:px-4">

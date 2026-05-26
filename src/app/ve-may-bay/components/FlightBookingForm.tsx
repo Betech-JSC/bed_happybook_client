@@ -37,9 +37,10 @@ import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import type { FlightBookFlightResponse } from "@/types/flightBooking";
 import {
-  isBookingDeadlineExpired,
+  attachPriceHoldToBookingSession,
   mergeBookFlightIntoSession,
 } from "@/utils/flightBookingFlow";
+import { isPriceHoldExpired } from "@/utils/flightHoldExpiry";
 import {
   buildCombinedSelectionFingerprint,
   buildSearchRouteFromParams,
@@ -466,11 +467,7 @@ export default function FlightBookForm({ airportsData }: any) {
                 bookingDeadline:
                   (holdOrderInfo?.booking_deadline as string) ??
                   normalizedConfirm.bookingDeadline,
-                holdExpiresAt:
-                  (holdOrderInfo?.hold_expires_at as string) ??
-                  (holdOrderInfo?.booking_deadline as string) ??
-                  normalizedConfirm.holdExpiresAt ??
-                  normalizedConfirm.bookingDeadline,
+                holdExpiresAt: normalizedConfirm.holdExpiresAt ?? undefined,
                 flow: flightType === "international" ? "international" : "domestic",
                 selectionFingerprint,
               });
@@ -523,8 +520,7 @@ export default function FlightBookForm({ airportsData }: any) {
           resumeUrl: "/ve-may-bay/thong-tin-hanh-khach",
           orderCode: normalizedConfirm.orderCode || undefined,
           bookingDeadline: normalizedConfirm.bookingDeadline,
-          holdExpiresAt:
-            normalizedConfirm.holdExpiresAt ?? normalizedConfirm.bookingDeadline,
+          holdExpiresAt: normalizedConfirm.holdExpiresAt ?? undefined,
           flow: flightType === "international" ? "international" : "domestic",
           selectionFingerprint,
         });
@@ -567,9 +563,9 @@ export default function FlightBookForm({ airportsData }: any) {
     if (!confirmData || !pendingBookingPayload || confirmExpired) return;
 
     const normalized = normalizeConfirmPriceResponse(confirmData);
-    const deadline = normalized.holdExpiresAt ?? normalized.bookingDeadline;
+    const holdDeadline = normalized.holdExpiresAt;
 
-    if (isBookingDeadlineExpired(deadline)) {
+    if (isPriceHoldExpired(holdDeadline)) {
       setConfirmExpired(true);
       toast.error(
         isHeld
@@ -581,6 +577,20 @@ export default function FlightBookForm({ airportsData }: any) {
 
     // Đã hold PNR trước đó — chỉ redirect, không cần gọi API
     if (isHeld) {
+      const heldSession = handleSessionStorage("get", "bookingFlight") as
+        | Record<string, unknown>
+        | undefined;
+      if (heldSession?.confirmPrice) {
+        handleSessionStorage(
+          "save",
+          "bookingFlight",
+          attachPriceHoldToBookingSession(
+            heldSession,
+            heldSession.confirmPrice as ConfirmPriceResponse,
+            new Date().toISOString()
+          )
+        );
+      }
       handleSessionStorage("remove", [
         "selectedFlightDepart",
         "selectedFlightReturn",
@@ -633,9 +643,13 @@ export default function FlightBookForm({ airportsData }: any) {
         order_code: normalized.orderCode,
       };
 
-      const bookingFlight = mergeBookFlightIntoSession(
+      const merged = mergeBookFlightIntoSession(
         draftSession,
         bookData,
+        confirmData
+      );
+      const bookingFlight = attachPriceHoldToBookingSession(
+        merged,
         confirmData
       );
 
@@ -656,11 +670,7 @@ export default function FlightBookForm({ airportsData }: any) {
         bookingDeadline:
           (bookingFlight.orderInfo as { booking_deadline?: string })
             ?.booking_deadline ?? normalized.bookingDeadline,
-        holdExpiresAt:
-          (bookingFlight.orderInfo as { hold_expires_at?: string })
-            ?.hold_expires_at ??
-          normalized.holdExpiresAt ??
-          normalized.bookingDeadline,
+        holdExpiresAt: normalized.holdExpiresAt ?? undefined,
         flow: flightType === "international" ? "international" : "domestic",
       });
       handleSessionStorage("remove", [

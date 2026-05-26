@@ -6,6 +6,7 @@ import type {
 } from "@/types/flightBooking";
 import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import { normalizeConfirmPriceResponse } from "@/utils/buildFlightConfirmPricePayload";
+import { PRICE_HOLD_STARTED_AT_KEY } from "@/utils/flightHoldExpiry";
 
 export const BOOKING_STATUS_POLL_INTERVAL_MS = 2500;
 export const BOOKING_STATUS_POLL_MAX_MS = 120_000;
@@ -104,8 +105,8 @@ export function mergeBookFlightIntoSession(
         orderInfo.booking_deadline ??
         normalized?.bookingDeadline ??
         (existingOrderInfo.booking_deadline as string | undefined),
+      // Giữ giá: chỉ từ confirm-price, book-flight không trả hold_expires_at
       hold_expires_at:
-        (orderInfo as Record<string, unknown>).hold_expires_at ??
         normalized?.holdExpiresAt ??
         (existingOrderInfo.hold_expires_at as string | undefined),
       total_price:
@@ -119,6 +120,32 @@ export function mergeBookFlightIntoSession(
     airdata_booking_id:
       existing.airdata_booking_id ?? normalized?.bookingId,
     confirmPrice: confirmPrice ?? existing.confirmPrice,
+  };
+}
+
+/** Gắn mốc submit book-flight + hold_expires_at từ confirm-price cho countdown checkout. */
+export function attachPriceHoldToBookingSession(
+  session: Record<string, unknown>,
+  confirmPrice: ConfirmPriceResponse | Record<string, unknown> | null,
+  startedAt: string = new Date().toISOString()
+): Record<string, unknown> {
+  const normalized = confirmPrice
+    ? normalizeConfirmPriceResponse(confirmPrice as Record<string, unknown>)
+    : null;
+  const holdExpiresAt = normalized?.holdExpiresAt ?? null;
+  const existingOrderInfo =
+    typeof session.orderInfo === "object" && session.orderInfo
+      ? (session.orderInfo as Record<string, unknown>)
+      : {};
+
+  return {
+    ...session,
+    [PRICE_HOLD_STARTED_AT_KEY]: startedAt,
+    confirmPrice: confirmPrice ?? session.confirmPrice,
+    orderInfo: {
+      ...existingOrderInfo,
+      ...(holdExpiresAt ? { hold_expires_at: holdExpiresAt } : {}),
+    },
   };
 }
 

@@ -1,40 +1,73 @@
 import { isBookingDeadlineExpired } from "@/utils/flightBookingFlow";
+import { normalizeConfirmPriceResponse } from "@/utils/buildFlightConfirmPricePayload";
 import { getFlightDraftMeta } from "@/utils/flightDraftSession";
 
-function readHoldField(
-  source: Record<string, unknown> | null | undefined,
-  key: string
-): string | undefined {
-  if (!source) return undefined;
+export const PRICE_HOLD_STARTED_AT_KEY = "price_hold_started_at";
+
+/** Absolute hold end time from confirm-price (not book-flight payment deadline). */
+export function resolvePriceHoldExpiresAt(
+  session: Record<string, unknown> | null | undefined
+): string | null {
+  if (!session) return null;
+
+  const confirmPrice = session.confirmPrice as Record<string, unknown> | undefined;
+  if (confirmPrice) {
+    const { holdExpiresAt } = normalizeConfirmPriceResponse(confirmPrice);
+    if (holdExpiresAt) return holdExpiresAt;
+  }
+
   const orderInfo =
-    typeof source.orderInfo === "object" && source.orderInfo
-      ? (source.orderInfo as Record<string, unknown>)
+    typeof session.orderInfo === "object" && session.orderInfo
+      ? (session.orderInfo as Record<string, unknown>)
       : undefined;
-  const camel =
-    key === "hold_expires_at" ? "holdExpiresAt" : "bookingDeadline";
-  const raw =
-    source[key] ??
-    source[camel] ??
-    orderInfo?.[key] ??
-    orderInfo?.[camel];
-  return typeof raw === "string" && raw.length > 0 ? raw : undefined;
+  const fromOrder = orderInfo?.hold_expires_at ?? orderInfo?.holdExpiresAt;
+  if (typeof fromOrder === "string" && fromOrder.length > 0) {
+    return fromOrder;
+  }
+
+  return null;
 }
 
-/** Prefer API hold_expires_at; fall back to booking_deadline for older responses. */
+export function resolvePriceHoldStartedAt(
+  session: Record<string, unknown> | null | undefined
+): string | null {
+  if (!session) return null;
+  const raw = session[PRICE_HOLD_STARTED_AT_KEY];
+  return typeof raw === "string" && raw.length > 0 ? raw : null;
+}
+
+export function getPriceHoldRemainingMs(
+  holdExpiresAt: string | null | undefined,
+  nowMs: number = Date.now()
+): number {
+  if (!holdExpiresAt) return 0;
+  const end = new Date(holdExpiresAt).getTime();
+  if (Number.isNaN(end)) return 0;
+  return Math.max(0, end - nowMs);
+}
+
+export function isPriceHoldExpired(
+  holdExpiresAt: string | null | undefined
+): boolean {
+  if (!holdExpiresAt) return false;
+  return getPriceHoldRemainingMs(holdExpiresAt) <= 0;
+}
+
+/**
+ * @deprecated Use resolvePriceHoldExpiresAt on full booking session (includes confirmPrice).
+ */
 export function resolveHoldExpiresAt(
   source: Record<string, unknown> | null | undefined
 ): string | null {
-  return (
-    readHoldField(source, "hold_expires_at") ??
-    readHoldField(source, "booking_deadline") ??
-    null
-  );
+  return resolvePriceHoldExpiresAt(source);
 }
 
 export function isHoldExpired(
   deadline: string | Date | null | undefined
 ): boolean {
-  return isBookingDeadlineExpired(deadline);
+  return isPriceHoldExpired(
+    deadline instanceof Date ? deadline.toISOString() : deadline
+  );
 }
 
 export function buildFlightSearchUrlFromDraft(): string {
