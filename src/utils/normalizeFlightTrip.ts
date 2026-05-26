@@ -2,13 +2,13 @@ const VN1A_CLIENT_ID = "VN1A";
 
 /** Vietnam Airlines (Airdata source VN1A or IATA VN). */
 export function isVietnamAirlinesTrip(
-  trip: Record<string, unknown> | null | undefined
+  trip: Record<string, unknown> | null | undefined,
 ): boolean {
   if (!trip) return false;
   const source = String(trip.source ?? "").toUpperCase();
   if (source === "VN1A") return true;
   const airline = String(
-    trip.airline ?? trip.airLineCode ?? trip.operator ?? ""
+    trip.airline ?? trip.airLineCode ?? trip.operator ?? "",
   ).toUpperCase();
   return airline === "VN";
 }
@@ -19,7 +19,7 @@ export function isVietnamAirlinesTrip(
  * Backend may return camelCase or snake_case.
  */
 export function getTripClientId(
-  trip: Record<string, unknown> | null | undefined
+  trip: Record<string, unknown> | null | undefined,
 ): string {
   if (!trip) return "";
 
@@ -39,7 +39,7 @@ export function getTripClientId(
 
 /** Ensure trip always has clientId string when stored / sent to confirm-price. */
 export function normalizeFlightTrip<T extends Record<string, unknown>>(
-  trip: T
+  trip: T,
 ): T & { clientId: string } {
   return {
     ...trip,

@@ -137,6 +137,7 @@ export default function ListFlights1GInternaltion({
                   </div>
                   <FlightInternational1GDetail
                     journey={journey}
+                    journeyIndex={leg}
                     onSelectFlight={
                       leg ? handleSelectReturnFlight : handleSelectDepartFlight
                     }

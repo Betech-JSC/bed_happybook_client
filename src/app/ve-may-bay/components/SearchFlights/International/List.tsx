@@ -22,6 +22,8 @@ import {
   getCheapestComparablePrice,
   getInternationalPackagePrice,
 } from "../../../lib/cheapest";
+import { persistInternationalCheckoutSelections } from "@/utils/internationalFlightSelection";
+import type { TripsSource } from "@/types/selectedFlight";
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -50,6 +52,8 @@ export default function ListFlightsInternaltion({
   returnDays,
   handleClickDate,
   flightSession,
+  tripsSource = "resource",
+  paxCounts = { adult: 1, child: 0, infant: 0 },
   isRoundTrip,
   totalPassengers,
   isReady,
@@ -327,9 +331,14 @@ export default function ListFlightsInternaltion({
     [filteredData]
   );
   const handleCheckout = async () => {
-    if (isCheckOut) {
-      handleSessionStorage("save", "departFlight", selectedDepartFlight);
-      handleSessionStorage("save", "returnFlight", selectedReturnFlight);
+    if (isCheckOut && flightSession) {
+      persistInternationalCheckoutSelections({
+        depart: selectedDepartFlight,
+        return: selectedReturnFlight,
+        searchId: flightSession,
+        tripsSource: tripsSource as TripsSource,
+        paxCounts,
+      });
       handleSessionStorage("save", "flightSession", flightSession);
       const res = await fetch("/api/set-session", {
         method: "POST",
@@ -350,6 +359,19 @@ export default function ListFlightsInternaltion({
     }
   };
 
+  const merge1GPackageSelection = (
+    previous: Record<string, unknown> | null,
+    incoming: Record<string, unknown>
+  ): Record<string, unknown> => {
+    const merged = _.cloneDeep(incoming);
+    const prevPicked =
+      (previous?._selectedJourneyFlights as Record<string, unknown>) ?? {};
+    const nextPicked =
+      (incoming._selectedJourneyFlights as Record<string, unknown>) ?? {};
+    merged._selectedJourneyFlights = { ...prevPicked, ...nextPicked };
+    return merged;
+  };
+
   const handleSelectDepartFlight = (
     flight: any,
     FareId: string,
@@ -359,8 +381,19 @@ export default function ListFlightsInternaltion({
     if (FareId !== selectedFareDataId) {
       handleUncheck(e);
       setSelectedReturnFlight(null);
+      setSelectedDepartFlight(null);
     }
-    setSelectedDepartFlight(flight);
+
+    if (flight?.source === SOURCE_1G) {
+      const merged = merge1GPackageSelection(
+        FareId === selectedFareDataId ? selectedDepartFlight : null,
+        flight
+      );
+      setSelectedDepartFlight(merged);
+      setSelectedReturnFlight(merged);
+    } else {
+      setSelectedDepartFlight(flight);
+    }
     setSelectedFareDataId(FareId);
   };
 
@@ -373,12 +406,32 @@ export default function ListFlightsInternaltion({
     if (FareId !== selectedFareDataId) {
       handleUncheck(e);
       setSelectedDepartFlight(null);
+      setSelectedReturnFlight(null);
     }
-    setSelectedReturnFlight(flight);
+
+    if (flight?.source === SOURCE_1G) {
+      const merged = merge1GPackageSelection(selectedDepartFlight, flight);
+      setSelectedDepartFlight(merged);
+      setSelectedReturnFlight(merged);
+    } else {
+      setSelectedReturnFlight(flight);
+    }
     setSelectedFareDataId(FareId);
   };
 
   useEffect(() => {
+    if (!selectedDepartFlight) {
+      setIsCheckOut(false);
+      return;
+    }
+    if (selectedDepartFlight.source === SOURCE_1G) {
+      const picked =
+        (selectedDepartFlight._selectedJourneyFlights as Record<string, unknown>) ??
+        {};
+      const requiredLegs = isRoundTrip ? ["0", "1"] : ["0"];
+      setIsCheckOut(requiredLegs.every((key) => Boolean(picked[key])));
+      return;
+    }
     if (selectedDepartFlight && selectedReturnFlight) {
       setIsCheckOut(true);
     }

@@ -1,8 +1,13 @@
 import type { SelectedFlight } from "@/types/selectedFlight";
 import {
   copyVjFareValueForConfirm,
+  isVietJetSource,
+  repairFareOptionFromTrip,
   resolveFareValueFromFareOption,
 } from "@/utils/fareValueToken";
+import { resolveSelectedItineraryId } from "@/utils/confirmPriceIdentifiers";
+import { is1GSource } from "@/utils/internationalFlightSelection";
+import { normalizeVjSelectedFlight } from "@/utils/vjSegmentToken";
 
 /** Legacy session: departFlight trip object → SelectedFlight (best effort). */
 export function legacyTripToSelectedFlight(
@@ -34,21 +39,48 @@ export function legacyTripToSelectedFlight(
         copyVjFareValueForConfirm(f) === selectedFv
     );
     if (idx >= 0) fareOptionIndex = idx;
+  } else if (fareOptionsList?.length) {
+    const stc = fareOption as Record<string, unknown>;
+    const idx = fareOptionsList.findIndex(
+      (f) =>
+        f.bookingClass === stc.bookingClass &&
+        f.fareBasisCode === stc.fareBasisCode &&
+        (f.groupClass === stc.groupClass || f.fareType === stc.fareType)
+    );
+    if (idx >= 0) fareOptionIndex = idx;
   }
 
-  return {
+  const repairedFare = repairFareOptionFromTrip(fareOption, {
+    fareOptionIndex,
+    trip,
+    source,
+  });
+
+  let fareValue = resolveFareValueFromFareOption(source, repairedFare, trip);
+  if (!fareValue && is1GSource(source)) {
+    fareValue = String(trip.hpb_id ?? fareOption.hpb_id ?? "").trim();
+  }
+
+  const selection: SelectedFlight = {
     searchId: context.searchId,
     resourceId: context.resourceId ?? (trip._resourceId as string | undefined),
-    itineraryId: String(
-      trip.itineraryId ?? context.itineraryId ?? (trip.flightLeg === 1 ? "2" : "1")
-    ),
+    itineraryId:
+      context.itineraryId && context.itineraryId !== "1" && context.itineraryId !== "2"
+        ? context.itineraryId
+        : resolveSelectedItineraryId(trip),
     fareOptionIndex,
     trip: tripRest,
     fareOption: {
-      ...fareOption,
-      fareValue: resolveFareValueFromFareOption(source, fareOption),
+      ...repairedFare,
+      fareValue,
     },
     paxCounts: context.paxCounts,
     tripsSource: context.tripsSource,
   };
+
+  if (isVietJetSource(source)) {
+    return normalizeVjSelectedFlight(selection, trip);
+  }
+
+  return selection;
 }

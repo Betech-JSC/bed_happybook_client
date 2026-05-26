@@ -49,6 +49,13 @@ export default function FlightConfirmPriceReview({
     serviceFeeTotal > 0 &&
     (serviceFeeInBreakdown == null || serviceFeeInBreakdown === 0);
 
+  const netFare =
+    normalized.breakdown.total_price_net != null
+      ? normalized.breakdown.total_price_net
+      : normalized.totalTax != null
+        ? fareTotal - normalized.totalTax - (serviceFeeInBreakdown ?? 0)
+        : null;
+
   const holdIso = normalized.holdExpiresAt ?? null;
   const deadline = holdIso ? new Date(holdIso) : null;
   const hasValidDeadline = deadline && !Number.isNaN(deadline.getTime());
@@ -106,6 +113,14 @@ export default function FlightConfirmPriceReview({
           Giá cuối cùng
         </p>
         <div className="space-y-3 text-sm">
+          {netFare != null && netFare > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span data-translate="true">Giá vé</span>
+              <span className="font-medium text-gray-900">
+                {formatCurrency(netFare)}
+              </span>
+            </div>
+          )}
           {normalized.totalTax != null && (
             <div className="flex justify-between text-gray-600">
               <span data-translate="true">Thuế và phí</span>

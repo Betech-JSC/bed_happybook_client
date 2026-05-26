@@ -4,7 +4,7 @@
  * - B3 book-flight: passport_number, passport_expiry, nationality, doc_type → BE lưu DB + rebuild hold
  * - INF: không gửi passport (BE bỏ bắt buộc INFANT)
  * - CHD: passport bắt buộc khi quốc tế (FE validate + map)
- * - residence: chưa map (chờ field UI)
+ * - residence: passport_issue_date (ngày cấp HC) khi có
  */
 import { format } from "date-fns";
 import type { ConfirmPricePaxListItem } from "@/types/flightConfirmPrice";
@@ -88,8 +88,16 @@ export function buildPaxDocumentsForPassenger(
       birthday: toAirdataBirthdayIso(pax.birthday) ?? "",
     };
 
+    const residence = toAirdataEndDate(pax.passport_issue_date);
+    if (residence) {
+      doc.residence = residence;
+    }
+
     return [doc];
   }
+
+  const paxType = PAX_TYPE_MAP[pax.type] ?? "ADULT";
+  if (paxType !== "ADULT") return [];
 
   const cccd = (pax.cccd ?? "").trim();
   if (!cccd) return [];

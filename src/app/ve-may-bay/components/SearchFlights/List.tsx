@@ -42,6 +42,7 @@ import {
 } from "../../lib/cheapest";
 import { createSelectedFlight } from "@/utils/createSelectedFlight";
 import { saveSelectedFlight } from "@/utils/selectedFlightStorage";
+import { isVietJetSource } from "@/utils/fareValueToken";
 import {
   buildCombinedSelectionFingerprint,
   buildLegSelectionFingerprint,
@@ -388,10 +389,22 @@ export default function ListFlights({
   const applyDepartSelection = (flight: any, fareOptionIndex: number) => {
     const selection = buildSelection(flight, fareOptionIndex);
     if (!selection) return;
-    saveSelectedFlight("depart", selection);
+    try {
+      saveSelectedFlight("depart", selection, { searchFlight: flight });
+    } catch (err) {
+      const code = err instanceof Error ? err.message : "";
+      if (code === "VJ_SEGMENT_TOKEN_REQUIRED" && isVietJetSource(flight.source)) {
+        toast.error(
+          "Chuyến bay chưa có mã chặng từ hệ thống. Vui lòng tìm kiếm lại hoặc chọn chuyến khác."
+        );
+        return;
+      }
+      throw err;
+    }
     const legacyTrip = {
-      ...flight,
       ...selection.trip,
+      ...flight,
+      segments: selection.trip.segments ?? flight.segments,
       fareOptions: flight.fareOptions ?? selection.trip.fareOptions,
       selectedTicketClass: selection.fareOption,
       flightCode: flight.flightCode,
@@ -405,10 +418,22 @@ export default function ListFlights({
   const applyReturnSelection = (flight: any, fareOptionIndex: number) => {
     const selection = buildSelection(flight, fareOptionIndex);
     if (!selection) return;
-    saveSelectedFlight("return", selection);
+    try {
+      saveSelectedFlight("return", selection, { searchFlight: flight });
+    } catch (err) {
+      const code = err instanceof Error ? err.message : "";
+      if (code === "VJ_SEGMENT_TOKEN_REQUIRED" && isVietJetSource(flight.source)) {
+        toast.error(
+          "Chuyến bay chưa có mã chặng từ hệ thống. Vui lòng tìm kiếm lại hoặc chọn chuyến khác."
+        );
+        return;
+      }
+      throw err;
+    }
     const legacyTrip = {
-      ...flight,
       ...selection.trip,
+      ...flight,
+      segments: selection.trip.segments ?? flight.segments,
       fareOptions: flight.fareOptions ?? selection.trip.fareOptions,
       selectedTicketClass: selection.fareOption,
       flightCode: flight.flightCode,

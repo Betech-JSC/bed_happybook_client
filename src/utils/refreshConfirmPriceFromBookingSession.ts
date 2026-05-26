@@ -11,13 +11,15 @@ import {
 import type { ConfirmPricePaxListItem } from "@/types/flightConfirmPrice";
 import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import type { SelectedFlight, TripsSource } from "@/types/selectedFlight";
-import { getFlightSearchContext } from "@/utils/selectedFlightStorage";
-import { updateFlightDraftMeta } from "@/utils/flightDraftSession";
 import {
-  isVietJetSource,
-  resolveFareValueFromFareOption,
-  sanitizeVjConfirmPriceRequest,
-} from "@/utils/fareValueToken";
+  getFlightSearchContext,
+  getSelectedFlight,
+} from "@/utils/selectedFlightStorage";
+import { mergeVjSegmentsFromSearchFlight } from "@/utils/vjSegmentToken";
+import { isVietJetSource } from "@/utils/fareValueToken";
+import { updateFlightDraftMeta } from "@/utils/flightDraftSession";
+import { repairFareOptionFromTrip } from "@/utils/fareValueToken";
+import { resolveSelectedItineraryId } from "@/utils/confirmPriceIdentifiers";
 
 export interface RefreshConfirmPriceResult {
   confirm: ConfirmPriceResponse;
@@ -41,6 +43,8 @@ function passengersFromBooking(
       lastName: String(row.last_name ?? ""),
       gender: row.gender === true,
       birthday: String(row.birthday ?? ""),
+      cccd: row.cccd != null ? String(row.cccd) : undefined,
+      cccd_date: row.cccd_date as string | Date | undefined,
       baggages: Array.isArray(row.baggages) ? row.baggages : undefined,
     };
   });
@@ -94,6 +98,16 @@ function selectionsFromBookingFlight(
     if (!fareOption) return;
 
     const source = trip.source ?? fareOption.source;
+    const storedSel = getSelectedFlight(index === 0 ? "depart" : "return");
+    let tripBody = (storedSel?.trip ?? trip) as Record<string, unknown>;
+
+    if (isVietJetSource(source)) {
+      tripBody = {
+        ...tripBody,
+        segments: mergeVjSegmentsFromSearchFlight(tripBody, trip),
+      };
+    }
+
     const fareOptionsList = trip.fareOptions as Record<string, unknown>[] | undefined;
     const selectedFv = (fareOption as { fareValue?: string }).fareValue;
     let fareOptionIndex = 0;
@@ -102,17 +116,27 @@ function selectionsFromBookingFlight(
       if (idx >= 0) fareOptionIndex = idx;
     }
 
+    const repairedFare = repairFareOptionFromTrip(
+      (storedSel?.fareOption ?? fareOption) as Record<string, unknown>,
+      {
+        fareOptionIndex: storedSel?.fareOptionIndex ?? fareOptionIndex,
+        trip: { ...trip, fareOptions: trip.fareOptions },
+        source,
+      }
+    );
+
     selections.push({
-      searchId,
-      trip,
-      fareOption: {
-        ...fareOption,
-        fareValue: resolveFareValueFromFareOption(source, fareOption),
-      },
-      fareOptionIndex,
-      itineraryId: String(trip.itineraryId ?? index + 1),
-      paxCounts,
-      tripsSource,
+      searchId: storedSel?.searchId || searchId,
+      trip: tripBody,
+      fareOption: repairedFare,
+      fareOptionIndex: storedSel?.fareOptionIndex ?? fareOptionIndex,
+      itineraryId: resolveSelectedItineraryId({
+        ...tripBody,
+        fareOptions: trip.fareOptions,
+        itineraryId: tripBody.itineraryId ?? trip.itineraryId,
+      }),
+      paxCounts: storedSel?.paxCounts ?? paxCounts,
+      tripsSource: storedSel?.tripsSource ?? tripsSource,
     });
   });
   return selections;
@@ -122,27 +146,6 @@ function buildConfirmPricePayload(
   bookingFlight: Record<string, unknown>,
   draft: Record<string, unknown> | null
 ): Record<string, unknown> | null {
-  const storedRequest = bookingFlight.confirmPriceRequest as
-    | Record<string, unknown>
-    | undefined;
-  const flightSession =
-    (handleSessionStorage("get", "flightSession") as string | null) ?? null;
-
-  if (storedRequest && typeof storedRequest === "object") {
-    const merged = {
-      ...storedRequest,
-      ...(flightSession ? { session: flightSession } : {}),
-    };
-    if (isVietJetSource(merged.type)) {
-      return sanitizeVjConfirmPriceRequest({
-        ...merged,
-        type: "VJ",
-        session: flightSession ?? merged.session,
-      });
-    }
-    return merged;
-  }
-
   const selections = selectionsFromBookingFlight(bookingFlight);
   if (!selections.length) return null;
 
@@ -156,6 +159,7 @@ function buildConfirmPricePayload(
     (bookingFlight.confirmPrice as ConfirmPriceResponse | undefined)
       ?.booking_flight_request_id;
 
+  /** Luôn rebuild (VJ: segment "" + token, parentPaxId) — không replay confirmPriceRequest cũ. */
   const payload = buildFlightConfirmPricePayloadFromSelections({
     selections,
     passengers,

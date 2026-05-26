@@ -32,6 +32,8 @@ export interface ConfirmPricePaxListItem {
   nationality?: string;
   passport_country?: string;
   passport_expiry_date?: string | Date;
+  /** Ngày cấp hộ chiếu → Airdata PaxDocuments.residence (YYYY-MM-DD). */
+  passport_issue_date?: string | Date;
   cccd?: string;
   cccd_date?: string | Date;
 }
@@ -46,6 +48,8 @@ export interface ConfirmPricePaxApiItem {
   PaxDocuments: AirdataPaxDocument[];
   /** Only when an infant is linked to this adult (form-built, not from search API). */
   childPaxId?: string;
+  /** VJ / Postman: infant → adult that carries the infant. */
+  parentPaxId?: string;
 }
 
 export interface ConfirmPriceFareBreakdown {
@@ -64,11 +68,21 @@ export interface ConfirmPriceItinerary {
   airline: string;
   /** Omit when search trip has no clientId; send "" when search returns empty. */
   clientId?: string;
+  /** 1G Postman placeholder — không lấy từ API search. */
+  bookingKey?: string;
   itineraryId: string;
   fareBreakdowns: ConfirmPriceFareBreakdown[];
   segments: unknown[];
   paxssr?: unknown[];
   paxSeat?: unknown[];
+}
+
+/** BE FlightConfirmPriceRequest::airdataPayload — 1G selection passthrough. */
+export interface ConfirmPriceSelectionBlock {
+  trip: Record<string, unknown>;
+  fare_option: Record<string, unknown>;
+  pax_counts: { adult: number; child: number; infant: number };
+  pax_lists: ConfirmPricePaxApiItem[];
 }
 
 export interface ConfirmPriceContact {
@@ -86,6 +100,8 @@ export interface ConfirmPriceRequest {
   airlineContact: ConfirmPriceAirlineContact;
   paxLists: ConfirmPricePaxApiItem[];
   itineraries: ConfirmPriceItinerary[];
+  /** 1G: BE build itineraries từ trip + fare_option search. */
+  selection?: ConfirmPriceSelectionBlock;
   contact?: ConfirmPriceContact;
   booking_flight_request_id?: number | null;
   trip?: string | null;

@@ -39,6 +39,8 @@ import {
   findMatchingFlightDraft,
   type FlightDraftMatch,
 } from "@/utils/flightDraftSession";
+import { saveFlightSearchContext } from "@/utils/selectedFlightStorage";
+import type { TripsSource } from "@/types/selectedFlight";
 
 export default function SearchFlightsInternationalResult({
   airportsData,
@@ -73,6 +75,7 @@ export default function SearchFlightsInternationalResult({
   const resultsRef = useRef<HTMLDivElement>(null);
   const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
   const [searchId, setSearchId] = useState<string | null>(null);
+  const [tripsSource, setTripsSource] = useState<TripsSource>("search");
   const [flightItineraryResource, setFlightItineraryResource] = useState<
     Array<{ key: string; value: number }>
   >([]);
@@ -262,6 +265,16 @@ export default function SearchFlightsInternationalResult({
           const resources: any = responseData?.resources ?? [];
           if (responseData?.searchId) {
             setSearchId(responseData?.searchId);
+            setTripsSource(resources.length ? "resource" : "search");
+            saveFlightSearchContext({
+              searchId: responseData.searchId,
+              tripsSource: resources.length ? "resource" : "search",
+              paxCounts: {
+                adult: passengerAdt,
+                child: passengerChd,
+                infant: passengerInf,
+              },
+            });
           } else {
             throw new Error("Search Error");
           }
@@ -678,6 +691,12 @@ export default function SearchFlightsInternationalResult({
           departDays={days}
           handleClickDate={handleClickDate}
           flightSession={searchId}
+          tripsSource={tripsSource}
+          paxCounts={{
+            adult: passengerAdt,
+            child: passengerChd,
+            infant: passengerInf,
+          }}
           isRoundTrip={isRoundTrip}
           totalPassengers={totalPassengers}
           flightType={flightType}

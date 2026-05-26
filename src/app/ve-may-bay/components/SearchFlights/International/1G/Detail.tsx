@@ -13,6 +13,7 @@ import FlightInfo from "@/components/FlightInfo";
 
 const FlightInternational1GDetail = ({
   journey,
+  journeyIndex = 0,
   onSelectFlight,
   setFlightDetail,
   fareData,
@@ -28,6 +29,14 @@ const FlightInternational1GDetail = ({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const fareDataClone = _.cloneDeep(fareData);
+    const leg = Number(journeyIndex) || 0;
+    const picked =
+      (fareDataClone._selectedJourneyFlights as Record<
+        string,
+        Record<string, unknown>
+      >) ?? {};
+    picked[String(leg)] = flightSelected;
+    fareDataClone._selectedJourneyFlights = picked;
     fareDataClone.selectedTicketClass = flightSelected;
     onSelectFlight(_.cloneDeep(fareDataClone), fareData?.hpb_id, e);
   };

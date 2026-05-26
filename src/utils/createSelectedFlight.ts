@@ -5,9 +5,11 @@ import type {
 } from "@/types/selectedFlight";
 import { normalizeFlightTrip } from "@/utils/normalizeFlightTrip";
 import {
-  copyVjFareValueForConfirm,
   isVietJetSource,
+  repairFareOptionFromTrip,
 } from "@/utils/fareValueToken";
+import { resolveSelectedItineraryId } from "@/utils/confirmPriceIdentifiers";
+import { mergeVjSegmentsFromSearchFlight } from "@/utils/vjSegmentToken";
 
 export function createSelectedFlight(
   trip: Record<string, unknown>,
@@ -25,28 +27,26 @@ export function createSelectedFlight(
   const sourceFare = fareOptions[fareOptionIndex] as Record<string, unknown>;
   const tripSource = trip.source ?? sourceFare.source;
 
-  const fareOption = isVietJetSource(tripSource)
-    ? { ...sourceFare, fareValue: copyVjFareValueForConfirm(sourceFare) }
-    : {
-        ...sourceFare,
-        fareValue:
-          typeof sourceFare.fareValue === "string"
-            ? sourceFare.fareValue.trim()
-            : sourceFare.fareValue,
-      };
+  const fareOption = repairFareOptionFromTrip(sourceFare, {
+    fareOptionIndex,
+    trip,
+    source: tripSource,
+  });
 
   const normalizedTrip = normalizeFlightTrip({
     ...trip,
     selectedTicketClass: fareOption,
   });
 
-  const itineraryId = String(
-    trip.itineraryId ?? (trip.flightLeg === 1 ? "2" : "1")
-  );
+  const itineraryId = resolveSelectedItineraryId(trip);
 
   const tripBody = { ...normalizedTrip } as Record<string, unknown>;
   delete tripBody.selectedTicketClass;
   delete tripBody.fareOptions;
+
+  if (isVietJetSource(tripSource) && Array.isArray(tripBody.segments)) {
+    tripBody.segments = mergeVjSegmentsFromSearchFlight(tripBody, trip);
+  }
 
   return {
     searchId: options.searchId,

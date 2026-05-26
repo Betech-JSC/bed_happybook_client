@@ -1,8 +1,21 @@
 /** fareOption.fareValue from search — pass through to confirm-price as-is. */
 
+import { resolveVjSegmentSearchToken } from "@/utils/vjSegmentToken";
+import { resolveVn1aFareValueFromSearch } from "@/utils/vn1aConfirmPrice";
+import {
+  isVuSource,
+  resolveVuFareValueFromSearch,
+} from "@/utils/vuConfirmPrice";
+
 export function isVietJetSource(source: unknown): boolean {
   const s = String(source ?? "").toUpperCase();
   return s === "VJ" || s.includes("VIETJET");
+}
+
+/** Vietnam Airlines (Airdata VN1A). Khác VJ — search thường trả fareOptions[].fareValue = "". */
+export function isVietnamAirlinesSource(source: unknown): boolean {
+  const s = String(source ?? "").toUpperCase();
+  return s === "VN1A" || s === "VN";
 }
 
 /** Non-VJ: trim đầu/cuối. */
@@ -11,12 +24,54 @@ export function copyFareValueRaw(value: unknown): string {
   return value.trim();
 }
 
+/** Các key BE/Airdata có thể trả token giá (ưu tiên fareValue). */
+function vjFareValueCandidates(fareOption: Record<string, unknown>): unknown[] {
+  return [
+    fareOption.fareValue,
+    fareOption.fare_value,
+    fareOption.FareValue,
+  ];
+}
+
 /**
  * VJ (BE): copy nguyên fareOptions[j].fareValue — không trim, không JSON.stringify lại.
  */
 export function copyVjFareValueForConfirm(fareOption: Record<string, unknown>): string {
-  const v = fareOption.fareValue;
-  return typeof v === "string" ? v : "";
+  for (const v of vjFareValueCandidates(fareOption)) {
+    if (typeof v === "string" && v.length > 0) return v;
+  }
+  return "";
+}
+
+/** Khôi phục fareValue từ hạng vé đã chọn / trip / kết quả search gốc. */
+export function repairVjFareOption(
+  fareOption: Record<string, unknown>,
+  options?: {
+    fareOptionIndex?: number;
+    trip?: Record<string, unknown>;
+    searchFlight?: Record<string, unknown>;
+  }
+): Record<string, unknown> {
+  const existing = copyVjFareValueForConfirm(fareOption);
+  if (existing) return { ...fareOption, fareValue: existing };
+
+  const index = options?.fareOptionIndex ?? 0;
+  const candidates: Record<string, unknown>[] = [fareOption];
+
+  for (const container of [options?.trip, options?.searchFlight]) {
+    if (!container) continue;
+    const list = container.fareOptions as Record<string, unknown>[] | undefined;
+    if (list?.[index]) candidates.push(list[index]);
+    const stc = container.selectedTicketClass as Record<string, unknown> | undefined;
+    if (stc) candidates.push(stc);
+  }
+
+  for (const row of candidates) {
+    const fv = copyVjFareValueForConfirm(row);
+    if (fv) return { ...fareOption, ...row, fareValue: fv };
+  }
+
+  return fareOption;
 }
 
 const VJ_BOOKING_KEY_RE = /^[A-Za-z0-9+/=]+$/;
@@ -84,6 +139,15 @@ export function validateFareValueForConfirm(
     return { ok: true };
   }
 
+  /**
+   * VN1A: fareValue bắt buộc (pipe token từ search) — không gửi "" / null.
+   */
+  if (isVietnamAirlinesSource(options?.source)) {
+    const raw = copyFareValueRaw(fareValue);
+    if (!raw) return { ok: false, code: "missing" };
+    return { ok: true };
+  }
+
   const raw = copyFareValueRaw(fareValue);
   if (!raw) return { ok: false, code: "missing" };
   return { ok: true };
@@ -91,15 +155,114 @@ export function validateFareValueForConfirm(
 
 export function resolveFareValueFromFareOption(
   source: unknown,
-  fareOption: Record<string, unknown>
+  fareOption: Record<string, unknown>,
+  trip?: Record<string, unknown>
 ): string {
   if (isVietJetSource(source)) {
     return copyVjFareValueForConfirm(fareOption);
   }
+  if (isVietnamAirlinesSource(source)) {
+    return resolveVn1aFareValueFromSearch(fareOption, trip);
+  }
+  if (isVuSource(source)) {
+    return resolveVuFareValueFromSearch(fareOption, trip);
+  }
   return copyFareValueRaw(fareOption.fareValue);
 }
 
-/** Gỡ bookingKey riêng; giữ fareValue raw trên fareBreakdowns. */
+/** Khôi phục fareValue từ fareOptions[j] khi selectedTicketClass thiếu token (VU RT/OW). */
+export function repairFareOptionFromTrip(
+  fareOption: Record<string, unknown>,
+  options?: {
+    fareOptionIndex?: number;
+    trip?: Record<string, unknown>;
+    source?: unknown;
+  }
+): Record<string, unknown> {
+  const source = options?.source;
+  if (isVietJetSource(source)) {
+    return repairVjFareOption(fareOption, options);
+  }
+
+  const trip = options?.trip;
+
+  if (isVietnamAirlinesSource(source)) {
+    const existing = resolveVn1aFareValueFromSearch(fareOption, trip);
+    if (existing) return { ...fareOption, fareValue: existing };
+
+    const index = options?.fareOptionIndex ?? 0;
+    const list = trip?.fareOptions as Record<string, unknown>[] | undefined;
+    const fromList = list?.[index];
+    if (fromList) {
+      const fv = resolveVn1aFareValueFromSearch(fromList, trip);
+      if (fv) return { ...fareOption, ...fromList, fareValue: fv };
+    }
+
+    const stc = trip?.selectedTicketClass as Record<string, unknown> | undefined;
+    if (stc) {
+      const fv = resolveVn1aFareValueFromSearch(stc, trip);
+      if (fv) return { ...fareOption, ...stc, fareValue: fv };
+    }
+
+    return { ...fareOption, fareValue: "" };
+  }
+
+  if (isVuSource(source) && trip) {
+    const index = options?.fareOptionIndex ?? 0;
+    const list = trip.fareOptions as Record<string, unknown>[] | undefined;
+    const fromList = list?.[index];
+    if (fromList) {
+      const fromListFv = resolveVuFareValueFromSearch(fromList, trip);
+      if (fromListFv) return { ...fareOption, ...fromList, fareValue: fromListFv };
+    }
+
+    const stc = trip.selectedTicketClass as Record<string, unknown> | undefined;
+    if (stc) {
+      const stcFv = resolveVuFareValueFromSearch(stc, trip);
+      if (stcFv) return { ...fareOption, ...stc, fareValue: stcFv };
+    }
+
+    return {
+      ...fareOption,
+      fareValue: resolveVuFareValueFromSearch(fareOption, trip),
+    };
+  }
+
+  const existing = resolveFareValueFromFareOption(source, fareOption, trip);
+  if (existing) return { ...fareOption, fareValue: existing };
+
+  const index = options?.fareOptionIndex ?? 0;
+  if (!trip) return { ...fareOption, fareValue: "" };
+
+  const list = trip.fareOptions as Record<string, unknown>[] | undefined;
+  const fromList = list?.[index];
+  if (fromList) {
+    const fv = resolveFareValueFromFareOption(source, fromList, trip);
+    if (fv) return { ...fareOption, ...fromList, fareValue: fv };
+  }
+
+  const stc = trip.selectedTicketClass as Record<string, unknown> | undefined;
+  if (stc) {
+    const fv = resolveFareValueFromFareOption(source, stc, trip);
+    if (fv) return { ...fareOption, ...stc, fareValue: fv };
+  }
+
+  return { ...fareOption, fareValue: "" };
+}
+
+function linkVjInfantToAdult(paxLists: Record<string, unknown>[]): void {
+  const firstAdult = paxLists.find((p) => p.paxType === "ADULT");
+  const firstInfant = paxLists.find((p) => p.paxType === "INFANT");
+  if (!firstAdult || !firstInfant) return;
+  if (!firstAdult.childPaxId) {
+    firstAdult.childPaxId = firstInfant.paxId;
+  }
+  if (!firstInfant.parentPaxId) {
+    firstInfant.parentPaxId = firstAdult.paxId;
+  }
+}
+
+/** VJ: giữ bookingKey itinerary (Postman placeholder), fareValue raw trên fareBreakdowns. */
 export function sanitizeVjConfirmPriceRequest(
   payload: Record<string, unknown>
 ): Record<string, unknown> {
@@ -114,21 +277,57 @@ export function sanitizeVjConfirmPriceRequest(
     ...(session ? { session } : {}),
   };
 
+  if (Array.isArray(payload.paxLists)) {
+    const paxLists = (payload.paxLists as Record<string, unknown>[]).map((pax) => {
+      const paxType = String(pax.paxType ?? "");
+      const title = String(pax.title ?? "");
+      if (paxType === "CHILD" || paxType === "INFANT") {
+        if (title === "MR") return { ...pax, title: "MSTR" };
+        if (title === "MS") return { ...pax, title: "MISS" };
+      }
+      return pax;
+    });
+    linkVjInfantToAdult(paxLists);
+    next.paxLists = paxLists;
+  }
+
   if (!Array.isArray(payload.itineraries)) return next;
 
   next.itineraries = (payload.itineraries as Record<string, unknown>[]).map(
     (itinerary) => {
-      const { bookingKey: _bk, ...rest } = itinerary;
-      const fareBreakdowns = Array.isArray(rest.fareBreakdowns)
-        ? (rest.fareBreakdowns as Record<string, unknown>[]).map((row) => ({
+      const fareBreakdowns = Array.isArray(itinerary.fareBreakdowns)
+        ? (itinerary.fareBreakdowns as Record<string, unknown>[]).map((row) => ({
             ...row,
             fareValue:
               typeof row.fareValue === "string"
                 ? row.fareValue
                 : copyVjFareValueForConfirm(row as Record<string, unknown>),
           }))
-        : rest.fareBreakdowns;
-      return { ...rest, fareBreakdowns };
+        : itinerary.fareBreakdowns;
+
+      const segments = Array.isArray(itinerary.segments)
+        ? (itinerary.segments as Record<string, unknown>[]).map((seg) => {
+            const operating = String(seg.operating ?? "").trim();
+            const op =
+              operating.toUpperCase() === "VJ" ? "" : operating;
+            return {
+              ...seg,
+              operating: op,
+              segmentValue: "",
+              segmentId: resolveVjSegmentSearchToken(seg),
+            };
+          })
+        : itinerary.segments;
+
+      return {
+        ...itinerary,
+        bookingKey:
+          typeof itinerary.bookingKey === "string" && itinerary.bookingKey
+            ? itinerary.bookingKey
+            : "string",
+        fareBreakdowns,
+        segments,
+      };
     }
   );
 
@@ -147,9 +346,10 @@ export function fareValueValidationMessage(
   language: "vi" | "en" = "vi"
 ): string {
   const vi: Record<string, string> = {
-    missing: "Vui lòng chọn lại hạng vé trước khi tiếp tục.",
+    missing:
+      "Thiếu mã giá hạng vé (fareValue). Vui lòng chọn lại hạng vé hoặc tìm chuyến mới.",
     invalid:
-      "Giá vé không còn hiệu lực. Vui lòng tìm chuyến bay lại và chọn hạng vé mới.",
+      "Mã giá hạng vé không hợp lệ hoặc đã hết hạn. Vui lòng tìm chuyến bay lại và chọn hạng vé mới.",
   };
   const en: Record<string, string> = {
     missing: "Please select a fare class before continuing.",

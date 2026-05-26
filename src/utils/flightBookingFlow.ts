@@ -210,6 +210,19 @@ export function resolveAuthoritativeFareTotal(input: {
   });
 }
 
+export function resolveBookingDraftFlow(
+  flights: { source?: unknown }[],
+  flightType: string
+): "domestic" | "international" | "1g" {
+  if (
+    flights.some((f) => String(f.source ?? "").toUpperCase() === "1G")
+  ) {
+    return "1g";
+  }
+  if (flightType === "international") return "international";
+  return "domestic";
+}
+
 export function computeFlightCheckoutGrandTotal(input: {
   fareTotal: number;
   baggagePrice?: number;

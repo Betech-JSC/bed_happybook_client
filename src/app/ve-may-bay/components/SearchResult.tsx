@@ -296,6 +296,7 @@ export default function SearchFlightsResult({
           }
           if (responseData?.isFullFlightResource) setIsFullFlightResource(true);
           if (responseData?.searchId) {
+            handleSessionStorage("save", "flightSession", responseData.searchId);
             saveFlightSearchContext({
               searchId: responseData.searchId,
               tripsSource: resources.length ? "resource" : "search",
@@ -448,6 +449,9 @@ export default function SearchFlightsResult({
           setTripsSource("resource");
           setFlightsData((prev: any) => {
             const merged = [...prev, ...flightsData];
+            if (searchId) {
+              handleSessionStorage("save", "flightSession", searchId);
+            }
             saveFlightSearchContext({
               searchId: searchId ?? "",
               tripsSource: "resource",

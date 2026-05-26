@@ -39,6 +39,7 @@ import type { FlightBookFlightResponse } from "@/types/flightBooking";
 import {
   attachPriceHoldToBookingSession,
   mergeBookFlightIntoSession,
+  resolveBookingDraftFlow,
 } from "@/utils/flightBookingFlow";
 import { isPriceHoldExpired } from "@/utils/flightHoldExpiry";
 import {
@@ -258,7 +259,10 @@ export default function FlightBookForm({ airportsData }: any) {
       },
       []
     );
-    data.book_type = "book-normal";
+    const is1G =
+      flights.length > 0 &&
+      String(flights[0]?.source ?? "").toUpperCase() === "1G";
+    data.book_type = is1G ? "1G" : "book-normal";
     data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
     let fare_data: any = [];
@@ -267,29 +271,52 @@ export default function FlightBookForm({ airportsData }: any) {
     let total_fee_service = 0;
     let total_price = 0;
 
-    flights.map((item) => {
-      total_price_net += item.selectedTicketClass.totalPriceWithOutTax;
+    const ticketClassOf = (item: Record<string, unknown>) =>
+      (item.selectedTicketClass as Record<string, unknown>) ?? item;
+
+    if (is1G) {
+      const primary = flights[0] as Record<string, unknown>;
+      const tc = ticketClassOf(primary);
+      total_price_net += Number(tc.totalPriceWithOutTax ?? tc.fareAdult ?? primary.totalPrice ?? 0);
       total_tax +=
-        item.selectedTicketClass.totalTaxAdt +
-        item.selectedTicketClass.totalTaxChd +
-        item.selectedTicketClass.totalTaxInf;
-      total_price += item.selectedTicketClass.totalPrice;
-      total_fee_service += item.selectedTicketClass.totalServiceFee;
+        Number(tc.totalTaxAdt ?? primary.totalTaxAdt ?? 0) +
+        Number(tc.totalTaxChd ?? primary.totalTaxChd ?? 0) +
+        Number(tc.totalTaxInf ?? primary.totalTaxInf ?? 0);
+      total_price += Number(tc.totalPrice ?? primary.totalPrice ?? 0);
+      total_fee_service += Number(tc.totalServiceFee ?? primary.totalServiceFee ?? 0);
       fare_data.push({
         session: flightSession,
-        fare_data_id_api: item.flightId,
-        source: item.source,
-        flights: [
-          {
-            flight_value: resolveFareValueFromFareOption(
-              item.source,
-              item.selectedTicketClass
-            ),
-            detail: item,
-          },
-        ],
+        fare_data_id_api: primary.hpb_id ?? primary.flightId,
+        source: "1G",
+        flights,
       });
-    });
+    } else {
+      flights.map((item) => {
+        const tc = ticketClassOf(item);
+        total_price_net += Number(tc.totalPriceWithOutTax ?? 0);
+        total_tax +=
+          Number(tc.totalTaxAdt ?? 0) +
+          Number(tc.totalTaxChd ?? 0) +
+          Number(tc.totalTaxInf ?? 0);
+        total_price += Number(tc.totalPrice ?? 0);
+        total_fee_service += Number(tc.totalServiceFee ?? 0);
+        fare_data.push({
+          session: flightSession,
+          fare_data_id_api: item.flightId,
+          source: item.source,
+          flights: [
+            {
+              flight_value: resolveFareValueFromFareOption(
+                item.source,
+                tc,
+                item
+              ),
+              detail: item,
+            },
+          ],
+        });
+      });
+    }
     formatData.contact.gender =
       formatData.contact.gender === "male" ? true : false;
     if (!generateInvoice) {
@@ -312,13 +339,15 @@ export default function FlightBookForm({ airportsData }: any) {
     };
   };
 
+  const resolveSelectionsForBooking = (): SelectedFlight[] => {
+    if (selectedFlights.length > 0) return selectedFlights;
+    return loadSelectedFlightsForBooking();
+  };
+
   const onSubmit = async (data: FlightBookingInforType) => {
     if (confirmStep === "review") return;
 
-    const selections =
-      selectedFlights.length > 0
-        ? selectedFlights
-        : loadSelectedFlightsForBooking();
+    const selections = resolveSelectionsForBooking();
 
     const verifyErrors = verifySelectedFlights(selections);
     if (verifyErrors.length) {
@@ -351,10 +380,30 @@ export default function FlightBookForm({ airportsData }: any) {
         passengers: confirmPassengers,
         contact,
       });
-    } catch {
-      toast.error(
-        "Giá vé không còn hiệu lực. Vui lòng tìm chuyến bay lại và chọn hạng vé mới."
-      );
+    } catch (buildErr) {
+      const code =
+        buildErr instanceof Error ? buildErr.message : String(buildErr ?? "");
+      if (code === "VJ_SEGMENT_TOKEN_REQUIRED") {
+        toast.error(
+          "Thiếu mã chặng bay VJ từ kết quả tìm kiếm. Vui lòng tìm chuyến lại và chọn hạng vé."
+        );
+      } else if (code === "VJ_SESSION_REQUIRED") {
+        toast.error("Phiên tìm kiếm đã hết hạn. Vui lòng tìm chuyến bay lại.");
+      } else if (code === "VN1A_SESSION_REQUIRED") {
+        toast.error("Phiên tìm kiếm VN1A đã hết hạn. Vui lòng tìm chuyến bay lại.");
+      } else if (code === "VN1A_FARE_VALUE_REQUIRED") {
+        toast.error(
+          "Thiếu mã giá Vietnam Airlines (fareValue). Vui lòng chọn lại hạng vé hoặc tìm chuyến mới."
+        );
+      } else if (code === "VU_FARE_VALUE_REQUIRED") {
+        toast.error(
+          "Thiếu mã giá Vietravel (fareValue). Vui lòng chọn lại hạng vé hoặc tìm chuyến mới."
+        );
+      } else {
+        toast.error(
+          "Giá vé không còn hiệu lực. Vui lòng tìm chuyến bay lại và chọn hạng vé mới."
+        );
+      }
       return;
     }
 
@@ -447,10 +496,7 @@ export default function FlightBookForm({ airportsData }: any) {
               handleSessionStorage("save", "bookingFlight", bookingFlight);
               handleSessionStorage("save", "flightBookingDraft", finalData);
 
-              const confirmSelections =
-                selectedFlights.length > 0
-                  ? selectedFlights
-                  : loadSelectedFlightsForBooking();
+              const confirmSelections = resolveSelectionsForBooking();
               const selectionFingerprint = buildCombinedSelectionFingerprint({
                 depart: confirmSelections[0]
                   ? {
@@ -486,7 +532,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   (holdOrderInfo?.booking_deadline as string) ??
                   normalizedConfirm.bookingDeadline,
                 holdExpiresAt: normalizedConfirm.holdExpiresAt ?? undefined,
-                flow: flightType === "international" ? "international" : "domestic",
+                flow: resolveBookingDraftFlow(flights, flightType),
                 selectionFingerprint,
               });
               setConfirmStep("review");
@@ -503,10 +549,7 @@ export default function FlightBookForm({ airportsData }: any) {
 
         // Fallback: hold không thành công hoặc không có requestId — show confirm review
         setConfirmStep("review");
-        const confirmSelections =
-          selectedFlights.length > 0
-            ? selectedFlights
-            : loadSelectedFlightsForBooking();
+        const confirmSelections = resolveSelectionsForBooking();
         const selectionFingerprint = buildCombinedSelectionFingerprint({
           depart: confirmSelections[0]
             ? {
@@ -539,7 +582,7 @@ export default function FlightBookForm({ airportsData }: any) {
           orderCode: normalizedConfirm.orderCode || undefined,
           bookingDeadline: normalizedConfirm.bookingDeadline,
           holdExpiresAt: normalizedConfirm.holdExpiresAt ?? undefined,
-          flow: flightType === "international" ? "international" : "domestic",
+          flow: resolveBookingDraftFlow(flights, flightType),
           selectionFingerprint,
         });
         toast.success("Đã xác nhận giá. Vui lòng kiểm tra trước khi thanh toán.");
@@ -689,7 +732,7 @@ export default function FlightBookForm({ airportsData }: any) {
           (bookingFlight.orderInfo as { booking_deadline?: string })
             ?.booking_deadline ?? normalized.bookingDeadline,
         holdExpiresAt: normalized.holdExpiresAt ?? undefined,
-        flow: flightType === "international" ? "international" : "domestic",
+        flow: resolveBookingDraftFlow(flights, flightType),
       });
       handleSessionStorage("remove", [
         "selectedFlightDepart",
@@ -755,7 +798,10 @@ export default function FlightBookForm({ airportsData }: any) {
     if (selections.length > 1) setIsRoundTrip(true);
     setSelectedFlights(selections);
     setFlights(flightData);
-    setFlightType(selections[0].trip.domestic ? "domestic" : "international");
+    const is1G = String(selections[0].trip?.source ?? "").toUpperCase() === "1G";
+    setFlightType(
+      is1G || !selections[0].trip.domestic ? "international" : "domestic"
+    );
     setFlightsDetail(flightData);
     setFlightSession(flightSession ?? selections[0].searchId);
     const savedConfirm = handleSessionStorage("get", "flightConfirmPrice");
@@ -816,20 +862,21 @@ export default function FlightBookForm({ airportsData }: any) {
   let totalTaxInf = 0;
   let dropdown: any = [];
   flights.map((item) => {
-    const ticketClass = item.selectedTicketClass;
+    const ticketClass =
+      (item.selectedTicketClass as Record<string, unknown>) ?? item;
     totalAdt = item.numberAdt;
     totalChd = item.numberChd;
     totalInf = item.numberInf;
-    totalPriceTicketAdt += ticketClass.fareAdultFinal;
-    totalPriceTicketChd += ticketClass.fareChildFinal;
-    totalPriceTicketInf += ticketClass.fareInfantFinal;
-    totalTaxAdt += ticketClass.taxAdult;
-    totalTaxChd += ticketClass.taxChild;
-    totalTaxInf += ticketClass.taxInfant;
-    totalPriceAdt += ticketClass.totalAdult;
-    totalPriceChd += ticketClass.totalChild;
-    totalPriceInf += ticketClass.totalInfant;
-    totalPrice += ticketClass.totalPrice;
+    totalPriceTicketAdt += Number(ticketClass.fareAdultFinal ?? item.fareAdultFinal ?? 0);
+    totalPriceTicketChd += Number(ticketClass.fareChildFinal ?? item.fareChildFinal ?? 0);
+    totalPriceTicketInf += Number(ticketClass.fareInfantFinal ?? item.fareInfantFinal ?? 0);
+    totalTaxAdt += Number(ticketClass.taxAdult ?? item.taxAdult ?? 0);
+    totalTaxChd += Number(ticketClass.taxChild ?? item.taxChild ?? 0);
+    totalTaxInf += Number(ticketClass.taxInfant ?? item.taxInfant ?? 0);
+    totalPriceAdt += Number(ticketClass.totalAdult ?? item.totalAdult ?? 0);
+    totalPriceChd += Number(ticketClass.totalChild ?? item.totalChild ?? 0);
+    totalPriceInf += Number(ticketClass.totalInfant ?? item.totalInfant ?? 0);
+    totalPrice += Number(ticketClass.totalPrice ?? item.totalPrice ?? 0);
   });
   if (totalAdt) {
     dropdown.push({
@@ -995,7 +1042,8 @@ export default function FlightBookForm({ airportsData }: any) {
               segmentId: segment.segmentId,
               fareValue: resolveFareValueFromFareOption(
                 flight.source,
-                flight.selectedTicketClass
+                flight.selectedTicketClass,
+                flight
               ),
               itineraryId: flight.itineraryId
                 ? flight.itineraryId.toString()
