@@ -15,12 +15,8 @@ export type MapSegmentDefaults = {
 function resolveOperatingForConfirm(
   operatingRaw: string,
   airline: string,
-  source?: string
+  _source?: string
 ): string {
-  const src = String(source ?? "").toUpperCase();
-  if (src === "VJ" || src.includes("VIETJET")) {
-    return "";
-  }
   return operatingRaw || airline;
 }
 

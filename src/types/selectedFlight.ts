@@ -14,6 +14,8 @@ export type SelectedFlight = {
   searchId: string;
   resourceId?: string;
   itineraryId: string;
+  /** Index j trong trips[i].fareOptions[] — net/tax/total/fareValue cùng một hạng vé. */
+  fareOptionIndex: number;
   trip: Trip;
   fareOption: FareOption;
   paxCounts: PaxCounts;

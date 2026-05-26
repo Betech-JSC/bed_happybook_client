@@ -7,6 +7,11 @@ import type {
 import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import { normalizeConfirmPriceResponse } from "@/utils/buildFlightConfirmPricePayload";
 import { PRICE_HOLD_STARTED_AT_KEY } from "@/utils/flightHoldExpiry";
+import {
+  resolveCheckoutFareTotal,
+  sumFareFromFlights,
+  sumServiceFeeFromFlights,
+} from "@/utils/flightCheckoutPricing";
 
 export const BOOKING_STATUS_POLL_INTERVAL_MS = 2500;
 export const BOOKING_STATUS_POLL_MAX_MS = 120_000;
@@ -92,6 +97,18 @@ export function mergeBookFlightIntoSession(
     (existingOrderInfo.sku as string) ||
     "";
 
+  const sessionFlights = (existing.flights ?? []) as {
+    selectedTicketClass?: { totalServiceFee?: number; totalPrice?: number };
+  }[];
+  const serviceFee = sumServiceFeeFromFlights(sessionFlights);
+  const searchFareTotal = sumFareFromFlights(sessionFlights);
+  const checkoutFare = resolveCheckoutFareTotal({
+    confirmPrice: confirmPrice ?? undefined,
+    summedFromFlights: searchFareTotal,
+    serviceFeeFromSearch: serviceFee,
+    orderInfoTotal: orderInfo.total_price,
+  });
+
   return {
     ...existing,
     passengers: bookResponse.passengers ?? existing.passengers,
@@ -111,6 +128,7 @@ export function mergeBookFlightIntoSession(
         (existingOrderInfo.hold_expires_at as string | undefined),
       total_price:
         orderInfo.total_price ??
+        checkoutFare ??
         normalized?.totalPrice ??
         (existingOrderInfo.total_price as number | undefined),
     },
@@ -177,25 +195,19 @@ export function sumBaggageFromPassengers(passengers: unknown[] | undefined): {
   return result;
 }
 
-/** Giá vé từ confirm-price / order (ưu tiên), không dùng tổng cộng từ fare search cũ. */
+/** Giá vé checkout: confirm + phí dịch vụ search khi confirm chưa gồm phí. */
 export function resolveAuthoritativeFareTotal(input: {
   confirmPrice?: ConfirmPriceResponse | Record<string, unknown> | null;
   orderInfo?: { total_price?: number } | null;
   summedFromFlights: number;
+  serviceFeeFromSearch?: number;
 }): number {
-  if (input.confirmPrice) {
-    const fromConfirm = normalizeConfirmPriceResponse(
-      input.confirmPrice as Record<string, unknown>
-    ).totalPrice;
-    if (fromConfirm != null && !Number.isNaN(fromConfirm)) {
-      return fromConfirm;
-    }
-  }
-  const fromOrder = input.orderInfo?.total_price;
-  if (fromOrder != null && !Number.isNaN(fromOrder)) {
-    return fromOrder;
-  }
-  return input.summedFromFlights;
+  return resolveCheckoutFareTotal({
+    confirmPrice: input.confirmPrice,
+    summedFromFlights: input.summedFromFlights,
+    serviceFeeFromSearch: input.serviceFeeFromSearch,
+    orderInfoTotal: input.orderInfo?.total_price,
+  });
 }
 
 export function computeFlightCheckoutGrandTotal(input: {
@@ -221,13 +233,11 @@ export function getCheckoutTotalsFromBookingFlight(
   baggagePrice: number;
   discount: number;
 } {
-  let summedFromFlights = 0;
   const flights = (bookingFlight.flights ?? []) as {
-    selectedTicketClass?: { totalPrice?: number };
+    selectedTicketClass?: { totalPrice?: number; totalServiceFee?: number };
   }[];
-  for (const flight of flights) {
-    summedFromFlights += Number(flight.selectedTicketClass?.totalPrice ?? 0);
-  }
+  const summedFromFlights = sumFareFromFlights(flights);
+  const serviceFee = sumServiceFeeFromFlights(flights);
 
   const baggage = sumBaggageFromPassengers(
     bookingFlight.passengers as unknown[] | undefined
@@ -240,6 +250,7 @@ export function getCheckoutTotalsFromBookingFlight(
     confirmPrice: bookingFlight.confirmPrice as ConfirmPriceResponse | undefined,
     orderInfo: bookingFlight.orderInfo as { total_price?: number },
     summedFromFlights,
+    serviceFeeFromSearch: serviceFee,
   });
   const grandTotal = computeFlightCheckoutGrandTotal({
     fareTotal,

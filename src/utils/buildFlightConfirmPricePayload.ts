@@ -15,7 +15,14 @@ import {
   toAirdataBirthdayIso,
 } from "@/utils/buildPaxDocuments";
 import { handleSessionStorage } from "@/utils/Helper";
-import { copyFareValueRaw } from "@/utils/fareValueToken";
+import {
+  copyFareValueRaw,
+  copyVjFareValueForConfirm,
+  isVietJetSource,
+  normalizeAirdataPhoneNumber,
+  sanitizeVjConfirmPriceRequest,
+  validateVjFareValueForConfirm,
+} from "@/utils/fareValueToken";
 import { mapSegmentsForConfirm } from "@/utils/mapSegmentForConfirm";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
@@ -71,6 +78,45 @@ const FARE_BREAKDOWN_CONFIG: Array<{
   },
 ];
 
+/** VJ Postman: tax = tax* + surcharge*, total = total* từ search. */
+const VJ_FARE_BREAKDOWN_CONFIG: Array<{
+  paxType: ConfirmPaxType;
+  countKey: "numberAdt" | "numberChd" | "numberInf";
+  netKeys: string[];
+  discountKeys: string[];
+  taxKeys: string[];
+  surchargeKeys: string[];
+  totalKeys: string[];
+}> = [
+  {
+    paxType: "ADULT",
+    countKey: "numberAdt",
+    netKeys: ["fareAdult"],
+    discountKeys: ["discountAdult", "discountAmountAdult"],
+    taxKeys: ["taxAdult"],
+    surchargeKeys: ["surchargeAdult"],
+    totalKeys: ["totalAdult"],
+  },
+  {
+    paxType: "CHILD",
+    countKey: "numberChd",
+    netKeys: ["fareChild"],
+    discountKeys: ["discountChild", "discountAmountChild"],
+    taxKeys: ["taxChild"],
+    surchargeKeys: ["surchargeChild"],
+    totalKeys: ["totalChild"],
+  },
+  {
+    paxType: "INFANT",
+    countKey: "numberInf",
+    netKeys: ["fareInfant"],
+    discountKeys: ["discountInfant", "discountAmountInfant"],
+    taxKeys: ["taxInfant"],
+    surchargeKeys: ["surchargeInfant"],
+    totalKeys: ["totalInfant"],
+  },
+];
+
 function pickNumber(
   source: Record<string, unknown>,
   keys: string[],
@@ -94,19 +140,67 @@ function pickString(source: Record<string, unknown>, keys: string[]): string {
   return "";
 }
 
-function resolveBreakdownFareValue(fare: Record<string, unknown>): string {
+function resolveBreakdownFareValue(
+  fare: Record<string, unknown>,
+  source?: unknown
+): string {
+  if (isVietJetSource(source)) {
+    return copyVjFareValueForConfirm(fare);
+  }
   return copyFareValueRaw(fare.fareValue);
+}
+
+function buildVjFareBreakdowns(
+  fare: Record<string, unknown>,
+  flight: Record<string, unknown>
+): ConfirmPriceFareBreakdown[] {
+  const source = flight.source ?? fare.source;
+  const fareValue = resolveBreakdownFareValue(fare, source);
+  const breakdowns: ConfirmPriceFareBreakdown[] = [];
+
+  for (const config of VJ_FARE_BREAKDOWN_CONFIG) {
+    const count = Number(flight[config.countKey]) || 0;
+    if (count <= 0) continue;
+
+    const netFare = pickNumber(fare, config.netKeys, 0);
+    const tax =
+      pickNumber(fare, config.taxKeys, 0) +
+      pickNumber(fare, config.surchargeKeys, 0);
+    const totalFromSearch = pickNumber(fare, config.totalKeys, 0);
+    const total = totalFromSearch > 0 ? totalFromSearch : netFare + tax;
+
+    breakdowns.push({
+      paxType: config.paxType,
+      netFare,
+      discountAmount: pickNumber(fare, config.discountKeys, 0),
+      discountAmountParent: 0,
+      tax,
+      total,
+      fareValue,
+    });
+  }
+
+  return breakdowns;
 }
 
 export function buildFareBreakdowns(
   flight: Record<string, unknown>
 ): ConfirmPriceFareBreakdown[] {
-  const fare =
-    (flight.selectedTicketClass as Record<string, unknown>) ??
-    (flight.fareOptions as Record<string, unknown>[])?.[0] ??
-    {};
+  const source = String(flight.source ?? "");
+  const isVj = isVietJetSource(source);
+
+  const fare = isVj
+    ? ((flight.selectedTicketClass as Record<string, unknown>) ?? {})
+    : ((flight.selectedTicketClass as Record<string, unknown>) ??
+      (flight.fareOptions as Record<string, unknown>[])?.[0] ??
+      {});
+
+  if (isVj) {
+    return buildVjFareBreakdowns(fare, flight);
+  }
 
   const breakdowns: ConfirmPriceFareBreakdown[] = [];
+  const fareValue = resolveBreakdownFareValue(fare, source);
 
   for (const config of FARE_BREAKDOWN_CONFIG) {
     const count = Number(flight[config.countKey]) || 0;
@@ -114,7 +208,7 @@ export function buildFareBreakdowns(
 
     const netFare = pickNumber(fare, config.netKeys, 0);
     const tax = pickNumber(fare, config.taxKeys, 0);
-    /** Airdata: total = netFare + tax — không dùng totalAdult (đã cộng phí DV). */
+    /** Airdata (non-VJ): total = netFare + tax — không dùng totalAdult (đã cộng phí DV). */
     const total = netFare + tax;
 
     breakdowns.push({
@@ -124,7 +218,7 @@ export function buildFareBreakdowns(
       discountAmountParent: 0,
       tax,
       total,
-      fareValue: resolveBreakdownFareValue(fare),
+      fareValue,
     });
   }
 
@@ -218,6 +312,7 @@ function buildItineraries(flights: Record<string, unknown>[]): ConfirmPriceItine
       airline,
       ...itineraryClientIdField(flight),
       itineraryId: String(flight.itineraryId ?? index + 1),
+      /** bookingKey: backend tự lấy từ fareBreakdowns[].fareValue — không gửi decode riêng. */
       fareBreakdowns: buildFareBreakdowns(flight),
       segments: buildConfirmSegments(flight),
       paxssr: [],
@@ -285,11 +380,11 @@ export function buildFlightConfirmPricePayload(input: {
   }
 
   const payload: ConfirmPriceRequest = {
-    type: sourceType,
+    type: isVietJetSource(sourceType) ? "VJ" : sourceType,
     flightType,
     splitItineraries: false,
     airlineContact: {
-      phoneNumber: contact.phone ?? "",
+      phoneNumber: normalizeAirdataPhoneNumber(contact.phone),
       email: contact.email ?? "",
     },
     paxLists,
@@ -297,11 +392,18 @@ export function buildFlightConfirmPricePayload(input: {
     contact: buildConfirmContact(contact),
   };
 
+  /** VJ: session = searchId (gán từ buildFlightConfirmPricePayloadFromSelections). */
   if (flightSession) {
     payload.session = flightSession;
   }
   if (bookingFlightRequestId != null) {
     payload.booking_flight_request_id = bookingFlightRequestId;
+  }
+
+  if (isVietJetSource(sourceType)) {
+    return sanitizeVjConfirmPriceRequest(
+      payload as unknown as Record<string, unknown>
+    ) as unknown as ConfirmPriceRequest;
   }
 
   return payload;
@@ -319,9 +421,21 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
   };
   bookingFlightRequestId?: number | null;
 }): ConfirmPriceRequest {
+  for (const sel of input.selections) {
+    const source = sel.trip?.source ?? sel.fareOption?.source;
+    if (!isVietJetSource(source)) continue;
+    if (!sel.searchId) {
+      throw new Error("VJ_SESSION_REQUIRED");
+    }
+    if (!validateVjFareValueForConfirm(sel.fareOption?.fareValue).ok) {
+      throw new Error("VJ_FARE_VALUE_INVALID");
+    }
+  }
+
   const flights = input.selections.map((sel, index) => ({
     ...(sel.trip as Record<string, unknown>),
     selectedTicketClass: sel.fareOption,
+    fareOptionIndex: sel.fareOptionIndex,
     itineraryId: sel.itineraryId || String(index + 1),
     numberAdt: sel.paxCounts.adult,
     numberChd: sel.paxCounts.child,

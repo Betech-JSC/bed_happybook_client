@@ -42,7 +42,11 @@ export function getSelectedFlight(
   const key = leg === "depart" ? KEYS.depart : KEYS.return;
   const stored = handleSessionStorage("get", key);
   if (stored?.trip && stored?.fareOption) {
-    return stored as SelectedFlight;
+    return {
+      ...(stored as SelectedFlight),
+      fareOptionIndex:
+        typeof stored.fareOptionIndex === "number" ? stored.fareOptionIndex : 0,
+    };
   }
   return null;
 }

@@ -13,6 +13,11 @@ import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import type { SelectedFlight, TripsSource } from "@/types/selectedFlight";
 import { getFlightSearchContext } from "@/utils/selectedFlightStorage";
 import { updateFlightDraftMeta } from "@/utils/flightDraftSession";
+import {
+  isVietJetSource,
+  resolveFareValueFromFareOption,
+  sanitizeVjConfirmPriceRequest,
+} from "@/utils/fareValueToken";
 
 export interface RefreshConfirmPriceResult {
   confirm: ConfirmPriceResponse;
@@ -88,10 +93,23 @@ function selectionsFromBookingFlight(
         | undefined);
     if (!fareOption) return;
 
+    const source = trip.source ?? fareOption.source;
+    const fareOptionsList = trip.fareOptions as Record<string, unknown>[] | undefined;
+    const selectedFv = (fareOption as { fareValue?: string }).fareValue;
+    let fareOptionIndex = 0;
+    if (selectedFv && fareOptionsList?.length) {
+      const idx = fareOptionsList.findIndex((f) => f.fareValue === selectedFv);
+      if (idx >= 0) fareOptionIndex = idx;
+    }
+
     selections.push({
       searchId,
       trip,
-      fareOption: { ...fareOption },
+      fareOption: {
+        ...fareOption,
+        fareValue: resolveFareValueFromFareOption(source, fareOption),
+      },
+      fareOptionIndex,
       itineraryId: String(trip.itineraryId ?? index + 1),
       paxCounts,
       tripsSource,
@@ -111,10 +129,18 @@ function buildConfirmPricePayload(
     (handleSessionStorage("get", "flightSession") as string | null) ?? null;
 
   if (storedRequest && typeof storedRequest === "object") {
-    return {
+    const merged = {
       ...storedRequest,
       ...(flightSession ? { session: flightSession } : {}),
     };
+    if (isVietJetSource(merged.type)) {
+      return sanitizeVjConfirmPriceRequest({
+        ...merged,
+        type: "VJ",
+        session: flightSession ?? merged.session,
+      });
+    }
+    return merged;
   }
 
   const selections = selectionsFromBookingFlight(bookingFlight);

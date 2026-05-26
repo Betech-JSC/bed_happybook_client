@@ -42,7 +42,7 @@ export function verifySelectedFlight(sel: SelectedFlight | null | undefined): st
 
   if (!fareOption) errors.push("fareOption is required");
 
-  const fareCheck = validateFareValueForConfirm(fareOption?.fareValue);
+  const fareCheck = validateFareValueForConfirm(fareOption?.fareValue, { source });
   if (!fareCheck.ok) {
     errors.push(fareValueValidationMessage(fareCheck, "vi"));
   }

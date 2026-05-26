@@ -4,6 +4,10 @@ import type {
   TripsSource,
 } from "@/types/selectedFlight";
 import { normalizeFlightTrip } from "@/utils/normalizeFlightTrip";
+import {
+  copyVjFareValueForConfirm,
+  isVietJetSource,
+} from "@/utils/fareValueToken";
 
 export function createSelectedFlight(
   trip: Record<string, unknown>,
@@ -19,13 +23,18 @@ export function createSelectedFlight(
   if (!fareOptions?.[fareOptionIndex]) return null;
 
   const sourceFare = fareOptions[fareOptionIndex] as Record<string, unknown>;
-  const fareOption = {
-    ...sourceFare,
-    fareValue:
-      typeof sourceFare.fareValue === "string"
-        ? sourceFare.fareValue.trim()
-        : sourceFare.fareValue,
-  };
+  const tripSource = trip.source ?? sourceFare.source;
+
+  const fareOption = isVietJetSource(tripSource)
+    ? { ...sourceFare, fareValue: copyVjFareValueForConfirm(sourceFare) }
+    : {
+        ...sourceFare,
+        fareValue:
+          typeof sourceFare.fareValue === "string"
+            ? sourceFare.fareValue.trim()
+            : sourceFare.fareValue,
+      };
+
   const normalizedTrip = normalizeFlightTrip({
     ...trip,
     selectedTicketClass: fareOption,
@@ -43,6 +52,7 @@ export function createSelectedFlight(
     searchId: options.searchId,
     resourceId: options.resourceId ?? (trip._resourceId as string | undefined),
     itineraryId,
+    fareOptionIndex,
     trip: tripBody,
     fareOption,
     paxCounts: options.paxCounts,

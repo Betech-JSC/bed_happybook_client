@@ -1,4 +1,27 @@
 /** @type {import('next').NextConfig} */
+
+const envImagePatterns = [];
+const envProtocol = process.env.NEXT_PUBLIC_PROTOCAL;
+const envHostname = process.env.NEXT_PUBLIC_HOSTNAME;
+const envCdnDomain = process.env.NEXT_PUBLIC_CDN_DOMAIN;
+
+if (envProtocol && envHostname) {
+  envImagePatterns.push({
+    protocol: envProtocol,
+    hostname: envHostname,
+    port: "",
+    pathname: "/**",
+  });
+}
+
+if (envProtocol && envCdnDomain) {
+  envImagePatterns.push({
+    protocol: envProtocol,
+    hostname: envCdnDomain,
+    pathname: "/**",
+  });
+}
+
 const nextConfig = {
   compress: true,
   poweredByHeader: false,
@@ -40,17 +63,7 @@ const nextConfig = {
         port: '8001',
         pathname: '/**',
       },
-      {
-        protocol: process.env.NEXT_PUBLIC_PROTOCAL,
-        hostname: process.env.NEXT_PUBLIC_HOSTNAME,
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: process.env.NEXT_PUBLIC_PROTOCAL,
-        hostname: process.env.NEXT_PUBLIC_CDN_DOMAIN,
-        pathname: "/**",
-      },
+      ...envImagePatterns,
       {
         protocol: "https",
         hostname: "cms.happybooktravel.com",

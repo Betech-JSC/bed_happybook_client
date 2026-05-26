@@ -4,11 +4,14 @@ import LoadingButton from "@/components/base/LoadingButton";
 import { formatCurrency } from "@/lib/formatters";
 import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import { normalizeConfirmPriceResponse } from "@/utils/buildFlightConfirmPricePayload";
+import { resolveCheckoutFareTotal } from "@/utils/flightCheckoutPricing";
 import CountDownCheckOut from "./CountDownCheckOut";
 
 interface FlightConfirmPriceReviewProps {
   confirmData: ConfirmPriceResponse;
-  estimatedTotal: number;
+  searchFareTotal: number;
+  serviceFeeTotal: number;
+  baggageTotal?: number;
   totalDiscount: number;
   onBack: () => void;
   onProceedPayment: () => void;
@@ -21,7 +24,9 @@ interface FlightConfirmPriceReviewProps {
 
 export default function FlightConfirmPriceReview({
   confirmData,
-  estimatedTotal,
+  searchFareTotal,
+  serviceFeeTotal,
+  baggageTotal = 0,
   totalDiscount,
   onBack,
   onProceedPayment,
@@ -32,7 +37,18 @@ export default function FlightConfirmPriceReview({
   pnrNumber = null,
 }: FlightConfirmPriceReviewProps) {
   const normalized = normalizeConfirmPriceResponse(confirmData);
-  const confirmedTotal = normalized.totalPrice ?? estimatedTotal - totalDiscount;
+  const fareTotal = resolveCheckoutFareTotal({
+    confirmPrice: confirmData,
+    summedFromFlights: searchFareTotal,
+    serviceFeeFromSearch: serviceFeeTotal,
+  });
+  const confirmedTotal = fareTotal + baggageTotal - totalDiscount;
+  const searchGrandTotal = searchFareTotal + baggageTotal - totalDiscount;
+  const serviceFeeInBreakdown = normalized.breakdown.total_fee_service;
+  const showServiceFeeLine =
+    serviceFeeTotal > 0 &&
+    (serviceFeeInBreakdown == null || serviceFeeInBreakdown === 0);
+
   const holdIso = normalized.holdExpiresAt ?? null;
   const deadline = holdIso ? new Date(holdIso) : null;
   const hasValidDeadline = deadline && !Number.isNaN(deadline.getTime());
@@ -42,10 +58,16 @@ export default function FlightConfirmPriceReview({
       <div className="rounded-2xl border border-[#B2DDFF] bg-[#EFF8FF] p-4 md:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-medium text-[#175CD3]" data-translate="true">
+            <p
+              className="text-sm font-medium text-[#175CD3]"
+              data-translate="true"
+            >
               {isHeld ? "Đã giữ chỗ thành công" : "Giá đã được xác nhận"}
             </p>
-            <p className="mt-1 text-22 font-bold text-[#0C4089]" data-translate="true">
+            <p
+              className="mt-1 text-22 font-bold text-[#0C4089]"
+              data-translate="true"
+            >
               {isHeld
                 ? "Vui lòng thanh toán để xác nhận vé"
                 : "Vui lòng kiểm tra trước khi thanh toán"}
@@ -72,7 +94,9 @@ export default function FlightConfirmPriceReview({
         {normalized.bookingId && !isHeld && (
           <p className="mt-3 text-sm text-gray-600">
             Mã giữ chỗ:{" "}
-            <span className="font-semibold text-gray-900">{normalized.bookingId}</span>
+            <span className="font-semibold text-gray-900">
+              {normalized.bookingId}
+            </span>
           </p>
         )}
       </div>
@@ -90,11 +114,19 @@ export default function FlightConfirmPriceReview({
               </span>
             </div>
           )}
-          {normalized.breakdown.total_fee_service != null && (
+          {!showServiceFeeLine && serviceFeeInBreakdown != null && (
             <div className="flex justify-between text-gray-600">
               <span data-translate="true">Phí dịch vụ</span>
               <span className="font-medium text-gray-900">
-                {formatCurrency(normalized.breakdown.total_fee_service)}
+                {formatCurrency(serviceFeeInBreakdown)}
+              </span>
+            </div>
+          )}
+          {baggageTotal > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span data-translate="true">Hành lý bổ sung</span>
+              <span className="font-medium text-gray-900">
+                {formatCurrency(baggageTotal)}
               </span>
             </div>
           )}
@@ -115,11 +147,11 @@ export default function FlightConfirmPriceReview({
             </span>
           </div>
         </div>
-        {estimatedTotal > 0 &&
-          Math.abs(confirmedTotal - (estimatedTotal - totalDiscount)) > 1000 && (
+        {searchGrandTotal > 0 &&
+          Math.abs(confirmedTotal - searchGrandTotal) > 1000 && (
             <p className="mt-3 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
-              Giá đã được cập nhật so với lúc tìm kiếm. Vui lòng kiểm tra trước khi
-              thanh toán.
+              Giá đã được cập nhật so với lúc tìm kiếm. Vui lòng kiểm tra trước
+              khi thanh toán.
             </p>
           )}
       </div>

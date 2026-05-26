@@ -389,7 +389,7 @@ function buildFingerprintFromStoredSelections(
             fareOptions: [selections[0].fareOption],
             selectedTicketClass: selections[0].fareOption,
           },
-          fareOptionIndex: 0,
+          fareOptionIndex: selections[0].fareOptionIndex ?? 0,
         }
       : null,
     return: selections[1]
@@ -399,7 +399,7 @@ function buildFingerprintFromStoredSelections(
             fareOptions: [selections[1].fareOption],
             selectedTicketClass: selections[1].fareOption,
           },
-          fareOptionIndex: 0,
+          fareOptionIndex: selections[1].fareOptionIndex ?? 0,
         }
       : null,
   });

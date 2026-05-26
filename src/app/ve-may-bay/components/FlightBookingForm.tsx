@@ -70,7 +70,14 @@ import {
   loadSelectedFlightsForBooking,
   tripFromSelection,
 } from "@/utils/selectedFlightStorage";
-import { isConfirmPriceSoftFailure } from "@/utils/fareValueToken";
+import {
+  resolveCheckoutFareTotal,
+  sumServiceFeeFromFlights,
+} from "@/utils/flightCheckoutPricing";
+import {
+  isConfirmPriceSoftFailure,
+  resolveFareValueFromFareOption,
+} from "@/utils/fareValueToken";
 import { verifySelectedFlights } from "@/utils/verifySelectedFlight";
 import { appendBookFlightPassportFields } from "@/utils/buildPaxDocuments";
 import InternationalPassportFields from "./InternationalPassportFields";
@@ -274,7 +281,10 @@ export default function FlightBookForm({ airportsData }: any) {
         source: item.source,
         flights: [
           {
-            flight_value: item.selectedTicketClass.fareValue,
+            flight_value: resolveFareValueFromFareOption(
+              item.source,
+              item.selectedTicketClass
+            ),
             detail: item,
           },
         ],
@@ -334,11 +344,19 @@ export default function FlightBookForm({ airportsData }: any) {
       address: "",
     };
 
-    const confirmPayload = buildFlightConfirmPricePayloadFromSelections({
-      selections,
-      passengers: confirmPassengers,
-      contact,
-    });
+    let confirmPayload;
+    try {
+      confirmPayload = buildFlightConfirmPricePayloadFromSelections({
+        selections,
+        passengers: confirmPassengers,
+        contact,
+      });
+    } catch {
+      toast.error(
+        "Giá vé không còn hiệu lực. Vui lòng tìm chuyến bay lại và chọn hạng vé mới."
+      );
+      return;
+    }
 
     const finalData = buildBookingPayload(data);
     if (!finalData) return;
@@ -443,7 +461,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         fareOptions: [confirmSelections[0].fareOption],
                         selectedTicketClass: confirmSelections[0].fareOption,
                       } as Record<string, unknown>,
-                      fareOptionIndex: 0,
+                      fareOptionIndex: confirmSelections[0].fareOptionIndex ?? 0,
                     }
                   : null,
                 return: confirmSelections[1]
@@ -455,7 +473,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         fareOptions: [confirmSelections[1].fareOption],
                         selectedTicketClass: confirmSelections[1].fareOption,
                       } as Record<string, unknown>,
-                      fareOptionIndex: 0,
+                      fareOptionIndex: confirmSelections[1].fareOptionIndex ?? 0,
                     }
                   : null,
               });
@@ -499,7 +517,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   fareOptions: [confirmSelections[0].fareOption],
                   selectedTicketClass: confirmSelections[0].fareOption,
                 } as Record<string, unknown>,
-                fareOptionIndex: 0,
+                fareOptionIndex: confirmSelections[0].fareOptionIndex ?? 0,
               }
             : null,
           return: confirmSelections[1]
@@ -511,7 +529,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   fareOptions: [confirmSelections[1].fareOption],
                   selectedTicketClass: confirmSelections[1].fareOption,
                 } as Record<string, unknown>,
-                fareOptionIndex: 0,
+                fareOptionIndex: confirmSelections[1].fareOptionIndex ?? 0,
               }
             : null,
         });
@@ -844,6 +862,17 @@ export default function FlightBookForm({ airportsData }: any) {
     });
   }
 
+  const serviceFeeTotal = sumServiceFeeFromFlights(flights);
+  const checkoutFareTotal = confirmData
+    ? resolveCheckoutFareTotal({
+        confirmPrice: confirmData,
+        summedFromFlights: totalPrice,
+        serviceFeeFromSearch: serviceFeeTotal,
+      })
+    : totalPrice;
+  const sidebarGrandTotal =
+    checkoutFareTotal + totalBaggages.price - totalDiscount;
+
   const calculateTotalBaggagePrice = (data: Record<string, any>) => {
     return Object.values(data)
       .flat(2)
@@ -964,7 +993,10 @@ export default function FlightBookForm({ airportsData }: any) {
               bookingClass: segment.bookingClass,
               groupClass: segment.groupClass,
               segmentId: segment.segmentId,
-              fareValue: flight.selectedTicketClass.fareValue,
+              fareValue: resolveFareValueFromFareOption(
+                flight.source,
+                flight.selectedTicketClass
+              ),
               itineraryId: flight.itineraryId
                 ? flight.itineraryId.toString()
                 : "1",
@@ -1961,7 +1993,9 @@ export default function FlightBookForm({ airportsData }: any) {
             {confirmStep === "review" && confirmData && (
               <FlightConfirmPriceReview
                 confirmData={confirmData}
-                estimatedTotal={finalPrice}
+                searchFareTotal={totalPrice}
+                serviceFeeTotal={serviceFeeTotal}
+                baggageTotal={totalBaggages.price}
                 totalDiscount={totalDiscount}
                 onBack={handleBackFromConfirm}
                 onProceedPayment={handleProceedToPayment}
@@ -2252,7 +2286,11 @@ export default function FlightBookForm({ airportsData }: any) {
                     Tổng cộng
                   </span>
                   <p className="font-bold text-primary">
-                    {formatCurrency(finalPrice - totalDiscount)}
+                    {formatCurrency(
+                      confirmStep === "review" && confirmData
+                        ? sidebarGrandTotal
+                        : finalPrice - totalDiscount
+                    )}
                   </p>
                 </div>
                 {/* <div className="text-[#166987] font-semibold mt-1 text-sm leading-6 italic">

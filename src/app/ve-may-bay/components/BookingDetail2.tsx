@@ -35,6 +35,7 @@ import {
   isFlightPaymentConfirmed,
   resolveAuthoritativeFareTotal,
 } from "@/utils/flightBookingFlow";
+import { sumServiceFeeFromFlights } from "@/utils/flightCheckoutPricing";
 import {
   buildFlightSearchUrlFromDraft,
   isPriceHoldExpired,
@@ -231,11 +232,13 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   }
 
   const searchParams = useSearchParams();
+  const serviceFeeFromSearch = sumServiceFeeFromFlights(data?.flights);
   const authoritativeFareTotal = data
     ? resolveAuthoritativeFareTotal({
         confirmPrice: data.confirmPrice,
         orderInfo: data.orderInfo,
         summedFromFlights: totalPrice,
+        serviceFeeFromSearch,
       })
     : totalPrice;
   const checkoutGrandTotal = data
