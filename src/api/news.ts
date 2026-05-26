@@ -10,8 +10,8 @@ const getNewsApiBaseUrl = () =>
 const newsApi = {
   fetchNewsIndex: (locale = "vi") =>
     http.get<any>(`news?locale=${locale}&is_happybook=1`, undefined, 3600),
-  getLastedNewsByPage: (page: string = "") =>
-    http.get<any>(`news/lastest-news-by-page?page=${page}&is_happybook=1`),
+  getLastedNewsByPage: (page: string = "", locale = "vi") =>
+    http.get<any>(`news/lastest-news-by-page?page=${page}&locale=${locale}&is_happybook=1`),
 };
 
 const fetchNewsDetail = async (
