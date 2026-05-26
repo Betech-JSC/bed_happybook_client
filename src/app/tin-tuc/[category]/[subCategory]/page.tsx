@@ -18,12 +18,14 @@ import { Suspense } from "react";
 import SeoSchema from "@/components/schema";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { isEmpty } from "lodash";
+import { getServerLang } from "@/lib/session";
 
 type Props = {
   params: { subCategory: string };
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data = await fetchCategoryDetails(params.subCategory, {});
+  const language = await getServerLang();
+  const data = await fetchCategoryDetails(params.subCategory, { locale: language });
   const robotsParts: string[] = [];
   if (data.category?.meta_robots) robotsParts.push(data.category.meta_robots);
   if (data.category?.meta_ai_tag && data.category.meta_ai_tag !== "all") {
