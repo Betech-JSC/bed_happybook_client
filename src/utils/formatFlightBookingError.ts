@@ -115,7 +115,7 @@ export function formatFlightBookingError(
       code,
       message:
         language === "vi"
-          ? "Token giá hoặc phiên tìm kiếm không còn hợp lệ (thường gặp với VietJet). Vui lòng tìm chuyến bay lại và xác nhận giá trong vài phút."
+          ? "Mã giá hoặc phiên tìm kiếm không còn hợp lệ. Vui lòng tìm chuyến bay lại và xác nhận giá trong vài phút."
           : "Fare token or search session is invalid. Please search again and confirm promptly.",
       details: [],
     };

@@ -98,29 +98,6 @@ function stringField(value: unknown, fallback = ""): string {
   return String(value);
 }
 
-/** bookingKey from fareOption.fareValue — VJ Base64 JSON, 9G FLN token, etc. */
-export function resolveBookingKey(fareValue: unknown): string {
-  if (typeof fareValue !== "string" || !fareValue.trim()) return "";
-
-  const trimmed = fareValue.trim();
-
-  try {
-    const decoded = atob(trimmed);
-    const parsed = JSON.parse(decoded) as { bookingKey?: string };
-    if (parsed?.bookingKey && typeof parsed.bookingKey === "string") {
-      return parsed.bookingKey;
-    }
-  } catch {
-    // not Base64 JSON
-  }
-
-  if (trimmed.startsWith("eyJ")) {
-    return "";
-  }
-
-  return trimmed;
-}
-
 function isNumericSegmentKey(value: string): boolean {
   return /^\d+$/.test(value);
 }

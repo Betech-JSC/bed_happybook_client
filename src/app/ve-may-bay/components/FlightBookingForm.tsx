@@ -356,7 +356,7 @@ export default function FlightBookForm({ airportsData }: any) {
           setBookingError({
             code: "fare_token_invalid",
             message:
-              "VietJet/Airdata không giữ được giá (token hết hạn hoặc không khớp phiên tìm kiếm). Vui lòng tìm chuyến bay lại và xác nhận giá ngay.",
+              "Không giữ được giá (mã giá hết hạn hoặc không khớp phiên tìm kiếm). Vui lòng tìm chuyến bay lại và xác nhận giá ngay.",
             details: [],
           });
           toast.error(
