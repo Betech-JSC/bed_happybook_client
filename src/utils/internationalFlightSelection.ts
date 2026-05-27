@@ -143,7 +143,7 @@ export function createSelectedFlightFrom1G(input: {
   };
 }
 
-function selected1GJourneyFlights(
+export function get1GJourneyFlights(
   pkg: Record<string, unknown>
 ): { journeyIndex: number; flight: Record<string, unknown> }[] {
   const picked = pkg._selectedJourneyFlights as
@@ -282,8 +282,18 @@ export function persistInternationalCheckoutSelections(input: {
   });
   if (departSel) {
     handleSessionStorage("save", "departFlight", {
+      ...departSel.trip,
       ...input.depart,
+      segments: departSel.trip.segments ?? input.depart.segments,
+      fareOptions:
+        (input.depart.fareOptions as Record<string, unknown>[] | undefined) ??
+        [departSel.fareOption],
       selectedTicketClass: departSel.fareOption,
+      flightCode: input.depart.flightCode,
+      numberAdt: paxCounts.adult,
+      numberChd: paxCounts.child,
+      numberInf: paxCounts.infant,
+      domestic: false,
     });
   }
 
@@ -297,8 +307,18 @@ export function persistInternationalCheckoutSelections(input: {
     });
     if (returnSel) {
       handleSessionStorage("save", "returnFlight", {
+        ...returnSel.trip,
         ...input.return,
+        segments: returnSel.trip.segments ?? input.return.segments,
+        fareOptions:
+          (input.return.fareOptions as Record<string, unknown>[] | undefined) ??
+          [returnSel.fareOption],
         selectedTicketClass: returnSel.fareOption,
+        flightCode: input.return.flightCode,
+        numberAdt: paxCounts.adult,
+        numberChd: paxCounts.child,
+        numberInf: paxCounts.infant,
+        domestic: false,
       });
     }
   }

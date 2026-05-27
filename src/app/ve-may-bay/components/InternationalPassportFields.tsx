@@ -12,12 +12,13 @@ import { FLIGHT_NATIONALITIES } from "@/constants/countries";
 import type { FlightBookingInforType } from "@/schemaValidations/flightBookingInfor.schema";
 
 interface InternationalPassportFieldsProps {
-  segment: "atd" | "chd";
+  segment: "atd" | "chd" | "inf";
   index: number;
   register: UseFormRegister<FlightBookingInforType>;
   control: Control<FlightBookingInforType>;
   errors: FieldErrors<FlightBookingInforType>;
   language: string;
+  onFieldValidate?: (name: Path<FlightBookingInforType>) => void;
 }
 
 export default function InternationalPassportFields({
@@ -27,6 +28,7 @@ export default function InternationalPassportFields({
   control,
   errors,
   language,
+  onFieldValidate,
 }: InternationalPassportFieldsProps) {
   const base = `${segment}.${index}`;
   const passportName = `${base}.passport` as Path<FlightBookingInforType>;
@@ -35,7 +37,14 @@ export default function InternationalPassportFields({
     `${base}.passport_expiry_date` as Path<FlightBookingInforType>;
 
   const fieldErrors =
-    segment === "atd" ? errors.atd?.[index] : errors.chd?.[index];
+    segment === "atd"
+      ? errors.atd?.[index]
+      : segment === "chd"
+        ? errors.chd?.[index]
+        : errors.inf?.[index];
+
+  const nationalityReg = register(nationalityName);
+  const passportReg = register(passportName);
 
   return (
     <>
@@ -50,7 +59,11 @@ export default function InternationalPassportFields({
         <input
           id={passportName}
           type="text"
-          {...register(passportName)}
+          {...passportReg}
+          onBlur={(e) => {
+            passportReg.onBlur(e);
+            onFieldValidate?.(passportName);
+          }}
           placeholder="Nhập số hộ chiếu"
           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
         />
@@ -68,7 +81,11 @@ export default function InternationalPassportFields({
         </label>
         <select
           id={nationalityName}
-          {...register(nationalityName)}
+          {...nationalityReg}
+          onChange={(e) => {
+            nationalityReg.onChange(e);
+            onFieldValidate?.(nationalityName);
+          }}
           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 focus:outline-none focus:border-primary indent-3.5"
           defaultValue=""
         >
@@ -101,7 +118,10 @@ export default function InternationalPassportFields({
               <DatePicker
                 id={expiryName}
                 selected={(field.value as Date) || null}
-                onChange={(date: Date | null) => field.onChange(date)}
+                onChange={(date: Date | null) => {
+                  field.onChange(date);
+                  onFieldValidate?.(expiryName);
+                }}
                 placeholderText="Nhập ngày hết hạn"
                 dateFormat="dd-MM-yyyy"
                 showMonthDropdown

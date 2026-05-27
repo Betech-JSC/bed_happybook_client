@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type Path } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -68,8 +68,8 @@ import {
   normalizeConfirmPriceResponse,
 } from "@/utils/buildFlightConfirmPricePayload";
 import {
+  flightsFromSelections,
   loadSelectedFlightsForBooking,
-  tripFromSelection,
 } from "@/utils/selectedFlightStorage";
 import {
   resolveCheckoutFareTotal,
@@ -81,6 +81,12 @@ import {
 } from "@/utils/fareValueToken";
 import { verifySelectedFlights } from "@/utils/verifySelectedFlight";
 import { appendBookFlightPassportFields } from "@/utils/buildPaxDocuments";
+import { readSegmentEndpoint } from "@/utils/segmentEndpoint";
+import {
+  build1GHoldFareData,
+  sum1GHoldFareTotals,
+} from "@/utils/build1GHoldFareData";
+import { merge1GSelectionsForConfirm } from "@/utils/oneGConfirmPrice";
 import InternationalPassportFields from "./InternationalPassportFields";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
@@ -118,6 +124,7 @@ export default function FlightBookForm({ airportsData }: any) {
   const [confirmExpired, setConfirmExpired] = useState(false);
   const [proceedingPayment, setProceedingPayment] = useState(false);
   const [isHeld, setIsHeld] = useState(false);
+  const [isSkippedHold, setIsSkippedHold] = useState(false);
   const [pnrNumber, setPnrNumber] = useState<string | null>(null);
   const [pendingBookingPayload, setPendingBookingPayload] = useState<any>(null);
   const [selectedFlights, setSelectedFlights] = useState<SelectedFlight[]>([]);
@@ -183,6 +190,7 @@ export default function FlightBookForm({ airportsData }: any) {
     handleSubmit,
     reset,
     control,
+    trigger,
     formState: { errors },
   } = useForm<FlightBookingInforType>({
     resolver: zodResolver(schemaForm),
@@ -203,6 +211,11 @@ export default function FlightBookForm({ airportsData }: any) {
       checkBoxGenerateInvoice: false,
     },
   });
+
+  const validateField = (name: Path<FlightBookingInforType>) => {
+    void trigger(name);
+  };
+
   const showFlightBookingError = (
     payload: unknown,
     fallback: string
@@ -263,7 +276,6 @@ export default function FlightBookForm({ airportsData }: any) {
       flights.length > 0 &&
       String(flights[0]?.source ?? "").toUpperCase() === "1G";
     data.book_type = is1G ? "1G" : "book-normal";
-    data.trip = flights.length > 1 ? "round_trip" : "one_way";
     const { atd, chd, inf, checkBoxGenerateInvoice, ...formatData } = data;
     let fare_data: any = [];
     let total_price_net = 0;
@@ -273,23 +285,62 @@ export default function FlightBookForm({ airportsData }: any) {
 
     const ticketClassOf = (item: Record<string, unknown>) =>
       (item.selectedTicketClass as Record<string, unknown>) ?? item;
+    const toFareFlightRow = (item: Record<string, unknown>) => {
+      const tc = ticketClassOf(item);
+      return {
+        flight_value: resolveFareValueFromFareOption(item.source, tc, item),
+        detail: {
+          ...item,
+          selectedTicketClass: tc,
+        },
+      };
+    };
 
     if (is1G) {
       const primary = flights[0] as Record<string, unknown>;
-      const tc = ticketClassOf(primary);
-      total_price_net += Number(tc.totalPriceWithOutTax ?? tc.fareAdult ?? primary.totalPrice ?? 0);
-      total_tax +=
-        Number(tc.totalTaxAdt ?? primary.totalTaxAdt ?? 0) +
-        Number(tc.totalTaxChd ?? primary.totalTaxChd ?? 0) +
-        Number(tc.totalTaxInf ?? primary.totalTaxInf ?? 0);
-      total_price += Number(tc.totalPrice ?? primary.totalPrice ?? 0);
-      total_fee_service += Number(tc.totalServiceFee ?? primary.totalServiceFee ?? 0);
-      fare_data.push({
-        session: flightSession,
-        fare_data_id_api: primary.hpb_id ?? primary.flightId,
-        source: "1G",
-        flights,
+      const selections = resolveSelectionsForBooking();
+      const merged1G = merge1GSelectionsForConfirm(selections);
+      const departPkg = handleSessionStorage("get", "departFlight") as
+        | Record<string, unknown>
+        | null;
+      const packageTrip = {
+        ...(departPkg ?? {}),
+        ...((merged1G?.trip ??
+          selections[0]?.trip ??
+          primary) as Record<string, unknown>),
+        journeys:
+          (merged1G?.trip as Record<string, unknown> | undefined)?.journeys ??
+          (selections[0]?.trip as Record<string, unknown> | undefined)?.journeys ??
+          departPkg?.journeys,
+        _selectedJourneyFlights:
+          (merged1G?.trip as Record<string, unknown> | undefined)
+            ?._selectedJourneyFlights ??
+          (selections[0]?.trip as Record<string, unknown> | undefined)
+            ?._selectedJourneyFlights ??
+          departPkg?._selectedJourneyFlights,
+      } as Record<string, unknown>;
+      const paxCounts = merged1G?.paxCounts ?? selections[0]?.paxCounts;
+
+      fare_data = build1GHoldFareData({
+        packageTrip,
+        session: flightSession ?? "",
+        fareDataIdApi: String(packageTrip.hpb_id ?? packageTrip.flightId ?? ""),
+        fareOptionIndex: merged1G?.fareOptionIndex ?? selections[0]?.fareOptionIndex ?? 0,
+        paxCounts: paxCounts
+          ? {
+              adult: paxCounts.adult,
+              child: paxCounts.child,
+              infant: paxCounts.infant,
+            }
+          : undefined,
+        fallbackFlights: flights as Record<string, unknown>[],
       });
+
+      const legTotals = sum1GHoldFareTotals(fare_data);
+      total_price = legTotals.total_price;
+      total_tax = legTotals.total_tax;
+      total_price_net = legTotals.total_price_net;
+      total_fee_service = legTotals.total_fee_service;
     } else {
       flights.map((item) => {
         const tc = ticketClassOf(item);
@@ -302,21 +353,16 @@ export default function FlightBookForm({ airportsData }: any) {
         total_fee_service += Number(tc.totalServiceFee ?? 0);
         fare_data.push({
           session: flightSession,
-          fare_data_id_api: item.flightId,
+          fare_data_id_api:
+            item.flightId ?? item.hpb_id ?? item.flightCode ?? "",
           source: item.source,
-          flights: [
-            {
-              flight_value: resolveFareValueFromFareOption(
-                item.source,
-                tc,
-                item
-              ),
-              detail: item,
-            },
-          ],
+          flights: [toFareFlightRow(item as Record<string, unknown>)],
         });
       });
     }
+
+    data.trip = fare_data.length > 1 ? "round_trip" : "one_way";
+
     formatData.contact.gender =
       formatData.contact.gender === "male" ? true : false;
     if (!generateInvoice) {
@@ -330,6 +376,7 @@ export default function FlightBookForm({ airportsData }: any) {
       fare_data,
       is_invoice: generateInvoice,
       flightType: flightType,
+      ...(is1G ? { source: "1G" } : {}),
       total_price_net: total_price_net,
       total_tax: total_tax,
       total_fee_service: total_fee_service,
@@ -342,6 +389,51 @@ export default function FlightBookForm({ airportsData }: any) {
   const resolveSelectionsForBooking = (): SelectedFlight[] => {
     if (selectedFlights.length > 0) return selectedFlights;
     return loadSelectedFlightsForBooking();
+  };
+
+  const resolveFlightsForSession = (selections?: SelectedFlight[]) =>
+    flightsFromSelections(selections ?? resolveSelectionsForBooking());
+
+  const redirectToCheckout = (confirm: ConfirmPriceResponse) => {
+    const heldSession = handleSessionStorage("get", "bookingFlight") as
+      | Record<string, unknown>
+      | undefined;
+    if (!heldSession) {
+      toast.error("Không tìm thấy dữ liệu đặt chỗ. Vui lòng xác nhận giá lại.");
+      return false;
+    }
+    if (heldSession.confirmPrice) {
+      handleSessionStorage(
+        "save",
+        "bookingFlight",
+        attachPriceHoldToBookingSession(
+          heldSession,
+          heldSession.confirmPrice as ConfirmPriceResponse,
+          new Date().toISOString()
+        )
+      );
+    } else if (confirm) {
+      handleSessionStorage(
+        "save",
+        "bookingFlight",
+        attachPriceHoldToBookingSession(heldSession, confirm)
+      );
+    }
+    handleSessionStorage("remove", [
+      "selectedFlightDepart",
+      "selectedFlightReturn",
+      "departFlight",
+      "returnFlight",
+      "flightConfirmPrice",
+    ]);
+    const persistedBooking = handleSessionStorage("get", "bookingFlight");
+    if (!persistedBooking) {
+      toast.error("Không thể tạo dữ liệu đơn đặt chỗ. Vui lòng thử lại.");
+      return false;
+    }
+    setBookingError(null);
+    router.push("/ve-may-bay/thong-tin-dat-cho");
+    return true;
   };
 
   const onSubmit = async (data: FlightBookingInforType) => {
@@ -451,10 +543,38 @@ export default function FlightBookForm({ airportsData }: any) {
 
         // Gọi hold-flight để giữ PNR ngay sau khi confirm giá
         if (requestId) {
-          const holdPayload = {
+          const is1GHold =
+            flights.length > 0 &&
+            String(flights[0]?.source ?? "").toUpperCase() === "1G";
+          const holdPayload: Record<string, unknown> = {
             ...finalData,
             booking_flight_request_id: requestId,
+            ...(is1GHold
+              ? {
+                  book_type: "1G",
+                  source: "1G",
+                  flightType: "international",
+                  trip:
+                    Array.isArray(finalData.fare_data) &&
+                    finalData.fare_data.length > 1
+                      ? "round_trip"
+                      : finalData.trip,
+                }
+              : {}),
           };
+          if (normalizedConfirm.totalPrice != null) {
+            holdPayload.total_price = normalizedConfirm.totalPrice;
+          }
+          if (normalizedConfirm.totalTax != null) {
+            holdPayload.total_tax = normalizedConfirm.totalTax;
+          }
+          if (normalizedConfirm.breakdown.total_price_net != null) {
+            holdPayload.total_price_net = normalizedConfirm.breakdown.total_price_net;
+          }
+          if (normalizedConfirm.breakdown.total_fee_service != null) {
+            holdPayload.total_fee_service =
+              normalizedConfirm.breakdown.total_fee_service;
+          }
           try {
             const holdRes = await FlightApi.holdFlight(holdPayload);
             if (holdRes?.status === 200) {
@@ -463,9 +583,10 @@ export default function FlightBookForm({ airportsData }: any) {
               const holdRecord = holdData as Record<string, unknown>;
               const holdOrderInfo = holdData.orderInfo as Record<string, unknown> | undefined;
               const isActuallyHeld = holdRecord.held === true;
-              const isSkippedHold = holdRecord.skipped_hold === true;
+              const didSkipHold = holdRecord.skipped_hold === true;
 
               setIsHeld(isActuallyHeld);
+              setIsSkippedHold(didSkipHold);
               setPnrNumber(
                 isActuallyHeld
                   ? ((holdOrderInfo?.pnr_number as string) ?? null)
@@ -477,7 +598,7 @@ export default function FlightBookForm({ airportsData }: any) {
 
               const draftSession = {
                 ...finalData,
-                flights,
+                flights: resolveFlightsForSession(selections),
                 booking_flight_request_id: requestId,
                 confirmPrice: confirmResult,
                 confirmPriceRequest: storedConfirmRequest,
@@ -487,15 +608,23 @@ export default function FlightBookForm({ airportsData }: any) {
                 order_code: normalizedConfirm.orderCode,
               };
 
-              const bookingFlight = mergeBookFlightIntoSession(
-                draftSession,
-                holdData,
-                confirmResult
-              );
+              const bookingFlight: Record<string, unknown> = {
+                ...mergeBookFlightIntoSession(
+                  draftSession,
+                  holdData,
+                  confirmResult
+                ),
+                held: isActuallyHeld,
+                skipped_hold: didSkipHold,
+              };
 
-              if (totalDiscount > 0 && bookingFlight.orderInfo) {
-                (bookingFlight.orderInfo as { total_discount?: number }).total_discount =
-                  totalDiscount;
+              if (totalDiscount > 0) {
+                const orderInfo = bookingFlight.orderInfo as
+                  | { total_discount?: number }
+                  | undefined;
+                if (orderInfo) {
+                  orderInfo.total_discount = totalDiscount;
+                }
               }
 
               handleSessionStorage("save", "bookingFlight", bookingFlight);
@@ -543,7 +672,7 @@ export default function FlightBookForm({ airportsData }: any) {
               setConfirmStep("review");
               if (isActuallyHeld) {
                 toast.success("Đã giữ chỗ thành công. Vui lòng thanh toán để xác nhận vé.");
-              } else if (isSkippedHold) {
+              } else if (didSkipHold) {
                 toast.success("Đã xác nhận giá. Vui lòng thanh toán để xác nhận vé.");
               } else {
                 toast.success("Đã sẵn sàng thanh toán. Vui lòng tiếp tục để xác nhận vé.");
@@ -647,40 +776,9 @@ export default function FlightBookForm({ airportsData }: any) {
       return;
     }
 
-    // Đã hold PNR trước đó — chỉ redirect, không cần gọi API
-    if (isHeld) {
-      const heldSession = handleSessionStorage("get", "bookingFlight") as
-        | Record<string, unknown>
-        | undefined;
-      if (!heldSession) {
-        toast.error("Không tìm thấy dữ liệu đặt chỗ. Vui lòng xác nhận giá lại.");
-        return;
-      }
-      if (heldSession?.confirmPrice) {
-        handleSessionStorage(
-          "save",
-          "bookingFlight",
-          attachPriceHoldToBookingSession(
-            heldSession,
-            heldSession.confirmPrice as ConfirmPriceResponse,
-            new Date().toISOString()
-          )
-        );
-      }
-      handleSessionStorage("remove", [
-        "selectedFlightDepart",
-        "selectedFlightReturn",
-        "departFlight",
-        "returnFlight",
-        "flightConfirmPrice",
-      ]);
-      const persistedBooking = handleSessionStorage("get", "bookingFlight");
-      if (!persistedBooking) {
-        toast.error("Không thể tạo dữ liệu đơn đặt chỗ. Vui lòng thử lại.");
-        return;
-      }
-      setBookingError(null);
-      router.push("/ve-may-bay/thong-tin-dat-cho");
+    // Chỉ gọi book-flight khi BE skip hold (vd. VJ gần giờ bay). Còn lại → checkout trực tiếp.
+    if (!isSkippedHold) {
+      redirectToCheckout(confirmData);
       return;
     }
 
@@ -714,7 +812,7 @@ export default function FlightBookForm({ airportsData }: any) {
 
       const draftSession = {
         ...pendingBookingPayload,
-        flights,
+        flights: resolveFlightsForSession(),
         booking_flight_request_id: requestId,
         confirmPrice: confirmData,
         confirmPriceRequest: storedConfirmRequest,
@@ -800,6 +898,7 @@ export default function FlightBookForm({ airportsData }: any) {
     setConfirmData(null);
     setConfirmExpired(false);
     setIsHeld(false);
+    setIsSkippedHold(false);
     setPnrNumber(null);
     setBookingError(null);
     handleSessionStorage("remove", "flightConfirmPrice");
@@ -817,10 +916,10 @@ export default function FlightBookForm({ airportsData }: any) {
       return;
     }
 
-    const flightData = selections.map(tripFromSelection);
+    const flightData = flightsFromSelections(selections);
     const flightSession = handleSessionStorage("get", "flightSession");
 
-    if (selections.length > 1) setIsRoundTrip(true);
+    if (selections.length > 1 || flightData.length > 1) setIsRoundTrip(true);
     setSelectedFlights(selections);
     setFlights(flightData);
     const is1G = String(selections[0].trip?.source ?? "").toUpperCase() === "1G";
@@ -834,6 +933,23 @@ export default function FlightBookForm({ airportsData }: any) {
       setConfirmData(savedConfirm.confirm);
       setPendingBookingPayload(savedConfirm.bookingDraft);
       setConfirmStep("review");
+    }
+    const bookingFlight = handleSessionStorage("get", "bookingFlight") as
+      | Record<string, unknown>
+      | undefined;
+    if (bookingFlight) {
+      if (bookingFlight.held === true) {
+        setIsHeld(true);
+      }
+      if (bookingFlight.skipped_hold === true) {
+        setIsSkippedHold(true);
+      }
+      const orderInfo = bookingFlight.orderInfo as
+        | { pnr_number?: string }
+        | undefined;
+      if (orderInfo?.pnr_number) {
+        setPnrNumber(orderInfo.pnr_number);
+      }
     }
     setDocumentReady(true);
 
@@ -1049,14 +1165,17 @@ export default function FlightBookForm({ airportsData }: any) {
             itineraries: [],
             flightLeg: flight.flightLeg,
           };
-          flight.segments.map((segment: any) => {
+          (flight.segments ?? []).map((segment: any) => {
+            const segDep = readSegmentEndpoint(segment, "departure");
+            const segArr = readSegmentEndpoint(segment, "arrival");
+            if (!segDep?.IATACode || !segArr?.IATACode) return;
             baggeParams.itineraries.push({
               airline: segment.airline,
               source: flight.source,
-              departure: segment.departure.IATACode,
-              arrival: segment.arrival.IATACode,
-              departureDate: segment.departure.at,
-              arrivalDate: segment.arrival.at,
+              departure: segDep.IATACode,
+              arrival: segArr.IATACode,
+              departureDate: segDep.at,
+              arrivalDate: segArr.at,
               flightNumber: segment.flightNumber,
               flightNOP: segment.flightNOP
                 ? segment.flightNOP
@@ -1730,20 +1849,29 @@ export default function FlightBookForm({ airportsData }: any) {
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                          <select
-                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            {...register(`chd.${index}.gender`)}
-                          >
-                            <option value="" data-translate="true">
-                              Vui lòng chọn giới tính
-                            </option>
-                            <option value="male" data-translate="true">
-                              Nam
-                            </option>
-                            <option value="female" data-translate="true">
-                              Nữ
-                            </option>
-                          </select>
+                          {(() => {
+                            const genderReg = register(`chd.${index}.gender`);
+                            return (
+                              <select
+                                className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                                {...genderReg}
+                                onChange={(e) => {
+                                  genderReg.onChange(e);
+                                  validateField(`chd.${index}.gender`);
+                                }}
+                              >
+                                <option value="" data-translate="true">
+                                  Vui lòng chọn giới tính
+                                </option>
+                                <option value="male" data-translate="true">
+                                  Nam
+                                </option>
+                                <option value="female" data-translate="true">
+                                  Nữ
+                                </option>
+                              </select>
+                            );
+                          })()}
                         </div>
                         {errors.chd?.[index]?.gender && (
                           <p className="text-red-600">
@@ -1767,9 +1895,10 @@ export default function FlightBookForm({ airportsData }: any) {
                               <DatePicker
                                 id={`chd.${index}.birthday`}
                                 selected={field.value || null}
-                                onChange={(date: Date | null) =>
-                                  field.onChange(date)
-                                }
+                                onChange={(date: Date | null) => {
+                                  field.onChange(date);
+                                  validateField(`chd.${index}.birthday`);
+                                }}
                                 onChangeRaw={(event) => {
                                   if (event) {
                                     const target =
@@ -1780,6 +1909,9 @@ export default function FlightBookForm({ airportsData }: any) {
                                         .replace(/\//g, "-");
                                     }
                                   }
+                                }}
+                                onBlur={() => {
+                                  validateField(`chd.${index}.birthday`);
                                 }}
                                 placeholderText="Nhập ngày sinh"
                                 dateFormat="dd-MM-yyyy"
@@ -1812,6 +1944,7 @@ export default function FlightBookForm({ airportsData }: any) {
                           control={control}
                           errors={errors}
                           language={language}
+                          onFieldValidate={validateField}
                         />
                       )}
                       {Object.keys(listBaggageGrouped).length > 0 &&
@@ -1970,20 +2103,29 @@ export default function FlightBookForm({ airportsData }: any) {
                           <span className="text-red-500">*</span>
                         </label>
                         <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
-                          <select
-                            className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
-                            {...register(`inf.${index}.gender`)}
-                          >
-                            <option value="" data-translate="true">
-                              Vui lòng chọn giới tính
-                            </option>
-                            <option value="male" data-translate="true">
-                              Nam
-                            </option>
-                            <option value="female" data-translate="true">
-                              Nữ
-                            </option>
-                          </select>
+                          {(() => {
+                            const genderReg = register(`inf.${index}.gender`);
+                            return (
+                              <select
+                                className="text-sm w-full rounded-md  placeholder-gray-400 outline-none indent-3.5"
+                                {...genderReg}
+                                onChange={(e) => {
+                                  genderReg.onChange(e);
+                                  validateField(`inf.${index}.gender`);
+                                }}
+                              >
+                                <option value="" data-translate="true">
+                                  Vui lòng chọn giới tính
+                                </option>
+                                <option value="male" data-translate="true">
+                                  Nam
+                                </option>
+                                <option value="female" data-translate="true">
+                                  Nữ
+                                </option>
+                              </select>
+                            );
+                          })()}
                         </div>
                         {errors.inf?.[index]?.gender && (
                           <p className="text-red-600">
@@ -2007,9 +2149,10 @@ export default function FlightBookForm({ airportsData }: any) {
                               <DatePicker
                                 id={`inf.${index}.birthday`}
                                 selected={field.value || null}
-                                onChange={(date: Date | null) =>
-                                  field.onChange(date)
-                                }
+                                onChange={(date: Date | null) => {
+                                  field.onChange(date);
+                                  validateField(`inf.${index}.birthday`);
+                                }}
                                 onChangeRaw={(event) => {
                                   if (event) {
                                     const target =
@@ -2020,6 +2163,9 @@ export default function FlightBookForm({ airportsData }: any) {
                                         .replace(/\//g, "-");
                                     }
                                   }
+                                }}
+                                onBlur={() => {
+                                  validateField(`inf.${index}.birthday`);
                                 }}
                                 placeholderText="Nhập ngày sinh"
                                 dateFormat="dd-MM-yyyy"
@@ -2044,6 +2190,17 @@ export default function FlightBookForm({ airportsData }: any) {
                           </p>
                         )}
                       </div>
+                      {flightType === "international" && (
+                        <InternationalPassportFields
+                          segment="inf"
+                          index={index}
+                          register={register}
+                          control={control}
+                          errors={errors}
+                          language={language}
+                          onFieldValidate={validateField}
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
@@ -2113,14 +2270,30 @@ export default function FlightBookForm({ airportsData }: any) {
           <div>
             {flights.map((item, index) => {
               const flight = item;
+              const departure = flight.departure as
+                | { at?: string; IATACode?: string; timezone?: string }
+                | undefined;
+              const arrival = flight.arrival as
+                | { at?: string; IATACode?: string; timezone?: string }
+                | undefined;
+              if (
+                !departure?.at ||
+                !arrival?.at ||
+                !departure?.IATACode ||
+                !arrival?.IATACode
+              ) {
+                return null;
+              }
+              const departAt = departure.at;
+              const arriveAt = arrival.at;
               const durationFlight = flight.duration
                 ? flight.duration
                 : differenceInSeconds(
-                  new Date(flight.arrival.at),
-                  new Date(flight.departure.at)
+                  new Date(arriveAt),
+                  new Date(departAt)
                 ) / 60;
               const startDateLocale = format(
-                new Date(flight.departure.at),
+                new Date(departAt),
                 "EEEE dd/MM/yyyy",
                 { locale: vi }
               );
@@ -2140,7 +2313,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   </div>
                   <div className="flex my-3 item-start items-center text-left space-x-3">
                     <DisplayImage
-                      imagePath={`assets/images/airline/${flight.airLineCode.toLowerCase()}.gif`}
+                      imagePath={`assets/images/airline/${String(flight.airLineCode ?? flight.airline ?? "vn").toLowerCase()}.gif`}
                       width={80}
                       height={24}
                       alt={flight.airline}
@@ -2160,12 +2333,12 @@ export default function FlightBookForm({ airportsData }: any) {
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
                           {formatTimeZone(
-                            flight.departure.at,
-                            flight.departure.timezone
+                            departAt,
+                            departure.timezone ?? "Asia/Ho_Chi_Minh"
                           )}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
-                          {flight.departure.IATACode}
+                          {departure.IATACode}
                         </span>
                       </div>
 
@@ -2208,12 +2381,12 @@ export default function FlightBookForm({ airportsData }: any) {
                       <div className="flex flex-col items-center">
                         <span className="text-sm">
                           {formatTimeZone(
-                            flight.arrival.at,
-                            flight.arrival.timezone
+                            arriveAt,
+                            arrival.timezone ?? "Asia/Ho_Chi_Minh"
                           )}
                         </span>
                         <span className="bg-gray-200 px-2 py-[2px] rounded-sm text-sm mt-1">
-                          {flight.arrival.IATACode}
+                          {arrival.IATACode}
                         </span>
                       </div>
                     </div>

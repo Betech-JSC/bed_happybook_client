@@ -1,9 +1,8 @@
 /**
  * FE ↔ BE sync (quốc tế):
  * - B2 confirm-price: PaxDocuments trong paxLists → BE validate + forward Airdata
- * - B3 book-flight: passport_number, passport_expiry, nationality, doc_type → BE lưu DB + rebuild hold
- * - INF: không gửi passport (BE bỏ bắt buộc INFANT)
- * - CHD: passport bắt buộc khi quốc tế (FE validate + map)
+ * - B3 book-flight / hold-flight: passport_number, passport_expiry, nationality, doc_type
+ * - CHD / INF: passport khi quốc tế (nếu form có nhập)
  * - residence: passport_issue_date (ngày cấp HC) khi có
  */
 import { format } from "date-fns";
@@ -64,9 +63,6 @@ export function buildPaxDocumentsForPassenger(
   isInternational: boolean
 ): AirdataPaxDocument[] {
   if (isInternational) {
-    const paxType = PAX_TYPE_MAP[pax.type] ?? "ADULT";
-    if (paxType === "INFANT") return [];
-
     const number = (pax.passport ?? "").trim();
     if (!number) return [];
 
@@ -119,10 +115,6 @@ export function appendBookFlightPassportFields(
   formValue: Record<string, unknown>,
   options: { isInternational: boolean; paxType: BookFlightPaxType }
 ): void {
-  if (options.isInternational && options.paxType === "INF") {
-    return;
-  }
-
   const passport = String(formValue.passport ?? "").trim();
   const nationality = String(formValue.nationality ?? "VNM")
     .trim()

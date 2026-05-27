@@ -137,7 +137,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             const result = await PaymentApi.onePay(data.orderInfo.sku);
             if (result?.payment_url) {
               setPollingStatus(true);
-              window.location.href = result.payment_url;
+              window.open(result.payment_url, "_blank");
               return;
             }
             toast.error(toaStrMsg.sendFailed);

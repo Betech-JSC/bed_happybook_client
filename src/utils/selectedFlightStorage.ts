@@ -3,6 +3,7 @@ import type { FlightSearchContext } from "@/types/selectedFlight";
 import type { SelectedFlight } from "@/types/selectedFlight";
 import { legacyTripToSelectedFlight } from "@/utils/legacyTripToSelectedFlight";
 import { is1GSource } from "@/utils/internationalFlightSelection";
+import { build1GFlightsForBookingDisplay } from "@/utils/build1GHoldFareData";
 import { merge1GSelectionsForConfirm } from "@/utils/oneGConfirmPrice";
 import {
   isVietJetSource,
@@ -192,4 +193,168 @@ export function tripFromSelection(sel: SelectedFlight): Record<string, unknown> 
     ...sel.trip,
     selectedTicketClass: sel.fareOption,
   };
+}
+
+type FlightDisplayPoint = {
+  at?: string;
+  IATACode?: string;
+  timezone?: string;
+};
+
+function asFlightDisplayPoint(value: unknown): FlightDisplayPoint | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const obj = value as Record<string, unknown>;
+  const at = typeof obj.at === "string" ? obj.at : undefined;
+  const IATACode =
+    typeof obj.IATACode === "string"
+      ? obj.IATACode
+      : typeof obj.code === "string"
+        ? obj.code
+        : undefined;
+  const timezone = typeof obj.timezone === "string" ? obj.timezone : undefined;
+  if (!at && !IATACode) return undefined;
+  return { at, IATACode, timezone };
+}
+
+function flightPointFromSegment(
+  segment: Record<string, unknown> | undefined,
+  kind: "departure" | "arrival"
+): FlightDisplayPoint | undefined {
+  if (!segment) return undefined;
+
+  const nested = asFlightDisplayPoint(segment[kind]);
+  if (nested?.at || nested?.IATACode) return nested;
+
+  const timeKey = kind === "departure" ? "departureTime" : "arrivalTime";
+  const at = typeof segment[timeKey] === "string" ? segment[timeKey] : undefined;
+  const codeField = segment[kind];
+  const IATACode =
+    typeof codeField === "string"
+      ? codeField
+      : typeof segment[kind === "departure" ? "origin" : "destination"] ===
+          "string"
+        ? (segment[kind === "departure" ? "origin" : "destination"] as string)
+        : undefined;
+
+  if (!at && !IATACode) return undefined;
+  return { at, IATACode };
+}
+
+function resolveFlightDisplayPoints(trip: Record<string, unknown>): {
+  departure?: FlightDisplayPoint;
+  arrival?: FlightDisplayPoint;
+} {
+  const segments = Array.isArray(trip.segments)
+    ? (trip.segments as Record<string, unknown>[])
+    : [];
+  const firstSegment = segments[0];
+  const lastSegment = segments[segments.length - 1] ?? firstSegment;
+
+  return {
+    departure:
+      asFlightDisplayPoint(trip.departure) ??
+      flightPointFromSegment(firstSegment, "departure"),
+    arrival:
+      asFlightDisplayPoint(trip.arrival) ??
+      flightPointFromSegment(lastSegment, "arrival"),
+  };
+}
+
+/** Flight object shape dùng cho bookingFlight / hold-flight / checkout (đồng bộ QN–QT). */
+export function flightFromSelection(
+  sel: SelectedFlight,
+  options?: {
+    legacyTrip?: Record<string, unknown> | null;
+    legIndex?: number;
+  }
+): Record<string, unknown> {
+  const legacy = options?.legacyTrip ?? null;
+  const trip = sel.trip as Record<string, unknown>;
+  const fareOption = sel.fareOption as Record<string, unknown>;
+  const itineraryId = sel.itineraryId ?? trip.itineraryId;
+
+  const rawLeg = trip.flightLeg ?? legacy?.flightLeg ?? options?.legIndex;
+  let flightLeg = 0;
+  if (typeof rawLeg === "number") {
+    flightLeg = rawLeg;
+  } else if (String(itineraryId) === "2") {
+    flightLeg = 1;
+  } else if (options?.legIndex != null) {
+    flightLeg = options.legIndex;
+  }
+
+  const fareOptions =
+    (legacy?.fareOptions as Record<string, unknown>[] | undefined) ??
+    (trip.fareOptions as Record<string, unknown>[] | undefined) ??
+    [fareOption];
+
+  const mergedTrip = {
+    ...(legacy ?? {}),
+    ...trip,
+    selectedTicketClass: fareOption,
+    fareOptions,
+    numberAdt: sel.paxCounts.adult,
+    numberChd: sel.paxCounts.child,
+    numberInf: sel.paxCounts.infant,
+    flightId:
+      trip.flightId ??
+      legacy?.flightId ??
+      trip.hpb_id ??
+      legacy?.hpb_id ??
+      trip.flightCode ??
+      legacy?.flightCode,
+    flightCode: trip.flightCode ?? legacy?.flightCode,
+    flightLeg,
+    domestic: trip.domestic ?? legacy?.domestic ?? false,
+    itineraryId: itineraryId ?? (flightLeg === 1 ? "2" : "1"),
+    source: trip.source ?? fareOption.source ?? legacy?.source,
+    segments: trip.segments ?? legacy?.segments,
+  };
+
+  const { departure, arrival } = resolveFlightDisplayPoints(mergedTrip);
+
+  return {
+    ...mergedTrip,
+    ...(departure ? { departure } : {}),
+    ...(arrival ? { arrival } : {}),
+  };
+}
+
+function enrich1GPackageTrip(
+  trip: Record<string, unknown>
+): Record<string, unknown> {
+  const departPkg = handleSessionStorage("get", KEYS.departLegacy) as
+    | Record<string, unknown>
+    | null;
+  return {
+    ...(departPkg ?? {}),
+    ...trip,
+    journeys: trip.journeys ?? departPkg?.journeys,
+    _selectedJourneyFlights:
+      trip._selectedJourneyFlights ?? departPkg?._selectedJourneyFlights,
+  };
+}
+
+export function flightsFromSelections(
+  selections: SelectedFlight[]
+): Record<string, unknown>[] {
+  if (selections.length >= 1 && is1GSource(selections[0].trip?.source)) {
+    const sel = selections[0];
+    const packageTrip = enrich1GPackageTrip(sel.trip as Record<string, unknown>);
+    const legFlights = build1GFlightsForBookingDisplay({
+      packageTrip,
+      paxCounts: sel.paxCounts,
+      fareOptionIndex: sel.fareOptionIndex,
+    });
+    if (legFlights.length > 0) return legFlights;
+  }
+
+  const legacyKeys = ["departFlight", "returnFlight"] as const;
+  return selections.map((sel, index) => {
+    const legacyKey = legacyKeys[index];
+    const legacy = legacyKey
+      ? (handleSessionStorage("get", legacyKey) as Record<string, unknown> | null)
+      : null;
+    return flightFromSelection(sel, { legacyTrip: legacy, legIndex: index });
+  });
 }
