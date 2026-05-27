@@ -301,6 +301,7 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
   const isGds = is1GSource(flight.source);
   const isVj = isVietJetSource(flight.source);
   const isVn1a = isVietnamAirlinesSource(flight.source);
+  const isVu = isVuSource(flight.source);
   const isInternational =
     isGds || flight.domestic === false;
   const airline =
@@ -419,6 +420,29 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
       });
     }
 
+    if (isVu) {
+      return stripConfirmSegmentFields({
+        leg: legNum,
+        airline: segAirline,
+        operating,
+        departure,
+        arrival,
+        departureTime,
+        arrivalTime,
+        flightNumber: copyTripField(seg.flightNumber),
+        fareType: segFareType,
+        fareBasisCode: segFareBasisCode,
+        bookingClass: segBookingClass,
+        groupClass: segGroupClass || "Economy",
+        marriageGrp:
+          copyTripField(seg.marriageGrp) || (legNum === 1 ? "O" : "I"),
+        // VU: giữ nguyên id/value từ selected resource, không fallback theo leg.
+        segmentValue: copyTripField(seg.segmentValue),
+        segmentId: copyTripField(seg.segmentId),
+        bookingClassId: segBookingClassId,
+      });
+    }
+
     const segmentValue = copyTripField(seg.segmentValue);
     const segmentIdFromSearch = copyTripField(seg.segmentId);
 
@@ -467,6 +491,7 @@ function buildItineraries(flights: Record<string, unknown>[]): ConfirmPriceItine
         isGds,
         isVj,
         isVn1a,
+        isVu,
       }),
       fareBreakdowns: buildFareBreakdowns(flight),
       segments,
@@ -598,13 +623,6 @@ export function buildFlightConfirmPricePayload(input: {
   }
 
   if (isVuSource(sourceType)) {
-    for (const itinerary of payload.itineraries) {
-      for (const row of itinerary.fareBreakdowns) {
-        if (!row.fareValue?.trim()) {
-          throw new Error("VU_FARE_VALUE_REQUIRED");
-        }
-      }
-    }
     return sanitizeVuConfirmPriceRequest(
       payload as unknown as Record<string, unknown>
     ) as unknown as ConfirmPriceRequest;

@@ -3,6 +3,7 @@
 import { resolveVjSegmentSearchToken } from "@/utils/vjSegmentToken";
 import { resolveVn1aFareValueFromSearch } from "@/utils/vn1aConfirmPrice";
 import {
+  isVuFareValueMirroringItineraryId,
   isVuSource,
   resolveVuFareValueFromSearch,
 } from "@/utils/vuConfirmPrice";
@@ -130,26 +131,8 @@ export function validateFareValueForConfirm(
   fareValue: unknown,
   options?: { source?: unknown }
 ): FareValueValidation {
-  if (isVietJetSource(options?.source)) {
-    const raw = typeof fareValue === "string" ? fareValue : "";
-    if (!raw) return { ok: false, code: "missing" };
-    if (!validateVjFareValueForConfirm(fareValue).ok) {
-      return { ok: false, code: "invalid" };
-    }
-    return { ok: true };
-  }
-
-  /**
-   * VN1A: fareValue bắt buộc (pipe token từ search) — không gửi "" / null.
-   */
-  if (isVietnamAirlinesSource(options?.source)) {
-    const raw = copyFareValueRaw(fareValue);
-    if (!raw) return { ok: false, code: "missing" };
-    return { ok: true };
-  }
-
-  const raw = copyFareValueRaw(fareValue);
-  if (!raw) return { ok: false, code: "missing" };
+  // FE không chặn flow theo fareValue cho bất kỳ hãng nào.
+  // BE sẽ là nguồn quyết định cuối cùng khi xử lý confirm-price/book.
   return { ok: true };
 }
 
@@ -213,18 +196,35 @@ export function repairFareOptionFromTrip(
     const fromList = list?.[index];
     if (fromList) {
       const fromListFv = resolveVuFareValueFromSearch(fromList, trip);
-      if (fromListFv) return { ...fareOption, ...fromList, fareValue: fromListFv };
+      if (fromListFv) {
+        return {
+          ...fareOption,
+          ...fromList,
+          fareValue: isVuFareValueMirroringItineraryId(fromListFv, trip)
+            ? ""
+            : fromListFv,
+        };
+      }
     }
 
     const stc = trip.selectedTicketClass as Record<string, unknown> | undefined;
     if (stc) {
       const stcFv = resolveVuFareValueFromSearch(stc, trip);
-      if (stcFv) return { ...fareOption, ...stc, fareValue: stcFv };
+      if (stcFv) {
+        return {
+          ...fareOption,
+          ...stc,
+          fareValue: isVuFareValueMirroringItineraryId(stcFv, trip)
+            ? ""
+            : stcFv,
+        };
+      }
     }
 
+    const ownFv = resolveVuFareValueFromSearch(fareOption, trip);
     return {
       ...fareOption,
-      fareValue: resolveVuFareValueFromSearch(fareOption, trip),
+      fareValue: isVuFareValueMirroringItineraryId(ownFv, trip) ? "" : ownFv,
     };
   }
 

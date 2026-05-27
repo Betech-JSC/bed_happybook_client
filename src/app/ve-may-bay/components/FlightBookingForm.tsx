@@ -460,11 +460,16 @@ export default function FlightBookForm({ airportsData }: any) {
             if (holdRes?.status === 200) {
               const holdData = (holdRes?.payload?.data ??
                 holdRes?.payload) as FlightBookFlightResponse;
+              const holdRecord = holdData as Record<string, unknown>;
               const holdOrderInfo = holdData.orderInfo as Record<string, unknown> | undefined;
+              const isActuallyHeld = holdRecord.held === true;
+              const isSkippedHold = holdRecord.skipped_hold === true;
 
-              setIsHeld(true);
+              setIsHeld(isActuallyHeld);
               setPnrNumber(
-                (holdOrderInfo?.pnr_number as string) ?? null
+                isActuallyHeld
+                  ? ((holdOrderInfo?.pnr_number as string) ?? null)
+                  : null
               );
 
               const storedConfirmRequest = handleSessionStorage("get", "flightConfirmPrice")
@@ -524,7 +529,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   : null,
               });
               updateFlightDraftMeta({
-                stage: "held",
+                stage: isActuallyHeld ? "held" : "price_confirmed",
                 resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
                 orderCode:
                   (holdOrderInfo?.sku as string) ?? normalizedConfirm.orderCode ?? undefined,
@@ -536,7 +541,13 @@ export default function FlightBookForm({ airportsData }: any) {
                 selectionFingerprint,
               });
               setConfirmStep("review");
-              toast.success("Đã giữ chỗ thành công. Vui lòng thanh toán để xác nhận vé.");
+              if (isActuallyHeld) {
+                toast.success("Đã giữ chỗ thành công. Vui lòng thanh toán để xác nhận vé.");
+              } else if (isSkippedHold) {
+                toast.success("Đã xác nhận giá. Vui lòng thanh toán để xác nhận vé.");
+              } else {
+                toast.success("Đã sẵn sàng thanh toán. Vui lòng tiếp tục để xác nhận vé.");
+              }
               window.scrollTo({ top: 0, behavior: "smooth" });
               return;
             }
@@ -641,6 +652,10 @@ export default function FlightBookForm({ airportsData }: any) {
       const heldSession = handleSessionStorage("get", "bookingFlight") as
         | Record<string, unknown>
         | undefined;
+      if (!heldSession) {
+        toast.error("Không tìm thấy dữ liệu đặt chỗ. Vui lòng xác nhận giá lại.");
+        return;
+      }
       if (heldSession?.confirmPrice) {
         handleSessionStorage(
           "save",
@@ -659,6 +674,11 @@ export default function FlightBookForm({ airportsData }: any) {
         "returnFlight",
         "flightConfirmPrice",
       ]);
+      const persistedBooking = handleSessionStorage("get", "bookingFlight");
+      if (!persistedBooking) {
+        toast.error("Không thể tạo dữ liệu đơn đặt chỗ. Vui lòng thử lại.");
+        return;
+      }
       setBookingError(null);
       router.push("/ve-may-bay/thong-tin-dat-cho");
       return;
@@ -741,6 +761,11 @@ export default function FlightBookForm({ airportsData }: any) {
         "returnFlight",
         "flightConfirmPrice",
       ]);
+      const persistedBooking = handleSessionStorage("get", "bookingFlight");
+      if (!persistedBooking) {
+        toast.error("Không thể tạo dữ liệu đơn đặt chỗ. Vui lòng thử lại.");
+        return;
+      }
       setBookingError(null);
       router.push("/ve-may-bay/thong-tin-dat-cho");
     } catch (error: unknown) {

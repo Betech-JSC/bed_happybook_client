@@ -6,7 +6,7 @@ import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
-import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/base/LoadingButton";
 import { FlightApi } from "@/api/Flight";
@@ -361,6 +361,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
   }, [router, searchParams, t]);
 
   useEffect(() => {
+    if (loading || data) return;
+    toast.error("Không tìm thấy dữ liệu đơn đặt chỗ. Vui lòng xác nhận giá lại.");
+    router.replace("/ve-may-bay/thong-tin-hanh-khach");
+  }, [loading, data, router]);
+
+  useEffect(() => {
     if (!polledStatus) return;
     setOrderStatus(polledStatus);
     if (isFlightPaymentConfirmed(polledStatus)) {
@@ -557,7 +563,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       </div>
     );
   }
-  if (!data) notFound();
+  if (!data) return null;
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">

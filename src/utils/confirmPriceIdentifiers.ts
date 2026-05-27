@@ -44,7 +44,7 @@ export function resolveConfirmItineraryId(
   flight: Record<string, unknown>,
   segments: Record<string, unknown>[],
   index: number,
-  options?: { isGds?: boolean; isVj?: boolean; isVn1a?: boolean }
+  options?: { isGds?: boolean; isVj?: boolean; isVn1a?: boolean; isVu?: boolean }
 ): string {
   if (options?.isVn1a) {
     return "1";
@@ -52,6 +52,20 @@ export function resolveConfirmItineraryId(
 
   if (options?.isVj) {
     return String(flight.itineraryId ?? index + 1);
+  }
+
+  if (options?.isVu) {
+    const fromFlight = copyField(flight.itineraryId);
+    if (fromFlight && !isPlaceholderLegItineraryId(fromFlight)) {
+      return fromFlight;
+    }
+    const hpb = copyField(flight.hpb_id) || copyField(flight.flightId);
+    if (hpb) return hpb;
+    const firstSegmentValue = copyField(segments[0]?.segmentValue);
+    if (firstSegmentValue) return firstSegmentValue;
+    const firstSegmentId = copyField(segments[0]?.segmentId);
+    if (firstSegmentId) return firstSegmentId;
+    return "";
   }
 
   const firstSegmentValue = copyField(segments[0]?.segmentValue);

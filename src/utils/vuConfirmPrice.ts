@@ -1,6 +1,6 @@
 /**
  * VU (Vietravel) confirm-price — Postman domestic OW/RT.
- * fareValue: ưu tiên fareOptions[].fareValue; nếu rỗng → segmentValue / itineraryId.
+ * fareValue: ưu tiên fareOptions[].fareValue token từ resource; nếu rỗng -> "".
  * bookingKey: "string". Không gửi field search thừa (status) trên segment.
  */
 import type { ConfirmPaxType, ConfirmPriceFareBreakdown } from "@/types/flightConfirmPrice";
@@ -8,7 +8,7 @@ import { isPlaceholderLegItineraryId } from "@/utils/confirmPriceIdentifiers";
 import { copyFareValueRaw } from "@/utils/fareValueToken";
 
 export function isVuSource(source: unknown): boolean {
-  return String(source ?? "").toUpperCase() === "VU";
+  return String(source ?? "").trim().toUpperCase() === "VU";
 }
 
 function copyField(value: unknown): string {
@@ -20,7 +20,21 @@ function copyField(value: unknown): string {
   return "";
 }
 
-/** Postman VU: fareValue = token search hoặc cùng itineraryId / segmentValue. */
+function isNumericString(value: string): boolean {
+  return /^\d+$/.test(value);
+}
+
+export function isVuFareValueMirroringItineraryId(
+  fareValue: unknown,
+  trip?: Record<string, unknown>
+): boolean {
+  const raw = copyFareValueRaw(fareValue);
+  if (!raw || !isNumericString(raw)) return false;
+  const pricingId = resolveVuItineraryPricingId(trip);
+  return Boolean(pricingId) && isNumericString(pricingId) && raw === pricingId;
+}
+
+/** Postman VU: fareValue chỉ lấy token từ search/resource, không fallback itineraryId. */
 export function resolveVuFareValueFromSearch(
   fareOption: Record<string, unknown>,
   trip?: Record<string, unknown>
@@ -48,7 +62,7 @@ export function resolveVuFareValueFromSearch(
     if (fv) return fv;
   }
 
-  return resolveVuItineraryPricingId(trip);
+  return "";
 }
 
 /** segmentValue (= itineraryId) khi search không trả fareValue. */
@@ -159,8 +173,7 @@ export function buildVuFareBreakdowns(
     {};
 
   const fareValue =
-    resolveVuFareValueFromSearch(fare, flight) ||
-    resolveVuItineraryPricingId(flight);
+    resolveVuFareValueFromSearch(fare, flight);
 
   const breakdowns: ConfirmPriceFareBreakdown[] = [];
 
@@ -202,41 +215,95 @@ export function sanitizeVuConfirmPriceRequest(
     ...(session ? { session } : {}),
   };
 
-  if (!Array.isArray(payload.itineraries)) return next;
-
-  next.itineraries = (payload.itineraries as Record<string, unknown>[]).map(
-    (itinerary) => {
-      const pricingId =
-        copyField(itinerary.itineraryId) ||
-        copyField(
-          (itinerary.segments as Record<string, unknown>[] | undefined)?.[0]
-            ?.segmentValue
-        );
-
-      const fareBreakdowns = Array.isArray(itinerary.fareBreakdowns)
-        ? (itinerary.fareBreakdowns as Record<string, unknown>[]).map(
-            (row) => ({
-              ...row,
-              fareValue:
-                copyField(row.fareValue) || pricingId,
-            })
-          )
-        : itinerary.fareBreakdowns;
-
-      const segments = Array.isArray(itinerary.segments)
-        ? (itinerary.segments as Record<string, unknown>[]).map((seg) =>
-            stripConfirmSegmentFields(seg)
-          )
-        : itinerary.segments;
-
-      return {
-        ...itinerary,
-        bookingKey: "string",
-        fareBreakdowns,
-        segments,
-      };
-    }
-  );
-
-  return next;
+  return normalizeConfirmPricePayload(next);
 }
+
+type AnyObj = Record<string, unknown>;
+
+const toSafeString = (v: unknown): string => (v == null ? "" : String(v));
+
+const normalizeFareBreakdowns = (
+  fareBreakdowns: AnyObj[] | undefined,
+  itinerary?: AnyObj
+): AnyObj[] => {
+  if (!Array.isArray(fareBreakdowns)) return [];
+  return fareBreakdowns.map((row) => {
+    const fb = row && typeof row === "object" ? row : {};
+    return {
+    ...fb,
+    // Airdata không nhận null/undefined cho fareValue
+    fareValue: isVuFareValueMirroringItineraryId(fb?.fareValue, itinerary)
+      ? ""
+      : toSafeString(fb?.fareValue),
+    paxType: toSafeString(fb?.paxType),
+  };
+  });
+};
+
+const normalizeSegments = (segments: AnyObj[] | undefined): AnyObj[] => {
+  if (!Array.isArray(segments)) return [];
+  return segments.map((rawSeg) => {
+    const seg = stripConfirmSegmentFields(rawSeg);
+    return {
+      ...seg,
+      // giữ nguyên token từ resource, chỉ ép kiểu string để tránh null
+      segmentValue: toSafeString(seg?.segmentValue),
+      segmentId: toSafeString(seg?.segmentId),
+      bookingClassId: toSafeString(seg?.bookingClassId),
+      airline: toSafeString(seg?.airline),
+      operating: toSafeString(seg?.operating),
+      departure: toSafeString(seg?.departure),
+      arrival: toSafeString(seg?.arrival),
+      flightNumber: toSafeString(seg?.flightNumber),
+      fareType: toSafeString(seg?.fareType),
+      fareBasisCode: toSafeString(seg?.fareBasisCode),
+      bookingClass: toSafeString(seg?.bookingClass),
+      groupClass: toSafeString(seg?.groupClass),
+      marriageGrp: toSafeString(seg?.marriageGrp),
+    };
+  });
+};
+
+const normalizeItinerariesForAirdata = (
+  itineraries: AnyObj[] | undefined
+): AnyObj[] => {
+  if (!Array.isArray(itineraries)) return [];
+  return itineraries.map((it) => {
+    const source = toSafeString(it?.source).toUpperCase();
+    const normalizedFareBreakdowns = normalizeFareBreakdowns(
+      it?.fareBreakdowns as AnyObj[] | undefined,
+      it
+    );
+    return {
+      ...it,
+      source,
+      airline: toSafeString(it?.airline),
+      clientId: toSafeString(it?.clientId),
+      itineraryId: toSafeString(it?.itineraryId),
+      bookingKey: toSafeString(it?.bookingKey || "string"),
+      fareBreakdowns: normalizedFareBreakdowns,
+      segments: normalizeSegments(it?.segments as AnyObj[] | undefined),
+      paxssr: Array.isArray(it?.paxssr) ? it.paxssr : [],
+      paxSeat: Array.isArray(it?.paxSeat) ? it.paxSeat : [],
+    };
+  });
+};
+
+export const normalizeConfirmPricePayload = (payload: AnyObj): AnyObj => {
+  return {
+    ...payload,
+    type: toSafeString(payload?.type).toUpperCase(),
+    flightType: toSafeString(payload?.flightType || "OW"),
+    airlineContact: {
+      phoneNumber: toSafeString(
+        (payload?.airlineContact as AnyObj | undefined)?.phoneNumber
+      ),
+      email: toSafeString((payload?.airlineContact as AnyObj | undefined)?.email),
+    },
+    paxLists: Array.isArray(payload?.paxLists) ? payload.paxLists : [],
+    itineraries: normalizeItinerariesForAirdata(
+      payload?.itineraries as AnyObj[] | undefined
+    ),
+    splitItineraries: Boolean(payload?.splitItineraries),
+  };
+};
