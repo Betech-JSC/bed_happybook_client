@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -258,10 +259,12 @@ export default function EsimInternationalCards({
                       }}
                     >
                       {avatarUrl ? (
-                        <img
+                        <Image
                           src={avatarUrl}
                           alt={pkg.title || pkg.destination}
-                          className="absolute inset-0 h-full w-full object-contain object-center opacity-100"
+                          fill
+                          sizes="(max-width: 640px) 88vw, (max-width: 768px) 62vw, (max-width: 1024px) 48vw, 25vw"
+                          className="object-contain object-center opacity-100"
                         />
                       ) : null}
                       {avatarUrl ? null : (

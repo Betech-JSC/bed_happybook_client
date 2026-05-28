@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Globe } from "lucide-react";
 import { resolveEsimPackageAvatarUrl, type EsimPackageView } from "../lib/esim";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
@@ -32,9 +33,13 @@ export default function EsimInternationalDetailGallery({
         }}
       >
         {hasAvatar ? (
-          <img
+          <Image
             src={avatarUrl}
             alt={selectedPackage?.title || selectedPackage?.destination || categoryLabel}
+            width={1600}
+            height={1000}
+            priority
+            sizes="(max-width: 768px) 100vw, 66vw"
             className="block h-auto w-full object-contain object-top opacity-100"
           />
         ) : (

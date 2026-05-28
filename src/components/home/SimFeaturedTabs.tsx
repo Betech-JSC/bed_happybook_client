@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Globe } from "lucide-react";
 import {
   Carousel,
@@ -275,11 +276,13 @@ export default function SimFeaturedTabs({
                   >
                     <div className="h-full overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
                       {avatarUrl ? (
-                        <div className="bg-white">
-                          <img
+                        <div className="relative min-h-[240px] overflow-hidden bg-white">
+                          <Image
                             src={avatarUrl}
                             alt={pkg.title || pkg.destination}
-                            className="block h-auto w-full object-contain object-top opacity-100"
+                            fill
+                            sizes="(max-width: 640px) 88vw, (max-width: 768px) 62vw, (max-width: 1024px) 48vw, 25vw"
+                            className="object-contain object-top opacity-100"
                           />
                         </div>
                       ) : (
