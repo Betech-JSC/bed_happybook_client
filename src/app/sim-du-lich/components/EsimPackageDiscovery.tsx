@@ -541,7 +541,9 @@ export default function EsimPackageDiscovery({
                 >
                   <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                     <div
-                      className="relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-full"
+                      className={`relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-full ${
+                        avatarUrl ? "border border-slate-200 bg-white shadow-sm" : ""
+                      }`}
                       style={{
                         background: avatarUrl
                           ? "transparent"
@@ -552,7 +554,7 @@ export default function EsimPackageDiscovery({
                         <img
                           src={avatarUrl}
                           alt={title}
-                          className="absolute inset-0 h-full w-full object-contain object-center opacity-100"
+                          className="absolute inset-0 h-full w-full object-cover object-top opacity-100"
                         />
                       ) : null}
                       {avatarUrl ? null : (
@@ -674,11 +676,13 @@ export default function EsimPackageDiscovery({
                   }`}
                 />
                 {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={pkg.title || pkg.destination}
-                    className="h-14 w-14 rounded-xl border border-slate-200 object-contain object-center ring-1 ring-slate-200"
-                  />
+                  <div className="h-14 w-14 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <img
+                      src={avatarUrl}
+                      alt={pkg.title || pkg.destination}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
                 ) : null}
                 <div>
                   <div className={`font-bold ${isActive ? "text-hb-navy" : "text-midnight-ink"}`}>
