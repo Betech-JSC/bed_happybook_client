@@ -25,9 +25,35 @@ const createCacheKey = (scope: string, params?: Record<string, unknown>) =>
       .sort(([a], [b]) => a.localeCompare(b))
   )}`;
 
-const optionsCache = new Map<string, Promise<EsimFilterOptions>>();
-const packageCache = new Map<string, Promise<EsimPackageView[]>>();
-const detailCache = new Map<string, Promise<EsimPackageView | null>>();
+const CACHE_TTL_MS = 60_000;
+
+type CacheEntry<T> = {
+  value: Promise<T>;
+  expiresAt: number;
+};
+
+const optionsCache = new Map<string, CacheEntry<EsimFilterOptions>>();
+const packageCache = new Map<string, CacheEntry<EsimPackageView[]>>();
+const detailCache = new Map<string, CacheEntry<EsimPackageView | null>>();
+
+const getCachedValue = <T>(cache: Map<string, CacheEntry<T>>, key: string): Promise<T> | null => {
+  const entry = cache.get(key);
+  if (!entry) return null;
+
+  if (entry.expiresAt <= Date.now()) {
+    cache.delete(key);
+    return null;
+  }
+
+  return entry.value;
+};
+
+const setCachedValue = <T>(cache: Map<string, CacheEntry<T>>, key: string, value: Promise<T>) => {
+  cache.set(key, {
+    value,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
+};
 
 export const loadAllEsimPackages = async (params?: {
   q?: string;
@@ -37,7 +63,7 @@ export const loadAllEsimPackages = async (params?: {
   locale?: string;
 }) => {
   const cacheKey = createCacheKey("packages", params);
-  const cached = packageCache.get(cacheKey);
+  const cached = getCachedValue(packageCache, cacheKey);
   if (cached) return cached;
 
   const promise = (async () => {
@@ -91,13 +117,13 @@ export const loadAllEsimPackages = async (params?: {
     }
   })();
 
-  packageCache.set(cacheKey, promise);
+  setCachedValue(packageCache, cacheKey, promise);
   return promise;
 };
 
 export const loadEsimOptions = async (locale?: string): Promise<EsimFilterOptions> => {
   const cacheKey = createCacheKey("options", { locale });
-  const cached = optionsCache.get(cacheKey);
+  const cached = getCachedValue(optionsCache, cacheKey);
   if (cached) return cached;
 
   const promise = (async () => {
@@ -112,13 +138,13 @@ export const loadEsimOptions = async (locale?: string): Promise<EsimFilterOption
     }
   })();
 
-  optionsCache.set(cacheKey, promise);
+  setCachedValue(optionsCache, cacheKey, promise);
   return promise;
 };
 
 export const loadEsimPackageBySlug = async (slug: string, locale?: string): Promise<EsimPackageView | null> => {
   const cacheKey = createCacheKey("detail", { slug, locale });
-  const cached = detailCache.get(cacheKey);
+  const cached = getCachedValue(detailCache, cacheKey);
   if (cached) return cached;
 
   const promise = (async () => {
@@ -135,6 +161,6 @@ export const loadEsimPackageBySlug = async (slug: string, locale?: string): Prom
     }
   })();
 
-  detailCache.set(cacheKey, promise);
+  setCachedValue(detailCache, cacheKey, promise);
   return promise;
 };
