@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -551,10 +552,12 @@ export default function EsimPackageDiscovery({
                       }}
                     >
                       {avatarUrl ? (
-                        <img
+                        <Image
                           src={avatarUrl}
                           alt={title}
-                          className="absolute inset-0 h-full w-full object-cover object-top opacity-100"
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 42vw"
+                          className="object-cover object-top opacity-100"
                         />
                       ) : null}
                       {avatarUrl ? null : (
@@ -677,9 +680,11 @@ export default function EsimPackageDiscovery({
                 />
                 {avatarUrl ? (
                   <div className="h-14 w-14 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                    <img
+                    <Image
                       src={avatarUrl}
                       alt={pkg.title || pkg.destination}
+                      width={56}
+                      height={56}
                       className="h-full w-full object-cover object-top"
                     />
                   </div>

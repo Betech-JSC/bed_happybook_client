@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Globe, Mail, Wifi, Zap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { resolveEsimPackageAvatarUrl, type EsimPackageView, type EsimVariantView } from "../lib/esim";
@@ -19,10 +20,13 @@ export default function EsimHeroSection({ selectedPackage, selectedVariant }: Pr
     <>
       <section className="relative aspect-[16/9] w-full overflow-hidden rounded-12px shadow-lg bg-hb-navy flex items-center justify-center">
         {avatarUrl ? (
-          <img
+          <Image
             src={avatarUrl}
             alt={selectedPackage?.title || selectedPackage?.destination || t("eSIM du lịch")}
-            className="absolute inset-0 h-full w-full object-contain object-center opacity-100"
+            fill
+            priority
+            sizes="100vw"
+            className="object-contain object-center opacity-100"
           />
         ) : null}
         {avatarUrl ? null : (
