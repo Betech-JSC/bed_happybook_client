@@ -31,6 +31,7 @@ type Args = {
   initialCategory?: string;
   initialPackageSlug?: string;
   initialSelectedPackage?: EsimPackageView | null;
+  initialPackages?: EsimPackageView[];
   sidebarFilterMode?: SidebarFilterMode;
 };
 
@@ -41,13 +42,15 @@ export function useEsimCatalog({
   initialCategory,
   initialPackageSlug,
   initialSelectedPackage,
+  initialPackages,
   sidebarFilterMode = "destination",
 }: Args) {
   const router = useRouter();
   const t = useSimDuLichStaticText(activeLocale);
   const [query, setQuery] = useState("");
   const [selectedRegionId, setSelectedRegionId] = useState("");
-  const [packages, setPackages] = useState<EsimPackageView[]>([]);
+  const hasInitialPackages = Boolean(initialPackages?.length);
+  const [packages, setPackages] = useState<EsimPackageView[]>(() => initialPackages ?? []);
   const [filters, setFilters] = useState<EsimFilterOptions>({
     regions: [],
     destinations: [],
@@ -56,7 +59,7 @@ export function useEsimCatalog({
   const [selectedDestinationLabels, setSelectedDestinationLabels] = useState<string[]>([]);
   const [packageQuery, setPackageQuery] = useState("");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !hasInitialPackages);
   const [error, setError] = useState("");
   const [selectedPackageSlug, setSelectedPackageSlug] = useState("");
   const [selectedSku, setSelectedSku] = useState("");
@@ -83,6 +86,15 @@ export function useEsimCatalog({
   }, [selectedSku]);
 
   useEffect(() => {
+    if (hasInitialPackages) {
+      setFilters({
+        regions: [],
+        destinations: [],
+        operators: [],
+      });
+      return;
+    }
+
     let active = true;
 
     const loadOptions = async () => {
@@ -100,7 +112,7 @@ export function useEsimCatalog({
     return () => {
       active = false;
     };
-  }, [activeLocale]);
+  }, [activeLocale, hasInitialPackages]);
 
   useEffect(() => {
     appliedInitialCategoryRef.current = "";
@@ -125,6 +137,13 @@ export function useEsimCatalog({
   }, [filters.regions, initialCategory, selectedRegionId]);
 
   useEffect(() => {
+    if (hasInitialPackages) {
+      setPackages(initialPackages ?? []);
+      setLoading(false);
+      setError("");
+      return;
+    }
+
     let active = true;
 
     const loadPackages = async () => {
@@ -196,7 +215,16 @@ export function useEsimCatalog({
       active = false;
       clearTimeout(timer);
     };
-  }, [activeLocale, debouncedQuery, initialPackageSlug, initialSelectedPackage, selectedRegionId, t]);
+  }, [
+    activeLocale,
+    debouncedQuery,
+    hasInitialPackages,
+    initialPackageSlug,
+    initialPackages,
+    initialSelectedPackage,
+    selectedRegionId,
+    t,
+  ]);
 
   const normalizeText = useCallback(
     (value: string) =>
@@ -468,6 +496,7 @@ export function useEsimCatalog({
   );
 
   const activeRegionLabel =
+    selectedPackage?.regionLabel ||
     regionOptions.find((item) => item.value === selectedRegionId)?.label || t("Tất cả");
 
   const serviceTypeLabel = selectedVariant

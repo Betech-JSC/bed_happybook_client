@@ -2,7 +2,7 @@
 
 import { Globe, Mail, Wifi, Zap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { EsimPackageView, EsimVariantView } from "../lib/esim";
+import { resolveEsimPackageAvatarUrl, type EsimPackageView, type EsimVariantView } from "../lib/esim";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 
 type Props = {
@@ -13,10 +13,21 @@ type Props = {
 export default function EsimHeroSection({ selectedPackage, selectedVariant }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+  const avatarUrl = resolveEsimPackageAvatarUrl(selectedPackage);
 
   return (
     <>
       <section className="relative aspect-[16/9] w-full overflow-hidden rounded-12px shadow-lg bg-hb-navy flex items-center justify-center">
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={selectedPackage?.title || selectedPackage?.destination || t("eSIM du lịch")}
+            className="absolute inset-0 h-full w-full object-contain object-center opacity-100"
+          />
+        ) : null}
+        {avatarUrl ? null : (
+          <div className="absolute inset-0 bg-gradient-to-t from-hb-navy/90 to-transparent" />
+        )}
         <div className="text-center z-10 px-6">
           <h2 className="text-white text-4xl md:text-5xl font-bold mb-4 drop-shadow-md">
             {selectedPackage?.destination || t("eSIM du lịch")}
@@ -26,8 +37,6 @@ export default function EsimHeroSection({ selectedPackage, selectedVariant }: Pr
             {selectedPackage?.network ? `— ${selectedPackage.network}` : ""}
           </p>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-hb-navy/90 to-transparent" />
-
         <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-20">
           <div className="bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
             <Globe size={16} className="text-hb-navy" />

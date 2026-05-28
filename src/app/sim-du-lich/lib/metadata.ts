@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
-import { siteUrl } from "@/constants";
+import { cmsUrl, siteUrl } from "@/constants";
 import { formatMetadata } from "@/lib/formatters";
 
 type SimDuLichCategory = "root" | "quoc-te" | "viet-nam";
@@ -26,7 +26,7 @@ const resolveImageUrl = (source?: SimDuLichSeoSource | null) => {
   const image = source.meta_image || "";
   if (image.trim()) {
     if (/^https?:\/\//i.test(image)) return image;
-    return `${siteUrl}${image.startsWith("/") ? "" : "/"}${image}`;
+    return `${cmsUrl}${image.startsWith("/") ? "" : "/"}${image}`;
   }
 
   if (source.image_url && source.image_location) {

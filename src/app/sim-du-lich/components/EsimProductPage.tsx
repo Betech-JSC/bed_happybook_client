@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
@@ -71,6 +71,10 @@ export default function EsimProductPage({
   const categorySidebarTitle = category ? resolveSidebarTitle(category, t) : t("Quốc gia");
   const sidebarFilterMode = category === "viet-nam" ? "operator" : "destination";
   const categoryHref = category ? resolveCategoryHref(category) : "";
+  const initialPackages = useMemo(
+    () => (initialSelectedPackage ? [initialSelectedPackage] : undefined),
+    [initialSelectedPackage]
+  );
 
   const catalog = useEsimCatalog({
     cmsPageContent,
@@ -79,6 +83,7 @@ export default function EsimProductPage({
     initialCategory,
     initialPackageSlug,
     initialSelectedPackage,
+    initialPackages,
     sidebarFilterMode,
   });
 
