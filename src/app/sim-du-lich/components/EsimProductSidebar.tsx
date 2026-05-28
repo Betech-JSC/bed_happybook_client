@@ -108,11 +108,15 @@ export default function EsimProductSidebar({
               <div className="flex items-end justify-between">
                 <span className="text-steel-secondary text-sm font-medium">{t("Tổng cộng:")}</span>
                 <span className="text-3xl font-bold text-hb-coral">
-                  {formatEsimMoney(total, selectedVariantMoney.currency)}
+                  {selectedVariant ? formatEsimMoney(total, selectedVariantMoney.currency) : t("Chưa chọn gói")}
                 </span>
               </div>
               <p className="text-[10px] text-right text-steel-secondary">
-                {selectedVariantMoney.price > 0 ? t("Đã bao gồm thuế và phí xử lý") : t("Đã bao gồm thuế, Miễn phí xử lý")}
+                {selectedVariant
+                  ? selectedVariantMoney.price > 0
+                    ? t("Đã bao gồm thuế và phí xử lý")
+                    : t("Đã bao gồm thuế, Miễn phí xử lý")
+                  : t("Hãy chọn gói để xem giá")}
               </p>
 
               <button
