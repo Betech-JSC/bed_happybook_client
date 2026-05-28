@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { cmsUrl } from "@/constants";
 
 export default function DisplayImage({
   imagePath,
@@ -17,11 +18,9 @@ export default function DisplayImage({
   priority?: boolean;
   sizes?: string;
 }) {
-  const cmsDomain =
-    process.env.NEXT_PUBLIC_CMS_URL || "https://cms.happybooktravel.com";
   const fullImageUrl = imagePath.startsWith("/")
-    ? `${cmsDomain}${imagePath}`
-    : `${cmsDomain}/${imagePath}`;
+    ? `${cmsUrl}${imagePath}`
+    : `${cmsUrl}/${imagePath}`;
 
   return (
     <Image

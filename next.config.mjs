@@ -29,14 +29,14 @@ const nextConfig = {
         pathname: '/**',
       },
       {
-        protocol: process.env.NEXT_PUBLIC_PROTOCAL,
-        hostname: process.env.NEXT_PUBLIC_HOSTNAME,
+        protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
+        hostname: process.env.NEXT_PUBLIC_HOSTNAME || 'api.happybooktravel.com',
         port: "",
         pathname: "/**",
       },
       {
-        protocol: process.env.NEXT_PUBLIC_PROTOCAL,
-        hostname: process.env.NEXT_PUBLIC_CDN_DOMAIN,
+        protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
+        hostname: process.env.NEXT_PUBLIC_CDN_DOMAIN || 'cdn.happybooktravel.com',
         pathname: "/**",
       },
       {

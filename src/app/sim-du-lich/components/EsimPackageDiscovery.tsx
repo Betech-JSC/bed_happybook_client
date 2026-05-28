@@ -12,6 +12,7 @@ import {
   findCheapestVariant,
   getEsimVariantMoney,
   getSelectableEsimVariants,
+  resolveEsimPackageAvatarUrl,
   type EsimFilterOption,
   type EsimPackageView,
 } from "../lib/esim";
@@ -518,6 +519,7 @@ export default function EsimPackageDiscovery({
             const validityLabel = cheapest?.validity
               ? `${cheapest.validity} ngày`
               : pkg.coverage || pkg.subtitle || pkg.network || title;
+            const avatarUrl = resolveEsimPackageAvatarUrl(pkg);
 
             return (
               <button
@@ -532,45 +534,64 @@ export default function EsimPackageDiscovery({
                   !isSelectable ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 >
-                <div
+                  <div
                   className={`flex flex-col lg:flex-row lg:space-x-6 rounded-3xl bg-white p-5 mt-4 transition-opacity duration-700 ${
                     isActive ? "ring-2 ring-orange-100" : ""
                   } ${!isSelectable ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
-                    <div className="relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl bg-gradient-to-br from-[#2147D8] via-[#3157D8] to-[#2D49C7] lg:aspect-auto lg:h-full">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.24),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.12),_transparent_34%)]" />
-                      <div className="absolute left-3 right-3 top-3 flex flex-nowrap items-center gap-2 overflow-hidden">
-                        <span className="inline-flex min-w-0 max-w-[46%] flex-[1_1_46%] items-center gap-1.5 rounded-full bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-midnight-ink shadow-sm lg:px-3 lg:text-xs">
-                          <Globe className="h-3.5 w-3.5 shrink-0 text-[#1D4ED8]" />
-                          <span className="min-w-0 truncate whitespace-nowrap">
-                            {title || pkg.regionLabel || "eSIM"}
+                    <div
+                      className={`relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-full ${
+                        avatarUrl ? "border border-slate-200 bg-white shadow-sm" : ""
+                      }`}
+                      style={{
+                        background: avatarUrl
+                          ? "transparent"
+                          : "linear-gradient(135deg, #2147D8 0%, #3157D8 50%, #2D49C7 100%)",
+                      }}
+                    >
+                      {avatarUrl ? (
+                        <img
+                          src={avatarUrl}
+                          alt={title}
+                          className="absolute inset-0 h-full w-full object-cover object-top opacity-100"
+                        />
+                      ) : null}
+                      {avatarUrl ? null : (
+                        <div className="absolute left-3 right-3 top-3 flex flex-nowrap items-center gap-2 overflow-hidden">
+                          <span className="inline-flex min-w-0 max-w-[46%] flex-[1_1_46%] items-center gap-1.5 rounded-full bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-midnight-ink shadow-sm lg:px-3 lg:text-xs">
+                            <Globe className="h-3.5 w-3.5 shrink-0 text-[#1D4ED8]" />
+                            <span className="min-w-0 truncate whitespace-nowrap">
+                              {title || pkg.regionLabel || "eSIM"}
+                            </span>
                           </span>
-                        </span>
-                        <span className="inline-flex shrink-0 items-center rounded-full bg-[#1E3A8A] px-3 py-1.5 text-[11px] font-extrabold text-white shadow-sm lg:text-xs">
-                          eSIM
-                        </span>
-                        <span className="inline-flex min-w-0 flex-1 items-center rounded-full bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-midnight-ink shadow-sm lg:px-3 lg:text-xs">
-                          <span className="min-w-0 truncate whitespace-nowrap">
-                            {pkg.network || "Network"}
+                          <span className="inline-flex shrink-0 items-center rounded-full bg-[#1E3A8A] px-3 py-1.5 text-[11px] font-extrabold text-white shadow-sm lg:text-xs">
+                            eSIM
                           </span>
-                        </span>
-                      </div>
-
-                      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white lg:px-8">
-                        <h3 className="max-w-[14ch] text-[24px] font-black leading-[0.94] tracking-tight drop-shadow-md lg:text-[34px]">
-                          {title}
-                        </h3>
-                        <p className="mt-2 max-w-[20ch] text-xs font-semibold leading-snug text-white/90 drop-shadow-sm lg:mt-3 lg:text-base">
-                          {subtitle}
-                        </p>
-                      </div>
-
-                      <div className="absolute bottom-0 left-0 rounded-tr-3xl bg-[#4E6EB3] px-3 py-1 text-white">
-                        <span className="block max-w-[14rem] truncate whitespace-nowrap text-sm" data-translate="true">
-                          {pkg.regionLabel || pkg.coverage || pkg.destination}
-                        </span>
-                      </div>
+                          <span className="inline-flex min-w-0 flex-1 items-center rounded-full bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-midnight-ink shadow-sm lg:px-3 lg:text-xs">
+                            <span className="min-w-0 truncate whitespace-nowrap">
+                              {pkg.network || "Network"}
+                            </span>
+                          </span>
+                        </div>
+                      )}
+                      {avatarUrl ? null : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white lg:px-8">
+                          <h3 className="max-w-[14ch] text-[24px] font-black leading-[0.94] tracking-tight drop-shadow-md lg:text-[34px]">
+                            {title}
+                          </h3>
+                          <p className="mt-2 max-w-[20ch] text-xs font-semibold leading-snug text-white/90 drop-shadow-sm lg:mt-3 lg:text-base">
+                            {subtitle}
+                          </p>
+                        </div>
+                      )}
+                      {avatarUrl ? null : (
+                        <div className="absolute bottom-0 left-0 rounded-tr-3xl bg-[#4E6EB3] px-3 py-1 text-white">
+                          <span className="block max-w-[14rem] truncate whitespace-nowrap text-sm" data-translate="true">
+                            {pkg.regionLabel || pkg.coverage || pkg.destination}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -632,6 +653,7 @@ export default function EsimPackageDiscovery({
           const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
           const isSelectable = Boolean(cheapest && cheapestMoney.price > 0);
           const isActive = pkg.slug === selectedPackageSlug;
+          const avatarUrl = resolveEsimPackageAvatarUrl(pkg);
 
           return (
             <button
@@ -653,6 +675,15 @@ export default function EsimPackageDiscovery({
                     isActive ? "bg-hb-coral" : "bg-slate-200"
                   }`}
                 />
+                {avatarUrl ? (
+                  <div className="h-14 w-14 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <img
+                      src={avatarUrl}
+                      alt={pkg.title || pkg.destination}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
+                ) : null}
                 <div>
                   <div className={`font-bold ${isActive ? "text-hb-navy" : "text-midnight-ink"}`}>
                     {pkg.destination}
