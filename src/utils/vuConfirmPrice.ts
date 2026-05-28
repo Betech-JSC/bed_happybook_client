@@ -165,12 +165,7 @@ function pickNumber(
 export function buildVuFareBreakdowns(
   flight: Record<string, unknown>
 ): ConfirmPriceFareBreakdown[] {
-  const fareIndex =
-    typeof flight.fareOptionIndex === "number" ? flight.fareOptionIndex : 0;
-  const fare =
-    (flight.selectedTicketClass as Record<string, unknown>) ??
-    (flight.fareOptions as Record<string, unknown>[])?.[fareIndex] ??
-    {};
+  const fare = assertVuFareConsistency(flight, "confirm");
 
   const fareValue =
     resolveVuFareValueFromSearch(fare, flight);
@@ -197,6 +192,81 @@ export function buildVuFareBreakdowns(
   }
 
   return breakdowns;
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+}
+
+function hasFiniteNumber(value: unknown): boolean {
+  return toFiniteNumber(value) != null;
+}
+
+function trimString(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+export function resolveVuFareOptionFromFlight(
+  flight: Record<string, unknown>
+): Record<string, unknown> {
+  const fareIndex =
+    typeof flight.fareOptionIndex === "number" ? flight.fareOptionIndex : 0;
+  const fareOptions = Array.isArray(flight.fareOptions)
+    ? (flight.fareOptions as Record<string, unknown>[])
+    : [];
+  const selected =
+    (flight.selectedTicketClass as Record<string, unknown> | undefined) ?? {};
+  const indexed = fareOptions[fareIndex] ?? {};
+
+  // VU must keep one chosen fare option across all mapped fields.
+  return { ...selected, ...indexed };
+}
+
+export function assertVuFareConsistency(
+  flight: Record<string, unknown>,
+  stage: "confirm" | "hold"
+): Record<string, unknown> {
+  const fare = resolveVuFareOptionFromFlight(flight);
+  if (!Object.keys(fare).length) {
+    throw new Error("VU_FARE_OPTION_REQUIRED");
+  }
+
+  if (
+    !trimString(fare.bookingClass) ||
+    !trimString(fare.groupClass) ||
+    !trimString(fare.fareBasisCode)
+  ) {
+    throw new Error("VU_FARE_OPTION_INCOMPLETE");
+  }
+
+  const segments = Array.isArray(flight.segments)
+    ? (flight.segments as Record<string, unknown>[])
+    : [];
+  if (
+    segments.some(
+      (seg) => !trimString(seg.segmentId) || !trimString(seg.segmentValue)
+    )
+  ) {
+    throw new Error("VU_SEGMENT_TOKEN_REQUIRED");
+  }
+
+  if (!hasFiniteNumber(fare.taxAdult) || !hasFiniteNumber(fare.totalAdult)) {
+    throw new Error("VU_FARE_BREAKDOWN_INCOMPLETE");
+  }
+
+  if (stage === "hold") {
+    const totalPrice = toFiniteNumber(fare.totalPrice);
+    if (totalPrice == null || totalPrice <= 0) {
+      throw new Error("VU_HOLD_TOTAL_REQUIRED");
+    }
+  }
+
+  return fare;
 }
 
 export function sanitizeVuConfirmPriceRequest(

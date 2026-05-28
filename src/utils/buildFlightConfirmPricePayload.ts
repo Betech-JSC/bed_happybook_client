@@ -42,6 +42,7 @@ import {
   sanitizeVn1aConfirmPriceRequest,
 } from "@/utils/vn1aConfirmPrice";
 import {
+  assertVuFareConsistency,
   buildVuFareBreakdowns,
   isVuSource,
   resolveVuFareValueFromSearch,
@@ -295,21 +296,22 @@ export function buildPaxLists(
 }
 
 function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
-  const ticketClass = flight.selectedTicketClass as
+  const baseTicketClass = flight.selectedTicketClass as
     | Record<string, unknown>
     | undefined;
   const isGds = is1GSource(flight.source);
   const isVj = isVietJetSource(flight.source);
   const isVn1a = isVietnamAirlinesSource(flight.source);
   const isVu = isVuSource(flight.source);
+  const ticketClass = isVu
+    ? assertVuFareConsistency(flight, "confirm")
+    : baseTicketClass;
   const isInternational =
     isGds || flight.domestic === false;
   const airline =
     copyTripField(flight.airline) || copyTripField(flight.airLineCode);
 
-  const fareType = firstPipeSegment(
-    ticketClass?.fareType ?? ticketClass?.groupClass
-  );
+  const fareType = firstPipeSegment(ticketClass?.fareType ?? ticketClass?.groupClass);
   const fareBasisCode = firstPipeSegment(ticketClass?.fareBasisCode);
   const bookingClass = copyTripField(ticketClass?.bookingClass);
   const groupClass = copyTripField(ticketClass?.groupClass);
@@ -430,10 +432,11 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
         departureTime,
         arrivalTime,
         flightNumber: copyTripField(seg.flightNumber),
-        fareType: segFareType,
-        fareBasisCode: segFareBasisCode,
-        bookingClass: segBookingClass,
-        groupClass: segGroupClass || "Economy",
+        // VU must map fare-class fields from chosen fare option only.
+        fareType: fareType || segFareType,
+        fareBasisCode,
+        bookingClass,
+        groupClass,
         marriageGrp:
           copyTripField(seg.marriageGrp) || (legNum === 1 ? "O" : "I"),
         // VU: giữ nguyên id/value từ selected resource, không fallback theo leg.
@@ -683,16 +686,26 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
   const flights = input.selections.map((sel, index) => {
     const trip = sel.trip as Record<string, unknown>;
     const source = trip.source ?? sel.fareOption?.source;
+    const selectedFare = isVuSource(source)
+      ? assertVuFareConsistency(
+          {
+            ...trip,
+            selectedTicketClass: sel.fareOption,
+            fareOptionIndex: sel.fareOptionIndex,
+          },
+          "confirm"
+        )
+      : repairFareOptionFromTrip(
+          sel.fareOption as Record<string, unknown>,
+          {
+            fareOptionIndex: sel.fareOptionIndex,
+            trip,
+            source,
+          }
+        );
     return {
       ...trip,
-      selectedTicketClass: repairFareOptionFromTrip(
-        sel.fareOption as Record<string, unknown>,
-        {
-          fareOptionIndex: sel.fareOptionIndex,
-          trip,
-          source,
-        }
-      ),
+      selectedTicketClass: selectedFare,
       fareOptionIndex: sel.fareOptionIndex,
       itineraryId: sel.itineraryId,
       numberAdt: sel.paxCounts.adult,

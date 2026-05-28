@@ -87,6 +87,10 @@ import {
   sum1GHoldFareTotals,
 } from "@/utils/build1GHoldFareData";
 import { merge1GSelectionsForConfirm } from "@/utils/oneGConfirmPrice";
+import {
+  assertVuFareConsistency,
+  isVuSource,
+} from "@/utils/vuConfirmPrice";
 import InternationalPassportFields from "./InternationalPassportFields";
 import type { SelectedFlight } from "@/types/selectedFlight";
 
@@ -285,14 +289,38 @@ export default function FlightBookForm({ airportsData }: any) {
 
     const ticketClassOf = (item: Record<string, unknown>) =>
       (item.selectedTicketClass as Record<string, unknown>) ?? item;
+    const buildVuHoldDetail = (item: Record<string, unknown>) => {
+      const selectedFare = assertVuFareConsistency(item, "hold");
+      const normalizedSegments = Array.isArray(item.segments)
+        ? (item.segments as Record<string, unknown>[]).map((seg) => ({
+            ...seg,
+            fareBasisCode: selectedFare.fareBasisCode,
+            bookingClass: selectedFare.bookingClass,
+            groupClass: selectedFare.groupClass,
+            fareType: selectedFare.fareType ?? selectedFare.groupClass,
+            segmentId: String(seg.segmentId ?? "").trim(),
+            segmentValue: String(seg.segmentValue ?? "").trim(),
+          }))
+        : [];
+      return {
+        ...item,
+        segments: normalizedSegments,
+        selectedTicketClass: selectedFare,
+      };
+    };
     const toFareFlightRow = (item: Record<string, unknown>) => {
-      const tc = ticketClassOf(item);
+      const tc = isVuSource(item.source)
+        ? assertVuFareConsistency(item, "hold")
+        : ticketClassOf(item);
+      const detail = isVuSource(item.source)
+        ? buildVuHoldDetail(item)
+        : {
+            ...item,
+            selectedTicketClass: tc,
+          };
       return {
         flight_value: resolveFareValueFromFareOption(item.source, tc, item),
-        detail: {
-          ...item,
-          selectedTicketClass: tc,
-        },
+        detail,
       };
     };
 
@@ -343,12 +371,19 @@ export default function FlightBookForm({ airportsData }: any) {
       total_fee_service = legTotals.total_fee_service;
     } else {
       flights.map((item) => {
-        const tc = ticketClassOf(item);
-        total_price_net += Number(tc.totalPriceWithOutTax ?? 0);
+        const tc = isVuSource(item.source)
+          ? assertVuFareConsistency(item, "hold")
+          : ticketClassOf(item);
+        total_price_net += Number(
+          tc.totalPriceWithOutTax ??
+            (Number(tc.fareAdult ?? 0) +
+              Number(tc.fareChild ?? 0) +
+              Number(tc.fareInfant ?? 0))
+        );
         total_tax +=
-          Number(tc.totalTaxAdt ?? 0) +
-          Number(tc.totalTaxChd ?? 0) +
-          Number(tc.totalTaxInf ?? 0);
+          Number(tc.totalTaxAdt ?? tc.taxAdult ?? 0) +
+          Number(tc.totalTaxChd ?? tc.taxChild ?? 0) +
+          Number(tc.totalTaxInf ?? tc.taxInfant ?? 0);
         total_price += Number(tc.totalPrice ?? 0);
         total_fee_service += Number(tc.totalServiceFee ?? 0);
         fare_data.push({
@@ -491,6 +526,22 @@ export default function FlightBookForm({ airportsData }: any) {
         toast.error(
           "Thiếu mã giá Vietravel (fareValue). Vui lòng chọn lại hạng vé hoặc tìm chuyến mới."
         );
+      } else if (code === "VU_FARE_OPTION_REQUIRED") {
+        toast.error("Thiếu fare option VU đã chọn. Vui lòng chọn lại chuyến bay.");
+      } else if (code === "VU_FARE_OPTION_INCOMPLETE") {
+        toast.error(
+          "Fare option VU chưa đủ bookingClass/groupClass/fareBasisCode. Vui lòng chọn lại hạng vé."
+        );
+      } else if (code === "VU_SEGMENT_TOKEN_REQUIRED") {
+        toast.error(
+          "Thiếu segmentId/segmentValue của VU. Vui lòng tìm chuyến lại và chọn đúng hạng vé."
+        );
+      } else if (code === "VU_FARE_BREAKDOWN_INCOMPLETE") {
+        toast.error(
+          "Fare breakdown VU chưa đủ giá/net/tax. Vui lòng chọn lại hạng vé."
+        );
+      } else if (code === "VU_HOLD_TOTAL_REQUIRED") {
+        toast.error("Thiếu tổng tiền của fare option VU để giữ chỗ.");
       } else {
         toast.error(
           "Giá vé không còn hiệu lực. Vui lòng tìm chuyến bay lại và chọn hạng vé mới."
