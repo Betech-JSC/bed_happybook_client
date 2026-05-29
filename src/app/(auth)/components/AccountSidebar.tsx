@@ -27,7 +27,7 @@ export default function AccountSidebar({ userInfo }: any) {
     { name: "Visa", type: "visa" },
     { name: "Tour", type: "tour" },
     { name: "Du thuyền", type: "du-thuyen" },
-    { name: "Vé vui chơi", type: "ve-vui-choi" },
+    { name: "Vé vui chơi & hoạt động", type: "ve-vui-choi" },
     { name: "Fast Track", type: "fast-track" },
     { name: "Khách sạn", type: "khach-san" },
     { name: "Bảo hiểm", type: "bao-hiem" },

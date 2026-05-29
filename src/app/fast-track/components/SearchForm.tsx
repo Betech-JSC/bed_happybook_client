@@ -109,7 +109,7 @@ export default function SearchForm() {
             className="text-[18px] font-semibold text-black"
             data-translate="true"
           >
-            Tìm vé vui chơi
+            Tìm vé vui chơi & hoạt động
           </span>
         </label>
       </div>

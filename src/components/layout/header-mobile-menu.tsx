@@ -128,6 +128,12 @@ export default function HeaderMobileMenu() {
             <Link href="/ve-may-bay" className="block mt-3 hover:text-[#F27145] cursor-pointer">
               {t("ve_may_bay")}
             </Link>
+            <Link href="/du-thuyen" className="block mt-3 hover:text-[#F27145] cursor-pointer">
+              {t("du_thuyen")}
+            </Link>
+            <Link href="/ve-vui-choi" className="block mt-3 hover:text-[#F27145] cursor-pointer">
+              {t("ve_vui_choi_hoat_dong")}
+            </Link>
             <Link href="/khach-san" className="block mt-3 hover:text-[#F27145] cursor-pointer">
               {t("khach_san")}
             </Link>
@@ -143,9 +149,6 @@ export default function HeaderMobileMenu() {
             </Link>
             <Link href="/tours/tour-quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("tour_quoc_te")}
-            </Link>
-            <Link href="/du-thuyen" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("du_thuyen")}
             </Link>
 
             <Link href="/combo" className="block mt-3 hover:text-[#F27145] cursor-pointer">
@@ -165,9 +168,6 @@ export default function HeaderMobileMenu() {
               {t("tu_van_visa_mien_phi")}
             </Link>
 
-            <Link href="/ve-vui-choi" className="block mt-3 hover:text-[#F27145] cursor-pointer">
-              {t("ve_vui_choi")}
-            </Link>
           </div>
 
           <div className="mt-6">
@@ -178,7 +178,7 @@ export default function HeaderMobileMenu() {
               </svg>
             </div>
             <Link href="/fast-track" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("fast_track")}
+              {t("dich_vu_tai_san_bay")}
             </Link>
             <Link href="/bao-hiem" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("bao_hiem")}
@@ -219,7 +219,7 @@ export default function HeaderMobileMenu() {
 
           <div className="mt-6 mb-6">
             <div className="flex items-center justify-between">
-              <strong>{t("khac")}</strong>
+              <strong>{t("danh_cho_ban")}</strong>
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
