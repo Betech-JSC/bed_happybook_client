@@ -26,6 +26,7 @@ const createCacheKey = (scope: string, params?: Record<string, unknown>) =>
   )}`;
 
 const CACHE_TTL_MS = 60_000;
+const ESIM_SEARCH_PAGE_SIZE = 250;
 
 type CacheEntry<T> = {
   value: Promise<T>;
@@ -75,7 +76,8 @@ export const loadAllEsimPackages = async (params?: {
           destination_id: params?.destination_id,
           operator: params?.operator,
           page: 1,
-          page_size: 100,
+          page_size: ESIM_SEARCH_PAGE_SIZE,
+          compact: true,
         },
         params?.locale
       );
@@ -95,7 +97,8 @@ export const loadAllEsimPackages = async (params?: {
               destination_id: params?.destination_id,
               operator: params?.operator,
               page,
-              page_size: 100,
+              page_size: ESIM_SEARCH_PAGE_SIZE,
+              compact: true,
             },
             params?.locale
           )
@@ -149,7 +152,7 @@ export const loadEsimPackageBySlug = async (slug: string, locale?: string): Prom
 
   const promise = (async () => {
     try {
-      const response = await ProductEsimApi.detailBySlug(slug, locale);
+      const response = await ProductEsimApi.detailBySlug(slug, locale, true);
       const detail = unwrapResponseData(response?.payload) as ApiEsimPackage | null;
 
       if (!detail) return null;

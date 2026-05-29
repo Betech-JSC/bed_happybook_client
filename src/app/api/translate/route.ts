@@ -1,25 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { translateText } from "@/utils/translateApi";
 
 export async function POST(req: NextRequest) {
-  let { targetLang, texts } = await req.json();
+  const { targetLang, texts } = await req.json();
   try {
-    if (!texts.length) {
+    if (!Array.isArray(texts) || !texts.length) {
       return Response.json([], { status: 200 });
     }
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_TRANSLATE_API_KEY;
-    const payload = [[texts, "vi", targetLang], "te"];
-    const url = `https://translate-pa.googleapis.com/v1/translateHtml`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json+protobuf",
-        "x-goog-api-key": `${apiKey}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-    return Response.json(data[0] ?? [], { status: 200 });
+    const data = await translateText(texts, targetLang);
+    return Response.json(data, { status: 200 });
   } catch (error) {
     return Response.json([], { status: 200 });
   }

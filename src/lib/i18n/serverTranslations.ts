@@ -4,15 +4,22 @@ import {
 } from "@/constants/staticText";
 import { formatTranslationMap } from "@/utils/translateDom";
 
-const applyAmusementTicketAliases = (translations: Record<string, string>) => {
+const applyAmusementTicketAliases = (
+  translations: Record<string, string>,
+  lang: string
+) => {
   const amusementLabel =
-    translations["ve_vui_choi_hoat_dong"] ??
-    translations["ve_vui_choi"] ??
-    "Vé vui chơi & hoạt động";
+    lang === "vi"
+      ? translations["ve_vui_choi_hoat_dong"] ??
+        translations["ve_vui_choi"] ??
+        "Vé vui chơi & hoạt động"
+      : "Attraction tickets";
   const searchLabel =
-    translations["tim_ve_vui_choi_hoat_dong"] ??
-    translations["tim_ve_vui_choi"] ??
-    "Tìm vé vui chơi & hoạt động";
+    lang === "vi"
+      ? translations["tim_ve_vui_choi_hoat_dong"] ??
+        translations["tim_ve_vui_choi"] ??
+        "Tìm vé vui chơi & hoạt động"
+      : "Search attraction tickets";
 
   return {
     ...translations,
@@ -27,7 +34,7 @@ export async function getServerTranslations(
   lang: string
 ): Promise<Record<string, string>> {
   if (lang === "vi") {
-    return applyAmusementTicketAliases(formatTranslationMap(unifiedStaticText));
+    return applyAmusementTicketAliases(formatTranslationMap(unifiedStaticText), lang);
   }
 
   return getStaticTextTranslationMap(lang);

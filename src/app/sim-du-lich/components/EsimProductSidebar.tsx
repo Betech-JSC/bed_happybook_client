@@ -2,7 +2,7 @@
 
 import { BadgeCheck, ChevronDown, Headset, Info } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
+import type { Dispatch, ReactNode, Ref, SetStateAction } from "react";
 import { formatEsimMoney, type EsimPackageView, type EsimVariantView } from "../lib/esim";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 
@@ -32,6 +32,7 @@ type Props = {
   showDetailSections?: boolean;
   showActionBlock?: boolean;
   showInfoBlock?: boolean;
+  actionBlockRef?: Ref<HTMLDivElement>;
 };
 
 export default function EsimProductSidebar({
@@ -52,6 +53,7 @@ export default function EsimProductSidebar({
   showDetailSections = true,
   showActionBlock = true,
   showInfoBlock = true,
+  actionBlockRef,
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
@@ -104,15 +106,19 @@ export default function EsimProductSidebar({
           ) : null}
 
           {showActionBlock ? (
-            <>
-              <div className="flex items-end justify-between">
+            <div ref={actionBlockRef}>
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <span className="text-steel-secondary text-sm font-medium">{t("Tổng cộng:")}</span>
-                <span className="text-3xl font-bold text-hb-coral">
-                  {formatEsimMoney(total, selectedVariantMoney.currency)}
+                <span className="text-2xl font-bold leading-tight text-hb-coral sm:text-3xl">
+                  {selectedVariant ? formatEsimMoney(total, selectedVariantMoney.currency) : t("Chưa chọn gói")}
                 </span>
               </div>
-              <p className="text-[10px] text-right text-steel-secondary">
-                {selectedVariantMoney.price > 0 ? t("Đã bao gồm thuế và phí xử lý") : t("Đã bao gồm thuế, Miễn phí xử lý")}
+              <p className="text-[10px] text-right text-steel-secondary sm:text-right">
+                {selectedVariant
+                  ? selectedVariantMoney.price > 0
+                    ? t("Đã bao gồm thuế và phí xử lý")
+                    : t("Đã bao gồm thuế, Miễn phí xử lý")
+                  : t("Hãy chọn gói để xem giá")}
               </p>
 
               <button
@@ -134,7 +140,7 @@ export default function EsimProductSidebar({
                   <span>{t("Hỗ trợ khách hàng 24/7")}</span>
                 </div>
               </div>
-            </>
+            </div>
           ) : null}
         </div>
 

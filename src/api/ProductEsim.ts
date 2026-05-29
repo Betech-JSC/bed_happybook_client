@@ -15,6 +15,7 @@ const buildSearchQuery = (params?: {
   operator?: string;
   page_size?: number;
   page?: number;
+  compact?: boolean;
 }) => {
   const searchParams = new URLSearchParams();
 
@@ -33,6 +34,9 @@ const buildSearchQuery = (params?: {
   if (typeof params?.page === "number" && params.page > 0) {
     searchParams.set("page", `${params.page}`);
   }
+  if (params?.compact) {
+    searchParams.set("compact", "1");
+  }
 
   const search = searchParams.toString();
   return search ? `?${search}` : "";
@@ -47,11 +51,22 @@ const ProductEsimApi = {
     operator?: string;
     page_size?: number;
     page?: number;
+    compact?: boolean;
   }, locale?: string) => http.get<any>(`${path}/search${buildSearchQuery(params)}`, langHeader(locale), 10000, 0),
-  detail: (slug: string, locale?: string) =>
-    http.get<any>(`${path}/detail/${slug}`, langHeader(locale), 10000, 0),
-  detailBySlug: (slug: string, locale?: string) =>
-    http.get<any>(`${path}/detail-by-slug/${slug}`, langHeader(locale), 10000, 0),
+  detail: (slug: string, locale?: string, compact?: boolean) =>
+    http.get<any>(
+      `${path}/detail/${slug}${compact ? "?compact=1" : ""}`,
+      langHeader(locale),
+      10000,
+      0
+    ),
+  detailBySlug: (slug: string, locale?: string, compact?: boolean) =>
+    http.get<any>(
+      `${path}/detail-by-slug/${slug}${compact ? "?compact=1" : ""}`,
+      langHeader(locale),
+      10000,
+      0
+    ),
   getOptionsFilter: (locale?: string) =>
     http.get<any>(`${path}/options-filter`, langHeader(locale), 10000, 0),
   quote: (body: {

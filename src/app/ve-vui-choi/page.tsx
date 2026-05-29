@@ -17,6 +17,7 @@ import { formatMetadata } from "@/lib/formatters";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { PageApi } from "@/api/Page";
 import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
 import SeoSchema from "@/components/schema";
 
 function getMetadata(data: any) {
@@ -53,6 +54,7 @@ export default async function EntertainmentTickets() {
     ?.data as any;
 
   const language = await getServerLang();
+  const t = await getServerT();
   const contentPage = (await PageApi.getContent("ve-vui-choi", language))
     ?.payload?.data as any;
   const metadata = getMetadata(contentPage);
@@ -84,9 +86,7 @@ export default async function EntertainmentTickets() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-gray-700" data-translate="true">
-                    Vé vui chơi & hoạt động
-                  </p>
+                  <p className="text-gray-700">{t("ve_vui_choi")}</p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
