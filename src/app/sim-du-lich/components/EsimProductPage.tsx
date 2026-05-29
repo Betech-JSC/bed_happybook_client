@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
-import { useMemo, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
@@ -89,6 +88,8 @@ export default function EsimProductPage({
 
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
   const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const actionBlockRef = useRef<HTMLDivElement | null>(null);
+  const [showMobilePaymentBar, setShowMobilePaymentBar] = useState(false);
 
   const scrollSidebarIntoView = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -98,6 +99,61 @@ export default function EsimProductPage({
       sidebarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }, []);
+
+  useEffect(() => {
+    if (!isDetailPage || typeof window === "undefined") {
+      setShowMobilePaymentBar(false);
+      return;
+    }
+
+    const target = actionBlockRef.current;
+    if (!target) {
+      setShowMobilePaymentBar(window.matchMedia("(max-width: 1023px)").matches);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const updateVisibility = (isIntersecting: boolean) => {
+      setShowMobilePaymentBar(mediaQuery.matches && !isIntersecting);
+    };
+
+    const handleMediaChange = () => {
+      if (!mediaQuery.matches) {
+        setShowMobilePaymentBar(false);
+        return;
+      }
+
+      const entry = target.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const visibleHeight = Math.min(entry.bottom, viewportHeight) - Math.max(entry.top, 0);
+      const isVisible = visibleHeight > 0;
+      updateVisibility(isVisible);
+    };
+
+    if (!mediaQuery.matches) {
+      setShowMobilePaymentBar(false);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        updateVisibility(Boolean(entry?.isIntersecting));
+      },
+      {
+        threshold: 0,
+      }
+    );
+
+    observer.observe(target);
+    handleMediaChange();
+
+    mediaQuery.addEventListener("change", handleMediaChange);
+
+    return () => {
+      observer.disconnect();
+      mediaQuery.removeEventListener("change", handleMediaChange);
+    };
+  }, [isDetailPage]);
 
   const breadcrumbItems = category
     ? isDetailPage
@@ -176,8 +232,8 @@ export default function EsimProductPage({
           </div>
         ) : null}
 
-        <div className="flex flex-col-reverse items-start mt-6 lg:flex-row lg:space-x-8">
-          <div className="w-full space-y-4 lg:w-8/12 mt-4 lg:mt-0">
+        <div className="flex flex-col items-start mt-6 lg:flex-row lg:space-x-8">
+          <div className="order-1 w-full space-y-4 lg:order-none lg:w-8/12">
             <EsimInternationalDetailGallery
               selectedPackage={catalog.selectedPackage}
               categoryLabel={categoryLabel}
@@ -213,7 +269,10 @@ export default function EsimProductPage({
             </div>
           </div>
 
-          <div ref={sidebarRef} className="w-full lg:w-4/12 lg:sticky lg:top-[148px] lg:self-start">
+          <div
+            ref={sidebarRef}
+            className="order-2 mt-4 w-full lg:order-none lg:mt-0 lg:w-4/12 lg:sticky lg:top-[148px] lg:self-start"
+          >
             <EsimProductSidebar
               selectedPackage={catalog.selectedPackage}
               selectedVariant={catalog.selectedVariant}
@@ -229,6 +288,7 @@ export default function EsimProductPage({
               setOpenDetailSection={catalog.setOpenDetailSection}
               sticky={false}
               showDetailHeader
+              actionBlockRef={actionBlockRef}
             />
           </div>
         </div>
@@ -237,7 +297,7 @@ export default function EsimProductPage({
   );
 
   return (
-    <main className="w-full pb-32">
+    <main className="w-full pb-44 lg:pb-32">
       {isDetailPage ? renderDetailShell() : renderListingShell()}
 
       {isDetailPage ? (
@@ -258,28 +318,30 @@ export default function EsimProductPage({
         </div>
       ) : null}
 
-      <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
-        <div>
-          <div className="text-xs text-steel-secondary">{t("Tổng thanh toán")}</div>
-          <div className="text-xl font-bold text-hb-coral">
-            {formatEsimMoney(
-              catalog.total,
-              activeLocale === "en" ? "USD" : catalog.selectedVariantMoney.currency
-            )}
+      {isDetailPage && showMobilePaymentBar ? (
+        <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
+          <div>
+            <div className="text-xs text-steel-secondary">{t("Tổng thanh toán")}</div>
+            <div className="text-xl font-bold text-hb-coral">
+              {formatEsimMoney(
+                catalog.total,
+                activeLocale === "en" ? "USD" : catalog.selectedVariantMoney.currency
+              )}
+            </div>
           </div>
+          <button
+            onClick={catalog.handleBookNow}
+            disabled={
+              !catalog.selectedPackage ||
+              !catalog.selectedVariant ||
+              catalog.selectedVariantMoney.price <= 0
+            }
+            className="rounded-xl bg-hb-coral px-8 py-3 font-bold text-white transition-all hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {t("Đặt ngay")}
+          </button>
         </div>
-        <button
-          onClick={catalog.handleBookNow}
-          disabled={
-            !catalog.selectedPackage ||
-            !catalog.selectedVariant ||
-            catalog.selectedVariantMoney.price <= 0
-          }
-          className="rounded-xl bg-hb-coral px-8 py-3 font-bold text-white transition-all hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {t("Đặt ngay")}
-        </button>
-      </div>
+      ) : null}
 
       {catalog.showModal && catalog.selectedPackage ? (
         <PackageSelectorModal

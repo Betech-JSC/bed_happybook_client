@@ -481,6 +481,7 @@ const simDuLichStaticText: string[] = [
   "Chi tiết gói dịch vụ",
   "Tóm tắt",
   "Chưa chọn gói",
+  "Chưa có giá khả dụng",
   "Đơn giá:",
   "Chưa có dữ liệu mức giá.",
   "Đặt lại",

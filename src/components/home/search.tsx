@@ -20,9 +20,9 @@ export default function Search({ airportsData }: any) {
           {t("bat_dau_hanh_trinh_voi_happy_book")}
         </h2>
         <div className="h-[192px] pt-11 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-          <div className="min-w-[600px] w-max grid grid-cols-4 gap-2 mb-4 absolute top-[-12%] left-[50%] translate-x-[-50%] bg-[#000000] py-2 px-3 rounded-3xl">
+          <div className="grid grid-cols-4 gap-2 mb-4 absolute top-[-12%] inset-x-3 bg-[#000000] py-2 px-3 rounded-3xl">
             <button
-              className={`flex lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 0 ? "bg-[#1570EF]" : ""
+              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 0 ? "bg-[#1570EF]" : ""
                 }`}
               onClick={() => setActiveTab(0)}
             >
@@ -37,7 +37,7 @@ export default function Search({ airportsData }: any) {
             </button>
             <button
               onClick={() => setActiveTab(1)}
-              className={`flex lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 1 ? "bg-[#1570EF]" : ""
+              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 1 ? "bg-[#1570EF]" : ""
                 }`}
             >
               <Image
@@ -51,7 +51,7 @@ export default function Search({ airportsData }: any) {
             </button>
             <button
               onClick={() => setActiveTab(2)}
-              className={`flex lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 2 ? "bg-[#1570EF]" : ""
+              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 2 ? "bg-[#1570EF]" : ""
                 }`}
             >
               <Image
@@ -64,7 +64,7 @@ export default function Search({ airportsData }: any) {
             </button>
             <button
               onClick={() => setActiveTab(3)}
-              className={`flex lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 3 ? "bg-[#1570EF]" : ""
+              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 3 ? "bg-[#1570EF]" : ""
                 }`}
             >
               <Image
