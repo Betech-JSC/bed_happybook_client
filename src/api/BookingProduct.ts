@@ -32,6 +32,13 @@ const BookingProductApi = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  HistoryAll: (token: string | undefined, page: number, pageSize: number = 10) =>
+    http.get<any>(`${path}/history/all?page=${page}&page_size=${pageSize}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }, 10000, 0),
 };
 
 export { BookingProductApi, EsimApi };
