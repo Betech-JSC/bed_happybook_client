@@ -38,7 +38,7 @@ export default async function WhyChooseHappyBook() {
             ></Image>
             <div>
               <p className="text-18 font-semibold mb-1 text-gray-900">
-                {t("don_vi_hon_8_nam_kinh_nghiem")}
+                {t("don_vi_hon_10_nam_kinh_nghiem")}
               </p>
               <p className="text-18 font-semibold text-gray-900">
                 {t("lay_chu_tin_lam_dau")}

@@ -237,7 +237,7 @@ export default async function Footer() {
                   href="/fast-track"
                   className={`block mt-3 ${styles.text_hover_default}`}
                 >
-                  {t("fast_track")}
+                  {t("dich_vu_tai_san_bay")}
                 </Link>
                 <Link
                   href="/phong-cho-thuong-gia"
@@ -248,7 +248,7 @@ export default async function Footer() {
               </div>
             </div>
             <div>
-              <p className="font-bold">{t("khac")}</p>
+              <p className="font-bold">{t("danh_cho_ban")}</p>
               <p className={`mt-4 ${styles.text_hover_default} `}>
                 <Link href="/tu-van-nhan-visa">{t("tu_van_visa")}</Link>
               </p>

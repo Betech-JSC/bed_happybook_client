@@ -85,7 +85,7 @@ export default async function EntertainmentTickets() {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <p className="text-gray-700" data-translate="true">
-                    Vé vui chơi
+                    Vé vui chơi & hoạt động
                   </p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
