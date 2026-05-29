@@ -26,15 +26,26 @@ export default function YachtDetailInfor({ product }: any) {
   const [departDate, setDepartDate] = useState<Date>(today);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [detail, setDetail] = useState<any>(product);
-  const dayMap: Record<string, string> = {
-    monday: "Thứ Hai",
-    tuesday: "Ba",
-    wednesday: "Tư",
-    thursday: "Năm",
-    friday: "Sáu",
-    saturday: "Bảy",
-    sunday: "Chủ nhật",
-  };
+  const dayMap: Record<string, string> =
+    language === "vi"
+      ? {
+          monday: "Thứ Hai",
+          tuesday: "Thứ Ba",
+          wednesday: "Thứ Tư",
+          thursday: "Thứ Năm",
+          friday: "Thứ Sáu",
+          saturday: "Thứ Bảy",
+          sunday: "Chủ Nhật",
+        }
+      : {
+          monday: "Monday",
+          tuesday: "Tuesday",
+          wednesday: "Wednesday",
+          thursday: "Thursday",
+          friday: "Friday",
+          saturday: "Saturday",
+          sunday: "Sunday",
+        };
   const daysOpeningRaw = product?.yacht?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
     ? daysOpeningRaw
@@ -43,7 +54,9 @@ export default function YachtDetailInfor({ product }: any) {
       : [];
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
-    ? "Mỗi ngày"
+    ? language === "vi"
+      ? "Mỗi ngày"
+      : "Every day"
     : daysOpening
       .map((day: any) => dayMap[day])
       .filter(Boolean)
@@ -111,13 +124,12 @@ export default function YachtDetailInfor({ product }: any) {
                       <div className="flex gap-2 md:gap-3 flex-col md:flex-row justify-between items-start">
                         <p
                           className="text-blue-700 text-18 font-semibold"
-                          data-translate="true"
                         >
                           {option?.name}
                         </p>
                         {departDate && (
                           <div className="w-32 flex-shrink-0">
-                            <span>Ngày </span>
+                            <span>{language === "vi" ? "Ngày " : "Date "}</span>
                             <span>{format(departDate, "dd/MM/yyyy")}</span>
                           </div>
                         )}
@@ -130,19 +142,17 @@ export default function YachtDetailInfor({ product }: any) {
                           key={ticket.id}
                           className="flex space-x-2 justify-between items-start py-4 border-b last:border-none"
                         >
-                          <div>
-                            <div
-                              className="font-semibold text-base"
-                              data-translate="true"
-                            >
-                              {renderTextContent(ticket?.type?.name)}
-                            </div>
-                            <div
-                              className="text-sm text-gray-500 mt-1"
-                              data-translate="true"
-                            >
-                              {!isEmpty(ticket?.type?.description)
-                                ? renderTextContent(ticket?.type?.description)
+                        <div>
+                          <div
+                            className="font-semibold text-base"
+                          >
+                            {renderTextContent(ticket?.type?.name)}
+                          </div>
+                          <div
+                            className="text-sm text-gray-500 mt-1"
+                          >
+                            {!isEmpty(ticket?.type?.description)
+                              ? renderTextContent(ticket?.type?.description)
                                 : ""}
                             </div>
                           </div>
@@ -185,7 +195,6 @@ export default function YachtDetailInfor({ product }: any) {
             </h2>
             <div className="ckeditor_container">
               <div
-                data-translate="true"
                 className="cke_editable"
                 dangerouslySetInnerHTML={{
                   __html: renderTextContent(product?.yacht?.description),
@@ -200,7 +209,6 @@ export default function YachtDetailInfor({ product }: any) {
           <div>
             <h1
               className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-              data-translate="true"
             >
               {renderTextContent(product?.name)}
             </h1>
@@ -209,12 +217,13 @@ export default function YachtDetailInfor({ product }: any) {
               <Image
                 className="w-4 h-4"
                 src="/icon/clock.svg"
-                alt="Thời gian"
+                alt={language === "vi" ? "Thời gian" : "Opening hours"}
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
-                Mở {displayTimeOpening ?? ""} | {displayDaysOpening ?? ""}
+              <span>
+                {language === "vi" ? "Mở" : "Open"} {displayTimeOpening ?? ""} |{" "}
+                {displayDaysOpening ?? ""}
               </span>
             </div>
 
@@ -222,11 +231,11 @@ export default function YachtDetailInfor({ product }: any) {
               <Image
                 className="w-4 h-4"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa chỉ"
+                alt={language === "vi" ? "Địa chỉ" : "Address"}
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
+              <span>
                 {renderTextContent(product?.yacht?.address)}
               </span>
             </div>
@@ -249,7 +258,7 @@ export default function YachtDetailInfor({ product }: any) {
           <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
             <Image
               src="/icon/calendar.svg"
-              alt="Lịch"
+              alt={language === "vi" ? "Lịch" : "Calendar"}
               className="h-10"
               width={18}
               height={18}
@@ -259,7 +268,7 @@ export default function YachtDetailInfor({ product }: any) {
                 selected={departDate}
                 onChange={(date) => setDepartDate(date ? date : today)}
                 dateFormat="dd/MM/yyyy"
-                placeholderText="Chọn ngày"
+                placeholderText={language === "vi" ? "Chọn ngày" : "Select date"}
                 popperPlacement="bottom-start"
                 minDate={today}
                 locale={language === "vi" ? vi : enUS}

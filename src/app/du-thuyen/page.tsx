@@ -49,10 +49,9 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function ProductYacht() {
-  const optionsFilter = (await ProductYachtApi.getOptionsFilter())?.payload
-    ?.data as any;
-
   const language = await getServerLang();
+  const optionsFilter = (await ProductYachtApi.getOptionsFilter(language))
+    ?.payload?.data as any;
   const contentPage = (await PageApi.getContent("du-thuyen", language))?.payload
     ?.data as any;
   const metadata = getMetadata(contentPage);

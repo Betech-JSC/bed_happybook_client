@@ -22,6 +22,7 @@ import { ProductYachtApi } from "@/api/ProductYacht";
 import { Fragment } from "react";
 import YachtDetailInfor from "./YachtDetailInfor";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { getServerLang } from "@/lib/session";
 
 export default async function YachtDetail({
   alias,
@@ -31,7 +32,8 @@ export default async function YachtDetail({
   searchParams: { [key: string]: string | undefined };
 }) {
   const t = await getServerT();
-  const res = (await ProductYachtApi.detail(alias)) as any;
+  const language = await getServerLang();
+  const res = (await ProductYachtApi.detail(alias, undefined, language)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();
@@ -55,7 +57,6 @@ export default async function YachtDetail({
                   <Link
                     href={`/du-thuyen/${detail?.category?.alias}`}
                     className="text-blue-700"
-                    data-translate="true"
                   >
                     {detail?.category?.name}
                   </Link>
@@ -64,7 +65,7 @@ export default async function YachtDetail({
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-gray-700" data-translate="true">
+                  <p className="text-gray-700">
                     {renderTextContent(detail?.name)}
                   </p>
                 </BreadcrumbLink>

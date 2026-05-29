@@ -1,16 +1,10 @@
 "use client";
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { useCallback, useEffect, useRef, useState } from "react";
-import TourStyle from "@/styles/tour.module.scss";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
 import { useSearchParams } from "next/navigation";
-import { translatePage } from "@/utils/translateDom";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { format, isValid } from "date-fns";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
@@ -33,7 +27,8 @@ export default function Search({
   categoryDefault?: number;
 }) {
   const { t } = useTranslation();
-  const { language } = useLanguage();
+  const getYachtDisplayName = (item: any) =>
+    item?.yacht?.name || item?.name || "";
 
   const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
@@ -77,9 +72,7 @@ export default function Search({
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
-      translatePage("#wrapper-search-amusement-ticket", 10).then(() =>
-        setTranslatedText(true)
-      );
+      setTranslatedText(true);
     } catch (error) {
       console.log("Error search: " + error);
     } finally {
@@ -182,7 +175,7 @@ export default function Search({
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}
-                          alt={renderTextContent(item.name)}
+                          alt={renderTextContent(getYachtDisplayName(item))}
                           width={360}
                           height={270}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -194,9 +187,8 @@ export default function Search({
                       <Link
                         href={`/du-thuyen/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
-                        data-translate="true"
                       >
-                        {renderTextContent(item.name)}
+                        {renderTextContent(getYachtDisplayName(item))}
                       </Link>
                       <div className="mt-1 text-end">
                         <DisplayPrice

@@ -29,15 +29,18 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import YachtDetail from "../components/YachtDetail";
 import YachtCategory from "../components/YachtCategory";
 import { ProductCategoryApi } from "@/api/ProductCategory";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
+  const language = await getServerLang();
   let data = null;
 
-  data = (await ProductCategoryApi.detail("yacht", slug))?.payload?.data as any;
+  data = (await ProductCategoryApi.detail("yacht", slug, language))?.payload
+    ?.data as any;
 
   if (!data) {
-    const resDetail = await ProductYachtApi.detailBySlug(slug);
+    const resDetail = await ProductYachtApi.detailBySlug(slug, language);
     data = resDetail?.payload.data;
     if (data) data.alias = data?.slug;
   }
@@ -73,7 +76,9 @@ export default async function YachtAliasPage({
   searchParams: { [key: string]: string | undefined };
 }) {
   const { slug } = params;
-  const detailCate = (await ProductCategoryApi.detail("yacht", slug))?.payload
+  const language = await getServerLang();
+  const detailCate = (await ProductCategoryApi.detail("yacht", slug, language))
+    ?.payload
     ?.data as any;
   return !detailCate ? (
     <YachtDetail alias={slug} searchParams={searchParams} />

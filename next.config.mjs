@@ -29,6 +29,12 @@ const nextConfig = {
         pathname: '/**',
       },
       {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8001',
+        pathname: '/**',
+      },
+      {
         protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
         hostname: process.env.NEXT_PUBLIC_HOSTNAME || 'api.happybooktravel.com',
         port: "",

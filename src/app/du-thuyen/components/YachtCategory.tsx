@@ -11,9 +11,11 @@ import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import Search from "./Search";
+import { getServerLang } from "@/lib/session";
 
 export default async function YachtCategory({ detail }: any) {
-  const optionsFilter = (await ProductYachtApi.getOptionsFilter())?.payload
+  const language = await getServerLang();
+  const optionsFilter = (await ProductYachtApi.getOptionsFilter(language))?.payload
     ?.data as any;
   const filteredOptions = optionsFilter.filter(
     (item: any) => item.name !== "category"
@@ -27,11 +29,7 @@ export default async function YachtCategory({ detail }: any) {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link
-                    href="/"
-                    className="text-blue-700"
-                    data-translate="true"
-                  >
+                  <Link href="/" className="text-blue-700">
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -39,7 +37,7 @@ export default async function YachtCategory({ detail }: any) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-gray-700" data-translate="true">
+                  <p className="text-gray-700">
                     {detail?.name}
                   </p>
                 </BreadcrumbLink>

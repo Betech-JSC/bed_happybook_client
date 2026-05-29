@@ -81,13 +81,13 @@ export default function CheckOutForm({
     CheckOutYachtSchema(messages, generateInvoice)
   );
   const dayMap: Record<string, string> = {
-    monday: "Thứ Hai",
-    tuesday: "Ba",
-    wednesday: "Tư",
-    thursday: "Năm",
-    friday: "Sáu",
-    saturday: "Bảy",
-    sunday: "Chủ nhật",
+    monday: language === "vi" ? "Thứ Hai" : "Monday",
+    tuesday: language === "vi" ? "Thứ Ba" : "Tuesday",
+    wednesday: language === "vi" ? "Thứ Tư" : "Wednesday",
+    thursday: language === "vi" ? "Thứ Năm" : "Thursday",
+    friday: language === "vi" ? "Thứ Sáu" : "Friday",
+    saturday: language === "vi" ? "Thứ Bảy" : "Saturday",
+    sunday: language === "vi" ? "Chủ nhật" : "Sunday",
   };
   const daysOpeningRaw = product?.yacht?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
@@ -97,7 +97,9 @@ export default function CheckOutForm({
       : [];
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
-    ? "Mỗi ngày"
+    ? language === "vi"
+      ? "Mỗi ngày"
+      : "Every day"
     : daysOpening
       .map((day: any) => dayMap[day])
       .filter(Boolean)
@@ -158,7 +160,11 @@ export default function CheckOutForm({
       (item: any) => item.quantity > 0
     );
     if (isEmpty(isSelectedTicketOption)) {
-      setErrTicketOption("Vui lòng chọn ít nhất 1 loại vé");
+      setErrTicketOption(
+        language === "vi"
+          ? "Vui lòng chọn ít nhất 1 loại vé"
+          : "Please select at least 1 ticket type"
+      );
       toast.error(toaStrMsg.formNotValid);
       return;
     } else {
@@ -318,7 +324,6 @@ export default function CheckOutForm({
             </div> */}
             <p
               className="text-blue-700 text-base font-medium"
-              data-translate="true"
             >
               {yachtOptionSelected?.name}
             </p>
@@ -333,13 +338,11 @@ export default function CheckOutForm({
                       <div>
                         <div
                           className="font-semibold text-base"
-                          data-translate="true"
                         >
                           {renderTextContent(ticket.title)}
                         </div>
                         <div
                           className="text-sm text-gray-500 mt-1"
-                          data-translate="true"
                         >
                           {!isEmpty(ticket.description)
                             ? renderTextContent(ticket.description)
@@ -406,15 +409,21 @@ export default function CheckOutForm({
                     htmlFor="fullName"
                     className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                   >
-                    <span data-translate="true">Họ và tên</span>
+                    <span data-translate="true">
+                      {language === "vi" ? "Họ và tên" : "Full name"}
+                    </span>
                     <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="fullName"
                     type="text"
                     {...register("full_name")}
-                    placeholder="Nhập họ và tên"
-                    title="Nhập họ và tên"
+                    placeholder={
+                      language === "vi" ? "Nhập họ và tên" : "Enter full name"
+                    }
+                    title={
+                      language === "vi" ? "Nhập họ và tên" : "Enter full name"
+                    }
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                   />
                   {errors.full_name && (
@@ -426,7 +435,9 @@ export default function CheckOutForm({
                     htmlFor="gender"
                     className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                   >
-                    <span data-translate="true">Giới tính</span>
+                    <span data-translate="true">
+                      {language === "vi" ? "Giới tính" : "Gender"}
+                    </span>
                     <span className="text-red-500">*</span>
                   </label>
                   <div className="flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -436,13 +447,15 @@ export default function CheckOutForm({
                       {...register("gender")}
                     >
                       <option value="" data-translate="true">
-                        Vui lòng chọn giới tính
+                        {language === "vi"
+                          ? "Vui lòng chọn giới tính"
+                          : "Please select gender"}
                       </option>
                       <option value="male" data-translate="true">
-                        Nam
+                        {language === "vi" ? "Nam" : "Male"}
                       </option>
                       <option value="female" data-translate="true">
-                        Nữ
+                        {language === "vi" ? "Nữ" : "Female"}
                       </option>
                     </select>
                   </div>
@@ -461,7 +474,11 @@ export default function CheckOutForm({
                         id="phone"
                         value={field.value}
                         onChange={field.onChange}
-                        placeholder="Nhập số điện thoại"
+                        placeholder={
+                          language === "vi"
+                            ? "Nhập số điện thoại"
+                            : "Enter phone number"
+                        }
                         error={errors.phone?.message}
                         defaultCountry="VN"
                       />
@@ -478,9 +495,9 @@ export default function CheckOutForm({
                     <input
                       id="email"
                       type="text"
-                      title="Nhập email"
+                      title={language === "vi" ? "Nhập email" : "Enter email"}
                       {...register("email")}
-                      placeholder="Nhập email"
+                      placeholder={language === "vi" ? "Nhập email" : "Enter email"}
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                     />{" "}
                     {errors.email && (
@@ -491,7 +508,9 @@ export default function CheckOutForm({
               </div>
               <div className="mt-4">
                 <textarea
-                  placeholder="Yêu cầu đặc biệt"
+                  placeholder={
+                    language === "vi" ? "Yêu cầu đặc biệt" : "Special requests"
+                  }
                   {...register("note")}
                   className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
                 ></textarea>
@@ -681,7 +700,7 @@ export default function CheckOutForm({
             <LoadingButton
               style="mt-6"
               isLoading={loading}
-              text="Gửi yêu cầu"
+              text={language === "vi" ? "Gửi yêu cầu" : "Send request"}
               disabled={loading}
             />
           </div>
@@ -692,7 +711,6 @@ export default function CheckOutForm({
           <div className="pb-4 border-b border-gray-200">
             <h1
               className="text-2xl font-bold hover:text-primary duration-300 transition-colors"
-              data-translate="true"
             >
               {product?.name}
             </h1>
@@ -700,29 +718,30 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/clock.svg"
-                alt="Thời gian"
+                alt={language === "vi" ? "Thời gian" : "Opening hours"}
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
-                Mở {displayTimeOpening} | {displayDaysOpening}
+              <span>
+                {language === "vi" ? "Mở" : "Open"} {displayTimeOpening} |{" "}
+                {displayDaysOpening}
               </span>
             </div>
             <div className="flex space-x-2 mt-3 items-start">
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa điểm"
+                alt={language === "vi" ? "Địa điểm" : "Address"}
                 width={18}
                 height={18}
               />
-              <span data-translate="true">
+              <span>
                 {renderTextContent(product?.yacht?.address)}
               </span>
             </div>
             {tickets?.map((item: any) => (
               <div key={item.id} className="mt-2 flex justify-between">
-                <span data-translate="true">{item.title}</span>
+                <span>{item.title}</span>
                 <div className="font-bold text-sm flex gap-1">
                   <DisplayPrice
                     className={`!font-bold !text-sm text-black`}
@@ -752,11 +771,11 @@ export default function CheckOutForm({
                 totalDiscount={totalDiscount}
                 currency={product?.currency}
               />
-            ) : (
+              ) : (
               totalPrice > 0 && (
                 <div className="w-full flex justify-between">
                   <DisplayPrice
-                    textPrefix={"Tổng cộng"}
+                    textPrefix={language === "vi" ? "Tổng cộng" : "Total"}
                     price={totalPrice}
                     currency={product?.currency}
                   />

@@ -24,6 +24,8 @@ export default function YachtTabs({
 }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
+  const getYachtDisplayName = (item: any) =>
+    item?.yacht?.name || item?.name || "";
   const [linkCategory, setLinkCategory] = useState<string>(
     data?.[0]?.alias ? `/du-thuyen/${data?.[0]?.alias}` : "/du-thuyen"
   );
@@ -80,7 +82,7 @@ export default function YachtTabs({
                 (tab: any, index: number) =>
                   tab.name && (
                     <CarouselItem key={index} className="basis-1/8">
-                      <button
+                        <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
                      ${activeTab === index
                             ? "bg-[#1570EF] hover:bg-blue-700 text-white"
@@ -90,7 +92,6 @@ export default function YachtTabs({
                           setActiveTab(index);
                           setLinkCategory(`/du-thuyen/${tab.alias}`);
                         }}
-                        data-translate="true"
                       >
                         {tab.name}
                       </button>
@@ -127,7 +128,7 @@ export default function YachtTabs({
                               <Image
                                 className="lg:group-hover:scale-105 ease-in-out duration-300 w-full h-full cursor-pointer object-cover"
                                 src={`${item.image_url}/${item.image_location}`}
-                                alt={item.name}
+                                alt={getYachtDisplayName(item)}
                                 width={320}
                                 height={320}
                               />
@@ -139,10 +140,9 @@ export default function YachtTabs({
                               className={`text-base font-semibold ${styles.text_hover_default}`}
                             >
                               <h3
-                                data-translate="true"
                                 className="h-12 line-clamp-2"
                               >
-                                {item.name}
+                                {getYachtDisplayName(item)}
                               </h3>
                             </Link>
                             <div className="mt-2 text-end">
