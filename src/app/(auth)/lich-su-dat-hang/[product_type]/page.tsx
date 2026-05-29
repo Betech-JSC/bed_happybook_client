@@ -66,7 +66,7 @@ const products: Record<ProductType, ProductItem> = {
     page: "/du-thuyen",
   },
   "ve-vui-choi": {
-    label: "Vé vui chơi",
+    label: "Vé vui chơi & hoạt động",
     type: "ticket",
     path: "/lich-su-dat-hang/ve-vui-choi",
     page: "/ve-vui-choi",
