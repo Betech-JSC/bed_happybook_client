@@ -19,10 +19,10 @@ export default function Search({ airportsData }: any) {
         <h2 className="text-3xl text-white font-bold text-center mb-12 relative">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
         </h2>
-        <div className="h-[192px] pt-11 p-6 mx-auto  bg-white rounded-lg shadow-lg relative">
-          <div className="grid grid-cols-4 gap-2 mb-4 absolute top-[-12%] inset-x-3 bg-[#000000] py-2 px-3 rounded-3xl">
+        <div className="h-[192px] pt-11 p-6 mx-auto bg-white rounded-lg shadow-lg relative">
+          <div className="absolute top-[-12%] left-1/2 -translate-x-1/2 flex w-full max-w-[1020px] min-w-[820px] gap-3 bg-[#000000] p-1.5 rounded-3xl shadow-lg overflow-hidden">
             <button
-              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 0 ? "bg-[#1570EF]" : ""
+              className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 0 ? "bg-[#1570EF]" : "bg-transparent"
                 }`}
               onClick={() => setActiveTab(0)}
             >
@@ -37,7 +37,7 @@ export default function Search({ airportsData }: any) {
             </button>
             <button
               onClick={() => setActiveTab(1)}
-              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 1 ? "bg-[#1570EF]" : ""
+              className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 1 ? "bg-[#1570EF]" : "bg-transparent"
                 }`}
             >
               <Image
@@ -51,7 +51,7 @@ export default function Search({ airportsData }: any) {
             </button>
             <button
               onClick={() => setActiveTab(2)}
-              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 2 ? "bg-[#1570EF]" : ""
+              className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 2 ? "bg-[#1570EF]" : "bg-transparent"
                 }`}
             >
               <Image
@@ -64,7 +64,7 @@ export default function Search({ airportsData }: any) {
             </button>
             <button
               onClick={() => setActiveTab(3)}
-              className={`flex min-w-0 lg:h-11 items-center justify-center text-white py-1 px-3 rounded-3xl focus:outline-none ${activeTab === 3 ? "bg-[#1570EF]" : ""
+              className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 3 ? "bg-[#1570EF]" : "bg-transparent"
                 }`}
             >
               <Image
