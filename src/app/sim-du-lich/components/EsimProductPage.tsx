@@ -101,7 +101,10 @@ export default function EsimProductPage({
 
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const actionBlockRef = useRef<HTMLDivElement>(null);
+  const [actionBlockNode, setActionBlockNode] = useState<HTMLDivElement | null>(null);
+  const actionBlockRef = useCallback((node: HTMLDivElement | null) => {
+    setActionBlockNode(node);
+  }, []);
   const [showMobilePaymentBar, setShowMobilePaymentBar] = useState(false);
 
   const scrollSidebarIntoView = useCallback(() => {
@@ -119,7 +122,7 @@ export default function EsimProductPage({
       return;
     }
 
-    const target = actionBlockRef.current;
+    const target = actionBlockNode;
     if (!target) {
       setShowMobilePaymentBar(window.matchMedia("(max-width: 1023px)").matches);
       return;
@@ -166,7 +169,7 @@ export default function EsimProductPage({
       observer.disconnect();
       mediaQuery.removeEventListener("change", handleMediaChange);
     };
-  }, [isDetailPage]);
+  }, [actionBlockNode, isDetailPage]);
 
   const breadcrumbItems = category
     ? isDetailPage

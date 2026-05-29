@@ -2,7 +2,7 @@
 
 import { BadgeCheck, ChevronDown, Headset, Info } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { Dispatch, ReactNode, RefObject, SetStateAction } from "react";
+import type { Dispatch, ReactNode, Ref, SetStateAction } from "react";
 import { formatEsimMoney, type EsimPackageView, type EsimVariantView } from "../lib/esim";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
 
@@ -32,7 +32,7 @@ type Props = {
   showDetailSections?: boolean;
   showActionBlock?: boolean;
   showInfoBlock?: boolean;
-  actionBlockRef?: RefObject<HTMLDivElement>;
+  actionBlockRef?: Ref<HTMLDivElement>;
 };
 
 export default function EsimProductSidebar({
