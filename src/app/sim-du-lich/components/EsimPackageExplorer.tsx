@@ -1,8 +1,15 @@
 "use client";
 
-import EsimPackageControls from "./EsimPackageControls";
-import EsimPackageDiscovery from "./EsimPackageDiscovery";
+import dynamic from "next/dynamic";
 import type { EsimFilterOption, EsimPackageView, EsimVariantView } from "../lib/esim";
+
+const LazyPackageControls = dynamic(() => import("./EsimPackageControls"), {
+  loading: () => <div className="h-[220px] rounded-3xl border border-slate-100 bg-white p-6 shadow-sm animate-pulse" />,
+});
+
+const LazyPackageDiscovery = dynamic(() => import("./EsimPackageDiscovery"), {
+  loading: () => <div className="min-h-[720px] rounded-3xl border border-slate-100 bg-white p-6 shadow-sm animate-pulse" />,
+});
 
 type Props = {
   selectedPackage: EsimPackageView | null;
@@ -78,7 +85,7 @@ export default function EsimPackageExplorer({
   return (
     <div className="space-y-8">
       {showPackageControls ? (
-        <EsimPackageControls
+        <LazyPackageControls
           selectedPackage={selectedPackage}
           selectedVariant={selectedVariant}
           serviceTypeLabel={serviceTypeLabel}
@@ -92,7 +99,7 @@ export default function EsimPackageExplorer({
         />
       ) : null}
 
-      <EsimPackageDiscovery
+      <LazyPackageDiscovery
         query={query}
         onQueryChange={onQueryChange}
         loading={loading}

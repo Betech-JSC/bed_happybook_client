@@ -32,7 +32,7 @@ type Props = {
   showDetailSections?: boolean;
   showActionBlock?: boolean;
   showInfoBlock?: boolean;
-  actionBlockRef?: RefObject<HTMLDivElement | null>;
+  actionBlockRef?: RefObject<HTMLDivElement>;
 };
 
 export default function EsimProductSidebar({

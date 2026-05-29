@@ -70,6 +70,8 @@ export function useEsimCatalog({
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [openDetailSection, setOpenDetailSection] = useState<DetailAccordionKey | null>("compatibility");
+  const [initialRegionReady, setInitialRegionReady] = useState(() => !initialCategory);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
   const selectedPackageSlugRef = useRef("");
   const selectedSkuRef = useRef("");
   const appliedInitialCategoryRef = useRef("");
@@ -125,8 +127,12 @@ export function useEsimCatalog({
         const data = await loadEsimOptions(activeLocale);
         if (!active) return;
         setFilters(data);
+        setFiltersLoaded(true);
       } catch (err) {
         console.error("Failed to load eSIM filters", err);
+        if (!active) return;
+        setFiltersLoaded(true);
+        setInitialRegionReady(true);
       }
     };
 
@@ -138,6 +144,7 @@ export function useEsimCatalog({
   }, [activeLocale, hasInitialPackages]);
 
   useEffect(() => {
+    setInitialRegionReady(!initialCategory);
     appliedInitialCategoryRef.current = "";
     setQuery("");
     setSelectedRegionId("");
@@ -147,22 +154,39 @@ export function useEsimCatalog({
   }, [initialCategory]);
 
   useEffect(() => {
-    if (!filters.regions.length || !initialCategory) return;
+    if (!initialCategory || !filtersLoaded) return;
 
-    const resolvedRegionId = resolveEsimRegionPreset(filters.regions, initialCategory);
-    if (!resolvedRegionId) return;
-    if (appliedInitialCategoryRef.current === initialCategory && selectedRegionId === resolvedRegionId) {
+    if (!filters.regions.length) {
+      setInitialRegionReady(true);
       return;
     }
 
-    appliedInitialCategoryRef.current = initialCategory;
-    setSelectedRegionId(resolvedRegionId);
-  }, [filters.regions, initialCategory, selectedRegionId]);
+    const resolvedRegionId = resolveEsimRegionPreset(filters.regions, initialCategory);
+    if (resolvedRegionId) {
+      if (appliedInitialCategoryRef.current === initialCategory && selectedRegionId === resolvedRegionId) {
+        setInitialRegionReady(true);
+        return;
+      }
+
+      appliedInitialCategoryRef.current = initialCategory;
+      setSelectedRegionId(resolvedRegionId);
+      setInitialRegionReady(true);
+      return;
+    }
+
+    setInitialRegionReady(true);
+  }, [filters.regions, filtersLoaded, initialCategory, selectedRegionId]);
 
   useEffect(() => {
     if (hasInitialPackages) {
       setPackages(initialPackages ?? []);
       setLoading(false);
+      setError("");
+      return;
+    }
+
+    if (initialCategory && !initialRegionReady) {
+      setLoading(true);
       setError("");
       return;
     }
@@ -256,6 +280,8 @@ export function useEsimCatalog({
     initialPackageSlug,
     initialPackages,
     initialSelectedPackage,
+    initialCategory,
+    initialRegionReady,
     isMobileViewport,
     selectedRegionId,
     t,

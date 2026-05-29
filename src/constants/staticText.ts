@@ -730,15 +730,22 @@ const staticTextTranslationCache = new Map<string, Promise<Record<string, string
 
 const getStaticTextCacheKey = (lang: string) => `${lang}:${unifiedStaticText.join("\u0001")}`;
 
-const applyAmusementTicketAliases = (translations: Record<string, string>) => {
+const applyAmusementTicketAliases = (
+  translations: Record<string, string>,
+  lang: string = "vi"
+) => {
   const amusementLabel =
-    translations["ve_vui_choi_hoat_dong"] ??
-    translations["ve_vui_choi"] ??
-    "Vé vui chơi & hoạt động";
+    lang === "vi"
+      ? translations["ve_vui_choi_hoat_dong"] ??
+        translations["ve_vui_choi"] ??
+        "Vé vui chơi & hoạt động"
+      : "Attraction tickets";
   const searchLabel =
-    translations["tim_ve_vui_choi_hoat_dong"] ??
-    translations["tim_ve_vui_choi"] ??
-    "Tìm vé vui chơi & hoạt động";
+    lang === "vi"
+      ? translations["tim_ve_vui_choi_hoat_dong"] ??
+        translations["tim_ve_vui_choi"] ??
+        "Tìm vé vui chơi & hoạt động"
+      : "Search attraction tickets";
 
   return {
     ...translations,
@@ -755,7 +762,7 @@ export async function getStaticTextTranslationMap(
   const cacheKey = getStaticTextCacheKey(lang);
 
   if (lang === "vi") {
-    return applyAmusementTicketAliases(formatTranslationMap(unifiedStaticText));
+    return applyAmusementTicketAliases(formatTranslationMap(unifiedStaticText), lang);
   }
 
   const cached = staticTextTranslationCache.get(cacheKey);
@@ -764,7 +771,8 @@ export async function getStaticTextTranslationMap(
   const pending = (async () => {
     const translated = await translateText(unifiedStaticText, lang);
     return applyAmusementTicketAliases(
-      formatTranslationMap(unifiedStaticText, translated)
+      formatTranslationMap(unifiedStaticText, translated),
+      lang
     );
   })();
 

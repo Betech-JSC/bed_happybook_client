@@ -1,18 +1,31 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
 import type { EsimPackageView } from "../lib/esim";
-import EsimInternationalDetailGallery from "./EsimInternationalDetailGallery";
-import EsimPackageControls from "./EsimPackageControls";
 import SimDuLichBreadcrumbs from "./SimDuLichBreadcrumbs";
 import EsimPackageExplorer from "./EsimPackageExplorer";
-import EsimProductSidebar from "./EsimProductSidebar";
-import PackageSelectorModal from "./PackageSelectorModal";
 import { useEsimCatalog } from "../hooks/useEsimCatalog";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+
+const EsimInternationalDetailGallery = dynamic(() => import("./EsimInternationalDetailGallery"), {
+  loading: () => <div className="aspect-[16/9] w-full rounded-3xl bg-slate-200 animate-pulse" />,
+});
+
+const EsimPackageControls = dynamic(() => import("./EsimPackageControls"), {
+  loading: () => <div className="h-[240px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse" />,
+});
+
+const EsimProductSidebar = dynamic(() => import("./EsimProductSidebar"), {
+  loading: () => <div className="min-h-[520px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse" />,
+});
+
+const PackageSelectorModal = dynamic(() => import("./PackageSelectorModal"), {
+  ssr: false,
+});
 
 type SimDuLichCategory = "quoc-te" | "viet-nam";
 
@@ -87,8 +100,8 @@ export default function EsimProductPage({
   });
 
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
-  const sidebarRef = useRef<HTMLDivElement | null>(null);
-  const actionBlockRef = useRef<HTMLDivElement | null>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const actionBlockRef = useRef<HTMLDivElement>(null);
   const [showMobilePaymentBar, setShowMobilePaymentBar] = useState(false);
 
   const scrollSidebarIntoView = useCallback(() => {
