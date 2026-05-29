@@ -22,7 +22,7 @@ export default function SearchTicketList({ tickets }: any) {
             className="text-[24px] lg:text-[32px] font-bold"
             data-translate="true"
           >
-            Vé vui chơi
+            Vé vui chơi & hoạt động
           </h2>
         </div>
         <Link
