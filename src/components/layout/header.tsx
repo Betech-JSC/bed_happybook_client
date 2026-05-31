@@ -25,7 +25,7 @@ export default function Header() {
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isSticky, setSticky] = useState<boolean>(false);
   const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
-  const topNavItemClass = "whitespace-nowrap text-[12px] xl:text-[13px] leading-none";
+  const topNavItemClass = "whitespace-nowrap text-[16px] leading-none";
   const excludePaths = [
     "/",
     "/dang-nhap",
