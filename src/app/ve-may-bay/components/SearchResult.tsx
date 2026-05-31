@@ -90,6 +90,7 @@ export default function SearchFlightsResult({
   const [matchingDraft, setMatchingDraft] = useState<FlightDraftMatch | null>(
     null
   );
+  const fetchedResourcesRef = useRef<Set<string>>(new Set());
 
   const params = useMemo(() => {
     let flightType: string = "OW";
@@ -261,6 +262,7 @@ export default function SearchFlightsResult({
         setStopNumFilters([]);
         setIsFullFlightResource(false);
         setFlightItineraryResource([]);
+        fetchedResourcesRef.current.clear();
         setAirlineData([]);
         setError("");
         handleSessionStorage("remove", [
@@ -407,9 +409,15 @@ export default function SearchFlightsResult({
   // Fetch flights by resource
   useEffect(() => {
     const fetchFlightDetails = async () => {
-      const unprocessed = flightItineraryResource.filter((r) => r.value === 0);
+      const unprocessed = flightItineraryResource.filter(
+        (r) => r.value === 0 && !fetchedResourcesRef.current.has(r.key)
+      );
 
       if (unprocessed.length === 0) return;
+
+      // Mark immediately as fetched/fetching to prevent duplicate triggers
+      unprocessed.forEach((r) => fetchedResourcesRef.current.add(r.key));
+
       setFlightItineraryResource((prev) =>
         prev.map((r) =>
           unprocessed.some((u) => u.key === r.key) ? { ...r, value: 1 } : r
@@ -477,7 +485,6 @@ export default function SearchFlightsResult({
     passengerAdt,
     passengerChd,
     passengerInf,
-    stopNumFilters,
     toaStrMsg.errorConnectApiFlight,
     StartPoint,
     EndPoint,

@@ -17,6 +17,7 @@ import { FlightDetailProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
 import { isEmpty } from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
+import { isFlightDepartureTooClose } from "@/utils/flightDepartureCheck";
 
 const FlightDomesticDetail = ({
   FareData,
@@ -47,6 +48,8 @@ const FlightDomesticDetail = ({
         selectedFlight.selectedTicketClass ?? flight.selectedTicketClass,
     };
   }
+
+  const isTooClose = flight ? isFlightDepartureTooClose(flight.departure?.at) : false;
 
   const fareOptions = Array.isArray(flight?.fareOptions)
     ? flight.fareOptions
@@ -186,6 +189,13 @@ const FlightDomesticDetail = ({
 
               </div>
             </div>
+            {isTooClose && (
+              <div className="col-span-full mt-2 flex justify-start">
+                <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 ring-1 ring-inset ring-red-600/10">
+                  ⚠️ {t("khoi_hanh_qua_gan_duoi_4_h_khong_the_dat_truc_tuyen") || "Khởi hành quá gần (dưới 4h) - Không thể đặt trực tuyến"}
+                </span>
+              </div>
+            )}
           </div>
           {fareOptions.length > 0 && (
             <div
@@ -313,7 +323,7 @@ const FlightDomesticDetail = ({
                                   selectedFlight
                                 );
                               }}
-                              className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
+                              className="text-center w-full font-medium py-2 rounded-lg duration-300 border-blue-600 bg-blue-600 text-white hover:text-primary"
                             >
                               {t("dat_ve")}
                             </button>

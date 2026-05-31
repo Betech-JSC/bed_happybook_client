@@ -275,8 +275,8 @@ export default function AirportPopupSelector({
 
       <div
         ref={popupRef}
-        className={`fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-full overflow-y-auto md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] lg:w-[750px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-[9999]
-            ${isPopupVisible ? "visible z-[9999]" : "invisible z-[-1]"}`}
+        className={`fixed !mt-[68px] md:!mt-2 top-0 md:top-full h-full overflow-y-auto md:h-fit md:inset-[unset] md:absolute w-screen md:w-[650px] lg:w-[750px] left-0 bg-white border border-gray-300 shadow-lg rounded-md z-[9999] transition-custom origin-top
+            ${isPopupVisible ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}`}
       >
         <div className="flex items-center justify-between px-4 py-2 border-b">
           <h2 className="text-lg font-semibold text-orange-700">
@@ -309,15 +309,15 @@ export default function AirportPopupSelector({
         {searchQuery && (
           <div>
             {airPortSeach.length > 0 && (
-              <div className="px-4 py-2 absolute left-4 bg-white border border-gray-300 rounded-lg w-11/12 max-h-[320px] z-30 h-auto overflow-y-auto">
-                <div>
+              <div className="px-4 py-2 absolute left-4 bg-white border border-gray-200 rounded-lg w-11/12 max-h-[320px] z-30 h-auto overflow-y-auto animate-slideDown shadow-xl border-t border-gray-100">
+                <div className="py-1">
                   {airPortSeach.map((item: any, index: number) => (
                     <div
                       key={index}
-                      className="font-normal py-2 text-left rounded-lg text__default_hover cursor-pointer"
+                      className="font-normal px-4 py-2.5 text-left rounded-md text__default_hover cursor-pointer hover:bg-gray-50 transition-colors duration-150"
                       onClick={() => handleAirportSelect(null, item)}
                     >
-                      <b>{item.code}</b> - <span>{item.name_vi}</span>
+                      <b className="text-orange-700 font-semibold">{item.code}</b> - <span className="text-gray-700">{item.name_vi}</span>
                     </div>
                   ))}
                 </div>

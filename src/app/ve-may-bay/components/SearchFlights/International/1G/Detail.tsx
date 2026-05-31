@@ -9,6 +9,7 @@ import {
 import _ from "lodash";
 import DisplayImage from "@/components/base/DisplayImage";
 import { useTranslation } from "@/hooks/useTranslation";
+import { isFlightDepartureTooClose } from "@/utils/flightDepartureCheck";
 import FlightInfo from "@/components/FlightInfo";
 
 const FlightInternational1GDetail = ({
@@ -49,11 +50,13 @@ const FlightInternational1GDetail = ({
               {t("re_nhat")}
             </div>
           )}
-          {journey.map((flight: any, key: number) => (
-            <div
-              key={key}
-              className="grid grid-cols-8 mb-2 last:mb-0 items-center justify-between rounded-lg bg-white p-2 md:py-2 md:px-4 border border-gray-200"
-            >
+          {journey.map((flight: any, key: number) => {
+            const isTooClose = isFlightDepartureTooClose(flight.departure?.at);
+            return (
+              <div
+                key={key}
+                className="grid grid-cols-8 mb-2 last:mb-0 items-center justify-between rounded-lg bg-white p-2 md:py-2 md:px-4 border border-gray-200"
+              >
               <div className="col-span-2">
                 <div className="flex flex-row items-center gap-2 md:gap-4 text-left">
                   <DisplayImage
@@ -139,39 +142,46 @@ const FlightInternational1GDetail = ({
                   </div>
                 </div>
               </div>
-              <div className="col-span-2 w-full text-center flex flex-col items-center justify-center gap-1 md:gap-2">
-                <div>
-                  <input
-                    name={`flight[${flight.sequence === 1 ? 0 : 1}]`}
-                    onChange={(e) => handleSelectFlight(flight, e)}
-                    type="radio"
-                    className="w-4 h-4 md:w-5 md:h-5 cursor-pointer"
-                  />
+                <div className="col-span-2 w-full text-center flex flex-col items-center justify-center gap-1 md:gap-2">
+                  <div>
+                    <input
+                      name={`flight[${flight.sequence === 1 ? 0 : 1}]`}
+                      onChange={(e) => handleSelectFlight(flight, e)}
+                      type="radio"
+                      className="w-4 h-4 md:w-5 md:h-5 cursor-pointer"
+                    />
+                  </div>
+                  <button
+                    className="inline-block text-blue-700 border-b border-blue-700 font-normal text-[10px] md:text-base"
+                    onClick={() =>
+                      setExpandedFlightIndex(expandedFlightIndex === key ? null : key)
+                    }
+                  >
+                    {expandedFlightIndex === key ? t("thu_gon") : t("xem_chi_tiet")}
+                  </button>
                 </div>
-                <button
-                  className="inline-block text-blue-700 border-b border-blue-700 font-normal text-[10px] md:text-base"
-                  onClick={() =>
-                    setExpandedFlightIndex(expandedFlightIndex === key ? null : key)
-                  }
+                {isTooClose && (
+                  <div className="col-span-full mt-2 flex justify-start">
+                    <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700 ring-1 ring-inset ring-red-600/10">
+                      ⚠️ {t("khoi_hanh_qua_gan_duoi_4_h_khong_the_dat_truc_tuyen") || "Khởi hành quá gần (dưới 4h) - Không thể đặt trực tuyến"}
+                    </span>
+                  </div>
+                )}
+                <div
+                  className={`grid transition-[grid-template-rows] duration-300 ease-out ${expandedFlightIndex === key ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    } col-span-full w-full`}
                 >
-                  {expandedFlightIndex === key ? t("thu_gon") : t("xem_chi_tiet")}
-                </button>
-              </div>
-              <div
-                className={`grid transition-[grid-template-rows] duration-300 ease-out ${expandedFlightIndex === key ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                  } col-span-full w-full`}
-              >
-                <div className="overflow-hidden">
-                  <div className={`transition-opacity duration-300 ${expandedFlightIndex === key ? "opacity-100" : "opacity-0"}`}>
-                    <div className="mt-4">
-                      <FlightInfo flight={flight} airports={airports} />
+                  <div className="overflow-hidden">
+                    <div className={`transition-opacity duration-300 ${expandedFlightIndex === key ? "opacity-100" : "opacity-0"}`}>
+                      <div className="mt-4">
+                        <FlightInfo flight={flight} airports={airports} />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-          ))}
+            );
+          })}
         </div>
       )}
     </Fragment>

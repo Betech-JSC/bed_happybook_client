@@ -54,6 +54,8 @@ export const flightStaticText: string[] = [
   "Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất",
   "Chuyến bay",
   "Ngày đặt",
+  "Khởi hành quá gần (dưới 4h) - Không thể đặt trực tuyến",
+  "Khởi hành < 4h",
 ];
 
 export const visaStaticText: string[] = [

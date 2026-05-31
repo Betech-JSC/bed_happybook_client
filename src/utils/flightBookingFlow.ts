@@ -20,7 +20,17 @@ export function isBookingDeadlineExpired(
   deadline: string | Date | null | undefined
 ): boolean {
   if (!deadline) return false;
-  const end = deadline instanceof Date ? deadline : new Date(deadline);
+  if (deadline instanceof Date) {
+    return Date.now() > deadline.getTime();
+  }
+
+  // Normalize YYYY-MM-DD HH:mm:ss to YYYY-MM-DDTHH:mm:ss for Safari / cross-browser parsing
+  let normalized = deadline.trim();
+  if (normalized.includes(" ") && !normalized.includes("T")) {
+    normalized = normalized.replace(" ", "T");
+  }
+
+  const end = new Date(normalized);
   if (Number.isNaN(end.getTime())) return false;
   return Date.now() > end.getTime();
 }

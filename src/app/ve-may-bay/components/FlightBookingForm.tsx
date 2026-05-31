@@ -48,6 +48,7 @@ import {
   findMatchingFlightDraft,
   updateFlightDraftMeta,
   type FlightDraftMatch,
+  type FlightDraftStage,
 } from "@/utils/flightDraftSession";
 import ResumeFlightDraftModal from "@/components/flight/ResumeFlightDraftModal";
 import { FLIGHT_NATIONALITIES } from "@/constants/countries";
@@ -61,10 +62,9 @@ import { useVoucherManager } from "@/hooks/useVoucherManager";
 import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
 import PhoneInput from "@/components/form/PhoneInput";
 import FlightConfirmPriceReview from "./FlightConfirmPriceReview";
-import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
+import type { ConfirmPriceResponse, ConfirmPricePaxListItem } from "@/types/flightConfirmPrice";
 import {
   buildFlightConfirmPricePayloadFromSelections,
-  buildPassengersFromForm,
   normalizeConfirmPriceResponse,
 } from "@/utils/buildFlightConfirmPricePayload";
 import {
@@ -135,6 +135,95 @@ export default function FlightBookForm({ airportsData }: any) {
   const [draftModal, setDraftModal] = useState<FlightDraftMatch | null>(null);
   const { userInfo } = useUser();
 
+  const [preVerifyLoading, setPreVerifyLoading] = useState(false);
+  const [preVerifyError, setPreVerifyError] = useState<FlightBookingErrorDisplay | null>(null);
+
+  const buildMockPassengers = (paxCounts: { adult: number; child: number; infant: number }) => {
+    const passengers: ConfirmPricePaxListItem[] = [];
+    let idx = 0;
+    for (let i = 0; i < (paxCounts.adult || 1); i++) {
+      passengers.push({
+        index: idx++,
+        type: "ADT",
+        firstName: "GUEST",
+        lastName: "ADULT",
+        gender: true,
+        birthday: "1990-01-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (paxCounts.child || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "CHD",
+        firstName: "GUEST",
+        lastName: "CHILD",
+        gender: true,
+        birthday: "2018-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (paxCounts.infant || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "INF",
+        firstName: "GUEST",
+        lastName: "INFANT",
+        gender: true,
+        birthday: "2025-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    return passengers;
+  };
+
+  const runPreVerification = async (selections: SelectedFlight[]) => {
+    try {
+      setPreVerifyLoading(true);
+      setPreVerifyError(null);
+
+      const contact = {
+        full_name: "GUEST CONTACT",
+        gender: "male",
+        phone: "0900000000",
+        email: "guest@happybook.com.vn",
+        address: "Vietnam",
+      };
+
+      const paxCounts = selections[0]?.paxCounts ?? { adult: 1, child: 0, infant: 0 };
+      const mockPassengers = buildMockPassengers(paxCounts);
+
+      const confirmPayload = buildFlightConfirmPricePayloadFromSelections({
+        selections,
+        passengers: mockPassengers,
+        contact,
+      });
+
+      const respon = await FlightApi.confirmPrice(confirmPayload);
+      if (respon?.status !== 200) {
+        const payload = respon?.payload ?? {};
+        const errDisplay = formatFlightBookingError(payload, lang);
+        setPreVerifyError(errDisplay);
+      }
+    } catch (err: any) {
+      const payload = err instanceof HttpError ? err.payload : err?.payload ?? err;
+      const errDisplay = formatFlightBookingError(payload, lang);
+      setPreVerifyError(errDisplay);
+    } finally {
+      setPreVerifyLoading(false);
+    }
+  };
+
+
   const earliestDepartureDate = useMemo(() => {
     let earliest: Date | undefined;
     for (const flight of flights) {
@@ -195,6 +284,7 @@ export default function FlightBookForm({ airportsData }: any) {
     reset,
     control,
     trigger,
+    getValues,
     formState: { errors },
   } = useForm<FlightBookingInforType>({
     resolver: zodResolver(schemaForm),
@@ -220,6 +310,63 @@ export default function FlightBookForm({ airportsData }: any) {
     void trigger(name);
   };
 
+  const handleAutoFillMockData = async () => {
+    const paxCounts = selectedFlights[0]?.paxCounts ?? { adult: 1, child: 0, infant: 0 };
+    const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+    const getLetter = (index: number) => letters[index % letters.length];
+    
+    const atdList = Array.from({ length: paxCounts.adult || 1 }, (_, i) => ({
+      firstName: "TESTADT",
+      lastName: `PASSENGER ${getLetter(i)}`,
+      gender: i % 2 === 0 ? "male" : "female",
+      birthday: new Date(1990, 0, 1),
+      passport: "G12345678",
+      nationality: "VN",
+      passport_expiry_date: new Date(2035, 11, 31),
+    }));
+
+    const chdList = Array.from({ length: paxCounts.child || 0 }, (_, i) => ({
+      firstName: "TESTCHD",
+      lastName: `CHILD ${getLetter(i)}`,
+      gender: i % 2 === 0 ? "male" : "female",
+      birthday: new Date(new Date().getFullYear() - 5, 0, 1),
+      passport: "G12345678",
+      nationality: "VN",
+      passport_expiry_date: new Date(2035, 11, 31),
+    }));
+
+    const infList = Array.from({ length: paxCounts.infant || 0 }, (_, i) => ({
+      firstName: "TESTINF",
+      lastName: `INFANT ${getLetter(i)}`,
+      gender: i % 2 === 0 ? "male" : "female",
+      birthday: new Date(new Date().getFullYear() - 1, 0, 1),
+      passport: "G12345678",
+      nationality: "VN",
+      passport_expiry_date: new Date(2035, 11, 31),
+    }));
+
+    reset({
+      atd: atdList,
+      chd: chdList.length > 0 ? chdList : undefined,
+      inf: infList.length > 0 ? infList : undefined,
+      contact: {
+        full_name: "NGUYEN VAN TOAN",
+        phone: "0900000000",
+        email: "toan.nguyen@happybook.com.vn",
+        gender: "male",
+        address: "Ho Chi Minh City",
+      },
+      Note: "Auto filled test booking",
+      checkBoxGenerateInvoice: false,
+    });
+    
+    // Trì hoãn 1 chút để React Hook Form cập nhật giá trị rồi mới chạy validation
+    setTimeout(async () => {
+      await trigger();
+      toast.success("Đã tự động điền và validate dữ liệu test!");
+    }, 100);
+  };
+
   const showFlightBookingError = (
     payload: unknown,
     fallback: string
@@ -230,6 +377,89 @@ export default function FlightBookForm({ airportsData }: any) {
       duration: 7000,
     });
     return display;
+  };
+
+  /**
+   * Build the draft session object from booking payload + confirm response.
+   * Shared between onSubmit (hold flow) and handleProceedToPayment (book flow).
+   */
+  const buildDraftSession = (
+    payload: Record<string, unknown>,
+    requestId: string | number,
+    confirm: ConfirmPriceResponse,
+    normalized: ReturnType<typeof normalizeConfirmPriceResponse>,
+    selections?: SelectedFlight[]
+  ) => {
+    const storedConfirmRequest = handleSessionStorage("get", "flightConfirmPrice")
+      ?.request as Record<string, unknown> | undefined;
+
+    return {
+      ...payload,
+      flights: resolveFlightsForSession(selections),
+      booking_flight_request_id: requestId,
+      confirmPrice: confirm,
+      confirmPriceRequest: storedConfirmRequest,
+      bookingId: normalized.bookingId,
+      airdata_booking_id: confirm.airdata_booking_id ?? normalized.bookingId,
+      order_code: normalized.orderCode,
+    };
+  };
+
+  /**
+   * Persist booking session, clean up intermediate keys, and navigate to checkout.
+   * Returns false if persistence fails.
+   */
+  const persistBookingAndNavigate = (
+    bookingFlight: Record<string, unknown>,
+    payload: Record<string, unknown>,
+    opts: {
+      stage: FlightDraftStage;
+      orderCode?: string;
+      bookingDeadline?: string;
+      holdExpiresAt?: string;
+      selectionFingerprint?: string;
+    }
+  ): boolean => {
+    if (totalDiscount > 0 && bookingFlight.orderInfo) {
+      (bookingFlight.orderInfo as { total_discount?: number }).total_discount =
+        totalDiscount;
+    }
+
+    handleSessionStorage("save", "bookingFlight", bookingFlight);
+    handleSessionStorage("save", "flightBookingDraft", payload);
+
+    updateFlightDraftMeta({
+      stage: opts.stage,
+      resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
+      orderCode: opts.orderCode,
+      bookingDeadline: opts.bookingDeadline,
+      holdExpiresAt: opts.holdExpiresAt,
+      flow: resolveBookingDraftFlow(flights, flightType),
+      selectionFingerprint: opts.selectionFingerprint,
+    });
+
+    handleSessionStorage("remove", [
+      "selectedFlightDepart",
+      "selectedFlightReturn",
+      "departFlight",
+      "returnFlight",
+      "flightConfirmPrice",
+    ]);
+
+    const persisted = handleSessionStorage("get", "bookingFlight");
+    if (!persisted) {
+      toast.error("Không thể tạo dữ liệu đơn đặt chỗ. Vui lòng thử lại.");
+      return false;
+    }
+
+    setBookingError(null);
+    const orderSku = persisted?.orderInfo?.sku || persisted?.order_code || opts.orderCode;
+    router.push(
+      orderSku
+        ? `/ve-may-bay/thong-tin-dat-cho?order_code=${orderSku}`
+        : "/ve-may-bay/thong-tin-dat-cho"
+    );
+    return true;
   };
 
   const buildBookingPayload = (data: FlightBookingInforType) => {
@@ -467,7 +697,8 @@ export default function FlightBookForm({ airportsData }: any) {
       return false;
     }
     setBookingError(null);
-    router.push("/ve-may-bay/thong-tin-dat-cho");
+    const orderSku = persistedBooking?.orderInfo?.sku || persistedBooking?.order_code;
+    router.push(orderSku ? `/ve-may-bay/thong-tin-dat-cho?order_code=${orderSku}` : "/ve-may-bay/thong-tin-dat-cho");
     return true;
   };
 
@@ -482,71 +713,12 @@ export default function FlightBookForm({ airportsData }: any) {
       return;
     }
 
-    const confirmPassengers = buildPassengersFromForm(
-      data,
-      listBaggagePassenger
-    );
+    const savedConfirm = handleSessionStorage("get", "flightConfirmPrice");
+    const preVerifyConfirmResult = savedConfirm?.confirm;
+    const preVerifyRequestId = preVerifyConfirmResult?.booking_flight_request_id;
 
-    const contact = {
-      full_name: data.contact.full_name,
-      gender:
-        data.contact.gender === true || data.contact.gender === "male"
-          ? "male"
-          : data.contact.gender === false || data.contact.gender === "female"
-            ? "female"
-            : String(data.contact.gender ?? "male"),
-      phone: data.contact.phone,
-      email: data.contact.email,
-      address: "",
-    };
-
-    let confirmPayload;
-    try {
-      confirmPayload = buildFlightConfirmPricePayloadFromSelections({
-        selections,
-        passengers: confirmPassengers,
-        contact,
-      });
-    } catch (buildErr) {
-      const code =
-        buildErr instanceof Error ? buildErr.message : String(buildErr ?? "");
-      if (code === "VJ_SEGMENT_TOKEN_REQUIRED") {
-        toast.error(
-          "Thiếu mã chặng bay VJ từ kết quả tìm kiếm. Vui lòng tìm chuyến lại và chọn hạng vé."
-        );
-      } else if (code === "VJ_SESSION_REQUIRED") {
-        toast.error("Phiên tìm kiếm đã hết hạn. Vui lòng tìm chuyến bay lại.");
-      } else if (code === "VN1A_SESSION_REQUIRED") {
-        toast.error("Phiên tìm kiếm VN1A đã hết hạn. Vui lòng tìm chuyến bay lại.");
-      } else if (code === "VN1A_FARE_VALUE_REQUIRED") {
-        toast.error(
-          "Thiếu mã giá Vietnam Airlines (fareValue). Vui lòng chọn lại hạng vé hoặc tìm chuyến mới."
-        );
-      } else if (code === "VU_FARE_VALUE_REQUIRED") {
-        toast.error(
-          "Thiếu mã giá Vietravel (fareValue). Vui lòng chọn lại hạng vé hoặc tìm chuyến mới."
-        );
-      } else if (code === "VU_FARE_OPTION_REQUIRED") {
-        toast.error("Thiếu fare option VU đã chọn. Vui lòng chọn lại chuyến bay.");
-      } else if (code === "VU_FARE_OPTION_INCOMPLETE") {
-        toast.error(
-          "Fare option VU chưa đủ bookingClass/groupClass/fareBasisCode. Vui lòng chọn lại hạng vé."
-        );
-      } else if (code === "VU_SEGMENT_TOKEN_REQUIRED") {
-        toast.error(
-          "Thiếu segmentId/segmentValue của VU. Vui lòng tìm chuyến lại và chọn đúng hạng vé."
-        );
-      } else if (code === "VU_FARE_BREAKDOWN_INCOMPLETE") {
-        toast.error(
-          "Fare breakdown VU chưa đủ giá/net/tax. Vui lòng chọn lại hạng vé."
-        );
-      } else if (code === "VU_HOLD_TOTAL_REQUIRED") {
-        toast.error("Thiếu tổng tiền của fare option VU để giữ chỗ.");
-      } else {
-        toast.error(
-          "Giá vé không còn hiệu lực. Vui lòng tìm chuyến bay lại và chọn hạng vé mới."
-        );
-      }
+    if (!preVerifyRequestId || !preVerifyConfirmResult) {
+      toast.error("Không tìm thấy dữ liệu xác thực giá. Vui lòng quay lại chọn chuyến.");
       return;
     }
 
@@ -555,191 +727,88 @@ export default function FlightBookForm({ airportsData }: any) {
 
     try {
       setLoading(true);
-      const respon = await FlightApi.confirmPrice(confirmPayload);
-      if (respon?.status === 200) {
-        const confirmResult =
-          (respon?.payload?.data as ConfirmPriceResponse) ??
-          (respon?.payload as ConfirmPriceResponse);
-        const resultRecord = confirmResult as Record<string, unknown>;
 
-        if (isConfirmPriceSoftFailure(resultRecord)) {
-          setBookingError({
-            code: "fare_token_invalid",
-            message:
-              "Không giữ được giá (mã giá hết hạn hoặc không khớp phiên tìm kiếm). Vui lòng tìm chuyến bay lại và xác nhận giá ngay.",
-            details: [],
-          });
-          toast.error(
-            "Token giá không hợp lệ hoặc đã hết hạn. Vui lòng tìm kiếm lại."
-          );
-          return;
-        }
+      const confirmResult = preVerifyConfirmResult as ConfirmPriceResponse;
+      const normalizedConfirm = normalizeConfirmPriceResponse(confirmResult);
 
-        setBookingError(null);
-        setConfirmData(confirmResult);
-        setConfirmExpired(false);
-        setPendingBookingPayload(finalData);
+      setBookingError(null);
+      setConfirmData(confirmResult);
+      setConfirmExpired(false);
+      setPendingBookingPayload(finalData);
 
-        const normalizedConfirm =
-          normalizeConfirmPriceResponse(confirmResult);
-        const requestId =
-          normalizedConfirm.bookingFlightRequestId ??
-          (confirmResult as any).booking_flight_request_id;
-
-        handleSessionStorage("save", "flightConfirmPrice", {
-          confirm: confirmResult,
-          request: confirmPayload,
-          bookingDraft: finalData,
-        });
-
-        // Gọi hold-flight để giữ PNR ngay sau khi confirm giá
-        if (requestId) {
-          const is1GHold =
-            flights.length > 0 &&
-            String(flights[0]?.source ?? "").toUpperCase() === "1G";
-          const holdPayload: Record<string, unknown> = {
-            ...finalData,
-            booking_flight_request_id: requestId,
-            ...(is1GHold
-              ? {
-                  book_type: "1G",
-                  source: "1G",
-                  flightType: "international",
-                  trip:
-                    Array.isArray(finalData.fare_data) &&
-                    finalData.fare_data.length > 1
-                      ? "round_trip"
-                      : finalData.trip,
-                }
-              : {}),
-          };
-          if (normalizedConfirm.totalPrice != null) {
-            holdPayload.total_price = normalizedConfirm.totalPrice;
-          }
-          if (normalizedConfirm.totalTax != null) {
-            holdPayload.total_tax = normalizedConfirm.totalTax;
-          }
-          if (normalizedConfirm.breakdown.total_price_net != null) {
-            holdPayload.total_price_net = normalizedConfirm.breakdown.total_price_net;
-          }
-          if (normalizedConfirm.breakdown.total_fee_service != null) {
-            holdPayload.total_fee_service =
-              normalizedConfirm.breakdown.total_fee_service;
-          }
-          try {
-            const holdRes = await FlightApi.holdFlight(holdPayload);
-            if (holdRes?.status === 200) {
-              const holdData = (holdRes?.payload?.data ??
-                holdRes?.payload) as FlightBookFlightResponse;
-              const holdRecord = holdData as Record<string, unknown>;
-              const holdOrderInfo = holdData.orderInfo as Record<string, unknown> | undefined;
-              const isActuallyHeld = holdRecord.held === true;
-              const didSkipHold = holdRecord.skipped_hold === true;
-
-              setIsHeld(isActuallyHeld);
-              setIsSkippedHold(didSkipHold);
-              setPnrNumber(
-                isActuallyHeld
-                  ? ((holdOrderInfo?.pnr_number as string) ?? null)
-                  : null
-              );
-
-              const storedConfirmRequest = handleSessionStorage("get", "flightConfirmPrice")
-                ?.request as Record<string, unknown> | undefined;
-
-              const draftSession = {
-                ...finalData,
-                flights: resolveFlightsForSession(selections),
-                booking_flight_request_id: requestId,
-                confirmPrice: confirmResult,
-                confirmPriceRequest: storedConfirmRequest,
-                bookingId: normalizedConfirm.bookingId,
-                airdata_booking_id:
-                  (confirmResult as any).airdata_booking_id ?? normalizedConfirm.bookingId,
-                order_code: normalizedConfirm.orderCode,
-              };
-
-              const bookingFlight: Record<string, unknown> = {
-                ...mergeBookFlightIntoSession(
-                  draftSession,
-                  holdData,
-                  confirmResult
-                ),
-                held: isActuallyHeld,
-                skipped_hold: didSkipHold,
-              };
-
-              if (totalDiscount > 0) {
-                const orderInfo = bookingFlight.orderInfo as
-                  | { total_discount?: number }
-                  | undefined;
-                if (orderInfo) {
-                  orderInfo.total_discount = totalDiscount;
-                }
-              }
-
-              handleSessionStorage("save", "bookingFlight", bookingFlight);
-              handleSessionStorage("save", "flightBookingDraft", finalData);
-
-              const confirmSelections = resolveSelectionsForBooking();
-              const selectionFingerprint = buildCombinedSelectionFingerprint({
-                depart: confirmSelections[0]
-                  ? {
-                      flight: {
-                        ...confirmSelections[0].trip,
-                        flightCode: (confirmSelections[0].trip as { flightCode?: string })
-                          .flightCode,
-                        fareOptions: [confirmSelections[0].fareOption],
-                        selectedTicketClass: confirmSelections[0].fareOption,
-                      } as Record<string, unknown>,
-                      fareOptionIndex: confirmSelections[0].fareOptionIndex ?? 0,
-                    }
-                  : null,
-                return: confirmSelections[1]
-                  ? {
-                      flight: {
-                        ...confirmSelections[1].trip,
-                        flightCode: (confirmSelections[1].trip as { flightCode?: string })
-                          .flightCode,
-                        fareOptions: [confirmSelections[1].fareOption],
-                        selectedTicketClass: confirmSelections[1].fareOption,
-                      } as Record<string, unknown>,
-                      fareOptionIndex: confirmSelections[1].fareOptionIndex ?? 0,
-                    }
-                  : null,
-              });
-              updateFlightDraftMeta({
-                stage: isActuallyHeld ? "held" : "price_confirmed",
-                resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
-                orderCode:
-                  (holdOrderInfo?.sku as string) ?? normalizedConfirm.orderCode ?? undefined,
-                bookingDeadline:
-                  (holdOrderInfo?.booking_deadline as string) ??
-                  normalizedConfirm.bookingDeadline,
-                holdExpiresAt: normalizedConfirm.holdExpiresAt ?? undefined,
-                flow: resolveBookingDraftFlow(flights, flightType),
-                selectionFingerprint,
-              });
-              setConfirmStep("review");
-              if (isActuallyHeld) {
-                toast.success("Đã giữ chỗ thành công. Vui lòng thanh toán để xác nhận vé.");
-              } else if (didSkipHold) {
-                toast.success("Đã xác nhận giá. Vui lòng thanh toán để xác nhận vé.");
-              } else {
-                toast.success("Đã sẵn sàng thanh toán. Vui lòng tiếp tục để xác nhận vé.");
-              }
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              return;
+      // Gọi hold-flight để giữ PNR ngay lập tức bằng ID đã xác thực trước đó
+      const is1GHold =
+        flights.length > 0 &&
+        String(flights[0]?.source ?? "").toUpperCase() === "1G";
+      const holdPayload: Record<string, unknown> = {
+        ...finalData,
+        booking_flight_request_id: preVerifyRequestId,
+        ...(is1GHold
+          ? {
+              book_type: "1G",
+              source: "1G",
+              flightType: "international",
+              trip:
+                Array.isArray(finalData.fare_data) &&
+                finalData.fare_data.length > 1
+                  ? "round_trip"
+                  : finalData.trip,
             }
-            // Hold failed — fall through to show confirm-only UI
-            toast.error("Không thể giữ chỗ. Vui lòng thử lại hoặc tiếp tục đặt vé.");
-          } catch {
-            toast.error("Lỗi giữ chỗ. Vui lòng thử lại.");
-          }
-        }
+          : {}),
+      };
 
-        // Fallback: hold không thành công hoặc không có requestId — show confirm review
-        setConfirmStep("review");
+      if (normalizedConfirm.totalPrice != null) {
+        holdPayload.total_price = normalizedConfirm.totalPrice;
+      }
+      if (normalizedConfirm.totalTax != null) {
+        holdPayload.total_tax = normalizedConfirm.totalTax;
+      }
+      if (normalizedConfirm.breakdown.total_price_net != null) {
+        holdPayload.total_price_net = normalizedConfirm.breakdown.total_price_net;
+      }
+      if (normalizedConfirm.breakdown.total_fee_service != null) {
+        holdPayload.total_fee_service =
+          normalizedConfirm.breakdown.total_fee_service;
+      }
+
+      const holdRes = await FlightApi.holdFlight(holdPayload);
+      if (holdRes?.status === 200) {
+        const holdData = (holdRes?.payload?.data ??
+          holdRes?.payload) as FlightBookFlightResponse;
+        const holdRecord = holdData as Record<string, unknown>;
+        const holdOrderInfo = holdData.orderInfo as Record<string, unknown> | undefined;
+        const isActuallyHeld = holdRecord.held === true;
+        const didSkipHold = holdRecord.skipped_hold === true;
+
+        setIsHeld(isActuallyHeld);
+        setIsSkippedHold(didSkipHold);
+        setPnrNumber(
+          isActuallyHeld
+            ? ((holdOrderInfo?.pnr_number as string) ?? null)
+            : null
+        );
+
+        const draftSession = buildDraftSession(
+          finalData,
+          preVerifyRequestId,
+          confirmResult,
+          normalizedConfirm,
+          selections
+        );
+
+        const bookingFlight: Record<string, unknown> = {
+          ...mergeBookFlightIntoSession(
+            draftSession,
+            holdData,
+            confirmResult
+          ),
+          held: isActuallyHeld,
+          skipped_hold: didSkipHold,
+        };
+
+        handleSessionStorage("save", "bookingFlight", bookingFlight);
+        handleSessionStorage("save", "flightBookingDraft", finalData);
+
         const confirmSelections = resolveSelectionsForBooking();
         const selectionFingerprint = buildCombinedSelectionFingerprint({
           depart: confirmSelections[0]
@@ -767,27 +836,40 @@ export default function FlightBookForm({ airportsData }: any) {
               }
             : null,
         });
+
         updateFlightDraftMeta({
-          stage: "price_confirmed",
-          resumeUrl: "/ve-may-bay/thong-tin-hanh-khach",
-          orderCode: normalizedConfirm.orderCode || undefined,
-          bookingDeadline: normalizedConfirm.bookingDeadline,
+          stage: isActuallyHeld ? "held" : "price_confirmed",
+          resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
+          orderCode:
+            (holdOrderInfo?.sku as string) ?? normalizedConfirm.orderCode ?? undefined,
+          bookingDeadline:
+            (holdOrderInfo?.booking_deadline as string) ??
+            normalizedConfirm.bookingDeadline,
           holdExpiresAt: normalizedConfirm.holdExpiresAt ?? undefined,
           flow: resolveBookingDraftFlow(flights, flightType),
           selectionFingerprint,
         });
-        toast.success("Đã xác nhận giá. Vui lòng kiểm tra trước khi thanh toán.");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        const errDisplay = showFlightBookingError(
-          respon?.payload,
-          toaStrMsg.sendFailed
-        );
-        if (isFlightDepartureError(errDisplay.code)) {
-          setConfirmStep("form");
-          setConfirmData(null);
-          handleSessionStorage("remove", "flightConfirmPrice");
+        setConfirmStep("review");
+        if (isActuallyHeld) {
+          toast.success("Đã giữ chỗ thành công. Vui lòng thanh toán để xác nhận vé.");
+        } else if (didSkipHold) {
+          toast.success("Đã xác nhận giá. Vui lòng thanh toán để xác nhận vé.");
+        } else {
+          toast.success("Đã sẵn sàng thanh toán. Vui lòng tiếp tục để xác nhận vé.");
         }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      // Hold failed (non-200 but not thrown) — parse API error
+      const errDisplay = showFlightBookingError(
+        holdRes?.payload,
+        "Không thể giữ chỗ. Vui lòng thử lại hoặc tiếp tục đặt vé."
+      );
+      if (isFlightDepartureError(errDisplay.code)) {
+        setConfirmStep("form");
+        setConfirmData(null);
+        handleSessionStorage("remove", "flightConfirmPrice");
       }
     } catch (error: any) {
       if (
@@ -858,20 +940,12 @@ export default function FlightBookForm({ airportsData }: any) {
       const bookData = (respon?.payload?.data ??
         respon?.payload) as FlightBookFlightResponse;
 
-      const storedConfirmRequest = handleSessionStorage("get", "flightConfirmPrice")
-        ?.request as Record<string, unknown> | undefined;
-
-      const draftSession = {
-        ...pendingBookingPayload,
-        flights: resolveFlightsForSession(),
-        booking_flight_request_id: requestId,
-        confirmPrice: confirmData,
-        confirmPriceRequest: storedConfirmRequest,
-        bookingId: normalized.bookingId,
-        airdata_booking_id:
-          confirmData.airdata_booking_id ?? normalized.bookingId,
-        order_code: normalized.orderCode,
-      };
+      const draftSession = buildDraftSession(
+        pendingBookingPayload,
+        requestId,
+        confirmData,
+        normalized
+      );
 
       const merged = mergeBookFlightIntoSession(
         draftSession,
@@ -883,40 +957,22 @@ export default function FlightBookForm({ airportsData }: any) {
         confirmData
       );
 
-      if (totalDiscount > 0 && bookingFlight.orderInfo) {
-        (bookingFlight.orderInfo as { total_discount?: number }).total_discount =
-          totalDiscount;
-      }
-
-      handleSessionStorage("save", "bookingFlight", bookingFlight);
-      handleSessionStorage("save", "flightBookingDraft", pendingBookingPayload);
       const orderSku =
         (bookingFlight.orderInfo as { sku?: string })?.sku ??
         normalized.orderCode;
-      updateFlightDraftMeta({
-        stage: "pending_payment",
-        resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
-        orderCode: orderSku,
-        bookingDeadline:
-          (bookingFlight.orderInfo as { booking_deadline?: string })
-            ?.booking_deadline ?? normalized.bookingDeadline,
-        holdExpiresAt: normalized.holdExpiresAt ?? undefined,
-        flow: resolveBookingDraftFlow(flights, flightType),
-      });
-      handleSessionStorage("remove", [
-        "selectedFlightDepart",
-        "selectedFlightReturn",
-        "departFlight",
-        "returnFlight",
-        "flightConfirmPrice",
-      ]);
-      const persistedBooking = handleSessionStorage("get", "bookingFlight");
-      if (!persistedBooking) {
-        toast.error("Không thể tạo dữ liệu đơn đặt chỗ. Vui lòng thử lại.");
-        return;
-      }
-      setBookingError(null);
-      router.push("/ve-may-bay/thong-tin-dat-cho");
+
+      persistBookingAndNavigate(
+        bookingFlight as Record<string, unknown>,
+        pendingBookingPayload,
+        {
+          stage: "pending_payment",
+          orderCode: orderSku,
+          bookingDeadline:
+            (bookingFlight.orderInfo as { booking_deadline?: string })
+              ?.booking_deadline ?? normalized.bookingDeadline ?? undefined,
+          holdExpiresAt: normalized.holdExpiresAt ?? undefined,
+        }
+      );
     } catch (error: unknown) {
       const httpErr = error instanceof HttpError ? error : null;
       const message =
@@ -960,6 +1016,56 @@ export default function FlightBookForm({ airportsData }: any) {
     toast.error("Phiên đặt vé đã hết hạn");
     router.push("/ve-may-bay/tim-kiem-ve");
   };
+
+  const handleSearchRedirect = () => {
+    if (!selectedFlights || selectedFlights.length === 0) {
+      router.push("/ve-may-bay/tim-kiem-ve");
+      return;
+    }
+    const selections = selectedFlights;
+    const departFlight = selections[0]?.trip;
+    if (!departFlight) {
+      router.push("/ve-may-bay/tim-kiem-ve");
+      return;
+    }
+    const depart = departFlight.departure as { IATACode?: string; at?: string } | undefined;
+    const arrival = departFlight.arrival as { IATACode?: string } | undefined;
+    if (!depart?.IATACode || !arrival?.IATACode || !depart.at) {
+      router.push("/ve-may-bay/tim-kiem-ve");
+      return;
+    }
+    const startPoint = depart.IATACode;
+    const endPoint = arrival.IATACode;
+    const tripType = selections.length > 1 ? "roundTrip" : "oneWay";
+    const departDate = format(new Date(depart.at), "ddMMyyyy");
+    
+    let returnDate = departDate;
+    const returnDepart = selections[1]?.trip?.departure as { at?: string } | undefined;
+    if (tripType === "roundTrip" && returnDepart?.at) {
+      returnDate = format(new Date(returnDepart.at), "ddMMyyyy");
+    }
+
+    const startAirport = airportsData?.find((a: any) => a.code === startPoint);
+    const endAirport = airportsData?.find((a: any) => a.code === endPoint);
+    const fromLabel = startAirport ? `${startAirport.city} (${startAirport.code})` : startPoint;
+    const toLabel = endAirport ? `${endAirport.city} (${endAirport.code})` : endPoint;
+
+    const params = new URLSearchParams({
+      tripType,
+      StartPoint: startPoint,
+      EndPoint: endPoint,
+      DepartDate: departDate,
+      ReturnDate: returnDate,
+      Adt: String(selections[0].paxCounts?.adult ?? 1),
+      Chd: String(selections[0].paxCounts?.child ?? 0),
+      Inf: String(selections[0].paxCounts?.infant ?? 0),
+      from: fromLabel,
+      to: toLabel,
+    });
+
+    router.push(`/ve-may-bay/tim-kiem-ve?${params.toString()}`);
+  };
+
   useEffect(() => {
     const selections = loadSelectedFlightsForBooking();
     if (!selections.length) {
@@ -980,10 +1086,17 @@ export default function FlightBookForm({ airportsData }: any) {
     setFlightsDetail(flightData);
     setFlightSession(flightSession ?? selections[0].searchId);
     const savedConfirm = handleSessionStorage("get", "flightConfirmPrice");
-    if (savedConfirm?.confirm && savedConfirm?.bookingDraft) {
+    if (savedConfirm?.confirm) {
       setConfirmData(savedConfirm.confirm);
-      setPendingBookingPayload(savedConfirm.bookingDraft);
-      setConfirmStep("review");
+      if (savedConfirm?.bookingDraft) {
+        setPendingBookingPayload(savedConfirm.bookingDraft);
+        setConfirmStep("review");
+      } else {
+        setConfirmStep("form");
+      }
+      setPreVerifyLoading(false);
+    } else {
+      runPreVerification(selections);
     }
     const bookingFlight = handleSessionStorage("get", "bookingFlight") as
       | Record<string, unknown>
@@ -1037,69 +1150,94 @@ export default function FlightBookForm({ airportsData }: any) {
     }
   }, [router]);
 
-  let totalPrice = 0;
-  let totalAdt = 1;
-  let totalChd = 0;
-  let totalInf = 0;
-  let totalPriceAdt = 0;
-  let totalPriceChd = 0;
-  let totalPriceInf = 0;
+  const {
+    totalPrice,
+    totalAdt,
+    totalChd,
+    totalInf,
+    dropdown,
+    totalPriceAdt,
+    totalPriceChd,
+    totalPriceInf,
+  } = useMemo(() => {
+    let _totalPrice = 0;
+    let _totalAdt = 1;
+    let _totalChd = 0;
+    let _totalInf = 0;
+    let _totalPriceAdt = 0;
+    let _totalPriceChd = 0;
+    let _totalPriceInf = 0;
+    let _totalPriceTicketAdt = 0;
+    let _totalPriceTicketChd = 0;
+    let _totalPriceTicketInf = 0;
+    let _totalTaxAdt = 0;
+    let _totalTaxChd = 0;
+    let _totalTaxInf = 0;
+    const _dropdown: any = [];
+
+    flights.forEach((item) => {
+      const ticketClass =
+        (item.selectedTicketClass as Record<string, unknown>) ?? item;
+      _totalAdt = item.numberAdt;
+      _totalChd = item.numberChd;
+      _totalInf = item.numberInf;
+      _totalPriceTicketAdt += Number(ticketClass.fareAdultFinal ?? item.fareAdultFinal ?? 0);
+      _totalPriceTicketChd += Number(ticketClass.fareChildFinal ?? item.fareChildFinal ?? 0);
+      _totalPriceTicketInf += Number(ticketClass.fareInfantFinal ?? item.fareInfantFinal ?? 0);
+      _totalTaxAdt += Number(ticketClass.taxAdult ?? item.taxAdult ?? 0);
+      _totalTaxChd += Number(ticketClass.taxChild ?? item.taxChild ?? 0);
+      _totalTaxInf += Number(ticketClass.taxInfant ?? item.taxInfant ?? 0);
+      _totalPriceAdt += Number(ticketClass.totalAdult ?? item.totalAdult ?? 0);
+      _totalPriceChd += Number(ticketClass.totalChild ?? item.totalChild ?? 0);
+      _totalPriceInf += Number(ticketClass.totalInfant ?? item.totalInfant ?? 0);
+      _totalPrice += Number(ticketClass.totalPrice ?? item.totalPrice ?? 0);
+    });
+
+    if (_totalAdt) {
+      _dropdown.push({
+        totalPrice: _totalPriceAdt,
+        quantity: _totalAdt,
+        totalPriceTicket: _totalPriceTicketAdt,
+        totalTax: _totalTaxAdt,
+        type: "Adt",
+        title: "Vé người lớn",
+      });
+    }
+    if (_totalChd) {
+      _dropdown.push({
+        totalPrice: _totalPriceChd,
+        quantity: _totalChd,
+        totalPriceTicket: _totalPriceTicketChd,
+        totalTax: _totalTaxChd,
+        type: "Chd",
+        title: "Vé trẻ em",
+      });
+    }
+    if (_totalInf) {
+      _dropdown.push({
+        totalPrice: _totalPriceInf,
+        quantity: _totalInf,
+        totalPriceTicket: _totalPriceTicketInf,
+        totalTax: _totalTaxInf,
+        type: "Inf",
+        title: "Vé em bé",
+      });
+    }
+
+    return {
+      totalPrice: _totalPrice,
+      totalAdt: _totalAdt,
+      totalChd: _totalChd,
+      totalInf: _totalInf,
+      dropdown: _dropdown,
+      totalPriceAdt: _totalPriceAdt,
+      totalPriceChd: _totalPriceChd,
+      totalPriceInf: _totalPriceInf,
+    };
+  }, [flights]);
+
   let keyLoopPassenger = 1;
   let keyLoopDropdown = 1;
-  let totalPriceTicketAdt = 0;
-  let totalPriceTicketChd = 0;
-  let totalPriceTicketInf = 0;
-  let totalTaxAdt = 0;
-  let totalTaxChd = 0;
-  let totalTaxInf = 0;
-  let dropdown: any = [];
-  flights.map((item) => {
-    const ticketClass =
-      (item.selectedTicketClass as Record<string, unknown>) ?? item;
-    totalAdt = item.numberAdt;
-    totalChd = item.numberChd;
-    totalInf = item.numberInf;
-    totalPriceTicketAdt += Number(ticketClass.fareAdultFinal ?? item.fareAdultFinal ?? 0);
-    totalPriceTicketChd += Number(ticketClass.fareChildFinal ?? item.fareChildFinal ?? 0);
-    totalPriceTicketInf += Number(ticketClass.fareInfantFinal ?? item.fareInfantFinal ?? 0);
-    totalTaxAdt += Number(ticketClass.taxAdult ?? item.taxAdult ?? 0);
-    totalTaxChd += Number(ticketClass.taxChild ?? item.taxChild ?? 0);
-    totalTaxInf += Number(ticketClass.taxInfant ?? item.taxInfant ?? 0);
-    totalPriceAdt += Number(ticketClass.totalAdult ?? item.totalAdult ?? 0);
-    totalPriceChd += Number(ticketClass.totalChild ?? item.totalChild ?? 0);
-    totalPriceInf += Number(ticketClass.totalInfant ?? item.totalInfant ?? 0);
-    totalPrice += Number(ticketClass.totalPrice ?? item.totalPrice ?? 0);
-  });
-  if (totalAdt) {
-    dropdown.push({
-      totalPrice: totalPriceAdt,
-      quantity: totalAdt,
-      totalPriceTicket: totalPriceTicketAdt,
-      totalTax: totalTaxAdt,
-      type: "Adt",
-      title: "Vé người lớn",
-    });
-  }
-  if (totalChd) {
-    dropdown.push({
-      totalPrice: totalPriceChd,
-      quantity: totalChd,
-      totalPriceTicket: totalPriceTicketChd,
-      totalTax: totalTaxChd,
-      type: "Chd",
-      title: "Vé trẻ em",
-    });
-  }
-  if (totalInf) {
-    dropdown.push({
-      totalPrice: totalPriceInf,
-      quantity: totalInf,
-      totalPriceTicket: totalPriceTicketInf,
-      totalTax: totalTaxInf,
-      type: "Inf",
-      title: "Vé em bé",
-    });
-  }
 
   const serviceFeeTotal = sumServiceFeeFromFlights(flights);
   const checkoutFareTotal = confirmData
@@ -1298,6 +1436,42 @@ export default function FlightBookForm({ airportsData }: any) {
       </div>
     );
   }
+
+  if (preVerifyLoading) {
+    return (
+      <div className="min-h-[400px] flex flex-col justify-center items-center py-12 bg-white rounded-2xl shadow-sm mt-6">
+        <span className="loader_spiner !w-12 !h-12 !border-4 !border-blue-500 !border-t-blue-200 animate-spin"></span>
+        <p className="mt-4 text-lg font-medium text-gray-700">
+          Đang kiểm tra tình trạng chỗ và giá vé từ hãng bay...
+        </p>
+      </div>
+    );
+  }
+
+  if (preVerifyError) {
+    return (
+      <div className="min-h-[400px] flex flex-col justify-center items-center py-12 px-6 bg-white rounded-2xl shadow-sm mt-6 text-center">
+        <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
+          Vé hoặc Hạng ghế không khả dụng
+        </h3>
+        <p className="text-gray-600 max-w-md mb-6 leading-relaxed">
+          {preVerifyError.message || "Hạng vé hoặc chuyến bay bạn chọn hiện không còn khả dụng trên hệ thống hãng bay."}
+        </p>
+        <button
+          onClick={handleSearchRedirect}
+          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm"
+        >
+          {language === "vi" ? "Quay lại tìm kiếm chuyến bay" : "Search flights again"}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <form
       id="wrapper-flight-booking-form"
@@ -1320,7 +1494,24 @@ export default function FlightBookForm({ airportsData }: any) {
               Thông tin đặt hàng
             </h3>
           </div>
-          <div className="mt-6">
+          {confirmStep === "form" && (
+            <>
+              {process.env.NODE_ENV === "development" && (
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center justify-between shadow-sm">
+                  <div>
+                    <p className="text-yellow-800 font-semibold text-sm">Chế độ DEV: Giả lập dữ liệu test</p>
+                    <p className="text-xs text-yellow-600">Tự động điền đầy đủ thông tin hành khách và liên hệ hợp lệ.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAutoFillMockData}
+                    className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium text-sm rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  >
+                    Tự động điền Form
+                  </button>
+                </div>
+              )}
+              <div className="mt-6">
             <p className="font-bold text-18" data-translate="true">
               Thông tin liên hệ
             </p>
@@ -2256,6 +2447,9 @@ export default function FlightBookForm({ airportsData }: any) {
                   </div>
                 ))}
             </div>
+          </div>
+        </>
+      )}
             {bookingError && (
               <div
                 role="alert"
@@ -2269,23 +2463,116 @@ export default function FlightBookForm({ airportsData }: any) {
                     ))}
                   </ul>
                 )}
+                {bookingError.code === "FARE_ALREADY_EXPIRED" && (
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={handleSearchRedirect}
+                      className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      {language === "vi" ? "Tìm kiếm lại chuyến bay" : "Search flights again"}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
             {confirmStep === "review" && confirmData && (
-              <FlightConfirmPriceReview
-                confirmData={confirmData}
-                searchFareTotal={totalPrice}
-                serviceFeeTotal={serviceFeeTotal}
-                baggageTotal={totalBaggages.price}
-                totalDiscount={totalDiscount}
-                onBack={handleBackFromConfirm}
-                onProceedPayment={handleProceedToPayment}
-                isProceeding={proceedingPayment}
-                isExpired={confirmExpired}
-                onExpired={handleConfirmExpired}
-                isHeld={isHeld}
-                pnrNumber={pnrNumber}
-              />
+              <div className="mt-6 space-y-6">
+                <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
+                  <h4 className="text-18 font-bold mb-4 border-b pb-2 text-[#0C4089]" data-translate="true">
+                    Thông tin liên hệ & hành khách
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+                    <div>
+                      <p className="text-gray-500" data-translate="true">Người liên hệ</p>
+                      <p className="font-semibold text-gray-800">{getValues("contact.full_name")}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500" data-translate="true">Số điện thoại</p>
+                      <p className="font-semibold text-gray-800">{getValues("contact.phone")}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500" data-translate="true">Email</p>
+                      <p className="font-semibold text-gray-800">{getValues("contact.email")}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500" data-translate="true">Giới tính</p>
+                      <p className="font-semibold text-gray-800">
+                        {getValues("contact.gender") === "male" || getValues("contact.gender") === true ? "Nam" : "Nữ"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <h5 className="text-sm font-bold mb-3 text-gray-700" data-translate="true">
+                    Danh sách hành khách
+                  </h5>
+                  <div className="space-y-3">
+                    {getValues("atd")?.map((p, idx) => (
+                      <div key={`adt-${idx}`} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg text-sm">
+                        <div>
+                          <p className="font-semibold text-gray-800">
+                            {idx + 1}. {p.lastName?.toUpperCase()} {p.firstName?.toUpperCase()}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {p.gender === "male" ? "Nam" : "Nữ"}
+                            {p.birthday && ` - ${format(new Date(p.birthday), "dd/MM/yyyy")}`}
+                          </p>
+                        </div>
+                        <span className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full font-medium" data-translate="true">
+                          Người lớn
+                        </span>
+                      </div>
+                    ))}
+                    {getValues("chd")?.map((p, idx) => (
+                      <div key={`chd-${idx}`} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg text-sm">
+                        <div>
+                          <p className="font-semibold text-gray-800">
+                            {idx + 1}. {p.lastName?.toUpperCase()} {p.firstName?.toUpperCase()}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {p.gender === "male" ? "Nam" : "Nữ"}
+                            {p.birthday && ` - ${format(new Date(p.birthday), "dd/MM/yyyy")}`}
+                          </p>
+                        </div>
+                        <span className="text-xs px-2 py-1 bg-amber-50 text-amber-700 rounded-full font-medium" data-translate="true">
+                          Trẻ em
+                        </span>
+                      </div>
+                    ))}
+                    {getValues("inf")?.map((p, idx) => (
+                      <div key={`inf-${idx}`} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg text-sm">
+                        <div>
+                          <p className="font-semibold text-gray-800">
+                            {idx + 1}. {p.lastName?.toUpperCase()} {p.firstName?.toUpperCase()}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {p.gender === "male" ? "Nam" : "Nữ"}
+                            {p.birthday && ` - ${format(new Date(p.birthday), "dd/MM/yyyy")}`}
+                          </p>
+                        </div>
+                        <span className="text-xs px-2 py-1 bg-purple-50 text-purple-700 rounded-full font-medium" data-translate="true">
+                          Em bé
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <FlightConfirmPriceReview
+                  confirmData={confirmData}
+                  searchFareTotal={totalPrice}
+                  serviceFeeTotal={serviceFeeTotal}
+                  baggageTotal={totalBaggages.price}
+                  totalDiscount={totalDiscount}
+                  onBack={handleBackFromConfirm}
+                  onProceedPayment={handleProceedToPayment}
+                  isProceeding={proceedingPayment}
+                  isExpired={confirmExpired}
+                  onExpired={handleConfirmExpired}
+                  isHeld={isHeld}
+                  pnrNumber={pnrNumber}
+                />
+              </div>
             )}
             {confirmStep === "form" && (
               <div className="mt-6">
@@ -2297,7 +2584,6 @@ export default function FlightBookForm({ airportsData }: any) {
               </div>
             )}
           </div>
-        </div>
         <div className="w-full md:w-5/12 lg:w-4/12 bg-white rounded-2xl pb-0 ">
           <div className="pb-0 py-4 px-3 lg:px-6">
             <div className="flex flex-col space-y-2 items-start lg:items-center lg:space-y-0 lg:flex-row lg:justify-between">

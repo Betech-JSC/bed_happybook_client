@@ -29,9 +29,10 @@ export function collectSegmentsFromJourneys(
       .sort(([a], [b]) => Number(a) - Number(b))
       .flatMap(([, flight]) => {
         const segs = (flight.segments ?? []) as Record<string, unknown>[];
+        const journeyId = (flight.journeyId ?? flight.journey_id ?? "") as string;
         return segs.length
-          ? [{ segments: segs }]
-          : [{ segments: [flight] }];
+          ? [{ journeyId, segments: segs }]
+          : [{ journeyId, segments: [flight] }];
       });
   } else if (journeys) {
     if (Array.isArray(journeys)) {

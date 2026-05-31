@@ -8,6 +8,7 @@ import {
 import DisplayImage from "@/components/base/DisplayImage";
 import _, { isEmpty } from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
+import { isFlightDepartureTooClose } from "@/utils/flightDepartureCheck";
 import FlightInfo from "@/components/FlightInfo";
 
 const FlightInternationDetail = ({
@@ -28,6 +29,8 @@ const FlightInternationDetail = ({
   }
 
   let flight = FareData ?? null;
+
+  const isTooClose = flight ? isFlightDepartureTooClose(flight.departure?.at) : false;
 
   const handleSelectFlight = (
     flightSelected: any,
@@ -142,6 +145,13 @@ const FlightInternationDetail = ({
               {isExpanded ? t("thu_gon") : t("xem_chi_tiet")}
             </button>
           </div>
+          {isTooClose && (
+            <div className="col-span-full mt-2 flex justify-start">
+              <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700 ring-1 ring-inset ring-red-600/10">
+                ⚠️ {t("khoi_hanh_qua_gan_duoi_4_h_khong_the_dat_truc_tuyen") || "Khởi hành quá gần (dưới 4h) - Không thể đặt trực tuyến"}
+              </span>
+            </div>
+          )}
           <div
             className={`grid transition-[grid-template-rows] duration-300 ease-out ${isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
               } col-span-full w-full`}

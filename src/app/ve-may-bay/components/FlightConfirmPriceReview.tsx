@@ -61,7 +61,7 @@ export default function FlightConfirmPriceReview({
   const hasValidDeadline = deadline && !Number.isNaN(deadline.getTime());
 
   return (
-    <section className="mt-6 space-y-4">
+    <section className="space-y-4">
       <div className="rounded-2xl border border-[#B2DDFF] bg-[#EFF8FF] p-4 md:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
@@ -178,14 +178,6 @@ export default function FlightConfirmPriceReview({
       )}
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <button
-          type="button"
-          onClick={onBack}
-          className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
-          data-translate="true"
-        >
-          Quay lại chỉnh sửa
-        </button>
         <LoadingButton
           type="button"
           style="mt-0"

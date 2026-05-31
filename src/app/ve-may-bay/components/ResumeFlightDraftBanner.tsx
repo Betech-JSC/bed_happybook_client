@@ -63,45 +63,20 @@ export default function ResumeFlightDraftBanner({
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handleContinue = async () => {
-    if (meta.stage === "held") {
-      if (meta.bookingDeadline && isBookingDeadlineExpired(meta.bookingDeadline)) {
-        toast.error("Đã hết thời gian giữ chỗ.");
-        return;
-      }
-      router.push(meta.resumeUrl);
-      return;
-    }
-
-    if (meta.stage !== "pending_payment") {
-      router.push(meta.resumeUrl);
-      return;
-    }
-
     if (meta.bookingDeadline && isBookingDeadlineExpired(meta.bookingDeadline)) {
-      toast.error("Đã hết thời gian giữ giá / thanh toán.");
+      toast.error(
+        meta.stage === "held"
+          ? "Đã hết thời gian giữ chỗ."
+          : "Đã hết thời gian giữ giá / thanh toán."
+      );
       return;
     }
 
-    setPaymentLoading(true);
-    try {
-      const refreshed = await refreshConfirmPriceFromBookingSession();
-      if (!refreshed) {
-        toast.error(
-          "Không thể lấy giá mới. Vui lòng mở lại đơn hoặc tìm chuyến khác."
-        );
-        return;
-      }
+    const targetUrl = meta.orderCode
+      ? `${meta.resumeUrl}?order_code=${meta.orderCode}`
+      : meta.resumeUrl;
 
-      toast.success(
-        `Tổng thanh toán: ${formatCurrency(refreshed.grandTotal)}. Vui lòng kiểm tra trước khi thanh toán.`
-      );
-
-      router.push(meta.resumeUrl);
-    } catch {
-      toast.error("Không thể cập nhật giá. Vui lòng thử lại.");
-    } finally {
-      setPaymentLoading(false);
-    }
+    router.push(targetUrl);
   };
 
   const handleDiscard = () => {

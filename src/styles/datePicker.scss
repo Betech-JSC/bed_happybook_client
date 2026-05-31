@@ -17,6 +17,12 @@
     margin-top: 8px;
   }
   .react-datepicker {
+    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top left;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+
     &__input-container input {
       width: 100%;
       font-size: 16px;
