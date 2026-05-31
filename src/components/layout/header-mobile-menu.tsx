@@ -128,14 +128,27 @@ export default function HeaderMobileMenu() {
             <Link href="/ve-may-bay" className="block mt-3 hover:text-[#F27145] cursor-pointer">
               {t("ve_may_bay")}
             </Link>
+            <Link href="/khach-san" className="block mt-3 hover:text-[#F27145] cursor-pointer">
+              {t("khach_san")}
+            </Link>
             <Link href="/du-thuyen" className="block mt-3 hover:text-[#F27145] cursor-pointer">
               {t("du_thuyen")}
             </Link>
             <Link href="/ve-vui-choi" className="block mt-3 hover:text-[#F27145] cursor-pointer">
               {t("ve_vui_choi_hoat_dong")}
             </Link>
-            <Link href="/khach-san" className="block mt-3 hover:text-[#F27145] cursor-pointer">
-              {t("khach_san")}
+
+            <div className="flex items-center justify-between mt-3">
+              <span className="font-medium">{t("visa")}</span>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <Link href="/visa" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+              {t("danh_sach_visa_cac_nuoc")}
+            </Link>
+            <Link href="/tu-van-nhan-visa" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
+              {t("tu_van_visa_mien_phi")}
             </Link>
 
             <div className="flex items-center justify-between mt-3">
@@ -155,54 +168,30 @@ export default function HeaderMobileMenu() {
               {t("combo")}
             </Link>
 
-            <div className="flex items-center justify-between mt-3">
-              <span className="font-medium">{t("visa")}</span>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <Link href="/visa" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("danh_sach_visa_cac_nuoc")}
-            </Link>
-            <Link href="/tu-van-nhan-visa" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("tu_van_visa_mien_phi")}
-            </Link>
-
           </div>
 
           <div className="mt-6">
             <div className="flex items-center justify-between">
-              <strong>{t("tien_ich")}</strong>
+              <strong>{t("dich_vu_tai_san_bay")}</strong>
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <Link href="/fast-track" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("dich_vu_tai_san_bay")}
-            </Link>
-            <Link href="/bao-hiem" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("bao_hiem")}
+              {t("dich_vu_dua_don_san_bay")}
             </Link>
             <Link href="/phong-cho-thuong-gia" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("phong_cho_thuong_gia")}
             </Link>
-            <div className="mt-3">
-              <div className="flex items-center justify-between mt-3">
-                <strong>{t("sim_du_lich")}</strong>
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div className="mt-2 pl-3">
-                <Link href="/sim-du-lich/quoc-te" className="block mt-2 hover:text-[#F27145] cursor-pointer">
-                  {t("sim_du_lich_quoc_te")}
-                </Link>
-                <Link href="/sim-viet-nam" className="block mt-2 hover:text-[#F27145] cursor-pointer">
-                  {t("sim_du_lich_viet_nam")}
-                </Link>
-              </div>
-            </div>
           </div>
+
+          <Link href="/bao-hiem" className="block mt-6 hover:text-[#F27145] cursor-pointer">
+            <strong>{t("bao_hiem")}</strong>
+          </Link>
+
+          <Link href="/sim-du-lich" className="block mt-6 hover:text-[#F27145] cursor-pointer">
+            <strong>{t("sim_du_lich")}</strong>
+          </Link>
 
           <div className="mt-6">
             <div className="flex items-center justify-between">
