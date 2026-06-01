@@ -39,6 +39,17 @@ const AuthApi = {
 
     return response;
   },
+  uploadAvatar: async (file: File) => {
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    const response = await fetch("/api/auth/upload-avatar", {
+      method: "POST",
+      body: formData,
+    });
+
+    return response;
+  },
 };
 
 export { AuthApi };

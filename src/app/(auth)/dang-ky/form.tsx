@@ -21,6 +21,8 @@ export default function FormRegister() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { language } = useLanguage();
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const messages = validationMessages[language as "vi" | "en"];
   const schema = getAuthRegisterSchema(messages);
@@ -91,6 +93,19 @@ export default function FormRegister() {
           />
           {errors.phone && (
             <p className="text-red-600">{errors.phone.message}</p>
+          )}
+        </div>
+
+        <div className="mt-3">
+          <p>{t("ngay_sinh")}</p>
+          <input
+            type="date"
+            max={today}
+            {...register("birthday")}
+            className="mt-2 h-11 border-[1px] border-gray-300 rounded-lg w-full px-3 outline-primary"
+          />
+          {errors.birthday && (
+            <p className="text-red-600">{errors.birthday.message}</p>
           )}
         </div>
 

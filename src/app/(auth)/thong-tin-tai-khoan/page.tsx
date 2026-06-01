@@ -6,6 +6,7 @@ import AccountSidebar from "../components/AccountSidebar";
 import { notFound } from "next/navigation";
 import { parseISO, format } from "date-fns";
 import { isEmpty } from "lodash";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function InfoItem({
   label,
@@ -24,6 +25,7 @@ function InfoItem({
   );
 }
 export default function UserProfile() {
+  const { t } = useTranslation();
   const { userInfo } = useUser();
   if (!userInfo) notFound();
   return (
@@ -40,6 +42,10 @@ export default function UserProfile() {
               value={
                 !isEmpty(userInfo.phone) ? userInfo.phone : "Chưa xác định"
               }
+            />
+            <InfoItem
+              label={t("ngay_sinh")}
+              value={userInfo.birthday ? format(parseISO(userInfo.birthday), "dd-MM-yyyy") : "-"}
             />
             <InfoItem
               label="Ngày đăng ký"

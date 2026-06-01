@@ -31,12 +31,19 @@ export async function POST(req: Request) {
       email: data?.data?.user_info?.email,
       phone: data?.data?.user_info?.phone,
       gender: data?.data?.user_info?.gender,
+      avatar: data?.data?.user_info?.avatar ?? undefined,
+      avatar_url: data?.data?.user_info?.avatar_url ?? undefined,
+      birthday: data?.data?.user_info?.birthday ?? undefined,
       created_at: data?.data?.user_info?.created_at,
     };
     await session.save();
 
     return Response.json(
-      { message: data.message, user_info: data?.data?.user_info },
+      {
+        message: data.message,
+        user_info: data?.data?.user_info,
+        needs_birthday_update: data?.data?.needs_birthday_update ?? !data?.data?.user_info?.birthday,
+      },
       { status: 200 }
     );
   } catch (error) {

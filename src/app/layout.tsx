@@ -22,6 +22,7 @@ import { getServerTranslations } from "@/lib/i18n/serverTranslations";
 import { TranslationProvider } from "../contexts/TranslationContext";
 import PromoModal from "@/components/base/PromoModal";
 import { AosProvider } from "@/components/layout/AosProvider";
+import BirthdayRequiredModal from "@/components/base/BirthdayRequiredModal";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"], display: "swap" });
 
@@ -150,6 +151,7 @@ export default async function RootLayout({
                   <HeaderMobile></HeaderMobile>
                   <MobileMenuOverlay />
                   {/* <PromoModal /> */}
+                  <BirthdayRequiredModal />
                   {children}
                   <Toaster toastOptions={toastOptions} />
                   <div id="datepicker-portal"></div>

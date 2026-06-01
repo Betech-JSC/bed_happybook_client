@@ -24,6 +24,13 @@ export const getAuthRegisterSchema = (messages: ValidationMessages) => {
         .min(3, (messages.minLength as (length: number) => string)(3))
         .max(100, (messages.maxLength as (length: number) => string)(100)),
 
+      birthday: z
+        .string()
+        .min(1, (messages.minLength as (length: number) => string)(1))
+        .regex(/^\d{4}-\d{2}-\d{2}$/, {
+          message: messages.inValidBirthDay,
+        }),
+
       password: z
         .string()
         .min(1, (messages.minLength as (length: number) => string)(1))

@@ -431,6 +431,7 @@ const authStaticText: string[] = [
   "Đăng xuất",
   "Mật khẩu",
   "Nhập lại mật khẩu",
+  "Ngày sinh",
   "Tên tài khoản hoặc địa chỉ email",
 ];
 
