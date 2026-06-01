@@ -1,0 +1,329 @@
+"use client";
+
+import Image from "next/image";
+import { useMemo } from "react";
+import { Clock3, Globe, MapPin, Search, Wifi } from "lucide-react";
+import type { EsimPackageView } from "../lib/esim";
+import {
+  formatEsimMoney,
+  findCheapestVariant,
+  getEsimVariantMoney,
+  resolveEsimPackageAvatarUrl,
+} from "../lib/esim";
+import { sortEsimPackages, type SortMode } from "../lib/esim-discovery";
+import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+
+type Props = {
+  query: string;
+  onQueryChange: (value: string) => void;
+  loading: boolean;
+  error: string;
+  packages: EsimPackageView[];
+  activeLocale: "vi" | "en";
+  selectedPackageSlug: string;
+  onSelectPackage: (pkg: EsimPackageView) => void;
+  showInternationalFilters?: boolean;
+  pageTitle?: string;
+  sortMode: SortMode;
+  onSortModeChange: (mode: SortMode) => void;
+};
+
+export default function EsimPackageDiscoveryList({
+  query,
+  onQueryChange,
+  loading,
+  error,
+  packages,
+  activeLocale,
+  selectedPackageSlug,
+  onSelectPackage,
+  showInternationalFilters = false,
+  pageTitle,
+  sortMode,
+  onSortModeChange,
+}: Props) {
+  const t = useSimDuLichStaticText(activeLocale);
+  const sortedPackages = useMemo(
+    () => sortEsimPackages(packages, activeLocale, sortMode, showInternationalFilters),
+    [activeLocale, packages, showInternationalFilters, sortMode]
+  );
+
+  const renderPackageList = () => {
+    if (loading && sortedPackages.length === 0) {
+      return (
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-[280px] animate-pulse rounded-2xl border-2 border-[#EAECF0] bg-slate-50 lg:h-[220px]"
+            />
+          ))}
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="rounded-[24px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      );
+    }
+
+    if (sortedPackages.length === 0) {
+      return (
+        <div className="rounded-[24px] border border-slate-200 bg-white px-4 py-6 text-sm text-slate-500">
+          {t("Không tìm thấy gói eSIM phù hợp.")}
+        </div>
+      );
+    }
+
+    if (showInternationalFilters) {
+      return (
+        <div className="space-y-0">
+          {sortedPackages.map((pkg) => {
+            const cheapest = findCheapestVariant(pkg, activeLocale);
+            const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
+            const isSelectable = Boolean(cheapest && cheapestMoney.price > 0);
+            const isActive = pkg.slug === selectedPackageSlug;
+            const title = pkg.destination || pkg.title || pkg.regionLabel || "eSIM";
+            const subtitle = pkg.subtitle || pkg.coverage || pkg.network || pkg.regionLabel || title;
+            const validityLabel = cheapest?.validity
+              ? `${cheapest.validity} ngày`
+              : pkg.coverage || pkg.subtitle || pkg.network || title;
+            const avatarUrl = resolveEsimPackageAvatarUrl(pkg);
+
+            return (
+              <button
+                key={pkg.slug}
+                type="button"
+                onClick={() => {
+                  if (!isSelectable) return;
+                  onSelectPackage(pkg);
+                }}
+                disabled={!isSelectable}
+                className={`w-full text-left ${!isSelectable ? "cursor-not-allowed opacity-50" : ""}`}
+              >
+                <div
+                  className={`mt-4 flex flex-col rounded-3xl bg-white p-5 transition-opacity duration-700 lg:flex-row lg:space-x-6 ${
+                    isActive ? "ring-2 ring-orange-100" : ""
+                  } ${!isSelectable ? "cursor-not-allowed opacity-50" : ""}`}
+                >
+                  <div className="relative w-full overflow-hidden rounded-xl lg:w-5/12">
+                    <div
+                      className={`relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-full ${
+                        avatarUrl ? "border border-slate-200 bg-white shadow-sm" : ""
+                      }`}
+                      style={{
+                        background: avatarUrl
+                          ? "transparent"
+                          : "linear-gradient(135deg, #2147D8 0%, #3157D8 50%, #2D49C7 100%)",
+                      }}
+                    >
+                      {avatarUrl ? (
+                        <Image
+                          src={avatarUrl}
+                          alt={title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 42vw"
+                          className="object-cover object-top opacity-100"
+                        />
+                      ) : null}
+                      {avatarUrl ? null : (
+                        <div className="absolute left-3 right-3 top-3 flex flex-nowrap items-center gap-2 overflow-hidden">
+                          <span className="inline-flex min-w-0 max-w-[46%] flex-[1_1_46%] items-center gap-1.5 rounded-full bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-midnight-ink shadow-sm lg:px-3 lg:text-xs">
+                            <Globe className="h-3.5 w-3.5 shrink-0 text-[#1D4ED8]" />
+                            <span className="min-w-0 truncate whitespace-nowrap">
+                              {title || pkg.regionLabel || "eSIM"}
+                            </span>
+                          </span>
+                          <span className="inline-flex shrink-0 items-center rounded-full bg-[#1E3A8A] px-3 py-1.5 text-[11px] font-extrabold text-white shadow-sm lg:text-xs">
+                            eSIM
+                          </span>
+                          <span className="inline-flex min-w-0 flex-1 items-center rounded-full bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-midnight-ink shadow-sm lg:px-3 lg:text-xs">
+                            <span className="min-w-0 truncate whitespace-nowrap">{pkg.network || "Network"}</span>
+                          </span>
+                        </div>
+                      )}
+                      {avatarUrl ? null : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white lg:px-8">
+                          <h3 className="max-w-[14ch] text-[24px] font-black leading-[0.94] tracking-tight drop-shadow-md lg:text-[34px]">
+                            {title}
+                          </h3>
+                          <p className="mt-2 max-w-[20ch] text-xs font-semibold leading-snug text-white/90 drop-shadow-sm lg:mt-3 lg:text-base">
+                            {subtitle}
+                          </p>
+                        </div>
+                      )}
+                      {avatarUrl ? null : (
+                        <div className="absolute bottom-0 left-0 rounded-tr-3xl bg-[#4E6EB3] px-3 py-1 text-white">
+                          <span className="block max-w-[14rem] truncate whitespace-nowrap text-sm" data-translate="true">
+                            {pkg.regionLabel || pkg.coverage || pkg.destination}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex w-full flex-col justify-between lg:mt-0 lg:w-7/12">
+                    <div className="space-y-3">
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hb-coral">eSIM</p>
+                        <h3 className="text-18 font-semibold leading-tight transition-colors duration-300 hover:text-primary">
+                          <span data-translate="true">{title}</span>
+                        </h3>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 text-gray-500">
+                        <span data-translate="true">0 đánh giá</span>
+                      </div>
+
+                      <div className="space-y-2.5 text-midnight-ink">
+                        <div className="flex items-center gap-2.5 leading-6">
+                          <Clock3 className="h-4 w-4 shrink-0 text-slate-500" />
+                          <span data-translate="true">{validityLabel}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 leading-6">
+                          <MapPin className="h-4 w-4 shrink-0 text-slate-500" />
+                          <span data-translate="true">{pkg.regionLabel || pkg.destination}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 leading-6">
+                          <Wifi className="h-4 w-4 shrink-0 text-slate-500" />
+                          <span data-translate="true">{pkg.network || pkg.coverage}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 text-end text-2xl font-bold text-primary">
+                      {isSelectable ? (
+                        <span>{formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}</span>
+                      ) : (
+                        <span data-translate="true">Chưa có giá khả dụng</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {sortedPackages.map((pkg) => {
+          const cheapest = findCheapestVariant(pkg, activeLocale);
+          const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
+          const isSelectable = Boolean(cheapest && cheapestMoney.price > 0);
+          const isActive = pkg.slug === selectedPackageSlug;
+          const avatarUrl = resolveEsimPackageAvatarUrl(pkg);
+
+          return (
+            <button
+              key={pkg.slug}
+              onClick={() => {
+                if (!isSelectable) return;
+                onSelectPackage(pkg);
+              }}
+              disabled={!isSelectable}
+              className={`rounded-xl border p-4 text-left transition-all ${
+                isActive
+                  ? "border-hb-navy bg-blue-50/50 shadow-sm"
+                  : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-sm"
+              } ${!isSelectable ? "cursor-not-allowed opacity-50 hover:shadow-none" : ""}`}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={`h-3 w-3 flex-shrink-0 rounded-full mt-1.5 ${
+                    isActive ? "bg-hb-coral" : "bg-slate-200"
+                  }`}
+                />
+                {avatarUrl ? (
+                  <div className="h-14 w-14 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <Image
+                      src={avatarUrl}
+                      alt={pkg.title || pkg.destination}
+                      width={56}
+                      height={56}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
+                ) : null}
+                <div>
+                  <div className={`font-bold ${isActive ? "text-hb-navy" : "text-midnight-ink"}`}>
+                    {pkg.destination}
+                  </div>
+                  <div className="mt-1 line-clamp-1 text-sm text-steel-secondary">
+                    {pkg.subtitle} - {pkg.network}
+                  </div>
+                  <div className="mt-2 text-sm font-bold text-hb-coral">
+                    {isSelectable
+                      ? `${t("Từ")} ${formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}`
+                      : t("Chưa có giá khả dụng")}
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
+  if (!showInternationalFilters) {
+    return (
+      <div className="pt-8">
+        <div className="relative mb-6">
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={query}
+            onChange={(event) => onQueryChange(event.target.value)}
+            placeholder={t("Tìm theo quốc gia, khu vực...")}
+            className="h-12 w-full rounded-xl border border-slate-200 pl-12 pr-4 text-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-hb-coral"
+          />
+        </div>
+
+        {renderPackageList()}
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-8">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-midnight-ink lg:text-4xl">{pageTitle || t("Sim du lịch quốc tế")}</h1>
+        </div>
+        <div className="hidden items-center gap-3 lg:flex">
+          <span className="text-lg text-midnight-ink">{t("Sắp xếp")}</span>
+          <div className="w-60 rounded-xl border border-slate-200 bg-white">
+            <select
+              value={sortMode}
+              onChange={(event) => onSortModeChange(event.target.value as SortMode)}
+              className="w-full rounded-xl bg-white px-4 py-3 text-midnight-ink outline-none"
+            >
+              <option value="newest">{t("Mới nhất")}</option>
+              <option value="price-asc">{t("Giá từ thấp đến cao")}</option>
+              <option value="price-desc">{t("Giá từ cao xuống thấp")}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-3 flex items-center justify-between text-sm text-midnight-ink lg:hidden">
+        <span>
+          {packages.length} {t("kết quả", "results")}
+        </span>
+        <span className="inline-flex items-center gap-2 font-medium text-slate-700">
+          <span>{sortMode === "price-desc" ? t("Giá cao xuống thấp") : sortMode === "price-asc" ? t("Giá thấp đến cao") : t("Mới nhất")}</span>
+        </span>
+      </div>
+
+      {renderPackageList()}
+    </div>
+  );
+}
