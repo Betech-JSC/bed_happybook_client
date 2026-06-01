@@ -302,6 +302,8 @@ export default function FlightBookForm({ airportsData }: any) {
         email: userInfo?.email,
         gender: userInfo && userInfo?.gender === 0 ? "female" : "male",
       },
+      update_phone_to_booking: false,
+      update_email_to_booking: false,
       checkBoxGenerateInvoice: false,
     },
   });
@@ -357,6 +359,8 @@ export default function FlightBookForm({ airportsData }: any) {
         address: "Ho Chi Minh City",
       },
       Note: "Auto filled test booking",
+      update_phone_to_booking: false,
+      update_email_to_booking: false,
       checkBoxGenerateInvoice: false,
     });
     
@@ -952,10 +956,14 @@ export default function FlightBookForm({ airportsData }: any) {
         bookData,
         confirmData
       );
-      const bookingFlight = attachPriceHoldToBookingSession(
-        merged,
-        confirmData
-      );
+      const bookingFlight: any = {
+        ...attachPriceHoldToBookingSession(
+          merged,
+          confirmData
+        ),
+        held: false,
+        skipped_hold: true,
+      };
 
       const orderSku =
         (bookingFlight.orderInfo as { sku?: string })?.sku ??
@@ -1630,6 +1638,39 @@ export default function FlightBookForm({ airportsData }: any) {
                       </p>
                     )}
                   </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      {...register("update_phone_to_booking")}
+                      className="w-4 h-4 mt-0.5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2 focus:ring-offset-2 transition-colors cursor-pointer"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-gray-800" data-translate="true">
+                        Cập nhật SĐT khách vào booking
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Nhận tin nhắn Delay/Thay đổi giờ bay trực tiếp từ hãng.
+                      </span>
+                    </div>
+                  </label>
+                  <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      {...register("update_email_to_booking")}
+                      className="w-4 h-4 mt-0.5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2 focus:ring-offset-2 transition-colors cursor-pointer"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-gray-800" data-translate="true">
+                        Cập nhật Email khách vào booking
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Nhận thông tin PNR/Vé trực tiếp từ hãng bay.
+                      </span>
+                    </div>
+                  </label>
                 </div>
 
                 <div className="mt-4">

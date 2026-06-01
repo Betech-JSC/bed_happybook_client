@@ -48,7 +48,7 @@ export function merge1GSelectionsForConfirm(
       (first.trip?._selectedJourneyFlights &&
         typeof first.trip._selectedJourneyFlights === "object"));
 
-  if (selections.length === 1 && tripHasPackage) return first;
+  if (tripHasPackage) return first;
 
   const picked: Record<string, Record<string, unknown>> = {};
   let packageTrip: Record<string, unknown> | null = null;
@@ -186,6 +186,10 @@ export function build1GConfirmPriceSelectionPayload(input: {
   const fareOption = { ...selection.fareOption };
   const flightType = resolve1GFlightType(trip);
   const itineraries = build1GItineraries(selection, fareBreakdowns);
+
+  if (itineraries[0]?.segments) {
+    trip.segments = itineraries[0].segments;
+  }
 
   const payload: ConfirmPriceRequest = {
     type: "1G",

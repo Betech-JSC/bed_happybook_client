@@ -76,6 +76,16 @@ const ERROR_TRANSLATIONS_VI: Record<string, string> = {
     "Hệ thống hãng bay từ chối giữ vé do chặng bay hoặc hạng đặt chỗ không khả dụng tại thời điểm này. Vui lòng chọn chuyến bay hoặc hạng vé khác.",
   "OFFER NOT FOUND":
     "Phiên giá vé (Offer) của hãng hàng không đã hết hạn hoặc không còn hiệu lực. Vui lòng quay lại tìm kiếm chuyến bay mới để cập nhật giá vé mới nhất.",
+  "AIR_CHINA_CANNOT_BE_BOOKED_WITHOUT_VIETNAM_AIRPORT":
+    "Hành trình của hãng Air China (CA) phải có điểm khởi hành hoặc điểm đến tại Việt Nam mới có thể đặt trực tuyến. Vui lòng chọn hành trình khác hoặc liên hệ booker.",
+  "*UNABLE - FLIGHT NOT FOUND IN VENDOR SYSTEM*":
+    "Hệ thống hãng bay báo chuyến bay này không còn khả dụng hoặc đã thay đổi lịch trình. Vui lòng quay lại tìm kiếm chuyến bay mới.",
+  "AGENCY_CAN_NOT_PAYMENT_THIS_AIRLINE":
+    "Tài khoản đại lý không có quyền tự động xuất vé cho hãng này. Đơn hàng sẽ được nhân viên phòng vé xử lý thủ công.",
+  "VJ_CANNOT_HOLD_BOOKING_24_HOURS_BEFORE_DEPARTURE_TIME":
+    "Hãng VietJet không cho phép giữ chỗ dưới 24 giờ trước khởi hành. Vui lòng liên hệ bộ phận hỗ trợ khách hàng để được hỗ trợ xuất vé.",
+  "vj_near_departure_manual_needed":
+    "Hãng VietJet không cho phép giữ chỗ dưới 24 giờ trước khởi hành. Đơn hàng đang được Booker xử lý thủ công.",
 };
 
 const ERROR_TRANSLATIONS_EN: Record<string, string> = {
@@ -87,6 +97,16 @@ const ERROR_TRANSLATIONS_EN: Record<string, string> = {
     "The fare offer has expired. Please go back and search again to get the latest price.",
   "TRAVELPORT_NOT_SUPPORTED_THIS_AIRLINE":
     "This airline is not supported for online booking through our partner system. Please choose a different airline or contact support.",
+  "AIR_CHINA_CANNOT_BE_BOOKED_WITHOUT_VIETNAM_AIRPORT":
+    "Air China (CA) flights cannot be booked online for itineraries that do not start or end in Vietnam. Please choose another route or contact support.",
+  "*UNABLE - FLIGHT NOT FOUND IN VENDOR SYSTEM*":
+    "The airline reported that this flight is no longer available or the schedule has changed. Please search for a new flight.",
+  "AGENCY_CAN_NOT_PAYMENT_THIS_AIRLINE":
+    "Our agency account is not authorized to auto-issue tickets for this airline. The order will be handled manually by bookers.",
+  "VJ_CANNOT_HOLD_BOOKING_24_HOURS_BEFORE_DEPARTURE_TIME":
+    "VietJet does not allow booking holds within 24 hours of departure. Please contact support to issue your ticket.",
+  "vj_near_departure_manual_needed":
+    "VietJet does not allow booking holds within 24 hours of departure. The order is being handled manually by bookers.",
 };
 
 function extractPayload(payload: unknown): {

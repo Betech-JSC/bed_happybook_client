@@ -7,6 +7,7 @@ export type FlightBookingOrderStatus =
   | "paid"
   | "issuing"
   | "issued"
+  | "done"
   | "paid_book_failed";
 
 export interface FlightBookingStatusData {

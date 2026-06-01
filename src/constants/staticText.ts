@@ -54,8 +54,11 @@ export const flightStaticText: string[] = [
   "Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất",
   "Chuyến bay",
   "Ngày đặt",
-  "Khởi hành quá gần (dưới 4h) - Không thể đặt trực tuyến",
+  "Khởi hành quá gần (dưới 4h)",
   "Khởi hành < 4h",
+  "Cảnh báo giờ bay gần",
+  "Chuyến bay này sẽ khởi hành dưới 4 tiếng tính từ hiện tại. Vui lòng đảm bảo bạn kịp thời gian di chuyển ra sân bay và làm thủ tục.",
+  "Đồng ý tiếp tục",
 ];
 
 export const visaStaticText: string[] = [
@@ -195,6 +198,8 @@ const headerStaticText: string[] = [
   "Sim du lịch quốc tế",
   "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
   "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
+  "Flight Radar",
+  "Tra cứu và theo dõi tình trạng chuyến bay trực tuyến",
 ];
 
 const footerStaticText: string[] = [

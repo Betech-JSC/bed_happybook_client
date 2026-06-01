@@ -106,6 +106,8 @@ export interface ConfirmPriceRequest {
   booking_flight_request_id?: number | null;
   trip?: string | null;
   session?: string | null;
+  update_phone_to_booking?: boolean;
+  update_email_to_booking?: boolean;
 }
 
 export interface ConfirmPriceBreakdown {

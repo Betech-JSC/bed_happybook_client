@@ -82,6 +82,7 @@ export function build1GFareOptionFromPackage(
     copyFareValueRaw(ticket.fareValue) ||
     copyFareValueRaw(pkg.fareValue) ||
     String(pkg.hpb_id ?? "").trim();
+  const journeyIds = ticket.journeyIds ?? pkg.journeyIds ?? ticket.journey_ids ?? pkg.journey_ids;
 
   return {
     ...ticket,
@@ -100,6 +101,7 @@ export function build1GFareOptionFromPackage(
     totalPriceWithOutTax:
       ticket.totalPriceWithOutTax ?? pkg.totalPriceWithOutTax,
     fareValue,
+    ...(journeyIds ? { journeyIds } : {}),
   };
 }
 

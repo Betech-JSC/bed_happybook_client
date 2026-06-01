@@ -43,6 +43,7 @@ import {
   resolvePriceHoldExpiresAt,
 } from "@/utils/flightHoldExpiry";
 import { getTripClientId } from "@/utils/normalizeFlightTrip";
+import { flightBookingErrorToastText } from "@/utils/formatFlightBookingError";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const { t } = useTranslation();
@@ -142,7 +143,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               window.open(result.payment_url, "_blank");
               return;
             }
-            toast.error(toaStrMsg.sendFailed);
+            const errText = flightBookingErrorToastText(
+              result,
+              language as "vi" | "en",
+              "Không thể tạo link thanh toán. Vui lòng thử lại."
+            );
+            toast.error(errText);
           }
           if (selectedPaymentMethod === "cash") {
             setIsOrderCashSuccess(true);
@@ -422,10 +428,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     [showRuleTicket, fetchFareRules],
   );
 
-  const handleTicketPaymentTimeout = () => {
+  const handleTicketPaymentTimeout = useCallback(() => {
     setTicketPaymentTimeout(true);
     toast.error("Phiên giữ giá / thanh toán đã hết hạn");
-  };
+  }, []);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -502,7 +508,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               "Error generating QR code or creating receipt:",
               error,
             );
-            toast.error(toaStrMsg.error);
+            const errText = flightBookingErrorToastText(
+              error?.payload ?? error,
+              language as "vi" | "en",
+              "Không thể tạo mã QR thanh toán. Vui lòng thử lại."
+            );
+            toast.error(errText);
           });
       }
     }

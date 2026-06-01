@@ -18,8 +18,8 @@ export default function CountDownCheckOut({
     : timeCountDown;
   const targetTime = typeof normalizedTime === "string" ? parseISO(normalizedTime) : normalizedTime;
 
-  const calculateTimeLeft = useCallback((target: Date) => {
-    const difference = +target - +new Date();
+  const calculateTimeLeft = useCallback((targetMs: number) => {
+    const difference = targetMs - Date.now();
     if (difference <= 0) {
       return { hours: 0, minutes: 0, seconds: 0, totalMs: 0, expired: true as const };
     }
@@ -33,11 +33,12 @@ export default function CountDownCheckOut({
     };
   }, []);
 
-  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetTime));
+  const targetTimestamp = targetTime.getTime();
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetTimestamp));
 
   useEffect(() => {
     const tick = () => {
-      const next = calculateTimeLeft(targetTime);
+      const next = calculateTimeLeft(targetTimestamp);
       setTimeLeft(next);
       if (next.expired && !expiredNotifiedRef.current) {
         expiredNotifiedRef.current = true;
@@ -48,7 +49,7 @@ export default function CountDownCheckOut({
     tick();
     const timerCheckOut = setInterval(tick, 1000);
     return () => clearInterval(timerCheckOut);
-  }, [targetTime, calculateTimeLeft, handleTicketPaymentTimeout]);
+  }, [targetTimestamp, calculateTimeLeft, handleTicketPaymentTimeout]);
 
   if (timeLeft.expired) {
     return (

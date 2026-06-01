@@ -1,6 +1,10 @@
 import { format, parseISO } from "date-fns";
 import { handleSessionStorage } from "@/utils/Helper";
-import { isBookingDeadlineExpired } from "@/utils/flightBookingFlow";
+import {
+  isBookingDeadlineExpired,
+  isFlightPaymentConfirmed,
+} from "@/utils/flightBookingFlow";
+import type { FlightBookingOrderStatus } from "@/types/flightBooking";
 import { normalizeConfirmPriceResponse } from "@/utils/buildFlightConfirmPricePayload";
 import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import {
@@ -261,6 +265,15 @@ export function evaluateFlightSelectionChange(input: {
   if (!routesMatchStrict(input.searchRoute, meta)) return { type: "allow" };
 
   if (meta.stage === "pending_payment" || meta.stage === "held") {
+    const bookingFlight = handleSessionStorage("get", "bookingFlight") as
+      | { status?: string; orderInfo?: { status?: string } }
+      | null;
+    const status = (bookingFlight?.status ||
+      bookingFlight?.orderInfo?.status) as FlightBookingOrderStatus | undefined;
+    if (status && isFlightPaymentConfirmed(status)) {
+      clearFlightDraftSession();
+      return { type: "allow" };
+    }
     return {
       type: "block_pending_payment",
       orderCode: meta.orderCode,
@@ -574,11 +587,9 @@ export function findMatchingFlightDraft(
   const bookingFlight = handleSessionStorage("get", "bookingFlight") as
     | { status?: string; orderInfo?: { status?: string } }
     | null;
-  const terminalStatus =
-    bookingFlight?.status === "issued" ||
-    bookingFlight?.status === "paid_book_failed" ||
-    bookingFlight?.orderInfo?.status === "issued" ||
-    bookingFlight?.orderInfo?.status === "paid_book_failed";
+  const status = (bookingFlight?.status ||
+    bookingFlight?.orderInfo?.status) as FlightBookingOrderStatus | undefined;
+  const terminalStatus = status ? isFlightPaymentConfirmed(status) : false;
   if (terminalStatus) {
     clearFlightDraftSession();
     return null;

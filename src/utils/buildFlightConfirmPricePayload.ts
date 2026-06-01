@@ -551,9 +551,20 @@ export function buildFlightConfirmPricePayload(input: {
   };
   flightSession?: string | null;
   bookingFlightRequestId?: number | null;
+  agentContact?: { phone?: string; email?: string } | null;
+  update_phone_to_booking?: boolean;
+  update_email_to_booking?: boolean;
 }): ConfirmPriceRequest {
-  const { flights, passengers, contact, flightSession, bookingFlightRequestId } =
-    input;
+  const {
+    flights,
+    passengers,
+    contact,
+    flightSession,
+    bookingFlightRequestId,
+    agentContact,
+    update_phone_to_booking,
+    update_email_to_booking,
+  } = input;
   const primaryFlight = flights[0] ?? {};
   const flightType: FlightTripType = flights.length > 1 ? "RT" : "OW";
   const sourceType = String(primaryFlight.source ?? "");
@@ -592,17 +603,27 @@ export function buildFlightConfirmPricePayload(input: {
     });
   }
 
+  const finalPhone = update_phone_to_booking
+    ? (contact.phone || "")
+    : (agentContact?.phone || contact.phone || "");
+
+  const finalEmail = update_email_to_booking
+    ? (contact.email || "")
+    : (agentContact?.email || contact.email || "");
+
   const payload: ConfirmPriceRequest = {
     type: isVietnamAirlinesSource(sourceType) ? "VN1A" : sourceType,
     flightType,
     splitItineraries: false,
     airlineContact: {
-      phoneNumber: normalizeAirdataPhoneNumber(contact.phone),
-      email: contact.email ?? "",
+      phoneNumber: normalizeAirdataPhoneNumber(finalPhone),
+      email: finalEmail,
     },
     paxLists,
     itineraries,
     contact: buildConfirmContact(contact),
+    update_phone_to_booking: !!update_phone_to_booking,
+    update_email_to_booking: !!update_email_to_booking,
   };
 
   if (flightSession) {
@@ -645,6 +666,9 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
     address?: string;
   };
   bookingFlightRequestId?: number | null;
+  agentContact?: { phone?: string; email?: string } | null;
+  update_phone_to_booking?: boolean;
+  update_email_to_booking?: boolean;
 }): ConfirmPriceRequest {
   if (is1GConfirmSelection(input.selections)) {
     const merged = merge1GSelectionsForConfirm(input.selections);
@@ -731,6 +755,9 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
       contact: input.contact,
       session: sessionId,
       bookingFlightRequestId: input.bookingFlightRequestId,
+      agentContact: input.agentContact,
+      update_phone_to_booking: input.update_phone_to_booking,
+      update_email_to_booking: input.update_email_to_booking,
     });
   }
 
@@ -740,6 +767,9 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
     contact: input.contact,
     flightSession: sessionId,
     bookingFlightRequestId: input.bookingFlightRequestId,
+    agentContact: input.agentContact,
+    update_phone_to_booking: input.update_phone_to_booking,
+    update_email_to_booking: input.update_email_to_booking,
   });
 }
 
