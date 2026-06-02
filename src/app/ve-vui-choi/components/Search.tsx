@@ -62,7 +62,7 @@ export default function Search({
       setIsLastPage(false);
 
       const search = buildSearch(query);
-      const res = await ProductTicket.search(`${search}`);
+      const res = await ProductTicket.search(`${search}`, language);
       const result = res?.payload?.data;
 
       setData((prevData: any[]) => {
@@ -91,7 +91,7 @@ export default function Search({
       setLoadingLoadMore(false);
       setIsDisabled(false);
     }
-  }, [query]);
+  }, [query, language]);
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);

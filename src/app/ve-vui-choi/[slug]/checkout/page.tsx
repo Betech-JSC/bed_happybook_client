@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import CheckOutForm from "@/app/ve-vui-choi/components/FormCheckOut";
 import { ProductTicket } from "@/api/ProductTicket";
 import { isMatch, parse, isBefore, startOfDay } from "date-fns";
+import { getServerLang } from "@/lib/session";
 
 export default async function TourCheckout({
   params,
@@ -24,7 +25,8 @@ export default async function TourCheckout({
   ) {
     notFound();
   }
-  const res = (await ProductTicket.detail(params.slug, departDate)) as any;
+  const language = await getServerLang();
+  const res = (await ProductTicket.detail(params.slug, departDate, language)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();
