@@ -42,7 +42,8 @@ function getMetadata(data: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const contentPage = (await PageApi.getContent("du-thuyen"))?.payload
+  const language = await getServerLang();
+  const contentPage = (await PageApi.getContent("du-thuyen", language))?.payload
     ?.data as any;
 
   return getMetadata(contentPage);

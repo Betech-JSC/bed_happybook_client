@@ -12,9 +12,11 @@ import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import Search from "./Search";
 import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 export default async function YachtCategory({ detail }: any) {
   const language = await getServerLang();
+  const t = await getServerT();
   const optionsFilter = (await ProductYachtApi.getOptionsFilter(language))?.payload
     ?.data as any;
   const filteredOptions = optionsFilter.filter(
@@ -30,7 +32,7 @@ export default async function YachtCategory({ detail }: any) {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/" className="text-blue-700">
-                    Trang chủ
+                    {t("trang_chu")}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
