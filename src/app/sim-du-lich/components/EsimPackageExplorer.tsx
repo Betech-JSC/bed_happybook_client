@@ -29,6 +29,7 @@ type Props = {
   destinationOptions?: EsimFilterOption[];
   selectedDestinationLabels?: string[];
   onToggleDestinationLabel?: (label: string) => void;
+  onDestinationLabelsChange?: (labels: string[]) => void;
   onSelectDestinationLabel?: (label: string | null) => void;
   onSelectPackageFilterSku?: (sku: string | null) => void;
   packageQuery?: string;
@@ -65,6 +66,7 @@ export default function EsimPackageExplorer({
   destinationOptions = [],
   selectedDestinationLabels = [],
   onToggleDestinationLabel,
+  onDestinationLabelsChange,
   onSelectDestinationLabel,
   onSelectPackageFilterSku,
   packageQuery,
@@ -115,6 +117,7 @@ export default function EsimPackageExplorer({
         destinationOptions={destinationOptions}
         selectedDestinationLabels={selectedDestinationLabels}
         onToggleDestinationLabel={onToggleDestinationLabel}
+        onDestinationLabelsChange={onDestinationLabelsChange}
         onSelectDestinationLabel={onSelectDestinationLabel}
         onSelectPackageFilterSku={onSelectPackageFilterSku}
         packageQuery={packageQuery}

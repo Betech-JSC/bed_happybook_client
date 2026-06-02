@@ -219,6 +219,7 @@ export default function EsimProductPage({
           destinationOptions={catalog.sidebarOptions}
           selectedDestinationLabels={catalog.selectedDestinationLabels}
           onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
+          onDestinationLabelsChange={catalog.setSelectedDestinationLabels}
           onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
           onSelectPackageFilterSku={catalog.handleSelectPackageFilterSku}
           packageQuery={catalog.packageQuery}
