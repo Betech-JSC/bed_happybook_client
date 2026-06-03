@@ -20,6 +20,7 @@ const FlightInternational1GDetail = ({
   fareData,
   airports,
   isCheapest,
+  selectedDepartFlight,
 }: any) => {
   const { t } = useTranslation();
 
@@ -147,21 +148,34 @@ const FlightInternational1GDetail = ({
                 <div className="col-span-2 w-full text-center flex flex-col items-center justify-center gap-1 md:gap-2">
                   <div>
                     <input
-                      name={`flight[${flight.sequence === 1 ? 0 : 1}]`}
+                      name={`flight[${journeyIndex}]`}
                       checked={
-                        fareData?._selectedJourneyFlights?.[String(Number(journeyIndex) || 0)]?.flightCode === flight.flightCode
+                        selectedDepartFlight?.hpb_id === fareData?.hpb_id &&
+                        (() => {
+                          const selected = selectedDepartFlight?._selectedJourneyFlights?.[String(Number(journeyIndex) || 0)];
+                          if (!selected) return false;
+                          const selId = selected.journeyId ?? selected.journey_id ?? selected.flightCode;
+                          const curId = flight.journeyId ?? flight.journey_id ?? flight.flightCode;
+                          return selId && curId && selId === curId;
+                        })()
                       }
+                      readOnly
                       onClick={(e) => {
-                        if (isTooClose && fareData?._selectedJourneyFlights?.[String(Number(journeyIndex) || 0)]?.flightCode !== flight.flightCode) {
+                        const isAlreadySelected = selectedDepartFlight?.hpb_id === fareData?.hpb_id &&
+                          (() => {
+                            const selected = selectedDepartFlight?._selectedJourneyFlights?.[String(Number(journeyIndex) || 0)];
+                            if (!selected) return false;
+                            const selId = selected.journeyId ?? selected.journey_id ?? selected.flightCode;
+                            const curId = flight.journeyId ?? flight.journey_id ?? flight.flightCode;
+                            return selId && curId && selId === curId;
+                          })();
+                        if (isTooClose && !isAlreadySelected) {
                           e.preventDefault();
                           setShowWarningModal(true);
                           setPendingFlight(flight);
+                          return;
                         }
-                      }}
-                      onChange={(e) => {
-                        if (!isTooClose) {
-                          handleSelectFlight(flight, e);
-                        }
+                        handleSelectFlight(flight, e as any);
                       }}
                       type="radio"
                       className="w-4 h-4 md:w-5 md:h-5 cursor-pointer"

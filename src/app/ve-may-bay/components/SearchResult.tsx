@@ -265,13 +265,23 @@ export default function SearchFlightsResult({
         fetchedResourcesRef.current.clear();
         setAirlineData([]);
         setError("");
-        handleSessionStorage("remove", [
-          "selectedFlightDepart",
-          "selectedFlightReturn",
-          "departFlight",
-          "returnFlight",
-          "flightConfirmPrice",
-        ]);
+        const searchRoute = buildSearchRouteFromParams({
+          startPoint: StartPoint,
+          endPoint: EndPoint,
+          tripType,
+          departDate: DepartDate,
+          returnDate: ReturnDate,
+        });
+        const match = findMatchingFlightDraft(searchRoute);
+        if (!match) {
+          handleSessionStorage("remove", [
+            "selectedFlightDepart",
+            "selectedFlightReturn",
+            "departFlight",
+            "returnFlight",
+            "flightConfirmPrice",
+          ]);
+        }
         if (StartPoint && EndPoint && DepartDate) {
           const response = await FlightApi.search({
             ...params,

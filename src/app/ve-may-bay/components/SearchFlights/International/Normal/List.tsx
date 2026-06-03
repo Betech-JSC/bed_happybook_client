@@ -140,7 +140,8 @@ export default function ListFlightsInternationalNormal({
               key={index}
               FareData={item}
               onSelectFlight={handleSelectDepartFlight}
-              selectedFlight={null}
+              selectedFlight={selectedDepartFlight}
+              selectedFareDataId={selectedFareDataId}
               setFlightDetail={handleShowPopupFlightDetail}
               filters={filters}
               totalPassengers={totalPassengers}
@@ -183,7 +184,8 @@ export default function ListFlightsInternationalNormal({
               key={index}
               FareData={item}
               onSelectFlight={handleSelectReturnFlight}
-              selectedFlight={null}
+              selectedFlight={selectedReturnFlight}
+              selectedFareDataId={selectedFareDataId}
               setFlightDetail={handleShowPopupFlightDetail}
               filters={filters}
               totalPassengers={totalPassengers}
@@ -200,14 +202,14 @@ export default function ListFlightsInternationalNormal({
           ref={btnCheckoutRef}
         >
           <button
-            className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${!isCheckOut
+            className={`text-center w-36 h-11 mt-5 md:mt-3 bg-blue-50 text-blue-700 font-medium py-2 rounded-lg hover:text-primary duration-300 ${!isCheckOut || selectedFareDataId !== flightsData.hpb_id
               ? "disabled:bg-gray-200 disabled:cursor-not-allowed"
               : ""
               }`}
             onClick={() => {
               handleCheckout();
             }}
-            disabled={isCheckOut ? false : true}
+            disabled={!isCheckOut || selectedFareDataId !== flightsData.hpb_id}
           >
             <span>{t("chon")}</span>
           </button>

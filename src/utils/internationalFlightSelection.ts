@@ -8,7 +8,13 @@ import { handleSessionStorage } from "@/utils/Helper";
 import { copyFareValueRaw } from "@/utils/fareValueToken";
 
 export function is1GSource(source: unknown): boolean {
-  return String(source ?? "").toUpperCase() === "1G";
+  const s = String(source ?? "").toUpperCase();
+  return s === "1G";
+}
+
+export function isGdsSource(source: unknown): boolean {
+  const s = String(source ?? "").toUpperCase();
+  return s === "1G" || s === "9G";
 }
 
 export type JourneyLike = {

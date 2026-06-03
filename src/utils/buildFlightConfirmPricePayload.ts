@@ -26,7 +26,7 @@ import {
 import { resolveConfirmItineraryId } from "@/utils/confirmPriceIdentifiers";
 import { resolveSegmentDateTime } from "@/utils/mapSegmentForConfirm";
 import type { SelectedFlight } from "@/types/selectedFlight";
-import { is1GSource } from "@/utils/internationalFlightSelection";
+import { is1GSource, isGdsSource } from "@/utils/internationalFlightSelection";
 import {
   build1GConfirmPriceSelectionPayload,
   is1GConfirmSelection,
@@ -87,28 +87,28 @@ const FARE_BREAKDOWN_CONFIG: Array<{
   discountKeys: string[];
   taxKeys: string[];
 }> = [
-  {
-    paxType: "ADULT",
-    countKey: "numberAdt",
-    netKeys: ["fareAdult"],
-    discountKeys: ["discountAdult", "discountAmountAdult"],
-    taxKeys: ["taxAdult"],
-  },
-  {
-    paxType: "CHILD",
-    countKey: "numberChd",
-    netKeys: ["fareChild"],
-    discountKeys: ["discountChild", "discountAmountChild"],
-    taxKeys: ["taxChild"],
-  },
-  {
-    paxType: "INFANT",
-    countKey: "numberInf",
-    netKeys: ["fareInfant"],
-    discountKeys: ["discountInfant", "discountAmountInfant"],
-    taxKeys: ["taxInfant"],
-  },
-];
+    {
+      paxType: "ADULT",
+      countKey: "numberAdt",
+      netKeys: ["fareAdult"],
+      discountKeys: ["discountAdult", "discountAmountAdult"],
+      taxKeys: ["taxAdult"],
+    },
+    {
+      paxType: "CHILD",
+      countKey: "numberChd",
+      netKeys: ["fareChild"],
+      discountKeys: ["discountChild", "discountAmountChild"],
+      taxKeys: ["taxChild"],
+    },
+    {
+      paxType: "INFANT",
+      countKey: "numberInf",
+      netKeys: ["fareInfant"],
+      discountKeys: ["discountInfant", "discountAmountInfant"],
+      taxKeys: ["taxInfant"],
+    },
+  ];
 
 function pickNumber(
   source: Record<string, unknown>,
@@ -180,15 +180,15 @@ export function buildFareBreakdowns(
   const fare = isVj
     ? ((flight.selectedTicketClass as Record<string, unknown>) ?? {})
     : repairFareOptionFromTrip(
-        ((flight.selectedTicketClass as Record<string, unknown>) ??
-          (flight.fareOptions as Record<string, unknown>[])?.[fareIndex] ??
-          {}) as Record<string, unknown>,
-        {
-          fareOptionIndex: fareIndex,
-          trip: flight,
-          source,
-        }
-      );
+      ((flight.selectedTicketClass as Record<string, unknown>) ??
+        (flight.fareOptions as Record<string, unknown>[])?.[fareIndex] ??
+        {}) as Record<string, unknown>,
+      {
+        fareOptionIndex: fareIndex,
+        trip: flight,
+        source,
+      }
+    );
 
   if (isVj) {
     return buildVjFareBreakdowns(fare, flight);
@@ -299,7 +299,7 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
   const baseTicketClass = flight.selectedTicketClass as
     | Record<string, unknown>
     | undefined;
-  const isGds = is1GSource(flight.source);
+  const isGds = isGdsSource(flight.source);
   const isVj = isVietJetSource(flight.source);
   const isVn1a = isVietnamAirlinesSource(flight.source);
   const isVu = isVuSource(flight.source);
@@ -479,7 +479,7 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
 function buildItineraries(flights: Record<string, unknown>[]): ConfirmPriceItinerary[] {
   return flights.map((flight, index) => {
     const airline = copyTripField(flight.airline) || copyTripField(flight.airLineCode);
-    const isGds = is1GSource(flight.source);
+    const isGds = isGdsSource(flight.source);
     const isVj = isVietJetSource(flight.source);
     const isVn1a = isVietnamAirlinesSource(flight.source);
     const isVu = isVuSource(flight.source);
@@ -569,7 +569,9 @@ export function buildFlightConfirmPricePayload(input: {
   const flightType: FlightTripType = flights.length > 1 ? "RT" : "OW";
   const sourceType = String(primaryFlight.source ?? "");
 
-  if (isVietJetSource(sourceType)) {
+  const allVj = flights.every((f) => isVietJetSource(f.source));
+
+  if (allVj) {
     if (!flightSession) {
       throw new Error("VJ_SESSION_REQUIRED");
     }
@@ -712,21 +714,21 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
     const source = trip.source ?? sel.fareOption?.source;
     const selectedFare = isVuSource(source)
       ? assertVuFareConsistency(
-          {
-            ...trip,
-            selectedTicketClass: sel.fareOption,
-            fareOptionIndex: sel.fareOptionIndex,
-          },
-          "confirm"
-        )
+        {
+          ...trip,
+          selectedTicketClass: sel.fareOption,
+          fareOptionIndex: sel.fareOptionIndex,
+        },
+        "confirm"
+      )
       : repairFareOptionFromTrip(
-          sel.fareOption as Record<string, unknown>,
-          {
-            fareOptionIndex: sel.fareOptionIndex,
-            trip,
-            source,
-          }
-        );
+        sel.fareOption as Record<string, unknown>,
+        {
+          fareOptionIndex: sel.fareOptionIndex,
+          trip,
+          source,
+        }
+      );
     return {
       ...trip,
       selectedTicketClass: selectedFare,
@@ -788,7 +790,7 @@ export function buildPassengersFromForm(
     items.map((item, index) => {
       const baggages =
         listBaggagePassenger[typeKey]?.[index] &&
-        Array.isArray(listBaggagePassenger[typeKey][index])
+          Array.isArray(listBaggagePassenger[typeKey][index])
           ? listBaggagePassenger[typeKey][index]
           : undefined;
 

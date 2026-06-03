@@ -442,7 +442,8 @@ export default function ListFlightsInternaltion({
           body: JSON.stringify({
             flightType:
               selectedDepartFlight?.source === SOURCE_1G &&
-                selectedReturnFlight?.source === SOURCE_1G
+                selectedReturnFlight?.source === SOURCE_1G &&
+                Array.isArray(selectedDepartFlight?.journeys)
                 ? SOURCE_1G
                 : "NORMAL",
           }),
@@ -488,7 +489,7 @@ export default function ListFlightsInternaltion({
       setSelectedDepartFlight(null);
     }
 
-    if (flight?.source === SOURCE_1G) {
+    if (flight?.source === SOURCE_1G && Array.isArray(flight?.journeys)) {
       const merged = merge1GPackageSelection(
         FareId === selectedFareDataId ? selectedDepartFlight : null,
         flight
@@ -513,7 +514,7 @@ export default function ListFlightsInternaltion({
       setSelectedReturnFlight(null);
     }
 
-    if (flight?.source === SOURCE_1G) {
+    if (flight?.source === SOURCE_1G && Array.isArray(flight?.journeys)) {
       const merged = merge1GPackageSelection(selectedDepartFlight, flight);
       setSelectedDepartFlight(merged);
       setSelectedReturnFlight(merged);
@@ -528,16 +529,19 @@ export default function ListFlightsInternaltion({
       setIsCheckOut(false);
       return;
     }
-    if (selectedDepartFlight.source === SOURCE_1G) {
+    if (selectedDepartFlight.source === SOURCE_1G && Array.isArray(selectedDepartFlight.journeys)) {
       const picked =
         (selectedDepartFlight._selectedJourneyFlights as Record<string, unknown>) ??
         {};
       const requiredLegs = isRoundTrip ? ["0", "1"] : ["0"];
-      setIsCheckOut(requiredLegs.every((key) => Boolean(picked[key])));
+      const result = requiredLegs.every((key) => Boolean(picked[key]));
+      setIsCheckOut(result);
       return;
     }
     if (selectedDepartFlight && selectedReturnFlight) {
       setIsCheckOut(true);
+    } else {
+      setIsCheckOut(false);
     }
   }, [isRoundTrip, selectedReturnFlight, selectedDepartFlight]);
 
@@ -785,6 +789,7 @@ export default function ListFlightsInternaltion({
                         handleSelectDepartFlight={handleSelectDepartFlight}
                         handleSelectReturnFlight={handleSelectReturnFlight}
                         selectedFareDataId={selectedFareDataId}
+                        selectedDepartFlight={selectedDepartFlight}
                         handleCheckout={handleCheckout}
                         isCheckOut={isCheckOut}
                         isCheapest={

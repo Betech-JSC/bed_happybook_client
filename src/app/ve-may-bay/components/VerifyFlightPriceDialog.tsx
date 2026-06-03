@@ -8,6 +8,7 @@ interface VerifyFlightPriceDialogProps {
   error: string | null;
   language?: string;
   onClose: () => void;
+  onSearchAgain?: () => void;
 }
 
 export default function VerifyFlightPriceDialog({
@@ -16,10 +17,20 @@ export default function VerifyFlightPriceDialog({
   error,
   language = "vi",
   onClose,
+  onSearchAgain,
 }: VerifyFlightPriceDialogProps) {
   if (!open) return null;
 
   const isVi = language === "vi";
+
+  const handleSearchAgain = () => {
+    onClose();
+    if (onSearchAgain) {
+      onSearchAgain();
+    } else {
+      window.location.reload();
+    }
+  };
 
   return (
     <div
@@ -73,13 +84,20 @@ export default function VerifyFlightPriceDialog({
                   ? "Hạng vé hoặc chuyến bay bạn chọn hiện không còn khả dụng trên hệ thống hãng bay."
                   : "The selected flight or seat class is no longer available from the airline.")}
             </p>
-            <div className="w-full flex justify-end">
+            <div className="w-full flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={handleSearchAgain}
+                className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-sm font-semibold shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                {isVi ? "Tìm kiếm lại chuyến bay" : "Search for flights again"}
+              </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-sm font-semibold shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="w-full rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-3 text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               >
-                {isVi ? "Đóng & Chọn chuyến khác" : "Close & Choose another"}
+                {isVi ? "Chọn chuyến khác trong danh sách" : "Choose another from list"}
               </button>
             </div>
           </div>
@@ -88,3 +106,4 @@ export default function VerifyFlightPriceDialog({
     </div>
   );
 }
+

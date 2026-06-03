@@ -20,14 +20,11 @@ const FlightInternationDetail = ({
   HPB_ID,
   airports,
   isCheapest,
+  selectedFareDataId,
 }: any) => {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = React.useState<boolean>(false);
   const [showWarningModal, setShowWarningModal] = React.useState<boolean>(false);
-
-  if (selectedFlight) {
-    FareData = selectedFlight;
-  }
 
   let flight = FareData ?? null;
 
@@ -134,7 +131,10 @@ const FlightInternationDetail = ({
             <div>
               <input
                 name={`flight[${flightLeg}]`}
-                checked={selectedFlight?.flightCode === flight.flightCode}
+                checked={
+                  selectedFlight?.flightCode === flight.flightCode &&
+                  selectedFareDataId === HPB_ID
+                }
                 onClick={(e) => {
                   if (isTooClose && selectedFlight?.flightCode !== flight.flightCode) {
                     e.preventDefault();

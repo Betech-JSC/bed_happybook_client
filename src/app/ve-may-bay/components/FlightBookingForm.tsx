@@ -80,7 +80,10 @@ import {
   resolveFareValueFromFareOption,
 } from "@/utils/fareValueToken";
 import { verifySelectedFlights } from "@/utils/verifySelectedFlight";
-import { appendBookFlightPassportFields } from "@/utils/buildPaxDocuments";
+import {
+  appendBookFlightPassportFields,
+  isInternationalItineraries,
+} from "@/utils/buildPaxDocuments";
 import { readSegmentEndpoint } from "@/utils/segmentEndpoint";
 import {
   build1GHoldFareData,
@@ -151,8 +154,8 @@ export default function FlightBookForm({ airportsData }: any) {
         birthday: "1990-01-01",
         passport: "G12345678",
         passport_expiry_date: "2030-12-31",
-        passport_country: "VN",
-        nationality: "VN",
+        passport_country: "VNM",
+        nationality: "VNM",
       });
     }
     for (let i = 0; i < (paxCounts.child || 0); i++) {
@@ -165,8 +168,8 @@ export default function FlightBookForm({ airportsData }: any) {
         birthday: "2018-06-01",
         passport: "G12345678",
         passport_expiry_date: "2030-12-31",
-        passport_country: "VN",
-        nationality: "VN",
+        passport_country: "VNM",
+        nationality: "VNM",
       });
     }
     for (let i = 0; i < (paxCounts.infant || 0); i++) {
@@ -179,8 +182,8 @@ export default function FlightBookForm({ airportsData }: any) {
         birthday: "2025-06-01",
         passport: "G12345678",
         passport_expiry_date: "2030-12-31",
-        passport_country: "VN",
-        nationality: "VN",
+        passport_country: "VNM",
+        nationality: "VNM",
       });
     }
     return passengers;
@@ -213,6 +216,13 @@ export default function FlightBookForm({ airportsData }: any) {
         const payload = respon?.payload ?? {};
         const errDisplay = formatFlightBookingError(payload, lang);
         setPreVerifyError(errDisplay);
+      } else {
+        const confirmResult = respon?.payload?.data ?? respon?.payload;
+        setConfirmData(confirmResult);
+        handleSessionStorage("save", "flightConfirmPrice", {
+          confirm: confirmResult,
+          bookingDraft: null,
+        });
       }
     } catch (err: any) {
       const payload = err instanceof HttpError ? err.payload : err?.payload ?? err;
@@ -323,7 +333,7 @@ export default function FlightBookForm({ airportsData }: any) {
       gender: i % 2 === 0 ? "male" : "female",
       birthday: new Date(1990, 0, 1),
       passport: "G12345678",
-      nationality: "VN",
+      nationality: "VNM",
       passport_expiry_date: new Date(2035, 11, 31),
     }));
 
@@ -333,7 +343,7 @@ export default function FlightBookForm({ airportsData }: any) {
       gender: i % 2 === 0 ? "male" : "female",
       birthday: new Date(new Date().getFullYear() - 5, 0, 1),
       passport: "G12345678",
-      nationality: "VN",
+      nationality: "VNM",
       passport_expiry_date: new Date(2035, 11, 31),
     }));
 
@@ -343,7 +353,7 @@ export default function FlightBookForm({ airportsData }: any) {
       gender: i % 2 === 0 ? "male" : "female",
       birthday: new Date(new Date().getFullYear() - 1, 0, 1),
       passport: "G12345678",
-      nationality: "VN",
+      nationality: "VNM",
       passport_expiry_date: new Date(2035, 11, 31),
     }));
 
@@ -1087,10 +1097,8 @@ export default function FlightBookForm({ airportsData }: any) {
     if (selections.length > 1 || flightData.length > 1) setIsRoundTrip(true);
     setSelectedFlights(selections);
     setFlights(flightData);
-    const is1G = String(selections[0].trip?.source ?? "").toUpperCase() === "1G";
-    setFlightType(
-      is1G || !selections[0].trip.domestic ? "international" : "domestic"
-    );
+    const isInternational = isInternationalItineraries(flightData);
+    setFlightType(isInternational ? "international" : "domestic");
     setFlightsDetail(flightData);
     setFlightSession(flightSession ?? selections[0].searchId);
     const savedConfirm = handleSessionStorage("get", "flightConfirmPrice");

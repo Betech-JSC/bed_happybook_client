@@ -295,6 +295,9 @@ export function sanitizeVjConfirmPriceRequest(
 
   next.itineraries = (payload.itineraries as Record<string, unknown>[]).map(
     (itinerary) => {
+      if (!isVietJetSource(itinerary.source)) {
+        return itinerary;
+      }
       const fareBreakdowns = Array.isArray(itinerary.fareBreakdowns)
         ? (itinerary.fareBreakdowns as Record<string, unknown>[]).map((row) => ({
             ...row,

@@ -58,6 +58,10 @@ const ERROR_TRANSLATIONS_VI: Record<string, string> = {
     "Lỗi hệ thống đối tác khi lưu giá vé (GDS Fare Data Exception). Vui lòng thử lại hoặc chọn vé khác.",
   "*0 AVAIL/WL CLOSED*":
     "Hạng vé này hiện đã hết chỗ hoặc hãng bay đã đóng lượt đặt chỗ. Vui lòng quay lại chọn chuyến bay hoặc hạng ghế khác.",
+  "*0 AVAIL/WL OPEN*":
+    "Hạng vé này hiện đã hết chỗ (chỉ mở hàng đợi/chờ). Vui lòng quay lại chọn chuyến bay hoặc hạng ghế khác.",
+  "*SELL RESTRICTED*":
+    "Hãng hàng không hạn chế bán hạng vé hoặc hành trình này qua kênh trực tuyến. Vui lòng chọn chuyến bay hoặc hạng ghế khác.",
   "DATE SEQUENCE IN ITINERARY NEEDS VERIFICATION":
     "Trình tự ngày bay giữa các chặng không hợp lệ (ví dụ: ngày bay về trước ngày bay đi, hoặc thời gian nối chuyến không đúng thứ tự). Vui lòng kiểm tra lại lịch trình.",
   "FLIGHT SEGMENTS UNAVAILABLE IN THE REQUESTED CLASS":
@@ -68,6 +72,12 @@ const ERROR_TRANSLATIONS_VI: Record<string, string> = {
     "Hãng hàng không này hiện không được hỗ trợ đặt trực tuyến qua hệ thống đối tác. Vui lòng chọn chuyến bay của hãng hàng không khác hoặc liên hệ nhân viên để được hỗ trợ đặt thủ công.",
   "CHECK AVAILABILITY":
     "Hạng vé này hiện không còn khả dụng trực tuyến hoặc chuyến bay quá cận giờ khởi hành. Vui lòng chọn chuyến bay khác hoặc liên hệ nhân viên hỗ trợ.",
+  "REQUESTED CABIN HAS NO AVAILABLE FARES":
+    "Hạng ghế bạn chọn hiện đã hết chỗ trên hệ thống hãng bay. Vui lòng tìm kiếm lại để cập nhật tình trạng chỗ mới nhất hoặc chọn chuyến bay khác.",
+  "NO VALID FARE FOR INPUT CRITERIA":
+    "Không tìm thấy giá vé hợp lệ cho hành trình này. Hạng vé có thể đã hết hoặc điều kiện vé đã thay đổi. Vui lòng tìm kiếm lại.",
+  "CABIN CLASS NOT AVAILABLE":
+    "Hạng ghế yêu cầu hiện không khả dụng trên chuyến bay này. Vui lòng chọn hạng ghế hoặc chuyến bay khác.",
   "Order is not ready for holding.":
     "Yêu cầu đặt vé này đã được xử lý hoặc không còn hiệu lực. Vui lòng quay lại tìm kiếm chuyến bay mới.",
   "TRAVELPORT_CANNOT_HOLD_BOOKING_72_HOURS_BEFORE_DEPARTURE_TIME":
@@ -86,9 +96,23 @@ const ERROR_TRANSLATIONS_VI: Record<string, string> = {
     "Hãng VietJet không cho phép giữ chỗ dưới 24 giờ trước khởi hành. Vui lòng liên hệ bộ phận hỗ trợ khách hàng để được hỗ trợ xuất vé.",
   "vj_near_departure_manual_needed":
     "Hãng VietJet không cho phép giữ chỗ dưới 24 giờ trước khởi hành. Đơn hàng đang được Booker xử lý thủ công.",
+  "REQUEST REJECTED - TOO CLOSE FROM DEPARTURE":
+    "Yêu cầu đặt giữ chỗ bị từ chối do thời điểm bay quá cận giờ (quá giờ giữ chỗ của hãng). Vui lòng chọn chuyến bay khác.",
+  "confirm_price_http_error":
+    "Lỗi kết nối hệ thống xác nhận giá vé. Vui lòng thử lại sau.",
+  "confirm_price_missing_booking_id":
+    "Hệ thống đối tác không trả về mã giữ chỗ. Vui lòng thử lại sau hoặc chọn chuyến bay khác.",
+  "confirm_price_failed":
+    "Xác nhận giá vé thất bại. Vui lòng thử lại hoặc chọn chuyến bay khác.",
 };
 
 const ERROR_TRANSLATIONS_EN: Record<string, string> = {
+  "*0 AVAIL/WL CLOSED*":
+    "This booking class is sold out or the airline has closed bookings for this class. Please go back and select a different flight or booking class.",
+  "*0 AVAIL/WL OPEN*":
+    "This booking class is currently sold out (only waitlist open). Please go back and select a different flight or booking class.",
+  "*SELL RESTRICTED*":
+    "The airline has restricted online sales for this booking class or itinerary. Please select a different flight or booking class.",
   "TRAVELPORT_CANNOT_HOLD_BOOKING_72_HOURS_BEFORE_DEPARTURE_TIME":
     "Holding is not supported for flights departing within 72 hours (3 days). Please select a flight departing more than 3 days from now.",
   "Unknown FareRuleFailureAVT: RoutingFailure,BookingClassFailure":
@@ -107,6 +131,14 @@ const ERROR_TRANSLATIONS_EN: Record<string, string> = {
     "VietJet does not allow booking holds within 24 hours of departure. Please contact support to issue your ticket.",
   "vj_near_departure_manual_needed":
     "VietJet does not allow booking holds within 24 hours of departure. The order is being handled manually by bookers.",
+  "REQUEST REJECTED - TOO CLOSE FROM DEPARTURE":
+    "Request rejected because it is too close to the departure time. Please choose another flight.",
+  "confirm_price_http_error":
+    "System connection error while confirming price. Please try again later.",
+  "confirm_price_missing_booking_id":
+    "Partner system did not return a booking ID. Please try again or select another flight.",
+  "confirm_price_failed":
+    "Price confirmation failed. Please try again or select another flight.",
 };
 
 function extractPayload(payload: unknown): {
