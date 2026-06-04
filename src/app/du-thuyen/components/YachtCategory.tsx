@@ -40,7 +40,7 @@ export default async function YachtCategory({ detail }: any) {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <p className="text-gray-700">
-                    {detail?.name}
+                    {detail?.display_title ?? detail?.name}
                   </p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -50,6 +50,7 @@ export default async function YachtCategory({ detail }: any) {
             <Search
               optionsFilter={filteredOptions}
               categoryDefault={detail?.id}
+              title={detail?.display_title ?? detail?.name}
             />
           </Suspense>
         </div>

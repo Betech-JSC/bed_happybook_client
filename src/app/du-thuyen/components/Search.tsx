@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
@@ -19,12 +19,32 @@ type optionFilterType = {
   }[];
 };
 
+const normalizeText = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[-_]+/g, " ")
+    .toLowerCase()
+    .trim();
+
+const yachtCategoryLabelMap: Record<string, string> = {
+  "du thuyen sai gon": "Ăn tối du thuyền",
+  "du thuyen ha long": "Tour du thuyền",
+};
+
+const mapYachtCategoryLabel = (label?: string) => {
+  if (!label) return label ?? "";
+  return yachtCategoryLabelMap[normalizeText(label)] ?? label;
+};
+
 export default function Search({
   optionsFilter,
   categoryDefault,
+  title,
 }: {
   optionsFilter: optionFilterType[];
   categoryDefault?: number;
+  title?: string;
 }) {
   const { t } = useTranslation();
   const getYachtDisplayName = (item: any) =>
@@ -45,6 +65,39 @@ export default function Search({
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [translatedText, setTranslatedText] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
+  const displayOptions = useMemo(
+    () =>
+      optionsFilter.map((group) => {
+        if (group.name !== "category") return group;
+
+        return {
+          ...group,
+          option: group.option.map((option) => ({
+            ...option,
+            label: mapYachtCategoryLabel(option.label),
+          })),
+        };
+      }),
+    [optionsFilter]
+  );
+  const selectedCategoryTitle = useMemo(() => {
+    const categoryGroup = displayOptions.find((group) => group.name === "category");
+    const selectedValues = Array.isArray(query["category[]"])
+      ? query["category[]"]
+      : query["category[]"]
+        ? [query["category[]"]]
+        : [];
+
+    if (selectedValues.length !== 1 || !categoryGroup) return "";
+
+    const selectedValue = String(selectedValues[0]);
+    const matchedOption = categoryGroup.option.find(
+      (option) => String(option.value) === selectedValue
+    );
+
+    return matchedOption?.label ?? "";
+  }, [displayOptions, query]);
+  const pageTitle = title ?? (selectedCategoryTitle || t("du_thuyen"));
 
   const loadData = useCallback(async () => {
     try {
@@ -84,7 +137,6 @@ export default function Search({
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
-    query.location = "";
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -92,16 +144,18 @@ export default function Search({
       if (groupFilters.includes(value)) {
         return {
           ...prevFilters,
+          location: "",
           [group]: groupFilters.filter((item: string) => item !== value),
           page: 1,
-          isFilter: true,
+          isFilters: true,
         };
       } else {
         return {
           ...prevFilters,
+          location: "",
           [group]: [...groupFilters, value],
           page: 1,
-          isFilter: true,
+          isFilters: true,
         };
       }
     });
@@ -134,7 +188,7 @@ export default function Search({
           setQuery={setQuery}
           query={query}
           isDisabled={isDisabled}
-          options={optionsFilter}
+          options={displayOptions}
           handleFilterChange={handleFilterChange}
           handleSortData={handleSortData}
           showFilterDate={false}
@@ -142,7 +196,7 @@ export default function Search({
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold">{t("du_thuyen")}</h1>
+          <h1 className="text-32 font-bold">{pageTitle}</h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
             <div className="w-auto min-w-[180px] bg-white border border-gray-200 rounded-lg">

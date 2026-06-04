@@ -31,6 +31,24 @@ import YachtCategory from "../components/YachtCategory";
 import { ProductCategoryApi } from "@/api/ProductCategory";
 import { getServerLang } from "@/lib/session";
 
+const normalizeText = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[-_]+/g, " ")
+    .toLowerCase()
+    .trim();
+
+const yachtCategoryTitleMap: Record<string, string> = {
+  "du thuyen sai gon": "Ăn tối du thuyền",
+  "du thuyen ha long": "Tour du thuyền",
+};
+
+const getYachtCategoryDisplayTitle = (detail: any) => {
+  const rawTitle = detail?.name || detail?.alias || detail?.slug || "";
+  return yachtCategoryTitleMap[normalizeText(rawTitle)] ?? rawTitle;
+};
+
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
   const language = await getServerLang();
@@ -45,8 +63,12 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     if (data) data.alias = data?.slug;
   }
 
+  if (data) {
+    data.display_title = getYachtCategoryDisplayTitle(data);
+  }
+
   return formatMetadata({
-    title: data?.meta_title ?? data?.name,
+    title: data?.meta_title ?? data?.display_title ?? data?.name,
     description: data?.meta_description,
     robots: data?.meta_robots,
     keywords: data?.keywords,
@@ -80,6 +102,9 @@ export default async function YachtAliasPage({
   const detailCate = (await ProductCategoryApi.detail("yacht", slug, language))
     ?.payload
     ?.data as any;
+  if (detailCate) {
+    detailCate.display_title = getYachtCategoryDisplayTitle(detailCate);
+  }
   return !detailCate ? (
     <YachtDetail alias={slug} searchParams={searchParams} />
   ) : (
