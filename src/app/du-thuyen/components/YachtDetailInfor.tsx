@@ -19,6 +19,36 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import ProductLightboxGallery from "@/components/product/components/ProductLightboxGallery";
 import ProductGallery from "@/components/product/components/ProductGallery";
 
+const safeParseOpeningDays = (value: unknown) => {
+  if (Array.isArray(value)) return value;
+
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  return [];
+};
+
+const safeFormatOpeningTime = (value: unknown) => {
+  if (typeof value !== "string" || !value.trim()) return "";
+
+  try {
+    let parsed = parse(value, "HH:mm:ss", new Date());
+    if (isNaN(parsed.getTime())) {
+      parsed = parse(value, "HH:mm", new Date());
+    }
+
+    return isNaN(parsed.getTime()) ? value : format(parsed, "HH:mm");
+  } catch {
+    return value;
+  }
+};
+
 export default function YachtDetailInfor({ product }: any) {
   const today = new Date();
   const { t } = useTranslation();
@@ -47,11 +77,7 @@ export default function YachtDetailInfor({ product }: any) {
           sunday: "Sunday",
         };
   const daysOpeningRaw = product?.yacht?.opening_days;
-  const daysOpening = Array.isArray(daysOpeningRaw)
-    ? daysOpeningRaw
-    : typeof daysOpeningRaw === "string"
-      ? JSON.parse(daysOpeningRaw)
-      : [];
+  const daysOpening = safeParseOpeningDays(daysOpeningRaw);
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
     ? language === "vi"
@@ -61,12 +87,7 @@ export default function YachtDetailInfor({ product }: any) {
       .map((day: any) => dayMap[day])
       .filter(Boolean)
       .join(", ");
-  const parsedTimeOpening = parse(
-    product?.yacht?.opening_time,
-    "HH:mm:ss",
-    new Date()
-  );
-  const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+  const displayTimeOpening = safeFormatOpeningTime(product?.yacht?.opening_time);
 
   const getMaxPricesPerOption = useCallback(() => {
     const dayName = format(departDate, "EEEE").toLowerCase();
