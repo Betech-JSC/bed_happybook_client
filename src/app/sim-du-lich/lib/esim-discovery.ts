@@ -184,10 +184,7 @@ export const buildGenericDestinationOptions = (destinationOptions: EsimFilterOpt
     });
 };
 
-export const buildComboDestinationOptions = (
-  destinationOptions: EsimFilterOption[],
-  packages: EsimPackageView[]
-) => {
+export const buildComboDestinationOptions = (destinationOptions: EsimFilterOption[]) => {
   const seen = new Set<string>();
   const comboOptions = destinationOptions
     .filter((option) => !isCountryOption(option) && !isVietnamDomesticOption(option))
@@ -198,52 +195,6 @@ export const buildComboDestinationOptions = (
       seen.add(key);
       return true;
     });
-
-  if (comboOptions.length > 0) {
-    return sortByDisplayLabel(comboOptions);
-  }
-
-  const looksLikeComboPackage = (pkg: EsimPackageView) => {
-    const text = normalizeText([pkg.destination, pkg.title, pkg.coverage, pkg.regionLabel].filter(Boolean).join(" "));
-    const rawText = `${pkg.coverage || ""} ${pkg.destination || ""}`.toLowerCase();
-
-    if (!text) return false;
-    if (/[,&]/.test(rawText) || /\band\b/.test(rawText)) return true;
-    if (/\b\d+\s*countries?\b/.test(rawText)) return true;
-
-    return /\b(regional|global|america|europe|asia|world)\b/.test(text);
-  };
-
-  packages.forEach((pkg) => {
-    if (!looksLikeComboPackage(pkg)) return;
-
-    const displayLabel =
-      pkg.destination?.trim() ||
-      pkg.title?.trim() ||
-      pkg.coverage?.trim() ||
-      pkg.regionLabel?.trim() ||
-      "";
-    const normalizedDisplayLabel = normalizeText(displayLabel);
-    if (
-      normalizedDisplayLabel.includes("vietnam") ||
-      normalizedDisplayLabel.includes("viet nam") ||
-      normalizedDisplayLabel.includes("domestic")
-    ) {
-      return;
-    }
-
-    const value = displayLabel;
-    const key = normalizeText(displayLabel || value);
-
-    if (!key || seen.has(key)) return;
-    seen.add(key);
-    comboOptions.push({
-      value,
-      label: displayLabel,
-      displayLabel,
-      flag: resolveDestinationFlag({ label: displayLabel, value }),
-    });
-  });
 
   return sortByDisplayLabel(comboOptions);
 };
@@ -330,6 +281,6 @@ export const sortEsimPackages = (
       return next.sort((a, b) => getPrice(b) - getPrice(a));
     case "newest":
     default:
-      return next.sort((a, b) => String(b.slug || "").localeCompare(String(a.slug || "")));
+      return next;
   }
 };

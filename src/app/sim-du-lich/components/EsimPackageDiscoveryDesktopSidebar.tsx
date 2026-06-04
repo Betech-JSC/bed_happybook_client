@@ -79,14 +79,15 @@ export default function EsimPackageDiscoveryDesktopSidebar({
             <h4 className="mb-4 text-2xl font-bold text-midnight-ink">{sidebarTitle || t("Nhà mạng")}</h4>
             <div className="space-y-3">
               {visibleSidebarOptions.map((option) => {
-                const checked = selectedDestinationLabels.includes(option.displayLabel);
+                const optionKey = String(option.value || option.displayLabel);
+                const checked = selectedDestinationLabels.includes(optionKey);
 
                 return (
                   <label key={option.value} className="flex cursor-pointer items-center gap-3">
                     <input
                       type="checkbox"
                       checked={checked}
-                      onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
+                      onChange={() => onToggleDestinationLabel?.(optionKey)}
                       className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
                     />
                     <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>
@@ -112,14 +113,15 @@ export default function EsimPackageDiscoveryDesktopSidebar({
                 <h4 className="mb-4 text-2xl font-bold text-midnight-ink">{t("Cụm quốc gia")}</h4>
                 <div className="space-y-3">
                   {visibleComboDestinations.map((option) => {
-                    const checked = selectedDestinationLabels.includes(option.displayLabel);
+                    const optionKey = String(option.value || option.displayLabel);
+                    const checked = selectedDestinationLabels.includes(optionKey);
 
                     return (
                       <label key={option.value} className="flex cursor-pointer items-center gap-3">
                         <input
                           type="checkbox"
                           checked={checked}
-                          onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
+                          onChange={() => onToggleDestinationLabel?.(optionKey)}
                           className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
                         />
                         <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>
@@ -134,14 +136,15 @@ export default function EsimPackageDiscoveryDesktopSidebar({
               <h4 className="mb-4 text-2xl font-bold text-midnight-ink">{sidebarTitle || t("Quốc gia")}</h4>
               <div className="space-y-3">
                 {visibleCountryDestinations.map((option) => {
-                  const checked = selectedDestinationLabels.includes(option.displayLabel);
+                  const optionKey = String(option.value || option.displayLabel);
+                  const checked = selectedDestinationLabels.includes(optionKey);
 
                   return (
                     <label key={option.value} className="flex cursor-pointer items-center gap-3">
                       <input
                         type="checkbox"
                         checked={checked}
-                        onChange={() => onToggleDestinationLabel?.(option.displayLabel)}
+                        onChange={() => onToggleDestinationLabel?.(optionKey)}
                         className="h-5 w-5 rounded border-slate-300 text-hb-coral focus:ring-hb-coral"
                       />
                       <span className="text-[15px] text-midnight-ink">{option.displayLabel}</span>

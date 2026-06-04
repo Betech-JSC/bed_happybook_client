@@ -9,6 +9,7 @@ import {
   findCheapestVariant,
   getEsimVariantMoney,
   resolveEsimPackageAvatarUrl,
+  isEsimVariantSelectable,
 } from "../lib/esim";
 import { sortEsimPackages, type SortMode } from "../lib/esim-discovery";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
@@ -26,6 +27,9 @@ type Props = {
   pageTitle?: string;
   sortMode: SortMode;
   onSortModeChange: (mode: SortMode) => void;
+  totalPackages?: number;
+  hasMorePackages?: boolean;
+  onLoadMorePackages?: () => void;
 };
 
 export default function EsimPackageDiscoveryList({
@@ -41,6 +45,9 @@ export default function EsimPackageDiscoveryList({
   pageTitle,
   sortMode,
   onSortModeChange,
+  totalPackages,
+  hasMorePackages = false,
+  onLoadMorePackages,
 }: Props) {
   const t = useSimDuLichStaticText(activeLocale);
   const sortedPackages = useMemo(
@@ -84,7 +91,7 @@ export default function EsimPackageDiscoveryList({
           {sortedPackages.map((pkg) => {
             const cheapest = findCheapestVariant(pkg, activeLocale);
             const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
-            const isSelectable = Boolean(cheapest && cheapestMoney.price > 0);
+            const isSelectable = cheapest ? isEsimVariantSelectable(cheapest, activeLocale) : false;
             const isActive = pkg.slug === selectedPackageSlug;
             const title = pkg.destination || pkg.title || pkg.regionLabel || "eSIM";
             const subtitle = pkg.subtitle || pkg.coverage || pkg.network || pkg.regionLabel || title;
@@ -217,7 +224,7 @@ export default function EsimPackageDiscoveryList({
         {sortedPackages.map((pkg) => {
           const cheapest = findCheapestVariant(pkg, activeLocale);
           const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
-          const isSelectable = Boolean(cheapest && cheapestMoney.price > 0);
+          const isSelectable = cheapest ? isEsimVariantSelectable(cheapest, activeLocale) : false;
           const isActive = pkg.slug === selectedPackageSlug;
           const avatarUrl = resolveEsimPackageAvatarUrl(pkg);
 
@@ -316,7 +323,7 @@ export default function EsimPackageDiscoveryList({
 
       <div className="mb-3 flex items-center justify-between text-sm text-midnight-ink lg:hidden">
         <span>
-          {packages.length} {t("kết quả", "results")}
+          {totalPackages ?? packages.length} {t("kết quả", "results")}
         </span>
         <span className="inline-flex items-center gap-2 font-medium text-slate-700">
           <span>{sortMode === "price-desc" ? t("Giá cao xuống thấp") : sortMode === "price-asc" ? t("Giá thấp đến cao") : t("Mới nhất")}</span>
@@ -324,6 +331,19 @@ export default function EsimPackageDiscoveryList({
       </div>
 
       {renderPackageList()}
+
+      {hasMorePackages ? (
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={onLoadMorePackages}
+            disabled={loading}
+            className="rounded-full border border-hb-coral px-6 py-3 text-sm font-bold text-hb-coral transition-colors hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? t("Đang tải", "Loading") : t("Xem thêm", "Load more")}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -55,6 +55,7 @@ export interface ApiEsimVariant {
   sms_international?: number | string;
   fair_use_policy?: string;
   speed_throttle?: string;
+  stock_status?: string;
   translations?: ApiEsimTranslation[];
 }
 
@@ -113,6 +114,7 @@ export interface EsimVariantView {
   smsInternational: number;
   fairUsePolicy: string;
   speedThrottle: string;
+  stockStatus: string;
 }
 
 export interface EsimPackageView {
@@ -256,7 +258,12 @@ export const getEsimVariantMoney = (
 export const isEsimVariantSelectable = (
   variant?: EsimVariantView | null,
   locale: string = "vi"
-): boolean => getEsimVariantMoney(variant, locale).price > 0;
+): boolean => {
+  if (!variant) return false;
+  if (getEsimVariantMoney(variant, locale).price <= 0) return false;
+  if (variant.stockStatus && variant.stockStatus !== "in_stock") return false;
+  return true;
+};
 
 export const getSelectableEsimVariants = (
   pkg?: EsimPackageView | null,
@@ -265,6 +272,13 @@ export const getSelectableEsimVariants = (
   (pkg?.variants ?? []).filter((variant) => isEsimVariantSelectable(variant, locale));
 
 export const normalizeFilterOptions = (payload: any, locale: Locale = "vi"): EsimFilterOptions => {
+  const isValidOperator = (label: string) => {
+    if (!label) return false;
+    if (label.length > 25) return false;
+    if (label.includes(", ")) return false;
+    return true;
+  };
+
   const mapOptions = (items: any[] = []): EsimFilterOption[] =>
     items
       .filter(Boolean)
@@ -280,10 +294,25 @@ export const normalizeFilterOptions = (payload: any, locale: Locale = "vi"): Esi
       }))
       .filter((item) => item.value !== "" || item.label !== "");
 
+  const mapOperators = (items: any[] = []): EsimFilterOption[] =>
+    items
+      .filter(Boolean)
+      .map((item) => ({
+        value: toString(item.code ?? item.slug ?? item.value ?? item.id ?? ""),
+        label: pickOptionLabel(item, locale, [
+          item.label,
+          item.name,
+          item.code,
+          item.value,
+          item.id,
+        ]),
+      }))
+      .filter((item) => item.label !== "" && isValidOperator(item.label));
+
   return {
     regions: mapOptions(payload?.regions ?? []),
     destinations: mapOptions(payload?.destinations ?? []),
-    operators: mapOptions(payload?.operators ?? []),
+    operators: mapOperators(payload?.operators ?? []),
   };
 };
 
@@ -322,6 +351,7 @@ export const normalizeEsimVariant = (variant: ApiEsimVariant): EsimVariantView =
   smsInternational: toNumber(variant.sms_international),
   fairUsePolicy: toString(variant.fair_use_policy),
   speedThrottle: toString(variant.speed_throttle),
+  stockStatus: toString(variant.stock_status || "in_stock"),
 });
 
 export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {

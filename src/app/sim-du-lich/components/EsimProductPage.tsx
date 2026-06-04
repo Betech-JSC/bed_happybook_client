@@ -220,14 +220,18 @@ export default function EsimProductPage({
           selectedDestinationLabels={catalog.selectedDestinationLabels}
           onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
           onDestinationLabelsChange={catalog.setSelectedDestinationLabels}
+          operatorOptions={catalog.filters.operators}
+          selectedOperatorLabels={catalog.selectedOperatorLabels}
+          onToggleOperatorLabel={catalog.handleToggleOperatorLabel}
           onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
           onSelectPackageFilterSku={catalog.handleSelectPackageFilterSku}
           packageQuery={catalog.packageQuery}
           onPackageQueryChange={catalog.setPackageQuery}
-          priceRange={catalog.priceRange}
-          priceBounds={catalog.priceBounds}
-          onPriceRangeChange={catalog.setPriceRange}
-          showPricePresetFilters={false}
+          sortMode={catalog.sortMode}
+          onSortModeChange={catalog.setSortMode}
+          totalPackages={catalog.totalPackages}
+          hasMorePackages={catalog.hasMorePackages}
+          onLoadMorePackages={catalog.handleLoadMorePackages}
           onOpenModal={() => catalog.setShowModal(true)}
           onSelectPackage={catalog.handleSelectPackage}
           onSelectSkuByValidity={catalog.handleSelectSkuByValidity}

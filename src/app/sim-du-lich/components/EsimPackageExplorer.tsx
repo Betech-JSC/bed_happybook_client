@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import type { EsimFilterOption, EsimPackageView, EsimVariantView } from "../lib/esim";
+import type { SortMode } from "../lib/esim-discovery";
 
 const LazyPackageControls = dynamic(() => import("./EsimPackageControls"), {
   loading: () => <div className="h-[220px] rounded-3xl border border-slate-100 bg-white p-6 shadow-sm animate-pulse" />,
@@ -31,6 +32,9 @@ type Props = {
   onToggleDestinationLabel?: (label: string) => void;
   onDestinationLabelsChange?: (labels: string[]) => void;
   onSelectDestinationLabel?: (label: string | null) => void;
+  operatorOptions?: EsimFilterOption[];
+  selectedOperatorLabels?: string[];
+  onToggleOperatorLabel?: (label: string) => void;
   onSelectPackageFilterSku?: (sku: string | null) => void;
   packageQuery?: string;
   onPackageQueryChange?: (value: string) => void;
@@ -39,6 +43,11 @@ type Props = {
   onPriceRangeChange?: (range: [number, number]) => void;
   showPriceFilters?: boolean;
   showPricePresetFilters?: boolean;
+  sortMode?: SortMode;
+  onSortModeChange?: (mode: SortMode) => void;
+  totalPackages?: number;
+  hasMorePackages?: boolean;
+  onLoadMorePackages?: () => void;
   onOpenModal: () => void;
   onSelectPackage: (pkg: EsimPackageView) => void;
   onSelectSkuByValidity: (validity: number) => void;
@@ -68,14 +77,22 @@ export default function EsimPackageExplorer({
   onToggleDestinationLabel,
   onDestinationLabelsChange,
   onSelectDestinationLabel,
+  operatorOptions,
+  selectedOperatorLabels,
+  onToggleOperatorLabel,
   onSelectPackageFilterSku,
   packageQuery,
   onPackageQueryChange,
   priceRange,
   priceBounds,
   onPriceRangeChange,
-  showPriceFilters = true,
-  showPricePresetFilters = true,
+  showPriceFilters = false,
+  showPricePresetFilters = false,
+  sortMode,
+  onSortModeChange,
+  totalPackages,
+  hasMorePackages,
+  onLoadMorePackages,
   onOpenModal,
   onSelectPackage,
   onSelectSkuByValidity,
@@ -119,6 +136,9 @@ export default function EsimPackageExplorer({
         onToggleDestinationLabel={onToggleDestinationLabel}
         onDestinationLabelsChange={onDestinationLabelsChange}
         onSelectDestinationLabel={onSelectDestinationLabel}
+        operatorOptions={operatorOptions}
+        selectedOperatorLabels={selectedOperatorLabels}
+        onToggleOperatorLabel={onToggleOperatorLabel}
         onSelectPackageFilterSku={onSelectPackageFilterSku}
         packageQuery={packageQuery}
         onPackageQueryChange={onPackageQueryChange}
@@ -127,6 +147,11 @@ export default function EsimPackageExplorer({
         onPriceRangeChange={onPriceRangeChange}
         showPriceFilters={showPriceFilters}
         showPricePresetFilters={showPricePresetFilters}
+        sortMode={sortMode}
+        onSortModeChange={onSortModeChange}
+        totalPackages={totalPackages}
+        hasMorePackages={hasMorePackages}
+        onLoadMorePackages={onLoadMorePackages}
       />
     </div>
   );
