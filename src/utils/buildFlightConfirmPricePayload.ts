@@ -636,13 +636,9 @@ export function buildFlightConfirmPricePayload(input: {
   }
 
   if (isVietnamAirlinesSource(sourceType)) {
-    for (const itinerary of payload.itineraries) {
-      for (const row of itinerary.fareBreakdowns) {
-        if (!row.fareValue?.trim()) {
-          throw new Error("VN1A_FARE_VALUE_REQUIRED");
-        }
-      }
-    }
+    // VN1A search API trả fareValue rỗng cho vé thường (M, U, Z, C…).
+    // Chỉ vé đặc biệt (BSV) mới có fareValue. BE chấp nhận fareValue rỗng,
+    // không chặn flow ở FE — nhất quán với validateFareValueForConfirm().
     return sanitizeVn1aConfirmPriceRequest(
       payload as unknown as Record<string, unknown>
     ) as unknown as ConfirmPriceRequest;
