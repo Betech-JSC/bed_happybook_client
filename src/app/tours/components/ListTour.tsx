@@ -14,6 +14,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
 import { translatePage } from "@/utils/translateDom";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
+import { getImageSrc } from "@/utils/Helper";
 
 type optionFilterType = {
   label: string;
@@ -23,6 +24,28 @@ type optionFilterType = {
     label?: string;
   }[];
 };
+
+function TourCardImage({
+  tour,
+  alt,
+}: {
+  tour: any;
+  alt: string;
+}) {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <Image
+      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full min-h-40 object-cover"
+      src={imageError ? "/default-image.png" : getImageSrc(tour.image_url, tour.image_location)}
+      alt={alt}
+      width={360}
+      height={270}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      onError={() => setImageError(true)}
+    />
+  );
+}
 
 export default function ListTour({
   type_tour,
@@ -191,15 +214,7 @@ export default function ListTour({
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                   <Link href={`/tours/${tour.slug}`}>
-                    <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full min-h-40 object-cover"
-                      src={`${tour.image_url}/${tour.image_location}`}
-                      alt={renderTextContent(tour?.product_name)}
-                      width={360}
-                      height={270}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    // style={{ height: 270 }}
-                    />
+                    <TourCardImage tour={tour} alt={renderTextContent(tour?.product_name)} />
                   </Link>
                   <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
                     <span data-translate="true">

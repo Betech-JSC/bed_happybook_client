@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import { getImageSrc } from "@/utils/Helper";
+import { useState } from "react";
 
 export default function TourItem({ tour }: any) {
+  const [imageError, setImageError] = useState(false);
   const vehicleIcon = ["bus", "AirplaneTilt-2"];
   if (tour?.transportation === 1) {
     vehicleIcon.splice(1, 1);
@@ -17,12 +22,13 @@ export default function TourItem({ tour }: any) {
         <Link href={`/tours/${tour.slug}`}>
           <Image
             className="lg:group-hover:scale-110 ease-in duration-300 cursor-pointer	object-cover w-full h-full"
-            src={`${tour.image_url}/${tour.image_location}`}
+            src={imageError ? "/default-image.png" : getImageSrc(tour.image_url, tour.image_location)}
             alt={tour.product_name || "Tour Happy Book"}
             width={320}
             height={320}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             style={{ width: "100%", height: "220px", objectFit: "cover" }}
+            onError={() => setImageError(true)}
           />
         </Link>
         <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
