@@ -29,6 +29,12 @@ const nextConfig = {
         pathname: '/**',
       },
       {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8001',
+        pathname: '/**',
+      },
+      {
         protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
         hostname: process.env.NEXT_PUBLIC_HOSTNAME || 'api.happybooktravel.com',
         port: "",
@@ -37,6 +43,11 @@ const nextConfig = {
       {
         protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
         hostname: process.env.NEXT_PUBLIC_CDN_DOMAIN || 'cdn.happybooktravel.com',
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.nhanhtravel.io.vn",
         pathname: "/**",
       },
       {
@@ -62,6 +73,15 @@ const nextConfig = {
     ],
     loader: "default",
     formats: ["image/avif", "image/webp"],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/tours/tour-quoc_te",
+        destination: "/tours/tour-quoc-te",
+        permanent: true,
+      },
+    ];
   },
   webpack: (config, { isServer }) => {
     // Split large chunks to reduce initial JS payload → lowers TBT
