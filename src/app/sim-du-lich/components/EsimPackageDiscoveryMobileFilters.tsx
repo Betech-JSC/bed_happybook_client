@@ -139,13 +139,14 @@ export default function EsimPackageDiscoveryMobileFilters({
       <>
         <div className="flex flex-wrap gap-2.5">
           {visibleItems.map((option) => {
-            const checked = draftDestinationLabels.includes(option.displayLabel);
+            const optionKey = String(option.value || option.displayLabel);
+            const checked = draftDestinationLabels.includes(optionKey);
 
             return (
               <button
                 key={`${option.value}-${option.displayLabel}`}
                 type="button"
-                onClick={() => toggleDraftDestination(option.displayLabel)}
+                onClick={() => toggleDraftDestination(optionKey)}
                 className={`rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors ${
                   checked
                     ? "border-hb-coral bg-orange-50 text-hb-coral"

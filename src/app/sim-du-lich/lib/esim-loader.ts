@@ -27,6 +27,18 @@ const createCacheKey = (scope: string, params?: Record<string, unknown>) =>
 
 const CACHE_TTL_MS = 60_000;
 const ESIM_SEARCH_PAGE_SIZE = 250;
+const ESIM_CARD_PAGE_SIZE = 36;
+const MAX_CACHE_ENTRIES = 50;
+
+export type EsimSortMode = "newest" | "price-asc" | "price-desc";
+
+export type EsimPackagePage = {
+  items: EsimPackageView[];
+  total: number;
+  perPage: number;
+  currentPage: number;
+  lastPage: number;
+};
 
 type CacheEntry<T> = {
   value: Promise<T>;
@@ -34,6 +46,7 @@ type CacheEntry<T> = {
 };
 
 const optionsCache = new Map<string, CacheEntry<EsimFilterOptions>>();
+const packagePageCache = new Map<string, CacheEntry<EsimPackagePage>>();
 const packageCache = new Map<string, CacheEntry<EsimPackageView[]>>();
 const detailCache = new Map<string, CacheEntry<EsimPackageView | null>>();
 
@@ -50,10 +63,73 @@ const getCachedValue = <T>(cache: Map<string, CacheEntry<T>>, key: string): Prom
 };
 
 const setCachedValue = <T>(cache: Map<string, CacheEntry<T>>, key: string, value: Promise<T>) => {
+  if (cache.size >= MAX_CACHE_ENTRIES) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey) cache.delete(oldestKey);
+  }
+
   cache.set(key, {
     value,
     expiresAt: Date.now() + CACHE_TTL_MS,
   });
+};
+
+export const loadEsimPackagesPage = async (params?: {
+  q?: string;
+  region_id?: string;
+  destination_ids?: string[];
+  operators?: string[];
+  page?: number;
+  page_size?: number;
+  sort?: EsimSortMode;
+  locale?: string;
+}): Promise<EsimPackagePage> => {
+  const page = Math.max(1, Number(params?.page ?? 1) || 1);
+  const pageSize = Math.max(1, Number(params?.page_size ?? ESIM_CARD_PAGE_SIZE) || ESIM_CARD_PAGE_SIZE);
+  const cacheKey = createCacheKey("package-page", { ...params, page, page_size: pageSize });
+  const cached = getCachedValue(packagePageCache, cacheKey);
+  if (cached) return cached;
+
+  const promise = (async () => {
+    try {
+      const response = await ProductEsimApi.search(
+        {
+          q: params?.q,
+          region_id: params?.region_id,
+          destination_ids: params?.destination_ids,
+          operators: params?.operators,
+          page,
+          page_size: pageSize,
+          sort: params?.sort,
+          card: true,
+        },
+        params?.locale
+      );
+
+      const payload = safeGetPayload(response);
+      const items = normalizeEsimPackages((payload?.items ?? []) as ApiEsimPackage[]);
+
+      return {
+        items,
+        total: Number(payload?.total ?? items.length) || 0,
+        perPage: Number(payload?.per_page ?? pageSize) || pageSize,
+        currentPage: page,
+        lastPage: Number(payload?.last_page ?? 1) || 1,
+      };
+    } catch {
+      packagePageCache.delete(cacheKey);
+      return {
+        items: [],
+        total: 0,
+        perPage: pageSize,
+        currentPage: page,
+        lastPage: 1,
+      };
+    }
+  })();
+
+  setCachedValue(packagePageCache, cacheKey, promise);
+  return promise;
 };
 
 export const loadAllEsimPackages = async (params?: {
@@ -77,7 +153,7 @@ export const loadAllEsimPackages = async (params?: {
           operator: params?.operator,
           page: 1,
           page_size: ESIM_SEARCH_PAGE_SIZE,
-          compact: true,
+          card: true,
         },
         params?.locale
       );
@@ -89,8 +165,8 @@ export const loadAllEsimPackages = async (params?: {
       const lastPage = Number(payload.last_page ?? 1) || 1;
 
       if (lastPage > 1) {
-        const pageRequests = Array.from({ length: lastPage - 1 }, (_, index) => index + 2).map((page) =>
-          ProductEsimApi.search(
+        for (let page = 2; page <= lastPage; page++) {
+          const nextPage = await ProductEsimApi.search(
             {
               q: params?.q,
               region_id: params?.region_id,
@@ -98,19 +174,15 @@ export const loadAllEsimPackages = async (params?: {
               operator: params?.operator,
               page,
               page_size: ESIM_SEARCH_PAGE_SIZE,
-              compact: true,
+              card: true,
             },
             params?.locale
-          )
-        );
-
-        const nextPages = await Promise.all(pageRequests);
-        nextPages.forEach((nextPage) => {
+          );
           const nextPayload = safeGetPayload(nextPage);
           if (nextPayload) {
             items.push(...((nextPayload.items ?? []) as any));
           }
-        });
+        }
       }
 
       return normalizeEsimPackages(items);

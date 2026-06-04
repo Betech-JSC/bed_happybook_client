@@ -1,9 +1,13 @@
-"use client";
-
-import "rc-slider/assets/index.css";
+import type { EsimFilterOption } from "../lib/esim";
 import type { DestinationSelectOption, SortMode } from "../lib/esim-discovery";
 import EsimPackageDiscoveryDesktopSidebar from "./EsimPackageDiscoveryDesktopSidebar";
 import EsimPackageDiscoveryMobileFilters from "./EsimPackageDiscoveryMobileFilters";
+
+const toDisplayOption = (option: EsimFilterOption): DestinationSelectOption => ({
+  ...option,
+  flag: "🌐",
+  displayLabel: option.label ?? String(option.value),
+});
 
 type Props = {
   activeLocale: "vi" | "en";
@@ -16,6 +20,9 @@ type Props = {
   selectedDestinationLabels: string[];
   onToggleDestinationLabel?: (label: string) => void;
   onDestinationLabelsChange?: (labels: string[]) => void;
+  operatorOptions?: EsimFilterOption[];
+  selectedOperatorLabels?: string[];
+  onToggleOperatorLabel?: (label: string) => void;
   priceRange: [number, number];
   priceBounds: { min: number; max: number };
   onPriceRangeChange?: (range: [number, number]) => void;
@@ -37,6 +44,9 @@ export default function EsimPackageDiscoveryFilters({
   selectedDestinationLabels,
   onToggleDestinationLabel,
   onDestinationLabelsChange,
+  operatorOptions,
+  selectedOperatorLabels,
+  onToggleOperatorLabel,
   priceRange,
   priceBounds,
   onPriceRangeChange,
@@ -48,6 +58,8 @@ export default function EsimPackageDiscoveryFilters({
 }: Props) {
   if (!showInternationalFilters) return null;
 
+  const isOperatorMode = sidebarMode === "generic";
+
   return (
     <>
       <EsimPackageDiscoveryMobileFilters
@@ -55,10 +67,10 @@ export default function EsimPackageDiscoveryFilters({
         sidebarTitle={sidebarTitle}
         sidebarMode={sidebarMode}
         countryDestinationOptions={countryDestinationOptions}
-        genericDestinationOptions={genericDestinationOptions}
+        genericDestinationOptions={isOperatorMode && operatorOptions ? operatorOptions.map(toDisplayOption) : genericDestinationOptions}
         comboDestinationOptions={comboDestinationOptions}
-        selectedDestinationLabels={selectedDestinationLabels}
-        onToggleDestinationLabel={onToggleDestinationLabel}
+        selectedDestinationLabels={isOperatorMode && selectedOperatorLabels ? selectedOperatorLabels : selectedDestinationLabels}
+        onToggleDestinationLabel={isOperatorMode ? onToggleOperatorLabel : onToggleDestinationLabel}
         onDestinationLabelsChange={onDestinationLabelsChange}
         priceRange={priceRange}
         priceBounds={priceBounds}
@@ -76,10 +88,10 @@ export default function EsimPackageDiscoveryFilters({
           sidebarMode={sidebarMode}
           showInternationalFilters={showInternationalFilters}
           countryDestinationOptions={countryDestinationOptions}
-          genericDestinationOptions={genericDestinationOptions}
+          genericDestinationOptions={isOperatorMode && operatorOptions ? operatorOptions.map(toDisplayOption) : genericDestinationOptions}
           comboDestinationOptions={comboDestinationOptions}
-          selectedDestinationLabels={selectedDestinationLabels}
-          onToggleDestinationLabel={onToggleDestinationLabel}
+          selectedDestinationLabels={isOperatorMode && selectedOperatorLabels ? selectedOperatorLabels : selectedDestinationLabels}
+          onToggleDestinationLabel={isOperatorMode ? onToggleOperatorLabel : onToggleDestinationLabel}
           priceRange={priceRange}
           priceBounds={priceBounds}
           onPriceRangeChange={onPriceRangeChange}

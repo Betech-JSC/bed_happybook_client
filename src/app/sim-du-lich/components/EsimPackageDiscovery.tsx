@@ -31,12 +31,20 @@ type Props = {
   onToggleDestinationLabel?: (label: string) => void;
   onDestinationLabelsChange?: (labels: string[]) => void;
   onSelectDestinationLabel?: (label: string | null) => void;
+  operatorOptions?: EsimFilterOption[];
+  selectedOperatorLabels?: string[];
+  onToggleOperatorLabel?: (label: string) => void;
   onSelectPackageFilterSku?: (sku: string | null) => void;
   priceRange?: [number, number];
   priceBounds?: { min: number; max: number };
   onPriceRangeChange?: (range: [number, number]) => void;
   showPriceFilters?: boolean;
   showPricePresetFilters?: boolean;
+  sortMode?: SortMode;
+  onSortModeChange?: (mode: SortMode) => void;
+  totalPackages?: number;
+  hasMorePackages?: boolean;
+  onLoadMorePackages?: () => void;
 };
 
 export default function EsimPackageDiscovery({
@@ -58,6 +66,9 @@ export default function EsimPackageDiscovery({
   onToggleDestinationLabel,
   onDestinationLabelsChange,
   onSelectDestinationLabel,
+  operatorOptions,
+  selectedOperatorLabels,
+  onToggleOperatorLabel,
   onSelectPackageFilterSku,
   onPackageQueryChange,
   priceRange = [0, 0],
@@ -65,8 +76,15 @@ export default function EsimPackageDiscovery({
   onPriceRangeChange,
   showPriceFilters = true,
   showPricePresetFilters = true,
+  sortMode: controlledSortMode,
+  onSortModeChange,
+  totalPackages,
+  hasMorePackages = false,
+  onLoadMorePackages,
 }: Props) {
-  const [sortMode, setSortMode] = useState<SortMode>("price-asc");
+  const [localSortMode, setLocalSortMode] = useState<SortMode>("price-asc");
+  const sortMode = controlledSortMode ?? localSortMode;
+  const handleSortModeChange = onSortModeChange ?? setLocalSortMode;
 
   const countryDestinationOptions = useMemo(
     () => buildCountryDestinationOptions(destinationOptions),
@@ -77,8 +95,8 @@ export default function EsimPackageDiscovery({
     [destinationOptions]
   );
   const comboDestinationOptions = useMemo(
-    () => buildComboDestinationOptions(destinationOptions, packages),
-    [destinationOptions, packages]
+    () => buildComboDestinationOptions(destinationOptions),
+    [destinationOptions]
   );
 
   const sharedListProps = {
@@ -93,7 +111,10 @@ export default function EsimPackageDiscovery({
     showInternationalFilters,
     pageTitle,
     sortMode,
-    onSortModeChange: setSortMode,
+    onSortModeChange: handleSortModeChange,
+    totalPackages,
+    hasMorePackages,
+    onLoadMorePackages,
   } as const;
 
   if (!showInternationalFilters) {
@@ -119,14 +140,17 @@ export default function EsimPackageDiscovery({
             selectedDestinationLabels={selectedDestinationLabels}
             onToggleDestinationLabel={onToggleDestinationLabel}
             onDestinationLabelsChange={onDestinationLabelsChange}
+            operatorOptions={operatorOptions}
+            selectedOperatorLabels={selectedOperatorLabels}
+            onToggleOperatorLabel={onToggleOperatorLabel}
             priceRange={priceRange}
             priceBounds={priceBounds}
             onPriceRangeChange={onPriceRangeChange}
             showPriceFilters={showPriceFilters}
             showPricePresetFilters={showPricePresetFilters}
             sortMode={sortMode}
-            onSortModeChange={setSortMode}
-            packagesCount={packages.length}
+            onSortModeChange={handleSortModeChange}
+            packagesCount={totalPackages ?? packages.length}
           />
         </div>
 
