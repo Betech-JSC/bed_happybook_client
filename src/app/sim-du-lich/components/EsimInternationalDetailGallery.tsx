@@ -12,6 +12,8 @@ type Props = {
   titleFallback: string;
 };
 
+const stripHtml = (value: string) => value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
 export default function EsimInternationalDetailGallery({
   selectedPackage,
   categoryLabel,
@@ -21,6 +23,12 @@ export default function EsimInternationalDetailGallery({
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
   const avatarUrl = resolveEsimPackageAvatarUrl(selectedPackage);
   const hasAvatar = Boolean(avatarUrl);
+  const packageSummary =
+    stripHtml(selectedPackage?.footerContent || "") ||
+    selectedPackage?.subtitle ||
+    selectedPackage?.coverage ||
+    selectedPackage?.destination ||
+    categoryLabel;
 
   return (
     <section className="space-y-4">
@@ -73,10 +81,7 @@ export default function EsimInternationalDetailGallery({
                 {selectedPackage?.title || titleFallback}
               </p>
               <p className="mt-4 max-w-[18ch] text-sm font-semibold leading-snug text-white/90 drop-shadow-sm sm:max-w-2xl sm:text-base md:mt-5 md:text-2xl">
-                {selectedPackage?.subtitle ||
-                  selectedPackage?.coverage ||
-                  selectedPackage?.destination ||
-                  categoryLabel}
+                {packageSummary}
               </p>
             </div>
             <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/18 to-transparent" />
