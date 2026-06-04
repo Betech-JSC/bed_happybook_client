@@ -13,6 +13,7 @@ import { ProductYachtApi } from "@/api/ProductYacht";
 import Search from "./Search";
 import { getServerLang } from "@/lib/session";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { translateText } from "@/utils/translateApi";
 
 export default async function YachtCategory({ detail }: any) {
   const language = await getServerLang();
@@ -22,6 +23,11 @@ export default async function YachtCategory({ detail }: any) {
   const filteredOptions = optionsFilter.filter(
     (item: any) => item.name !== "category"
   );
+  const rawDisplayTitle = detail?.display_title ?? detail?.name ?? "";
+  const displayTitle =
+    language === "vi" || !rawDisplayTitle
+      ? rawDisplayTitle
+      : (await translateText([rawDisplayTitle], language))[0] || rawDisplayTitle;
 
   return (
     <Fragment>
@@ -40,7 +46,7 @@ export default async function YachtCategory({ detail }: any) {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <p className="text-gray-700">
-                    {detail?.display_title ?? detail?.name}
+                    {displayTitle}
                   </p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -50,7 +56,7 @@ export default async function YachtCategory({ detail }: any) {
             <Search
               optionsFilter={filteredOptions}
               categoryDefault={detail?.id}
-              title={detail?.display_title ?? detail?.name}
+              title={rawDisplayTitle}
             />
           </Suspense>
         </div>

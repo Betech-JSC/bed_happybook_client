@@ -1,6 +1,7 @@
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrencyFromVnd, isVndCurrency } from "@/lib/formatters";
 import { displayProductPrice } from "@/utils/Helper";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { isEmpty } from "lodash";
 
 export default function DisplayPriceWithDiscount({
   price,
@@ -14,6 +15,13 @@ export default function DisplayPriceWithDiscount({
   const { language } = useLanguage();
   const finalPrice =
     totalDiscount > 0 && price < totalDiscount ? 0 : price - totalDiscount;
+  const formatPrice = (value: number) =>
+    language === "en" && isVndCurrency(currency)
+      ? formatCurrencyFromVnd(value, language)
+      : !isEmpty(currency)
+        ? displayProductPrice(value, currency)
+        : formatCurrencyFromVnd(value, language);
+
   return (
     <div>
       {totalDiscount > 0 && (
@@ -22,22 +30,13 @@ export default function DisplayPriceWithDiscount({
             <span className=" text-gray-700 font-medium" data-translate="true">
               Giá gốc
             </span>
-            <p className="font-medium">
-              {currency
-                ? displayProductPrice(price, currency)
-                : formatCurrency(price, language)}
-            </p>
+            <p className="font-medium">{formatPrice(price)}</p>
           </div>
           <div className="flex py-4 justify-between">
             <span className=" text-gray-700 font-medium" data-translate="true">
               Giảm giá
             </span>
-            <p className="font-medium">
-              {" "}
-              {currency
-                ? displayProductPrice(totalDiscount, currency)
-                : formatCurrency(totalDiscount, language)}
-            </p>
+            <p className="font-medium"> {formatPrice(totalDiscount)}</p>
           </div>
         </div>
       )}
@@ -45,11 +44,7 @@ export default function DisplayPriceWithDiscount({
         <span className="text-gray-700 font-medium" data-translate="true">
           Tổng cộng
         </span>
-        <p className="text-base lg:text-xl text-primary">
-          {currency
-            ? displayProductPrice(finalPrice, currency)
-            : formatCurrency(finalPrice, language)}
-        </p>
+        <p className="text-base lg:text-xl text-primary">{formatPrice(finalPrice)}</p>
       </div>
     </div>
   );

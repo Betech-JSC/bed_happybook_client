@@ -49,6 +49,35 @@ const formatCurrency = (
   }).format(value);
 };
 
+const VND_PER_USD = 27000;
+
+const isVndCurrency = (currency: any) => {
+  if (!currency) return true;
+  if (typeof currency === "string") return currency.toUpperCase() === "VND";
+
+  const code =
+    typeof currency?.code === "string" ? currency.code.toUpperCase() : "";
+  const symbolLeft = currency?.symbol_left ?? "";
+  const symbolRight = currency?.symbol_right ?? "";
+
+  return (
+    (!code && !symbolLeft && !symbolRight) ||
+    code === "VND" ||
+    symbolRight === "đ" ||
+    symbolRight === "₫"
+  );
+};
+
+const formatCurrencyFromVnd = (
+  value: number,
+  language: string = "vi",
+  digits: number = language === "en" ? 2 : 0
+) => {
+  const amount = language === "en" ? Number(value) / VND_PER_USD : Number(value);
+
+  return formatCurrency(amount, language, digits);
+};
+
 const formatMoney = (
   value: any,
   locale: string | undefined = undefined,
@@ -108,4 +137,7 @@ export {
   formatMetadata,
   formatTimeFromHour,
   formatTimeZone,
+  formatCurrencyFromVnd,
+  isVndCurrency,
+  VND_PER_USD,
 };

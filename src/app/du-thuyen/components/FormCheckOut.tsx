@@ -32,6 +32,36 @@ import {
   CheckOutYachtType,
 } from "@/schemaValidations/checkOutYacht";
 
+const safeParseOpeningDays = (value: unknown) => {
+  if (Array.isArray(value)) return value;
+
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  return [];
+};
+
+const safeFormatOpeningTime = (value: unknown) => {
+  if (typeof value !== "string" || !value.trim()) return "";
+
+  try {
+    let parsed = parse(value, "HH:mm:ss", new Date());
+    if (isNaN(parsed.getTime())) {
+      parsed = parse(value, "HH:mm", new Date());
+    }
+
+    return isNaN(parsed.getTime()) ? value : format(parsed, "HH:mm");
+  } catch {
+    return value;
+  }
+};
+
 interface Ticket {
   id: number;
   title: string;
@@ -90,11 +120,7 @@ export default function CheckOutForm({
     sunday: language === "vi" ? "Chủ nhật" : "Sunday",
   };
   const daysOpeningRaw = product?.yacht?.opening_days;
-  const daysOpening = Array.isArray(daysOpeningRaw)
-    ? daysOpeningRaw
-    : typeof daysOpeningRaw === "string"
-      ? JSON.parse(daysOpeningRaw)
-      : [];
+  const daysOpening = safeParseOpeningDays(daysOpeningRaw);
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
     ? language === "vi"
@@ -104,12 +130,7 @@ export default function CheckOutForm({
       .map((day: any) => dayMap[day])
       .filter(Boolean)
       .join(", ");
-  const parsedTimeOpening = parse(
-    product?.yacht?.opening_time,
-    "HH:mm:ss",
-    new Date()
-  );
-  const displayTimeOpening = format(parsedTimeOpening, "HH:mm");
+  const displayTimeOpening = safeFormatOpeningTime(product?.yacht?.opening_time);
 
   useEffect(() => {
     if (product?.ticket_prices) {

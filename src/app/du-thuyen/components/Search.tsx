@@ -9,6 +9,8 @@ import { ProductYachtApi } from "@/api/ProductYacht";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translateText } from "@/utils/translateApi";
 
 type optionFilterType = {
   label: string;
@@ -17,24 +19,6 @@ type optionFilterType = {
     value?: number;
     label?: string;
   }[];
-};
-
-const normalizeText = (value: string) =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[-_]+/g, " ")
-    .toLowerCase()
-    .trim();
-
-const yachtCategoryLabelMap: Record<string, string> = {
-  "du thuyen sai gon": "Ăn tối du thuyền",
-  "du thuyen ha long": "Tour du thuyền",
-};
-
-const mapYachtCategoryLabel = (label?: string) => {
-  if (!label) return label ?? "";
-  return yachtCategoryLabelMap[normalizeText(label)] ?? label;
 };
 
 export default function Search({
@@ -47,6 +31,7 @@ export default function Search({
   title?: string;
 }) {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const getYachtDisplayName = (item: any) =>
     item?.yacht?.name || item?.name || "";
 
@@ -64,40 +49,69 @@ export default function Search({
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [translatedText, setTranslatedText] = useState<boolean>(false);
+  const [translatedTitle, setTranslatedTitle] = useState<string>(title ?? "");
+  const [translatedOptions, setTranslatedOptions] =
+    useState<optionFilterType[]>(optionsFilter);
   const [data, setData] = useState<any>([]);
-  const displayOptions = useMemo(
-    () =>
-      optionsFilter.map((group) => {
-        if (group.name !== "category") return group;
-
-        return {
-          ...group,
-          option: group.option.map((option) => ({
-            ...option,
-            label: mapYachtCategoryLabel(option.label),
-          })),
-        };
-      }),
-    [optionsFilter]
-  );
   const selectedCategoryTitle = useMemo(() => {
-    const categoryGroup = displayOptions.find((group) => group.name === "category");
-    const selectedValues = Array.isArray(query["category[]"])
-      ? query["category[]"]
-      : query["category[]"]
-        ? [query["category[]"]]
+    const categoryGroup = translatedOptions.find(
+      (group) => group.name === "category"
+    );
+    const rawSelected = query["category[]"];
+    const selectedValues = Array.isArray(rawSelected)
+      ? rawSelected
+      : rawSelected
+        ? [rawSelected]
         : [];
 
     if (selectedValues.length !== 1 || !categoryGroup) return "";
 
-    const selectedValue = String(selectedValues[0]);
     const matchedOption = categoryGroup.option.find(
-      (option) => String(option.value) === selectedValue
+      (option) => String(option.value) === String(selectedValues[0])
     );
 
     return matchedOption?.label ?? "";
-  }, [displayOptions, query]);
-  const pageTitle = title ?? (selectedCategoryTitle || t("du_thuyen"));
+  }, [query, translatedOptions]);
+  const pageTitle =
+    selectedCategoryTitle || translatedTitle || title || t("du_thuyen");
+
+  useEffect(() => {
+    if (language === "vi") {
+      setTranslatedTitle(title ?? "");
+      setTranslatedOptions(optionsFilter);
+      return;
+    }
+
+    const allLabels = [title, ...optionsFilter.flatMap((group) => [
+      group.label,
+      ...group.option.map((option) => option.label),
+    ])].filter(Boolean) as string[];
+
+    if (!allLabels.length) {
+      setTranslatedTitle(title ?? "");
+      setTranslatedOptions(optionsFilter);
+      return;
+    }
+
+    translateText(allLabels, language).then((translated) => {
+      const translatedMap = new Map<string, string>();
+      allLabels.forEach((label, index) => {
+        translatedMap.set(label, translated[index] ?? label);
+      });
+
+      setTranslatedTitle(translatedMap.get(title ?? "") ?? title ?? "");
+      setTranslatedOptions(
+        optionsFilter.map((group) => ({
+          ...group,
+          label: translatedMap.get(group.label) ?? group.label,
+          option: group.option.map((option) => ({
+            ...option,
+            label: translatedMap.get(option.label ?? "") ?? option.label,
+          })),
+        }))
+      );
+    });
+  }, [language, optionsFilter, title]);
 
   const loadData = useCallback(async () => {
     try {
@@ -188,7 +202,7 @@ export default function Search({
           setQuery={setQuery}
           query={query}
           isDisabled={isDisabled}
-          options={displayOptions}
+          options={translatedOptions}
           handleFilterChange={handleFilterChange}
           handleSortData={handleSortData}
           showFilterDate={false}
@@ -196,7 +210,9 @@ export default function Search({
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold">{pageTitle}</h1>
+          <h1 className="text-32 font-bold">
+            {pageTitle}
+          </h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
             <div className="w-auto min-w-[180px] bg-white border border-gray-200 rounded-lg">
