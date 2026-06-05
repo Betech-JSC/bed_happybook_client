@@ -784,6 +784,12 @@ const ERROR_TRANSLATIONS_VI: Record<string, string> = {
     "Tài khoản của bạn không có quyền xem Công văn, tài liệu này.",
   "YOUR_ACCOUNT_CANNOT_CREATE_BOOKING_QH_V3":
     "Tài khoản của bạn không thể tạo booking QH (V3)",
+  "timeout of 60000ms exceeded":
+    "Hệ thống hãng bay phản hồi chậm (Timeout). Vui lòng thử lại sau hoặc liên hệ bộ phận hỗ trợ khách hàng.",
+  "timeout":
+    "Hệ thống hãng bay phản hồi chậm (Timeout). Vui lòng thử lại sau hoặc liên hệ bộ phận hỗ trợ khách hàng.",
+  "Request timeout":
+    "Hệ thống hãng bay phản hồi chậm (Timeout). Vui lòng thử lại sau hoặc liên hệ bộ phận hỗ trợ khách hàng.",
 };
 
 const ERROR_TRANSLATIONS_EN: Record<string, string> = {
@@ -819,6 +825,12 @@ const ERROR_TRANSLATIONS_EN: Record<string, string> = {
     "Partner system did not return a booking ID. Please try again or select another flight.",
   "confirm_price_failed":
     "Price confirmation failed. Please try again or select another flight.",
+  "timeout of 60000ms exceeded":
+    "The airline system took too long to respond (Timeout). Please try again later or contact support.",
+  "timeout":
+    "The airline system took too long to respond (Timeout). Please try again later or contact support.",
+  "Request timeout":
+    "The airline system took too long to respond (Timeout). Please try again later or contact support.",
 };
 
 function extractPayload(payload: unknown): {
@@ -826,6 +838,15 @@ function extractPayload(payload: unknown): {
   errors: FlightBookingErrorDetails;
   rawMessage?: string;
 } {
+  if (typeof payload === "string") {
+    const trimmed = payload.trim();
+    return {
+      code: trimmed,
+      errors: {},
+      rawMessage: trimmed,
+    };
+  }
+
   const p =
     payload && typeof payload === "object"
       ? (payload as Record<string, unknown>)
@@ -929,8 +950,24 @@ export function formatFlightBookingError(
     rawMessage && !["fail", "error"].includes(code.toLowerCase()) ? rawMessage : null;
 
   const lookupKey = fallbackMessage || code;
+  const lowerKey = String(lookupKey || "").toLowerCase();
 
-  if (language === "vi" && lookupKey && ERROR_TRANSLATIONS_VI[lookupKey]) {
+  if (
+    lowerKey.includes("inactive conversation") ||
+    lowerKey.includes("session expired") ||
+    lowerKey.includes("inactive session") ||
+    lowerKey.includes("verify session")
+  ) {
+    fallbackMessage =
+      language === "vi"
+        ? "Phiên giao dịch với hãng đã hết hạn do quá thời gian chờ. Vui lòng quay lại tìm kiếm và đặt vé lại."
+        : "The booking session has expired due to inactivity. Please search for the flight and try again.";
+  } else if (lowerKey.includes("timeout of 60000ms exceeded") || lowerKey.includes("timeout")) {
+    fallbackMessage =
+      language === "vi"
+        ? "Hệ thống hãng bay phản hồi chậm (Timeout). Vui lòng thử lại sau hoặc liên hệ bộ phận hỗ trợ khách hàng."
+        : "The airline system took too long to respond (Timeout). Please try again later or contact support.";
+  } else if (language === "vi" && lookupKey && ERROR_TRANSLATIONS_VI[lookupKey]) {
     fallbackMessage = ERROR_TRANSLATIONS_VI[lookupKey];
   } else if (language === "en" && lookupKey && ERROR_TRANSLATIONS_EN[lookupKey]) {
     fallbackMessage = ERROR_TRANSLATIONS_EN[lookupKey];

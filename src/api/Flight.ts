@@ -28,12 +28,12 @@ const FlightApi = {
   getFareRules: (data: any) => http.post<any>(`${path}/fare-rules`, data),
   getBaggage: (data: any) => http.post<any>(`${path}/list-ancillary`, data),
   getAirlines: (data: any) => http.post<any>(`${path}/airlines`, data),
-  confirmPrice: (data: any) => http.post<any>(`${path}/confirm-price`, data),
-  bookFlight: (url: string, data: any) => http.post<any>(url, data),
+  confirmPrice: (data: any) => http.post<any>(`${path}/confirm-price`, data, undefined, 90000),
+  bookFlight: (url: string, data: any) => http.post<any>(url, data, undefined, 120000),
   bookFlightDomestic: (data: unknown) =>
-    http.post<any>(`${path}/book-flight`, data),
+    http.post<any>(`${path}/book-flight`, data, undefined, 120000),
   holdFlight: (data: unknown) =>
-    http.post<any>(`${path}/hold-flight`, data),
+    http.post<any>(`${path}/hold-flight`, data, undefined, 120000),
   bookingStatus: (orderCode: string) =>
     http.get<any>(
       `${path}/booking-status/${encodeURIComponent(orderCode)}`,
