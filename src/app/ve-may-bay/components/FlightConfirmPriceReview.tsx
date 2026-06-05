@@ -20,6 +20,7 @@ interface FlightConfirmPriceReviewProps {
   onExpired: () => void;
   isHeld?: boolean;
   pnrNumber?: string | null;
+  flights?: any[];
 }
 
 export default function FlightConfirmPriceReview({
@@ -35,6 +36,7 @@ export default function FlightConfirmPriceReview({
   onExpired,
   isHeld = false,
   pnrNumber = null,
+  flights = [],
 }: FlightConfirmPriceReviewProps) {
   const normalized = normalizeConfirmPriceResponse(confirmData);
   const fareTotal = resolveCheckoutFareTotal({
@@ -60,13 +62,45 @@ export default function FlightConfirmPriceReview({
   const deadline = holdIso ? new Date(holdIso) : null;
   const hasValidDeadline = deadline && !Number.isNaN(deadline.getTime());
 
+  const renderPnrSection = () => {
+    if (!pnrNumber) return null;
+
+    if (pnrNumber.includes(" / ")) {
+      const pnrList = pnrNumber.split(" / ").map((p) => p.trim());
+      if (flights && flights.length === pnrList.length) {
+        return (
+          <div className="mt-3 space-y-1.5 text-sm text-gray-600">
+            {pnrList.map((pnr, idx) => {
+              const flight = flights[idx];
+              const direction = idx === 1 ? "Chiều về" : "Chiều đi";
+              const airlineName = flight?.airline ?? "";
+              return (
+                <p key={idx}>
+                  Mã đặt chỗ PNR ({direction} - {airlineName}):{" "}
+                  <span className="font-semibold text-gray-900">{pnr}</span>
+                </p>
+              );
+            })}
+          </div>
+        );
+      }
+    }
+
+    return (
+      <p className="mt-3 text-sm text-gray-600">
+        Mã đặt chỗ (PNR):{" "}
+        <span className="font-semibold text-gray-900">{pnrNumber}</span>
+      </p>
+    );
+  };
+
   return (
     <section className="space-y-4">
       <div className="rounded-2xl border border-[#B2DDFF] bg-[#EFF8FF] p-4 md:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p
-              className="text-sm font-medium text-[#175CD3]"
+               className="text-sm font-medium text-[#175CD3]"
               data-translate="true"
             >
               {isHeld ? "Đã giữ chỗ thành công" : "Giá đã được xác nhận"}
@@ -92,12 +126,7 @@ export default function FlightConfirmPriceReview({
             </div>
           )}
         </div>
-        {pnrNumber && isHeld && (
-          <p className="mt-3 text-sm text-gray-600">
-            Mã đặt chỗ (PNR):{" "}
-            <span className="font-semibold text-gray-900">{pnrNumber}</span>
-          </p>
-        )}
+        {isHeld && renderPnrSection()}
         {normalized.bookingId && !isHeld && (
           <p className="mt-3 text-sm text-gray-600">
             Mã giữ chỗ:{" "}
