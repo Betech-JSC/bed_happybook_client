@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
-import { siteUrl } from "@/constants";
+import { cmsUrl, siteUrl } from "@/constants";
 import { formatMetadata } from "@/lib/formatters";
+import { measureSimDuLichServerTiming } from "./serverTiming";
 
 type SimDuLichCategory = "root" | "quoc-te" | "viet-nam";
 
@@ -26,7 +27,7 @@ const resolveImageUrl = (source?: SimDuLichSeoSource | null) => {
   const image = source.meta_image || "";
   if (image.trim()) {
     if (/^https?:\/\//i.test(image)) return image;
-    return `${siteUrl}${image.startsWith("/") ? "" : "/"}${image}`;
+    return `${cmsUrl}${image.startsWith("/") ? "" : "/"}${image}`;
   }
 
   if (source.image_url && source.image_location) {
@@ -53,58 +54,63 @@ export async function buildSimDuLichMetadata(
   canonicalPath?: string,
   seoSource?: SimDuLichSeoSource | null
 ): Promise<Metadata> {
-  const translations = await getServerTranslations(language);
-  const t = (key: string, fallback: string) => translations[key] || fallback;
+  return measureSimDuLichServerTiming(
+    `buildSimDuLichMetadata(${language}, ${category})`,
+    async () => {
+      const translations = await getServerTranslations(language);
+      const t = (key: string, fallback: string) => translations[key] || fallback;
 
-  const defaultCanonical =
-    category === "viet-nam"
-      ? "/sim-viet-nam"
-      : category === "quoc-te"
-        ? "/sim-du-lich/quoc-te"
-        : "/sim-du-lich";
+      const defaultCanonical =
+        category === "viet-nam"
+          ? "/sim-viet-nam"
+          : category === "quoc-te"
+            ? "/sim-du-lich/quoc-te"
+            : "/sim-du-lich";
 
-  const title = firstNonEmptyText(
-    seoSource?.meta_title,
-    seoSource?.title,
-    seoSource?.page_name,
-    detailTitle,
-    "HappyBook Travel"
+      const title = firstNonEmptyText(
+        seoSource?.meta_title,
+        seoSource?.title,
+        seoSource?.page_name,
+        detailTitle,
+        "HappyBook Travel"
+      );
+      const description = firstNonEmptyText(
+        seoSource?.meta_description,
+        seoSource?.description,
+        seoSource?.subtitle,
+        seoSource?.note,
+        seoSource?.page_name,
+        seoSource?.title,
+        detailTitle,
+        title
+      );
+      const canonical =
+        resolveCanonicalUrl(seoSource?.canonical_link) ||
+        resolveCanonicalUrl(canonicalPath) ||
+        resolveCanonicalUrl(defaultCanonical);
+      const image = resolveImageUrl(seoSource);
+
+      return formatMetadata({
+        title: t(title, title),
+        description: t(description, description),
+        keywords: seoSource?.meta_keywords?.trim() || undefined,
+        robots: seoSource?.meta_robots?.trim() || "index, follow",
+        alternates: {
+          canonical,
+        },
+        openGraph: {
+          title: t(title, title),
+          description: t(description, description),
+          images: image
+            ? [
+                {
+                  url: image,
+                  alt: t(title, title),
+                },
+              ]
+            : undefined,
+        },
+      });
+    }
   );
-  const description = firstNonEmptyText(
-    seoSource?.meta_description,
-    seoSource?.description,
-    seoSource?.subtitle,
-    seoSource?.note,
-    seoSource?.page_name,
-    seoSource?.title,
-    detailTitle,
-    title
-  );
-  const canonical =
-    resolveCanonicalUrl(seoSource?.canonical_link) ||
-    resolveCanonicalUrl(canonicalPath) ||
-    resolveCanonicalUrl(defaultCanonical);
-  const image = resolveImageUrl(seoSource);
-
-  return formatMetadata({
-      title: t(title, title),
-      description: t(description, description),
-      keywords: seoSource?.meta_keywords?.trim() || undefined,
-    robots: seoSource?.meta_robots?.trim() || "index, follow",
-    alternates: {
-      canonical,
-    },
-    openGraph: {
-      title: t(title, title),
-      description: t(description, description),
-      images: image
-        ? [
-            {
-              url: image,
-              alt: t(title, title),
-            },
-          ]
-        : undefined,
-    },
-  });
 }

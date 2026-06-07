@@ -3,7 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
-import { loadAllEsimPackages, loadEsimOptions } from "../lib/esim-loader";
+import { loadEsimOptions, loadEsimPackagesPage, type EsimSortMode } from "../lib/esim-loader";
 import {
   findCheapestVariant,
   getEsimVariantMoney,
@@ -22,7 +22,7 @@ import { useSimDuLichStaticText } from "./useSimDuLichStaticText";
 type Locale = "vi" | "en";
 type DetailAccordionKey = "compatibility" | "refund" | "faq";
 type SidebarFilterMode = "destination" | "operator";
-const PRICE_FILTER_CAP = 2_000_000;
+const ESIM_LIST_PAGE_SIZE = 36;
 
 type Args = {
   cmsPageContent: EsimCmsPageContent | null | undefined;
@@ -31,6 +31,7 @@ type Args = {
   initialCategory?: string;
   initialPackageSlug?: string;
   initialSelectedPackage?: EsimPackageView | null;
+  initialPackages?: EsimPackageView[];
   sidebarFilterMode?: SidebarFilterMode;
 };
 
@@ -41,30 +42,43 @@ export function useEsimCatalog({
   initialCategory,
   initialPackageSlug,
   initialSelectedPackage,
+  initialPackages,
   sidebarFilterMode = "destination",
 }: Args) {
   const router = useRouter();
   const t = useSimDuLichStaticText(activeLocale);
+  const [isMobileViewport, setIsMobileViewport] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 1023px)").matches;
+  });
   const [query, setQuery] = useState("");
   const [selectedRegionId, setSelectedRegionId] = useState("");
-  const [packages, setPackages] = useState<EsimPackageView[]>([]);
+  const hasInitialPackages = Boolean(initialPackages?.length);
+  const [packages, setPackages] = useState<EsimPackageView[]>(() => initialPackages ?? []);
   const [filters, setFilters] = useState<EsimFilterOptions>({
     regions: [],
     destinations: [],
     operators: [],
   });
   const [selectedDestinationLabels, setSelectedDestinationLabels] = useState<string[]>([]);
+  const [selectedOperatorLabels, setSelectedOperatorLabels] = useState<string[]>([]);
   const [packageQuery, setPackageQuery] = useState("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
-  const [loading, setLoading] = useState(true);
+  const [sortMode, setSortMode] = useState<EsimSortMode>("price-asc");
+  const [page, setPage] = useState(1);
+  const [totalPackages, setTotalPackages] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
+  const [loading, setLoading] = useState(() => !hasInitialPackages);
   const [error, setError] = useState("");
   const [selectedPackageSlug, setSelectedPackageSlug] = useState("");
   const [selectedSku, setSelectedSku] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [openDetailSection, setOpenDetailSection] = useState<DetailAccordionKey | null>("compatibility");
+  const [initialRegionReady, setInitialRegionReady] = useState(() => !initialCategory);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
   const selectedPackageSlugRef = useRef("");
   const selectedSkuRef = useRef("");
+  const packagesRef = useRef<EsimPackageView[]>(initialPackages ?? []);
   const appliedInitialCategoryRef = useRef("");
   const routeCategory = useMemo(
     () => (initialCategory ? normalizeSimDuLichCategory(initialCategory) : ""),
@@ -83,6 +97,38 @@ export function useEsimCatalog({
   }, [selectedSku]);
 
   useEffect(() => {
+    packagesRef.current = packages;
+  }, [packages]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const updateViewport = () => {
+      setIsMobileViewport(mediaQuery.matches);
+    };
+
+    updateViewport();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateViewport);
+      return () => mediaQuery.removeEventListener("change", updateViewport);
+    }
+
+    mediaQuery.addListener(updateViewport);
+    return () => mediaQuery.removeListener(updateViewport);
+  }, []);
+
+  useEffect(() => {
+    if (hasInitialPackages) {
+      setFilters({
+        regions: [],
+        destinations: [],
+        operators: [],
+      });
+      return;
+    }
+
     let active = true;
 
     const loadOptions = async () => {
@@ -90,8 +136,12 @@ export function useEsimCatalog({
         const data = await loadEsimOptions(activeLocale);
         if (!active) return;
         setFilters(data);
+        setFiltersLoaded(true);
       } catch (err) {
         console.error("Failed to load eSIM filters", err);
+        if (!active) return;
+        setFiltersLoaded(true);
+        setInitialRegionReady(true);
       }
     };
 
@@ -100,31 +150,61 @@ export function useEsimCatalog({
     return () => {
       active = false;
     };
-  }, [activeLocale]);
+  }, [activeLocale, hasInitialPackages]);
 
   useEffect(() => {
+    setInitialRegionReady(!initialCategory);
     appliedInitialCategoryRef.current = "";
     setQuery("");
     setSelectedRegionId("");
     setSelectedDestinationLabels([]);
+    setSelectedOperatorLabels([]);
     setPackageQuery("");
-    setPriceRange([0, 0]);
+    setPage(1);
   }, [initialCategory]);
 
   useEffect(() => {
-    if (!filters.regions.length || !initialCategory) return;
+    setPage(1);
+  }, [debouncedQuery, selectedRegionId, selectedDestinationLabels, sortMode]);
 
-    const resolvedRegionId = resolveEsimRegionPreset(filters.regions, initialCategory);
-    if (!resolvedRegionId) return;
-    if (appliedInitialCategoryRef.current === initialCategory && selectedRegionId === resolvedRegionId) {
+  useEffect(() => {
+    if (!initialCategory || !filtersLoaded) return;
+
+    if (!filters.regions.length) {
+      setInitialRegionReady(true);
       return;
     }
 
-    appliedInitialCategoryRef.current = initialCategory;
-    setSelectedRegionId(resolvedRegionId);
-  }, [filters.regions, initialCategory, selectedRegionId]);
+    const resolvedRegionId = resolveEsimRegionPreset(filters.regions, initialCategory);
+    if (resolvedRegionId) {
+      if (appliedInitialCategoryRef.current === initialCategory && selectedRegionId === resolvedRegionId) {
+        setInitialRegionReady(true);
+        return;
+      }
+
+      appliedInitialCategoryRef.current = initialCategory;
+      setSelectedRegionId(resolvedRegionId);
+      setInitialRegionReady(true);
+      return;
+    }
+
+    setInitialRegionReady(true);
+  }, [filters.regions, filtersLoaded, initialCategory, selectedRegionId]);
 
   useEffect(() => {
+    if (hasInitialPackages) {
+      setPackages(initialPackages ?? []);
+      setLoading(false);
+      setError("");
+      return;
+    }
+
+    if (initialCategory && !initialRegionReady) {
+      setLoading(true);
+      setError("");
+      return;
+    }
+
     let active = true;
 
     const loadPackages = async () => {
@@ -132,15 +212,23 @@ export function useEsimCatalog({
       setError("");
 
       try {
-        const items = await loadAllEsimPackages({
+        const result = await loadEsimPackagesPage({
           q: debouncedQuery || undefined,
           region_id: selectedRegionId || undefined,
+          destination_ids: sidebarFilterMode === "destination" ? selectedDestinationLabels : [],
+          operators: sidebarFilterMode === "operator" ? selectedOperatorLabels : [],
+          sort: sortMode,
+          page,
+          page_size: ESIM_LIST_PAGE_SIZE,
           locale: activeLocale,
         });
+        const items = page > 1 ? [...packagesRef.current, ...result.items] : result.items;
 
         if (!active) return;
 
         setPackages(items);
+        setTotalPackages(result.total);
+        setLastPage(result.lastPage);
 
         if (items.length === 0) {
           setSelectedPackageSlug("");
@@ -157,7 +245,16 @@ export function useEsimCatalog({
           (initialPackageSlug && initialSelectedPackage?.slug === initialPackageSlug
             ? initialSelectedPackage
             : null) ||
-          items[0];
+          (!isMobileViewport ? items[0] : null);
+
+        if (!preferredPackage) {
+          if (!isMobileViewport) {
+            setSelectedPackageSlug(items[0].slug);
+            const defaultVariants = getSelectableEsimVariants(items[0], activeLocale);
+            setSelectedSku(defaultVariants[0]?.sku || "");
+          }
+          return;
+        }
 
         const nextPackage = preferredPackage;
 
@@ -168,13 +265,15 @@ export function useEsimCatalog({
         const selectableVariants = getSelectableEsimVariants(nextPackage, activeLocale);
         const nextVariant =
           selectableVariants.find((variant) => variant.sku === currentSku) ||
-          selectableVariants[0] ||
+          (!isMobileViewport ? selectableVariants[0] || null : null) ||
           null;
 
         if (nextVariant && nextVariant.sku !== currentSku) {
           setSelectedSku(nextVariant.sku);
         } else if (!nextVariant) {
-          setSelectedSku("");
+          if (currentSku) {
+            setSelectedSku("");
+          }
         }
       } catch (err) {
         if (!active) return;
@@ -188,107 +287,47 @@ export function useEsimCatalog({
       }
     };
 
-    const timer = setTimeout(() => {
-      void loadPackages();
-    }, 180);
+    void loadPackages();
 
     return () => {
       active = false;
-      clearTimeout(timer);
     };
-  }, [activeLocale, debouncedQuery, initialPackageSlug, initialSelectedPackage, selectedRegionId, t]);
-
-  const normalizeText = useCallback(
-    (value: string) =>
-      value
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim(),
-    []
-  );
-  const priceBounds = useMemo(() => {
-    if (!packages.length) return { min: 0, max: 0 };
-
-    const prices = packages
-      .map((pkg) => {
-        const cheapest = findCheapestVariant(pkg, activeLocale);
-        return cheapest ? getEsimVariantMoney(cheapest, activeLocale).price : null;
-      })
-      .filter((price): price is number => typeof price === "number" && Number.isFinite(price) && price > 0);
-
-    if (!prices.length) return { min: 0, max: 0 };
-
-    return {
-      min: Math.min(...prices),
-      max: PRICE_FILTER_CAP,
-    };
-  }, [activeLocale, packages]);
-
-  useEffect(() => {
-    if (!packages.length) {
-      setPriceRange([0, 0]);
-      return;
-    }
-
-    setPriceRange((current) => {
-      if (current[0] === 0 && current[1] === 0) {
-        return [priceBounds.min, priceBounds.max];
-      }
-
-      return [
-        Math.max(priceBounds.min, Math.min(current[0], priceBounds.max)),
-        Math.max(priceBounds.min, Math.min(current[1], priceBounds.max)),
-      ];
-    });
-  }, [packages.length, priceBounds.max, priceBounds.min]);
+  }, [
+    activeLocale,
+    debouncedQuery,
+    debouncedPackageQuery,
+    hasInitialPackages,
+    initialPackageSlug,
+    initialPackages,
+    initialSelectedPackage,
+    initialCategory,
+    initialRegionReady,
+    isMobileViewport,
+    page,
+    selectedDestinationLabels,
+    selectedOperatorLabels,
+    selectedRegionId,
+    sidebarFilterMode,
+    sortMode,
+    t,
+  ]);
 
   const visiblePackages = useMemo(() => {
     if (!packages.length) return packages;
 
-    const selectedDestinationSet = new Set(selectedDestinationLabels.map((label) => normalizeText(label)));
     const selectedVariantSku = debouncedPackageQuery;
 
     return packages.filter((pkg) => {
-      const cheapest = findCheapestVariant(pkg, activeLocale);
-      const money = getEsimVariantMoney(cheapest, activeLocale);
-      const sidebarText =
-        sidebarFilterMode === "operator"
-          ? normalizeText(
-              [pkg.operator, pkg.network, pkg.title, pkg.destination, pkg.regionLabel]
-                .filter(Boolean)
-                .join(" ")
-            )
-          : normalizeText([pkg.destination, pkg.title, pkg.regionLabel, pkg.coverage].filter(Boolean).join(" "));
       const matchesVariantInfo =
         selectedVariantSku === "" ||
         getSelectableEsimVariants(pkg, activeLocale).some((variant) => variant.sku === selectedVariantSku);
-      const matchesDestination =
-        selectedDestinationSet.size === 0 ||
-        (sidebarText !== "" &&
-          Array.from(selectedDestinationSet).some(
-            (label) => sidebarText.includes(label) || label.includes(sidebarText)
-          ));
-      const matchesPrice =
-        priceBounds.min === 0 && priceBounds.max === 0
-          ? true
-          : money.price >= priceRange[0] && money.price <= priceRange[1];
 
-      return matchesDestination && matchesVariantInfo && matchesPrice;
+      return matchesVariantInfo;
     });
   }, [
     activeLocale,
     debouncedPackageQuery,
-    normalizeText,
     packages,
-    priceRange,
-    priceBounds.max,
-    priceBounds.min,
-    sidebarFilterMode,
-    selectedDestinationLabels,
   ]);
 
   const sidebarOptions = useMemo<EsimFilterOption[]>(() => {
@@ -296,31 +335,8 @@ export function useEsimCatalog({
       return filters.destinations;
     }
 
-    const fromPackages: EsimFilterOption[] = [];
-    const seen = new Set<string>();
-
-    packages.forEach((pkg) => {
-      const label =
-        pkg.title?.trim() ||
-        pkg.network?.trim() ||
-        pkg.operator?.trim() ||
-        pkg.destination?.trim() ||
-        pkg.regionLabel?.trim() ||
-        "";
-      const value = pkg.operator?.trim() || pkg.network?.trim() || label;
-      const normalizedKey = normalizeText(label || value);
-
-      if (!normalizedKey || seen.has(normalizedKey)) return;
-      seen.add(normalizedKey);
-      fromPackages.push({ label, value });
-    });
-
-    if (fromPackages.length > 0) {
-      return fromPackages.sort((a, b) => a.label.localeCompare(b.label, "vi"));
-    }
-
     return filters.operators;
-  }, [filters.destinations, filters.operators, normalizeText, packages, sidebarFilterMode]);
+  }, [filters.destinations, filters.operators, sidebarFilterMode]);
 
   const selectedPackage = useMemo<EsimPackageView | null>(() => {
     if (!visiblePackages.length) return null;
@@ -328,9 +344,9 @@ export function useEsimCatalog({
       visiblePackages.find((item) => item.slug === selectedPackageSlug) ||
       visiblePackages.find((item) => item.slug === initialPackageSlug) ||
       (initialPackageSlug && initialSelectedPackage?.slug === initialPackageSlug ? initialSelectedPackage : null) ||
-      visiblePackages[0]
+      (!isMobileViewport ? visiblePackages[0] : null)
     );
-  }, [initialPackageSlug, initialSelectedPackage, selectedPackageSlug, visiblePackages]);
+  }, [initialPackageSlug, initialSelectedPackage, isMobileViewport, selectedPackageSlug, visiblePackages]);
 
   const selectedVariant = useMemo<EsimVariantView | null>(() => {
     if (!selectedPackage?.variants.length) return null;
@@ -340,9 +356,13 @@ export function useEsimCatalog({
       return matchedVariant;
     }
 
+    if (isMobileViewport) {
+      return null;
+    }
+
     const fallbackVariant = getSelectableEsimVariants(selectedPackage, activeLocale)[0] || null;
     return fallbackVariant;
-  }, [activeLocale, selectedPackage, selectedSku]);
+  }, [activeLocale, isMobileViewport, selectedPackage, selectedSku]);
 
   const selectedVariantMoney = useMemo(
     () => getEsimVariantMoney(selectedVariant, activeLocale),
@@ -363,13 +383,13 @@ export function useEsimCatalog({
     const selectableVariants = getSelectableEsimVariants(selectedPackage, activeLocale);
     const nextSku =
       selectableVariants.find((variant) => variant.sku === selectedSku)?.sku ||
-      selectableVariants[0]?.sku ||
+      (!isMobileViewport ? selectableVariants[0]?.sku : "") ||
       "";
 
     if (nextSku !== selectedSku) {
       setSelectedSku(nextSku);
     }
-  }, [activeLocale, selectedPackage, selectedPackageSlug, selectedSku, visiblePackages]);
+  }, [activeLocale, isMobileViewport, selectedPackage, selectedPackageSlug, selectedSku, visiblePackages]);
 
   const handleSelectPackage = useCallback((pkg: EsimPackageView) => {
     if (routeCategory) {
@@ -379,9 +399,9 @@ export function useEsimCatalog({
 
     const selectableVariants = getSelectableEsimVariants(pkg, activeLocale);
     setSelectedPackageSlug(pkg.slug);
-    setSelectedSku(selectableVariants[0]?.sku || "");
+    setSelectedSku(isMobileViewport ? "" : selectableVariants[0]?.sku || "");
     setShowModal(false);
-  }, [activeLocale, routeCategory, router]);
+  }, [activeLocale, isMobileViewport, routeCategory, router]);
 
   const handleSelectVariant = useCallback((variant: EsimVariantView) => {
     if (!isEsimVariantSelectable(variant, activeLocale)) return;
@@ -439,11 +459,22 @@ export function useEsimCatalog({
     );
   }, []);
 
+  const handleToggleOperatorLabel = useCallback((label: string) => {
+    setSelectedOperatorLabels((current) =>
+      current.includes(label) ? current.filter((item) => item !== label) : [...current, label]
+    );
+  }, []);
+
   const handleSelectDestinationLabel = useCallback((label: string | null) => {
     setSelectedDestinationLabels(label ? [label] : []);
     setQuery("");
     setPackageQuery("");
   }, []);
+
+  const handleLoadMorePackages = useCallback(() => {
+    if (loading || page >= lastPage) return;
+    setPage((current) => current + 1);
+  }, [lastPage, loading, page]);
 
   const handleSelectPackageFilterSku = useCallback(
     (sku: string | null) => {
@@ -468,6 +499,7 @@ export function useEsimCatalog({
   );
 
   const activeRegionLabel =
+    selectedPackage?.regionLabel ||
     regionOptions.find((item) => item.value === selectedRegionId)?.label || t("Tất cả");
 
   const serviceTypeLabel = selectedVariant
@@ -492,19 +524,23 @@ export function useEsimCatalog({
     setSelectedRegionId,
     selectedDestinationLabels,
     setSelectedDestinationLabels,
+    selectedOperatorLabels,
+    setSelectedOperatorLabels,
     handleToggleDestinationLabel,
+    handleToggleOperatorLabel,
     handleSelectDestinationLabel,
     handleSelectPackageFilterSku,
     packageQuery,
     setPackageQuery,
-    priceRange,
-    setPriceRange,
-    priceBounds,
     packages,
     visiblePackages,
     filters,
     loading,
     error,
+    sortMode,
+    setSortMode,
+    totalPackages,
+    hasMorePackages: page < lastPage,
     selectedPackageSlug,
     selectedSku,
     selectedPackage,
@@ -524,6 +560,7 @@ export function useEsimCatalog({
     sidebarOptions,
     serviceTypeLabel,
     detailSections,
+    handleLoadMorePackages,
     handleSelectPackage,
     handleSelectVariant,
     handleSelectSkuByValidity,

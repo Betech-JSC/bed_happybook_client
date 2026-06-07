@@ -13,8 +13,13 @@ const buildSearchQuery = (params?: {
   region_id?: string | number;
   destination_id?: string | number;
   operator?: string;
+  operators?: Array<string | number> | string;
   page_size?: number;
   page?: number;
+  compact?: boolean;
+  card?: boolean;
+  sort?: "newest" | "price-asc" | "price-desc";
+  destination_ids?: Array<string | number> | string;
 }) => {
   const searchParams = new URLSearchParams();
 
@@ -27,11 +32,28 @@ const buildSearchQuery = (params?: {
     searchParams.set("destination_id", `${params.destination_id}`);
   }
   if (params?.operator?.trim()) searchParams.set("operator", params.operator.trim());
+  if (params?.operators) {
+    const value = Array.isArray(params.operators) ? params.operators.join(",") : params.operators;
+    if (`${value}`.trim()) searchParams.set("operators", `${value}`.trim());
+  }
+  if (params?.destination_ids) {
+    const value = Array.isArray(params.destination_ids) ? params.destination_ids.join(",") : params.destination_ids;
+    if (`${value}`.trim()) searchParams.set("destination_ids", `${value}`.trim());
+  }
   if (typeof params?.page_size === "number" && params.page_size > 0) {
     searchParams.set("page_size", `${params.page_size}`);
   }
   if (typeof params?.page === "number" && params.page > 0) {
     searchParams.set("page", `${params.page}`);
+  }
+  if (params?.compact) {
+    searchParams.set("compact", "1");
+  }
+  if (params?.card) {
+    searchParams.set("card", "1");
+  }
+  if (params?.sort) {
+    searchParams.set("sort", params.sort);
   }
 
   const search = searchParams.toString();
@@ -45,13 +67,28 @@ const ProductEsimApi = {
     region_id?: string | number;
     destination_id?: string | number;
     operator?: string;
+    operators?: Array<string | number> | string;
     page_size?: number;
     page?: number;
+    compact?: boolean;
+    card?: boolean;
+    sort?: "newest" | "price-asc" | "price-desc";
+    destination_ids?: Array<string | number> | string;
   }, locale?: string) => http.get<any>(`${path}/search${buildSearchQuery(params)}`, langHeader(locale), 10000, 0),
-  detail: (slug: string, locale?: string) =>
-    http.get<any>(`${path}/detail/${slug}`, langHeader(locale), 10000, 0),
-  detailBySlug: (slug: string, locale?: string) =>
-    http.get<any>(`${path}/detail-by-slug/${slug}`, langHeader(locale), 10000, 0),
+  detail: (slug: string, locale?: string, compact?: boolean) =>
+    http.get<any>(
+      `${path}/detail/${slug}${compact ? "?compact=1" : ""}`,
+      langHeader(locale),
+      10000,
+      0
+    ),
+  detailBySlug: (slug: string, locale?: string, compact?: boolean) =>
+    http.get<any>(
+      `${path}/detail-by-slug/${slug}${compact ? "?compact=1" : ""}`,
+      langHeader(locale),
+      10000,
+      0
+    ),
   getOptionsFilter: (locale?: string) =>
     http.get<any>(`${path}/options-filter`, langHeader(locale), 10000, 0),
   quote: (body: {

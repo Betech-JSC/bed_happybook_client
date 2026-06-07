@@ -170,7 +170,7 @@ export default function SearchFilters({
                     onChange={(e) => {
                       handleSortData(e.target.value);
                     }}
-                    defaultValue={"id|desc"}
+                    defaultValue={"price|asc"}
                   >
                     <option value="id|desc">{textTranSlate("moi_nhat")}</option>
                     <option value="id|asc">{textTranSlate("cu_nhat")}</option>

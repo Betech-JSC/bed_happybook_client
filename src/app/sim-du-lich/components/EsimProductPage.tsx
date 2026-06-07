@@ -1,19 +1,31 @@
 "use client";
 
-import { useCallback, useRef } from "react";
-import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatEsimMoney } from "../lib/esim";
 import type { EsimCmsFaqItem, EsimCmsPageContent } from "../lib/cms-content";
 import type { EsimPackageView } from "../lib/esim";
-import EsimInternationalDetailGallery from "./EsimInternationalDetailGallery";
-import EsimPackageControls from "./EsimPackageControls";
 import SimDuLichBreadcrumbs from "./SimDuLichBreadcrumbs";
 import EsimPackageExplorer from "./EsimPackageExplorer";
-import EsimProductSidebar from "./EsimProductSidebar";
-import PackageSelectorModal from "./PackageSelectorModal";
 import { useEsimCatalog } from "../hooks/useEsimCatalog";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+
+const EsimInternationalDetailGallery = dynamic(() => import("./EsimInternationalDetailGallery"), {
+  loading: () => <div className="aspect-[16/9] w-full rounded-3xl bg-slate-200 animate-pulse" />,
+});
+
+const EsimPackageControls = dynamic(() => import("./EsimPackageControls"), {
+  loading: () => <div className="h-[240px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse" />,
+});
+
+const EsimProductSidebar = dynamic(() => import("./EsimProductSidebar"), {
+  loading: () => <div className="min-h-[520px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse" />,
+});
+
+const PackageSelectorModal = dynamic(() => import("./PackageSelectorModal"), {
+  ssr: false,
+});
 
 type SimDuLichCategory = "quoc-te" | "viet-nam";
 
@@ -39,6 +51,8 @@ const resolveCategoryHref = (category: SimDuLichCategory) =>
 
 const resolveSidebarTitle = (category: SimDuLichCategory, t: (text: string, fallback?: string) => string) =>
   category === "viet-nam" ? t("Nhà mạng", "Nhà mạng") : t("Quốc gia", "Quốc gia");
+
+const stripHtml = (value: string) => value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
 export default function EsimProductPage({
   footerContent,
@@ -71,6 +85,10 @@ export default function EsimProductPage({
   const categorySidebarTitle = category ? resolveSidebarTitle(category, t) : t("Quốc gia");
   const sidebarFilterMode = category === "viet-nam" ? "operator" : "destination";
   const categoryHref = category ? resolveCategoryHref(category) : "";
+  const initialPackages = useMemo(
+    () => (initialSelectedPackage ? [initialSelectedPackage] : undefined),
+    [initialSelectedPackage]
+  );
 
   const catalog = useEsimCatalog({
     cmsPageContent,
@@ -79,11 +97,22 @@ export default function EsimProductPage({
     initialCategory,
     initialPackageSlug,
     initialSelectedPackage,
+    initialPackages,
     sidebarFilterMode,
   });
 
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
-  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const packageDetailSummary =
+    stripHtml(packageFooterContent) ||
+    catalog.selectedPackage?.subtitle ||
+    catalog.selectedPackage?.coverage ||
+    "";
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [actionBlockNode, setActionBlockNode] = useState<HTMLDivElement | null>(null);
+  const actionBlockRef = useCallback((node: HTMLDivElement | null) => {
+    setActionBlockNode(node);
+  }, []);
+  const [showMobilePaymentBar, setShowMobilePaymentBar] = useState(false);
 
   const scrollSidebarIntoView = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -93,6 +122,61 @@ export default function EsimProductPage({
       sidebarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }, []);
+
+  useEffect(() => {
+    if (!isDetailPage || typeof window === "undefined") {
+      setShowMobilePaymentBar(false);
+      return;
+    }
+
+    const target = actionBlockNode;
+    if (!target) {
+      setShowMobilePaymentBar(window.matchMedia("(max-width: 1023px)").matches);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const updateVisibility = (isIntersecting: boolean) => {
+      setShowMobilePaymentBar(mediaQuery.matches && !isIntersecting);
+    };
+
+    const handleMediaChange = () => {
+      if (!mediaQuery.matches) {
+        setShowMobilePaymentBar(false);
+        return;
+      }
+
+      const entry = target.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const visibleHeight = Math.min(entry.bottom, viewportHeight) - Math.max(entry.top, 0);
+      const isVisible = visibleHeight > 0;
+      updateVisibility(isVisible);
+    };
+
+    if (!mediaQuery.matches) {
+      setShowMobilePaymentBar(false);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        updateVisibility(Boolean(entry?.isIntersecting));
+      },
+      {
+        threshold: 0,
+      }
+    );
+
+    observer.observe(target);
+    handleMediaChange();
+
+    mediaQuery.addEventListener("change", handleMediaChange);
+
+    return () => {
+      observer.disconnect();
+      mediaQuery.removeEventListener("change", handleMediaChange);
+    };
+  }, [actionBlockNode, isDetailPage]);
 
   const breadcrumbItems = category
     ? isDetailPage
@@ -142,14 +226,19 @@ export default function EsimProductPage({
           destinationOptions={catalog.sidebarOptions}
           selectedDestinationLabels={catalog.selectedDestinationLabels}
           onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
+          onDestinationLabelsChange={catalog.setSelectedDestinationLabels}
+          operatorOptions={catalog.filters.operators}
+          selectedOperatorLabels={catalog.selectedOperatorLabels}
+          onToggleOperatorLabel={catalog.handleToggleOperatorLabel}
           onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
           onSelectPackageFilterSku={catalog.handleSelectPackageFilterSku}
           packageQuery={catalog.packageQuery}
           onPackageQueryChange={catalog.setPackageQuery}
-          priceRange={catalog.priceRange}
-          priceBounds={catalog.priceBounds}
-          onPriceRangeChange={catalog.setPriceRange}
-          showPricePresetFilters={false}
+          sortMode={catalog.sortMode}
+          onSortModeChange={catalog.setSortMode}
+          totalPackages={catalog.totalPackages}
+          hasMorePackages={catalog.hasMorePackages}
+          onLoadMorePackages={catalog.handleLoadMorePackages}
           onOpenModal={() => catalog.setShowModal(true)}
           onSelectPackage={catalog.handleSelectPackage}
           onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
@@ -171,8 +260,8 @@ export default function EsimProductPage({
           </div>
         ) : null}
 
-        <div className="flex flex-col-reverse items-start mt-6 lg:flex-row lg:space-x-8">
-          <div className="w-full space-y-4 lg:w-8/12 mt-4 lg:mt-0">
+        <div className="flex flex-col items-start mt-6 lg:flex-row lg:space-x-8">
+          <div className="order-1 w-full space-y-4 lg:order-none lg:w-8/12">
             <EsimInternationalDetailGallery
               selectedPackage={catalog.selectedPackage}
               categoryLabel={categoryLabel}
@@ -202,13 +291,21 @@ export default function EsimProductPage({
               <h2 className="text-xl font-bold text-midnight-ink">
                 {catalog.selectedPackage?.destination || t("Thông tin gói")}
               </h2>
-              <p className="mt-2 text-sm leading-7 text-steel-secondary">
-                {catalog.selectedPackage?.subtitle || catalog.selectedPackage?.coverage || ""}
-              </p>
+              {packageFooterContent ? (
+                <div
+                  className="mt-2 space-y-3 text-sm leading-7 text-steel-secondary"
+                  dangerouslySetInnerHTML={{ __html: packageFooterContent }}
+                />
+              ) : (
+                <p className="mt-2 text-sm leading-7 text-steel-secondary">{packageDetailSummary}</p>
+              )}
             </div>
           </div>
 
-          <div ref={sidebarRef} className="w-full lg:w-4/12 lg:sticky lg:top-[148px] lg:self-start">
+          <div
+            ref={sidebarRef}
+            className="order-2 mt-4 w-full lg:order-none lg:mt-0 lg:w-4/12 lg:sticky lg:top-[148px] lg:self-start"
+          >
             <EsimProductSidebar
               selectedPackage={catalog.selectedPackage}
               selectedVariant={catalog.selectedVariant}
@@ -224,6 +321,7 @@ export default function EsimProductPage({
               setOpenDetailSection={catalog.setOpenDetailSection}
               sticky={false}
               showDetailHeader
+              actionBlockRef={actionBlockRef}
             />
           </div>
         </div>
@@ -232,49 +330,41 @@ export default function EsimProductPage({
   );
 
   return (
-    <main className="w-full pb-32">
+    <main className="w-full pb-44 lg:pb-32">
       {isDetailPage ? renderDetailShell() : renderListingShell()}
 
       {isDetailPage ? (
         <div className="bg-white">
           <div className={detailContainerClassName}>
-            {packageFooterContent ? (
-              <section className="mt-8 rounded-2xl border border-slate-200 bg-gray-50 p-8">
-                <h3 className="mb-3 text-sm font-bold text-midnight-ink">{t("Nội dung")}</h3>
-                <div
-                  className="space-y-3 text-sm leading-relaxed text-steel-secondary"
-                  dangerouslySetInnerHTML={{ __html: packageFooterContent }}
-                />
-              </section>
-            ) : null}
-
             {footerContent ? <div className="my-8">{footerContent}</div> : null}
           </div>
         </div>
       ) : null}
 
-      <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
-        <div>
-          <div className="text-xs text-steel-secondary">{t("Tổng thanh toán")}</div>
-          <div className="text-xl font-bold text-hb-coral">
-            {formatEsimMoney(
-              catalog.total,
-              activeLocale === "en" ? "USD" : catalog.selectedVariantMoney.currency
-            )}
+      {isDetailPage && showMobilePaymentBar ? (
+        <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
+          <div>
+            <div className="text-xs text-steel-secondary">{t("Tổng thanh toán")}</div>
+            <div className="text-xl font-bold text-hb-coral">
+              {formatEsimMoney(
+                catalog.total,
+                activeLocale === "en" ? "USD" : catalog.selectedVariantMoney.currency
+              )}
+            </div>
           </div>
+          <button
+            onClick={catalog.handleBookNow}
+            disabled={
+              !catalog.selectedPackage ||
+              !catalog.selectedVariant ||
+              catalog.selectedVariantMoney.price <= 0
+            }
+            className="rounded-xl bg-hb-coral px-8 py-3 font-bold text-white transition-all hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {t("Đặt ngay")}
+          </button>
         </div>
-        <button
-          onClick={catalog.handleBookNow}
-          disabled={
-            !catalog.selectedPackage ||
-            !catalog.selectedVariant ||
-            catalog.selectedVariantMoney.price <= 0
-          }
-          className="rounded-xl bg-hb-coral px-8 py-3 font-bold text-white transition-all hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {t("Đặt ngay")}
-        </button>
-      </div>
+      ) : null}
 
       {catalog.showModal && catalog.selectedPackage ? (
         <PackageSelectorModal

@@ -1,27 +1,4 @@
 /** @type {import('next').NextConfig} */
-
-const envImagePatterns = [];
-const envProtocol = process.env.NEXT_PUBLIC_PROTOCAL;
-const envHostname = process.env.NEXT_PUBLIC_HOSTNAME;
-const envCdnDomain = process.env.NEXT_PUBLIC_CDN_DOMAIN;
-
-if (envProtocol && envHostname) {
-  envImagePatterns.push({
-    protocol: envProtocol,
-    hostname: envHostname,
-    port: "",
-    pathname: "/**",
-  });
-}
-
-if (envProtocol && envCdnDomain) {
-  envImagePatterns.push({
-    protocol: envProtocol,
-    hostname: envCdnDomain,
-    pathname: "/**",
-  });
-}
-
 const nextConfig = {
   compress: true,
   poweredByHeader: false,
@@ -58,12 +35,21 @@ const nextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '8001',
-        pathname: '/**',
+        protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
+        hostname: process.env.NEXT_PUBLIC_HOSTNAME || 'api.happybooktravel.com',
+        port: "",
+        pathname: "/**",
       },
-      ...envImagePatterns,
+      {
+        protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
+        hostname: process.env.NEXT_PUBLIC_CDN_DOMAIN || 'cdn.happybooktravel.com',
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.nhanhtravel.io.vn",
+        pathname: "/**",
+      },
       {
         protocol: "https",
         hostname: "cms.happybooktravel.com",
@@ -87,6 +73,15 @@ const nextConfig = {
     ],
     loader: "default",
     formats: ["image/avif", "image/webp"],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/tours/tour-quoc_te",
+        destination: "/tours/tour-quoc-te",
+        permanent: true,
+      },
+    ];
   },
   webpack: (config, { isServer }) => {
     // Split large chunks to reduce initial JS payload → lowers TBT

@@ -422,6 +422,24 @@ export default function Header() {
             </Link>
 
             <Link
+              href="/du-thuyen"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/du-thuyen"),
+              })}
+            >
+              {t("du_thuyen")}
+            </Link>
+
+            <Link
+              href="/ve-vui-choi"
+              className={clsx(styles.header__menu_item, {
+                [styles.active]: pathname.startsWith("/ve-vui-choi"),
+              })}
+            >
+              {t("ve_vui_choi_hoat_dong")}
+            </Link>
+
+            <Link
               href="/khach-san"
               className={clsx(styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/khach-san"),
@@ -455,10 +473,6 @@ export default function Header() {
                   <Link href="/tours/tour-quoc-te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
                     <span className="text-xl">✈️</span>
                     <span className="text-[#101828] font-medium text-[14px]">{t("tour_quoc_te")}</span>
-                  </Link>
-                  <Link href="/du-thuyen" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
-                    <span className="text-xl">🛥️</span>
-                    <span className="text-[#101828] font-medium text-[14px]">{t("du_thuyen")}</span>
                   </Link>
                 </div>
               </div>
@@ -503,15 +517,6 @@ export default function Header() {
               </div>
             </div>
 
-            <Link
-              href="/ve-vui-choi"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/ve-vui-choi"),
-              })}
-            >
-              {t("ve_vui_choi")}
-            </Link>
-
             <div
               className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
                 [styles.active]: pathname.startsWith("/fast-track") || pathname.startsWith("/bao-hiem") || pathname.startsWith("/sim") || pathname.startsWith("/phong-cho-thuong-gia"),
@@ -535,7 +540,7 @@ export default function Header() {
                   <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                     <img src="/icon/fast-track.png" alt="Fast Track" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                     <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("fast_track")}</div>
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("dich_vu_tai_san_bay")}</div>
                       <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("ho_tro_lam_thu_tuc_nhanh_chong_tai_san_bay")}</div>
                     </div>
                   </Link>
@@ -689,7 +694,7 @@ export default function Header() {
             <div
               className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item)}
             >
-              <span className="mr-1">{t("khac")}</span>
+              <span className="mr-1">{t("danh_cho_ban")}</span>
               <div className="h-5 self-center">
                 <svg
                   width="16"
@@ -709,7 +714,7 @@ export default function Header() {
               </div>
               <div className="absolute top-full right-0 bg-white rounded-xl shadow-xl p-4 w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
                 <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
-                  {t("khac")}
+                  {t("danh_cho_ban")}
                 </div>
                 <div className="flex flex-col space-y-1">
                   <Link href="/dang-ky-ctv" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">

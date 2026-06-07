@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useCallback } from "react";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
 import { cn } from "@/lib/utils";
+import { getImageSrc } from "@/utils/Helper";
 
 const videoExtensions = [
   ".mp4",
@@ -56,7 +57,7 @@ export default function ProductLightboxGallery({
 
   const items = useMemo(() => {
     return (images ?? []).map((img) => {
-      const src = img.image_url + img.image_location;
+      const src = getImageSrc(img.image_url, img.image_location);
       const video = isVideo(src);
       return {
         src,
@@ -131,16 +132,17 @@ export default function ProductLightboxGallery({
       thumbsWrap.appendChild(thumbsList);
 
       images.forEach((img, i) => {
+        const src = getImageSrc(img.image_url, img.image_location);
         const item = document.createElement("button");
         item.type = "button";
         item.className = "pswp-thumb-item";
         item.setAttribute("aria-label", `Ảnh ${i + 1}`);
         item.setAttribute("data-index", String(i));
 
-        const isVidThumb = isVideo(img.image_url + img.image_location);
+        const isVidThumb = isVideo(src);
         if (isVidThumb) {
           const thumbVideo = document.createElement("video");
-          thumbVideo.src = img.image_url + img.image_location;
+          thumbVideo.src = src;
           thumbVideo.muted = true;
           thumbVideo.playsInline = true;
           thumbVideo.preload = "metadata";
@@ -150,7 +152,7 @@ export default function ProductLightboxGallery({
           item.appendChild(thumbVideo);
         } else {
           const thumb = document.createElement("img");
-          thumb.src = img.image_url + img.image_location;
+          thumb.src = src;
           thumb.alt = "Menu Image";
           thumb.decoding = "async";
           thumb.loading = "lazy";

@@ -1,3 +1,5 @@
+import { cmsUrl } from "@/constants";
+
 export interface ApiEsimOption {
   value: string | number;
   label: string;
@@ -53,6 +55,7 @@ export interface ApiEsimVariant {
   sms_international?: number | string;
   fair_use_policy?: string;
   speed_throttle?: string;
+  stock_status?: string;
   translations?: ApiEsimTranslation[];
 }
 
@@ -72,6 +75,7 @@ export interface ApiEsimPackage {
   device_compatibility?: string;
   refund_policy?: string;
   footer_content?: string;
+  avatar?: string;
   meta_title?: string;
   meta_description?: string;
   meta_keywords?: string;
@@ -110,6 +114,7 @@ export interface EsimVariantView {
   smsInternational: number;
   fairUsePolicy: string;
   speedThrottle: string;
+  stockStatus: string;
 }
 
 export interface EsimPackageView {
@@ -129,6 +134,7 @@ export interface EsimPackageView {
   deviceCompatibility: string;
   refundPolicy: string;
   footerContent: string;
+  avatar?: string;
   meta_title?: string;
   meta_description?: string;
   meta_keywords?: string;
@@ -137,6 +143,7 @@ export interface EsimPackageView {
   meta_image?: string;
   isFeatured: boolean;
   variants: EsimVariantView[];
+  translations?: ApiEsimTranslation[];
 }
 
 export interface EsimFilterOption {
@@ -167,6 +174,13 @@ const toNumber = (value: unknown, fallback = 0): number => {
 const toString = (value: unknown): string =>
   typeof value === "string" ? value : value === null || value === undefined ? "" : String(value);
 
+const resolveImageUrl = (value?: string | null): string => {
+  const image = toString(value).trim();
+  if (!image) return "";
+  if (/^https?:\/\//i.test(image)) return image;
+  return `${cmsUrl}${image.startsWith("/") ? "" : "/"}${image}`;
+};
+
 const pickTranslatedValue = (
   translations: ApiEsimTranslation[] | undefined,
   locale: Locale,
@@ -175,6 +189,17 @@ const pickTranslatedValue = (
   if (!translations?.length) return fallback;
 
   const matched = translations.find((item) => item?.locale === locale && item?.value?.trim());
+  return matched?.value?.trim() || fallback;
+};
+
+const pickAnyTranslatedValue = (
+  translations: ApiEsimTranslation[] | undefined,
+  field: string,
+  fallback = ""
+): string => {
+  if (!translations?.length) return fallback;
+
+  const matched = translations.find((item) => item?.field === field && item?.value?.trim());
   return matched?.value?.trim() || fallback;
 };
 
@@ -233,7 +258,12 @@ export const getEsimVariantMoney = (
 export const isEsimVariantSelectable = (
   variant?: EsimVariantView | null,
   locale: string = "vi"
-): boolean => getEsimVariantMoney(variant, locale).price > 0;
+): boolean => {
+  if (!variant) return false;
+  if (getEsimVariantMoney(variant, locale).price <= 0) return false;
+  if (variant.stockStatus && variant.stockStatus !== "in_stock") return false;
+  return true;
+};
 
 export const getSelectableEsimVariants = (
   pkg?: EsimPackageView | null,
@@ -242,6 +272,13 @@ export const getSelectableEsimVariants = (
   (pkg?.variants ?? []).filter((variant) => isEsimVariantSelectable(variant, locale));
 
 export const normalizeFilterOptions = (payload: any, locale: Locale = "vi"): EsimFilterOptions => {
+  const isValidOperator = (label: string) => {
+    if (!label) return false;
+    if (label.length > 25) return false;
+    if (label.includes(", ")) return false;
+    return true;
+  };
+
   const mapOptions = (items: any[] = []): EsimFilterOption[] =>
     items
       .filter(Boolean)
@@ -257,10 +294,25 @@ export const normalizeFilterOptions = (payload: any, locale: Locale = "vi"): Esi
       }))
       .filter((item) => item.value !== "" || item.label !== "");
 
+  const mapOperators = (items: any[] = []): EsimFilterOption[] =>
+    items
+      .filter(Boolean)
+      .map((item) => ({
+        value: toString(item.code ?? item.slug ?? item.value ?? item.id ?? ""),
+        label: pickOptionLabel(item, locale, [
+          item.label,
+          item.name,
+          item.code,
+          item.value,
+          item.id,
+        ]),
+      }))
+      .filter((item) => item.label !== "" && isValidOperator(item.label));
+
   return {
     regions: mapOptions(payload?.regions ?? []),
     destinations: mapOptions(payload?.destinations ?? []),
-    operators: mapOptions(payload?.operators ?? []),
+    operators: mapOperators(payload?.operators ?? []),
   };
 };
 
@@ -299,6 +351,7 @@ export const normalizeEsimVariant = (variant: ApiEsimVariant): EsimVariantView =
   smsInternational: toNumber(variant.sms_international),
   fairUsePolicy: toString(variant.fair_use_policy),
   speedThrottle: toString(variant.speed_throttle),
+  stockStatus: toString(variant.stock_status || "in_stock"),
 });
 
 export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
@@ -328,6 +381,7 @@ export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
     deviceCompatibility: toString(item.device_compatibility),
     refundPolicy: toString(item.refund_policy),
     footerContent: toString(item.footer_content),
+    avatar: toString(item.avatar),
     meta_title: toString(item.meta_title),
     meta_description: toString(item.meta_description),
     meta_keywords: toString(item.meta_keywords),
@@ -335,6 +389,7 @@ export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
     canonical_link: toString(item.canonical_link),
     meta_image: toString(item.meta_image),
     isFeatured: toBoolean(item.is_featured),
+    translations: item.translations ?? [],
     variants: variants.sort((a, b) => {
       if (a.validity !== b.validity) return a.validity - b.validity;
       if (a.price !== b.price) return a.price - b.price;
@@ -342,6 +397,15 @@ export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
     }),
   };
 };
+
+export const resolveEsimPackageAvatarUrl = (pkg?: Pick<EsimPackageView, "avatar" | "meta_image"> | null): string =>
+  resolveImageUrl(
+    pkg?.avatar ||
+      pickAnyTranslatedValue((pkg as EsimPackageView | null | undefined)?.translations, "avatar", "") ||
+      pkg?.meta_image ||
+      pickAnyTranslatedValue((pkg as EsimPackageView | null | undefined)?.translations, "meta_image", "") ||
+      ""
+  );
 
 export const normalizeEsimPackages = (items: ApiEsimPackage[] = []): EsimPackageView[] =>
   items.map(normalizeEsimPackage).filter((item) => item.id !== "");

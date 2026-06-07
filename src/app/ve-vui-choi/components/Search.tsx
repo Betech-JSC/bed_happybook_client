@@ -17,6 +17,7 @@ import { format, isValid } from "date-fns";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import { useTranslation } from "@/hooks/useTranslation";
 import DisplayPrice from "@/components/base/DisplayPrice";
+import { translateText } from "@/utils/translateApi";
 
 type optionFilterType = {
   label: string;
@@ -49,6 +50,8 @@ export default function Search({
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [translatedText, setTranslatedText] = useState<boolean>(false);
+  const [translatedOptions, setTranslatedOptions] =
+    useState<optionFilterType[]>(optionsFilter);
   const [data, setData] = useState<any>([]);
 
   const loadData = useCallback(async () => {
@@ -124,6 +127,40 @@ export default function Search({
     loadData();
   }, [query, loadData]);
 
+  useEffect(() => {
+    if (language === "vi") {
+      setTranslatedOptions(optionsFilter);
+      return;
+    }
+
+    const allLabels = optionsFilter.flatMap((group) =>
+      [group.label, ...group.option.map((o) => o.label)].filter(Boolean) as string[]
+    );
+
+    if (!allLabels.length) {
+      setTranslatedOptions(optionsFilter);
+      return;
+    }
+
+    translateText(allLabels, language).then((translated) => {
+      const translatedMap = new Map<string, string>();
+      allLabels.forEach((label, i) => {
+        translatedMap.set(label, translated[i] ?? label);
+      });
+
+      const result: optionFilterType[] = optionsFilter.map((group) => ({
+        ...group,
+        label: translatedMap.get(group.label) ?? group.label,
+        option: group.option.map((o) => ({
+          ...o,
+          label: translatedMap.get(o.label ?? "") ?? o.label,
+        })),
+      }));
+
+      setTranslatedOptions(result);
+    });
+  }, [language, optionsFilter]);
+
   if (firstLoad) {
     return (
       <div
@@ -141,7 +178,7 @@ export default function Search({
           setQuery={setQuery}
           query={query}
           isDisabled={isDisabled}
-          options={optionsFilter}
+          options={translatedOptions}
           handleFilterChange={handleFilterChange}
           handleSortData={handleSortData}
           showFilterDate={false}
@@ -152,13 +189,13 @@ export default function Search({
           <h1 className="text-32 font-bold">{t("ve_vui_choi")}</h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
-            <div className="w-40 bg-white border border-gray-200 rounded-lg">
+            <div className="w-auto min-w-[180px] bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
                 onChange={(e) => {
                   handleSortData(e.target.value);
                 }}
-                defaultValue={"id|desc"}
+                defaultValue={"price|asc"}
               >
                 <option value="id|desc">{t("moi_nhat")}</option>
                 <option value="id|asc">{t("cu_nhat")}</option>

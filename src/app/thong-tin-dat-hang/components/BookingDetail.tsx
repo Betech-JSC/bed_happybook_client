@@ -26,6 +26,7 @@ import { toast } from "react-hot-toast";
 export default function BookingDetail() {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const searchParams = useSearchParams();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isStickySideBar, setStickySideBar] = useState<boolean>(false);
@@ -42,6 +43,9 @@ export default function BookingDetail() {
   const [vietQrData, setVietQrData] = useState<any>({});
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
   const [pollingStatus, setPollingStatus] = useState<boolean>(false);
+
+  // Lấy order_code từ URL
+  const orderCodeFromUrl = searchParams.get("order_code");
 
   // Xác định phụ phí giờ bay thêm từ additional_fees
   const nightTimeSurchargeFee = useMemo(() => {
@@ -95,60 +99,39 @@ export default function BookingDetail() {
     },
   });
 
-  const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
-    const bookingData = handleSessionStorage("get", "bookingData");
-    const orderCodeFromQuery = searchParams.get("order_code");
+    const fetchOrderData = async () => {
+      // Ưu tiên đọc từ sessionStorage trước
+      const bookingData = handleSessionStorage("get", "bookingData");
+      if (bookingData) {
+        setData(bookingData);
+        setLoading(false);
+        return;
+      }
 
-    if (bookingData) {
-      setData(bookingData);
-      setLoading(false);
-      return;
-    }
-
-    if (orderCodeFromQuery) {
-      BookingProductApi.paymentInfo(orderCodeFromQuery)
-        .then((response: any) => {
-          const info = response?.payload?.data ?? response?.payload?.payload?.data;
-          if (info) {
-            setData({
-              code: info.order_code,
-              full_name: info.full_name ?? info.customer_name ?? "",
-              phone: info.phone ?? info.customer_phone ?? "",
-              email: info.email ?? info.customer_email ?? "",
-              total_price: info.total_price ?? 0,
-              total_discount: info.total_discount ?? 0,
-              product: {
-                name: info.service_name ?? "Dịch vụ",
-                currency: info.currency ?? "VND",
-              },
-              booking: {},
-              status: info.status,
-              payment_method: info.payment_method,
-              deadline: info.deadline,
-              isEmailRecovery: true,
-            });
-
-            if (info.status === "paid") {
-              setIsPaid(true);
-            }
+      // Nếu không có sessionStorage, thử đọc từ URL
+      if (orderCodeFromUrl) {
+        try {
+          const response = await BookingProductApi.getByCode(orderCodeFromUrl);
+          if (response?.payload?.data) {
+            setData(response.payload.data);
           } else {
-            toast.error(t("khong_tim_thay_don_hang"));
+            setData(null);
           }
-        })
-        .catch(() => {
-          toast.error(t("co_loi_xay_ra"));
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-      return;
-    }
+        } catch (error) {
+          console.error("Error fetching order:", error);
+          setData(null);
+        }
+      } else {
+        setData(null);
+      }
+      setLoading(false);
+    };
 
-    setLoading(false);
-  }, [searchParams, t]);
+    fetchOrderData();
+  }, [orderCodeFromUrl]);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -756,17 +739,17 @@ export default function BookingDetail() {
           }`}
       >
         {!data?.isEmailRecovery && (
-        <div className="overflow-hidden rounded-t-2xl">
-          {data?.product?.image_url && (
-            <Image
-              src={`${data?.product?.image_url}/${data?.product?.image_location}`}
-              alt={data?.product?.name}
-              width={600}
-              height={450}
-              className="w-full h-auto rounded-t-2xl hover:scale-110 ease-in duration-300"
-            />
-          )}
-        </div>
+          <div className="overflow-hidden rounded-t-2xl">
+            {data?.product?.image_url && (
+              <Image
+                src={`${data?.product?.image_url}/${data?.product?.image_location}`}
+                alt={data?.product?.name}
+                width={600}
+                height={450}
+                className="w-full h-auto rounded-t-2xl hover:scale-110 ease-in duration-300"
+              />
+            )}
+          </div>
         )}
         <div className={`py-3 px-5 ${data?.isEmailRecovery ? 'pt-5' : ''}`}>
           <h2 className="text-xl font-semibold">{data?.product?.name}</h2>

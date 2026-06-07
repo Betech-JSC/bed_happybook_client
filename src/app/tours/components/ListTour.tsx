@@ -14,6 +14,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { useSearchParams } from "next/navigation";
 import { translatePage } from "@/utils/translateDom";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
+import { getImageSrc } from "@/utils/Helper";
 
 type optionFilterType = {
   label: string;
@@ -23,6 +24,28 @@ type optionFilterType = {
     label?: string;
   }[];
 };
+
+function TourCardImage({
+  tour,
+  alt,
+}: {
+  tour: any;
+  alt: string;
+}) {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <Image
+      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full min-h-40 object-cover"
+      src={imageError ? "/default-image.png" : getImageSrc(tour.image_url, tour.image_location)}
+      alt={alt}
+      width={360}
+      height={270}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      onError={() => setImageError(true)}
+    />
+  );
+}
 
 export default function ListTour({
   type_tour,
@@ -156,13 +179,13 @@ export default function ListTour({
           </h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span data-translate="true">Sắp xếp</span>
-            <div className="w-40 bg-white border border-gray-200 rounded-lg">
+            <div className="w-auto min-w-[180px] bg-white border border-gray-200 rounded-lg">
               <select
                 className="px-4 py-2 rounded-lg w-[90%] outline-none bg-white"
                 onChange={(e) => {
                   handleSortData(e.target.value);
                 }}
-                defaultValue={"id|desc"}
+                defaultValue={"price|asc"}
               >
                 <option value="id|desc" data-translate="true">
                   Mới nhất
@@ -191,15 +214,7 @@ export default function ListTour({
               >
                 <div className="w-full lg:w-5/12 relative overflow-hidden rounded-xl">
                   <Link href={`/tours/${tour.slug}`}>
-                    <Image
-                      className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full min-h-40 object-cover"
-                      src={`${tour.image_url}/${tour.image_location}`}
-                      alt={renderTextContent(tour?.product_name)}
-                      width={360}
-                      height={270}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    // style={{ height: 270 }}
-                    />
+                    <TourCardImage tour={tour} alt={renderTextContent(tour?.product_name)} />
                   </Link>
                   <div className="absolute bottom-0 left-0 text-white px-3 py-1 bg-[#4E6EB3] rounded-tr-3xl">
                     <span data-translate="true">

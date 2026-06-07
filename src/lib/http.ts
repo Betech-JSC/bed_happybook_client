@@ -42,7 +42,7 @@ const request = async <Response>(
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch(fullUrl, {
+    const fetchOptions: RequestInit = {
       ...options,
       headers: {
         ...baseHeader,
@@ -51,8 +51,17 @@ const request = async <Response>(
       body,
       method,
       signal: controller.signal,
-      next: { revalidate: timeCache },
-    });
+    };
+
+    // Only attach Next.js revalidation when we actually want cache semantics.
+    // `cache: "no-store"` and `next.revalidate` must not be combined.
+    if (timeCache > 0) {
+      (fetchOptions as RequestInit & { next?: { revalidate: number } }).next = {
+        revalidate: timeCache,
+      };
+    }
+
+    const response = await fetch(fullUrl, fetchOptions);
     clearTimeout(timeoutId);
 
     const contentType = response.headers.get("content-type") || "";

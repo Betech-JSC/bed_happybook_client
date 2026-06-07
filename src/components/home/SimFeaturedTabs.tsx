@@ -16,6 +16,7 @@ import {
   findCheapestVariant,
   formatEsimMoney,
   getEsimVariantMoney,
+  resolveEsimPackageAvatarUrl,
   type EsimPackageView,
 } from "@/app/sim-du-lich/lib/esim";
 import { getSimDuLichDetailHref } from "@/app/sim-du-lich/lib/routes";
@@ -262,6 +263,7 @@ export default function SimFeaturedTabs({
               const cheapestMoney = getEsimVariantMoney(cheapest, pricingLanguage);
               const flag = resolveFlag(pkg.coverage || pkg.destination || pkg.regionLabel);
               const categoryAlias = activeTabData.key;
+              const avatarUrl = resolveEsimPackageAvatarUrl(pkg);
 
               return (
                 <CarouselItem
@@ -273,37 +275,53 @@ export default function SimFeaturedTabs({
                     className="group block h-full"
                   >
                     <div className="h-full overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl">
-                      <div
-                        className={`relative min-h-[220px] overflow-hidden p-5 text-white ${activeTabData.accentClassName}`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
-                            {t(activeTabData.labelKey)}
-                          </span>
-                          <span className="text-3xl leading-none"><FlagDisplay flag={flag} size={28} /></span>
+                      {avatarUrl ? (
+                        <div className="relative min-h-[240px] overflow-hidden bg-white">
+                          <Image
+                            src={avatarUrl}
+                            alt={pkg.title || pkg.destination}
+                            fill
+                            sizes="(max-width: 640px) 88vw, (max-width: 768px) 62vw, (max-width: 1024px) 48vw, 25vw"
+                            className="object-contain object-top opacity-100"
+                          />
                         </div>
-
-                        <div className="mt-8 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
-                              <Globe className="h-4 w-4" />
+                      ) : (
+                        <div
+                          className={`relative min-h-[220px] overflow-hidden p-5 text-white ${activeTabData.accentClassName}`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
+                              {t(activeTabData.labelKey)}
                             </span>
-                            <span className="text-sm font-medium text-white/90">
-                              {pkg.regionLabel || pkg.coverage}
-                            </span>
+                            <span className="text-3xl leading-none"><FlagDisplay flag={flag} size={28} /></span>
                           </div>
-                          <h3 className="line-clamp-2 text-2xl font-extrabold leading-tight">
+                          <div className="mt-8 space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                                <Globe className="h-4 w-4" />
+                              </span>
+                              <span className="text-sm font-medium text-white/90">
+                                {pkg.regionLabel || pkg.coverage}
+                              </span>
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-6 text-white/85">
+                              {pkg.subtitle || pkg.network || pkg.coverage || pkg.destination}
+                            </p>
+                          </div>
+                          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/15 to-transparent" />
+                        </div>
+                      )}
+
+                      <div className="space-y-4 p-5">
+                        <div className="space-y-1">
+                          <h3 className="line-clamp-2 text-lg font-extrabold leading-tight text-midnight-ink">
                             {pkg.title || pkg.destination}
                           </h3>
-                          <p className="line-clamp-2 text-sm leading-6 text-white/85">
-                            {pkg.subtitle || pkg.network || pkg.coverage}
+                          <p className="line-clamp-1 text-sm text-steel-secondary">
+                            {pkg.regionLabel || pkg.coverage || pkg.subtitle || pkg.network}
                           </p>
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/15 to-transparent" />
-                      </div>
-
-                      <div className="space-y-4 p-5">
                         <div className="flex flex-wrap gap-2">
                           {cheapest?.validity ? (
                             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">

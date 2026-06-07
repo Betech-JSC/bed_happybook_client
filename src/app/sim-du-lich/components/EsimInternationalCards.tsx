@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -14,6 +15,7 @@ import {
   findCheapestVariant,
   formatEsimMoney,
   getEsimVariantMoney,
+  resolveEsimPackageAvatarUrl,
   type EsimPackageView,
 } from "../lib/esim";
 import { getSimDuLichDetailHref } from "../lib/routes";
@@ -232,6 +234,7 @@ export default function EsimInternationalCards({
             const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
             const isActive = selectedPackageSlug === pkg.slug;
             const flag = resolveCountryFlag(pkg);
+            const avatarUrl = resolveEsimPackageAvatarUrl(pkg);
 
             return (
               <CarouselItem
@@ -250,16 +253,28 @@ export default function EsimInternationalCards({
                     <div
                       className="relative min-h-[240px] overflow-hidden p-5 text-white"
                       style={{
-                        background:
-                          "linear-gradient(135deg, #155EEF 0%, #1D4ED8 38%, #0EA5E9 100%)",
+                        background: avatarUrl
+                          ? "transparent"
+                          : "linear-gradient(135deg, #155EEF 0%, #1D4ED8 38%, #0EA5E9 100%)",
                       }}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
-                          eSIM
-                        </span>
-                        <span className="text-3xl leading-none"><FlagDisplay flag={flag} size={28} /></span>
-                      </div>
+                      {avatarUrl ? (
+                        <Image
+                          src={avatarUrl}
+                          alt={pkg.title || pkg.destination}
+                          fill
+                          sizes="(max-width: 640px) 88vw, (max-width: 768px) 62vw, (max-width: 1024px) 48vw, 25vw"
+                          className="object-contain object-center opacity-100"
+                        />
+                      ) : null}
+                      {avatarUrl ? null : (
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
+                            eSIM
+                          </span>
+                          <span className="text-3xl leading-none"><FlagDisplay flag={flag} size={28} /></span>
+                        </div>
+                      )}
 
                       <div className="mt-8 space-y-2">
                         <div className="flex items-center gap-2">
@@ -280,7 +295,9 @@ export default function EsimInternationalCards({
                         </p>
                       </div>
 
-                      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent" />
+                      {avatarUrl ? null : (
+                        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent" />
+                      )}
                     </div>
 
                     <div className="space-y-4 p-5">

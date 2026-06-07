@@ -158,20 +158,25 @@ const headerStaticText: string[] = [
   "Về chúng tôi",
   "Liên Hệ",
   "Tin tức",
-  "Tours",
-  "Tour nội địa",
-  "Tour quốc tế",
   "Vé máy bay",
-  "Visa",
   "Du thuyền",
   "Du thuyền Sài Gòn",
   "Du thuyền Hạ Long",
+  "Vé vui chơi & hoạt động",
   "Khách sạn",
-  "Bảo hiểm",
-  "Vé vui chơi",
+  "Tours",
+  "Tour nội địa",
+  "Tour quốc tế",
   "Combo",
-  "Khác",
+  "Visa",
+  "Bảo hiểm",
   "Định cư",
+  "Tiện ích",
+  "Dịch vụ tiện ích",
+  "Dịch vụ tại sân bay",
+  "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
+  "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
+  "Dành cho bạn",
   "Đăng ký CTV",
   "Tư vấn visa",
   "Danh sách visa các nước",
@@ -182,10 +187,6 @@ const headerStaticText: string[] = [
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
-  "Tiện ích",
-  "Dịch vụ tiện ích",
-  "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
-  "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Sim du lịch",
   "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim",
   "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
@@ -256,7 +257,7 @@ const generalStaticText: string[] = [
   "hỗ trợ nhiệt tình 24/7",
   "Sản phẩm đa dạng, ",
   "giá cả tốt nhất",
-  "Đơn vị hơn 8 năm kinh nghiệm.",
+  "Đơn vị hơn 10 năm kinh nghiệm.",
   "Lấy chữ tín làm đầu",
   "Thông tin đang cập nhật...",
   "Câu hỏi thường gặp",
@@ -480,6 +481,7 @@ const simDuLichStaticText: string[] = [
   "Chi tiết gói dịch vụ",
   "Tóm tắt",
   "Chưa chọn gói",
+  "Chưa có giá khả dụng",
   "Đơn giá:",
   "Chưa có dữ liệu mức giá.",
   "Đặt lại",
@@ -713,8 +715,8 @@ export const unifiedStaticText: string[] = [
   "Thành Phố Phổ Biến tại Việt Nam",
   // === Visa  ===
   ...visaStaticText2,
-  // === Vé vui chơi  ===
-  "Tìm vé vui chơi",
+  // === Vé vui chơi & hoạt động  ===
+  "Tìm vé vui chơi & hoạt động",
   ...comboStaticText2,
   ...contactStaticText,
   ...formStaticText,
@@ -728,13 +730,39 @@ const staticTextTranslationCache = new Map<string, Promise<Record<string, string
 
 const getStaticTextCacheKey = (lang: string) => `${lang}:${unifiedStaticText.join("\u0001")}`;
 
+const applyAmusementTicketAliases = (
+  translations: Record<string, string>,
+  lang: string = "vi"
+) => {
+  const amusementLabel =
+    lang === "vi"
+      ? translations["ve_vui_choi_hoat_dong"] ??
+        translations["ve_vui_choi"] ??
+        "Vé vui chơi & hoạt động"
+      : "Attraction tickets";
+  const searchLabel =
+    lang === "vi"
+      ? translations["tim_ve_vui_choi_hoat_dong"] ??
+        translations["tim_ve_vui_choi"] ??
+        "Tìm vé vui chơi & hoạt động"
+      : "Search attraction tickets";
+
+  return {
+    ...translations,
+    ve_vui_choi: amusementLabel,
+    ve_vui_choi_hoat_dong: amusementLabel,
+    tim_ve_vui_choi: searchLabel,
+    tim_ve_vui_choi_hoat_dong: searchLabel,
+  };
+};
+
 export async function getStaticTextTranslationMap(
   lang: string = "vi"
 ): Promise<Record<string, string>> {
   const cacheKey = getStaticTextCacheKey(lang);
 
   if (lang === "vi") {
-    return formatTranslationMap(unifiedStaticText);
+    return applyAmusementTicketAliases(formatTranslationMap(unifiedStaticText), lang);
   }
 
   const cached = staticTextTranslationCache.get(cacheKey);
@@ -742,7 +770,10 @@ export async function getStaticTextTranslationMap(
 
   const pending = (async () => {
     const translated = await translateText(unifiedStaticText, lang);
-    return formatTranslationMap(unifiedStaticText, translated);
+    return applyAmusementTicketAliases(
+      formatTranslationMap(unifiedStaticText, translated),
+      lang
+    );
   })();
 
   staticTextTranslationCache.set(cacheKey, pending);

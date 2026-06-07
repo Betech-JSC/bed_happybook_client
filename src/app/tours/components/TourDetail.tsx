@@ -333,7 +333,7 @@ export default async function TourDetail({ alias }: { alias: string }) {
                         className="text-18 font-semibold mb-1 text-gray-900"
                         data-translate
                       >
-                        Đơn vị hơn 8 năm kinh nghiệm.
+                        Đơn vị hơn 10 năm kinh nghiệm.
                       </p>
                       <p
                         className="text-18 font-semibold text-gray-900"
