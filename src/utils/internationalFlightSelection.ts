@@ -8,7 +8,13 @@ import { handleSessionStorage } from "@/utils/Helper";
 import { copyFareValueRaw } from "@/utils/fareValueToken";
 
 export function is1GSource(source: unknown): boolean {
-  return String(source ?? "").toUpperCase() === "1G";
+  const s = String(source ?? "").toUpperCase();
+  return s === "1G";
+}
+
+export function isGdsSource(source: unknown): boolean {
+  const s = String(source ?? "").toUpperCase();
+  return s === "1G" || s === "9G";
 }
 
 export type JourneyLike = {
@@ -29,9 +35,10 @@ export function collectSegmentsFromJourneys(
       .sort(([a], [b]) => Number(a) - Number(b))
       .flatMap(([, flight]) => {
         const segs = (flight.segments ?? []) as Record<string, unknown>[];
+        const journeyId = (flight.journeyId ?? flight.journey_id ?? "") as string;
         return segs.length
-          ? [{ segments: segs }]
-          : [{ segments: [flight] }];
+          ? [{ journeyId, segments: segs }]
+          : [{ journeyId, segments: [flight] }];
       });
   } else if (journeys) {
     if (Array.isArray(journeys)) {
@@ -81,6 +88,7 @@ export function build1GFareOptionFromPackage(
     copyFareValueRaw(ticket.fareValue) ||
     copyFareValueRaw(pkg.fareValue) ||
     String(pkg.hpb_id ?? "").trim();
+  const journeyIds = ticket.journeyIds ?? pkg.journeyIds ?? ticket.journey_ids ?? pkg.journey_ids;
 
   return {
     ...ticket,
@@ -99,6 +107,7 @@ export function build1GFareOptionFromPackage(
     totalPriceWithOutTax:
       ticket.totalPriceWithOutTax ?? pkg.totalPriceWithOutTax,
     fareValue,
+    ...(journeyIds ? { journeyIds } : {}),
   };
 }
 

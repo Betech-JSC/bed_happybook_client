@@ -222,6 +222,19 @@ function resolveJourneyFareOption(
     return selected;
   }
 
+  // Fallback for first leg of round-trip packages
+  if (legIndex === 0) {
+    const pkgSelected = packageTrip.selectedTicketClass as Record<string, unknown> | undefined;
+    if (pkgSelected && Object.keys(pkgSelected).length > 0) {
+      return pkgSelected;
+    }
+
+    if (Array.isArray(packageFareList)) {
+      if (packageFareList[fareOptionIndex]) return packageFareList[fareOptionIndex];
+      if (packageFareList[0]) return packageFareList[0];
+    }
+  }
+
   return {};
 }
 
@@ -259,20 +272,44 @@ function findCarryOnBaggage(fareOption: Record<string, unknown>): string {
 function buildSelectedTicketClass(
   fareOption: Record<string, unknown>
 ): Record<string, unknown> {
-  const totalAdult = Number(fareOption.totalAdult ?? 0);
-  const totalChild = Number(fareOption.totalChild ?? 0);
-  const totalInfant = Number(fareOption.totalInfant ?? 0);
+  const totalAdult = Number(fareOption.totalAdult ?? fareOption.totalPriceAdt ?? 0);
+  const totalChild = Number(fareOption.totalChild ?? fareOption.totalPriceChd ?? 0);
+  const totalInfant = Number(fareOption.totalInfant ?? fareOption.totalPriceInf ?? 0);
   const legTotal =
     totalAdult + totalChild + totalInfant ||
     Number(fareOption.totalPrice ?? 0);
+
+  const fareAdultFinal = Number(
+    fareOption.fareAdultFinal ??
+      fareOption.fareAdult ??
+      (totalAdult - Number(fareOption.taxAdult ?? 0))
+  );
+  const fareChildFinal = Number(
+    fareOption.fareChildFinal ??
+      fareOption.fareChild ??
+      (totalChild - Number(fareOption.taxChild ?? 0))
+  );
+  const fareInfantFinal = Number(
+    fareOption.fareInfantFinal ??
+      fareOption.fareInfant ??
+      (totalInfant - Number(fareOption.taxInfant ?? 0))
+  );
+
+  const taxAdult = Number(fareOption.taxAdult ?? 0);
+  const taxChild = Number(fareOption.taxChild ?? 0);
+  const taxInfant = Number(fareOption.taxInfant ?? 0);
+
+  const totalTaxAdt = Number(fareOption.totalTaxAdt ?? taxAdult);
+  const totalTaxChd = Number(fareOption.totalTaxChd ?? taxChild);
+  const totalTaxInf = Number(fareOption.totalTaxInf ?? taxInfant);
 
   return {
     fareAdult: fareOption.fareAdult,
     fareChild: fareOption.fareChild,
     fareInfant: fareOption.fareInfant,
-    taxAdult: fareOption.taxAdult,
-    taxChild: fareOption.taxChild,
-    taxInfant: fareOption.taxInfant,
+    taxAdult,
+    taxChild,
+    taxInfant,
     totalPrice: legTotal,
     bookingClass: fareOption.bookingClass,
     groupClass: fareOption.groupClass,
@@ -286,6 +323,20 @@ function buildSelectedTicketClass(
       fareOption.checkedBaggae ??
       fareOption.checkedBaggage ??
       "25 KG",
+    ...(fareOption.journeyIds ? { journeyIds: fareOption.journeyIds } : {}),
+    ...(fareOption.journey_ids ? { journey_ids: fareOption.journey_ids } : {}),
+    totalAdult,
+    totalChild,
+    totalInfant,
+    totalPriceAdt: totalAdult,
+    totalPriceChd: totalChild,
+    totalPriceInf: totalInfant,
+    fareAdultFinal,
+    fareChildFinal,
+    fareInfantFinal,
+    totalTaxAdt,
+    totalTaxChd,
+    totalTaxInf,
   };
 }
 
@@ -403,15 +454,17 @@ export function build1GFlightsForBookingDisplay(input: {
       : [];
     const firstSeg = segments[0];
 
+    const ticketClass = buildSelectedTicketClass(fareOption);
+
     return {
       ...journey,
       source: "1G",
       domestic: false,
-      selectedTicketClass: fareOption,
+      selectedTicketClass: ticketClass,
       fareOptions:
         journeyFareOptions(journey).length > 0
           ? journeyFareOptions(journey)
-          : [fareOption],
+          : [ticketClass],
       numberAdt: input.paxCounts.adult,
       numberChd: input.paxCounts.child,
       numberInf: input.paxCounts.infant,

@@ -32,6 +32,7 @@ export default function ListFlights1GInternaltion({
   isRoundTrip,
   totalPassengers,
   selectedFareDataId,
+  selectedDepartFlight,
   handleSelectDepartFlight,
   handleSelectReturnFlight,
   handleCheckout,
@@ -144,6 +145,7 @@ export default function ListFlights1GInternaltion({
                     setFlightDetail={handleShowPopupFlightDetail}
                     fareData={flightsData}
                     selectedFareDataId={selectedFareDataId}
+                    selectedDepartFlight={selectedDepartFlight}
                     airports={airportsData}
                     isCheapest={isCheapest}
                   />
@@ -192,7 +194,7 @@ export default function ListFlights1GInternaltion({
                   handleCheckout();
                 }}
                 disabled={
-                  !isCheckOut || !selectedFareDataId === flightsData.hpb_id
+                  !isCheckOut || selectedFareDataId !== flightsData.hpb_id
                 }
               >
                 <span>{t("chon")}</span>

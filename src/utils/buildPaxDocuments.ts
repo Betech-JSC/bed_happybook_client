@@ -25,7 +25,7 @@ export function isInternationalItineraries(
   return flights.some((flight) => {
     if (flight.domestic === false) return true;
     const source = String(flight.source ?? "").toUpperCase();
-    return source === "1G";
+    return source === "1G" || source === "9G";
   });
 }
 

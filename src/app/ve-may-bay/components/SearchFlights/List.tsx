@@ -41,7 +41,7 @@ import {
   getDomesticDisplayedPrice,
 } from "../../lib/cheapest";
 import { createSelectedFlight } from "@/utils/createSelectedFlight";
-import { saveSelectedFlight } from "@/utils/selectedFlightStorage";
+import { saveSelectedFlight, loadSelectedFlightsForBooking } from "@/utils/selectedFlightStorage";
 import { isVietJetSource } from "@/utils/fareValueToken";
 import {
   buildCombinedSelectionFingerprint,
@@ -54,6 +54,11 @@ import {
 } from "@/utils/flightDraftSession";
 import { toast } from "react-hot-toast";
 import ReplaceFlightDraftDialog from "../ReplaceFlightDraftDialog";
+import VerifyFlightPriceDialog from "../VerifyFlightPriceDialog";
+import { buildFlightConfirmPricePayloadFromSelections } from "@/utils/buildFlightConfirmPricePayload";
+import { formatFlightBookingError } from "@/utils/formatFlightBookingError";
+import { HttpError } from "@/lib/error";
+
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -115,6 +120,58 @@ export default function ListFlights({
   const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
   const [replaceDialogMessage, setReplaceDialogMessage] = useState("");
   const pendingSelectRef = useRef<(() => void) | null>(null);
+
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+
+  const buildMockPassengers = (paxCounts: { adult: number; child: number; infant: number }) => {
+    const passengers: any[] = [];
+    let idx = 0;
+    for (let i = 0; i < (paxCounts.adult || 1); i++) {
+      passengers.push({
+        index: idx++,
+        type: "ADT",
+        firstName: "GUEST",
+        lastName: "ADULT",
+        gender: true,
+        birthday: "1990-01-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (paxCounts.child || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "CHD",
+        firstName: "GUEST",
+        lastName: "CHILD",
+        gender: true,
+        birthday: "2018-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (paxCounts.infant || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "INF",
+        firstName: "GUEST",
+        lastName: "INFANT",
+        gender: true,
+        birthday: "2025-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    return passengers;
+  };
+
 
   const searchRoute = useMemo(
     () =>
@@ -567,18 +624,65 @@ export default function ListFlights({
   }, [isRoundTrip, selectedReturnFlight, selectedDepartFlight]);
 
   const handleCheckout = useCallback(async () => {
-    const res = await fetch("/api/set-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        flightType: "NORMAL",
-      }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
+    const selections = loadSelectedFlightsForBooking();
+    if (!selections.length) return;
+
+    try {
+      setIsVerifying(true);
+      setVerifyError(null);
+
+      const contact = {
+        full_name: "GUEST CONTACT",
+        gender: "male",
+        phone: "0900000000",
+        email: "guest@happybook.com.vn",
+        address: "Vietnam",
+      };
+
+      const paxCounts = selections[0]?.paxCounts ?? { adult: 1, child: 0, infant: 0 };
+      const mockPassengers = buildMockPassengers(paxCounts);
+
+      const confirmPayload = buildFlightConfirmPricePayloadFromSelections({
+        selections,
+        passengers: mockPassengers,
+        contact,
+      });
+
+      const respon = await FlightApi.confirmPrice(confirmPayload);
+      if (respon?.status !== 200) {
+        const payload = respon?.payload ?? {};
+        const errDisplay = formatFlightBookingError(payload, language as "vi" | "en");
+        setVerifyError(errDisplay.message || "Hạng vé hoặc chuyến bay bạn chọn hiện không còn khả dụng trên hệ thống hãng bay.");
+        return;
+      }
+
+      // Save confirm result so Passenger Details page doesn't verify again
+      const confirmResult = respon?.payload?.data ?? respon?.payload;
+      handleSessionStorage("save", "flightConfirmPrice", {
+        confirm: confirmResult,
+        bookingDraft: null,
+      });
+
+      const res = await fetch("/api/set-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          flightType: "NORMAL",
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
+      }
+    } catch (err: any) {
+      const payload = err instanceof HttpError ? err.payload : err?.payload ?? err;
+      const errDisplay = formatFlightBookingError(payload, language as "vi" | "en");
+      setVerifyError(errDisplay.message || "Hệ thống gặp sự cố khi xác thực giá vé từ hãng bay.");
+    } finally {
+      setIsVerifying(false);
     }
-  }, []);
+  }, [language]);
+
 
   useEffect(() => {
     if (isCheckOut && typeof window !== "undefined") {
@@ -974,6 +1078,13 @@ export default function ListFlights({
           message={replaceDialogMessage}
           onCancel={handleCancelReplaceDraft}
           onConfirm={handleConfirmReplaceDraft}
+        />
+        <VerifyFlightPriceDialog
+          open={isVerifying || verifyError !== null}
+          loading={isVerifying}
+          error={verifyError}
+          language={language}
+          onClose={() => setVerifyError(null)}
         />
       </div>
     </Fragment>

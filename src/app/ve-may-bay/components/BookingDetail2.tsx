@@ -1,11 +1,12 @@
 "use client";
 import { formatCurrency, formatTime, formatTimeZone } from "@/lib/formatters";
 import Image from "next/image";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
+import { accumulateBaggages } from "@/utils/accumulateBaggages";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/base/LoadingButton";
@@ -42,11 +43,13 @@ import {
   resolvePriceHoldExpiresAt,
 } from "@/utils/flightHoldExpiry";
 import { getTripClientId } from "@/utils/normalizeFlightTrip";
+import { flightBookingErrorToastText } from "@/utils/formatFlightBookingError";
 
 export default function BookingDetail2({ airports }: BookingDetailProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const { language } = useLanguage();
+  const hasCheckedRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [data, setData] = useState<any>(null);
   const [totalBaggages, setTotalBaggages] = useState<{
@@ -140,7 +143,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               window.open(result.payment_url, "_blank");
               return;
             }
-            toast.error(toaStrMsg.sendFailed);
+            const errText = flightBookingErrorToastText(
+              result,
+              language as "vi" | "en",
+              "Không thể tạo link thanh toán. Vui lòng thử lại."
+            );
+            toast.error(errText);
           }
           if (selectedPaymentMethod === "cash") {
             setIsOrderCashSuccess(true);
@@ -264,6 +272,9 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
 
   //   toast.dismiss();
   useEffect(() => {
+    if (hasCheckedRef.current) return;
+    hasCheckedRef.current = true;
+
     const bookingData = handleSessionStorage("get", "bookingFlight");
     const orderCodeFromQuery = searchParams.get("order_code");
 
@@ -274,7 +285,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
         | undefined;
       const effectiveStatus = status ?? orderInfoStatus;
 
-      if (effectiveStatus === "price_confirmed") {
+      if (effectiveStatus === "price_confirmed" && !bookingData?.skipped_hold) {
         setLoading(false);
         router.replace("/ve-may-bay/thong-tin-hanh-khach");
         return;
@@ -293,19 +304,7 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
 
       setData(bookingData);
       if (bookingData.passengers?.length) {
-        const accumulated = bookingData.passengers.reduce(
-          (acc: { price: number; quantity: number }, item: any) => {
-            if (Array.isArray(item.baggages)) {
-              item.baggages.forEach((bag: any) => {
-                acc.price += bag.price;
-                acc.quantity++;
-              });
-            }
-            return acc;
-          },
-          { price: 0, quantity: 0 },
-        );
-        setTotalBaggages(accumulated);
+        setTotalBaggages(accumulateBaggages(bookingData.passengers));
       }
 
       setLoading(false);
@@ -334,11 +333,15 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
                 phone: info.customer_phone ?? "",
                 gender: null,
               },
-              passengers: [],
-              flights: [],
+              passengers: info.passengers ?? [],
+              flights: info.flights ?? [],
               isEmailRecovery: true,
               status: recoveryStatus,
             });
+
+            if (info.passengers?.length) {
+              setTotalBaggages(accumulateBaggages(info.passengers));
+            }
 
             setOrderStatus(recoveryStatus);
             if (isFlightPaymentConfirmed(recoveryStatus)) {
@@ -346,10 +349,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
             }
           } else {
             toast.error(t("khong_tim_thay_don_hang"));
+            router.replace("/ve-may-bay");
           }
         })
         .catch(() => {
           toast.error(t("co_loi_xay_ra"));
+          router.replace("/ve-may-bay");
         })
         .finally(() => {
           setLoading(false);
@@ -357,14 +362,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
       return;
     }
 
+    toast.error("Không tìm thấy dữ liệu đơn đặt chỗ. Vui lòng xác nhận giá lại.");
+    router.replace("/ve-may-bay");
     setLoading(false);
   }, [router, searchParams, t]);
-
-  useEffect(() => {
-    if (loading || data) return;
-    toast.error("Không tìm thấy dữ liệu đơn đặt chỗ. Vui lòng xác nhận giá lại.");
-    router.replace("/ve-may-bay/thong-tin-hanh-khach");
-  }, [loading, data, router]);
 
   useEffect(() => {
     if (!polledStatus) return;
@@ -427,10 +428,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
     [showRuleTicket, fetchFareRules],
   );
 
-  const handleTicketPaymentTimeout = () => {
+  const handleTicketPaymentTimeout = useCallback(() => {
     setTicketPaymentTimeout(true);
     toast.error("Phiên giữ giá / thanh toán đã hết hạn");
-  };
+  }, []);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -507,7 +508,12 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               "Error generating QR code or creating receipt:",
               error,
             );
-            toast.error(toaStrMsg.error);
+            const errText = flightBookingErrorToastText(
+              error?.payload ?? error,
+              language as "vi" | "en",
+              "Không thể tạo mã QR thanh toán. Vui lòng thử lại."
+            );
+            toast.error(errText);
           });
       }
     }
@@ -574,10 +580,10 @@ export default function BookingDetail2({ airports }: BookingDetailProps) {
               "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
           }}
         >
-          <div className="flex flex-col lg:flex-row lg:space-x-4 justify-center px-4 lg:px-0 py-4">
+          <div className="flex flex-col xl:flex-row justify-between items-center px-6 py-4 gap-4">
             {!isPaid ? (
               <Fragment>
-                <p className="text-22 font-bold text-white">
+                <p className="text-lg md:text-xl font-bold text-white text-center xl:text-left">
                   {t("hoan_tat_don_hang_cua_ban_de_giu_gia_tot_nhat")}{" "}
                 </p>
                 {!ticketPaymentTimeout && holdExpiresAt ? (

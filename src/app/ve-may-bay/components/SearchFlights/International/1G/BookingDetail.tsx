@@ -6,6 +6,7 @@ import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
+import { accumulateBaggages } from "@/utils/accumulateBaggages";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/base/LoadingButton";
@@ -200,19 +201,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
     if (bookingData) {
       setData(bookingData);
       if (bookingData.passengers.length) {
-        const accumulated = bookingData.passengers.reduce(
-          (acc: { price: number; quantity: number }, item: any) => {
-            if (Array.isArray(item.baggages)) {
-              item.baggages.forEach((bag: any) => {
-                acc.price += bag.price;
-                acc.quantity++;
-              });
-            }
-            return acc;
-          },
-          { price: 0, quantity: 0 }
-        );
-        setTotalBaggages(accumulated);
+        setTotalBaggages(accumulateBaggages(bookingData.passengers));
       }
       setLoading(false);
       return;
@@ -237,20 +226,26 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                 phone: info.customer_phone ?? "",
                 gender: null,
               },
-              passengers: [],
-              flights: [],
+              passengers: info.passengers ?? [],
+              flights: info.flights ?? [],
               isEmailRecovery: true,
             });
+
+            if (info.passengers?.length) {
+              setTotalBaggages(accumulateBaggages(info.passengers));
+            }
 
             if (info.status === "paid") {
               setIsPaid(true);
             }
           } else {
             toast.error(t("khong_tim_thay_don_hang"));
+            router.replace("/ve-may-bay");
           }
         })
         .catch(() => {
           toast.error(t("co_loi_xay_ra"));
+          router.replace("/ve-may-bay");
         })
         .finally(() => {
           setLoading(false);
@@ -258,8 +253,10 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
       return;
     }
 
+    toast.error("Không tìm thấy dữ liệu đơn đặt chỗ. Vui lòng xác nhận giá lại.");
+    router.replace("/ve-may-bay");
     setLoading(false);
-  }, [searchParams, t]);
+  }, [searchParams, t, router]);
 
   useEffect(() => {
     let interval: any;
@@ -359,7 +356,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
       </div>
     );
   }
-  if (!data) notFound();
+  if (!data) return null;
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
@@ -370,10 +367,10 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
               "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
           }}
         >
-          <div className="flex flex-col lg:flex-row lg:space-x-4 justify-center px-4 lg:px-0 py-4">
+          <div className="flex flex-col xl:flex-row justify-between items-center px-6 py-4 gap-4">
             {!isPaid ? (
               <Fragment>
-                <p className="text-22 font-bold text-white">
+                <p className="text-lg md:text-xl font-bold text-white text-center xl:text-left">
                   {t("hoan_tat_don_hang_cua_ban_de_giu_gia_tot_nhat")}{" "}
                 </p>
                 {!ticketPaymentTimeout && holdExpiresAt ? (

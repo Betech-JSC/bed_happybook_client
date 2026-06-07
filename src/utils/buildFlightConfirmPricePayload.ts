@@ -26,7 +26,7 @@ import {
 import { resolveConfirmItineraryId } from "@/utils/confirmPriceIdentifiers";
 import { resolveSegmentDateTime } from "@/utils/mapSegmentForConfirm";
 import type { SelectedFlight } from "@/types/selectedFlight";
-import { is1GSource } from "@/utils/internationalFlightSelection";
+import { is1GSource, isGdsSource } from "@/utils/internationalFlightSelection";
 import {
   build1GConfirmPriceSelectionPayload,
   is1GConfirmSelection,
@@ -87,28 +87,28 @@ const FARE_BREAKDOWN_CONFIG: Array<{
   discountKeys: string[];
   taxKeys: string[];
 }> = [
-  {
-    paxType: "ADULT",
-    countKey: "numberAdt",
-    netKeys: ["fareAdult"],
-    discountKeys: ["discountAdult", "discountAmountAdult"],
-    taxKeys: ["taxAdult"],
-  },
-  {
-    paxType: "CHILD",
-    countKey: "numberChd",
-    netKeys: ["fareChild"],
-    discountKeys: ["discountChild", "discountAmountChild"],
-    taxKeys: ["taxChild"],
-  },
-  {
-    paxType: "INFANT",
-    countKey: "numberInf",
-    netKeys: ["fareInfant"],
-    discountKeys: ["discountInfant", "discountAmountInfant"],
-    taxKeys: ["taxInfant"],
-  },
-];
+    {
+      paxType: "ADULT",
+      countKey: "numberAdt",
+      netKeys: ["fareAdult"],
+      discountKeys: ["discountAdult", "discountAmountAdult"],
+      taxKeys: ["taxAdult"],
+    },
+    {
+      paxType: "CHILD",
+      countKey: "numberChd",
+      netKeys: ["fareChild"],
+      discountKeys: ["discountChild", "discountAmountChild"],
+      taxKeys: ["taxChild"],
+    },
+    {
+      paxType: "INFANT",
+      countKey: "numberInf",
+      netKeys: ["fareInfant"],
+      discountKeys: ["discountInfant", "discountAmountInfant"],
+      taxKeys: ["taxInfant"],
+    },
+  ];
 
 function pickNumber(
   source: Record<string, unknown>,
@@ -180,15 +180,15 @@ export function buildFareBreakdowns(
   const fare = isVj
     ? ((flight.selectedTicketClass as Record<string, unknown>) ?? {})
     : repairFareOptionFromTrip(
-        ((flight.selectedTicketClass as Record<string, unknown>) ??
-          (flight.fareOptions as Record<string, unknown>[])?.[fareIndex] ??
-          {}) as Record<string, unknown>,
-        {
-          fareOptionIndex: fareIndex,
-          trip: flight,
-          source,
-        }
-      );
+      ((flight.selectedTicketClass as Record<string, unknown>) ??
+        (flight.fareOptions as Record<string, unknown>[])?.[fareIndex] ??
+        {}) as Record<string, unknown>,
+      {
+        fareOptionIndex: fareIndex,
+        trip: flight,
+        source,
+      }
+    );
 
   if (isVj) {
     return buildVjFareBreakdowns(fare, flight);
@@ -299,7 +299,7 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
   const baseTicketClass = flight.selectedTicketClass as
     | Record<string, unknown>
     | undefined;
-  const isGds = is1GSource(flight.source);
+  const isGds = isGdsSource(flight.source);
   const isVj = isVietJetSource(flight.source);
   const isVn1a = isVietnamAirlinesSource(flight.source);
   const isVu = isVuSource(flight.source);
@@ -479,7 +479,7 @@ function buildConfirmSegments(flight: Record<string, unknown>): unknown[] {
 function buildItineraries(flights: Record<string, unknown>[]): ConfirmPriceItinerary[] {
   return flights.map((flight, index) => {
     const airline = copyTripField(flight.airline) || copyTripField(flight.airLineCode);
-    const isGds = is1GSource(flight.source);
+    const isGds = isGdsSource(flight.source);
     const isVj = isVietJetSource(flight.source);
     const isVn1a = isVietnamAirlinesSource(flight.source);
     const isVu = isVuSource(flight.source);
@@ -551,14 +551,27 @@ export function buildFlightConfirmPricePayload(input: {
   };
   flightSession?: string | null;
   bookingFlightRequestId?: number | null;
+  agentContact?: { phone?: string; email?: string } | null;
+  update_phone_to_booking?: boolean;
+  update_email_to_booking?: boolean;
 }): ConfirmPriceRequest {
-  const { flights, passengers, contact, flightSession, bookingFlightRequestId } =
-    input;
+  const {
+    flights,
+    passengers,
+    contact,
+    flightSession,
+    bookingFlightRequestId,
+    agentContact,
+    update_phone_to_booking,
+    update_email_to_booking,
+  } = input;
   const primaryFlight = flights[0] ?? {};
   const flightType: FlightTripType = flights.length > 1 ? "RT" : "OW";
   const sourceType = String(primaryFlight.source ?? "");
 
-  if (isVietJetSource(sourceType)) {
+  const allVj = flights.every((f) => isVietJetSource(f.source));
+
+  if (allVj) {
     if (!flightSession) {
       throw new Error("VJ_SESSION_REQUIRED");
     }
@@ -592,17 +605,27 @@ export function buildFlightConfirmPricePayload(input: {
     });
   }
 
+  const finalPhone = update_phone_to_booking
+    ? (contact.phone || "")
+    : (agentContact?.phone || contact.phone || "");
+
+  const finalEmail = update_email_to_booking
+    ? (contact.email || "")
+    : (agentContact?.email || contact.email || "");
+
   const payload: ConfirmPriceRequest = {
     type: isVietnamAirlinesSource(sourceType) ? "VN1A" : sourceType,
     flightType,
     splitItineraries: false,
     airlineContact: {
-      phoneNumber: normalizeAirdataPhoneNumber(contact.phone),
-      email: contact.email ?? "",
+      phoneNumber: normalizeAirdataPhoneNumber(finalPhone),
+      email: finalEmail,
     },
     paxLists,
     itineraries,
     contact: buildConfirmContact(contact),
+    update_phone_to_booking: !!update_phone_to_booking,
+    update_email_to_booking: !!update_email_to_booking,
   };
 
   if (flightSession) {
@@ -613,13 +636,9 @@ export function buildFlightConfirmPricePayload(input: {
   }
 
   if (isVietnamAirlinesSource(sourceType)) {
-    for (const itinerary of payload.itineraries) {
-      for (const row of itinerary.fareBreakdowns) {
-        if (!row.fareValue?.trim()) {
-          throw new Error("VN1A_FARE_VALUE_REQUIRED");
-        }
-      }
-    }
+    // VN1A search API trả fareValue rỗng cho vé thường (M, U, Z, C…).
+    // Chỉ vé đặc biệt (BSV) mới có fareValue. BE chấp nhận fareValue rỗng,
+    // không chặn flow ở FE — nhất quán với validateFareValueForConfirm().
     return sanitizeVn1aConfirmPriceRequest(
       payload as unknown as Record<string, unknown>
     ) as unknown as ConfirmPriceRequest;
@@ -645,6 +664,9 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
     address?: string;
   };
   bookingFlightRequestId?: number | null;
+  agentContact?: { phone?: string; email?: string } | null;
+  update_phone_to_booking?: boolean;
+  update_email_to_booking?: boolean;
 }): ConfirmPriceRequest {
   if (is1GConfirmSelection(input.selections)) {
     const merged = merge1GSelectionsForConfirm(input.selections);
@@ -688,21 +710,21 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
     const source = trip.source ?? sel.fareOption?.source;
     const selectedFare = isVuSource(source)
       ? assertVuFareConsistency(
-          {
-            ...trip,
-            selectedTicketClass: sel.fareOption,
-            fareOptionIndex: sel.fareOptionIndex,
-          },
-          "confirm"
-        )
+        {
+          ...trip,
+          selectedTicketClass: sel.fareOption,
+          fareOptionIndex: sel.fareOptionIndex,
+        },
+        "confirm"
+      )
       : repairFareOptionFromTrip(
-          sel.fareOption as Record<string, unknown>,
-          {
-            fareOptionIndex: sel.fareOptionIndex,
-            trip,
-            source,
-          }
-        );
+        sel.fareOption as Record<string, unknown>,
+        {
+          fareOptionIndex: sel.fareOptionIndex,
+          trip,
+          source,
+        }
+      );
     return {
       ...trip,
       selectedTicketClass: selectedFare,
@@ -731,6 +753,9 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
       contact: input.contact,
       session: sessionId,
       bookingFlightRequestId: input.bookingFlightRequestId,
+      agentContact: input.agentContact,
+      update_phone_to_booking: input.update_phone_to_booking,
+      update_email_to_booking: input.update_email_to_booking,
     });
   }
 
@@ -740,6 +765,9 @@ export function buildFlightConfirmPricePayloadFromSelections(input: {
     contact: input.contact,
     flightSession: sessionId,
     bookingFlightRequestId: input.bookingFlightRequestId,
+    agentContact: input.agentContact,
+    update_phone_to_booking: input.update_phone_to_booking,
+    update_email_to_booking: input.update_email_to_booking,
   });
 }
 
@@ -758,7 +786,7 @@ export function buildPassengersFromForm(
     items.map((item, index) => {
       const baggages =
         listBaggagePassenger[typeKey]?.[index] &&
-        Array.isArray(listBaggagePassenger[typeKey][index])
+          Array.isArray(listBaggagePassenger[typeKey][index])
           ? listBaggagePassenger[typeKey][index]
           : undefined;
 

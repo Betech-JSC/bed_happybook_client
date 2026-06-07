@@ -186,6 +186,9 @@ export default function HeaderMobileMenu() {
             <Link href="/phong-cho-thuong-gia" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
               {t("phong_cho_thuong_gia")}
             </Link>
+            <Link href="/flight-radar" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
+              {t("flight_radar")}
+            </Link>
             <div className="mt-3">
               <div className="flex items-center justify-between mt-3">
                 <strong>{t("sim_du_lich")}</strong>

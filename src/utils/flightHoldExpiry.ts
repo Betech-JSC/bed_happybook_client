@@ -10,19 +10,38 @@ export function resolvePriceHoldExpiresAt(
 ): string | null {
   if (!session) return null;
 
+  const orderInfo =
+    typeof session.orderInfo === "object" && session.orderInfo
+      ? (session.orderInfo as Record<string, unknown>)
+      : undefined;
+
+  // Nếu vé đã được giữ (held === true) hoặc đơn hàng khôi phục từ DB đã qua bước giữ giá (status khác draft/price_confirmed)
+  // thì sử dụng thời hạn thanh toán giữ chỗ thực tế (booking_deadline/bookingDeadline) từ API hãng bay.
+  const isHeld =
+    session.held === true ||
+    (orderInfo &&
+      orderInfo.status !== "price_confirmed" &&
+      orderInfo.status !== "draft");
+
+  const bookingDeadline = orderInfo?.booking_deadline ?? orderInfo?.bookingDeadline;
+
+  if (isHeld && typeof bookingDeadline === "string" && bookingDeadline.length > 0) {
+    return bookingDeadline;
+  }
+
   const confirmPrice = session.confirmPrice as Record<string, unknown> | undefined;
   if (confirmPrice) {
     const { holdExpiresAt } = normalizeConfirmPriceResponse(confirmPrice);
     if (holdExpiresAt) return holdExpiresAt;
   }
 
-  const orderInfo =
-    typeof session.orderInfo === "object" && session.orderInfo
-      ? (session.orderInfo as Record<string, unknown>)
-      : undefined;
   const fromOrder = orderInfo?.hold_expires_at ?? orderInfo?.holdExpiresAt;
   if (typeof fromOrder === "string" && fromOrder.length > 0) {
     return fromOrder;
+  }
+
+  if (typeof bookingDeadline === "string" && bookingDeadline.length > 0) {
+    return bookingDeadline;
   }
 
   return null;
@@ -41,7 +60,14 @@ export function getPriceHoldRemainingMs(
   nowMs: number = Date.now()
 ): number {
   if (!holdExpiresAt) return 0;
-  const end = new Date(holdExpiresAt).getTime();
+
+  // Normalize YYYY-MM-DD HH:mm:ss to YYYY-MM-DDTHH:mm:ss for cross-browser parsing (Safari, iOS, etc.)
+  let normalized = holdExpiresAt.trim();
+  if (normalized.includes(" ") && !normalized.includes("T")) {
+    normalized = normalized.replace(" ", "T");
+  }
+
+  const end = new Date(normalized).getTime();
   if (Number.isNaN(end)) return 0;
   return Math.max(0, end - nowMs);
 }

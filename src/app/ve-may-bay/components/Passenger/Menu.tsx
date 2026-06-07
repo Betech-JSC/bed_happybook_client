@@ -50,8 +50,10 @@ const SelectMenu = ({
       </div>
 
       <div
-        className={`absolute top-14 left-[-10%] md:left-0 z-10 w-64 md:w-80 p-4 rounded-lg shadow-md bg-white ${
-          isOpen ? "visible" : "invisible"
+        className={`absolute top-14 left-[-10%] md:left-0 z-10 w-64 md:w-80 p-4 rounded-lg shadow-lg border border-gray-100 bg-white transition-custom origin-top ${
+          isOpen
+            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
         }`}
       >
         <CounterGroup

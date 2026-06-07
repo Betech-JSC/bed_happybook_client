@@ -319,6 +319,9 @@ export type BuildVjConfirmPriceInput = {
   };
   session: string;
   bookingFlightRequestId?: number | null;
+  agentContact?: { phone?: string; email?: string } | null;
+  update_phone_to_booking?: boolean;
+  update_email_to_booking?: boolean;
 };
 
 /** Template Postman VJ — confirm-price / hold-flight. */
@@ -333,14 +336,22 @@ export function buildVjConfirmPricePayload(
   const paxLists = buildVjPaxLists(input.passengers, input.flights);
   const itineraries = buildVjItineraries(input.flights);
 
+  const finalPhone = input.update_phone_to_booking
+    ? (input.contact.phone || "")
+    : (input.agentContact?.phone || input.contact.phone || "");
+
+  const finalEmail = input.update_email_to_booking
+    ? (input.contact.email || "")
+    : (input.agentContact?.email || input.contact.email || "");
+
   const payload: ConfirmPriceRequest = {
     type: "VJ",
     flightType,
     splitItineraries: false,
     session: input.session,
     airlineContact: {
-      phoneNumber: normalizeAirdataPhoneNumber(input.contact.phone),
-      email: input.contact.email ?? "",
+      phoneNumber: normalizeAirdataPhoneNumber(finalPhone),
+      email: finalEmail,
     },
     paxLists,
     itineraries,
@@ -351,6 +362,8 @@ export function buildVjConfirmPricePayload(
       email: input.contact.email ?? "",
       address: input.contact.address ?? "",
     },
+    update_phone_to_booking: !!input.update_phone_to_booking,
+    update_email_to_booking: !!input.update_email_to_booking,
   };
 
   if (input.bookingFlightRequestId != null) {

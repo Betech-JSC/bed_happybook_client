@@ -313,6 +313,8 @@ export const FlightBookingInforBody = (
           })
           .optional(),
 
+    update_phone_to_booking: z.boolean().optional(),
+    update_email_to_booking: z.boolean().optional(),
     checkBoxGenerateInvoice: z.boolean(),
   })
     .superRefine((data, ctx) => {

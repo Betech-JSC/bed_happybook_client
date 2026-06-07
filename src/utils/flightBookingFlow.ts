@@ -20,7 +20,17 @@ export function isBookingDeadlineExpired(
   deadline: string | Date | null | undefined
 ): boolean {
   if (!deadline) return false;
-  const end = deadline instanceof Date ? deadline : new Date(deadline);
+  if (deadline instanceof Date) {
+    return Date.now() > deadline.getTime();
+  }
+
+  // Normalize YYYY-MM-DD HH:mm:ss to YYYY-MM-DDTHH:mm:ss for Safari / cross-browser parsing
+  let normalized = deadline.trim();
+  if (normalized.includes(" ") && !normalized.includes("T")) {
+    normalized = normalized.replace(" ", "T");
+  }
+
+  const end = new Date(normalized);
   if (Number.isNaN(end.getTime())) return false;
   return Date.now() > end.getTime();
 }
@@ -48,7 +58,13 @@ export function shouldPollFlightBookingStatus(
   if (!paymentStarted) return false;
   if (!status) return true;
   // Stop after payment is confirmed or PNR is held — no polling for ticket issuance.
-  if (status === "held" || status === "paid" || status === "issuing" || status === "issued") {
+  if (
+    status === "held" ||
+    status === "paid" ||
+    status === "issuing" ||
+    status === "issued" ||
+    status === "done"
+  ) {
     return false;
   }
   return status === "pending_payment";
@@ -61,6 +77,7 @@ export function isFlightPaymentConfirmed(
     status === "paid" ||
     status === "issuing" ||
     status === "issued" ||
+    status === "done" ||
     status === "paid_book_failed"
   );
 }
@@ -68,13 +85,17 @@ export function isFlightPaymentConfirmed(
 export function isFlightBookingTerminal(
   status: FlightBookingOrderStatus | undefined
 ): boolean {
-  return status === "issued" || status === "paid_book_failed";
+  return (
+    status === "issued" ||
+    status === "done" ||
+    status === "paid_book_failed"
+  );
 }
 
 export function isFlightBookingSuccess(
   status: FlightBookingOrderStatus | undefined
 ): boolean {
-  return status === "issued";
+  return status === "issued" || status === "done";
 }
 
 export function mergeBookFlightIntoSession(

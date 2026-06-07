@@ -1,6 +1,10 @@
 import { format, parseISO } from "date-fns";
 import { handleSessionStorage } from "@/utils/Helper";
-import { isBookingDeadlineExpired } from "@/utils/flightBookingFlow";
+import {
+  isBookingDeadlineExpired,
+  isFlightPaymentConfirmed,
+} from "@/utils/flightBookingFlow";
+import type { FlightBookingOrderStatus } from "@/types/flightBooking";
 import { normalizeConfirmPriceResponse } from "@/utils/buildFlightConfirmPricePayload";
 import type { ConfirmPriceResponse } from "@/types/flightConfirmPrice";
 import {
@@ -149,6 +153,52 @@ function removeDismissForRoute(routeKey: string): void {
   localStorage.setItem(DISMISS_STORAGE_KEY, JSON.stringify(keys));
 }
 
+const SESSION_KEYS_TO_BACKUP = [
+  "selectedFlightDepart",
+  "selectedFlightReturn",
+  "departFlight",
+  "returnFlight",
+  "flightConfirmPrice",
+  "bookingFlight",
+  "flightSearchContext",
+  "flightSession",
+] as const;
+
+export function backupFlightSessionState(meta: FlightDraftMeta): void {
+  if (typeof window === "undefined") return;
+  try {
+    const backupData: Record<string, any> = {};
+    SESSION_KEYS_TO_BACKUP.forEach((key) => {
+      const val = handleSessionStorage("get", key);
+      if (val) {
+        backupData[key] = val;
+      }
+    });
+    const routeKey = buildFlightDraftRouteKey(meta);
+    localStorage.setItem(`flightDraftBackup_${routeKey}`, JSON.stringify(backupData));
+  } catch (e) {
+    console.error("Failed to backup flight session:", e);
+  }
+}
+
+export function restoreFlightSessionState(routeKey: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem(`flightDraftBackup_${routeKey}`);
+    if (!raw) return false;
+    const backupData = JSON.parse(raw);
+    if (typeof backupData !== "object" || !backupData) return false;
+
+    Object.entries(backupData).forEach(([key, val]) => {
+      handleSessionStorage("save", key, val);
+    });
+    return true;
+  } catch (e) {
+    console.error("Failed to restore flight session:", e);
+    return false;
+  }
+}
+
 export function getFlightDraftMeta(): FlightDraftMeta | null {
   const raw = handleSessionStorage("get", FLIGHT_DRAFT_META_KEY);
   if (!raw?.startPoint || !raw?.endPoint || !raw?.departDate) return null;
@@ -161,6 +211,7 @@ export function saveFlightDraftMeta(meta: FlightDraftMeta): void {
     updatedAt: Date.now(),
   });
   removeDismissForRoute(buildFlightDraftRouteKey(meta));
+  backupFlightSessionState(meta);
 }
 
 export function updateFlightDraftMeta(
@@ -179,6 +230,13 @@ export function updateFlightDraftMeta(
 }
 
 export function clearFlightDraftSession(): void {
+  const current = getFlightDraftMeta();
+  if (current) {
+    const routeKey = buildFlightDraftRouteKey(current);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`flightDraftBackup_${routeKey}`);
+    }
+  }
   handleSessionStorage("remove", [...SESSION_KEYS_TO_CLEAR]);
 }
 
@@ -261,6 +319,15 @@ export function evaluateFlightSelectionChange(input: {
   if (!routesMatchStrict(input.searchRoute, meta)) return { type: "allow" };
 
   if (meta.stage === "pending_payment" || meta.stage === "held") {
+    const bookingFlight = handleSessionStorage("get", "bookingFlight") as
+      | { status?: string; orderInfo?: { status?: string } }
+      | null;
+    const status = (bookingFlight?.status ||
+      bookingFlight?.orderInfo?.status) as FlightBookingOrderStatus | undefined;
+    if (status && isFlightPaymentConfirmed(status)) {
+      clearFlightDraftSession();
+      return { type: "allow" };
+    }
     return {
       type: "block_pending_payment",
       orderCode: meta.orderCode,
@@ -574,11 +641,9 @@ export function findMatchingFlightDraft(
   const bookingFlight = handleSessionStorage("get", "bookingFlight") as
     | { status?: string; orderInfo?: { status?: string } }
     | null;
-  const terminalStatus =
-    bookingFlight?.status === "issued" ||
-    bookingFlight?.status === "paid_book_failed" ||
-    bookingFlight?.orderInfo?.status === "issued" ||
-    bookingFlight?.orderInfo?.status === "paid_book_failed";
+  const status = (bookingFlight?.status ||
+    bookingFlight?.orderInfo?.status) as FlightBookingOrderStatus | undefined;
+  const terminalStatus = status ? isFlightPaymentConfirmed(status) : false;
   if (terminalStatus) {
     clearFlightDraftSession();
     return null;

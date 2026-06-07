@@ -177,7 +177,7 @@ function resolveSegmentKeys(
     };
   }
 
-  /** VJ Postman: segmentValue "", segmentId = token search (không "1"). */
+  /** VJ Postman: segmentValue "" to prevent GDS token lookup crash. */
   if (isVietJetSource(source)) {
     return {
       segmentValue: "",

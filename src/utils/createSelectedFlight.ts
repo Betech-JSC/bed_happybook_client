@@ -43,6 +43,8 @@ export function createSelectedFlight(
   const tripBody = { ...normalizedTrip } as Record<string, unknown>;
   delete tripBody.selectedTicketClass;
   delete tripBody.fareOptions;
+  tripBody.source = tripSource;
+  fareOption.source = tripSource;
 
   if (isVietJetSource(tripSource) && Array.isArray(tripBody.segments)) {
     tripBody.segments = mergeVjSegmentsFromSearchFlight(tripBody, trip);
