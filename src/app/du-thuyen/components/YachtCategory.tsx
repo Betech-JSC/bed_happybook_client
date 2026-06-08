@@ -11,13 +11,23 @@ import FAQ from "@/components/content-page/FAQ";
 import WhyChooseHappyBook from "@/components/content-page/whyChooseHappyBook";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import Search from "./Search";
+import { getServerLang } from "@/lib/session";
+import { getServerT } from "@/lib/i18n/getServerT";
+import { translateText } from "@/utils/translateApi";
 
 export default async function YachtCategory({ detail }: any) {
-  const optionsFilter = (await ProductYachtApi.getOptionsFilter())?.payload
+  const language = await getServerLang();
+  const t = await getServerT();
+  const optionsFilter = (await ProductYachtApi.getOptionsFilter(language))?.payload
     ?.data as any;
   const filteredOptions = optionsFilter.filter(
     (item: any) => item.name !== "category"
   );
+  const rawDisplayTitle = detail?.display_title ?? detail?.name ?? "";
+  const displayTitle =
+    language === "vi" || !rawDisplayTitle
+      ? rawDisplayTitle
+      : (await translateText([rawDisplayTitle], language))[0] || rawDisplayTitle;
 
   return (
     <Fragment>
@@ -27,20 +37,16 @@ export default async function YachtCategory({ detail }: any) {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link
-                    href="/"
-                    className="text-blue-700"
-                    data-translate="true"
-                  >
-                    Trang chủ
+                  <Link href="/" className="text-blue-700">
+                    {t("trang_chu")}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <p className="text-gray-700" data-translate="true">
-                    {detail?.name}
+                  <p className="text-gray-700">
+                    {displayTitle}
                   </p>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -50,6 +56,7 @@ export default async function YachtCategory({ detail }: any) {
             <Search
               optionsFilter={filteredOptions}
               categoryDefault={detail?.id}
+              title={rawDisplayTitle}
             />
           </Suspense>
         </div>

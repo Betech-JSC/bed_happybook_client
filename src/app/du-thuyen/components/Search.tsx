@@ -1,20 +1,16 @@
 "use client";
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { useCallback, useEffect, useRef, useState } from "react";
-import TourStyle from "@/styles/tour.module.scss";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { buildSearch, renderTextContent } from "@/utils/Helper";
 import { useSearchParams } from "next/navigation";
-import { translatePage } from "@/utils/translateDom";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { format, isValid } from "date-fns";
 import { ProductYachtApi } from "@/api/ProductYacht";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translateText } from "@/utils/translateApi";
 
 type optionFilterType = {
   label: string;
@@ -28,12 +24,16 @@ type optionFilterType = {
 export default function Search({
   optionsFilter,
   categoryDefault,
+  title,
 }: {
   optionsFilter: optionFilterType[];
   categoryDefault?: number;
+  title?: string;
 }) {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const getYachtDisplayName = (item: any) =>
+    item?.yacht?.name || item?.name || "";
 
   const searchParams = useSearchParams();
   const [query, setQuery] = useState<{
@@ -49,7 +49,69 @@ export default function Search({
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const [translatedText, setTranslatedText] = useState<boolean>(false);
+  const [translatedTitle, setTranslatedTitle] = useState<string>(title ?? "");
+  const [translatedOptions, setTranslatedOptions] =
+    useState<optionFilterType[]>(optionsFilter);
   const [data, setData] = useState<any>([]);
+  const selectedCategoryTitle = useMemo(() => {
+    const categoryGroup = translatedOptions.find(
+      (group) => group.name === "category"
+    );
+    const rawSelected = query["category[]"];
+    const selectedValues = Array.isArray(rawSelected)
+      ? rawSelected
+      : rawSelected
+        ? [rawSelected]
+        : [];
+
+    if (selectedValues.length !== 1 || !categoryGroup) return "";
+
+    const matchedOption = categoryGroup.option.find(
+      (option) => String(option.value) === String(selectedValues[0])
+    );
+
+    return matchedOption?.label ?? "";
+  }, [query, translatedOptions]);
+  const pageTitle =
+    selectedCategoryTitle || translatedTitle || title || t("du_thuyen");
+
+  useEffect(() => {
+    if (language === "vi") {
+      setTranslatedTitle(title ?? "");
+      setTranslatedOptions(optionsFilter);
+      return;
+    }
+
+    const allLabels = [title, ...optionsFilter.flatMap((group) => [
+      group.label,
+      ...group.option.map((option) => option.label),
+    ])].filter(Boolean) as string[];
+
+    if (!allLabels.length) {
+      setTranslatedTitle(title ?? "");
+      setTranslatedOptions(optionsFilter);
+      return;
+    }
+
+    translateText(allLabels, language).then((translated) => {
+      const translatedMap = new Map<string, string>();
+      allLabels.forEach((label, index) => {
+        translatedMap.set(label, translated[index] ?? label);
+      });
+
+      setTranslatedTitle(translatedMap.get(title ?? "") ?? title ?? "");
+      setTranslatedOptions(
+        optionsFilter.map((group) => ({
+          ...group,
+          label: translatedMap.get(group.label) ?? group.label,
+          option: group.option.map((option) => ({
+            ...option,
+            label: translatedMap.get(option.label ?? "") ?? option.label,
+          })),
+        }))
+      );
+    });
+  }, [language, optionsFilter, title]);
 
   const loadData = useCallback(async () => {
     try {
@@ -77,9 +139,7 @@ export default function Search({
       if (result?.last_page === query.page) {
         setIsLastPage(true);
       }
-      translatePage("#wrapper-search-amusement-ticket", 10).then(() =>
-        setTranslatedText(true)
-      );
+      setTranslatedText(true);
     } catch (error) {
       console.log("Error search: " + error);
     } finally {
@@ -91,7 +151,6 @@ export default function Search({
 
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
-    query.location = "";
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -99,16 +158,18 @@ export default function Search({
       if (groupFilters.includes(value)) {
         return {
           ...prevFilters,
+          location: "",
           [group]: groupFilters.filter((item: string) => item !== value),
           page: 1,
-          isFilter: true,
+          isFilters: true,
         };
       } else {
         return {
           ...prevFilters,
+          location: "",
           [group]: [...groupFilters, value],
           page: 1,
-          isFilter: true,
+          isFilters: true,
         };
       }
     });
@@ -141,7 +202,7 @@ export default function Search({
           setQuery={setQuery}
           query={query}
           isDisabled={isDisabled}
-          options={optionsFilter}
+          options={translatedOptions}
           handleFilterChange={handleFilterChange}
           handleSortData={handleSortData}
           showFilterDate={false}
@@ -149,7 +210,9 @@ export default function Search({
       </div>
       <div className="w-full lg:w-9/12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h1 className="text-32 font-bold">{t("du_thuyen")}</h1>
+          <h1 className="text-32 font-bold">
+            {pageTitle}
+          </h1>
           <div className="hidden lg:flex my-4 md:my-0 space-x-3 items-center">
             <span>{t("sap_xep")}</span>
             <div className="w-auto min-w-[180px] bg-white border border-gray-200 rounded-lg">
@@ -182,7 +245,7 @@ export default function Search({
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
                           src={`${item.image_url}/${item.image_location}`}
-                          alt={renderTextContent(item.name)}
+                          alt={renderTextContent(getYachtDisplayName(item))}
                           width={360}
                           height={270}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -194,9 +257,8 @@ export default function Search({
                       <Link
                         href={`/du-thuyen/${item.slug}`}
                         className="text-base font-bold line-clamp-2 h-12"
-                        data-translate="true"
                       >
-                        {renderTextContent(item.name)}
+                        {renderTextContent(getYachtDisplayName(item))}
                       </Link>
                       <div className="mt-1 text-end">
                         <DisplayPrice
