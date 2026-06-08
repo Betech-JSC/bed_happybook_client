@@ -1,7 +1,7 @@
 import { formatMetadata } from "@/lib/formatters";
 import "@/styles/ckeditor-content.scss";
 import "@/styles/ckeditor-content.scss";
-import { ProductYachtApi } from "@/api/ProductYacht";
+import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 import { Metadata } from "next";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { ProductCategoryApi } from "@/api/ProductCategory";
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     ?.data as any;
 
   if (!data) {
-    const resDetail = await ProductYachtApi.detailBySlug(slug);
+    const resDetail = await ProductFastTrackApi.detailBySlug(slug, language);
     data = resDetail?.payload.data;
     if (data) data.alias = data?.slug;
   }

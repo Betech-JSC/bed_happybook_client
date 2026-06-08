@@ -284,7 +284,7 @@ export default function CheckOutForm({
                       <div className="flex items-start md:w-[30%] justify-between">
                         <div>
                           <span className="text-base mr-4">
-                            {formatCurrency(ticket.price)}
+                            {formatCurrency(ticket.price, language)}
                           </span>
                           <p className="text-sm text-gray-500 mt-1">
                             {t("gia")} / {t("khach")}
@@ -483,7 +483,7 @@ export default function CheckOutForm({
               <div key={item.id} className="mt-2 flex justify-between">
                 <span data-translate="true">{item.title}</span>
                 <span className="font-bold text-sm">
-                  {`${formatCurrency(item.price)} x ${item.quantity}`}
+                  {`${formatCurrency(item.price, language)} x ${item.quantity}`}
                 </span>
               </div>
             ))}

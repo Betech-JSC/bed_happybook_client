@@ -215,6 +215,13 @@ export default function BookingDetail() {
     }
   }, [selectedPaymentMethod]);
 
+  useEffect(() => {
+    if (data?.code?.startsWith("EVT") && language === "en") {
+      setSelectedPaymentMethod("paypal");
+      setValue("payment_method", "paypal");
+    }
+  }, [data?.code, language, setValue]);
+
   const onSubmit = async (dataForm: CheckOutBodyType) => {
     if (!data?.code) {
       toast.error(t("khong_tim_thay_ma_don_hang"));
@@ -259,6 +266,25 @@ export default function BookingDetail() {
           } catch (paymentError: any) {
             setIsGeneratingPaymentUrl(false);
             console.error("Error generating payment URL:", paymentError);
+            toast.error(t("co_loi_xay_ra_khi_tao_link_thanh_toan"));
+          }
+        } else if (selectedPaymentMethod === "paypal") {
+          setIsGeneratingPaymentUrl(true);
+          try {
+            const paymentResult = await BookingProductApi.paypalCreateTicketOrder({
+              order_code: data.code,
+            });
+
+            if (paymentResult?.status === 200 && paymentResult?.payload?.data?.approval_url) {
+              window.location.href = paymentResult.payload.data.approval_url;
+              toast.success(t("dang_chuyen_toi_paypal") || "Redirecting to PayPal...");
+            } else {
+              setIsGeneratingPaymentUrl(false);
+              toast.error(paymentResult?.payload?.message || t("khong_the_tao_link_thanh_toan"));
+            }
+          } catch (paymentError: any) {
+            setIsGeneratingPaymentUrl(false);
+            console.error("Error generating PayPal payment URL:", paymentError);
             toast.error(t("co_loi_xay_ra_khi_tao_link_thanh_toan"));
           }
         } else if (selectedPaymentMethod === "vietqr") {
@@ -603,72 +629,109 @@ export default function BookingDetail() {
                 {t("hinh_thuc_thanh_toan")}
               </p>
               <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                <div className="flex space-x-3 items-start ">
-                  <input
-                    type="radio"
-                    value="vietqr"
-                    id="payment_vietqr"
-                    {...register("payment_method")}
-                    className="w-5 h-5 mt-[2px]"
-                    onChange={(e) => {
-                      setValue("payment_method", e.target.value);
-                      setSelectedPaymentMethod(e.target.value);
-                    }}
-                  />
-                  <label
-                    htmlFor="payment_vietqr"
-                    className=" flex space-x-1"
-                  >
-                    <div className="font-normal">
-                      <Image
-                        src="/payment-method/transfer.svg"
-                        alt="Icon"
-                        width={24}
-                        height={24}
-                        className="w-6 h-6"
+                {language === "en" && data?.code?.startsWith("EVT") ? (
+                  <div className="flex space-x-3 items-center">
+                    <input
+                      type="radio"
+                      value="paypal"
+                      id="payment_paypal"
+                      {...register("payment_method")}
+                      className="w-5 h-5 shrink-0"
+                      checked={selectedPaymentMethod === "paypal"}
+                      onChange={(e) => {
+                        setValue("payment_method", e.target.value);
+                        setSelectedPaymentMethod(e.target.value);
+                      }}
+                    />
+                    <label
+                      htmlFor="payment_paypal"
+                      className="flex items-center gap-4 cursor-pointer"
+                    >
+                      <div className="flex h-11 min-w-[92px] items-center justify-center rounded-2xl border border-[#D7E3FA] bg-[#F7FAFF] px-3 shadow-sm">
+                        <span
+                          className="text-[17px] font-extrabold italic leading-none tracking-[-0.02em] text-[#003087]"
+                          style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}
+                        >
+                          PayPal
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-bold text-slate-800 text-lg">
+                          PayPal / Credit Card
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex space-x-3 items-start ">
+                      <input
+                        type="radio"
+                        value="vietqr"
+                        id="payment_vietqr"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
                       />
+                      <label
+                        htmlFor="payment_vietqr"
+                        className=" flex space-x-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/transfer.svg"
+                            alt="Icon"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("thanh_toan_quet_ma_qr_ngan_hang")}
+                          </span>
+                        </div>
+                      </label>
                     </div>
-                    <div>
-                      <span className="font-medium text-base max-width-[85%]">
-                        {t("thanh_toan_quet_ma_qr_ngan_hang")}
-                      </span>
-                    </div>
-                  </label>
-                </div>
 
-                <div className="flex space-x-3 md:items-center mt-4">
-                  <input
-                    type="radio"
-                    value="onepay"
-                    id="payment_onepay"
-                    {...register("payment_method")}
-                    className="w-5 h-5 mt-[2px]"
-                    checked={selectedPaymentMethod === "onepay"}
-                    onChange={(e) => {
-                      setValue("payment_method", e.target.value);
-                      setSelectedPaymentMethod(e.target.value);
-                    }}
-                  />
-                  <label
-                    htmlFor="payment_onepay"
-                    className="flex md:items-center gap-1"
-                  >
-                    <div className="font-normal">
-                      <Image
-                        src="/payment-method/visa.svg"
-                        alt="Icon"
-                        width={48}
-                        height={28}
-                        className="md:mt-1"
+                    <div className="flex space-x-3 md:items-center mt-4">
+                      <input
+                        type="radio"
+                        value="onepay"
+                        id="payment_onepay"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        checked={selectedPaymentMethod === "onepay"}
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
                       />
+                      <label
+                        htmlFor="payment_onepay"
+                        className="flex md:items-center gap-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/visa.svg"
+                            alt="Icon"
+                            width={48}
+                            height={28}
+                            className="md:mt-1"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("thanh_toan_visa_master_card_jcb")}
+                          </span>
+                        </div>
+                      </label>
                     </div>
-                    <div>
-                      <span className="font-medium text-base max-width-[85%]">
-                        {t("thanh_toan_visa_master_card_jcb")}
-                      </span>
-                    </div>
-                  </label>
-                </div>
+                  </>
+                )}
                 {errors.payment_method && (
                   <p className="text-red-600 mt-2">
                     {errors.payment_method.message}

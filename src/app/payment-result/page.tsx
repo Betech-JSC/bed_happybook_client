@@ -1,11 +1,18 @@
 "use client";
 
-import { CheckCircle, XCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
   const status = searchParams.get("status");
   const paymentMethod = (searchParams.get("payment_method") || "").toLowerCase();
   const orderCode = searchParams.get("id") || searchParams.get("order_code") || "";
@@ -17,9 +24,14 @@ export default function PaymentResultPage() {
   const successBodyTop = isEnglish
     ? "Thank you for your order."
     : "Cảm ơn bạn đã đặt hàng.";
+
+  const isAmusementTicket = orderCode.startsWith("EVT");
   const successBodyBottom = isEnglish
-    ? "Your eSIM order will be processed shortly."
+    ? (isAmusementTicket
+        ? "Your ticket order will be processed shortly."
+        : "Your eSIM order will be processed shortly.")
     : "Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.";
+
   const errorTitle = isEnglish ? "Payment failed" : "Thanh toán thất bại";
   const errorBodyTop = isEnglish
     ? "An error occurred during payment."
@@ -28,6 +40,16 @@ export default function PaymentResultPage() {
     ? "Please try again or contact support for assistance."
     : "Vui lòng thử lại hoặc liên hệ CSKH để được hỗ trợ.";
   const homeLabel = isEnglish ? "Back to home" : "Quay về trang chủ";
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
+        <div className="w-full max-w-2xl rounded-[28px] bg-white px-6 py-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.12)] flex items-center justify-center min-h-[300px]">
+          <Loader2 className="animate-spin text-blue-500 w-12 h-12" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">

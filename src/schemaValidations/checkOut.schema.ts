@@ -10,7 +10,7 @@ export const CheckOutBody = (messages: ValidationMessages) =>
       })
       .default("")
       .refine(
-        (value) => value && ["cash", "vietqr", "onepay"].includes(value),
+        (value) => value && ["cash", "vietqr", "onepay", "paypal"].includes(value),
         {
           message: messages.inValidPaymentMethod,
         }
