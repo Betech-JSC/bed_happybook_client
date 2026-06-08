@@ -47,6 +47,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "cdn.nhanhtravel.io.vn",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "cms.happybooktravel.com",
         pathname: "/**",
       },
@@ -68,6 +73,15 @@ const nextConfig = {
     ],
     loader: "default",
     formats: ["image/avif", "image/webp"],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/tours/tour-quoc_te",
+        destination: "/tours/tour-quoc-te",
+        permanent: true,
+      },
+    ];
   },
   webpack: (config, { isServer }) => {
     // Split large chunks to reduce initial JS payload → lowers TBT

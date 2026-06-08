@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Carousel,
@@ -12,6 +12,7 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { translateText } from "@/utils/translateApi";
 
 export default function YachtTabs({
   title,
@@ -22,13 +23,43 @@ export default function YachtTabs({
   defaultCategoryAlias?: string;
   data: any;
 }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
+  const [translatedData, setTranslatedData] = useState(data);
   const getYachtDisplayName = (item: any) =>
     item?.yacht?.name || item?.name || "";
   const [linkCategory, setLinkCategory] = useState<string>(
     data?.[0]?.alias ? `/du-thuyen/${data?.[0]?.alias}` : "/du-thuyen"
   );
+
+  useEffect(() => {
+    if (lang === "vi") {
+      setTranslatedData(data);
+      return;
+    }
+
+    const tabNames = data.map((tab: any) => tab?.name).filter(Boolean) as string[];
+    if (!tabNames.length) {
+      setTranslatedData(data);
+      return;
+    }
+
+    translateText(tabNames, lang).then((translated) => {
+      const translatedMap = new Map<string, string>();
+      tabNames.forEach((name, index) => {
+        translatedMap.set(name, translated[index] ?? name);
+      });
+
+      setTranslatedData(
+        data.map((tab: any) => ({
+          ...tab,
+          name: translatedMap.get(tab?.name) ?? tab?.name,
+          products: tab.products,
+        }))
+      );
+    });
+  }, [data, lang]);
+
   return (
     <Fragment>
       <div className="flex justify-between">
@@ -78,7 +109,7 @@ export default function YachtTabs({
             }}
           >
             <CarouselContent>
-              {data.map(
+              {translatedData.map(
                 (tab: any, index: number) =>
                   tab.name && (
                     <CarouselItem key={index} className="basis-1/8">
@@ -102,7 +133,7 @@ export default function YachtTabs({
           </Carousel>
         </div>
         <div>
-          {data.map((category: any, index: number) => {
+          {translatedData.map((category: any, index: number) => {
             if (index !== activeTab) return null;
             return (
               <div key={index}>

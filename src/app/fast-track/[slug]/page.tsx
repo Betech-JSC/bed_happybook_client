@@ -12,15 +12,14 @@ import { getServerLang } from "@/lib/session";
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
   const language = await getServerLang();
-  let data = null;
-
-  data = (await ProductCategoryApi.detail("fast-track", slug))?.payload
+  let data = (await ProductFastTrackApi.detailBySlug(slug, language))?.payload
     ?.data as any;
 
-  if (!data) {
-    const resDetail = await ProductFastTrackApi.detailBySlug(slug, language);
-    data = resDetail?.payload.data;
-    if (data) data.alias = data?.slug;
+  if (data) {
+    data.alias = data?.slug;
+  } else {
+    data = (await ProductCategoryApi.detail("fast-track", slug, language))
+      ?.payload?.data as any;
   }
 
   return formatMetadata({
@@ -54,11 +53,20 @@ export default async function FastTrackAliasPage({
   searchParams: { [key: string]: string | undefined };
 }) {
   const { slug } = params;
-  const detailCate = (await ProductCategoryApi.detail("fast-track", slug))
+  const language = await getServerLang();
+  const detail = (await ProductFastTrackApi.detailBySlug(slug, language))
     ?.payload?.data as any;
-  return !detailCate ? (
-    <FastTrackDetail alias={slug} searchParams={searchParams} />
-  ) : (
+
+  if (detail) {
+    return <FastTrackDetail alias={slug} searchParams={searchParams} />;
+  }
+
+  const detailCate = (await ProductCategoryApi.detail("fast-track", slug, language))
+    ?.payload?.data as any;
+
+  return detailCate ? (
     <FastTrackCategory detail={detailCate} />
+  ) : (
+    <FastTrackDetail alias={slug} searchParams={searchParams} />
   );
 }

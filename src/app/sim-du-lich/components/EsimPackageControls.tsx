@@ -49,7 +49,6 @@ export default function EsimPackageControls({
     variants.some(
       (variant) =>
         variant.validity === validity &&
-        (!selectedData || variant.data === selectedData) &&
         isEsimVariantSelectable(variant, locale)
     );
 
@@ -57,7 +56,6 @@ export default function EsimPackageControls({
     variants.some(
       (variant) =>
         variant.data === data &&
-        (selectedValidity === null || variant.validity === selectedValidity) &&
         isEsimVariantSelectable(variant, locale)
     );
 
