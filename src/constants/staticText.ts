@@ -54,6 +54,10 @@ export const flightStaticText: string[] = [
   "Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất",
   "Chuyến bay",
   "Ngày đặt",
+  "Khởi hành quá gần (dưới 4h)",
+  "Cảnh báo giờ bay gần",
+  "Chuyến bay này sẽ khởi hành dưới 4 tiếng tính từ hiện tại, vui lòng đảm bảo bạn kịp thời gian di chuyển ra sân bay và làm thủ tục.",
+  "Đồng ý tiếp tục",
 ];
 
 export const visaStaticText: string[] = [
