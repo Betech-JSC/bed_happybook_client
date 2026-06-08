@@ -18,7 +18,17 @@ export default function PaymentResultPage() {
     ? "Thank you for your order."
     : "Cảm ơn bạn đã đặt hàng.";
   const successBodyBottom = isEnglish
-    ? "Your eSIM order will be processed shortly."
+    ? (orderCode.startsWith("EVT")
+        ? "Your ticket order will be processed shortly."
+        : orderCode.startsWith("YACHT")
+        ? "Your yacht charter booking will be processed shortly."
+        : orderCode.startsWith("VISA")
+        ? "Your visa service order will be processed shortly."
+        : orderCode.startsWith("COMBO")
+        ? "Your combo package booking will be processed shortly."
+        : orderCode.startsWith("HAP")
+        ? "Your booking will be processed shortly."
+        : "Your eSIM order will be processed shortly.")
     : "Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.";
   const errorTitle = isEnglish ? "Payment failed" : "Thanh toán thất bại";
   const errorBodyTop = isEnglish

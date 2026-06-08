@@ -24,6 +24,10 @@ const BookingProductApi = {
   BusinessLounge: (data: any) => http.post<any>(`${path}/business-lounge`, data),
   updatePaymentMethod: (data: any) =>
     http.post<any>(`${path}/update-payment-method`, data),
+  paypalCreateOrder: (body: { order_code: string }) =>
+    http.post<any>(`${path}/paypal/create-order`, body),
+  paypalCaptureOrder: (body: { order_code?: string; paypal_order_id?: string }) =>
+    http.post<any>(`${path}/paypal/capture-order`, body),
   getByCode: (orderCode: string) =>
     http.get<any>(`${path}/${encodeURIComponent(orderCode)}`, undefined, 10000, 0),
   History: (token: string | undefined, productType: string, page: number) =>
