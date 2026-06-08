@@ -5,6 +5,7 @@ import {
     Plane, Search, Clock, Info, AlertCircle,
     ExternalLink, Globe, Calendar, CloudSun, Wind, Sun, Snowflake, Zap
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function FlightTracker() {
     const [flightNumber, setFlightNumber] = useState('');
@@ -12,6 +13,14 @@ export default function FlightTracker() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [triedSearch, setTriedSearch] = useState(false);
+
+    // Format date to local YYYY-MM-DD to avoid timezone shift from UTC/toISOString
+    const getLocalDateString = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
     // Generate 4 consecutive days starting from today for search options
     const generateDates = () => {
@@ -25,7 +34,7 @@ export default function FlightTracker() {
     };
 
     const [dateOptions] = useState(generateDates());
-    const [selectedDate, setSelectedDate] = useState(dateOptions[0].toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useState(getLocalDateString(dateOptions[0]));
 
     const fetchFlightData = async (number: string, dateStr: string) => {
         if (!number) return;
@@ -34,6 +43,7 @@ export default function FlightTracker() {
         setTriedSearch(true);
 
         const formattedNumber = number.toUpperCase().replace(/\s/g, '');
+        console.log("[FlightTracker] Fetching status for:", formattedNumber, "date:", dateStr);
 
         try {
             const response = await fetch(
@@ -56,15 +66,16 @@ export default function FlightTracker() {
         }
     };
 
-    useEffect(() => {
-        if (flightNumber && triedSearch) {
-            fetchFlightData(flightNumber, selectedDate);
-        }
-    }, [selectedDate]);
-
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (flightNumber.trim()) fetchFlightData(flightNumber, selectedDate);
+    };
+
+    const handleDateTabClick = (dateStr: string) => {
+        setSelectedDate(dateStr);
+        if (flightNumber.trim()) {
+            fetchFlightData(flightNumber, dateStr);
+        }
     };
 
     const formatDateVN = (dateInput: Date | string | null | undefined) => {
@@ -143,12 +154,12 @@ export default function FlightTracker() {
             {/* Date Tabs (Clean Style) */}
             <div className="flex border-b border-slate-100 mb-8 overflow-x-auto no-scrollbar">
                 {dateOptions.map((date) => {
-                    const iso = date.toISOString().split('T')[0];
+                    const iso = getLocalDateString(date);
                     const isActive = selectedDate === iso;
                     return (
                         <button
                             key={iso}
-                            onClick={() => setSelectedDate(iso)}
+                            onClick={() => handleDateTabClick(iso)}
                             className={`px-6 py-3.5 text-xs font-semibold whitespace-nowrap transition-all border-b-2 relative tracking-wider ${isActive
                                     ? "border-[#1570EF] text-[#1570EF]"
                                     : "border-transparent text-slate-400 hover:text-slate-600"
@@ -370,9 +381,12 @@ export default function FlightTracker() {
                                             </li>
                                         </ul>
                                     </div>
-                                    <button className="w-full mt-4 py-2.5 border border-blue-100 rounded-lg text-xs font-semibold text-[#1570EF] uppercase tracking-wider hover:bg-blue-50/30 transition-all">
+                                    <Link
+                                        href={`/fast-track?location=${flightData.arrival.iata}`}
+                                        className="w-full mt-4 py-2.5 border border-blue-100 rounded-lg text-xs font-semibold text-[#1570EF] uppercase tracking-wider hover:bg-blue-50/30 transition-all block text-center"
+                                    >
                                         Xem dịch vụ sân bay
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 {/* Local Time Card */}
