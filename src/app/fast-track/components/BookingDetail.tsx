@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
-import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
+import { getImageSrc, handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
 import { notFound, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -700,7 +700,7 @@ export default function BookingDetail() {
         <div className="overflow-hidden rounded-t-2xl">
           {data?.product?.image_location && (
             <Image
-              src={`${data?.product?.image_url}/${data?.product?.image_location}`}
+              src={getImageSrc(data?.product?.image_url, data?.product?.image_location)}
               alt={data?.product?.name || "Fast Track"}
               width={600}
               height={450}

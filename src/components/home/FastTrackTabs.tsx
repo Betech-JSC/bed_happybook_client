@@ -12,6 +12,7 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { getImageSrc } from "@/utils/Helper";
 
 export default function FastTrackTabs({
   title,
@@ -126,7 +127,7 @@ export default function FastTrackTabs({
                             <Link href={`/fast-track/${item.slug}`}>
                               <Image
                                 className="lg:group-hover:scale-105 ease-in-out w-full h-full duration-300 cursor-pointer object-cover"
-                                src={`${item.image_url}/${item.image_location}`}
+                                src={getImageSrc(item.image_url, item.image_location)}
                                 alt={item.name}
                                 width={320}
                                 height={320}

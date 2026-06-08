@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { buildSearch, renderTextContent } from "@/utils/Helper";
+import { buildSearch, getImageSrc, renderTextContent } from "@/utils/Helper";
 import { useSearchParams } from "next/navigation";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
@@ -207,7 +207,7 @@ export default function Search({
                       <Link href={`/fast-track/${item.slug}`}>
                         <Image
                           className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
-                          src={`${item.image_url}/${item.image_location}`}
+                          src={getImageSrc(item.image_url, item.image_location)}
                           alt={renderTextContent(item.name)}
                           width={360}
                           height={270}
