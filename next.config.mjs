@@ -100,6 +100,26 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "staging-happybook-cms.betech-digital.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "staging-happybook-cms.betech-digital.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "staging-happybook-api.betech-digital.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "staging-happybook-client.betech-digital.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "storage.googleapis.com",
         pathname: "/**",
       },

@@ -18,9 +18,17 @@ export default function DisplayImage({
   priority?: boolean;
   sizes?: string;
 }) {
-  const fullImageUrl = imagePath.startsWith("/")
-    ? `${cmsUrl}${imagePath}`
-    : `${cmsUrl}/${imagePath}`;
+  let fullImageUrl = "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    fullImageUrl = imagePath;
+  } else {
+    fullImageUrl = imagePath.startsWith("/")
+      ? `${cmsUrl}${imagePath}`
+      : `${cmsUrl}/${imagePath}`;
+  }
+
+  // Clean up any double slashes in the URL path (excluding the protocol prefix)
+  fullImageUrl = fullImageUrl.replace(/([^:]\/)\/+/g, "$1");
 
   return (
     <Image
