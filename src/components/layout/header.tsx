@@ -426,7 +426,7 @@ export default function Header() {
                     <span className="text-xl">✈️</span>
                     <span className="text-[#101828] font-medium text-[14px]">{t("tour_noi_dia")}</span>
                   </Link>
-                  <Link href="/tours/tour-quoc_te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                  <Link href="/tours/tour-quoc-te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
                     <span className="text-xl">✈️</span>
                     <span className="text-[#101828] font-medium text-[14px]">{t("tour_quoc_te")}</span>
                   </Link>
