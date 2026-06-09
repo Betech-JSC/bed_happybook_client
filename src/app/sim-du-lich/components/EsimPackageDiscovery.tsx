@@ -150,7 +150,6 @@ export default function EsimPackageDiscovery({
             showPricePresetFilters={showPricePresetFilters}
             sortMode={sortMode}
             onSortModeChange={handleSortModeChange}
-            packagesCount={totalPackages ?? packages.length}
           />
         </div>
 
