@@ -48,6 +48,7 @@ export default async function FastTrackCategory({ detail }: any) {
           </Breadcrumb>
           <Suspense>
             <Search
+              key={detail?.id}
               optionsFilter={filteredOptions}
               categoryDefault={detail?.id}
             />

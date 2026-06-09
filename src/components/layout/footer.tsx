@@ -237,7 +237,7 @@ export default async function Footer() {
                   href="/fast-track"
                   className={`block mt-3 ${styles.text_hover_default}`}
                 >
-                  {t("dich_vu_tai_san_bay")}
+                  {t("dua_don_xuat_nhap_canh")}
                 </Link>
                 <Link
                   href="/phong-cho-thuong-gia"

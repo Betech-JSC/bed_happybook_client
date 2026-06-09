@@ -156,9 +156,13 @@ export default function HeaderMobileMenu() {
                   <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <Link href="/fast-track" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
-                {t("dich_vu_dua_don_san_bay")}
-              </Link>
+              <div className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] text-[14px]">
+                <Link href="/fast-track" onClick={() => setIsMenuMbOpen(false)} className="font-medium text-[14px]">{t("dua_don_xuat_nhap_canh")}</Link>
+                <div className="flex flex-col mt-1 pl-3 space-y-2 border-l border-gray-200">
+                  <Link href="/fast-track/xuat-canh" onClick={() => setIsMenuMbOpen(false)} className="text-gray-500 hover:text-[#F27145] text-[13px]">{t("xuat_canh")}</Link>
+                  <Link href="/fast-track/nhap-canh" onClick={() => setIsMenuMbOpen(false)} className="text-gray-500 hover:text-[#F27145] text-[13px]">{t("nhap_canh")}</Link>
+                </div>
+              </div>
               <Link href="/phong-cho-thuong-gia" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
                 {t("phong_cho_thuong_gia")}
               </Link>

@@ -11,6 +11,9 @@ import { formatMetadata } from "@/lib/formatters";
 import { settingApi } from "@/api/Setting";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { VisaApi } from "@/api/Visa";
+import { ProductLocation } from "@/api/ProductLocation";
+import { getServerLang } from "@/lib/session";
 import {
   HomeHeroDesktopBackground,
   HomeHeroMobileBackground,
@@ -60,11 +63,22 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [airportsData, seo, t] = await Promise.all([
+  const language = await getServerLang();
+  const [airportsData, seo, t, visaOptions, locationsData] = await Promise.all([
     FlightApi.getCachedAirports(),
     settingApi.getCachedMetaSeo(),
     getServerT(),
+    VisaApi.getOptionsFilter(undefined, language).then(res => res?.payload?.data || []).catch(() => []),
+    ProductLocation.list(language).then(res => res?.payload?.data || []).catch(() => []),
   ]);
+
+  const comboLocations = locationsData?.length > 0
+    ? locationsData.map((opt: any) => ({
+      value: opt.id,
+      label: opt.name,
+    }))
+    : [];
+
   return (
     <Fragment>
       <WebsiteSchema />
@@ -74,7 +88,11 @@ export default async function Home() {
       <HomeHeroDesktopBackground />
 
       <Suspense fallback={null}>
-        <Search airportsData={airportsData} />
+        <Search
+          airportsData={airportsData}
+          visaOptionsFilter={visaOptions}
+          comboLocations={comboLocations}
+        />
       </Suspense>
 
       {/* Search Mobile */}
@@ -83,7 +101,11 @@ export default async function Home() {
           <HomeHeroMobileBackground />
           <div className="relative">
             <Suspense fallback={null}>
-              <SearchMobile airportsData={airportsData} />
+              <SearchMobile
+                airportsData={airportsData}
+                visaOptionsFilter={visaOptions}
+                comboLocations={comboLocations}
+              />
             </Suspense>
           </div>
         </div>

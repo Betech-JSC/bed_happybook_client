@@ -410,13 +410,20 @@ export default function Header() {
                   {t("dich_vu_tai_san_bay")}
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/fast-track.png" alt={t("dich_vu_dua_don_san_bay")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                    <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("dich_vu_dua_don_san_bay")}</div>
-                      <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("dua_don_san_bay_nhanh_chong_tien_loi")}</div>
+                  <div className="flex flex-col hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300">
+                    <Link href="/fast-track" className="!flex items-start gap-4 !h-auto">
+                      <img src="/icon/fast-track.png" alt={t("dua_don_xuat_nhap_canh")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                      <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
+                        <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("dua_don_xuat_nhap_canh")}</div>
+                        <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words mb-2">{t("dua_don_san_bay_nhanh_chong_tien_loi")}</div>
+                      </div>
+                    </Link>
+                    <div className="flex gap-4 pl-[58px]">
+                      <Link href="/fast-track/xuat-canh" className="text-blue-600 hover:text-blue-800 font-semibold text-[13px] hover:underline">{t("xuat_canh")}</Link>
+                      <span className="text-gray-300">|</span>
+                      <Link href="/fast-track/nhap-canh" className="text-blue-600 hover:text-blue-800 font-semibold text-[13px] hover:underline">{t("nhap_canh")}</Link>
                     </div>
-                  </Link>
+                  </div>
                   <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                     <img src="/icon/lounge.png" alt="Phòng chờ thương gia" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                     <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">

@@ -168,6 +168,7 @@ const headerStaticText: string[] = [
   "Tour nội địa",
   "Tour quốc tế",
   "Combo",
+  "Combo tiết kiệm",
   "Visa",
   "Bảo hiểm",
   "Định cư",
@@ -195,6 +196,9 @@ const headerStaticText: string[] = [
   "Sim du lịch quốc tế",
   "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
   "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
+  "Đưa đón xuất nhập cảnh",
+  "Xuất cảnh",
+  "Nhập cảnh",
 ];
 
 const footerStaticText: string[] = [
@@ -223,6 +227,8 @@ const footerStaticText: string[] = [
 ];
 
 const generalStaticText: string[] = [
+  "Tìm du thuyền",
+  "Nơi đi",
   "Chọn điểm đi",
   "Chọn điểm đến",
   "Từ",
