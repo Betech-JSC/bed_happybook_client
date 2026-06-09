@@ -738,14 +738,14 @@ const applyAmusementTicketAliases = (
   const amusementLabel =
     lang === "vi"
       ? translations["ve_vui_choi_hoat_dong"] ??
-        translations["ve_vui_choi"] ??
-        "Vé vui chơi & hoạt động"
+      translations["ve_vui_choi"] ??
+      "Vé vui chơi & hoạt động"
       : "Attraction tickets";
   const searchLabel =
     lang === "vi"
       ? translations["tim_ve_vui_choi_hoat_dong"] ??
-        translations["tim_ve_vui_choi"] ??
-        "Tìm vé vui chơi & hoạt động"
+      translations["tim_ve_vui_choi"] ??
+      "Tìm vé vui chơi & hoạt động"
       : "Search attraction tickets";
 
   return {

@@ -342,6 +342,7 @@ export default function Header() {
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
           <nav className="flex h-[26px] items-center space-x-5 xl:space-x-6">
+            {/* 1. Vé máy bay */}
             <Link
               href="/ve-may-bay"
               className={clsx(styles.header__menu_item, topNavItemClass, {
@@ -351,6 +352,7 @@ export default function Header() {
               {t("ve_may_bay")}
             </Link>
 
+            {/* 2. Khách sạn */}
             <Link
               href="/khach-san"
               className={clsx(styles.header__menu_item, topNavItemClass, {
@@ -360,27 +362,10 @@ export default function Header() {
               {t("khach_san")}
             </Link>
 
-            <Link
-              href="/du-thuyen"
-              className={clsx(styles.header__menu_item, topNavItemClass, {
-                [styles.active]: pathname.startsWith("/du-thuyen"),
-              })}
-            >
-              {t("du_thuyen")}
-            </Link>
-
-            <Link
-              href="/ve-vui-choi"
-              className={clsx(styles.header__menu_item, topNavItemClass, {
-                [styles.active]: pathname.startsWith("/ve-vui-choi"),
-              })}
-            >
-              {t("ve_vui_choi_hoat_dong")}
-            </Link>
-
+            {/* 3. Visa */}
             <div
               className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
-                [styles.active]: pathname.startsWith("/visa"),
+                [styles.active]: pathname.startsWith("/visa") || pathname.startsWith("/tu-van-nhan-visa"),
               })}
             >
               <span className="flex items-center gap-1">
@@ -406,45 +391,9 @@ export default function Header() {
               </div>
             </div>
 
+            {/* 4. Dịch vụ tại sân bay */}
             <div
               className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
-                [styles.active]: pathname.startsWith("/tours"),
-              })}
-            >
-              <span className="flex items-center gap-1">
-                <Link href="/tours">{t("Tours")}</Link>
-                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
-                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
-                  Tours
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <Link href="/tours/tour-noi-dia" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
-                    <span className="text-xl">✈️</span>
-                    <span className="text-[#101828] font-medium text-[14px]">{t("tour_noi_dia")}</span>
-                  </Link>
-                  <Link href="/tours/tour-quoc-te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
-                    <span className="text-xl">✈️</span>
-                    <span className="text-[#101828] font-medium text-[14px]">{t("tour_quoc_te")}</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <Link
-              href="/combo"
-              className={clsx(styles.header__menu_item, topNavItemClass, {
-                [styles.active]: pathname.startsWith("/combo"),
-              })}
-            >
-              {t("combo")}
-            </Link>
-
-            <div
-              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
                 [styles.active]: isAirportServiceActive,
               })}
             >
@@ -478,6 +427,76 @@ export default function Header() {
                 </div>
               </div>
             </div>
+
+            {/* 5. Vé vui chơi */}
+            <Link
+              href="/ve-vui-choi"
+              className={clsx(styles.header__menu_item, topNavItemClass, {
+                [styles.active]: pathname.startsWith("/ve-vui-choi"),
+              })}
+            >
+              {t("ve_vui_choi_hoat_dong")}
+            </Link>
+
+            {/* 6. Sim du lịch */}
+            <div
+              className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
+                [styles.active]: isSimDuLichMenuActive,
+              })}
+            >
+              <span className="flex items-center gap-1">
+                <Link href="/sim-du-lich">{t("sim_du_lich")}</Link>
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[240px] max-w-[calc(100vw-24px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+                  {t("sim_du_lich")}
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <Link href="/sim-viet-nam" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">🇻🇳</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("sim_du_lich_viet_nam")}</span>
+                  </Link>
+                  <Link href="/sim-du-lich/quoc-te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">✈️</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("sim_du_lich_quoc_te")}</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* 7. Tour */}
+            <div
+              className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
+                [styles.active]: pathname.startsWith("/tours"),
+              })}
+            >
+              <span className="flex items-center gap-1">
+                <Link href="/tours">{t("tours")}</Link>
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+                  Tours
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <Link href="/tours/tour-noi-dia" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">✈️</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("tour_noi_dia")}</span>
+                  </Link>
+                  <Link href="/tours/tour-quoc-te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">✈️</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("tour_quoc_te")}</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* 8. Bảo hiểm */}
             <Link
               href="/bao-hiem"
               className={clsx(styles.header__menu_item, topNavItemClass, {
@@ -487,14 +506,17 @@ export default function Header() {
               {t("bao_hiem")}
             </Link>
 
+            {/* 9. Du thuyền */}
             <Link
-              href="/sim-du-lich"
+              href="/du-thuyen"
               className={clsx(styles.header__menu_item, topNavItemClass, {
-                [styles.active]: isSimDuLichMenuActive,
+                [styles.active]: pathname.startsWith("/du-thuyen"),
               })}
             >
-              {t("sim_du_lich")}
+              {t("du_thuyen")}
             </Link>
+
+            {/* 10. Dành cho bạn */}
             <div
               className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass)}
             >

@@ -122,110 +122,131 @@ export default function HeaderMobileMenu() {
           className={`bg-white text-black overflow-y-scroll shadow-lg w-full h-full px-3`}
         >
           <div>
-            <p className="mt-3">
-              <strong>{t("dich_vu")}</strong>
-            </p>
-            <Link href="/ve-may-bay" className="block mt-3 hover:text-[#F27145] cursor-pointer">
+            {/* 1. Vé máy bay */}
+            <Link href="/ve-may-bay" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
               {t("ve_may_bay")}
             </Link>
-            <Link href="/khach-san" className="block mt-3 hover:text-[#F27145] cursor-pointer">
+
+            {/* 2. Khách sạn */}
+            <Link href="/khach-san" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
               {t("khach_san")}
             </Link>
-            <Link href="/du-thuyen" className="block mt-3 hover:text-[#F27145] cursor-pointer">
-              {t("du_thuyen")}
-            </Link>
-            <Link href="/ve-vui-choi" className="block mt-3 hover:text-[#F27145] cursor-pointer">
+
+            {/* 3. Visa */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[15px]">{t("visa")}</span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <Link href="/visa" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("danh_sach_visa_cac_nuoc")}
+              </Link>
+              <Link href="/tu-van-nhan-visa" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("tu_van_visa_mien_phi")}
+              </Link>
+            </div>
+
+            {/* 4. Dịch vụ tại sân bay */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[15px]">{t("dich_vu_tai_san_bay")}</span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <Link href="/fast-track" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("dich_vu_dua_don_san_bay")}
+              </Link>
+              <Link href="/phong-cho-thuong-gia" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("phong_cho_thuong_gia")}
+              </Link>
+            </div>
+
+            {/* 5. Vé vui chơi */}
+            <Link href="/ve-vui-choi" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
               {t("ve_vui_choi_hoat_dong")}
             </Link>
 
-            <div className="flex items-center justify-between mt-3">
-              <span className="font-medium">{t("visa")}</span>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            {/* 6. Sim du lịch */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[15px]">{t("sim_du_lich")}</span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <Link href="/sim-viet-nam" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("sim_du_lich_viet_nam")}
+              </Link>
+              <Link href="/sim-du-lich/quoc-te" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("sim_du_lich_quoc_te")}
+              </Link>
             </div>
-            <Link href="/visa" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("danh_sach_visa_cac_nuoc")}
-            </Link>
-            <Link href="/tu-van-nhan-visa" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("tu_van_visa_mien_phi")}
-            </Link>
 
-            <div className="flex items-center justify-between mt-3">
-              <span className="font-medium">{t("tours")}</span>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            {/* 7. Tour */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[15px]">{t("tours")}</span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <Link href="/tours/tour-noi-dia" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("tour_noi_dia")}
+              </Link>
+              <Link href="/tours/tour-quoc-te" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("tour_quoc_te")}
+              </Link>
             </div>
-            <Link href="/tours/tour-noi-dia" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("tour_noi_dia")}
-            </Link>
-            <Link href="/tours/tour-quoc-te" className="block mt-2 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("tour_quoc_te")}
-            </Link>
 
-            <Link href="/combo" className="block mt-3 hover:text-[#F27145] cursor-pointer">
-              {t("combo")}
+            {/* 8. Bảo hiểm */}
+            <Link href="/bao-hiem" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
+              {t("bao_hiem")}
             </Link>
 
-          </div>
+            {/* 9. Du thuyền */}
+            <Link href="/du-thuyen" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
+              {t("du_thuyen")}
+            </Link>
 
-          <div className="mt-6">
-            <div className="flex items-center justify-between">
-              <strong>{t("dich_vu_tai_san_bay")}</strong>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            {/* 10. Dành cho bạn */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[15px]">{t("danh_cho_ban")}</span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <Link href="/dang-ky-ctv" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("dang_ky_ctv")}
+              </Link>
+              {GeneralInforPaths.map(
+                (item: { title: string; slug: string; url: string }, index: number) => (
+                  <Link
+                    key={index}
+                    href={item.url}
+                    className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]"
+                  >
+                    {t(toSnakeCase(item.title))}
+                  </Link>
+                )
+              )}
             </div>
-            <Link href="/fast-track" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("dich_vu_dua_don_san_bay")}
-            </Link>
-            <Link href="/phong-cho-thuong-gia" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">
-              {t("phong_cho_thuong_gia")}
-            </Link>
-          </div>
 
-          <Link href="/bao-hiem" className="block mt-6 hover:text-[#F27145] cursor-pointer">
-            <strong>{t("bao_hiem")}</strong>
-          </Link>
-
-          <Link href="/sim-du-lich" className="block mt-6 hover:text-[#F27145] cursor-pointer">
-            <strong>{t("sim_du_lich")}</strong>
-          </Link>
-
-          <div className="mt-6">
-            <div className="flex items-center justify-between">
-              <strong>{t("ve_happy_book")}</strong>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            {/* Về Happy Book */}
+            <div className="mt-6 border-t border-gray-100 pt-4 mb-6">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[15px] text-gray-500">{t("ve_happy_book")}</span>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="#9ca3af" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <Link href="/ve-chung-toi" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">{t("ve_chung_toi")}</Link>
+              <Link href="/tin-tuc" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">{t("tin_tuc")}</Link>
+              <Link href="/lien-he" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">{t("lien_he_chung_toi")}</Link>
             </div>
-            <Link href="/ve-chung-toi" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("ve_chung_toi")}</Link>
-            <Link href="/tin-tuc" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("tin_tuc")}</Link>
-            <Link href="/lien-he" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("lien_he_chung_toi")}</Link>
-            <Link href="/dang-ky-ctv" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("dang_ky_ctv")}</Link>
-          </div>
-
-          <div className="mt-6 mb-6">
-            <div className="flex items-center justify-between">
-              <strong>{t("danh_cho_ban")}</strong>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="#283448" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <Link href="/visa" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("danh_sach_visa_cac_nuoc")}</Link>
-            <Link href="/tu-van-nhan-visa" className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer">{t("tu_van_visa")}</Link>
-            {GeneralInforPaths.map(
-              (item: { title: string; slug: string; url: string }, index: number) => (
-                <Link
-                  key={index}
-                  href={item.url}
-                  className="block mt-3 pl-3 hover:text-[#F27145] cursor-pointer"
-                >
-                  {t(toSnakeCase(item.title))}
-                </Link>
-              )
-            )}
           </div>
         </div>
       </div>
