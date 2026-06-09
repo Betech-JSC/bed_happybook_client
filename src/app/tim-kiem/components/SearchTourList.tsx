@@ -10,6 +10,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import styles from "@/styles/styles.module.scss";
+import { getImageSrc } from "@/utils/Helper";
 
 export default function SearchTourList({ tours }: any) {
   return (
@@ -66,7 +67,7 @@ export default function SearchTourList({ tours }: any) {
                     <Link href={`/tours/${product.slug}`}>
                       <Image
                         className=" hover:scale-110 ease-in duration-300 cursor-pointer	object-cover"
-                        src={`${product.image_url}/${product.image_location}`}
+                        src={getImageSrc(product.image_url, product.image_location)}
                         alt={product.name}
                         width={320}
                         height={320}

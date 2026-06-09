@@ -8,7 +8,7 @@ import "swiper/css";
 import "photoswipe/style.css";
 import Link from "next/link";
 import { useLightbox } from "@/hooks/useLightbox";
-import { getImageSize } from "@/utils/Helper";
+import { getImageSize, getImageSrc } from "@/utils/Helper";
 
 type Props = {
   product: {
@@ -77,7 +77,8 @@ export default function ProductGallery({ product }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [mainSwiper, setMainSwiper] = useState<any>(null);
   const [lightboxItems, setLightboxItems] = useState<any[]>([]);
-  const DEFAULT_IMAGE_SRC = "/images/default-image.png";
+  const [brokenImageIndexes, setBrokenImageIndexes] = useState<Record<number, boolean>>({});
+  const DEFAULT_IMAGE_SRC = "/default-image.png";
   const galleryId = useId().replace(/:/g, "_");
   const gallery = useMemo(() => {
     const list = (product?.gallery ?? []).filter(Boolean);
@@ -102,8 +103,7 @@ export default function ProductGallery({ product }: Props) {
     const prepareGallery = async () => {
       const items = await Promise.all(
         gallery.map(async (img: any) => {
-          const rawSrc = `${img.image_url || ""}/${img.image || ""}`;
-          const fullSrc = rawSrc.replace(/(^|[^:])\/\/+/g, "$1/");
+          const fullSrc = getImageSrc(img.image_url, img.image);
           const isVideo = isVideoFile(fullSrc);
           const isImage = isImageFile(fullSrc);
           
@@ -277,11 +277,14 @@ export default function ProductGallery({ product }: Props) {
                 >
                   <Image
                     className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-                    src={fullSrc}
+                    src={brokenImageIndexes[index] ? DEFAULT_IMAGE_SRC : fullSrc}
                     alt={`Image ${index + 1}`}
                     width={845}
                     height={450}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    onError={() =>
+                      setBrokenImageIndexes((prev) => ({ ...prev, [index]: true }))
+                    }
                   />
                 </Link>
               )}
@@ -347,10 +350,13 @@ export default function ProductGallery({ product }: Props) {
                   ) : (
                     <Image
                       className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-                      src={item.src}
+                      src={brokenImageIndexes[index] ? DEFAULT_IMAGE_SRC : item.src}
                       alt={`Thumb ${index + 1}`}
                       width={135}
                       height={120}
+                      onError={() =>
+                        setBrokenImageIndexes((prev) => ({ ...prev, [index]: true }))
+                      }
                     />
                   )}
                 </SwiperSlide>

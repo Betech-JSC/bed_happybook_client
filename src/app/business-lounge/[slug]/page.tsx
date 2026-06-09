@@ -7,18 +7,19 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { ProductCategoryApi } from "@/api/ProductCategory";
 import BusinessLoungeDetail from "@/app/business-lounge/components/BusinessLoungeDetail";
 import BusinessLoungeCategory from "@/app/business-lounge/components/BusinessLoungeCategory";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
-  let data = null;
+  const language = await getServerLang();
+  let data = (await ProductBusinessLoungeApi.detailBySlug(slug, language))
+    ?.payload?.data as any;
 
-  data = (await ProductCategoryApi.detail("business-lounge", slug))?.payload
-    ?.data as any;
-
-  if (!data) {
-    const resDetail = await ProductBusinessLoungeApi.detailBySlug(slug);
-    data = resDetail?.payload.data;
-    if (data) data.alias = data?.slug;
+  if (data) {
+    data.alias = data?.slug;
+  } else {
+    data = (await ProductCategoryApi.detail("business-lounge", slug, language))
+      ?.payload?.data as any;
   }
 
   return formatMetadata({
@@ -56,12 +57,21 @@ export default async function BusinessLoungeAliasPage({
   searchParams: { [key: string]: string | undefined };
 }) {
   const { slug } = params;
+  const language = await getServerLang();
+  const detail = (await ProductBusinessLoungeApi.detailBySlug(slug, language))
+    ?.payload?.data as any;
+
+  if (detail) {
+    return <BusinessLoungeDetail alias={slug} searchParams={searchParams} />;
+  }
+
   const detailCate = (
-    await ProductCategoryApi.detail("business-lounge", slug)
+    await ProductCategoryApi.detail("business-lounge", slug, language)
   )?.payload?.data as any;
-  return !detailCate ? (
-    <BusinessLoungeDetail alias={slug} searchParams={searchParams} />
-  ) : (
+
+  return detailCate ? (
     <BusinessLoungeCategory detail={detailCate} />
+  ) : (
+    <BusinessLoungeDetail alias={slug} searchParams={searchParams} />
   );
 }

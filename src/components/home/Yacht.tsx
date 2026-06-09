@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { HomeApi } from "@/api/Home";
 import YachtTabs from "./YachtTabs";
+import { getServerLang } from "@/lib/session";
 
 export default async function HomeYacht() {
-  const data = ((await HomeApi.index("yacht"))?.payload?.data as any) ?? [];
+  const language = await getServerLang();
+  const data = ((await HomeApi.index("yacht", language))?.payload?.data as any) ?? [];
   if (!data?.length) return;
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">

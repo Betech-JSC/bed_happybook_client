@@ -1,5 +1,5 @@
 "use client";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrencyFromVnd, isVndCurrency } from "@/lib/formatters";
 import { displayProductPrice, toSnakeCase } from "@/utils/Helper";
 import { isEmpty } from "lodash";
 import { Fragment } from "react";
@@ -20,6 +20,13 @@ export default function DisplayPrice({
 }) {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const shouldConvertVndToUsd = language === "en" && isVndCurrency(currency);
+  const formattedPrice = shouldConvertVndToUsd
+    ? formatCurrencyFromVnd(price, language)
+    : !isEmpty(currency)
+      ? displayProductPrice(price, currency)
+      : formatCurrencyFromVnd(price, language);
+
   return (
     <Fragment>
       {price > 0 ? (
@@ -33,11 +40,7 @@ export default function DisplayPrice({
               className
             )}
           >
-            {!isEmpty(currency) ? (
-              <>{displayProductPrice(price, currency)}</>
-            ) : (
-              <>{formatCurrency(price, language)}</>
-            )}
+            {formattedPrice}
           </span>
         </>
       ) : (

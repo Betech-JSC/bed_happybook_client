@@ -281,6 +281,37 @@ const getImageSize = (
   });
 };
 
+const PLACEHOLDER_IMAGE = "/default-image.png";
+
+const getImageSrc = (
+  url?: string | null,
+  location?: string | null,
+  fallback: string = PLACEHOLDER_IMAGE
+) => {
+  const sourceUrl = (url ?? "").trim();
+  const sourceLocation = (location ?? "").trim();
+
+  if (!sourceUrl && !sourceLocation) {
+    return fallback;
+  }
+
+  if (/^https?:\/\//i.test(sourceLocation)) {
+    return sourceLocation;
+  }
+
+  if (/^https?:\/\//i.test(sourceUrl) && !sourceLocation) {
+    return sourceUrl;
+  }
+
+  if (!sourceUrl || !sourceLocation) {
+    return fallback;
+  }
+
+  const normalizedUrl = sourceUrl.replace(/\/+$/, "");
+  const normalizedLocation = sourceLocation.replace(/^\/+/, "");
+  return `${normalizedUrl}/${normalizedLocation}`.replace(/(^|[^:])\/\/+/g, "$1/");
+};
+
 const getDefaultFormDataSearchFlights = (
   searchParams: URLSearchParams,
   airportDefault?: {
@@ -354,5 +385,6 @@ export {
   extractSlugAndId,
   CheckIsMobileDevice,
   getImageSize,
+  getImageSrc,
   getDefaultFormDataSearchFlights,
 };

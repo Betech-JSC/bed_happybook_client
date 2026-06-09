@@ -52,6 +52,8 @@ const resolveCategoryHref = (category: SimDuLichCategory) =>
 const resolveSidebarTitle = (category: SimDuLichCategory, t: (text: string, fallback?: string) => string) =>
   category === "viet-nam" ? t("Nhà mạng", "Nhà mạng") : t("Quốc gia", "Quốc gia");
 
+const stripHtml = (value: string) => value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
 export default function EsimProductPage({
   footerContent,
   cmsPageContent,
@@ -100,6 +102,11 @@ export default function EsimProductPage({
   });
 
   const packageFooterContent = catalog.selectedPackage?.footerContent?.trim() || "";
+  const packageDetailSummary =
+    stripHtml(packageFooterContent) ||
+    catalog.selectedPackage?.subtitle ||
+    catalog.selectedPackage?.coverage ||
+    "";
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [actionBlockNode, setActionBlockNode] = useState<HTMLDivElement | null>(null);
   const actionBlockRef = useCallback((node: HTMLDivElement | null) => {
@@ -219,14 +226,19 @@ export default function EsimProductPage({
           destinationOptions={catalog.sidebarOptions}
           selectedDestinationLabels={catalog.selectedDestinationLabels}
           onToggleDestinationLabel={catalog.handleToggleDestinationLabel}
+          onDestinationLabelsChange={catalog.setSelectedDestinationLabels}
+          operatorOptions={catalog.filters.operators}
+          selectedOperatorLabels={catalog.selectedOperatorLabels}
+          onToggleOperatorLabel={catalog.handleToggleOperatorLabel}
           onSelectDestinationLabel={catalog.handleSelectDestinationLabel}
           onSelectPackageFilterSku={catalog.handleSelectPackageFilterSku}
           packageQuery={catalog.packageQuery}
           onPackageQueryChange={catalog.setPackageQuery}
-          priceRange={catalog.priceRange}
-          priceBounds={catalog.priceBounds}
-          onPriceRangeChange={catalog.setPriceRange}
-          showPricePresetFilters={false}
+          sortMode={catalog.sortMode}
+          onSortModeChange={catalog.setSortMode}
+          totalPackages={catalog.totalPackages}
+          hasMorePackages={catalog.hasMorePackages}
+          onLoadMorePackages={catalog.handleLoadMorePackages}
           onOpenModal={() => catalog.setShowModal(true)}
           onSelectPackage={catalog.handleSelectPackage}
           onSelectSkuByValidity={catalog.handleSelectSkuByValidity}
@@ -279,9 +291,14 @@ export default function EsimProductPage({
               <h2 className="text-xl font-bold text-midnight-ink">
                 {catalog.selectedPackage?.destination || t("Thông tin gói")}
               </h2>
-              <p className="mt-2 text-sm leading-7 text-steel-secondary">
-                {catalog.selectedPackage?.subtitle || catalog.selectedPackage?.coverage || ""}
-              </p>
+              {packageFooterContent ? (
+                <div
+                  className="mt-2 space-y-3 text-sm leading-7 text-steel-secondary"
+                  dangerouslySetInnerHTML={{ __html: packageFooterContent }}
+                />
+              ) : (
+                <p className="mt-2 text-sm leading-7 text-steel-secondary">{packageDetailSummary}</p>
+              )}
             </div>
           </div>
 
@@ -319,16 +336,6 @@ export default function EsimProductPage({
       {isDetailPage ? (
         <div className="bg-white">
           <div className={detailContainerClassName}>
-            {packageFooterContent ? (
-              <section className="mt-8 rounded-2xl border border-slate-200 bg-gray-50 p-8">
-                <h3 className="mb-3 text-sm font-bold text-midnight-ink">{t("Nội dung")}</h3>
-                <div
-                  className="space-y-3 text-sm leading-relaxed text-steel-secondary"
-                  dangerouslySetInnerHTML={{ __html: packageFooterContent }}
-                />
-              </section>
-            ) : null}
-
             {footerContent ? <div className="my-8">{footerContent}</div> : null}
           </div>
         </div>

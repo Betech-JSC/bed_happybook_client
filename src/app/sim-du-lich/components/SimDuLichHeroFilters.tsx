@@ -169,11 +169,11 @@ export default function SimDuLichHeroFilters() {
   );
 
   const selectedDestinationOption =
-    destinationSelectOptions.find((option) => selectedDestinationLabels.includes(option.displayLabel)) || null;
+    destinationSelectOptions.find((option) => selectedDestinationLabels.includes(String(option.value))) || null;
 
   const handleDestinationChange = (option: SingleValue<DestinationSelectOption>) => {
-    const selectedLabel = option?.displayLabel ?? null;
-    handleSelectDestinationLabel(selectedLabel);
+    const selectedValue = option?.value ? String(option.value) : null;
+    handleSelectDestinationLabel(selectedValue);
   };
 
   const handleSearch = () => {
