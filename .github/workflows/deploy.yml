@@ -24,6 +24,17 @@ jobs:
       - name: 📦 Install Dependencies
         run: yarn install --frozen-lockfile
 
+      - name: 🔑 Fetch .env from VPS
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no -P ${{ vars.VPS_PORT }} -i ~/.ssh/id_rsa ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/var/www/bed_happybook_client/.env .env || echo "⚠️ Warning: No .env file found on VPS. Falling back to default env variables."
+          if [ -f .env ]; then
+            echo "✅ Loaded environment variables keys from VPS:"
+            cut -d'=' -f1 .env
+          fi
+
       - name: 🔨 Build Next.js Application
         # Nếu build Next.js cần biến môi trường tĩnh, bạn khai báo ở đây:
         env:
