@@ -123,14 +123,14 @@ export default function FastTrackTabs({
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                       >
                         <div className="relative overflow-hidden border-solid border-2 border-[#EAECF0] rounded-2xl bg-white group">
-                          <div className="relative overflow-hidden aspect-[1/1]">
+                          <div className="relative overflow-hidden aspect-[16/9] bg-white">
                             <Link href={`/fast-track/${item.slug}`}>
                               <Image
-                                className="lg:group-hover:scale-105 ease-in-out w-full h-full duration-300 cursor-pointer object-cover"
+                                className="lg:group-hover:scale-105 ease-in-out w-full h-full duration-300 cursor-pointer object-contain"
                                 src={getImageSrc(item.image_url, item.image_location)}
                                 alt={item.name}
-                                width={320}
-                                height={320}
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                               />
                             </Link>
                           </div>
