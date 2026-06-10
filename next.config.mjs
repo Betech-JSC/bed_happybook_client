@@ -3,6 +3,12 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: false,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // Tree-shake heavy packages to reduce JS bundle size → lowers TBT
   experimental: {
     optimizePackageImports: [

@@ -6,26 +6,48 @@ on:
       - master
 
 jobs:
-  deploy:
-    name: Deploy to VPS
+  build-and-deploy:
+    name: Build & Deploy to VPS
     runs-on: ubuntu-latest
     environment: Production
 
     steps:
-      - name: 🐛 Debug Information
-        run: |
-          echo "🔀 Branch: ${{ github.ref_name }}"
-          echo "📝 Commit: ${{ github.sha }}"
-          echo "👤 Actor: ${{ github.actor }}"
-          echo "📦 Repository: ${{ github.repository }}"
-          echo "🏷️ Event: ${{ github.event_name }}"
-          echo "🕐 Timestamp: $(date +'%Y-%m-%d %H:%M:%S %Z')"
-          echo "🌍 Environment: Production"
-          echo "🖥️ VPS Host: ${{ vars.VPS_HOST }}"
-          echo "👤 VPS User: ${{ vars.VPS_USERNAME }}"
-          echo "🔌 VPS Port: ${{ vars.VPS_PORT }}"
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
 
-      - name: 🔐 Deploy via SSH
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Hoặc phiên bản Node trên VPS của bạn
+          cache: 'yarn'
+
+      - name: 📦 Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔨 Build Next.js Application
+        # Nếu build Next.js cần biến môi trường tĩnh, bạn khai báo ở đây:
+        env:
+          NEXT_PUBLIC_API_ENDPOINT: https://api.happybooktravel.com/api/v1
+        run: yarn build
+
+      - name: 🗜️ Compress Build Files
+        # Nén các thư mục cần thiết để chạy Next.js: .next, public, package.json, yarn.lock, config
+        run: |
+          tar -czf deploy.tar.gz .next public package.json yarn.lock next.config.mjs
+
+      - name: 📤 Upload Build Archive to VPS
+        # Sử dụng SCP để đẩy file nén lên thư mục tạm trên VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.VPS_HOST }}
+          username: ${{ vars.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ vars.VPS_PORT }}
+          source: "deploy.tar.gz"
+          target: "/var/www/bed_happybook_client"
+
+      - name: 🔐 Extract and Restart PM2 via SSH
+        # SSH vào giải nén và restart PM2
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ vars.VPS_HOST }}
@@ -34,15 +56,13 @@ jobs:
           port: ${{ vars.VPS_PORT }}
           script: |
             cd /var/www/bed_happybook_client
+            
+            # Giải nén đè lên thư mục hiện tại
+            tar -xzf deploy.tar.gz -C .
+            rm deploy.tar.gz
 
-            # Force sync code từ GitHub — CHỈ ghi đè file tracked
-            # KHÔNG dùng git clean → bảo toàn .env và mọi file hệ thống
-            git fetch origin master
-            git reset --hard origin/master
+            # Cài đặt lại các package phục vụ production (nhanh và nhẹ hơn)
+            yarn install --production --prefer-offline
 
-            # Cài đặt dependencies và build
-            yarn install
-            yarn build
-
-            # Restart PM2
-            pm2 restart happybook
+            # Reload PM2 (Zero-downtime reload) with fallback
+            pm2 reload happybook || pm2 restart happybook
