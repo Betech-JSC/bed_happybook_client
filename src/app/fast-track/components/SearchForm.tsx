@@ -31,7 +31,6 @@ export default function SearchForm() {
   const [isLoading, setIsLoading] = useState(false);
   const isFetchedRef = useRef(false);
   const lastFetchedDateRef = useRef<string | null>(null);
-  const hasOpenedRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -80,9 +79,7 @@ export default function SearchForm() {
   }, [departureDate]);
 
   useEffect(() => {
-    if (hasOpenedRef.current) {
-      fetchData();
-    }
+    fetchData();
   }, [departureDate, fetchData]);
 
   useEffect(() => {
@@ -150,12 +147,6 @@ export default function SearchForm() {
                 components={{
                   IndicatorSeparator: () => null,
                   DropdownIndicator: () => null,
-                }}
-                onMenuOpen={() => {
-                  if (!hasOpenedRef.current) {
-                    hasOpenedRef.current = true;
-                    fetchData();
-                  }
                 }}
                 isLoading={isLoading}
               />
