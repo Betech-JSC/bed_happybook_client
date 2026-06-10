@@ -87,7 +87,7 @@ const ProductEsimApi = {
     customer_id?: number;
     source?: string;
     notes?: string;
-  }, locale?: string) => http.post<any>(`${path}/checkout`, body, langHeader(locale)),
+  }, locale?: string) => http.post<any>(`${path}/checkout`, body, langHeader(locale), 60000),
   paypalCaptureOrder: (body: {
     order_code?: string;
     paypal_order_id?: string;
