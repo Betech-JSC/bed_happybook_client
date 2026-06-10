@@ -88,7 +88,7 @@ export default function EsimPackageDiscoveryList({
     if (showInternationalFilters) {
       return (
         <div className="space-y-0">
-          {sortedPackages.map((pkg) => {
+          {sortedPackages.map((pkg, index) => {
             const cheapest = findCheapestVariant(pkg, activeLocale);
             const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
             const isSelectable = cheapest ? isEsimVariantSelectable(cheapest, activeLocale) : false;
@@ -116,7 +116,7 @@ export default function EsimPackageDiscoveryList({
                     isActive ? "ring-2 ring-orange-100" : ""
                   } ${!isSelectable ? "cursor-not-allowed opacity-50" : ""}`}
                 >
-                  <div className="relative w-full overflow-hidden rounded-xl lg:w-5/12">
+                  <div className="relative w-full overflow-hidden rounded-xl lg:w-[280px] lg:shrink-0">
                     <div
                       className={`relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-full ${
                         avatarUrl ? "border border-slate-200 bg-white shadow-sm" : ""
@@ -134,6 +134,7 @@ export default function EsimPackageDiscoveryList({
                           fill
                           sizes="(max-width: 1024px) 100vw, 42vw"
                           className="object-cover object-top opacity-100"
+                          priority={index < 2}
                         />
                       ) : null}
                       {avatarUrl ? null : (
@@ -172,7 +173,7 @@ export default function EsimPackageDiscoveryList({
                     </div>
                   </div>
 
-                  <div className="mt-4 flex w-full flex-col justify-between lg:mt-0 lg:w-7/12">
+                  <div className="mt-4 flex w-full flex-col justify-between lg:mt-0 lg:flex-1">
                     <div className="space-y-3">
                       <div className="space-y-1.5">
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hb-coral">eSIM</p>
@@ -221,7 +222,7 @@ export default function EsimPackageDiscoveryList({
 
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {sortedPackages.map((pkg) => {
+        {sortedPackages.map((pkg, index) => {
           const cheapest = findCheapestVariant(pkg, activeLocale);
           const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
           const isSelectable = cheapest ? isEsimVariantSelectable(cheapest, activeLocale) : false;
@@ -256,6 +257,7 @@ export default function EsimPackageDiscoveryList({
                       width={56}
                       height={56}
                       className="h-full w-full object-cover object-top"
+                      priority={index < 4}
                     />
                   </div>
                 ) : null}
@@ -282,7 +284,7 @@ export default function EsimPackageDiscoveryList({
 
   if (!showInternationalFilters) {
     return (
-      <div className="pt-8">
+      <div>
         <div className="relative mb-6">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -300,7 +302,7 @@ export default function EsimPackageDiscoveryList({
   }
 
   return (
-    <div className="pt-8">
+    <div>
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-midnight-ink lg:text-4xl">{pageTitle || t("Sim du lịch quốc tế")}</h1>
