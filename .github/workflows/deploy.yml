@@ -64,5 +64,5 @@ jobs:
             # Cài đặt lại các package phục vụ production (nhanh và nhẹ hơn)
             yarn install --production --prefer-offline
 
-            # Reload PM2 (Zero-downtime reload)
-            pm2 reload happybook
+            # Reload PM2 (Zero-downtime reload) with fallback
+            pm2 reload happybook || pm2 restart happybook
