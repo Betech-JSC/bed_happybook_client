@@ -22,7 +22,7 @@ import { useSimDuLichStaticText } from "./useSimDuLichStaticText";
 type Locale = "vi" | "en";
 type DetailAccordionKey = "compatibility" | "refund" | "faq";
 type SidebarFilterMode = "destination" | "operator";
-const ESIM_LIST_PAGE_SIZE = 36;
+const ESIM_LIST_PAGE_SIZE = 12;
 
 type Args = {
   cmsPageContent: EsimCmsPageContent | null | undefined;
@@ -87,6 +87,17 @@ export function useEsimCatalog({
 
   const debouncedQuery = useDeferredValue(query.trim());
   const debouncedPackageQuery = useDeferredValue(packageQuery.trim());
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(query.trim());
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
 
   useEffect(() => {
     selectedPackageSlugRef.current = selectedPackageSlug;
@@ -165,7 +176,7 @@ export function useEsimCatalog({
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedQuery, selectedRegionId, selectedDestinationLabels, sortMode]);
+  }, [debouncedSearchQuery, selectedRegionId, selectedDestinationLabels, sortMode]);
 
   useEffect(() => {
     if (!initialCategory || !filtersLoaded) return;
@@ -213,7 +224,7 @@ export function useEsimCatalog({
 
       try {
         const result = await loadEsimPackagesPage({
-          q: debouncedQuery || undefined,
+          q: debouncedSearchQuery || undefined,
           region_id: selectedRegionId || undefined,
           destination_ids: sidebarFilterMode === "destination" ? selectedDestinationLabels : [],
           operators: sidebarFilterMode === "operator" ? selectedOperatorLabels : [],
@@ -294,7 +305,7 @@ export function useEsimCatalog({
     };
   }, [
     activeLocale,
-    debouncedQuery,
+    debouncedSearchQuery,
     debouncedPackageQuery,
     hasInitialPackages,
     initialPackageSlug,
