@@ -24,12 +24,12 @@ export default function ImageGallery({ detail }: any) {
         spaceBetween={10}
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Thumbs]}
-        className="main-swiper w-full h-[300px] md:h-[450px] rounded-lg"
+        className="main-swiper w-full h-auto aspect-[16/9] md:h-[450px] md:aspect-auto rounded-lg"
       >
         {gallery.map((item: any, index: number) => (
           <SwiperSlide key={index}>
             <Image
-              className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
+              className="cursor-pointer w-full h-auto aspect-[16/9] md:h-[450px] md:aspect-auto rounded-lg hover:scale-110 ease-in duration-300 object-contain md:object-cover"
               src={getImageSrc(item.image_url, item.image)}
               alt="Ảnh Fast Track"
               width={845}

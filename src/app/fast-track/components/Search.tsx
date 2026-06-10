@@ -201,18 +201,16 @@ export default function Search({
                 return (
                   <div key={index} className="rounded-xl">
                     <div
-                      className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
+                      className={`w-full relative overflow-hidden rounded-t-xl bg-white transition-opacity duration-700 aspect-[16/9] ${translatedText ? "opacity-100" : "opacity-0"
                         }`}
                     >
                       <Link href={`/fast-track/${item.slug}`}>
                         <Image
-                          className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
+                          className="hover:scale-110 ease-in duration-300 cursor-pointer object-contain"
                           src={getImageSrc(item.image_url, item.image_location)}
                           alt={renderTextContent(item.name)}
-                          width={360}
-                          height={270}
+                          fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          style={{ height: 217 }}
                         />
                       </Link>
                     </div>
