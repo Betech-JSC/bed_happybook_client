@@ -325,6 +325,40 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
             </div>
             <span className="text-xs mt-2 font-semibold">{t("combo")}</span>
           </Link>
+          <a
+            href="https://zalo.me/2451421179976954585/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-2xl text-center h-[104px] block content-center bg-[#00000054] text-white"
+          >
+            <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
+              <Image
+                src="/icon/Ticket.svg"
+                alt="Vé tàu"
+                width={20}
+                height={20}
+                className="rounded-full mx-auto"
+              />
+            </div>
+            <span className="px-1 mt-2 text-xs font-semibold block">{t("ve_tau") || "Vé tàu"}</span>
+          </a>
+          <a
+            href="https://zalo.me/2451421179976954585/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-2xl text-center h-[104px] block content-center bg-[#00000054] text-white"
+          >
+            <div className="w-10 h-10 bg-[#175CD3] rounded-full mt-2 mx-auto content-center">
+              <Image
+                src="/icon/bus.svg"
+                alt="Thuê xe"
+                width={20}
+                height={20}
+                className="rounded-full mx-auto"
+              />
+            </div>
+            <span className="px-1 mt-2 text-xs font-semibold block">{t("thue_xe") || "Thuê xe"}</span>
+          </a>
         </div>
 
         {/* Tab Forms Container */}

@@ -176,7 +176,7 @@ const headerStaticText: string[] = [
   "Dịch vụ tiện ích",
   "Dịch vụ tại sân bay",
   "Dịch vụ đưa đón sân bay",
-  "Đưa đón sân bay nhanh chóng, tiện lợi",
+  "Hỗ trợ xuất nhập cảnh nhanh, rút ngắn thời gian chờ hàng.",
   "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Dành cho bạn",
   "Đăng ký CTV",
@@ -196,9 +196,13 @@ const headerStaticText: string[] = [
   "Sim du lịch quốc tế",
   "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
   "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
-  "Đưa đón xuất nhập cảnh",
+  "Đón tiễn ưu tiên (FastTrack)",
   "Xuất cảnh",
   "Nhập cảnh",
+  "Vé tàu",
+  "Thuê xe",
+  "Đưa đón sân bay",
+  "Xe riêng đưa đón tận nơi, đúng giờ, chu đáo 24/7.",
 ];
 
 const footerStaticText: string[] = [

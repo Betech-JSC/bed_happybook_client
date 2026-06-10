@@ -108,7 +108,7 @@ export default function SearchForm() {
             className="text-[18px] font-semibold text-black"
             data-translate="true"
           >
-            {t("dua_don_xuat_nhap_canh")}
+            {t("don_tien_uu_tien_fast_track")}
           </span>
         </label>
       </div>

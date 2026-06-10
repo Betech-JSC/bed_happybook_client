@@ -31,7 +31,7 @@ function ComboSearchForm({ locations }: { locations: any[] }) {
   const toOptions = locations.filter((opt: any) => opt.label !== query?.from);
 
   return (
-    <div className="mt-8 flex flex-col lg:flex-row lg:space-x-4 space-y-3 items-end justify-between">
+    <div className="mt-2 flex flex-col lg:flex-row lg:space-x-4 space-y-3 items-end justify-between">
       <div className="relative w-full lg:w-[40%]">
         <label htmlFor="from" className="font-medium text-gray-700 block mb-1">
           {t("diem_di")}
@@ -123,13 +123,13 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
         <h2 className="text-3xl text-white font-bold text-center mb-12 relative top-[-40px]">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
         </h2>
-        <div className="min-h-[192px] h-fit pt-[64px] p-6 mx-auto bg-white rounded-lg shadow-lg relative">
+        <div className="min-h-[192px] h-fit pt-[42px] p-6 mx-auto bg-white rounded-lg shadow-lg relative">
           <div className="absolute -top-[52px] left-1/2 -translate-x-1/2 flex flex-col items-center w-full max-w-[1020px] min-w-[820px] gap-1 bg-[#000000] p-2 rounded-3xl shadow-lg z-10">
             {/* Hàng 1: Sản phẩm nổi bật */}
-            <div className="flex w-full gap-2">
+            <div className="flex justify-center gap-2 w-full">
               {/* Tab 0 */}
               <button
-                className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-3 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 0 ? "bg-[#1570EF]" : "bg-transparent"
+                className={`flex items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 0 ? "bg-[#1570EF]" : "bg-transparent"
                   }`}
                 onClick={() => setActiveTab(0)}
               >
@@ -146,7 +146,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               {/* Tab 1 */}
               <button
                 onClick={() => setActiveTab(1)}
-                className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-3 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 1 ? "bg-[#1570EF]" : "bg-transparent"
+                className={`flex items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 1 ? "bg-[#1570EF]" : "bg-transparent"
                   }`}
               >
                 <Image
@@ -162,7 +162,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               {/* Tab 2 */}
               <button
                 onClick={() => setActiveTab(2)}
-                className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-3 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 2 ? "bg-[#1570EF]" : "bg-transparent"
+                className={`flex items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 2 ? "bg-[#1570EF]" : "bg-transparent"
                   }`}
               >
                 <Image
@@ -178,7 +178,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               {/* Tab 3 */}
               <button
                 onClick={() => setActiveTab(3)}
-                className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-3 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 3 ? "bg-[#1570EF]" : "bg-transparent"
+                className={`flex items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 3 ? "bg-[#1570EF]" : "bg-transparent"
                   }`}
               >
                 <Image
@@ -194,7 +194,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               {/* Tab 4 */}
               <button
                 onClick={() => setActiveTab(4)}
-                className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-3 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 4 ? "bg-[#1570EF]" : "bg-transparent"
+                className={`flex items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 4 ? "bg-[#1570EF]" : "bg-transparent"
                   }`}
               >
                 <Image
@@ -210,7 +210,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               {/* Tab 5 */}
               <button
                 onClick={() => setActiveTab(5)}
-                className={`flex flex-1 items-center justify-center whitespace-nowrap text-white px-3 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 5 ? "bg-[#1570EF]" : "bg-transparent"
+                className={`flex items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 5 ? "bg-[#1570EF]" : "bg-transparent"
                   }`}
               >
                 <Image
@@ -225,7 +225,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
             </div>
 
             {/* Hàng 2: Menu còn lại (nhỏ hơn) */}
-            <div className="flex justify-center gap-4 mt-0.5 border-t border-gray-800 w-full pt-1.5 pb-0.5">
+            <div className="flex justify-center gap-2 mt-0.5 border-t border-gray-800 w-full pt-1.5 pb-0.5">
               {/* Tab 6: Tours */}
               <button
                 onClick={() => setActiveTab(6)}
@@ -291,6 +291,40 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
                 />
                 <span className="ml-1.5">{t("bao_hiem") || "Bảo hiểm"}</span>
               </button>
+
+              {/* Vé tàu */}
+              <a
+                href="https://zalo.me/2451421179976954585/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center whitespace-nowrap text-white px-3 py-1 rounded-2xl transition-colors text-xs bg-transparent opacity-75 hover:opacity-100"
+              >
+                <Image
+                  src="/icon/Ticket.svg"
+                  alt="Vé tàu"
+                  width={14}
+                  height={14}
+                  style={{ width: 14, height: 14 }}
+                />
+                <span className="ml-1.5">{t("ve_tau") || "Vé tàu"}</span>
+              </a>
+
+              {/* Thuê xe */}
+              <a
+                href="https://zalo.me/2451421179976954585/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center whitespace-nowrap text-white px-3 py-1 rounded-2xl transition-colors text-xs bg-transparent opacity-75 hover:opacity-100"
+              >
+                <Image
+                  src="/icon/bus.svg"
+                  alt="Thuê xe"
+                  width={14}
+                  height={14}
+                  style={{ width: 14, height: 14 }}
+                />
+                <span className="ml-1.5">{t("thue_xe") || "Thuê xe"}</span>
+              </a>
             </div>
           </div>
 
@@ -302,17 +336,17 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
           </div>
 
           {/* Tabs 1 - Khách sạn */}
-          <div className={`mt-8 ${activeTab === 1 ? "block" : "hidden"}`}>
+          <div className={`mt-2 ${activeTab === 1 ? "block" : "hidden"}`}>
             <SearchHotel />
           </div>
 
           {/* Tabs 2 - Visa */}
-          <div className={`mt-8 ${activeTab === 2 ? "block" : "hidden"}`}>
+          <div className={`mt-2 ${activeTab === 2 ? "block" : "hidden"}`}>
             <VisaSearchForm optionsFilter={visaOptionsFilter} />
           </div>
 
           {/* Tabs 3 - Sim du lịch */}
-          <div className={`mt-8 ${activeTab === 3 ? "block" : "hidden"}`}>
+          <div className={`mt-2 ${activeTab === 3 ? "block" : "hidden"}`}>
             <label className="font-medium text-gray-700 block mb-1">
               {t("sim_du_lich")}
             </label>

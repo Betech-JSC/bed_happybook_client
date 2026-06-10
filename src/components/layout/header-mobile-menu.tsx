@@ -157,7 +157,7 @@ export default function HeaderMobileMenu() {
                 </svg>
               </div>
               <div className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] text-[14px]">
-                <Link href="/fast-track" onClick={() => setIsMenuMbOpen(false)} className="font-medium text-[14px]">{t("dua_don_xuat_nhap_canh")}</Link>
+                <Link href="/fast-track" onClick={() => setIsMenuMbOpen(false)} className="font-medium text-[14px]">{t("don_tien_uu_tien_fast_track")}</Link>
                 <div className="flex flex-col mt-1 pl-3 space-y-2 border-l border-gray-200">
                   <Link href="/fast-track/xuat-canh" onClick={() => setIsMenuMbOpen(false)} className="text-gray-500 hover:text-[#F27145] text-[13px]">{t("xuat_canh")}</Link>
                   <Link href="/fast-track/nhap-canh" onClick={() => setIsMenuMbOpen(false)} className="text-gray-500 hover:text-[#F27145] text-[13px]">{t("nhap_canh")}</Link>
@@ -166,6 +166,9 @@ export default function HeaderMobileMenu() {
               <Link href="/phong-cho-thuong-gia" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
                 {t("phong_cho_thuong_gia")}
               </Link>
+              <a href="https://zalo.me/2451421179976954585/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuMbOpen(false)} className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("dua_don_san_bay")}
+              </a>
             </div>
 
             {/* 5. Vé vui chơi */}
@@ -205,10 +208,6 @@ export default function HeaderMobileMenu() {
               </Link>
             </div>
 
-            {/* 8. Bảo hiểm */}
-            <Link href="/bao-hiem" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
-              {t("bao_hiem")}
-            </Link>
 
             {/* 9. Du thuyền */}
             <Link href="/du-thuyen" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
