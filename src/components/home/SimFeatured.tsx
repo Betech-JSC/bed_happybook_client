@@ -37,10 +37,10 @@ export default async function SimFeatured({ showTabButtons = true }: Props) {
 
     const [internationalPackages, domesticPackages] = await Promise.all([
       internationalRegionId
-        ? loadAllEsimPackages({ region_id: internationalRegionId, locale: language })
+        ? loadAllEsimPackages({ region_id: internationalRegionId, locale: language, is_featured: 1 })
         : Promise.resolve([]),
       domesticRegionId
-        ? loadAllEsimPackages({ region_id: domesticRegionId, locale: language })
+        ? loadAllEsimPackages({ region_id: domesticRegionId, locale: language, is_featured: 1 })
         : Promise.resolve([]),
     ]);
 
