@@ -410,18 +410,23 @@ export default function Header() {
                   {t("dich_vu_tai_san_bay")}
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <div className="flex flex-col hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300">
-                    <Link href="/fast-track" className="!flex items-start gap-4 !h-auto">
+                  <div className="flex flex-col">
+                    <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                       <img src="/icon/fast-track.png" alt={t("don_tien_uu_tien_fast_track")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                       <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
                         <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("don_tien_uu_tien_fast_track")}</div>
-                        <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words mb-2">{t("ho_tro_xuat_nhap_canh_nhanh_rut_ngan_thoi_gian_cho_hang")}</div>
+                        <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("ho_tro_xuat_nhap_canh_nhanh_rut_ngan_thoi_gian_cho_hang")}</div>
                       </div>
                     </Link>
-                    <div className="flex gap-4 pl-[58px]">
-                      <Link href="/fast-track/xuat-canh" className="text-blue-600 hover:text-blue-800 font-semibold text-[13px] hover:underline">{t("xuat_canh")}</Link>
-                      <span className="text-gray-300">|</span>
-                      <Link href="/fast-track/nhap-canh" className="text-blue-600 hover:text-blue-800 font-semibold text-[13px] hover:underline">{t("nhap_canh")}</Link>
+                    <div className="flex flex-col gap-3 pl-[58px] mt-1.5 mb-3">
+                      <Link href="/fast-track/xuat-canh" className="text-gray-600 hover:text-blue-600 font-medium text-[15px] transition-colors w-fit flex items-center gap-2.5 group">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-600 transition-colors flex-shrink-0"></span>
+                        {t("xuat_canh")}
+                      </Link>
+                      <Link href="/fast-track/nhap-canh" className="text-gray-600 hover:text-blue-600 font-medium text-[15px] transition-colors w-fit flex items-center gap-2.5 group">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-600 transition-colors flex-shrink-0"></span>
+                        {t("nhap_canh")}
+                      </Link>
                     </div>
                   </div>
                   <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
@@ -431,13 +436,13 @@ export default function Header() {
                       <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("tan_huong_khong_gian_thu_gian_cao_cap_va_tien_nghi_truoc_chuyen_hanh_trinh_sap_toi")}</div>
                     </div>
                   </Link>
-                  <a href="https://zalo.me/2451421179976954585/" target="_blank" rel="noopener noreferrer" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                  <Link href="/thue-xe" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                     <img src="/icon/car.svg" alt={t("dua_don_san_bay")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                     <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
                       <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("dua_don_san_bay")}</div>
                       <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("xe_rieng_dua_don_tan_noi_dung_gio_chu_dao_247")}</div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -166,9 +166,9 @@ export default function HeaderMobileMenu() {
               <Link href="/phong-cho-thuong-gia" className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
                 {t("phong_cho_thuong_gia")}
               </Link>
-              <a href="https://zalo.me/2451421179976954585/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuMbOpen(false)} className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+              <Link href="/thue-xe" onClick={() => setIsMenuMbOpen(false)} className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
                 {t("dua_don_san_bay")}
-              </a>
+              </Link>
             </div>
 
             {/* 5. Vé vui chơi */}

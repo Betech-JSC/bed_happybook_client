@@ -1,5 +1,7 @@
 import { Fragment, Suspense } from "react";
 import Banner from "@/components/home/banner";
+import { getCachedBanner } from "@/app/utils/home-cached-api";
+import BannerSlide from "@/components/home/BannerSlide";
 import AosAnimate from "@/components/layout/aos-animate";
 import Search from "@/components/home/search";
 import type { Metadata } from "next";
@@ -64,13 +66,16 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
 export default async function Home() {
   const language = await getServerLang();
-  const [airportsData, seo, t, visaOptions, locationsData] = await Promise.all([
+  const [airportsData, seo, t, visaOptions, locationsData, bannerDataRes] = await Promise.all([
     FlightApi.getCachedAirports(),
     settingApi.getCachedMetaSeo(),
     getServerT(),
     VisaApi.getOptionsFilter(undefined, language).then(res => res?.payload?.data || []).catch(() => []),
     ProductLocation.list(language).then(res => res?.payload?.data || []).catch(() => []),
+    getCachedBanner("home").catch(() => null),
   ]);
+
+  const bannerData = bannerDataRes?.payload?.data || [];
 
   const comboLocations = locationsData?.length > 0
     ? locationsData.map((opt: any) => ({
@@ -84,22 +89,28 @@ export default async function Home() {
       <WebsiteSchema />
       <h1 className="sr-only">{seo?.seo_title || "Happy Book - Dịch vụ du lịch hàng đầu"}</h1>
 
-      {/* Search Desktop Background - Moved to Server Component for LCP optimization */}
-      <HomeHeroDesktopBackground />
-
-      <Suspense fallback={null}>
-        <Search
-          airportsData={airportsData}
-          visaOptionsFilter={visaOptions}
-          comboLocations={comboLocations}
-        />
-      </Suspense>
+      {/* Search Desktop */}
+      <div className="hidden lg:block relative">
+        <HomeHeroDesktopBackground />
+        <Suspense fallback={null}>
+          <Search
+            airportsData={airportsData}
+            visaOptionsFilter={visaOptions}
+            comboLocations={comboLocations}
+          />
+        </Suspense>
+        {bannerData && bannerData.length > 0 && (
+          <div className="absolute bottom-6 left-0 right-0 z-10 px-3 lg:px-[50px] xl:px-[80px] max__screen mx-auto">
+            <BannerSlide data={bannerData} />
+          </div>
+        )}
+      </div>
 
       {/* Search Mobile */}
       <div className="mt-[68px] block lg:hidden relative h-max pb-10">
         <div className="mt-4 h-full">
           <HomeHeroMobileBackground />
-          <div className="relative">
+          <div className="relative pb-6">
             <Suspense fallback={null}>
               <SearchMobile
                 airportsData={airportsData}
@@ -107,15 +118,16 @@ export default async function Home() {
                 comboLocations={comboLocations}
               />
             </Suspense>
+            {bannerData && bannerData.length > 0 && (
+              <div className="mt-6 px-3 relative z-10">
+                <BannerSlide data={bannerData} />
+              </div>
+            )}
           </div>
         </div>
       </div>
       <main className="w-full bg-white relative z-2 rounded-2xl">
-        <Suspense fallback={<SkeletonProductTabs />}>
-          <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <Banner></Banner>
-          </div>
-        </Suspense>
+
 
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>

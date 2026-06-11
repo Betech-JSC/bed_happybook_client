@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { cloneItemsCarousel } from "@/utils/Helper";
 import Link from "next/link";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function BannerSlide({ data }: any) {
   const clonedItems =
@@ -24,6 +25,12 @@ export default function BannerSlide({ data }: any) {
             align: "start",
             loop: true,
           }}
+          plugins={[
+            Autoplay({
+              delay: 4000,
+              stopOnInteraction: false,
+            }),
+          ]}
         >
           <CarouselContent>
             {clonedItems.map((banner: any, index: number) => (

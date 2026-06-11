@@ -1,6 +1,7 @@
 "use client";
 import { Suspense, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import SearchFlight from "@/app/ve-may-bay/components/Search";
 import dynamic from "next/dynamic";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -293,10 +294,8 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               </button>
 
               {/* Vé tàu */}
-              <a
-                href="https://zalo.me/2451421179976954585/"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/ve-tau"
                 className="flex items-center justify-center whitespace-nowrap text-white px-3 py-1 rounded-2xl transition-colors text-xs bg-transparent opacity-75 hover:opacity-100"
               >
                 <Image
@@ -307,13 +306,11 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
                   style={{ width: 14, height: 14 }}
                 />
                 <span className="ml-1.5">{t("ve_tau") || "Vé tàu"}</span>
-              </a>
+              </Link>
 
               {/* Thuê xe */}
-              <a
-                href="https://zalo.me/2451421179976954585/"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/thue-xe"
                 className="flex items-center justify-center whitespace-nowrap text-white px-3 py-1 rounded-2xl transition-colors text-xs bg-transparent opacity-75 hover:opacity-100"
               >
                 <Image
@@ -324,7 +321,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
                   style={{ width: 14, height: 14 }}
                 />
                 <span className="ml-1.5">{t("thue_xe") || "Thuê xe"}</span>
-              </a>
+              </Link>
             </div>
           </div>
 
