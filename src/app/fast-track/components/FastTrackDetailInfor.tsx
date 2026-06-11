@@ -137,7 +137,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                       option.prices.map((ticket: any) => (
                         <div
                           key={ticket.id}
-                          className="flex space-x-2 justify-between items-start py-4 border-b last:border-none"
+                          className="flex space-x-2 justify-between items-start py-4 border-b last:border-none pr-14 md:pr-0"
                         >
                           <div>
                             <div
@@ -156,7 +156,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                           <div className="flex items-start justify-between">
                             <div>
                               <DisplayPrice
-                                className={`!text-base mr-4 text-black !font-normal`}
+                                className={`!text-base text-black !font-normal whitespace-nowrap flex-shrink-0`}
                                 price={ticket.price}
                                 currency={product?.currency}
                               />
@@ -177,7 +177,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                         {detail.additional_fees.map((fee: any) => (
                           <div
                             key={fee.id}
-                            className="flex justify-between items-center py-2 last:border-none"
+                            className="flex justify-between items-center py-2 last:border-none pr-14 md:pr-0"
                           >
                             <div>
                               <div
@@ -195,7 +195,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                               )}
                             </div>
                             <DisplayPrice
-                              className="!text-sm text-black !font-medium"
+                              className="!text-sm text-black !font-medium whitespace-nowrap flex-shrink-0"
                               price={fee.price}
                               currency={product?.currency}
                             />
