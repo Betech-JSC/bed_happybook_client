@@ -69,7 +69,7 @@ export default function EsimPackageControls({
     }`;
 
   return (
-    <section className="bg-white rounded-12px shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden">
+    <section id="chon-goi-esim" className="bg-white rounded-12px shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden">
       <div className="p-6 space-y-8">
         <div>
           <p className="text-sm font-bold text-midnight-ink mb-4">{t("Loại gói")}</p>

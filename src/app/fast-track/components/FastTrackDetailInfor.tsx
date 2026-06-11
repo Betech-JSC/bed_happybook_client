@@ -102,7 +102,7 @@ export default function FastTrackDetailInfor({ product }: any) {
       .catch(() => {});
   }, [language, product?.slug]);
   return (
-    <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
+    <div className="flex flex-col lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
         <ProductGallery product={detail} />
         <div id="cac-goi-dich-vu" className="mt-4">

@@ -130,6 +130,20 @@ export default function EsimProductSidebar({
                 {canBook ? t("Đặt ngay") : t("Chưa có giá khả dụng")}
               </button>
 
+              <button
+                type="button"
+                onClick={() => {
+                  const element = document.getElementById("chon-goi-esim");
+                  if (element) {
+                    const y = element.getBoundingClientRect().top + window.pageYOffset - 100;
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                  }
+                }}
+                className="w-full mt-3 bg-white border border-hb-coral text-hb-coral hover:bg-orange-50 font-semibold text-sm h-10 rounded-lg active:scale-[0.98] transition-all shadow-sm lg:hidden flex items-center justify-center"
+              >
+                {t("Quay lại chọn gói")}
+              </button>
+
               <div className="pt-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-xs text-steel-secondary">
                   <BadgeCheck className="w-4 h-4" />
