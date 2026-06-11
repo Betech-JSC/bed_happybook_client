@@ -2,8 +2,17 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import styles from "@/styles/styles.module.scss";
+import { usePathname } from "next/navigation";
 
 export default function BackToTopButton() {
+  const pathname = usePathname();
+  const isEsimRoute =
+    pathname?.startsWith("/sim-du-lich") ||
+    pathname?.startsWith("/sim-viet-nam") ||
+    pathname?.startsWith("/sim-quoc-te");
+
+  if (isEsimRoute) return null;
+
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => {

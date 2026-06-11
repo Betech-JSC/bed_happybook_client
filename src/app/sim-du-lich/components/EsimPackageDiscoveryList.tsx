@@ -118,7 +118,7 @@ export default function EsimPackageDiscoveryList({
                 >
                   <div className="relative w-full overflow-hidden rounded-xl lg:w-[280px] lg:shrink-0">
                     <div
-                      className={`relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-full ${
+                      className={`relative aspect-[16/10] w-full overflow-hidden rounded-xl ${
                         avatarUrl ? "border border-slate-200 bg-white shadow-sm" : ""
                       }`}
                       style={{
@@ -133,7 +133,7 @@ export default function EsimPackageDiscoveryList({
                           alt={title}
                           fill
                           sizes="(max-width: 1024px) 100vw, 42vw"
-                          className="object-cover object-top opacity-100"
+                          className="object-contain bg-white opacity-100"
                           priority={index < 2}
                         />
                       ) : null}
@@ -173,42 +173,49 @@ export default function EsimPackageDiscoveryList({
                     </div>
                   </div>
 
-                  <div className="mt-4 flex w-full flex-col justify-between lg:mt-0 lg:flex-1">
-                    <div className="space-y-3">
+                  <div className="mt-4 flex w-full flex-col lg:mt-0 lg:flex-row lg:justify-between lg:items-stretch lg:flex-1">
+                    <div className="flex-1 flex flex-col justify-between space-y-3">
                       <div className="space-y-1.5">
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hb-coral">eSIM</p>
                         <h3 className="text-18 font-semibold leading-tight transition-colors duration-300 hover:text-primary">
                           <span data-translate="true">{title}</span>
                         </h3>
+                        <div className="flex items-center gap-2.5 text-gray-500 text-sm">
+                          <span data-translate="true">0 đánh giá</span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5 text-gray-500">
-                        <span data-translate="true">0 đánh giá</span>
-                      </div>
-
-                      <div className="space-y-2.5 text-midnight-ink">
-                        <div className="flex items-center gap-2.5 leading-6">
+                      <div className="flex flex-row flex-nowrap lg:flex-col items-center lg:items-start gap-x-4 lg:gap-x-0 lg:gap-y-2.5 text-midnight-ink text-xs sm:text-sm overflow-hidden lg:overflow-visible">
+                        <div className="flex items-center gap-1.5 leading-6 shrink-0">
                           <Clock3 className="h-4 w-4 shrink-0 text-slate-500" />
                           <span data-translate="true">{validityLabel}</span>
                         </div>
 
-                        <div className="flex items-center gap-2.5 leading-6">
+                        <div className="flex items-center gap-1.5 leading-6 min-w-0 shrink-0 lg:shrink">
                           <MapPin className="h-4 w-4 shrink-0 text-slate-500" />
-                          <span data-translate="true">{pkg.regionLabel || pkg.destination}</span>
+                          <span className="truncate lg:whitespace-normal" data-translate="true">{pkg.regionLabel || pkg.destination}</span>
                         </div>
 
-                        <div className="flex items-center gap-2.5 leading-6">
+                        <div className="flex items-center gap-1.5 leading-6 min-w-0 shrink-0 lg:shrink">
                           <Wifi className="h-4 w-4 shrink-0 text-slate-500" />
-                          <span data-translate="true">{pkg.network || pkg.coverage}</span>
+                          <span className="truncate lg:whitespace-normal" data-translate="true">{pkg.network || pkg.coverage}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-3 text-end text-2xl font-bold text-primary">
-                      {isSelectable ? (
-                        <span>{formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}</span>
-                      ) : (
-                        <span data-translate="true">Chưa có giá khả dụng</span>
+                    <div className="mt-4 flex flex-col justify-end items-end lg:mt-0 lg:pl-6 lg:border-l lg:border-slate-100 lg:min-w-[180px]">
+                      <div className="text-xs text-steel-secondary mb-1">{t("Giá từ")}</div>
+                      <div className="text-2xl font-extrabold text-hb-coral">
+                        {isSelectable ? (
+                          <span>{formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}</span>
+                        ) : (
+                          <span className="text-sm font-semibold text-slate-400" data-translate="true">{t("Chưa có giá khả dụng")}</span>
+                        )}
+                      </div>
+                      {isSelectable && (
+                        <div className="mt-4 hidden lg:block bg-hb-coral hover:bg-orange-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all shadow-sm">
+                          {t("Chọn gói")}
+                        </div>
                       )}
                     </div>
                   </div>
