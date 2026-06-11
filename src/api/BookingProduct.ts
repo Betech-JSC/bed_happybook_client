@@ -13,15 +13,15 @@ const EsimApi = {
 };
 
 const BookingProductApi = {
-  Tour: (data: any) => http.post<any>(`${path}/tour`, data),
-  Hotel: (data: any) => http.post<any>(`${path}/hotel`, data),
-  Visa: (data: any) => http.post<any>(`${path}/visa`, data),
-  DinhCu: (data: any) => http.post<any>(`${path}/dinhcu`, data),
-  Combo: (data: any) => http.post<any>(`${path}/combo`, data),
-  Ticket: (data: any) => http.post<any>(`${path}/ticket`, data),
-  Yacht: (data: any) => http.post<any>(`${path}/yacht`, data),
-  FastTrack: (data: any) => http.post<any>(`${path}/fast-track`, data),
-  BusinessLounge: (data: any) => http.post<any>(`${path}/business-lounge`, data),
+  Tour: (data: any) => http.post<any>(`${path}/tour`, data, undefined, 60000),
+  Hotel: (data: any) => http.post<any>(`${path}/hotel`, data, undefined, 60000),
+  Visa: (data: any) => http.post<any>(`${path}/visa`, data, undefined, 60000),
+  DinhCu: (data: any) => http.post<any>(`${path}/dinhcu`, data, undefined, 60000),
+  Combo: (data: any) => http.post<any>(`${path}/combo`, data, undefined, 60000),
+  Ticket: (data: any) => http.post<any>(`${path}/ticket`, data, undefined, 60000),
+  Yacht: (data: any) => http.post<any>(`${path}/yacht`, data, undefined, 60000),
+  FastTrack: (data: any) => http.post<any>(`${path}/fast-track`, data, undefined, 60000),
+  BusinessLounge: (data: any) => http.post<any>(`${path}/business-lounge`, data, undefined, 60000),
   updatePaymentMethod: (data: any) =>
     http.post<any>(`${path}/update-payment-method`, data),
   paypalCreateOrder: (body: { order_code: string }) =>
@@ -36,6 +36,13 @@ const BookingProductApi = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  HistoryAll: (token: string | undefined, page: number, pageSize: number = 10) =>
+    http.get<any>(`${path}/history/all?page=${page}&page_size=${pageSize}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }, 10000, 0),
 };
 
 export { BookingProductApi, EsimApi };

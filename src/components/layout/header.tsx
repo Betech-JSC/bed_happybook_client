@@ -379,7 +379,7 @@ export default function Header() {
                 <Link href="/thong-tin-tai-khoan" style={{ margin: 0 }}>
                   {t("thong_tin_tai_khoan")}
                 </Link>
-                <Link href="/lich-su-dat-ve" style={{ margin: 0 }}>
+                <Link href="/lich-su-dat-hang" style={{ margin: 0 }}>
                   {t("lich_su_dat_hang")}
                 </Link>
                 <Link href="/thay-doi-mat-khau" style={{ margin: 0 }}>

@@ -7,7 +7,7 @@ const ProductInsurance = {
   search: (queryString: string) => http.get<any>(queryString),
   location: () => http.get<any>(`${path}/location`),
   detail: (id: string | number) => http.get<any>(`${path}/${id}`),
-  booking: (data: any) => http.post<any>(`${path}/booking`, data),
+  booking: (data: any) => http.post<any>(`${path}/booking`, data, undefined, 60000),
   downLoadSampleExcel: () =>
     fetch(`${baseUrl}/insurance/sample-execel`, {
       method: "GET",

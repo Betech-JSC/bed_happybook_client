@@ -28,7 +28,7 @@ const FlightApi = {
   getFareRules: (data: any) => http.post<any>(`${path}/fare-rules`, data),
   getBaggage: (data: any) => http.post<any>(`${path}/list-ancillary`, data),
   getAirlines: (data: any) => http.post<any>(`${path}/airlines`, data),
-  bookFlight: (url: string, data: any) => http.post<any>(url, data),
+  bookFlight: (url: string, data: any) => http.post<any>(url, data, undefined, 60000),
   airPorts: () => http.get<any>("danh-sach-diem-di-den-ve-may-bay"),
   getCachedAirports: getCachedAirports,
   searchAirPorts: (searchParams: string) =>
