@@ -341,7 +341,7 @@ export default function EsimProductPage({
         </div>
       ) : null}
 
-      {isDetailPage && showMobilePaymentBar ? (
+      {isDetailPage && showMobilePaymentBar && catalog.selectedVariant && catalog.total > 0 ? (
         <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
           <div>
             <div className="text-xs text-steel-secondary">{t("Tổng thanh toán")}</div>

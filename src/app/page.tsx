@@ -43,7 +43,20 @@ const NewsByPage = dynamic(() => import("@/components/content-page/NewsByPage"))
 const FooterMenu = dynamic(() => import("@/components/content-page/footer-menu"));
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const seo = await settingApi.getCachedMetaSeo();
+  type SeoMeta = {
+    seo_title?: string;
+    seo_description?: string;
+    seo_keywords?: string | string[];
+    image?: string;
+  };
+  let seo: SeoMeta = {};
+  try {
+    seo = (await settingApi.getCachedMetaSeo()) as SeoMeta;
+  } catch (e) {
+    console.warn("[Home generateMetadata] getCachedMetaSeo failed:", e);
+  }
+
+  const ogImageUrl = seo?.image ?? siteUrl;
 
   return formatMetadata({
     robots: "index, follow",
@@ -56,8 +69,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     openGraph: {
       images: [
         {
-          url: seo?.image,
-          alt: seo?.seo_title,
+          url: ogImageUrl,
+          alt: seo?.seo_title ?? "HappyBook Travel",
         },
       ],
     },
@@ -67,12 +80,21 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 export default async function Home() {
   const language = await getServerLang();
   const [airportsData, seo, t, visaOptions, locationsData, bannerDataRes] = await Promise.all([
-    FlightApi.getCachedAirports(),
-    settingApi.getCachedMetaSeo(),
+    FlightApi.getCachedAirports().catch((e) => {
+      console.warn("[Home] getCachedAirports failed:", e);
+      return [];
+    }),
+    settingApi.getCachedMetaSeo().catch((e) => {
+      console.warn("[Home] getCachedMetaSeo failed:", e);
+      return {};
+    }),
     getServerT(),
     VisaApi.getOptionsFilter(undefined, language).then(res => res?.payload?.data || []).catch(() => []),
     ProductLocation.list(language).then(res => res?.payload?.data || []).catch(() => []),
-    getCachedBanner("home").catch(() => null),
+    getCachedBanner("home").catch((e) => {
+      console.warn("[Home] getCachedBanner failed:", e);
+      return null;
+    }),
   ]);
 
   const bannerData = bannerDataRes?.payload?.data || [];

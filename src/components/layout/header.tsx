@@ -42,6 +42,7 @@ export default function Header() {
     "/khach-san",
     "/khach-san/tim-kiem",
     "/bao-hiem",
+    "/flight-radar",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
@@ -74,8 +75,11 @@ export default function Header() {
 
   const isAirportServiceActive =
     pathname.startsWith("/fast-track") ||
-    pathname.startsWith("/phong-cho-thuong-gia");
-  const isInsuranceActive = pathname.startsWith("/bao-hiem");
+    pathname.startsWith("/phong-cho-thuong-gia") ||
+    pathname.startsWith("/thue-xe") ||
+    pathname.startsWith("/bao-hiem") ||
+    pathname.startsWith("/flight-radar");
+
   const isSimDuLichMenuActive =
     pathname.startsWith("/sim-du-lich") ||
     pathname.startsWith("/sim-viet-nam") ||
@@ -309,7 +313,7 @@ export default function Header() {
                 <Link href="/thong-tin-tai-khoan" style={{ margin: 0 }}>
                   {t("thong_tin_tai_khoan")}
                 </Link>
-                <Link href="/lich-su-dat-ve" style={{ margin: 0 }}>
+                <Link href="/lich-su-dat-hang" style={{ margin: 0 }}>
                   {t("lich_su_dat_hang")}
                 </Link>
                 <Link href="/thay-doi-mat-khau" style={{ margin: 0 }}>
@@ -328,17 +332,8 @@ export default function Header() {
               </div>
             </div>
           )}
-
-          {/* Menu Button */}
-          {/* <div
-            className={`${styles.nav_icon} ${isMenuOpen ? styles.open : ""}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </div> */}
         </div>
+
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
           <nav className="flex h-[26px] items-center space-x-5 xl:space-x-6">
@@ -443,6 +438,22 @@ export default function Header() {
                       <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("xe_rieng_dua_don_tan_noi_dung_gio_chu_dao_247")}</div>
                     </div>
                   </Link>
+                  {/* Insurance link from master */}
+                  <Link href="/bao-hiem" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/insurance.png" alt="Bảo hiểm" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("bao_hiem")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("bao_ve_suc_khoe_va_tai_san_cho_toan_bo_chuyen_di_cua_ban")}</div>
+                    </div>
+                  </Link>
+                  {/* Flight Radar link from master */}
+                  <Link href="/flight-radar" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/AirplaneTiltBlue.svg" alt="Flight Radar" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("flight_radar")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("tra_cuu_va_theo_doi_tinh_trang_chuyen_bay_truc_tuyen")}</div>
+                    </div>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -515,6 +526,15 @@ export default function Header() {
               </div>
             </div>
 
+            {/* 8. Combo */}
+            <Link
+              href="/combo"
+              className={clsx(styles.header__menu_item, topNavItemClass, {
+                [styles.active]: pathname.startsWith("/combo"),
+              })}
+            >
+              {t("combo")}
+            </Link>
 
             {/* 9. Du thuyền */}
             <Link

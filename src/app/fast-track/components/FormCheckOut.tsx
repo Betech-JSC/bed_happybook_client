@@ -545,8 +545,8 @@ export default function CheckOutForm({
     }
   }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees, isBusinessLounge]);
 
-  // Tổng chi phí = giá vé + phụ phí (phụ phí giờ bay thêm đã được tự động tích vào additional fees nếu đáp ứng điều kiện)
-  const totalPrice = ticketsPrice + additionalFeesPrice;
+  // Tổng chi phí = giá vé + phụ phí - giảm giá sản phẩm (nếu có)
+  const totalPrice = Math.max(0, ticketsPrice + additionalFeesPrice - (product?.discount_price || 0));
   // const totalPrice = 2000; => test case
 
   // Đồng bộ guestList với số lượng vé đã chọn
@@ -1231,6 +1231,19 @@ export default function CheckOutForm({
                     ))}
                 </div>
               </>
+            )}
+            {product?.discount_price > 0 && (
+              <div className="mt-4 pt-4 border-t flex justify-between text-green-600 font-semibold">
+                <span data-translate="true">Giảm giá trực tiếp</span>
+                <div className="flex gap-1 items-center">
+                  <span>-</span>
+                  <DisplayPrice
+                    className="!font-bold !text-sm !text-green-600"
+                    price={product.discount_price}
+                    currency={product?.currency}
+                  />
+                </div>
+              </div>
             )}
           </div>
           <div className="pt-4 border-t">

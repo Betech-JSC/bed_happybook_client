@@ -20,6 +20,7 @@ const buildSearchQuery = (params?: {
   card?: boolean;
   sort?: "newest" | "price-asc" | "price-desc";
   destination_ids?: Array<string | number> | string;
+  is_featured?: number | boolean;
 }) => {
   const searchParams = new URLSearchParams();
 
@@ -55,6 +56,9 @@ const buildSearchQuery = (params?: {
   if (params?.sort) {
     searchParams.set("sort", params.sort);
   }
+  if (params?.is_featured !== undefined && params?.is_featured !== null) {
+    searchParams.set("is_featured", params.is_featured ? "1" : "0");
+  }
 
   const search = searchParams.toString();
   return search ? `?${search}` : "";
@@ -74,6 +78,7 @@ const ProductEsimApi = {
     card?: boolean;
     sort?: "newest" | "price-asc" | "price-desc";
     destination_ids?: Array<string | number> | string;
+    is_featured?: number | boolean;
   }, locale?: string) => http.get<any>(`${path}/search${buildSearchQuery(params)}`, langHeader(locale), 10000, 0),
   detail: (slug: string, locale?: string, compact?: boolean) =>
     http.get<any>(
@@ -109,7 +114,7 @@ const ProductEsimApi = {
     customer_id?: number;
     source?: string;
     notes?: string;
-  }, locale?: string) => http.post<any>(`${path}/checkout`, body, langHeader(locale)),
+  }, locale?: string) => http.post<any>(`${path}/checkout`, body, langHeader(locale), 60000),
   paypalCaptureOrder: (body: {
     order_code?: string;
     paypal_order_id?: string;

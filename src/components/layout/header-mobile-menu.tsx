@@ -121,7 +121,7 @@ export default function HeaderMobileMenu() {
           ref={dropdownRef}
           className={`bg-white text-black overflow-y-scroll shadow-lg w-full h-full px-3`}
         >
-          <div>
+          <div className="pb-8">
             {/* 1. Vé máy bay */}
             <Link href="/ve-may-bay" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
               {t("ve_may_bay")}
@@ -169,6 +169,12 @@ export default function HeaderMobileMenu() {
               <Link href="/thue-xe" onClick={() => setIsMenuMbOpen(false)} className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
                 {t("dua_don_san_bay")}
               </Link>
+              <Link href="/bao-hiem" onClick={() => setIsMenuMbOpen(false)} className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("bao_hiem")}
+              </Link>
+              <Link href="/flight-radar" onClick={() => setIsMenuMbOpen(false)} className="block mt-2 pl-3 text-gray-700 hover:text-[#F27145] cursor-pointer text-[14px]">
+                {t("flight_radar")}
+              </Link>
             </div>
 
             {/* 5. Vé vui chơi */}
@@ -208,6 +214,10 @@ export default function HeaderMobileMenu() {
               </Link>
             </div>
 
+            {/* 8. Combo */}
+            <Link href="/combo" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">
+              {t("combo")}
+            </Link>
 
             {/* 9. Du thuyền */}
             <Link href="/du-thuyen" className="block mt-4 hover:text-[#F27145] cursor-pointer font-semibold text-[15px]">

@@ -43,6 +43,8 @@ export default function Search({
     page: 1,
     location: searchParams.get("location") ?? "",
     "category[]": categoryDefault ? [categoryDefault] : "",
+    sort: "id",
+    order: "desc",
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
@@ -221,7 +223,7 @@ export default function Search({
                 onChange={(e) => {
                   handleSortData(e.target.value);
                 }}
-                defaultValue={"price|asc"}
+                defaultValue={"id|desc"}
               >
                 <option value="id|desc">{t("moi_nhat")}</option>
                 <option value="id|asc">{t("cu_nhat")}</option>
