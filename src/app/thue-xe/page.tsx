@@ -95,7 +95,7 @@ export default async function CarRentalPage() {
           {/* Contact Box */}
           <div className="mt-6 bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 max-w-[800px] mx-auto text-center">
             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Image src="/icon/bus.svg" alt="Car Rental" width={32} height={32} />
+              <Image src="/icon/car.svg" alt="Car Rental" width={32} height={32} />
             </div>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">

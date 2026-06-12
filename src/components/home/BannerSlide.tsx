@@ -35,7 +35,7 @@ export default function BannerSlide({ data }: any) {
           <CarouselContent>
             {clonedItems.map((banner: any, index: number) => (
               <CarouselItem
-                className="basis-full lg:basis-2/4 rounded-xl"
+                className="basis-full rounded-xl"
                 key={banner.id}
               >
                 <Link href={banner?.url ?? "#"}>
@@ -46,7 +46,7 @@ export default function BannerSlide({ data }: any) {
                     width={628}
                     height={210}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                    className="h-[100px] md:h-[156px] rounded-xl w-full object-cover"
+                    className="h-[150px] md:h-[150px] rounded-xl w-full object-cover"
                   />
                 </Link>
               </CarouselItem>

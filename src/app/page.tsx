@@ -100,17 +100,17 @@ export default async function Home() {
           />
         </Suspense>
         {bannerData && bannerData.length > 0 && (
-          <div className="absolute bottom-6 left-0 right-0 z-10 px-3 lg:px-[50px] xl:px-[80px] max__screen mx-auto">
+          <div className="absolute bottom-6 left-0 right-0 z-10 max-w-[960px] mx-auto px-3">
             <BannerSlide data={bannerData} />
           </div>
         )}
       </div>
 
       {/* Search Mobile */}
-      <div className="mt-[68px] block lg:hidden relative h-max pb-10">
-        <div className="mt-4 h-full">
-          <HomeHeroMobileBackground />
-          <div className="relative pb-6">
+      <div className="mt-[68px] block lg:hidden relative min-h-[calc(100vh-68px)] flex flex-col pb-10 justify-center">
+        <HomeHeroMobileBackground />
+        <div className="relative flex flex-col">
+          <div>
             <Suspense fallback={null}>
               <SearchMobile
                 airportsData={airportsData}
@@ -118,12 +118,12 @@ export default async function Home() {
                 comboLocations={comboLocations}
               />
             </Suspense>
-            {bannerData && bannerData.length > 0 && (
-              <div className="mt-6 px-3 relative z-10">
-                <BannerSlide data={bannerData} />
-              </div>
-            )}
           </div>
+          {bannerData && bannerData.length > 0 && (
+            <div className="mt-0 px-3 relative z-10 w-full">
+              <BannerSlide data={bannerData} />
+            </div>
+          )}
         </div>
       </div>
       <main className="w-full bg-white relative z-2 rounded-2xl">
