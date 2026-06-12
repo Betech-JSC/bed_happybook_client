@@ -126,7 +126,7 @@ export default async function CarRentalPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center space-x-2 bg-[#0068FF] hover:bg-[#0052cc] text-white font-semibold px-8 py-4 rounded-2xl shadow-md duration-300 transition-all text-lg w-full sm:w-auto"
             >
-              <Image src="/language/vi.svg" alt="Zalo" width={20} height={20} className="rounded-full bg-white" />
+              <Image src="/icon/zalo-icon-circle.png" alt="Zalo" width={20} height={20} className="rounded-full" />
               <span>{isVi ? "Liên hệ qua Zalo OA" : "Contact via Zalo OA"}</span>
             </a>
           </div>
