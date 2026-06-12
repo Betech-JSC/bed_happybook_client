@@ -404,7 +404,7 @@ export default function Header() {
                 <div className="text-gray-400 text-xs font-bold mb-4 uppercase tracking-wider block cursor-default text-left">
                   {t("dich_vu_tai_san_bay")}
                 </div>
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-2 max-h-[300px] overflow-y-auto overflow-x-hidden custom-scrollbar pr-2">
                   <div className="flex flex-col">
                     <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                       <img src="/icon/fast-track.png" alt={t("don_tien_uu_tien_fast_track")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
@@ -425,7 +425,7 @@ export default function Header() {
                     </div>
                   </div>
                   <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/lounge.png" alt="Phòng chờ thương gia" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <img src="/icon/insurance.png" alt="Phòng chờ thương gia" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                     <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
                       <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("phong_cho_thuong_gia")}</div>
                       <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("tan_huong_khong_gian_thu_gian_cao_cap_va_tien_nghi_truoc_chuyen_hanh_trinh_sap_toi")}</div>
@@ -436,14 +436,6 @@ export default function Header() {
                     <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
                       <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("dua_don_san_bay")}</div>
                       <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("xe_rieng_dua_don_tan_noi_dung_gio_chu_dao_247")}</div>
-                    </div>
-                  </Link>
-                  {/* Insurance link from master */}
-                  <Link href="/bao-hiem" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/insurance.png" alt="Bảo hiểm" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                    <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("bao_hiem")}</div>
-                      <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("bao_ve_suc_khoe_va_tai_san_cho_toan_bo_chuyen_di_cua_ban")}</div>
                     </div>
                   </Link>
                   {/* Flight Radar link from master */}
@@ -526,15 +518,6 @@ export default function Header() {
               </div>
             </div>
 
-            {/* 8. Combo */}
-            <Link
-              href="/combo"
-              className={clsx(styles.header__menu_item, topNavItemClass, {
-                [styles.active]: pathname.startsWith("/combo"),
-              })}
-            >
-              {t("combo")}
-            </Link>
 
             {/* 9. Du thuyền */}
             <Link

@@ -9,11 +9,13 @@ import {
 import Link from "next/link";
 import { getImageSrc } from "@/utils/Helper";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { getServerLang } from "@/lib/session";
 import { BannerApi } from "@/api/Banner";
 
 export default async function TouristSuggest() {
+  const language = await getServerLang();
   const data =
-    ((await BannerApi.getBannerPage("home-dichoi"))?.payload?.data as any) ??
+    ((await BannerApi.getBannerPage("home-dichoi", language))?.payload?.data as any) ??
     [];
 
   if (!data?.length) return;

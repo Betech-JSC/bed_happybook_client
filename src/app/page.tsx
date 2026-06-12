@@ -91,7 +91,7 @@ export default async function Home() {
     getServerT(),
     VisaApi.getOptionsFilter(undefined, language).then(res => res?.payload?.data || []).catch(() => []),
     ProductLocation.list(language).then(res => res?.payload?.data || []).catch(() => []),
-    getCachedBanner("home").catch((e) => {
+    getCachedBanner("home", language).catch((e) => {
       console.warn("[Home] getCachedBanner failed:", e);
       return null;
     }),
