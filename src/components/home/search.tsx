@@ -119,7 +119,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="relative z-[1] hidden lg:block">
+    <div className="relative z-20 hidden lg:block">
       <div className="lg:h-[800px] lg:px-[50px] xl:px-[80px] sm:px-3 pt-[210px] max__screen">
         <h2 className="text-3xl text-white font-bold text-center mb-12 relative top-[-40px]">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
