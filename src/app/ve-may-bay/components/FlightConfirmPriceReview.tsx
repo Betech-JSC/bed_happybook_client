@@ -100,7 +100,7 @@ export default function FlightConfirmPriceReview({
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p
-               className="text-sm font-medium text-[#175CD3]"
+              className="text-sm font-medium text-[#175CD3]"
               data-translate="true"
             >
               {isHeld ? "Đã giữ chỗ thành công" : "Giá đã được xác nhận"}
@@ -126,15 +126,6 @@ export default function FlightConfirmPriceReview({
             </div>
           )}
         </div>
-        {isHeld && renderPnrSection()}
-        {normalized.bookingId && !isHeld && (
-          <p className="mt-3 text-sm text-gray-600">
-            Mã giữ chỗ:{" "}
-            <span className="font-semibold text-gray-900">
-              {normalized.bookingId}
-            </span>
-          </p>
-        )}
       </div>
 
       <div className="rounded-2xl bg-white p-4 md:p-6 shadow-sm border border-gray-100">
