@@ -86,6 +86,7 @@ export interface ApiEsimPackage {
   is_featured?: boolean | number | string;
   sort_order?: number | string;
   destination_id?: number | string;
+  destination_model?: ApiEsimDestination;
   destinationModel?: ApiEsimDestination;
   variants?: ApiEsimVariant[];
   translations?: ApiEsimTranslation[];
@@ -355,7 +356,7 @@ export const normalizeEsimVariant = (variant: ApiEsimVariant): EsimVariantView =
 });
 
 export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
-  const destinationModel = item.destinationModel ?? {};
+  const destinationModel = item.destination_model ?? item.destinationModel ?? {};
   const regionModel = destinationModel.region ?? {};
   const variants = (item.variants ?? []).map(normalizeEsimVariant);
 
@@ -368,7 +369,13 @@ export const normalizeEsimPackage = (item: ApiEsimPackage): EsimPackageView => {
     id: toString(item.slug || item.id),
     slug: toString(item.slug || item.id),
     operator: toString(item.operator),
-    regionId: toString(regionModel.id ?? destinationModel.region_id ?? item.destinationModel?.region_id ?? ""),
+    regionId: toString(
+      regionModel.id ??
+        destinationModel.region_id ??
+        item.destination_model?.region_id ??
+        item.destinationModel?.region_id ??
+        ""
+    ),
     regionLabel,
     destinationId: toString(destinationModel.id ?? item.destination_id ?? ""),
     destination: destinationLabel,
