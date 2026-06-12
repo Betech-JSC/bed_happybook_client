@@ -28,6 +28,8 @@ const BookingProductApi = {
     http.post<any>(`${path}/paypal/create-order`, body),
   paypalCaptureOrder: (body: { order_code?: string; paypal_order_id?: string }) =>
     http.post<any>(`${path}/paypal/capture-order`, body),
+  paymentInfo: (orderCode: string) =>
+    http.get<any>(`${path}/payment-info/${encodeURIComponent(orderCode)}`, {}, 10000, 0),
   getByCode: (orderCode: string) =>
     http.get<any>(`${path}/${encodeURIComponent(orderCode)}`, undefined, 10000, 0),
   History: (token: string | undefined, productType: string, page: number) =>

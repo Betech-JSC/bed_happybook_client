@@ -33,6 +33,14 @@ import { toastMessages } from "@/lib/messages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import ListFlightsInternaltion from "./List";
+import ResumeFlightDraftBanner from "../../ResumeFlightDraftBanner";
+import {
+  buildSearchRouteFromParams,
+  findMatchingFlightDraft,
+  type FlightDraftMatch,
+} from "@/utils/flightDraftSession";
+import { saveFlightSearchContext } from "@/utils/selectedFlightStorage";
+import type { TripsSource } from "@/types/selectedFlight";
 
 export default function SearchFlightsInternationalResult({
   airportsData,
@@ -67,6 +75,7 @@ export default function SearchFlightsInternationalResult({
   const resultsRef = useRef<HTMLDivElement>(null);
   const [stopNumFilters, setStopNumFilters] = useState<number[]>([]);
   const [searchId, setSearchId] = useState<string | null>(null);
+  const [tripsSource, setTripsSource] = useState<TripsSource>("search");
   const [flightItineraryResource, setFlightItineraryResource] = useState<
     Array<{ key: string; value: number }>
   >([]);
@@ -76,6 +85,10 @@ export default function SearchFlightsInternationalResult({
   const [airlineData, setAirlineData] = useState<
     { id: number; name: string; code: string; logo: string }[]
   >([]);
+  const [matchingDraft, setMatchingDraft] = useState<FlightDraftMatch | null>(
+    null
+  );
+  const fetchedResourcesRef = useRef<Set<string>>(new Set());
 
   const params = useMemo(() => {
     let flightType: string = "RT";
@@ -241,6 +254,7 @@ export default function SearchFlightsInternationalResult({
         setStopNumFilters([]);
         setIsFullFlightResource(false);
         setFlightItineraryResource([]);
+        fetchedResourcesRef.current.clear();
         setAirlineData([]);
         setError("");
         if (StartPoint && EndPoint && DepartDate) {
@@ -253,6 +267,16 @@ export default function SearchFlightsInternationalResult({
           const resources: any = responseData?.resources ?? [];
           if (responseData?.searchId) {
             setSearchId(responseData?.searchId);
+            setTripsSource(resources.length ? "resource" : "search");
+            saveFlightSearchContext({
+              searchId: responseData.searchId,
+              tripsSource: resources.length ? "resource" : "search",
+              paxCounts: {
+                adult: passengerAdt,
+                child: passengerChd,
+                infant: passengerInf,
+              },
+            });
           } else {
             throw new Error("Search Error");
           }
@@ -363,9 +387,15 @@ export default function SearchFlightsInternationalResult({
   // Fetch flights by resource
   useEffect(() => {
     const fetchFlightDetails = async () => {
-      const unprocessed = flightItineraryResource.filter((r) => r.value === 0);
+      const unprocessed = flightItineraryResource.filter(
+        (r) => r.value === 0 && !fetchedResourcesRef.current.has(r.key)
+      );
 
       if (unprocessed.length === 0) return;
+
+      // Mark immediately as fetched/fetching to prevent duplicate triggers
+      unprocessed.forEach((r) => fetchedResourcesRef.current.add(r.key));
+
       setFlightItineraryResource((prev) =>
         prev.map((r) =>
           unprocessed.some((u) => u.key === r.key) ? { ...r, value: 1 } : r
@@ -413,7 +443,6 @@ export default function SearchFlightsInternationalResult({
     passengerAdt,
     passengerChd,
     passengerInf,
-    stopNumFilters,
     toaStrMsg.errorConnectApiFlight,
     StartPoint,
     EndPoint,
@@ -485,6 +514,29 @@ export default function SearchFlightsInternationalResult({
       setIsReady(false);
     }
   }, [loading, flights1G, flightsNormalGroupped]);
+
+  useEffect(() => {
+    if (!isReady) {
+      setMatchingDraft(null);
+      return;
+    }
+    const searchRoute = buildSearchRouteFromParams({
+      startPoint: StartPoint,
+      endPoint: EndPoint,
+      tripType,
+      departDate: DepartDate,
+      returnDate: ReturnDate,
+    });
+    const match = findMatchingFlightDraft(searchRoute);
+    if (
+      match &&
+      (match.meta.flow === "international" || match.meta.flow === "1g")
+    ) {
+      setMatchingDraft(match);
+    } else {
+      setMatchingDraft(null);
+    }
+  }, [isReady, StartPoint, EndPoint, tripType, DepartDate, ReturnDate]);
 
   if (!isReady) {
     return (
@@ -619,9 +671,18 @@ export default function SearchFlightsInternationalResult({
   }
 
   const finalFlightsData = [...flights1G, ...flightsNormalGroupped];
+
   return (
     <Fragment>
       <div ref={resultsRef}>
+        {matchingDraft && (
+          <ResumeFlightDraftBanner
+            match={matchingDraft}
+            fromLabel={from}
+            toLabel={to}
+            onClose={() => setMatchingDraft(null)}
+          />
+        )}
         <ListFlightsInternaltion
           from={from}
           to={to}
@@ -637,6 +698,12 @@ export default function SearchFlightsInternationalResult({
           departDays={days}
           handleClickDate={handleClickDate}
           flightSession={searchId}
+          tripsSource={tripsSource}
+          paxCounts={{
+            adult: passengerAdt,
+            child: passengerChd,
+            infant: passengerInf,
+          }}
           isRoundTrip={isRoundTrip}
           totalPassengers={totalPassengers}
           flightType={flightType}

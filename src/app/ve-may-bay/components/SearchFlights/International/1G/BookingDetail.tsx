@@ -6,7 +6,8 @@ import { differenceInSeconds, format, parse, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { handleSessionStorage } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
-import { notFound, useRouter } from "next/navigation";
+import { accumulateBaggages } from "@/utils/accumulateBaggages";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import LoadingButton from "@/components/base/LoadingButton";
 import { FlightApi } from "@/api/Flight";
@@ -26,9 +27,15 @@ import { toastMessages, validationMessages } from "@/lib/messages";
 import { translateText } from "@/utils/translateApi";
 import { useTranslation } from "@/hooks/useTranslation";
 import CountDownCheckOut from "../../../CountDownCheckOut";
+import PostPaymentSuccessBanner from "@/components/flight/PostPaymentSuccessBanner";
+import {
+  buildFlightSearchUrlFromDraft,
+  resolvePriceHoldExpiresAt,
+} from "@/utils/flightHoldExpiry";
 
 export default function BookingDetail1G({ airports }: BookingDetailProps) {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { language } = useLanguage();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -118,6 +125,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   };
 
   let keyLoopDropdown = 1;
+  const isEmailRecovery = data?.isEmailRecovery;
   let totalPrice = 0;
   let totalAdt = 1;
   let totalChd = 0;
@@ -133,7 +141,9 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   let totalTaxInf = 0;
   let dropdown: any = [];
   let fareData: any = [];
-  if (data?.flights?.length) {
+  if (data?.isEmailRecovery) {
+    totalPrice = data?.orderInfo?.total_price ?? 0;
+  } else if (data?.flights?.length) {
     data.flights.map((flightItem: any, index: number) => {
       fareData.push(flightItem);
       totalPrice = flightItem.totalPrice;
@@ -186,26 +196,67 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   //   toast.dismiss();
   useEffect(() => {
     const bookingData = handleSessionStorage("get", "bookingFlight");
-    setLoading(false);
+    const orderCodeFromQuery = searchParams.get("order_code");
+
     if (bookingData) {
       setData(bookingData);
       if (bookingData.passengers.length) {
-        const accumulated = bookingData.passengers.reduce(
-          (acc: { price: number; quantity: number }, item: any) => {
-            if (Array.isArray(item.baggages)) {
-              item.baggages.forEach((bag: any) => {
-                acc.price += bag.price;
-                acc.quantity++;
-              });
-            }
-            return acc;
-          },
-          { price: 0, quantity: 0 }
-        );
-        setTotalBaggages(accumulated);
+        setTotalBaggages(accumulateBaggages(bookingData.passengers));
       }
+      setLoading(false);
+      return;
     }
-  }, []);
+
+    if (orderCodeFromQuery) {
+      FlightApi.paymentInfo(orderCodeFromQuery)
+        .then((response: any) => {
+          const info = response?.payload?.data ?? response?.payload?.payload?.data;
+          if (info) {
+            setData({
+              orderInfo: {
+                sku: info.order_code,
+                total_price: info.total_price ?? 0,
+                total_discount: info.total_discount ?? 0,
+                booking_deadline: info.deadline,
+                payment_method: info.payment_method,
+              },
+              contact: {
+                full_name: info.customer_name ?? "",
+                email: info.customer_email ?? "",
+                phone: info.customer_phone ?? "",
+                gender: null,
+              },
+              passengers: info.passengers ?? [],
+              flights: info.flights ?? [],
+              isEmailRecovery: true,
+            });
+
+            if (info.passengers?.length) {
+              setTotalBaggages(accumulateBaggages(info.passengers));
+            }
+
+            if (info.status === "paid") {
+              setIsPaid(true);
+            }
+          } else {
+            toast.error(t("khong_tim_thay_don_hang"));
+            router.replace("/ve-may-bay");
+          }
+        })
+        .catch(() => {
+          toast.error(t("co_loi_xay_ra"));
+          router.replace("/ve-may-bay");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
+    }
+
+    toast.error("Không tìm thấy dữ liệu đơn đặt chỗ. Vui lòng xác nhận giá lại.");
+    router.replace("/ve-may-bay");
+    setLoading(false);
+  }, [searchParams, t, router]);
 
   useEffect(() => {
     let interval: any;
@@ -234,7 +285,11 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
 
   const handleTicketPaymentTimeout = () => {
     setTicketPaymentTimeout(true);
+    toast.error("Phiên đặt vé đã hết hạn");
+    router.push(buildFlightSearchUrlFromDraft());
   };
+
+  const holdExpiresAt = resolvePriceHoldExpiresAt(data);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -301,7 +356,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
       </div>
     );
   }
-  if (!data) notFound();
+  if (!data) return null;
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
@@ -312,15 +367,15 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
               "linear-gradient(97.39deg, #0C4089 2.42%, #1570EF 99.36%)",
           }}
         >
-          <div className="flex flex-col lg:flex-row lg:space-x-4 justify-center px-4 lg:px-0 py-4">
+          <div className="flex flex-col xl:flex-row justify-between items-center px-6 py-4 gap-4">
             {!isPaid ? (
               <Fragment>
-                <p className="text-22 font-bold text-white">
+                <p className="text-lg md:text-xl font-bold text-white text-center xl:text-left">
                   {t("hoan_tat_don_hang_cua_ban_de_giu_gia_tot_nhat")}{" "}
                 </p>
-                {!ticketPaymentTimeout && data.orderInfo.booking_deadline ? (
+                {!ticketPaymentTimeout && holdExpiresAt ? (
                   <CountDownCheckOut
-                    timeCountDown={data.orderInfo.booking_deadline}
+                    timeCountDown={holdExpiresAt}
                     handleTicketPaymentTimeout={handleTicketPaymentTimeout}
                   />
                 ) : (
@@ -351,15 +406,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
         )}
 
         {isPaid && (
-          <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
-            <p>
-              {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
-              {data?.orderInfo?.sku && `: ${data.orderInfo.sku}`}
-            </p>
-            <p>
-              {t("happybook_se_gui_xac_nhan_don_hang_trong_thoi_gian_khong_qua_24_h")}
-            </p>
-          </div>
+          <PostPaymentSuccessBanner orderCode={data?.orderInfo?.sku} />
         )}
         <div className="mt-6">
           <button

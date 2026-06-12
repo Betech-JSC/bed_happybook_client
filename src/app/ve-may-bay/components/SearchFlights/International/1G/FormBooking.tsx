@@ -15,7 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -40,6 +40,16 @@ import GenerateInvoiceForm from "@/components/form/GenerateInvoiceForm";
 import PhoneInput from "@/components/form/PhoneInput";
 import { useTranslation } from "@/hooks/useTranslation";
 import Flight1GDetailPopup from "./FlightDetailPopup";
+import { FLIGHT_NATIONALITIES } from "@/constants/countries";
+import { saveFlightDraftMetaForSearch } from "@/utils/flightDraftSession";
+import { resolveHoldExpiresAt } from "@/utils/flightHoldExpiry";
+import { appendBookFlightPassportFields } from "@/utils/buildPaxDocuments";
+import InternationalPassportFields from "../../../InternationalPassportFields";
+import {
+  flightBookingErrorToastText,
+  formatFlightBookingError,
+  type FlightBookingErrorDisplay,
+} from "@/utils/formatFlightBookingError";
 
 export default function Flight1GBookForm({ airportsData }: any) {
   const router = useRouter();
@@ -66,6 +76,7 @@ export default function Flight1GBookForm({ airportsData }: any) {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [showFlightDetail, setShowFlightDetail] = useState<boolean>(false);
   const { userInfo } = useUser();
+  const [bookingError, setBookingError] = useState<FlightBookingErrorDisplay | null>(null);
   // Handle Voucher
   const {
     totalDiscount,
@@ -82,8 +93,26 @@ export default function Flight1GBookForm({ airportsData }: any) {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
+  const earliestDepartureDate = useMemo(() => {
+    let earliest: Date | undefined;
+    for (const flight of flights) {
+      const at = (flight.departure as { at?: string } | undefined)?.at;
+      if (!at) continue;
+      const d = new Date(at);
+      if (!Number.isNaN(d.getTime()) && (!earliest || d < earliest)) {
+        earliest = d;
+      }
+    }
+    return earliest;
+  }, [flights]);
+
   const [schemaForm, setSchemaForm] = useState(() =>
-    FlightBookingInforBody(messages, generateInvoice, flightType)
+    FlightBookingInforBody(
+      messages,
+      generateInvoice,
+      "international",
+      earliestDepartureDate
+    )
   );
 
   useEffect(() => {
@@ -94,9 +123,14 @@ export default function Flight1GBookForm({ airportsData }: any) {
 
   useEffect(() => {
     setSchemaForm(
-      FlightBookingInforBody(messages, generateInvoice, flightType)
+      FlightBookingInforBody(
+        messages,
+        generateInvoice,
+        flightType || "international",
+        earliestDepartureDate
+      )
     );
-  }, [flightType, generateInvoice, messages]);
+  }, [flightType, generateInvoice, messages, earliestDepartureDate]);
 
   const {
     register,
@@ -156,12 +190,10 @@ export default function Flight1GBookForm({ airportsData }: any) {
             ? format(new Date(item.value.birthday), "yyyy-MM-dd")
             : "",
         };
-        if (item.Type === "ADT") {
-          passengerObj.cccd = item.value.cccd ? item.value.cccd : "";
-          passengerObj.cccd_date = item.value.cccd_date
-            ? format(new Date(item.value.cccd_date), "yyyy-MM-dd")
-            : "";
-        }
+        appendBookFlightPassportFields(passengerObj, item.value, {
+          isInternational: true,
+          paxType: item.Type as "ADT" | "CHD" | "INF",
+        });
         if (item.value.baggages && item.value.baggages.length > 0) {
           passengerObj.baggages = item.value.baggages;
         }
@@ -214,6 +246,7 @@ export default function Flight1GBookForm({ airportsData }: any) {
     const bookFlight = async () => {
       try {
         setLoading(true);
+        setBookingError(null);
         const respon = await FlightApi.bookFlight(
           `/flights-v2/book-flight-1G`,
           finalData
@@ -224,17 +257,52 @@ export default function Flight1GBookForm({ airportsData }: any) {
           resData.flights = flights;
           toast.success(toaStrMsg.sendSuccess);
           handleSessionStorage("save", "bookingFlight", resData);
+          const holdExpires = resolveHoldExpiresAt(
+            (resData.orderInfo ?? resData) as Record<string, unknown>
+          );
+          const depart = flights[0]?.departure as {
+            IATACode?: string;
+            at?: string;
+          };
+          const arrival = flights[0]?.arrival as { IATACode?: string };
+          if (depart?.IATACode && arrival?.IATACode && depart.at) {
+            saveFlightDraftMetaForSearch({
+              startPoint: depart.IATACode,
+              endPoint: arrival.IATACode,
+              tripType: flights.length > 1 ? "roundTrip" : "oneWay",
+              departDate: format(new Date(depart.at), "ddMMyyyy"),
+              returnDate:
+                flights.length > 1
+                  ? format(
+                      new Date(
+                        (flights[1]?.departure as { at?: string })?.at ??
+                          depart.at
+                      ),
+                      "ddMMyyyy"
+                    )
+                  : format(new Date(depart.at), "ddMMyyyy"),
+              stage: "pending_payment",
+              resumeUrl: "/ve-may-bay/thong-tin-dat-cho",
+              orderCode: resData?.orderInfo?.sku,
+              bookingDeadline: holdExpires,
+              holdExpiresAt: holdExpires,
+              flow: "1g",
+            });
+          }
           handleSessionStorage("remove", [
             "flightSession",
             "departFlight",
             "returnFlight",
             "flightType",
           ]);
+          const orderSku = resData?.orderInfo?.sku || resData?.order_code;
           setTimeout(() => {
-            router.push("/ve-may-bay/thong-tin-dat-cho");
+            router.push(orderSku ? `/ve-may-bay/thong-tin-dat-cho?order_code=${orderSku}` : "/ve-may-bay/thong-tin-dat-cho");
           }, 1000);
         } else {
-          toast.error(toaStrMsg.sendFailed);
+          const display = formatFlightBookingError(respon?.payload, language as "vi" | "en");
+          setBookingError(display);
+          toast.error(flightBookingErrorToastText(respon?.payload, language as "vi" | "en", toaStrMsg.sendFailed));
         }
       } catch (error: any) {
         if (
@@ -244,7 +312,10 @@ export default function Flight1GBookForm({ airportsData }: any) {
           setVoucherErrors(error.payload.errors.voucher_programs);
           toast.error(toaStrMsg.inValidVouchers);
         } else {
-          toast.error(toaStrMsg.error);
+          const payload = error instanceof HttpError ? error.payload : error;
+          const display = formatFlightBookingError(payload, language as "vi" | "en");
+          setBookingError(display);
+          toast.error(flightBookingErrorToastText(payload, language as "vi" | "en", toaStrMsg.error));
         }
       } finally {
         setLoading(false);
@@ -254,6 +325,55 @@ export default function Flight1GBookForm({ airportsData }: any) {
       bookFlight();
     }
   };
+
+  const handleSearchRedirect = () => {
+    if (!flights || flights.length === 0) {
+      router.push("/ve-may-bay/tim-kiem-ve");
+      return;
+    }
+    const departFlight = flights[0];
+    if (!departFlight) {
+      router.push("/ve-may-bay/tim-kiem-ve");
+      return;
+    }
+    const depart = departFlight.departure as { IATACode?: string; at?: string } | undefined;
+    const arrival = departFlight.arrival as { IATACode?: string } | undefined;
+    if (!depart?.IATACode || !arrival?.IATACode || !depart.at) {
+      router.push("/ve-may-bay/tim-kiem-ve");
+      return;
+    }
+    const startPoint = depart.IATACode;
+    const endPoint = arrival.IATACode;
+    const tripType = flights.length > 1 ? "roundTrip" : "oneWay";
+    const departDate = format(new Date(depart.at), "ddMMyyyy");
+    
+    let returnDate = departDate;
+    const returnDepart = flights[1]?.departure as { at?: string } | undefined;
+    if (tripType === "roundTrip" && returnDepart?.at) {
+      returnDate = format(new Date(returnDepart.at), "ddMMyyyy");
+    }
+
+    const startAirport = airportsData?.find((a: any) => a.code === startPoint);
+    const endAirport = airportsData?.find((a: any) => a.code === endPoint);
+    const fromLabel = startAirport ? `${startAirport.city} (${startAirport.code})` : startPoint;
+    const toLabel = endAirport ? `${endAirport.city} (${endAirport.code})` : endPoint;
+
+    const params = new URLSearchParams({
+      tripType,
+      StartPoint: startPoint,
+      EndPoint: endPoint,
+      DepartDate: departDate,
+      ReturnDate: returnDate,
+      Adt: String(departFlight.numberAdt ?? 1),
+      Chd: String(departFlight.numberChd ?? 0),
+      Inf: String(departFlight.numberInf ?? 0),
+      from: fromLabel,
+      to: toLabel,
+    });
+
+    router.push(`/ve-may-bay/tim-kiem-ve?${params.toString()}`);
+  };
+
   useEffect(() => {
     let flightData = [];
     let flightDetailData: any = [];
@@ -794,10 +914,39 @@ export default function Flight1GBookForm({ airportsData }: any) {
                           </div>
                           <div className="relative">
                             <label
+                              htmlFor={`atd.${index}.nationality`}
+                              className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
+                            >
+                              <span data-translate="true">Quốc tịch</span>
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              id={`atd.${index}.nationality`}
+                              {...register(`atd.${index}.nationality`)}
+                              className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 focus:outline-none focus:border-primary indent-3.5"
+                              defaultValue=""
+                            >
+                              <option value="" disabled>
+                                Chọn quốc tịch
+                              </option>
+                              {FLIGHT_NATIONALITIES.map((c) => (
+                                <option key={c.code} value={c.code}>
+                                  {c.label}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.atd?.[index]?.nationality && (
+                              <p className="text-red-600">
+                                {errors.atd?.[index]?.nationality?.message}
+                              </p>
+                            )}
+                          </div>
+                          <div className="relative">
+                            <label
                               id={`atd.${index}.passport_expiry_date`}
                               className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs"
                             >
-                              <span data-translate="true">Ngày hết hạn</span>
+                              <span data-translate="true">Ngày hết hạn hộ chiếu</span>
                               <span className="text-red-500">*</span>
                             </label>
                             <div className="booking-form-birthday flex justify-between items-end pt-6 pb-2 pr-2 border border-gray-300 rounded-md">
@@ -1089,6 +1238,14 @@ export default function Flight1GBookForm({ airportsData }: any) {
                           </p>
                         )}
                       </div>
+                      <InternationalPassportFields
+                        segment="chd"
+                        index={index}
+                        register={register}
+                        control={control}
+                        errors={errors}
+                        language={language}
+                      />
                       {Object.keys(listBaggageGrouped).length > 0 &&
                         Object.entries(listBaggageGrouped).map(
                           ([flightLeg, items]) => {
@@ -1323,6 +1480,29 @@ export default function Flight1GBookForm({ airportsData }: any) {
                   </div>
                 ))}
             </div>
+            {bookingError && (
+              <div className="p-4 mt-6 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                <p className="font-semibold">{bookingError.message}</p>
+                {bookingError.details && bookingError.details.length > 0 && (
+                  <ul className="mt-1.5 list-disc list-inside">
+                    {bookingError.details.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                )}
+                {bookingError.code === "FARE_ALREADY_EXPIRED" && (
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={handleSearchRedirect}
+                      className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      {language === "vi" ? "Tìm kiếm lại chuyến bay" : "Search flights again"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
             <div className="mt-6">
               <LoadingButton
                 isLoading={loading}

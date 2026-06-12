@@ -54,6 +54,10 @@ export const flightStaticText: string[] = [
   "Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất",
   "Chuyến bay",
   "Ngày đặt",
+  "Khởi hành quá gần (dưới 4h)",
+  "Cảnh báo giờ bay gần",
+  "Chuyến bay này sẽ khởi hành dưới 4 tiếng tính từ hiện tại, vui lòng đảm bảo bạn kịp thời gian di chuyển ra sân bay và làm thủ tục.",
+  "Đồng ý tiếp tục",
 ];
 
 export const visaStaticText: string[] = [
@@ -187,6 +191,10 @@ const headerStaticText: string[] = [
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
+  "Tiện ích",
+  "Dịch vụ tiện ích",
+  "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
+  "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Sim du lịch",
   "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim",
   "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
@@ -194,6 +202,8 @@ const headerStaticText: string[] = [
   "Sim du lịch quốc tế",
   "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
   "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
+  "Flight Radar",
+  "Tra cứu và theo dõi tình trạng chuyến bay trực tuyến",
 ];
 
 const footerStaticText: string[] = [
@@ -737,14 +747,14 @@ const applyAmusementTicketAliases = (
   const amusementLabel =
     lang === "vi"
       ? translations["ve_vui_choi_hoat_dong"] ??
-        translations["ve_vui_choi"] ??
-        "Vé vui chơi & hoạt động"
+      translations["ve_vui_choi"] ??
+      "Vé vui chơi & hoạt động"
       : "Attraction tickets";
   const searchLabel =
     lang === "vi"
       ? translations["tim_ve_vui_choi_hoat_dong"] ??
-        translations["tim_ve_vui_choi"] ??
-        "Tìm vé vui chơi & hoạt động"
+      translations["tim_ve_vui_choi"] ??
+      "Tìm vé vui chơi & hoạt động"
       : "Search attraction tickets";
 
   return {

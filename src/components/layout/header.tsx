@@ -46,6 +46,7 @@ export default function Header() {
     "/khach-san",
     "/khach-san/tim-kiem",
     "/bao-hiem",
+    "/flight-radar",
   ];
   const excludePathsRef = useRef(excludePaths);
   const handleScroll = () => {
@@ -686,6 +687,14 @@ export default function Header() {
                     <div className="flex flex-col items-start text-left group/item">
                       <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("phong_cho_thuong_gia")}</div>
                       <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("tan_huong_khong_gian_thu_gian_cao_cap_va_tien_nghi_truoc_chuyen_hanh_trinh_sap_toi")}</div>
+                    </div>
+                  </Link>
+
+                  <Link href="/flight-radar" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/AirplaneTiltBlue.svg" alt="Flight Radar" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("flight_radar")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("tra_cuu_va_theo_doi_tinh_trang_chuyen_bay_truc_tuyen")}</div>
                     </div>
                   </Link>
                 </div>

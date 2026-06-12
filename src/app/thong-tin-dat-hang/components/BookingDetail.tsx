@@ -99,6 +99,8 @@ export default function BookingDetail() {
     },
   });
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchOrderData = async () => {
       // Ưu tiên đọc từ sessionStorage trước
@@ -345,6 +347,12 @@ export default function BookingDetail() {
             </p>
           </div>
         </div>
+
+        {data?.isEmailRecovery && (
+          <div className="mt-4 bg-amber-50 text-amber-800 font-medium px-4 py-3 rounded w-full text-base border border-amber-200">
+            <p>Đang xem thông tin đơn hàng từ email. Một số thông tin có thể bị ẩn để bảo mật.</p>
+          </div>
+        )}
 
         {pollingStatus && !isPaid && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">

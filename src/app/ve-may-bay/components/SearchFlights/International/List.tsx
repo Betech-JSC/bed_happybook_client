@@ -22,6 +22,14 @@ import {
   getCheapestComparablePrice,
   getInternationalPackagePrice,
 } from "../../../lib/cheapest";
+import { persistInternationalCheckoutSelections } from "@/utils/internationalFlightSelection";
+import { loadSelectedFlightsForBooking } from "@/utils/selectedFlightStorage";
+import type { TripsSource } from "@/types/selectedFlight";
+import VerifyFlightPriceDialog from "../../VerifyFlightPriceDialog";
+import { buildFlightConfirmPricePayloadFromSelections } from "@/utils/buildFlightConfirmPricePayload";
+import { formatFlightBookingError } from "@/utils/formatFlightBookingError";
+import { HttpError } from "@/lib/error";
+
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -50,12 +58,14 @@ export default function ListFlightsInternaltion({
   returnDays,
   handleClickDate,
   flightSession,
+  tripsSource = "resource",
+  paxCounts = { adult: 1, child: 0, infant: 0 },
   isRoundTrip,
   totalPassengers,
   isReady,
   flightStopNum,
 }: ListFlight) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [selectedDepartFlight, setSelectedDepartFlight] = useState<any>(null);
   const [selectedReturnFlight, setSelectedReturnFlight] = useState<any>(null);
   const [selectedFareDataId, setSelectedFareDataId] = useState<string | null>(
@@ -64,8 +74,59 @@ export default function ListFlightsInternaltion({
   const [isCheckOut, setIsCheckOut] = useState<boolean>(false);
   const [filters, setFilters] = useState(defaultFilers);
   const wrapperResultRef = useRef<HTMLDivElement>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [dataLimit, setDataLimit] = useState(INITIAL_LIMIT);
+
+
+  const buildMockPassengers = (pCounts: { adult: number; child: number; infant: number }) => {
+    const passengers: any[] = [];
+    let idx = 0;
+    for (let i = 0; i < (pCounts.adult || 1); i++) {
+      passengers.push({
+        index: idx++,
+        type: "ADT",
+        firstName: "GUEST",
+        lastName: "ADULT",
+        gender: true,
+        birthday: "1990-01-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (pCounts.child || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "CHD",
+        firstName: "GUEST",
+        lastName: "CHILD",
+        gender: true,
+        birthday: "2018-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (pCounts.infant || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "INF",
+        firstName: "GUEST",
+        lastName: "INFANT",
+        gender: true,
+        birthday: "2025-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    return passengers;
+  };
 
   const resetFilters = () => {
     setFilters(defaultFilers);
@@ -327,27 +388,93 @@ export default function ListFlightsInternaltion({
     [filteredData]
   );
   const handleCheckout = async () => {
-    if (isCheckOut) {
-      handleSessionStorage("save", "departFlight", selectedDepartFlight);
-      handleSessionStorage("save", "returnFlight", selectedReturnFlight);
-      handleSessionStorage("save", "flightSession", flightSession);
-      const res = await fetch("/api/set-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          flightType:
-            selectedDepartFlight?.source === SOURCE_1G &&
-              selectedReturnFlight?.source === SOURCE_1G
-              ? SOURCE_1G
-              : "NORMAL",
-        }),
+    if (isCheckOut && flightSession) {
+      persistInternationalCheckoutSelections({
+        depart: selectedDepartFlight,
+        return: selectedReturnFlight,
+        searchId: flightSession,
+        tripsSource: tripsSource as TripsSource,
+        paxCounts,
       });
+      handleSessionStorage("save", "flightSession", flightSession);
 
-      const data = await res.json();
-      if (data.ok) {
-        window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
+      try {
+        setIsVerifying(true);
+        setVerifyError(null);
+
+        const selections = loadSelectedFlightsForBooking();
+        if (!selections.length) return;
+
+        const contact = {
+          full_name: "GUEST CONTACT",
+          gender: "male",
+          phone: "0900000000",
+          email: "guest@happybook.com.vn",
+          address: "Vietnam",
+        };
+
+        const mockPassengers = buildMockPassengers(paxCounts);
+
+        const confirmPayload = buildFlightConfirmPricePayloadFromSelections({
+          selections,
+          passengers: mockPassengers,
+          contact,
+        });
+
+        const respon = await FlightApi.confirmPrice(confirmPayload);
+        if (respon?.status !== 200) {
+          const payload = respon?.payload ?? {};
+          const errDisplay = formatFlightBookingError(payload, lang as "vi" | "en");
+          setVerifyError(errDisplay.message || "Hạng vé hoặc chuyến bay bạn chọn hiện không còn khả dụng trên hệ thống hãng bay.");
+          return;
+        }
+
+        // Save confirm result so Passenger Details page doesn't verify again
+        const confirmResult = respon?.payload?.data ?? respon?.payload;
+        handleSessionStorage("save", "flightConfirmPrice", {
+          confirm: confirmResult,
+          bookingDraft: null,
+        });
+
+        const res = await fetch("/api/set-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            flightType:
+              selectedDepartFlight?.source === SOURCE_1G &&
+                selectedReturnFlight?.source === SOURCE_1G &&
+                Array.isArray(selectedDepartFlight?.journeys)
+                ? SOURCE_1G
+                : "NORMAL",
+          }),
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
+        }
+      } catch (err: any) {
+        const payload = err instanceof HttpError ? err.payload : err?.payload ?? err;
+        const errDisplay = formatFlightBookingError(payload, lang as "vi" | "en");
+        setVerifyError(errDisplay.message || "Hệ thống gặp sự cố khi xác thực giá vé từ hãng bay.");
+      } finally {
+        setIsVerifying(false);
       }
     }
+  };
+
+
+  const merge1GPackageSelection = (
+    previous: Record<string, unknown> | null,
+    incoming: Record<string, unknown>
+  ): Record<string, unknown> => {
+    const merged = _.cloneDeep(incoming);
+    const prevPicked =
+      (previous?._selectedJourneyFlights as Record<string, unknown>) ?? {};
+    const nextPicked =
+      (incoming._selectedJourneyFlights as Record<string, unknown>) ?? {};
+    merged._selectedJourneyFlights = { ...prevPicked, ...nextPicked };
+    return merged;
   };
 
   const handleSelectDepartFlight = (
@@ -359,8 +486,19 @@ export default function ListFlightsInternaltion({
     if (FareId !== selectedFareDataId) {
       handleUncheck(e);
       setSelectedReturnFlight(null);
+      setSelectedDepartFlight(null);
     }
-    setSelectedDepartFlight(flight);
+
+    if (flight?.source === SOURCE_1G && Array.isArray(flight?.journeys)) {
+      const merged = merge1GPackageSelection(
+        FareId === selectedFareDataId ? selectedDepartFlight : null,
+        flight
+      );
+      setSelectedDepartFlight(merged);
+      setSelectedReturnFlight(merged);
+    } else {
+      setSelectedDepartFlight(flight);
+    }
     setSelectedFareDataId(FareId);
   };
 
@@ -373,14 +511,37 @@ export default function ListFlightsInternaltion({
     if (FareId !== selectedFareDataId) {
       handleUncheck(e);
       setSelectedDepartFlight(null);
+      setSelectedReturnFlight(null);
     }
-    setSelectedReturnFlight(flight);
+
+    if (flight?.source === SOURCE_1G && Array.isArray(flight?.journeys)) {
+      const merged = merge1GPackageSelection(selectedDepartFlight, flight);
+      setSelectedDepartFlight(merged);
+      setSelectedReturnFlight(merged);
+    } else {
+      setSelectedReturnFlight(flight);
+    }
     setSelectedFareDataId(FareId);
   };
 
   useEffect(() => {
+    if (!selectedDepartFlight) {
+      setIsCheckOut(false);
+      return;
+    }
+    if (selectedDepartFlight.source === SOURCE_1G && Array.isArray(selectedDepartFlight.journeys)) {
+      const picked =
+        (selectedDepartFlight._selectedJourneyFlights as Record<string, unknown>) ??
+        {};
+      const requiredLegs = isRoundTrip ? ["0", "1"] : ["0"];
+      const result = requiredLegs.every((key) => Boolean(picked[key]));
+      setIsCheckOut(result);
+      return;
+    }
     if (selectedDepartFlight && selectedReturnFlight) {
       setIsCheckOut(true);
+    } else {
+      setIsCheckOut(false);
     }
   }, [isRoundTrip, selectedReturnFlight, selectedDepartFlight]);
 
@@ -628,6 +789,7 @@ export default function ListFlightsInternaltion({
                         handleSelectDepartFlight={handleSelectDepartFlight}
                         handleSelectReturnFlight={handleSelectReturnFlight}
                         selectedFareDataId={selectedFareDataId}
+                        selectedDepartFlight={selectedDepartFlight}
                         handleCheckout={handleCheckout}
                         isCheckOut={isCheckOut}
                         isCheapest={
@@ -684,6 +846,13 @@ export default function ListFlightsInternaltion({
           </div>
         </div>
       </div>
+      <VerifyFlightPriceDialog
+        open={isVerifying || verifyError !== null}
+        loading={isVerifying}
+        error={verifyError}
+        language={lang}
+        onClose={() => setVerifyError(null)}
+      />
     </Fragment>
   );
 }

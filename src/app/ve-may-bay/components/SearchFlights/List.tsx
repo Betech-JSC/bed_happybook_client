@@ -40,6 +40,25 @@ import {
   getCheapestComparablePrice,
   getDomesticDisplayedPrice,
 } from "../../lib/cheapest";
+import { createSelectedFlight } from "@/utils/createSelectedFlight";
+import { saveSelectedFlight, loadSelectedFlightsForBooking } from "@/utils/selectedFlightStorage";
+import { isVietJetSource } from "@/utils/fareValueToken";
+import {
+  buildCombinedSelectionFingerprint,
+  buildLegSelectionFingerprint,
+  buildSearchRouteFromParams,
+  evaluateFlightSelectionChange,
+  replaceDraftLegSelection,
+  saveFlightDraftMetaForSearch,
+  type FlightSelectionLeg,
+} from "@/utils/flightDraftSession";
+import { toast } from "react-hot-toast";
+import ReplaceFlightDraftDialog from "../ReplaceFlightDraftDialog";
+import VerifyFlightPriceDialog from "../VerifyFlightPriceDialog";
+import { buildFlightConfirmPricePayloadFromSelections } from "@/utils/buildFlightConfirmPricePayload";
+import { formatFlightBookingError } from "@/utils/formatFlightBookingError";
+import { HttpError } from "@/lib/error";
+
 
 const defaultFilers: filtersFlight = {
   priceWithoutTax: "0",
@@ -70,12 +89,15 @@ export default function ListFlights({
   returnDays,
   handleClickDate,
   flightSession,
+  tripsSource = "resource",
+  paxCounts = { adult: 1, child: 0, infant: 0 },
   isRoundTrip,
   totalPassengers,
   flightType,
   flightStopNum,
   translatedStaticText,
   isReady,
+  onDraftChange,
 }: ListFlight) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -95,6 +117,90 @@ export default function ListFlights({
   const [departLimit, setDepartLimit] = useState(INITIAL_LIMIT);
   const [returnLimit, setReturnLimit] = useState(INITIAL_LIMIT);
   const [filters, setFilters] = useState(defaultFilers);
+  const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
+  const [replaceDialogMessage, setReplaceDialogMessage] = useState("");
+  const pendingSelectRef = useRef<(() => void) | null>(null);
+
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+
+  const buildMockPassengers = (paxCounts: { adult: number; child: number; infant: number }) => {
+    const passengers: any[] = [];
+    let idx = 0;
+    for (let i = 0; i < (paxCounts.adult || 1); i++) {
+      passengers.push({
+        index: idx++,
+        type: "ADT",
+        firstName: "GUEST",
+        lastName: "ADULT",
+        gender: true,
+        birthday: "1990-01-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (paxCounts.child || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "CHD",
+        firstName: "GUEST",
+        lastName: "CHILD",
+        gender: true,
+        birthday: "2018-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    for (let i = 0; i < (paxCounts.infant || 0); i++) {
+      passengers.push({
+        index: idx++,
+        type: "INF",
+        firstName: "GUEST",
+        lastName: "INFANT",
+        gender: true,
+        birthday: "2025-06-01",
+        passport: "G12345678",
+        passport_expiry_date: "2030-12-31",
+        passport_country: "VN",
+        nationality: "VN",
+      });
+    }
+    return passengers;
+  };
+
+
+  const searchRoute = useMemo(
+    () =>
+      buildSearchRouteFromParams({
+        startPoint: StartPoint ?? "",
+        endPoint: EndPoint ?? "",
+        tripType: isRoundTrip ? "roundTrip" : "oneWay",
+        departDate: departDate ?? "",
+        returnDate: isRoundTrip
+          ? (returnDate ?? departDate ?? "")
+          : (departDate ?? ""),
+      }),
+    [StartPoint, EndPoint, isRoundTrip, departDate, returnDate]
+  );
+
+  const notifyDraftChange = useCallback(() => {
+    onDraftChange?.();
+  }, [onDraftChange]);
+
+  const getFareIndexFromFlight = (flight: {
+    fareOptions?: { fareValue?: string }[];
+    selectedTicketClass?: { fareValue?: string };
+  }): number => {
+    const selectedFv = flight.selectedTicketClass?.fareValue;
+    if (!selectedFv || !flight.fareOptions?.length) return 0;
+    const idx = flight.fareOptions.findIndex((f) => f.fareValue === selectedFv);
+    return idx >= 0 ? idx : 0;
+  };
+
   // AOS is handled globally via AosProvider IntersectionObserver
   const scrollToRef = (ref: any) => {
     if (ref.current) {
@@ -327,32 +433,184 @@ export default function ListFlights({
   );
 
   // Select Depart and Return Flight
-  const handleSelectDepartFlight = (flight: any, fareOptionIndex: number) => {
-    if (selectedDepartFlight?.flightCode === flight.flightCode) {
-      setSelectedDepartFlight(null);
-    } else {
-      flight.selectedTicketClass = flight.fareOptions[fareOptionIndex];
-      setSelectedDepartFlight(flight);
-      if (isRoundTrip && !selectedReturnFlight) {
-        setTimeout(() => {
-          scrollToRef(returnFlightRef);
-        }, 100);
+  const buildSelection = (flight: any, fareOptionIndex: number) => {
+    if (!flightSession) return null;
+    return createSelectedFlight(flight, fareOptionIndex, {
+      searchId: flightSession,
+      tripsSource,
+      paxCounts,
+      resourceId: flight._resourceId,
+    });
+  };
+
+  const applyDepartSelection = (flight: any, fareOptionIndex: number) => {
+    const selection = buildSelection(flight, fareOptionIndex);
+    if (!selection) return;
+    try {
+      saveSelectedFlight("depart", selection, { searchFlight: flight });
+    } catch (err) {
+      const code = err instanceof Error ? err.message : "";
+      if (code === "VJ_SEGMENT_TOKEN_REQUIRED" && isVietJetSource(flight.source)) {
+        toast.error(
+          "Chuyến bay chưa có mã chặng từ hệ thống. Vui lòng tìm kiếm lại hoặc chọn chuyến khác."
+        );
+        return;
       }
+      throw err;
+    }
+    const legacyTrip = {
+      ...selection.trip,
+      ...flight,
+      segments: selection.trip.segments ?? flight.segments,
+      fareOptions: flight.fareOptions ?? selection.trip.fareOptions,
+      selectedTicketClass: selection.fareOption,
+      flightCode: flight.flightCode,
+    };
+    setSelectedDepartFlight(legacyTrip);
+    if (isRoundTrip && !selectedReturnFlight) {
+      setTimeout(() => scrollToRef(returnFlightRef), 100);
     }
   };
 
-  const handleSelectReturnFlight = (flight: any, fareOptionIndex: number) => {
-    if (selectedReturnFlight?.flightCode === flight.flightCode) {
-      setSelectedReturnFlight(null);
-    } else {
-      flight.selectedTicketClass = flight.fareOptions[fareOptionIndex];
-      setSelectedReturnFlight(flight);
-      if (isRoundTrip && !selectedDepartFlight) {
-        setTimeout(() => {
-          scrollToRef(departFlightRef);
-        }, 100);
+  const applyReturnSelection = (flight: any, fareOptionIndex: number) => {
+    const selection = buildSelection(flight, fareOptionIndex);
+    if (!selection) return;
+    try {
+      saveSelectedFlight("return", selection, { searchFlight: flight });
+    } catch (err) {
+      const code = err instanceof Error ? err.message : "";
+      if (code === "VJ_SEGMENT_TOKEN_REQUIRED" && isVietJetSource(flight.source)) {
+        toast.error(
+          "Chuyến bay chưa có mã chặng từ hệ thống. Vui lòng tìm kiếm lại hoặc chọn chuyến khác."
+        );
+        return;
       }
+      throw err;
     }
+    const legacyTrip = {
+      ...selection.trip,
+      ...flight,
+      segments: selection.trip.segments ?? flight.segments,
+      fareOptions: flight.fareOptions ?? selection.trip.fareOptions,
+      selectedTicketClass: selection.fareOption,
+      flightCode: flight.flightCode,
+    };
+    setSelectedReturnFlight(legacyTrip);
+    if (isRoundTrip && !selectedDepartFlight) {
+      setTimeout(() => scrollToRef(departFlightRef), 100);
+    }
+  };
+
+  const runSelectionWithDraftGate = (
+    leg: FlightSelectionLeg,
+    flight: any,
+    fareOptionIndex: number,
+    isDeselect: boolean,
+    applyFn: () => void
+  ) => {
+    if (isDeselect) {
+      applyFn();
+      notifyDraftChange();
+      return;
+    }
+
+    const newLegFp = buildLegSelectionFingerprint(
+      flight as Record<string, unknown>,
+      fareOptionIndex,
+      leg
+    );
+    const action = evaluateFlightSelectionChange({
+      searchRoute,
+      leg,
+      newLegFingerprint: newLegFp,
+      isDeselect: false,
+    });
+
+    if (action.type === "block_pending_payment") {
+      toast.error(
+        action.orderCode
+          ? `Đơn ${action.orderCode} đang chờ thanh toán. Vui lòng hoàn tất hoặc hủy đơn trước khi chọn chuyến khác.`
+          : "Đơn đang chờ thanh toán. Vui lòng hoàn tất thanh toán trước."
+      );
+      return;
+    }
+
+    if (action.type === "confirm_replace") {
+      pendingSelectRef.current = () => {
+        replaceDraftLegSelection({
+          searchRoute,
+          leg,
+          newLegFingerprint: newLegFp,
+          fromLabel: from ?? undefined,
+          toLabel: to ?? undefined,
+        });
+        applyFn();
+        toast.success("Đã chuyển sang chuyến mới");
+        notifyDraftChange();
+      };
+      setReplaceDialogMessage(action.message);
+      setReplaceDialogOpen(true);
+      return;
+    }
+
+    if (action.type === "auto_replaced") {
+      replaceDraftLegSelection({
+        searchRoute,
+        leg,
+        newLegFingerprint: newLegFp,
+        fromLabel: from ?? undefined,
+        toLabel: to ?? undefined,
+      });
+      toast.success("Đã chuyển sang chuyến mới", { duration: 2500 });
+    }
+
+    applyFn();
+    notifyDraftChange();
+  };
+
+  const handleSelectDepartFlight = (flight: any, fareOptionIndex: number) => {
+    const isDeselect = selectedDepartFlight?.flightCode === flight.flightCode;
+    runSelectionWithDraftGate(
+      "depart",
+      flight,
+      fareOptionIndex,
+      isDeselect,
+      () => {
+        if (isDeselect) {
+          setSelectedDepartFlight(null);
+        } else {
+          applyDepartSelection(flight, fareOptionIndex);
+        }
+      }
+    );
+  };
+
+  const handleSelectReturnFlight = (flight: any, fareOptionIndex: number) => {
+    const isDeselect = selectedReturnFlight?.flightCode === flight.flightCode;
+    runSelectionWithDraftGate(
+      "return",
+      flight,
+      fareOptionIndex,
+      isDeselect,
+      () => {
+        if (isDeselect) {
+          setSelectedReturnFlight(null);
+        } else {
+          applyReturnSelection(flight, fareOptionIndex);
+        }
+      }
+    );
+  };
+
+  const handleConfirmReplaceDraft = () => {
+    setReplaceDialogOpen(false);
+    pendingSelectRef.current?.();
+    pendingSelectRef.current = null;
+  };
+
+  const handleCancelReplaceDraft = () => {
+    setReplaceDialogOpen(false);
+    pendingSelectRef.current = null;
   };
 
   useEffect(() => {
@@ -366,28 +624,71 @@ export default function ListFlights({
   }, [isRoundTrip, selectedReturnFlight, selectedDepartFlight]);
 
   const handleCheckout = useCallback(async () => {
-    const res = await fetch("/api/set-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        flightType: "NORMAL",
-      }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
+    const selections = loadSelectedFlightsForBooking();
+    if (!selections.length) return;
+
+    try {
+      setIsVerifying(true);
+      setVerifyError(null);
+
+      const contact = {
+        full_name: "GUEST CONTACT",
+        gender: "male",
+        phone: "0900000000",
+        email: "guest@happybook.com.vn",
+        address: "Vietnam",
+      };
+
+      const paxCounts = selections[0]?.paxCounts ?? { adult: 1, child: 0, infant: 0 };
+      const mockPassengers = buildMockPassengers(paxCounts);
+
+      const confirmPayload = buildFlightConfirmPricePayloadFromSelections({
+        selections,
+        passengers: mockPassengers,
+        contact,
+      });
+
+      const respon = await FlightApi.confirmPrice(confirmPayload);
+      if (respon?.status !== 200) {
+        const payload = respon?.payload ?? {};
+        const errDisplay = formatFlightBookingError(payload, language as "vi" | "en");
+        setVerifyError(errDisplay.message || "Hạng vé hoặc chuyến bay bạn chọn hiện không còn khả dụng trên hệ thống hãng bay.");
+        return;
+      }
+
+      // Save confirm result so Passenger Details page doesn't verify again
+      const confirmResult = respon?.payload?.data ?? respon?.payload;
+      handleSessionStorage("save", "flightConfirmPrice", {
+        confirm: confirmResult,
+        bookingDraft: null,
+      });
+
+      const res = await fetch("/api/set-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          flightType: "NORMAL",
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        window.location.href = "/ve-may-bay/thong-tin-hanh-khach";
+      }
+    } catch (err: any) {
+      const payload = err instanceof HttpError ? err.payload : err?.payload ?? err;
+      const errDisplay = formatFlightBookingError(payload, language as "vi" | "en");
+      setVerifyError(errDisplay.message || "Hệ thống gặp sự cố khi xác thực giá vé từ hãng bay.");
+    } finally {
+      setIsVerifying(false);
     }
-  }, []);
+  }, [language]);
+
 
   useEffect(() => {
     if (isCheckOut && typeof window !== "undefined") {
-      if (selectedDepartFlight) {
-        handleSessionStorage("save", "departFlight", selectedDepartFlight);
-      }
-      if (selectedReturnFlight) {
-        handleSessionStorage("save", "returnFlight", selectedReturnFlight);
-      } else {
+      if (!selectedReturnFlight) {
         handleSessionStorage("remove", "returnFlight");
+        handleSessionStorage("remove", "selectedFlightReturn");
       }
       if (flightSession) {
         handleSessionStorage("save", "flightSession", flightSession);
@@ -395,6 +696,32 @@ export default function ListFlights({
       if (flightType) {
         handleSessionStorage("save", "flightType", flightType);
       }
+      const selectionFingerprint = buildCombinedSelectionFingerprint({
+        depart: selectedDepartFlight
+          ? {
+              flight: selectedDepartFlight,
+              fareOptionIndex: getFareIndexFromFlight(selectedDepartFlight),
+            }
+          : null,
+        return: selectedReturnFlight
+          ? {
+              flight: selectedReturnFlight,
+              fareOptionIndex: getFareIndexFromFlight(selectedReturnFlight),
+            }
+          : null,
+      });
+      saveFlightDraftMetaForSearch({
+        startPoint: StartPoint ?? "",
+        endPoint: EndPoint ?? "",
+        tripType: isRoundTrip ? "roundTrip" : "oneWay",
+        departDate: departDate ?? "",
+        returnDate: isRoundTrip ? (returnDate ?? departDate ?? "") : (departDate ?? ""),
+        fromLabel: from ?? undefined,
+        toLabel: to ?? undefined,
+        stage: "selecting",
+        resumeUrl: "/ve-may-bay/thong-tin-hanh-khach",
+        selectionFingerprint,
+      });
       handleCheckout();
     }
   }, [
@@ -405,6 +732,13 @@ export default function ListFlights({
     flightType,
     flightSession,
     handleCheckout,
+    StartPoint,
+    EndPoint,
+    departDate,
+    returnDate,
+    from,
+    to,
+    isRoundTrip,
   ]);
 
   const flightsGroup: any = useMemo(
@@ -738,6 +1072,19 @@ export default function ListFlights({
           isOpen={showDetail}
           onClose={handleClosePopupFlightDetail}
           isLoadingFareRules={isLoadingFareRules}
+        />
+        <ReplaceFlightDraftDialog
+          open={replaceDialogOpen}
+          message={replaceDialogMessage}
+          onCancel={handleCancelReplaceDraft}
+          onConfirm={handleConfirmReplaceDraft}
+        />
+        <VerifyFlightPriceDialog
+          open={isVerifying || verifyError !== null}
+          loading={isVerifying}
+          error={verifyError}
+          language={language}
+          onClose={() => setVerifyError(null)}
         />
       </div>
     </Fragment>
