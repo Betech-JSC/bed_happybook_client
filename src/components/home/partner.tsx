@@ -5,7 +5,7 @@ import { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
-import { cloneItemsCarousel } from "@/utils/Helper";
+import { cloneItemsCarousel, getImageSrc } from "@/utils/Helper";
 
 export default function Partner({ data }: any) {
   if (data.length > 0 && data.length < 6) {
@@ -86,7 +86,7 @@ export default function Partner({ data }: any) {
             {data.map((item: any) => (
               <SwiperSlide key={item.id} className="basis-1/6">
                 <Image
-                  src={`${item.image_url}/${item.image_location}`}
+                  src={getImageSrc(item.image_url, item.image_location)}
                   alt={item.name || "Đối tác"}
                   width={250}
                   height={60}
@@ -123,7 +123,7 @@ export default function Partner({ data }: any) {
                 <SwiperSlide key={item.id} className="basis-1/6">
                   <div>
                     <Image
-                      src={`${item.image_url}/${item.image_location}`}
+                      src={getImageSrc(item.image_url, item.image_location)}
                       alt={item.name || "Đối tác"}
                       width={250}
                       height={60}

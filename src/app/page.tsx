@@ -100,14 +100,14 @@ export default async function Home() {
           />
         </Suspense>
         {bannerData && bannerData.length > 0 && (
-          <div className="absolute bottom-6 left-0 right-0 z-10 max-w-[960px] mx-auto px-3">
+          <div className="absolute bottom-6 left-0 right-0 z-10 max-w-[1100px] mx-auto">
             <BannerSlide data={bannerData} />
           </div>
         )}
       </div>
 
       {/* Search Mobile */}
-      <div className="mt-[68px] block lg:hidden relative min-h-[calc(100vh-68px)] flex flex-col pb-10 justify-center">
+      <div className="mt-[68px] block lg:hidden relative min-h-[calc(100vh-68px)] flex flex-col pb-10 justify-start">
         <HomeHeroMobileBackground />
         <div className="relative flex flex-col">
           <div>

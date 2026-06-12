@@ -4,6 +4,8 @@ import { unstable_cache } from "next/cache";
 
 const path = "/setting";
 
+const isDev = process.env.NODE_ENV === "development";
+
 const getCachedMetaSeo = unstable_cache(
   async () => {
     const response = await http.get<any>(
@@ -24,7 +26,7 @@ const getCachedMetaSeo = unstable_cache(
   },
   ["cached-setting-meta-seo"],
   {
-    revalidate: 60 * 60,
+    revalidate: isDev ? 1 : 60 * 60,
   }
 );
 

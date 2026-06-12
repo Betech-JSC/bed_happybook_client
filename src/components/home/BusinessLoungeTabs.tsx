@@ -12,6 +12,7 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { getImageSrc } from "@/utils/Helper";
 
 export default function BusinessLoungeTabs({
   title,
@@ -127,7 +128,7 @@ export default function BusinessLoungeTabs({
                               {item.image_url && item.image_location ? (
                                 <Image
                                   className="lg:group-hover:scale-105 ease-in-out w-full h-full duration-300 cursor-pointer object-cover"
-                                  src={`${item.image_url}/${item.image_location}`}
+                                  src={getImageSrc(item.image_url, item.image_location)}
                                   alt={item.name || "Image"}
                                   width={320}
                                   height={320}
