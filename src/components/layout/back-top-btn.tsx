@@ -5,15 +5,13 @@ import styles from "@/styles/styles.module.scss";
 import { usePathname } from "next/navigation";
 
 export default function BackToTopButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
   const pathname = usePathname();
   const isEsimRoute =
     pathname?.startsWith("/sim-du-lich") ||
     pathname?.startsWith("/sim-viet-nam") ||
     pathname?.startsWith("/sim-quoc-te");
-
-  if (isEsimRoute) return null;
-
-  const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => {
     if (window.scrollY > 200) {
@@ -31,14 +29,14 @@ export default function BackToTopButton() {
   };
 
   useEffect(() => {
+    if (isEsimRoute) return;
     window.addEventListener("scroll", toggleVisibility);
     return () => {
-      if (window.scrollY > 300) {
-        setIsVisible(true);
-      }
       window.removeEventListener("scroll", toggleVisibility);
     };
-  }, []);
+  }, [isEsimRoute]);
+
+  if (isEsimRoute) return null;
 
   return (
     <div className={styles.back__top}>
