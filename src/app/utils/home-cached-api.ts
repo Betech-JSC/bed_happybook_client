@@ -6,8 +6,8 @@ import { unstable_cache } from "next/cache";
 const isDev = process.env.NODE_ENV === "development";
 
 export const getCachedBanner = unstable_cache(
-    async (page: string) => {
-        return await BannerApi.getBannerPage(page);
+    async (page: string, locale?: string) => {
+        return await BannerApi.getBannerPage(page, locale);
     },
     ["cached-banner-home"],
     {
