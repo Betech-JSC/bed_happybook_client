@@ -32,13 +32,24 @@ export default function Search({
   const { t } = useTranslation();
 
   const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category[]") || searchParams.get("category");
+  let initialCategory: any = "";
+  if (categoryDefault) {
+    initialCategory = [categoryDefault];
+  } else if (categoryParam) {
+    const parsed = parseInt(categoryParam);
+    if (!isNaN(parsed)) {
+      initialCategory = [parsed];
+    }
+  }
+
   const [query, setQuery] = useState<{
     page: number;
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
-    "category[]": categoryDefault ? [categoryDefault] : "",
+    "category[]": initialCategory,
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
@@ -119,6 +130,35 @@ export default function Search({
   useEffect(() => {
     loadData();
   }, [query, loadData]);
+
+  useEffect(() => {
+    const categoryParam = searchParams.get("category[]") || searchParams.get("category");
+    let newCategory: any = "";
+    if (categoryDefault) {
+      newCategory = [categoryDefault];
+    } else if (categoryParam) {
+      const parsed = parseInt(categoryParam);
+      if (!isNaN(parsed)) {
+        newCategory = [parsed];
+      }
+    }
+    const newLocation = searchParams.get("location") ?? "";
+
+    setQuery((prev) => {
+      const isCategoryEqual = JSON.stringify(prev["category[]"]) === JSON.stringify(newCategory);
+      const isLocationEqual = prev.location === newLocation;
+      if (isCategoryEqual && isLocationEqual) {
+        return prev;
+      }
+      return {
+        ...prev,
+        page: 1,
+        location: newLocation,
+        "category[]": newCategory,
+        isFilters: true,
+      };
+    });
+  }, [searchParams, categoryDefault]);
 
   // Translate filter options when language changes
   useEffect(() => {

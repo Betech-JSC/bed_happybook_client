@@ -12,7 +12,6 @@ import { useUser } from "@/contexts/UserContext";
 import { AuthApi } from "@/api/Auth";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toSnakeCase } from "@/utils/Helper";
-import { normalizeSimDuLichCategory, useSimDuLichRegions } from "@/hooks/useSimDuLichRegions";
 
 export default function Header() {
   const { t } = useTranslation();
@@ -25,11 +24,8 @@ export default function Header() {
   const [querySeach, setQuerySeach] = useState<string>("");
   const [isStickyHeader, setStickyHeader] = useState<boolean>(true);
   const [isSticky, setSticky] = useState<boolean>(false);
-  const [isSimDuLichOpen, setIsSimDuLichOpen] = useState(false);
-  const simDuLichRef = useRef<HTMLDivElement>(null);
-  const simDuLichHoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const simDuLichRegions = useSimDuLichRegions(language);
   const logo = isSticky ? "/logo-footer.svg" : "/logo.svg";
+  const topNavItemClass = "whitespace-nowrap text-[16px] leading-none";
   const excludePaths = [
     "/",
     "/dang-nhap",
@@ -77,80 +73,17 @@ export default function Header() {
     }
   }, [isStickyHeader]);
 
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (simDuLichRef.current && !simDuLichRef.current.contains(event.target as Node)) {
-        setIsSimDuLichOpen(false);
-      }
-    };
+  const isAirportServiceActive =
+    pathname.startsWith("/fast-track") ||
+    pathname.startsWith("/phong-cho-thuong-gia") ||
+    pathname.startsWith("/thue-xe") ||
+    pathname.startsWith("/bao-hiem") ||
+    pathname.startsWith("/flight-radar");
 
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
-
-  useEffect(() => {
-    if (simDuLichHoverTimeoutRef.current) {
-      clearTimeout(simDuLichHoverTimeoutRef.current);
-      simDuLichHoverTimeoutRef.current = null;
-    }
-    setIsSimDuLichOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    return () => {
-      if (simDuLichHoverTimeoutRef.current) {
-        clearTimeout(simDuLichHoverTimeoutRef.current);
-        simDuLichHoverTimeoutRef.current = null;
-      }
-    };
-  }, []);
-
-  const activeSimCategory =
-    pathname.startsWith("/sim-viet-nam")
-      ? "viet-nam"
-      : pathname.startsWith("/sim-quoc-te") || pathname.startsWith("/sim-du-lich/quoc-te")
-        ? "quoc-te"
-        : "";
-
-  const simRegionMenuMeta: Record<
-    string,
-    { icon: string; iconAlt: string; description: string }
-  > = {
-    "viet-nam": {
-      icon: "/icon/VN flag.svg",
-      iconAlt: "Việt Nam",
-      description: t(
-        toSnakeCase("Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.")
-      ),
-    },
-    "quoc-te": {
-      icon: "/sim-du-lich/esim-international-icon.svg",
-      iconAlt: "Quốc tế",
-      description: t(
-        toSnakeCase("Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.")
-      ),
-    },
-  };
-
-  const openSimDuLichMenu = () => {
-    if (simDuLichHoverTimeoutRef.current) {
-      clearTimeout(simDuLichHoverTimeoutRef.current);
-      simDuLichHoverTimeoutRef.current = null;
-    }
-    setIsSimDuLichOpen(true);
-  };
-
-  const closeSimDuLichMenu = () => {
-    if (simDuLichHoverTimeoutRef.current) {
-      clearTimeout(simDuLichHoverTimeoutRef.current);
-    }
-
-    simDuLichHoverTimeoutRef.current = setTimeout(() => {
-      setIsSimDuLichOpen(false);
-      simDuLichHoverTimeoutRef.current = null;
-    }, 150);
-  };
-
+  const isSimDuLichMenuActive =
+    pathname.startsWith("/sim-du-lich") ||
+    pathname.startsWith("/sim-viet-nam") ||
+    pathname.startsWith("/sim-quoc-te");
 
 
   return (
@@ -399,69 +332,175 @@ export default function Header() {
               </div>
             </div>
           )}
-
-          {/* Menu Button */}
-          {/* <div
-            className={`${styles.nav_icon} ${isMenuOpen ? styles.open : ""}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </div> */}
         </div>
+
         {/* Navigation */}
         <div className="mx-auto relative lg:px-[50px] xl:px-[80px] sm:px-3">
-          <nav className="flex h-[26px] space-x-8">
+          <nav className="flex h-[26px] items-center space-x-5 xl:space-x-6">
+            {/* 1. Vé máy bay */}
             <Link
               href="/ve-may-bay"
-              className={clsx(styles.header__menu_item, {
+              className={clsx(styles.header__menu_item, topNavItemClass, {
                 [styles.active]: pathname.startsWith("/ve-may-bay"),
               })}
             >
               {t("ve_may_bay")}
             </Link>
 
-            <Link
-              href="/du-thuyen"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/du-thuyen"),
-              })}
-            >
-              {t("du_thuyen")}
-            </Link>
-
-            <Link
-              href="/ve-vui-choi"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/ve-vui-choi"),
-              })}
-            >
-              {t("ve_vui_choi_hoat_dong")}
-            </Link>
-
+            {/* 2. Khách sạn */}
             <Link
               href="/khach-san"
-              className={clsx(styles.header__menu_item, {
+              className={clsx(styles.header__menu_item, topNavItemClass, {
                 [styles.active]: pathname.startsWith("/khach-san"),
               })}
             >
               {t("khach_san")}
             </Link>
 
+            {/* 3. Visa */}
             <div
-              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/tours"),
+              className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
+                [styles.active]: pathname.startsWith("/visa") || pathname.startsWith("/tu-van-nhan-visa"),
               })}
             >
-              <span className="mr-1">
-                <Link href="/tours">{t("Tours")}</Link>
-              </span>
-              <div className="h-5 self-center">
+              <span className="flex items-center gap-1">
+                <Link href="/visa">{t("visa")}</Link>
                 <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
+              </span>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[360px] max-w-[calc(100vw-24px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+                  Visa
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <Link href="/visa" className="flex items-start gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">🌏</span>
+                    <span className="min-w-0 text-[#101828] font-medium text-[14px] leading-snug whitespace-normal">{t("danh_sach_visa_cac_nuoc")}</span>
+                  </Link>
+                  <Link href="/tu-van-nhan-visa" className="flex items-start gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">💬</span>
+                    <span className="min-w-0 text-[#101828] font-medium text-[14px] leading-snug whitespace-normal">{t("tu_van_visa_mien_phi")}</span>
+                  </Link>
+                </div>
               </div>
+            </div>
+
+            {/* 4. Dịch vụ tại sân bay */}
+            <div
+              className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
+                [styles.active]: isAirportServiceActive,
+              })}
+            >
+              <span className="flex items-center gap-1">
+                {t("dich_vu_tai_san_bay")}
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <div
+                className={`absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-5 w-[420px] max-w-[calc(100vw-24px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4`}
+              >
+                <div className="text-gray-400 text-xs font-bold mb-4 uppercase tracking-wider block cursor-default text-left">
+                  {t("dich_vu_tai_san_bay")}
+                </div>
+                <div className="flex flex-col space-y-2 max-h-[300px] overflow-y-auto overflow-x-hidden custom-scrollbar pr-2">
+                  <div className="flex flex-col">
+                    <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                      <img src="/icon/fast-track.png" alt={t("don_tien_uu_tien_fast_track")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                      <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
+                        <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("don_tien_uu_tien_fast_track")}</div>
+                        <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("ho_tro_xuat_nhap_canh_nhanh_rut_ngan_thoi_gian_cho_hang")}</div>
+                      </div>
+                    </Link>
+                    <div className="flex flex-col gap-3 pl-[58px] mt-1.5 mb-3">
+                      <Link href="/fast-track/xuat-canh" className="text-gray-600 hover:text-blue-600 font-medium text-[15px] transition-colors w-fit flex items-center gap-2.5 group">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-600 transition-colors flex-shrink-0"></span>
+                        {t("xuat_canh")}
+                      </Link>
+                      <Link href="/fast-track/nhap-canh" className="text-gray-600 hover:text-blue-600 font-medium text-[15px] transition-colors w-fit flex items-center gap-2.5 group">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-600 transition-colors flex-shrink-0"></span>
+                        {t("nhap_canh")}
+                      </Link>
+                    </div>
+                  </div>
+                  <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/insurance.png" alt="Phòng chờ thương gia" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("phong_cho_thuong_gia")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("tan_huong_khong_gian_thu_gian_cao_cap_va_tien_nghi_truoc_chuyen_hanh_trinh_sap_toi")}</div>
+                    </div>
+                  </Link>
+                  <Link href="/thue-xe" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/car.svg" alt={t("dua_don_san_bay")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("dua_don_san_bay")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("xe_rieng_dua_don_tan_noi_dung_gio_chu_dao_247")}</div>
+                    </div>
+                  </Link>
+                  {/* Flight Radar link from master */}
+                  <Link href="/flight-radar" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
+                    <img src="/icon/AirplaneTiltBlue.svg" alt="Flight Radar" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                    <div className="flex flex-col items-start text-left group/item">
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("flight_radar")}</div>
+                      <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("tra_cuu_va_theo_doi_tinh_trang_chuyen_bay_truc_tuyen")}</div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Vé vui chơi */}
+            <Link
+              href="/ve-vui-choi"
+              className={clsx(styles.header__menu_item, topNavItemClass, {
+                [styles.active]: pathname.startsWith("/ve-vui-choi"),
+              })}
+            >
+              {t("ve_vui_choi_hoat_dong")}
+            </Link>
+
+            {/* 6. Sim du lịch */}
+            <div
+              className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
+                [styles.active]: isSimDuLichMenuActive,
+              })}
+            >
+              <span className="flex items-center gap-1">
+                <Link href="/sim-du-lich">{t("sim_du_lich")}</Link>
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[240px] max-w-[calc(100vw-24px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+                  {t("sim_du_lich")}
+                </div>
+                <div className="flex flex-col space-y-1">
+                  <Link href="/sim-viet-nam" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">🇻🇳</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("sim_du_lich_viet_nam")}</span>
+                  </Link>
+                  <Link href="/sim-du-lich/quoc-te" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
+                    <span className="text-xl">✈️</span>
+                    <span className="text-[#101828] font-medium text-[14px]">{t("sim_du_lich_quoc_te")}</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* 7. Tour */}
+            <div
+              className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass, {
+                [styles.active]: pathname.startsWith("/tours"),
+              })}
+            >
+              <span className="flex items-center gap-1">
+                <Link href="/tours">{t("tours")}</Link>
+                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
               <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
                 <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
                   Tours
@@ -479,232 +518,23 @@ export default function Header() {
               </div>
             </div>
 
+
+            {/* 9. Du thuyền */}
             <Link
-              href="/combo"
-              className={clsx(styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/combo"),
+              href="/du-thuyen"
+              className={clsx(styles.header__menu_item, topNavItemClass, {
+                [styles.active]: pathname.startsWith("/du-thuyen"),
               })}
             >
-              {t("combo")}
+              {t("du_thuyen")}
             </Link>
 
+            {/* 10. Dành cho bạn */}
             <div
-              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/visa"),
-              })}
+              className={clsx(`relative flex items-center group cursor-pointer`, styles.header__menu_item, topNavItemClass)}
             >
-              <span className="mr-1">
-                <Link href="/visa">{t("visa")}</Link>
-              </span>
-              <div className="h-5 self-center">
-                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[240px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
-                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
-                  Visa
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <Link href="/visa" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
-                    <span className="text-xl">🌏</span>
-                    <span className="text-[#101828] font-medium text-[14px]">{t("danh_sach_visa_cac_nuoc")}</span>
-                  </Link>
-                  <Link href="/tu-van-nhan-visa" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
-                    <span className="text-xl">💬</span>
-                    <span className="text-[#101828] font-medium text-[14px]">{t("tu_van_visa_mien_phi")}</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div
-              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item, {
-                [styles.active]: pathname.startsWith("/fast-track") || pathname.startsWith("/bao-hiem") || pathname.startsWith("/sim") || pathname.startsWith("/phong-cho-thuong-gia"),
-              })}
-            >
-              <span className="mr-1">
-                {t("tien_ich")}
-              </span>
-              <div className="h-5 self-center">
-                <svg width="16" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 7.5L10 12.5L15 7.5" stroke={isSticky ? "#283448" : "#fff"} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div
-                className={`absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-5 w-[380px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4`}
-              >
-                <div className="text-gray-400 text-xs font-bold mb-4 uppercase tracking-wider block cursor-default text-left">
-                  {t("dich_vu_tien_ich")}
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/fast-track.png" alt="Fast Track" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                    <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("dich_vu_tai_san_bay")}</div>
-                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("ho_tro_lam_thu_tuc_nhanh_chong_tai_san_bay")}</div>
-                    </div>
-                  </Link>
-
-                  <Link href="/bao-hiem" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/insurance.png" alt="Bảo hiểm" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                    <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("bao_hiem")}</div>
-                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("bao_ve_suc_khoe_va_tai_san_cho_toan_bo_chuyen_di_cua_ban")}</div>
-                    </div>
-                  </Link>
-
-                  <div
-                    ref={simDuLichRef}
-                    className="relative"
-                    onMouseEnter={openSimDuLichMenu}
-                    onMouseLeave={closeSimDuLichMenu}
-                    onFocusCapture={openSimDuLichMenu}
-                    onBlurCapture={(event) => {
-                      const nextFocusedNode = event.relatedTarget;
-
-                      if (!nextFocusedNode || !simDuLichRef.current?.contains(nextFocusedNode as Node)) {
-                        closeSimDuLichMenu();
-                      }
-                    }}
-                  >
-                    <div className="!flex items-start gap-4 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto text-left hover:bg-blue-50">
-                      <Link
-                        href="/sim-du-lich"
-                        className="flex min-w-0 flex-1 items-start gap-4 text-left"
-                      >
-                        <img src="/icon/sim.png" alt="Sim du lịch" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                        <div className="flex flex-col items-start text-left min-w-0">
-                          <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 transition-colors">
-                            {t("sim_du_lich")}
-                          </div>
-                          <div className="text-gray-500 text-xs leading-relaxed font-normal">
-                            {t("internet_toan_cau_voi_muc_gia_re_hon_data_roaming_khong_can_thao_lap_sim")}
-                          </div>
-                        </div>
-                      </Link>
-
-                      <div
-                        aria-hidden="true"
-                        className={`mt-1 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 pointer-events-none ${
-                          isSimDuLichOpen
-                            ? "rotate-180 bg-white/80 text-slate-700"
-                            : "text-slate-500"
-                        }`}
-                      >
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M5 7.5L10 12.5L15 7.5"
-                            stroke="currentColor"
-                            strokeWidth="1.66667"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-
-                    <div
-                      aria-hidden={!isSimDuLichOpen}
-                      className={`absolute left-full top-0 ml-3 w-[330px] rounded-3xl border border-slate-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.12)] z-50 transform-gpu origin-top-left transition-[opacity,transform] duration-200 ease-out before:absolute before:-left-3 before:top-0 before:h-full before:w-3 before:content-[''] before:bg-transparent ${
-                        isSimDuLichOpen
-                          ? "pointer-events-auto opacity-100 translate-x-0 translate-y-0 scale-100"
-                          : "pointer-events-none opacity-0 translate-x-0 translate-y-2 scale-[0.98]"
-                      }`}
-                      onMouseEnter={openSimDuLichMenu}
-                      onMouseLeave={closeSimDuLichMenu}
-                    >
-                      <div className="flex flex-col gap-2">
-                        {simDuLichRegions.length > 0 ? (
-                          simDuLichRegions.map((item) => {
-                            const category = normalizeSimDuLichCategory(item.label);
-                            const itemMeta = simRegionMenuMeta[category] ?? {
-                              icon: "/icon/sim.png",
-                              iconAlt: item.label,
-                              description: t(
-                                toSnakeCase(
-                                  "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim"
-                                )
-                              ),
-                            };
-                            const isActive =
-                              activeSimCategory &&
-                              item.href.toLowerCase().includes(activeSimCategory);
-
-                            return (
-                              <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setIsSimDuLichOpen(false)}
-                                className={`group/link flex items-start gap-4 rounded-2xl border px-4 py-4 transition-all duration-300 ${
-                                  isActive
-                                    ? "border-blue-200 bg-[#EEF4FF]"
-                                    : "border-transparent hover:border-slate-200 hover:bg-slate-50"
-                                }`}
-                              >
-                                <div
-                                  className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl ${
-                                    isActive ? "bg-white" : "bg-slate-100"
-                                  }`}
-                                >
-                                  <Image
-                                    src={itemMeta.icon}
-                                    alt={itemMeta.iconAlt}
-                                    width={24}
-                                    height={24}
-                                    className="h-6 w-6 object-contain"
-                                  />
-                                </div>
-
-                                <div className="min-w-0 text-left">
-                                  <div
-                                    className={`text-[15px] font-semibold leading-tight transition-colors ${
-                                      isActive
-                                        ? "text-blue-600"
-                                        : "text-[#101828] group-hover/link:text-blue-600"
-                                    }`}
-                                  >
-                                    {item.label}
-                                  </div>
-                                  <div className="mt-1 text-xs leading-relaxed text-slate-500">
-                                    {itemMeta.description}
-                                  </div>
-                                </div>
-                              </Link>
-                            );
-                          })
-                        ) : (
-                          <div className="px-4 py-4 text-sm text-slate-500">
-                            {t("Đang tải dữ liệu...")}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <Link href="/phong-cho-thuong-gia" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/lounge.png" alt="Phòng chờ thương gia" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                    <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("phong_cho_thuong_gia")}</div>
-                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("tan_huong_khong_gian_thu_gian_cao_cap_va_tien_nghi_truoc_chuyen_hanh_trinh_sap_toi")}</div>
-                    </div>
-                  </Link>
-
-                  <Link href="/flight-radar" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
-                    <img src="/icon/AirplaneTiltBlue.svg" alt="Flight Radar" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
-                    <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors">{t("flight_radar")}</div>
-                      <div className="text-gray-500 text-xs leading-relaxed font-normal">{t("tra_cuu_va_theo_doi_tinh_trang_chuyen_bay_truc_tuyen")}</div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div
-              className={clsx(`relative flex group cursor-pointer`, styles.header__menu_item)}
-            >
-              <span className="mr-1">{t("danh_cho_ban")}</span>
-              <div className="h-5 self-center">
+              <span className="flex items-center gap-1">
+                {t("danh_cho_ban")}
                 <svg
                   width="16"
                   height="14"
@@ -720,15 +550,15 @@ export default function Header() {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </div>
-              <div className="absolute top-full right-0 bg-white rounded-xl shadow-xl p-4 w-[220px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
-                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default">
+              </span>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-4 w-[360px] max-w-[calc(100vw-24px)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                <div className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider cursor-default text-left">
                   {t("danh_cho_ban")}
                 </div>
                 <div className="flex flex-col space-y-1">
                   <Link href="/dang-ky-ctv" className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300">
-                    <span className="text-xl">📝</span>
-                    <span className="text-[#101828] font-medium text-[14px]">{t("dang_ky_ctv")}</span>
+                    <span className="text-xl flex-shrink-0">📝</span>
+                    <span className="text-[#101828] font-medium text-[14px] leading-snug min-w-0 flex-1 whitespace-normal break-words text-left">{t("dang_ky_ctv")}</span>
                   </Link>
                   {GeneralInforPaths.map(
                     (
@@ -740,8 +570,8 @@ export default function Header() {
                         href={item.url}
                         className="flex items-center gap-3 hover:bg-blue-50 px-3 py-2 -mx-3 rounded-xl transition-all duration-300"
                       >
-                        <span className="text-xl">📄</span>
-                        <span className="text-[#101828] font-medium text-[14px]">{t(toSnakeCase(item.title))}</span>
+                        <span className="text-xl flex-shrink-0">📄</span>
+                        <span className="text-[#101828] font-medium text-[14px] leading-snug min-w-0 flex-1 whitespace-normal break-words text-left">{t(toSnakeCase(item.title))}</span>
                       </Link>
                     )
                   )}

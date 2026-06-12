@@ -158,6 +158,11 @@ export default function SideBarFilterProduct({
                               value={option.value}
                               disabled={isDisabled}
                               className={`flex-shrink-0 ${TourStyle.custom_checkbox}`}
+                              checked={
+                                query[`${group.name}[]`]?.includes(
+                                  option?.value?.toString()
+                                ) || false
+                              }
                               onChange={(e) =>
                                 handleFilterChange(
                                   `${group.name}[]`,

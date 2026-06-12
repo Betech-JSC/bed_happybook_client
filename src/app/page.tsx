@@ -1,5 +1,7 @@
 import { Fragment, Suspense } from "react";
 import Banner from "@/components/home/banner";
+import { getCachedBanner } from "@/app/utils/home-cached-api";
+import BannerSlide from "@/components/home/BannerSlide";
 import AosAnimate from "@/components/layout/aos-animate";
 import Search from "@/components/home/search";
 import type { Metadata } from "next";
@@ -11,6 +13,9 @@ import { formatMetadata } from "@/lib/formatters";
 import { settingApi } from "@/api/Setting";
 import SkeletonProductTabs from "@/components/skeletons/SkeletonProductTabs";
 import { getServerT } from "@/lib/i18n/getServerT";
+import { VisaApi } from "@/api/Visa";
+import { ProductLocation } from "@/api/ProductLocation";
+import { getServerLang } from "@/lib/session";
 import {
   HomeHeroDesktopBackground,
   HomeHeroMobileBackground,
@@ -73,7 +78,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [airportsData, seo, t] = await Promise.all([
+  const language = await getServerLang();
+  const [airportsData, seo, t, visaOptions, locationsData, bannerDataRes] = await Promise.all([
     FlightApi.getCachedAirports().catch((e) => {
       console.warn("[Home] getCachedAirports failed:", e);
       return [];
@@ -83,36 +89,67 @@ export default async function Home() {
       return {};
     }),
     getServerT(),
+    VisaApi.getOptionsFilter(undefined, language).then(res => res?.payload?.data || []).catch(() => []),
+    ProductLocation.list(language).then(res => res?.payload?.data || []).catch(() => []),
+    getCachedBanner("home", language).catch((e) => {
+      console.warn("[Home] getCachedBanner failed:", e);
+      return null;
+    }),
   ]);
+
+  const bannerData = bannerDataRes?.payload?.data || [];
+
+  const comboLocations = locationsData?.length > 0
+    ? locationsData.map((opt: any) => ({
+      value: opt.id,
+      label: opt.name,
+    }))
+    : [];
+
   return (
     <Fragment>
       <WebsiteSchema />
       <h1 className="sr-only">{seo?.seo_title || "Happy Book - Dịch vụ du lịch hàng đầu"}</h1>
 
-      {/* Search Desktop Background - Moved to Server Component for LCP optimization */}
-      <HomeHeroDesktopBackground />
-
-      <Suspense fallback={null}>
-        <Search airportsData={airportsData} />
-      </Suspense>
+      {/* Search Desktop */}
+      <div className="hidden lg:block relative">
+        <HomeHeroDesktopBackground />
+        <Suspense fallback={null}>
+          <Search
+            airportsData={airportsData}
+            visaOptionsFilter={visaOptions}
+            comboLocations={comboLocations}
+          />
+        </Suspense>
+        {bannerData && bannerData.length > 0 && (
+          <div className="absolute bottom-6 left-0 right-0 z-10 max-w-[1100px] mx-auto">
+            <BannerSlide data={bannerData} />
+          </div>
+        )}
+      </div>
 
       {/* Search Mobile */}
-      <div className="mt-[68px] block lg:hidden relative h-max pb-10">
-        <div className="mt-4 h-full">
-          <HomeHeroMobileBackground />
-          <div className="relative">
+      <div className="mt-[68px] block lg:hidden relative min-h-[calc(100vh-68px)] flex flex-col pb-10 justify-start">
+        <HomeHeroMobileBackground />
+        <div className="relative flex flex-col">
+          <div>
             <Suspense fallback={null}>
-              <SearchMobile airportsData={airportsData} />
+              <SearchMobile
+                airportsData={airportsData}
+                visaOptionsFilter={visaOptions}
+                comboLocations={comboLocations}
+              />
             </Suspense>
           </div>
+          {bannerData && bannerData.length > 0 && (
+            <div className="mt-0 px-3 relative z-10 w-full">
+              <BannerSlide data={bannerData} />
+            </div>
+          )}
         </div>
       </div>
       <main className="w-full bg-white relative z-2 rounded-2xl">
-        <Suspense fallback={<SkeletonProductTabs />}>
-          <div className="pt-7 px-3 lg:px-[50px] xl:px-[80px] max__screen">
-            <Banner></Banner>
-          </div>
-        </Suspense>
+
 
         <Suspense fallback={<SkeletonProductTabs />}>
           <AosAnimate>

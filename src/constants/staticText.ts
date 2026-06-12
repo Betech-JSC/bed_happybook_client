@@ -172,12 +172,15 @@ const headerStaticText: string[] = [
   "Tour nội địa",
   "Tour quốc tế",
   "Combo",
+  "Combo tiết kiệm",
   "Visa",
   "Bảo hiểm",
   "Định cư",
   "Tiện ích",
   "Dịch vụ tiện ích",
   "Dịch vụ tại sân bay",
+  "Dịch vụ đưa đón sân bay",
+  "Hỗ trợ xuất nhập cảnh nhanh, rút ngắn thời gian chờ hàng.",
   "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
   "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Dành cho bạn",
@@ -191,10 +194,6 @@ const headerStaticText: string[] = [
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
-  "Tiện ích",
-  "Dịch vụ tiện ích",
-  "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
-  "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Sim du lịch",
   "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim",
   "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
@@ -202,6 +201,13 @@ const headerStaticText: string[] = [
   "Sim du lịch quốc tế",
   "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
   "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
+  "Đón tiễn ưu tiên (FastTrack)",
+  "Xuất cảnh",
+  "Nhập cảnh",
+  "Vé tàu",
+  "Thuê xe",
+  "Đưa đón sân bay",
+  "Xe riêng đưa đón tận nơi, đúng giờ, chu đáo 24/7.",
   "Flight Radar",
   "Tra cứu và theo dõi tình trạng chuyến bay trực tuyến",
 ];
@@ -232,6 +238,8 @@ const footerStaticText: string[] = [
 ];
 
 const generalStaticText: string[] = [
+  "Tìm du thuyền",
+  "Nơi đi",
   "Chọn điểm đi",
   "Chọn điểm đến",
   "Từ",
@@ -385,6 +393,7 @@ const generalStaticText: string[] = [
   "Vui lòng nhập giờ đáp cho dịch vụ đón sân bay",
   "Vui lòng nhập giờ bay cho dịch vụ tiễn sân bay",
 ];
+
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
   "Chơi Hè Thả Ga, Không Lo Về Giá",
@@ -392,6 +401,7 @@ const tourStaticText: string[] = [
   "Tour Du Lịch Nước Ngoài Cao Cấp",
   "Trải Nghiệm Thế Giới, Khám Phá Bản Thân",
 ];
+
 const comboStaticText2: string[] = [
   "Khám phá các điểm đến HOT",
   "Các combo du lịch ưu đãi",

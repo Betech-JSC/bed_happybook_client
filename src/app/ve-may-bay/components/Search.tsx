@@ -226,8 +226,8 @@ export default function Search({
   return (
     <Suspense>
       <div id="wrapper-search-ticket-flight">
-        <div className="grid grid-cols-6 lg:flex lg:space-x-12 gap-4 mb-4">
-          <label className="col-span-2 flex items-center space-x-2">
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <label className="flex items-center space-x-2">
             <input
               type="radio"
               // name="tripType"
@@ -238,7 +238,7 @@ export default function Search({
             />
             <span className="text-black">{t("mot_chieu")}</span>
           </label>
-          <label className="col-span-2 flex items-center space-x-2">
+          <label className="flex items-center lg:justify-center space-x-2">
             <input
               type="radio"
               // name="tripType"
@@ -248,7 +248,7 @@ export default function Search({
             />
             <span className="text-black">{t("khu_hoi")}</span>
           </label>
-          <label className="col-span-2 flex items-center space-x-2">
+          <label className="flex items-center lg:justify-end space-x-2">
             <input
               type="checkbox"
               className="form-checkbox w-4 h-4"

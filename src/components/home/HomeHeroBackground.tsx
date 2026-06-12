@@ -66,7 +66,7 @@ function AutoBanner({
 
 export function HomeHeroDesktopBackground() {
   return (
-    <div className="hidden lg:block absolute inset-0 h-[694px]">
+    <div className="hidden lg:block absolute inset-0 h-[850px]">
       <AutoBanner slides={desktopSlides} className="absolute inset-0" />
       <div
         className="absolute inset-0"
