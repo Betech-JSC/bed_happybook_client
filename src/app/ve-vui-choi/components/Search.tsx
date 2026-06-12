@@ -37,13 +37,14 @@ export default function Search({
   const { language } = useLanguage();
 
   const searchParams = useSearchParams();
+  const paramCategory = searchParams.get("category");
   const [query, setQuery] = useState<{
     page: number;
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
-    // departureDate: format(today, "yyyy-MM-dd"),
+    "category[]": paramCategory ? [paramCategory] : [],
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);

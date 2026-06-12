@@ -12,6 +12,7 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { getImageSrc } from "@/utils/Helper";
 
 export default function AmusementTicketTabs({
   title,
@@ -120,7 +121,7 @@ export default function AmusementTicketTabs({
                             <Link href={`/ve-vui-choi/${item.slug}`} className="pointer-events-none">
                               <Image
                                 className="lg:group-hover:scale-105 ease-in-out duration-300 w-full h-full cursor-pointer object-cover"
-                                src={`${item.image_url}/${item.image_location}`}
+                                src={getImageSrc(item.image_url, item.image_location)}
                                 alt={item.name}
                                 width={320}
                                 height={320}

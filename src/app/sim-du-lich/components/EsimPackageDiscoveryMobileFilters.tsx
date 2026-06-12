@@ -27,7 +27,6 @@ type Props = {
   showPriceFilters?: boolean;
   sortMode: SortMode;
   onSortModeChange: (mode: SortMode) => void;
-  packagesCount: number;
 };
 
 type MobileSheet = "location" | "filters" | null;
@@ -48,7 +47,6 @@ export default function EsimPackageDiscoveryMobileFilters({
   showPriceFilters = true,
   sortMode,
   onSortModeChange,
-  packagesCount,
 }: Props) {
   const t = useSimDuLichStaticText(activeLocale);
   const [mobileSheet, setMobileSheet] = useState<MobileSheet>(null);
@@ -355,7 +353,7 @@ export default function EsimPackageDiscoveryMobileFilters({
             onClick={applyMobileDraft}
             className="rounded-lg bg-hb-coral px-5 py-3 text-sm font-extrabold text-white shadow-sm"
           >
-            {t("Show", "Show")} {packagesCount} {t("kết quả", "results")}
+            {t("Show results", "Show results")}
           </button>
         </div>
       </div>

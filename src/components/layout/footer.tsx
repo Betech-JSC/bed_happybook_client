@@ -237,7 +237,7 @@ export default async function Footer() {
                   href="/fast-track"
                   className={`block mt-3 ${styles.text_hover_default}`}
                 >
-                  {t("dich_vu_tai_san_bay")}
+                  {t("don_tien_uu_tien_fast_track")}
                 </Link>
                 <Link
                   href="/phong-cho-thuong-gia"
@@ -245,6 +245,14 @@ export default async function Footer() {
                 >
                   {t("phong_cho_thuong_gia")}
                 </Link>
+                <a
+                  href="https://zalo.me/2451421179976954585/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`block mt-3 ${styles.text_hover_default}`}
+                >
+                  {t("dua_don_san_bay")}
+                </a>
               </div>
             </div>
             <div>

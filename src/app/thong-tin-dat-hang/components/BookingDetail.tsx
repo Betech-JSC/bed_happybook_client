@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
-import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
+import { getImageSrc, handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
 import { useForm } from "react-hook-form";
@@ -99,6 +99,8 @@ export default function BookingDetail() {
     },
   });
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchOrderData = async () => {
       // Ưu tiên đọc từ sessionStorage trước
@@ -130,6 +132,23 @@ export default function BookingDetail() {
 
     fetchOrderData();
   }, [orderCodeFromUrl]);
+
+  const isFastTrack = data?.product?.product_type === "fast-track";
+  const isEnglish = language === "en";
+  const showPayPalOnly = isFastTrack && isEnglish;
+
+  useEffect(() => {
+    const isAmusementPaypal = data?.code?.startsWith("EVT") && language === "en";
+    if (showPayPalOnly || isAmusementPaypal) {
+      setValue("payment_method", "paypal");
+      setSelectedPaymentMethod("paypal");
+    } else {
+      if (selectedPaymentMethod === "paypal") {
+        setValue("payment_method", "");
+        setSelectedPaymentMethod("");
+      }
+    }
+  }, [showPayPalOnly, language, data?.code, selectedPaymentMethod, setValue]);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -215,12 +234,6 @@ export default function BookingDetail() {
     }
   }, [selectedPaymentMethod]);
 
-  useEffect(() => {
-    if (data?.code?.startsWith("EVT") && language === "en") {
-      setSelectedPaymentMethod("paypal");
-      setValue("payment_method", "paypal");
-    }
-  }, [data?.code, language, setValue]);
 
   const onSubmit = async (dataForm: CheckOutBodyType) => {
     if (!data?.code) {
@@ -271,20 +284,33 @@ export default function BookingDetail() {
         } else if (selectedPaymentMethod === "paypal") {
           setIsGeneratingPaymentUrl(true);
           try {
-            const paymentResult = await BookingProductApi.paypalCreateTicketOrder({
-              order_code: data.code,
-            });
+            if (data.code.startsWith("EVT")) {
+              const paymentResult = await BookingProductApi.paypalCreateTicketOrder({
+                order_code: data.code,
+              });
 
-            if (paymentResult?.status === 200 && paymentResult?.payload?.data?.approval_url) {
-              window.location.href = paymentResult.payload.data.approval_url;
-              toast.success(t("dang_chuyen_toi_paypal") || "Redirecting to PayPal...");
+              if (paymentResult?.status === 200 && paymentResult?.payload?.data?.approval_url) {
+                window.location.href = paymentResult.payload.data.approval_url;
+                toast.success(t("dang_chuyen_toi_paypal") || "Redirecting to PayPal...");
+              } else {
+                setIsGeneratingPaymentUrl(false);
+                toast.error(paymentResult?.payload?.message || t("khong_the_tao_link_thanh_toan"));
+              }
             } else {
-              setIsGeneratingPaymentUrl(false);
-              toast.error(paymentResult?.payload?.message || t("khong_the_tao_link_thanh_toan"));
+              const paymentResult = await BookingProductApi.paypalCreateOrder({
+                order_code: data.code,
+              });
+
+              if (paymentResult?.payload?.success && paymentResult?.payload?.data?.approval_url) {
+                window.location.href = paymentResult.payload.data.approval_url;
+              } else {
+                setIsGeneratingPaymentUrl(false);
+                toast.error(paymentResult?.payload?.message || t("Không thể tạo link thanh toán PayPal."));
+              }
             }
           } catch (paymentError: any) {
             setIsGeneratingPaymentUrl(false);
-            console.error("Error generating PayPal payment URL:", paymentError);
+            console.error("Error generating PayPal URL:", paymentError);
             toast.error(t("co_loi_xay_ra_khi_tao_link_thanh_toan"));
           }
         } else if (selectedPaymentMethod === "vietqr") {
@@ -336,6 +362,12 @@ export default function BookingDetail() {
             </p>
           </div>
         </div>
+
+        {data?.isEmailRecovery && (
+          <div className="mt-4 bg-amber-50 text-amber-800 font-medium px-4 py-3 rounded w-full text-base border border-amber-200">
+            <p>Đang xem thông tin đơn hàng từ email. Một số thông tin có thể bị ẩn để bảo mật.</p>
+          </div>
+        )}
 
         {pollingStatus && !isPaid && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
@@ -629,38 +661,60 @@ export default function BookingDetail() {
                 {t("hinh_thuc_thanh_toan")}
               </p>
               <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                {language === "en" && data?.code?.startsWith("EVT") ? (
+                {showPayPalOnly || (language === "en" && data?.code?.startsWith("EVT")) ? (
                   <div className="flex space-x-3 items-center">
                     <input
                       type="radio"
                       value="paypal"
                       id="payment_paypal"
                       {...register("payment_method")}
-                      className="w-5 h-5 shrink-0"
+                      className="w-5 h-5 shrink-0 mt-[2px]"
                       checked={selectedPaymentMethod === "paypal"}
                       onChange={(e) => {
                         setValue("payment_method", e.target.value);
                         setSelectedPaymentMethod(e.target.value);
                       }}
                     />
-                    <label
-                      htmlFor="payment_paypal"
-                      className="flex items-center gap-4 cursor-pointer"
-                    >
-                      <div className="flex h-11 min-w-[92px] items-center justify-center rounded-2xl border border-[#D7E3FA] bg-[#F7FAFF] px-3 shadow-sm">
-                        <span
-                          className="text-[17px] font-extrabold italic leading-none tracking-[-0.02em] text-[#003087]"
-                          style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}
-                        >
-                          PayPal
-                        </span>
-                      </div>
-                      <div>
-                        <span className="font-bold text-slate-800 text-lg">
-                          PayPal / Credit Card
-                        </span>
-                      </div>
-                    </label>
+                    {data?.code?.startsWith("EVT") ? (
+                      <label
+                        htmlFor="payment_paypal"
+                        className="flex items-center gap-4 cursor-pointer"
+                      >
+                        <div className="flex h-11 min-w-[92px] items-center justify-center rounded-2xl border border-[#D7E3FA] bg-[#F7FAFF] px-3 shadow-sm">
+                          <span
+                            className="text-[17px] font-extrabold italic leading-none tracking-[-0.02em] text-[#003087]"
+                            style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}
+                          >
+                            PayPal
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-bold text-slate-800 text-lg">
+                            PayPal / Credit Card
+                          </span>
+                        </div>
+                      </label>
+                    ) : (
+                      <label
+                        htmlFor="payment_paypal"
+                        className="flex space-x-1 cursor-pointer"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/visa.svg"
+                            alt="PayPal"
+                            width={48}
+                            height={28}
+                            className="md:mt-1"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("Thanh toán qua PayPal")}
+                          </span>
+                        </div>
+                      </label>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -796,7 +850,7 @@ export default function BookingDetail() {
         <div className="overflow-hidden rounded-t-2xl">
           {data?.product?.image_url && (
             <Image
-              src={`${data?.product?.image_url}/${data?.product?.image_location}`}
+              src={getImageSrc(data?.product?.image_url, data?.product?.image_location)}
               alt={data?.product?.name}
               width={600}
               height={450}

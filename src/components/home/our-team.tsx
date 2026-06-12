@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
 import styles from "@/styles/styles.module.scss";
-import { cloneItemsCarousel } from "@/utils/Helper";
+import { cloneItemsCarousel, getImageSrc } from "@/utils/Helper";
 import Link from "next/link";
 
 export default function OurTeam({ data }: any) {
@@ -84,7 +84,7 @@ export default function OurTeam({ data }: any) {
             <SwiperSlide key={member.id} className="basis-1/6">
               <div className={styles.member__item}>
                 <Image
-                  src={`${member.image_url}/${member.image_location}`}
+                  src={getImageSrc(member.image_url, member.image_location)}
                   alt={member.name}
                   width={100}
                   height={100}

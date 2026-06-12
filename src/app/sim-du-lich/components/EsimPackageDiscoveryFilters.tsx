@@ -30,7 +30,6 @@ type Props = {
   showPricePresetFilters?: boolean;
   sortMode: SortMode;
   onSortModeChange: (mode: SortMode) => void;
-  packagesCount: number;
 };
 
 export default function EsimPackageDiscoveryFilters({
@@ -54,7 +53,6 @@ export default function EsimPackageDiscoveryFilters({
   showPricePresetFilters = true,
   sortMode,
   onSortModeChange,
-  packagesCount,
 }: Props) {
   if (!showInternationalFilters) return null;
 
@@ -78,7 +76,6 @@ export default function EsimPackageDiscoveryFilters({
         showPriceFilters={showPriceFilters}
         sortMode={sortMode}
         onSortModeChange={onSortModeChange}
-        packagesCount={packagesCount}
       />
 
       <div className="hidden lg:block">

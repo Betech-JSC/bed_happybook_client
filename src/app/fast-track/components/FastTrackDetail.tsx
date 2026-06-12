@@ -47,7 +47,7 @@ export default async function FastTrackDetail({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link
-                    href={`/du-thuyen/${detail?.category?.alias}`}
+                    href={`/fast-track/${detail?.category?.alias}`}
                     className="text-blue-700"
                     data-translate="true"
                   >

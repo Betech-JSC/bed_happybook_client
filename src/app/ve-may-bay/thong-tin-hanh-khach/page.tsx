@@ -5,8 +5,7 @@ import { pageUrl } from "@/utils/Urls";
 import SeoSchema from "@/components/schema";
 import { formatMetadata } from "@/lib/formatters";
 import { PageApi } from "@/api/Page";
-import { getServerLang, getSession } from "@/lib/session";
-import Flight1GBookForm from "../components/SearchFlights/International/1G/FormBooking";
+import { getServerLang } from "@/lib/session";
 
 function getMetadata(data: any) {
   return formatMetadata({
@@ -49,8 +48,6 @@ export default async function CustomerInfo() {
     await PageApi.getContent("thong-tin-hanh-khach", language)
   )?.payload?.data as any;
   const metadata = getMetadata(contentPage);
-  const session = await getSession();
-  const flightType = session.flightType;
   return (
     <SeoSchema
       metadata={metadata}
@@ -67,11 +64,7 @@ export default async function CustomerInfo() {
     >
       <main className="bg-gray-100 mt-10">
         <div className="base__content ">
-          {flightType === "1G" ? (
-            <Flight1GBookForm airportsData={airportsData} />
-          ) : (
-            <FlightBookForm airportsData={airportsData} />
-          )}
+          <FlightBookForm airportsData={airportsData} />
         </div>
       </main>
     </SeoSchema>

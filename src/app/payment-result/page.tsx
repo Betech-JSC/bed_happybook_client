@@ -29,6 +29,14 @@ export default function PaymentResultPage() {
   const successBodyBottom = isEnglish
     ? (isAmusementTicket
         ? "Your ticket order will be processed shortly."
+        : orderCode.startsWith("YACHT")
+        ? "Your yacht charter booking will be processed shortly."
+        : orderCode.startsWith("VISA")
+        ? "Your visa service order will be processed shortly."
+        : orderCode.startsWith("COMBO")
+        ? "Your combo package booking will be processed shortly."
+        : orderCode.startsWith("HAP")
+        ? "Your booking will be processed shortly."
         : "Your eSIM order will be processed shortly.")
     : "Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.";
 

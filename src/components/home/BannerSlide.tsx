@@ -7,8 +7,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { cloneItemsCarousel } from "@/utils/Helper";
+import { cloneItemsCarousel, getImageSrc } from "@/utils/Helper";
 import Link from "next/link";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function BannerSlide({ data }: any) {
   const clonedItems =
@@ -17,29 +18,48 @@ export default function BannerSlide({ data }: any) {
     clonedItems && (
       <div
         className="mt-0 lg:mt-3"
-        style={{ width: "100%", height: "100%", position: "relative" }}
+        style={{ width: "100%", position: "relative" }}
       >
         <Carousel
           opts={{
             align: "start",
             loop: true,
           }}
+          plugins={[
+            Autoplay({
+              delay: 4000,
+              stopOnInteraction: false,
+            }),
+          ]}
         >
-          <CarouselContent>
+          <CarouselContent className="!ml-0">
             {clonedItems.map((banner: any, index: number) => (
               <CarouselItem
-                className="basis-full lg:basis-2/4 rounded-xl"
+                className="basis-full rounded-xl !pl-0"
                 key={banner.id}
               >
-                <Link href={banner?.url ?? "#"}>
+                <Link href={banner?.url ?? "#"} className="w-full block">
+                  {/* Mobile/Tablet Image */}
                   <Image
                     priority={index < 2}
-                    src={`${banner.image_url}/${banner.image_location}`}
+                    src={getImageSrc(banner.image_url_mobile || banner.image_url, banner.image_location_mobile || banner.image_location)}
                     alt={banner.title || "Banner Happy Book"}
-                    width={628}
-                    height={210}
+                    width={1024}
+                    height={239}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                    className="h-[100px] md:h-[156px] rounded-xl w-full object-cover"
+                    className="block lg:hidden w-full h-[150px] md:h-[170px] rounded-xl"
+                    style={{ objectFit: "cover" }}
+                  />
+                  {/* Desktop Image */}
+                  <Image
+                    priority={index < 2}
+                    src={getImageSrc(banner.image_url, banner.image_location)}
+                    alt={banner.title || "Banner Happy Book"}
+                    width={1024}
+                    height={239}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                    className="hidden lg:block w-full lg:h-[257px] rounded-xl"
+                    style={{ objectFit: "cover" }}
                   />
                 </Link>
               </CarouselItem>

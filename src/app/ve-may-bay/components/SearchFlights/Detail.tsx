@@ -17,6 +17,7 @@ import { FlightDetailProps } from "@/types/flight";
 import DisplayImage from "@/components/base/DisplayImage";
 import { isEmpty } from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
+import { isFlightDepartureTooClose } from "@/utils/flightDepartureCheck";
 
 const FlightDomesticDetail = ({
   FareData,
@@ -33,12 +34,28 @@ const FlightDomesticDetail = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | string>(0);
   const [hasHeight, setHasHeight] = useState<boolean>(false);
-
-  if (selectedFlight) {
-    FareData = selectedFlight;
-  }
+  const [showWarningModal, setShowWarningModal] = useState<boolean>(false);
+  const [pendingIndex, setPendingIndex] = useState<number | null>(null);
 
   let flight = FareData ?? null;
+
+  if (
+    selectedFlight &&
+    flight &&
+    selectedFlight.flightCode === flight.flightCode
+  ) {
+    flight = {
+      ...flight,
+      selectedTicketClass:
+        selectedFlight.selectedTicketClass ?? flight.selectedTicketClass,
+    };
+  }
+
+  const isTooClose = flight ? isFlightDepartureTooClose(flight.departure?.at) : false;
+
+  const fareOptions = Array.isArray(flight?.fareOptions)
+    ? flight.fareOptions
+    : [];
 
   const toggleShowDetails = useCallback(
     (flightCode: any, flightSelected: any) => {
@@ -61,8 +78,8 @@ const FlightDomesticDetail = ({
     setHasHeight(true);
   }, [showDetails]);
 
-  if (flight?.fareOptions?.length < 1) {
-    return;
+  if (!flight || fareOptions.length < 1) {
+    return null;
   }
 
   const startOperating = !isEmpty(flight.segments?.[0]?.operating)
@@ -138,7 +155,7 @@ const FlightDomesticDetail = ({
                           ? flight.selectedTicketClass.totalPriceWithOutTax.toLocaleString(
                             "vi-VN"
                           )
-                          : flight.fareOptions[0].totalPriceWithOutTax.toLocaleString(
+                          : fareOptions[0].totalPriceWithOutTax.toLocaleString(
                             "vi-VN"
                           )
                         : flight.selectedTicketClass
@@ -147,8 +164,8 @@ const FlightDomesticDetail = ({
                             flight.selectedTicketClass.taxAdult
                           ).toLocaleString("vi-VN")
                           : (
-                            flight.fareOptions[0].fareAdultFinal +
-                            flight.fareOptions[0].taxAdult
+                            fareOptions[0].fareAdultFinal +
+                            fareOptions[0].taxAdult
                           ).toLocaleString("vi-VN")}{" "}
                     </div>
                     <div className="col-span-1 flex items-center justify-end ">
@@ -174,8 +191,15 @@ const FlightDomesticDetail = ({
 
               </div>
             </div>
+            {isTooClose && (
+              <div className="col-span-full mt-2 flex justify-start">
+                <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 ring-1 ring-inset ring-red-600/10">
+                  ⚠️ {t("khoi_hanh_qua_gan_duoi_4_h") || "Khởi hành quá gần (dưới 4h)"}
+                </span>
+              </div>
+            )}
           </div>
-          {flight.fareOptions.length > 0 && (
+          {fareOptions.length > 0 && (
             <div
               ref={contentRef}
               style={{
@@ -190,10 +214,10 @@ const FlightDomesticDetail = ({
                 <div
                   className={`inline-grid w-max gap-3`}
                   style={{
-                    gridTemplateColumns: `repeat(${flight.fareOptions.length}, minmax(0, 1fr)`,
+                    gridTemplateColumns: `repeat(${fareOptions.length}, minmax(0, 1fr)`,
                   }}
                 >
-                  {flight.fareOptions.map((ticket: any, index: number) => {
+                  {fareOptions.map((ticket: any, index: number) => {
                     return (
                       <div
                         key={index}
@@ -295,13 +319,18 @@ const FlightDomesticDetail = ({
                           <div className="mt-4">
                             <button
                               onClick={() => {
-                                onSelectFlight(flight, index);
-                                toggleShowDetails(
-                                  flight.flightCode,
-                                  selectedFlight
-                                );
+                                if (isTooClose) {
+                                  setPendingIndex(index);
+                                  setShowWarningModal(true);
+                                } else {
+                                  onSelectFlight(flight, index);
+                                  toggleShowDetails(
+                                    flight.flightCode,
+                                    selectedFlight
+                                  );
+                                }
                               }}
-                              className="text-center w-full border border-blue-600 bg-blue-600 text-white font-medium py-2 rounded-lg hover:text-primary duration-300"
+                              className="text-center w-full font-medium py-2 rounded-lg duration-300 border-blue-600 bg-blue-600 text-white hover:text-primary"
                             >
                               {t("dat_ve")}
                             </button>
@@ -314,6 +343,49 @@ const FlightDomesticDetail = ({
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {showWarningModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100 transform scale-100 transition-all duration-300">
+            <div className="flex items-center gap-3 text-amber-600 mb-3">
+              <span className="p-2 bg-amber-50 rounded-xl text-xl">⚠️</span>
+              <h3 className="text-lg font-bold text-slate-900">
+                {t("canh_bao_gio_bay_gan") || "Cảnh báo giờ bay gần"}
+              </h3>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed mb-6">
+              {t("chuyen_bay_nay_se_khoi_hanh_duoi_4_tieng_tinh_tu_hien_tai_vui_long_dam_bao_ban_kip_thoi_gian_di_chuyen_ra_san_bay_va_lam_thu_tuc") ||
+                `Chuyến bay này sẽ khởi hành vào lúc ${formatTimeZone(flight.departure.at, flight.departure.timezone)} (dưới 4 tiếng tính từ hiện tại). Vui lòng đảm bảo bạn kịp thời gian di chuyển ra sân bay và làm thủ tục.`}
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowWarningModal(false);
+                  setPendingIndex(null);
+                }}
+                className="flex-1 py-2.5 px-4 border border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors text-sm"
+              >
+                {t("quay_lai") || "Quay lại"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (pendingIndex !== null) {
+                    onSelectFlight(flight, pendingIndex);
+                    toggleShowDetails(flight.flightCode, selectedFlight);
+                  }
+                  setShowWarningModal(false);
+                  setPendingIndex(null);
+                }}
+                className="flex-1 py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/20 transition-all text-sm animate-pulse"
+              >
+                {t("dong_y_tiep_tuc") || "Đồng ý tiếp tục"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </Fragment>

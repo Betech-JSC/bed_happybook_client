@@ -50,7 +50,7 @@ export default async function RootLayout({
   const session = await getSession();
   const translations = await getServerTranslations(session.language);
   return (
-    <html lang={session.language}>
+    <html lang={session.language} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://api.happybooktravel.com" />
         <link rel="preconnect" href="https://cms.happybooktravel.com" />
@@ -127,7 +127,7 @@ export default async function RootLayout({
         </noscript>
         {/* End Meta Pixel Code */}
       </head>
-      <body className={OpenSans.className}>
+      <body className={OpenSans.className} suppressHydrationWarning>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe

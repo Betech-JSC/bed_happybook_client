@@ -13,6 +13,7 @@ import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
 import { translateText } from "@/utils/translateApi";
+import { getImageSrc } from "@/utils/Helper";
 
 export default function YachtTabs({
   title,
@@ -158,7 +159,7 @@ export default function YachtTabs({
                             <Link href={`/du-thuyen/${item.slug}`}>
                               <Image
                                 className="lg:group-hover:scale-105 ease-in-out duration-300 w-full h-full cursor-pointer object-cover"
-                                src={`${item.image_url}/${item.image_location}`}
+                                src={getImageSrc(item.image_url, item.image_location)}
                                 alt={getYachtDisplayName(item)}
                                 width={320}
                                 height={320}
