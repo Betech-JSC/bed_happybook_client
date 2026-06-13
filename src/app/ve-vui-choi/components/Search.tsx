@@ -44,6 +44,8 @@ export default function Search({
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
+    from: searchParams.get("from") ?? "",
+    to: searchParams.get("to") ?? "",
     "category[]": paramCategory ? [paramCategory] : [],
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
@@ -97,6 +99,8 @@ export default function Search({
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
     query.location = "";
+    query.from = "";
+    query.to = "";
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
