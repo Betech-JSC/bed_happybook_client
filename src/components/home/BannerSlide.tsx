@@ -65,8 +65,8 @@ export default function BannerSlide({ data }: any) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden lg:inline-flex" />
-          <CarouselNext className="hidden lg:inline-flex" />
+          <CarouselPrevious className="hidden lg:inline-flex z-10" />
+          <CarouselNext className="hidden lg:inline-flex z-10" />
         </Carousel>
       </div>
     )

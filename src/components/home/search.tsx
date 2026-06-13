@@ -119,12 +119,12 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="relative z-20 hidden lg:block">
+    <div className="relative z-20 hidden lg:block pointer-events-none">
       <div className="lg:h-[800px] lg:px-[50px] xl:px-[80px] sm:px-3 pt-[210px] max__screen">
         <h2 className="text-3xl text-white font-bold text-center mb-12 relative top-[-40px]">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
         </h2>
-        <div className="min-h-[192px] h-fit pt-[42px] p-6 mx-auto bg-white rounded-lg shadow-lg relative max-w-[1100px]">
+        <div className="min-h-[192px] h-fit pt-[42px] p-6 mx-auto bg-white rounded-lg shadow-lg relative max-w-[1100px] pointer-events-auto">
           <div className="absolute -top-[52px] left-1/2 -translate-x-1/2 flex flex-col items-center w-full max-w-[960px] min-w-[820px] gap-1 bg-[#000000] p-2 rounded-3xl shadow-lg z-10">
             {/* Hàng 1: Sản phẩm nổi bật */}
             <div className="flex justify-center gap-2 w-full">
