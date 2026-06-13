@@ -44,9 +44,9 @@ export default function BannerSlide({ data }: any) {
                     priority={index < 2}
                     src={getImageSrc(banner.image_url_mobile || banner.image_url, banner.image_location_mobile || banner.image_location)}
                     alt={banner.title || "Banner Happy Book"}
-                    width={1024}
-                    height={239}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                    width={768}
+                    height={180}
+                    sizes="(max-width: 1024px) 100vw, 100vw"
                     className="block lg:hidden w-full h-[150px] md:h-[170px] rounded-xl"
                     style={{ objectFit: "cover" }}
                   />
@@ -55,9 +55,9 @@ export default function BannerSlide({ data }: any) {
                     priority={index < 2}
                     src={getImageSrc(banner.image_url, banner.image_location)}
                     alt={banner.title || "Banner Happy Book"}
-                    width={1024}
-                    height={239}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                    width={1100}
+                    height={257}
+                    sizes="(max-width: 1100px) 100vw, 1100px"
                     className="hidden lg:block w-full lg:h-[257px] rounded-xl"
                     style={{ objectFit: "cover" }}
                   />
