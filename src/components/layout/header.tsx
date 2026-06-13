@@ -89,7 +89,7 @@ export default function Header() {
   return (
     <header
       className={clsx(
-        "text-white relative hidden lg:block h-[132px] z-10",
+        "text-white relative hidden lg:block h-[132px] z-30",
         styles.header__menu,
         headerClass,
         {
@@ -99,7 +99,7 @@ export default function Header() {
     >
       <div
         className={clsx(
-          "text-white fixed hidden lg:block h-[132px] z-10 max__screen w-full left-1/2 -translate-x-1/2"
+          "text-white fixed hidden lg:block h-[132px] z-30 max__screen w-full left-1/2 -translate-x-1/2"
         )}
       >
         <div className="mx-auto flex justify-between items-center px-4 pb-4 relative lg:px-[50px] xl:px-[80px] sm:px-3">
