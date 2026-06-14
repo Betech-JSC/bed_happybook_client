@@ -372,7 +372,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
 
           {/* Tabs 8 - Vé vui chơi & hoạt động */}
           <div className={`mt-2 ${activeTab === 8 ? "block" : "hidden"}`}>
-            <SearchAmusement />
+            <SearchAmusement locations={comboLocations} />
           </div>
 
           {/* Tabs 9 - Bảo hiểm */}

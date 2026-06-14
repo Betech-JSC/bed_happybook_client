@@ -404,8 +404,8 @@ export default function Header() {
                 <div className="text-gray-400 text-xs font-bold mb-4 uppercase tracking-wider block cursor-default text-left">
                   {t("dich_vu_tai_san_bay")}
                 </div>
-                <div className="flex flex-col space-y-2 max-h-[300px] overflow-y-auto overflow-x-hidden custom-scrollbar pr-2">
-                  <div className="flex flex-col">
+                <div className="flex flex-col space-y-2 relative">
+                  <div className="flex flex-col relative group/fasttrack">
                     <Link href="/fast-track" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                       <img src="/icon/fast-track.png" alt={t("don_tien_uu_tien_fast_track")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                       <div className="flex min-w-0 flex-1 flex-col items-start text-left group/item">
@@ -413,14 +413,20 @@ export default function Header() {
                         <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("ho_tro_xuat_nhap_canh_nhanh_rut_ngan_thoi_gian_cho_hang")}</div>
                       </div>
                     </Link>
-                    <div className="flex flex-col gap-3 pl-[58px] mt-1.5 mb-3">
-                      <Link href="/fast-track/xuat-canh" className="text-gray-600 hover:text-blue-600 font-medium text-[15px] transition-colors w-fit flex items-center gap-2.5 group">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-600 transition-colors flex-shrink-0"></span>
-                        {t("xuat_canh")}
+                    <div className="absolute left-[calc(100%+8px)] top-0 bg-white border border-gray-100 rounded-xl shadow-xl p-5 w-[420px] max-w-[calc(100vw-24px)] opacity-0 invisible group-hover/fasttrack:opacity-100 group-hover/fasttrack:visible group-hover/fasttrack:pointer-events-auto transition-all duration-200 pointer-events-none flex flex-col space-y-2 z-[60] before:content-[''] before:absolute before:-left-2 before:top-0 before:w-2 before:h-full">
+                      <Link href="/fast-track/xuat-canh" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto w-full group/item">
+                        <img src="/icon/fast-track.png" alt={t("tien_xuat_canh")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                        <div className="flex min-w-0 flex-1 flex-col items-start text-left">
+                          <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("tien_xuat_canh")}</div>
+                          <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("ho_tro_lam_thu_tuc_xuat_canh_nhanh_rut_ngan_thoi_gian_cho_doi")}</div>
+                        </div>
                       </Link>
-                      <Link href="/fast-track/nhap-canh" className="text-gray-600 hover:text-blue-600 font-medium text-[15px] transition-colors w-fit flex items-center gap-2.5 group">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-600 transition-colors flex-shrink-0"></span>
-                        {t("nhap_canh")}
+                      <Link href="/fast-track/nhap-canh" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto w-full group/item">
+                        <img src="/icon/fast-track.png" alt={t("don_nhap_canh")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
+                        <div className="flex min-w-0 flex-1 flex-col items-start text-left">
+                          <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("don_nhap_canh")}</div>
+                          <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("ho_tro_lam_thu_tuc_nhap_canh_nhanh_rut_ngan_thoi_gian_cho_doi")}</div>
+                        </div>
                       </Link>
                     </div>
                   </div>
