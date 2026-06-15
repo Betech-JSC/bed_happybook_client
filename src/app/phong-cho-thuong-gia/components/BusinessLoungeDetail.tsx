@@ -47,11 +47,15 @@ export default async function BusinessLoungeDetail({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link
-                    href={`/phong-cho-thuong-gia/${detail?.category?.alias}`}
+                    href={
+                      detail?.category?.alias
+                        ? `/phong-cho-thuong-gia/${detail.category.alias}`
+                        : "/phong-cho-thuong-gia"
+                    }
                     className="text-blue-700"
                     data-translate="true"
                   >
-                    {detail?.category?.name}
+                    {detail?.category?.name || t("phong_cho_thuong_gia")}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
