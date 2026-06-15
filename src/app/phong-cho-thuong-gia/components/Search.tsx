@@ -203,11 +203,26 @@ export default function Search({
                         {renderTextContent(item.name)}
                       </Link>
                       <div className="mt-1 text-end">
-                        <DisplayPrice
-                          price={item.min_price}
-                          textPrefix="Giá từ"
-                          currency={item?.currency}
-                        />
+                        {item.discount_price > 0 && item.price > 0 ? (
+                          <div className="flex flex-col items-end">
+                            <DisplayPrice
+                              price={item.price}
+                              currency={item?.currency}
+                              className="!text-gray-500 !line-through !font-normal !text-sm"
+                            />
+                            <DisplayPrice
+                              price={item.price - item.discount_price}
+                              currency={item?.currency}
+                              className="!text-[#F27145] !font-bold !text-lg"
+                            />
+                          </div>
+                        ) : (
+                          <DisplayPrice
+                            price={item.min_price}
+                            textPrefix="Giá từ"
+                            currency={item?.currency}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>

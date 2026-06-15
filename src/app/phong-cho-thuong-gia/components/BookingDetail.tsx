@@ -724,6 +724,21 @@ export default function BookingDetail() {
                 />
               </div>
             )}
+            {data?.product?.discount_price > 0 && (
+              <div className="flex justify-between mb-2 text-green-600 font-semibold">
+                <span className="text-sm" data-translate="true">
+                  Giảm giá trực tiếp
+                </span>
+                <div className="flex gap-1 items-center">
+                  <span>-</span>
+                  <DisplayPrice
+                    className="!font-bold !text-base !text-green-600"
+                    price={data.product.discount_price}
+                    currency={data?.product?.currency}
+                  />
+                </div>
+              </div>
+            )}
             {totalDiscount > 0 ? (
               <DisplayPriceWithDiscount
                 price={totalPrice}
