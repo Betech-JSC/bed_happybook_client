@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronRight, Headphones } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getEsimVariantMoney } from "../../lib/esim";
 import type { EsimPackageView, EsimVariantView } from "../../lib/esim";
 import { useSimDuLichStaticText } from "../../hooks/useSimDuLichStaticText";
 
@@ -60,6 +61,7 @@ export default function CheckoutSummarySidebar({
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+  const money = getEsimVariantMoney(selectedVariant, language);
 
   return (
     <div className="lg:col-span-4 lg:sticky lg:top-[140px] space-y-6 h-fit">
@@ -89,7 +91,14 @@ export default function CheckoutSummarySidebar({
           <div className="space-y-3">
             <div className="flex justify-between text-slate-600 font-medium">
               <span>{t("Tạm tính")}</span>
-              <span>{formatCheckoutAmount(subtotal, currency)}</span>
+              <div className="flex flex-col items-end">
+                {money.originalPrice > money.price && (
+                  <span className="text-xs text-slate-400 line-through">
+                    {formatCheckoutAmount(money.originalPrice * qty, currency)}
+                  </span>
+                )}
+                <span>{formatCheckoutAmount(subtotal, currency)}</span>
+              </div>
             </div>
             <div className="flex justify-between text-slate-600 font-medium">
               <span
@@ -121,6 +130,14 @@ export default function CheckoutSummarySidebar({
               <span className="text-sm font-bold text-slate-500 mb-1">
                 {t("Số tiền thanh toán:")}
               </span>
+              {money.originalPrice > money.price && (
+                <span className="text-sm font-normal text-slate-400 line-through mb-1">
+                  {formatCheckoutAmount(
+                    (money.originalPrice * qty) + (money.serviceFeeAmount * qty) + (paymentMethod === "onepay" ? (checkoutData?.payment_fee_amount ?? 0) : 0),
+                    currency
+                  )}
+                </span>
+              )}
               <span className="text-3xl font-bold text-[#F27145]">
                 {formatCheckoutAmount(total, currency)}
               </span>

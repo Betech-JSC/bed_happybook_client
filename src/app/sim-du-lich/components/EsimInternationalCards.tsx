@@ -320,6 +320,11 @@ export default function EsimInternationalCards({
                           <div className="text-xs uppercase tracking-[0.18em] text-steel-secondary">
                             {t("Gia chi từ")}
                           </div>
+                          {cheapestMoney.originalPrice > cheapestMoney.price && (
+                            <div className="text-xs font-normal text-slate-400 line-through">
+                              {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                            </div>
+                          )}
                           <div className="text-xl font-extrabold text-hb-coral">
                             {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
                           </div>

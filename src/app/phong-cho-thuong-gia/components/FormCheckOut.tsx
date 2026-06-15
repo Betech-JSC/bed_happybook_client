@@ -506,8 +506,8 @@ export default function CheckOutForm({
     }
   }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees, isBusinessLounge]);
 
-  // Tổng chi phí = giá vé + phụ phí (phụ phí giờ bay thêm đã được tự động tích vào additional fees nếu đáp ứng điều kiện)
-  const totalPrice = ticketsPrice + additionalFeesPrice;
+  // Tổng chi phí = giá vé + phụ phí - giảm giá sản phẩm (nếu có)
+  const totalPrice = Math.max(0, ticketsPrice + additionalFeesPrice - (product?.discount_price || 0));
   // const totalPrice = 2000; => test case
 
   // Đồng bộ guestList với số lượng vé đã chọn
@@ -1019,6 +1019,7 @@ export default function CheckOutForm({
                 </div>
               </>
             )}
+            {/* Removed direct discount row as requested */}
           </div>
           <div className="pt-4 border-t">
             <VoucherProgram
@@ -1032,10 +1033,10 @@ export default function CheckOutForm({
             />
           </div>
           <div className="mt-4">
-            {totalDiscount > 0 ? (
+            {((product?.discount_price || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
-                price={totalPrice}
-                totalDiscount={totalDiscount}
+                price={Math.max(0, totalPrice - totalDiscount)}
+                originalPrice={ticketsPrice + additionalFeesPrice}
                 currency={product?.currency}
               />
             ) : (

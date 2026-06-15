@@ -46,13 +46,21 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [step, setStep] = useState<2 | 3>(2);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => userInfo?.email || "");
   const [emailError, setEmailError] = useState("");
   const [showContact, setShowContact] = useState(false);
-  const [contactName, setContactName] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
+  const [contactName, setContactName] = useState(() => userInfo?.name || "");
+  const [contactPhone, setContactPhone] = useState(() => userInfo?.phone?.toString() || "");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(isEnglish ? "paypal" : "vietqr");
   const [summaryOpen, setSummaryOpen] = useState(false);
+
+  useEffect(() => {
+    if (userInfo) {
+      if (userInfo.email && !email) setEmail(userInfo.email);
+      if (userInfo.name && !contactName) setContactName(userInfo.name);
+      if (userInfo.phone && !contactPhone) setContactPhone(userInfo.phone.toString());
+    }
+  }, [userInfo]);
   const [timeLeft, setTimeLeft] = useState(3540);
   const [quote, setQuote] = useState<EsimQuoteData | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
@@ -235,6 +243,11 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     const err = validateEmail(email);
     setEmailError(err);
     if (err) return;
+    if (!contactName.trim()) {
+      toast.error(t("Vui lòng nhập Họ tên"));
+      setShowContact(true);
+      return;
+    }
     if (!selectedVariant || !isEsimVariantSelectable(selectedVariant, activeLocale)) {
       toast.error(t("Gói eSIM này hiện chưa có giá khả dụng."));
       return;
@@ -245,7 +258,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     }
     setStep(3);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [activeLocale, email, quoteIsAvailable, selectedVariant, t, validateEmail]);
+  }, [activeLocale, email, contactName, quoteIsAvailable, selectedVariant, t, validateEmail]);
 
   useEffect(() => {
     let interval: number | undefined;

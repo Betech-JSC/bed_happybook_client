@@ -345,11 +345,21 @@ export default function EsimProductPage({
         <div className="fixed bottom-16 left-0 z-40 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] lg:hidden sm:bottom-0">
           <div>
             <div className="text-xs text-steel-secondary">{t("Tổng thanh toán")}</div>
-            <div className="text-xl font-bold text-hb-coral">
-              {formatEsimMoney(
-                catalog.total,
-                activeLocale === "en" ? "USD" : catalog.selectedVariantMoney.currency
+            <div className="flex flex-col items-start">
+              {catalog.selectedVariantMoney.originalPrice && catalog.selectedVariantMoney.originalPrice > catalog.selectedVariantMoney.price && (
+                <span className="text-xs font-normal text-slate-400 line-through">
+                  {formatEsimMoney(
+                    (catalog.selectedVariantMoney.originalPrice * catalog.quantity) + ((catalog.selectedVariantMoney.serviceFeeAmount ?? 0) * catalog.quantity),
+                    activeLocale === "en" ? "USD" : catalog.selectedVariantMoney.currency
+                  )}
+                </span>
               )}
+              <div className="text-xl font-bold text-hb-coral">
+                {formatEsimMoney(
+                  catalog.total,
+                  activeLocale === "en" ? "USD" : catalog.selectedVariantMoney.currency
+                )}
+              </div>
             </div>
           </div>
           <button
