@@ -68,7 +68,7 @@ export default function CheckoutContactSection({
             onClick={onOpenContact}
             className="flex items-center justify-center gap-2 w-full h-14 rounded-xl border-2 border-dashed border-slate-300 text-slate-600 font-bold hover:border-hb-navy hover:text-hb-navy hover:bg-blue-50 transition-colors"
           >
-            <User className="w-5 h-5" /> {t("Thêm Họ tên & Số điện thoại (Tùy chọn)")}
+            <User className="w-5 h-5" /> {t("Thêm Họ tên & Số điện thoại (Bắt buộc)")}
           </button>
         )}
       </div>
