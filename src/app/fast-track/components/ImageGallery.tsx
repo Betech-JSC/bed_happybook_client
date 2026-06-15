@@ -5,6 +5,7 @@ import { useState } from "react";
 import Image from "next/image";
 import "swiper/css";
 import "swiper/css/thumbs";
+import { getImageSrc } from "@/utils/Helper";
 
 export default function ImageGallery({ detail }: any) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
@@ -23,13 +24,13 @@ export default function ImageGallery({ detail }: any) {
         spaceBetween={10}
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Thumbs]}
-        className="main-swiper w-full h-[300px] md:h-[450px] rounded-lg"
+        className="main-swiper w-full h-auto aspect-[16/9] md:h-[450px] md:aspect-auto rounded-lg"
       >
         {gallery.map((item: any, index: number) => (
           <SwiperSlide key={index}>
             <Image
-              className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-              src={`${item.image_url}/${item.image}`}
+              className="cursor-pointer w-full h-auto aspect-[16/9] md:h-[450px] md:aspect-auto rounded-lg hover:scale-110 ease-in duration-300 object-contain md:object-cover"
+              src={getImageSrc(item.image_url, item.image)}
               alt="Ảnh Fast Track"
               width={845}
               height={450}
@@ -68,7 +69,7 @@ export default function ImageGallery({ detail }: any) {
             <SwiperSlide key={index} className="overflow-hidden rounded-lg">
               <Image
                 className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
-                src={`${item.image_url}/${item.image}`}
+                src={getImageSrc(item.image_url, item.image)}
                 alt="Ảnh Fast Track"
                 width={135}
                 height={120}

@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { buildSearch, renderTextContent } from "@/utils/Helper";
+import { buildSearch, getImageSrc, renderTextContent } from "@/utils/Helper";
 import { useSearchParams } from "next/navigation";
 import SideBarFilterProduct from "@/components/product/components/SideBarFilter";
 import DisplayPrice from "@/components/base/DisplayPrice";
@@ -32,13 +32,24 @@ export default function Search({
   const { t } = useTranslation();
 
   const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category[]") || searchParams.get("category");
+  let initialCategory: any = "";
+  if (categoryDefault) {
+    initialCategory = [categoryDefault];
+  } else if (categoryParam) {
+    const parsed = parseInt(categoryParam);
+    if (!isNaN(parsed)) {
+      initialCategory = [parsed];
+    }
+  }
+
   const [query, setQuery] = useState<{
     page: number;
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
-    "category[]": categoryDefault ? [categoryDefault] : "",
+    "category[]": initialCategory,
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
@@ -119,6 +130,35 @@ export default function Search({
   useEffect(() => {
     loadData();
   }, [query, loadData]);
+
+  useEffect(() => {
+    const categoryParam = searchParams.get("category[]") || searchParams.get("category");
+    let newCategory: any = "";
+    if (categoryDefault) {
+      newCategory = [categoryDefault];
+    } else if (categoryParam) {
+      const parsed = parseInt(categoryParam);
+      if (!isNaN(parsed)) {
+        newCategory = [parsed];
+      }
+    }
+    const newLocation = searchParams.get("location") ?? "";
+
+    setQuery((prev) => {
+      const isCategoryEqual = JSON.stringify(prev["category[]"]) === JSON.stringify(newCategory);
+      const isLocationEqual = prev.location === newLocation;
+      if (isCategoryEqual && isLocationEqual) {
+        return prev;
+      }
+      return {
+        ...prev,
+        page: 1,
+        location: newLocation,
+        "category[]": newCategory,
+        isFilters: true,
+      };
+    });
+  }, [searchParams, categoryDefault]);
 
   // Translate filter options when language changes
   useEffect(() => {
@@ -201,18 +241,16 @@ export default function Search({
                 return (
                   <div key={index} className="rounded-xl">
                     <div
-                      className={`w-full relative overflow-hidden rounded-t-xl transition-opacity duration-700 ${translatedText ? "opacity-100" : "opacity-0"
+                      className={`w-full relative overflow-hidden rounded-t-xl bg-white transition-opacity duration-700 aspect-[16/9] ${translatedText ? "opacity-100" : "opacity-0"
                         }`}
                     >
                       <Link href={`/fast-track/${item.slug}`}>
                         <Image
-                          className="hover:scale-110 ease-in duration-300 cursor-pointer h-full w-full object-cover"
-                          src={`${item.image_url}/${item.image_location}`}
+                          className="hover:scale-110 ease-in duration-300 cursor-pointer object-contain"
+                          src={getImageSrc(item.image_url, item.image_location)}
                           alt={renderTextContent(item.name)}
-                          width={360}
-                          height={270}
+                          fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          style={{ height: 217 }}
                         />
                       </Link>
                     </div>
@@ -224,11 +262,26 @@ export default function Search({
                         {renderTextContent(item.name)}
                       </Link>
                       <div className="mt-1 text-end">
-                        <DisplayPrice
-                          price={item.min_price}
-                          textPrefix="Giá từ"
-                          currency={item?.currency}
-                        />
+                        {item.discount_price > 0 && item.price > 0 ? (
+                          <div className="flex flex-col items-end">
+                            <DisplayPrice
+                              price={item.price}
+                              currency={item?.currency}
+                              className="!text-gray-500 !line-through !font-normal !text-sm"
+                            />
+                            <DisplayPrice
+                              price={item.price - item.discount_price}
+                              currency={item?.currency}
+                              className="!text-[#F27145] !font-bold !text-lg"
+                            />
+                          </div>
+                        ) : (
+                          <DisplayPrice
+                            price={item.min_price}
+                            textPrefix="Giá từ"
+                            currency={item?.currency}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>

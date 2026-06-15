@@ -1,14 +1,15 @@
 import Image from "next/image";
-import { Fragment, use, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter } from "next/navigation";
 import { vi, enUS } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ProductTicket } from "@/api/ProductTicket";
+import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 import { format, isValid } from "date-fns";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Option = {
   label: string;
@@ -19,6 +20,7 @@ export default function SearchForm() {
   const router = useRouter();
   const today = new Date();
   const { language } = useLanguage();
+  const { t } = useTranslation();
 
   const [locationSelected, setLocationSelected] = useState<any>(null);
   const [departureDate, setDepartureDate] = useState<Date | null>(today);
@@ -29,7 +31,6 @@ export default function SearchForm() {
   const [isLoading, setIsLoading] = useState(false);
   const isFetchedRef = useRef(false);
   const lastFetchedDateRef = useRef<string | null>(null);
-  const hasOpenedRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -50,7 +51,7 @@ export default function SearchForm() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const res = await ProductTicket.location(`?departDate=${dateStr}`);
+      const res = await ProductFastTrackApi.location(`?departDate=${dateStr}`);
       const data = res?.payload?.data ?? [];
 
       const newOptions: Option[] = data.map((item: any) => ({
@@ -78,9 +79,7 @@ export default function SearchForm() {
   }, [departureDate]);
 
   useEffect(() => {
-    if (hasOpenedRef.current) {
-      fetchData();
-    }
+    fetchData();
   }, [departureDate, fetchData]);
 
   useEffect(() => {
@@ -95,7 +94,7 @@ export default function SearchForm() {
       );
       const lastDashIndex = locationSelected.value.lastIndexOf("-");
       const slug = locationSelected.value.substring(0, lastDashIndex);
-      router.push(`/ve-vui-choi/chi-tiet/${slug}?departDate=${date}`);
+      router.push(`/fast-track/${slug}?departDate=${date}`);
     } else {
       toast.dismiss();
       toast.error("Vui lòng chọn đầy đủ thông tin");
@@ -109,7 +108,7 @@ export default function SearchForm() {
             className="text-[18px] font-semibold text-black"
             data-translate="true"
           >
-            Tìm vé vui chơi & hoạt động
+            {t("don_tien_uu_tien_fast_track")}
           </span>
         </label>
       </div>
@@ -117,7 +116,7 @@ export default function SearchForm() {
       <div className="flex flex-wrap lg:flex-nowrap gap-2">
         <div className="w-full lg:w-5/12">
           <label className="block text-gray-700 mb-1" data-translate="true">
-            Nơi đi
+            {t("diem_den")}
           </label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
@@ -149,12 +148,6 @@ export default function SearchForm() {
                   IndicatorSeparator: () => null,
                   DropdownIndicator: () => null,
                 }}
-                onMenuOpen={() => {
-                  if (!hasOpenedRef.current) {
-                    hasOpenedRef.current = true;
-                    fetchData();
-                  }
-                }}
                 isLoading={isLoading}
               />
             )}
@@ -162,7 +155,7 @@ export default function SearchForm() {
         </div>
         <div className="w-full lg:w-5/12">
           <label className="block text-gray-700 mb-1" data-translate="true">
-            Ngày đi
+            {t("ngay_di")}
           </label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
@@ -174,7 +167,6 @@ export default function SearchForm() {
             ></Image>
             <div className="w-full [&>div]:w-full border-none">
               <DatePicker
-                // ref={departDateRef}
                 selected={departureDate}
                 onChange={(date) => setDepartureDate(date)}
                 dateFormat="dd/MM/yyyy"
@@ -211,7 +203,7 @@ export default function SearchForm() {
               data-translate="true"
               disabled={isLoading}
             >
-              Tìm kiếm
+              {t("tim_kiem")}
             </button>
           </div>
         </div>

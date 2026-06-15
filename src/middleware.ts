@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getSession } from "./lib/session";
+import { getIronSession } from "iron-session";
+import { sessionOptions, SessionData } from "./lib/session";
 
 const protectedRoutes = [
   "/thong-tin-tai-khoan",
   "/lich-su-dat-ve",
+  "/lich-su-dat-hang",
   "/thay-doi-mat-khau",
 ];
 
@@ -17,17 +19,25 @@ export async function middleware(request: NextRequest) {
 
   if (!requiresAuth) return NextResponse.next();
 
-  const token = await getSession();
+  const response = NextResponse.next();
+  const session = await getIronSession<SessionData>(request, response, sessionOptions);
 
-  if (!token.access_token) {
+  if (!session.access_token) {
     const loginUrl = new URL("/dang-nhap", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ["/thong-tin-tai-khoan", "/lich-su-dat-ve", "/thay-doi-mat-khau"],
+  matcher: [
+    "/thong-tin-tai-khoan",
+    "/lich-su-dat-ve",
+    "/lich-su-dat-ve/:path*",
+    "/lich-su-dat-hang",
+    "/lich-su-dat-hang/:path*",
+    "/thay-doi-mat-khau",
+  ],
 };

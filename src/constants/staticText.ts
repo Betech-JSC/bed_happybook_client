@@ -54,6 +54,10 @@ export const flightStaticText: string[] = [
   "Hoàn tất đơn hàng của bạn, để giữ giá tốt nhất",
   "Chuyến bay",
   "Ngày đặt",
+  "Khởi hành quá gần (dưới 4h)",
+  "Cảnh báo giờ bay gần",
+  "Chuyến bay này sẽ khởi hành dưới 4 tiếng tính từ hiện tại, vui lòng đảm bảo bạn kịp thời gian di chuyển ra sân bay và làm thủ tục.",
+  "Đồng ý tiếp tục",
 ];
 
 export const visaStaticText: string[] = [
@@ -168,12 +172,15 @@ const headerStaticText: string[] = [
   "Tour nội địa",
   "Tour quốc tế",
   "Combo",
+  "Combo tiết kiệm",
   "Visa",
   "Bảo hiểm",
   "Định cư",
   "Tiện ích",
   "Dịch vụ tiện ích",
   "Dịch vụ tại sân bay",
+  "Dịch vụ đưa đón sân bay",
+  "Hỗ trợ xuất nhập cảnh nhanh, rút ngắn thời gian chờ hàng.",
   "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
   "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Dành cho bạn",
@@ -194,6 +201,19 @@ const headerStaticText: string[] = [
   "Sim du lịch quốc tế",
   "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
   "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
+  "Đón tiễn ưu tiên (FastTrack)",
+  "Xuất cảnh",
+  "Nhập cảnh",
+  "Tiễn xuất cảnh",
+  "Hỗ trợ làm thủ tục xuất cảnh nhanh, rút ngắn thời gian chờ đợi.",
+  "Đón nhập cảnh",
+  "Hỗ trợ làm thủ tục nhập cảnh nhanh, rút ngắn thời gian chờ đợi.",
+  "Vé tàu",
+  "Thuê xe",
+  "Đưa đón sân bay",
+  "Xe riêng đưa đón tận nơi, đúng giờ, chu đáo 24/7.",
+  "Flight Radar",
+  "Tra cứu và theo dõi tình trạng chuyến bay trực tuyến",
 ];
 
 const footerStaticText: string[] = [
@@ -222,6 +242,8 @@ const footerStaticText: string[] = [
 ];
 
 const generalStaticText: string[] = [
+  "Tìm du thuyền",
+  "Nơi đi",
   "Chọn điểm đi",
   "Chọn điểm đến",
   "Từ",
@@ -375,6 +397,7 @@ const generalStaticText: string[] = [
   "Vui lòng nhập giờ đáp cho dịch vụ đón sân bay",
   "Vui lòng nhập giờ bay cho dịch vụ tiễn sân bay",
 ];
+
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
   "Chơi Hè Thả Ga, Không Lo Về Giá",
@@ -382,6 +405,7 @@ const tourStaticText: string[] = [
   "Tour Du Lịch Nước Ngoài Cao Cấp",
   "Trải Nghiệm Thế Giới, Khám Phá Bản Thân",
 ];
+
 const comboStaticText2: string[] = [
   "Khám phá các điểm đến HOT",
   "Các combo du lịch ưu đãi",
@@ -737,14 +761,14 @@ const applyAmusementTicketAliases = (
   const amusementLabel =
     lang === "vi"
       ? translations["ve_vui_choi_hoat_dong"] ??
-        translations["ve_vui_choi"] ??
-        "Vé vui chơi & hoạt động"
+      translations["ve_vui_choi"] ??
+      "Vé vui chơi & hoạt động"
       : "Attraction tickets";
   const searchLabel =
     lang === "vi"
       ? translations["tim_ve_vui_choi_hoat_dong"] ??
-        translations["tim_ve_vui_choi"] ??
-        "Tìm vé vui chơi & hoạt động"
+      translations["tim_ve_vui_choi"] ??
+      "Tìm vé vui chơi & hoạt động"
       : "Search attraction tickets";
 
   return {

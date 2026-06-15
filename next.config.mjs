@@ -35,6 +35,24 @@ const nextConfig = {
         pathname: '/**',
       },
       {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '8000',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '8001',
+        pathname: '/**',
+      },
+      {
         protocol: process.env.NEXT_PUBLIC_PROTOCAL || 'https',
         hostname: process.env.NEXT_PUBLIC_HOSTNAME || 'api.happybooktravel.com',
         port: "",
@@ -53,6 +71,51 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "cms.happybooktravel.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.laptrinhdelamgi.edu.vn",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "cdn.laptrinhdelamgi.edu.vn",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "crm.happybooktravel.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "happybooktravel.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "api.happybooktravel.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "staging-happybook-cms.betech-digital.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "staging-happybook-cms.betech-digital.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "staging-happybook-api.betech-digital.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "staging-happybook-client.betech-digital.com",
         pathname: "/**",
       },
       {

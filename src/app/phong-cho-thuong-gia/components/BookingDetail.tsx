@@ -724,10 +724,11 @@ export default function BookingDetail() {
                 />
               </div>
             )}
-            {totalDiscount > 0 ? (
+            {/* Removed direct discount row as requested */}
+            {((data?.product?.discount_price || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
-                price={totalPrice}
-                totalDiscount={totalDiscount}
+                price={finalTotal}
+                originalPrice={totalPrice + (data?.product?.discount_price || 0) + onePayFee}
                 currency={data?.product?.currency}
               />
             ) : (

@@ -15,12 +15,16 @@ export default async function FlightBookingHistoryIndex({
   const session = await getSession();
   const token = session.access_token;
   if (isEmpty(token)) {
-    redirect("/dang-nhap");
+    redirect(
+      `/dang-nhap?redirect=${encodeURIComponent("/lich-su-dat-ve")}`
+    );
   }
   const currentPage = parseInt(searchParams?.page || "1");
   const response = await FlightApi.bookingHistory(token, currentPage);
   if (response?.status === 401) {
-    redirect("/dang-nhap");
+    redirect(
+      `/dang-nhap?redirect=${encodeURIComponent("/lich-su-dat-ve")}`
+    );
   }
   const data = response?.payload?.data;
   const airportsReponse = await FlightApi.airPorts();

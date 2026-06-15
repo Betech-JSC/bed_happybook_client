@@ -27,7 +27,7 @@ const createCacheKey = (scope: string, params?: Record<string, unknown>) =>
 
 const CACHE_TTL_MS = 60_000;
 const ESIM_SEARCH_PAGE_SIZE = 250;
-const ESIM_CARD_PAGE_SIZE = 36;
+const ESIM_CARD_PAGE_SIZE = 12;
 const MAX_CACHE_ENTRIES = 50;
 
 export type EsimSortMode = "newest" | "price-asc" | "price-desc";
@@ -138,6 +138,7 @@ export const loadAllEsimPackages = async (params?: {
   destination_id?: string;
   operator?: string;
   locale?: string;
+  is_featured?: number;
 }) => {
   const cacheKey = createCacheKey("packages", params);
   const cached = getCachedValue(packageCache, cacheKey);
@@ -154,6 +155,7 @@ export const loadAllEsimPackages = async (params?: {
           page: 1,
           page_size: ESIM_SEARCH_PAGE_SIZE,
           card: true,
+          is_featured: params?.is_featured,
         },
         params?.locale
       );
@@ -175,6 +177,7 @@ export const loadAllEsimPackages = async (params?: {
               page,
               page_size: ESIM_SEARCH_PAGE_SIZE,
               card: true,
+              is_featured: params?.is_featured,
             },
             params?.locale
           );

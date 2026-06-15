@@ -8,6 +8,7 @@ import {
 import DisplayImage from "@/components/base/DisplayImage";
 import _, { isEmpty } from "lodash";
 import { useTranslation } from "@/hooks/useTranslation";
+import { isFlightDepartureTooClose } from "@/utils/flightDepartureCheck";
 import FlightInfo from "@/components/FlightInfo";
 
 const FlightInternationDetail = ({
@@ -19,15 +20,15 @@ const FlightInternationDetail = ({
   HPB_ID,
   airports,
   isCheapest,
+  selectedFareDataId,
 }: any) => {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = React.useState<boolean>(false);
-
-  if (selectedFlight) {
-    FareData = selectedFlight;
-  }
+  const [showWarningModal, setShowWarningModal] = React.useState<boolean>(false);
 
   let flight = FareData ?? null;
+
+  const isTooClose = flight ? isFlightDepartureTooClose(flight.departure?.at) : false;
 
   const handleSelectFlight = (
     flightSelected: any,
@@ -130,7 +131,21 @@ const FlightInternationDetail = ({
             <div>
               <input
                 name={`flight[${flightLeg}]`}
-                onChange={(e) => handleSelectFlight(flight, e)}
+                checked={
+                  selectedFlight?.flightCode === flight.flightCode &&
+                  selectedFareDataId === HPB_ID
+                }
+                onClick={(e) => {
+                  if (isTooClose && selectedFlight?.flightCode !== flight.flightCode) {
+                    e.preventDefault();
+                    setShowWarningModal(true);
+                  }
+                }}
+                onChange={(e) => {
+                  if (!isTooClose) {
+                    handleSelectFlight(flight, e);
+                  }
+                }}
                 type="radio"
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer"
               />
@@ -142,6 +157,13 @@ const FlightInternationDetail = ({
               {isExpanded ? t("thu_gon") : t("xem_chi_tiet")}
             </button>
           </div>
+          {isTooClose && (
+            <div className="col-span-full mt-2 flex justify-start">
+              <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700 ring-1 ring-inset ring-red-600/10">
+                ⚠️ {t("khoi_hanh_qua_gan_duoi_4_h") || "Khởi hành quá gần (dưới 4h)"}
+              </span>
+            </div>
+          )}
           <div
             className={`grid transition-[grid-template-rows] duration-300 ease-out ${isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
               } col-span-full w-full`}
@@ -156,6 +178,42 @@ const FlightInternationDetail = ({
           </div>
         </div>
       </div>
+
+      {showWarningModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100 transform scale-100 transition-all duration-300">
+            <div className="flex items-center gap-3 text-amber-600 mb-3">
+              <span className="p-2 bg-amber-50 rounded-xl text-xl">⚠️</span>
+              <h3 className="text-lg font-bold text-slate-900">
+                {t("canh_bao_gio_bay_gan") || "Cảnh báo giờ bay gần"}
+              </h3>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed mb-6">
+              {t("chuyen_bay_nay_se_khoi_hanh_duoi_4_tieng_tinh_tu_hien_tai_vui_long_dam_bao_ban_kip_thoi_gian_di_chuyen_ra_san_bay_va_lam_thu_tuc") ||
+                `Chuyến bay này sẽ khởi hành dưới 4 tiếng tính từ hiện tại. Vui lòng đảm bảo bạn kịp thời gian di chuyển ra sân bay và làm thủ tục.`}
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowWarningModal(false)}
+                className="flex-1 py-2.5 px-4 border border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors text-sm"
+              >
+                {t("quay_lai") || "Quay lại"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectFlight(_.cloneDeep(flight), HPB_ID, { target: { checked: true } } as any);
+                  setShowWarningModal(false);
+                }}
+                className="flex-1 py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/20 transition-all text-sm animate-pulse"
+              >
+                {t("dong_y_tiep_tuc") || "Đồng ý tiếp tục"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Fragment>
   );
 };
