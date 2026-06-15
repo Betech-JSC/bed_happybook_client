@@ -247,10 +247,10 @@ export const getEsimVariantMoney = (
       ? (variant?.priceUsd ?? 0)
       : (variant?.price ?? 0),
     originalPrice: isEnglish
-      ? (variant?.originalPriceUsd ?? variant?.originalPrice ?? 0)
+      ? (variant?.originalPriceUsd ?? 0)
       : (variant?.originalPrice ?? 0),
     serviceFeeAmount: isEnglish
-      ? (variant?.serviceFeeAmountUsd ?? variant?.serviceFeeAmount ?? 0)
+      ? (variant?.serviceFeeAmountUsd ?? 0)
       : (variant?.serviceFeeAmount ?? 0),
     currency,
   };
