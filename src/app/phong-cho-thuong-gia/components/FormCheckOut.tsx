@@ -1019,19 +1019,7 @@ export default function CheckOutForm({
                 </div>
               </>
             )}
-            {product?.discount_price > 0 && (
-              <div className="mt-4 pt-4 border-t flex justify-between text-green-600 font-semibold">
-                <span data-translate="true">Giảm giá trực tiếp</span>
-                <div className="flex gap-1 items-center">
-                  <span>-</span>
-                  <DisplayPrice
-                    className="!font-bold !text-sm !text-green-600"
-                    price={product.discount_price}
-                    currency={product?.currency}
-                  />
-                </div>
-              </div>
-            )}
+            {/* Removed direct discount row as requested */}
           </div>
           <div className="pt-4 border-t">
             <VoucherProgram
@@ -1045,10 +1033,10 @@ export default function CheckOutForm({
             />
           </div>
           <div className="mt-4">
-            {totalDiscount > 0 ? (
+            {((product?.discount_price || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
-                price={totalPrice}
-                totalDiscount={totalDiscount}
+                price={Math.max(0, totalPrice - totalDiscount)}
+                originalPrice={ticketsPrice + additionalFeesPrice}
                 currency={product?.currency}
               />
             ) : (
