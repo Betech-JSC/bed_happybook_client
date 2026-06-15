@@ -65,7 +65,7 @@ export default async function CompoTour() {
       : [];
   const comboData = ((await ComboApi.getAll())?.payload?.data as any) ?? [];
   const hotDestination =
-    ((await BannerApi.getBannerPage("combo-diemdenhot"))?.payload
+    ((await BannerApi.getBannerPage("combo-diemdenhot", language))?.payload
       ?.data as any) ?? [];
 
   const contentPage = (await PageApi.getContent("combo", language))?.payload

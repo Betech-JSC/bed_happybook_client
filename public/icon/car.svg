@@ -1,0 +1,19 @@
+<svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background subtle glow like other icons if they have it (they don't, they are transparent) -->
+  <!-- Car Cabin / Roof -->
+  <path d="M11 18.5L16 11.5C16.8 10.4 18.1 9.8 19.5 9.8H25.5C26.7 9.8 27.8 10.3 28.5 11.2L34 18.5" fill="#D0D5DD" stroke="#101828" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Car Windows -->
+  <path d="M18.5 11.5H24.5C25.1 11.5 25.6 11.8 25.9 12.3L29.5 17.5H14.5L17.3 12.3C17.6 11.8 18.0 11.5 18.5 11.5Z" fill="#B2CCFF" stroke="#101828" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Car Body -->
+  <path d="M4 18.5H38C39.7 18.5 41 19.8 41 21.5V26.5C41 27.6 40.1 28.5 39 28.5H34.5C34.5 25.7 32.3 23.5 29.5 23.5C26.7 23.5 24.5 25.7 24.5 28.5H17.5C17.5 25.7 15.3 23.5 12.5 23.5C9.7 23.5 7.5 25.7 7.5 28.5H3C1.9 28.5 1 27.6 1 26.5V21.5C1 19.8 2.3 18.5 4 18.5Z" fill="#FDB022" stroke="#101828" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Wheel 1 -->
+  <circle cx="12.5" cy="28.5" r="4.5" fill="#344054" stroke="#101828" stroke-width="2.5"/>
+  <circle cx="12.5" cy="28.5" r="1.5" fill="#FFFFFF"/>
+  <!-- Wheel 2 -->
+  <circle cx="29.5" cy="28.5" r="4.5" fill="#344054" stroke="#101828" stroke-width="2.5"/>
+  <circle cx="29.5" cy="28.5" r="1.5" fill="#FFFFFF"/>
+  <!-- Headlight (Yellow/White light) -->
+  <path d="M39.5 21.5H41" stroke="#FDB022" stroke-width="2" stroke-linecap="round"/>
+  <!-- Tail light -->
+  <path d="M1 21.5H2.5" stroke="#FDA29B" stroke-width="2" stroke-linecap="round"/>
+</svg>

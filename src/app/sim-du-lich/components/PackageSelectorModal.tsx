@@ -96,7 +96,20 @@ export default function PackageSelectorModal({
                   <div className={s.radioCardTitle}>{variant.desc}</div>
                 </div>
                 <div className={s.radioCardPrice}>
-                  {isSelectable ? formatEsimMoney(money.price, money.currency) : t("Chưa khả dụng")}
+                  {isSelectable ? (
+                    <div className="flex flex-col items-end">
+                      {money.originalPrice > money.price && (
+                        <span className="text-xs font-normal text-slate-400 line-through">
+                          {formatEsimMoney(money.originalPrice, money.currency)}
+                        </span>
+                      )}
+                      <span className="font-semibold text-hb-coral">
+                        {formatEsimMoney(money.price, money.currency)}
+                      </span>
+                    </div>
+                  ) : (
+                    t("Chưa khả dụng")
+                  )}
                 </div>
               </button>
             );

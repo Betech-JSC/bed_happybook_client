@@ -5,16 +5,28 @@ import { isEmpty } from "lodash";
 
 export default function DisplayPriceWithDiscount({
   price,
+  originalPrice,
   totalDiscount = 0,
   currency = null,
 }: {
   price: number;
+  originalPrice?: number;
   totalDiscount?: number;
   currency?: any;
 }) {
   const { language } = useLanguage();
-  const finalPrice =
-    totalDiscount > 0 && price < totalDiscount ? 0 : price - totalDiscount;
+  const displayOriginal = originalPrice !== undefined ? originalPrice : price;
+  const displayFinal =
+    originalPrice !== undefined
+      ? price
+      : totalDiscount > 0 && price < totalDiscount
+        ? 0
+        : price - totalDiscount;
+  const hasDiscount =
+    originalPrice !== undefined
+      ? originalPrice > price
+      : totalDiscount > 0;
+
   const formatPrice = (value: number) =>
     language === "en" && isVndCurrency(currency)
       ? formatCurrencyFromVnd(value, language)
@@ -23,28 +35,19 @@ export default function DisplayPriceWithDiscount({
         : formatCurrencyFromVnd(value, language);
 
   return (
-    <div>
-      {totalDiscount > 0 && (
-        <div>
-          <div className="flex pt-4 justify-between">
-            <span className=" text-gray-700 font-medium" data-translate="true">
-              Giá gốc
-            </span>
-            <p className="font-medium">{formatPrice(price)}</p>
-          </div>
-          <div className="flex py-4 justify-between">
-            <span className=" text-gray-700 font-medium" data-translate="true">
-              Giảm giá
-            </span>
-            <p className="font-medium"> {formatPrice(totalDiscount)}</p>
-          </div>
-        </div>
-      )}
-      <div className="flex pt-4 justify-between border-t border-t-gray-300 font-semibold ">
-        <span className="text-gray-700 font-medium" data-translate="true">
-          Tổng cộng
+    <div className="w-full flex justify-between items-end">
+      <span className="text-gray-700 font-medium" data-translate="true">
+        Tổng cộng
+      </span>
+      <div className="flex flex-col items-end">
+        {hasDiscount && (
+          <span className="text-sm font-normal text-slate-400 line-through mb-1">
+            {formatPrice(displayOriginal)}
+          </span>
+        )}
+        <span className="text-base lg:text-xl text-[#F27145] font-bold">
+          {formatPrice(displayFinal)}
         </span>
-        <p className="text-base lg:text-xl text-primary">{formatPrice(finalPrice)}</p>
       </div>
     </div>
   );

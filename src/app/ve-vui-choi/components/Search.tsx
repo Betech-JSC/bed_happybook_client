@@ -37,13 +37,16 @@ export default function Search({
   const { language } = useLanguage();
 
   const searchParams = useSearchParams();
+  const paramCategory = searchParams.get("category");
   const [query, setQuery] = useState<{
     page: number;
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
-    // departureDate: format(today, "yyyy-MM-dd"),
+    from: searchParams.get("from") ?? "",
+    to: searchParams.get("to") ?? "",
+    "category[]": paramCategory ? [paramCategory] : [],
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loadingLoadMore, setLoadingLoadMore] = useState<boolean>(false);
@@ -96,6 +99,8 @@ export default function Search({
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
     query.location = "";
+    query.from = "";
+    query.to = "";
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]

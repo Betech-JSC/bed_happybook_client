@@ -17,7 +17,7 @@ type DetailSection = {
 type Props = {
   selectedPackage: EsimPackageView | null;
   selectedVariant: EsimVariantView | null;
-  selectedVariantMoney: { price: number; currency: string };
+  selectedVariantMoney: { price: number; currency: string; originalPrice?: number; serviceFeeAmount?: number };
   activeRegionLabel: string;
   serviceTypeLabel: string;
   titleFallback: string;
@@ -109,9 +109,19 @@ export default function EsimProductSidebar({
             <div ref={actionBlockRef}>
               <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <span className="text-steel-secondary text-sm font-medium">{t("Tổng cộng:")}</span>
-                <span className="text-2xl font-bold leading-tight text-hb-coral sm:text-3xl">
-                  {selectedVariant ? formatEsimMoney(total, selectedVariantMoney.currency) : t("Chưa chọn gói")}
-                </span>
+                <div className="flex flex-col items-end">
+                  {selectedVariant && selectedVariantMoney.originalPrice && selectedVariantMoney.originalPrice > selectedVariantMoney.price && (
+                    <span className="text-sm font-normal text-slate-400 line-through">
+                      {formatEsimMoney(
+                        (selectedVariantMoney.originalPrice * quantity) + ((selectedVariantMoney.serviceFeeAmount ?? 0) * quantity),
+                        selectedVariantMoney.currency
+                      )}
+                    </span>
+                  )}
+                  <span className="text-2xl font-bold leading-tight text-hb-coral sm:text-3xl">
+                    {selectedVariant ? formatEsimMoney(total, selectedVariantMoney.currency) : t("Chưa chọn gói")}
+                  </span>
+                </div>
               </div>
               <p className="text-[10px] text-right text-steel-secondary sm:text-right">
                 {selectedVariant
@@ -128,6 +138,20 @@ export default function EsimProductSidebar({
                 className="w-full bg-hb-coral hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold h-12 rounded-xl active:scale-[0.98] transition-all shadow-md"
               >
                 {canBook ? t("Đặt ngay") : t("Chưa có giá khả dụng")}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const element = document.getElementById("chon-goi-esim");
+                  if (element) {
+                    const y = element.getBoundingClientRect().top + window.pageYOffset - 100;
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                  }
+                }}
+                className="w-full mt-3 bg-white border border-hb-coral text-hb-coral hover:bg-orange-50 font-semibold text-sm h-10 rounded-lg active:scale-[0.98] transition-all shadow-sm lg:hidden flex items-center justify-center"
+              >
+                {t("Quay lại chọn gói")}
               </button>
 
               <div className="pt-4 flex flex-col gap-2">
@@ -159,8 +183,16 @@ export default function EsimProductSidebar({
                     <span className="font-semibold block mb-1">
                       {selectedVariant?.desc || t("Chưa chọn gói")}
                     </span>
-                    {t("Đơn giá:")} {formatEsimMoney(selectedVariantMoney.price, selectedVariantMoney.currency)} x{" "}
-                    {quantity}
+                    {t("Đơn giá:")}{" "}
+                    {selectedVariantMoney.originalPrice && selectedVariantMoney.originalPrice > selectedVariantMoney.price && (
+                      <span className="text-slate-400 line-through mr-1">
+                        {formatEsimMoney(selectedVariantMoney.originalPrice, selectedVariantMoney.currency)}
+                      </span>
+                    )}
+                    <span className="font-semibold text-hb-coral">
+                      {formatEsimMoney(selectedVariantMoney.price, selectedVariantMoney.currency)}
+                    </span>{" "}
+                    x {quantity}
                   </div>
                 </div>
 

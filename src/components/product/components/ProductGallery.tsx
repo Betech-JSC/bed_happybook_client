@@ -225,7 +225,7 @@ export default function ProductGallery({ product }: Props) {
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Thumbs]}
         onSwiper={setMainSwiper}
-        className="main-swiper w-full h-[300px] md:h-[450px] rounded-lg"
+        className="main-swiper w-full aspect-[4/3] md:h-[450px] md:aspect-auto rounded-lg bg-white"
       >
           {lightboxItems.map((item: any, index: number) => {
           const fullSrc = item.src;
@@ -236,7 +236,7 @@ export default function ProductGallery({ product }: Props) {
           return (
             <SwiperSlide key={index}>
               {isVideo ? (
-                <div className="relative w-full h-[300px] md:h-[450px] rounded-lg overflow-hidden">
+                <div className="relative w-full h-full rounded-lg overflow-hidden">
                   <video
                     className="w-full h-full object-cover rounded-lg"
                     controls
@@ -266,6 +266,7 @@ export default function ProductGallery({ product }: Props) {
               ) : (
                 <Link
                   href={fullSrc}
+                  className="w-full h-full block relative overflow-hidden rounded-lg"
                   data-pswp-src={fullSrc}
                   data-pswp-width={width}
                   data-pswp-height={height}
@@ -276,7 +277,7 @@ export default function ProductGallery({ product }: Props) {
                   }}
                 >
                   <Image
-                    className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
+                    className="cursor-pointer w-full h-full rounded-lg hover:scale-110 ease-in duration-300 object-contain md:object-cover"
                     src={brokenImageIndexes[index] ? DEFAULT_IMAGE_SRC : fullSrc}
                     alt={`Image ${index + 1}`}
                     width={845}
