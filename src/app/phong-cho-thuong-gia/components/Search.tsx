@@ -298,14 +298,29 @@ export default function Search({
                         </div>
                       )}
                       <div className="flex items-baseline gap-2.5">
-                        {item.discount_price > 0 && item.price > 0 ? (
-                          <>
-                            <DisplayPrice price={item.price} currency={item?.currency} className="!text-gray-400 !line-through !font-normal !text-[13px]" />
-                            <DisplayPrice price={item.price - item.discount_price} currency={item?.currency} className="!text-[#F27145] !font-extrabold !text-lg" />
-                          </>
-                        ) : (
-                          <DisplayPrice price={item.min_price} textPrefix="Giá từ" currency={item?.currency} className="!text-[#F27145] !font-extrabold !text-lg" />
-                        )}
+                        {(() => {
+                          // Giá hiển thị: ưu tiên giá gạch (giá gốc) -> giá bán.
+                          // - Nếu có discount_price: gốc = price, bán = price - discount.
+                          // - Nếu không: lấy min_price (giá option) làm giá bán; nếu price>min_price thì gạch price.
+                          const sale =
+                            item.discount_price > 0 && item.price > 0
+                              ? item.price - item.discount_price
+                              : item.min_price || item.price || 0;
+                          const original =
+                            item.discount_price > 0 && item.price > 0
+                              ? item.price
+                              : item.price > sale
+                              ? item.price
+                              : 0;
+                          return (
+                            <>
+                              {original > sale && (
+                                <DisplayPrice price={original} currency={item?.currency} className="!text-gray-400 !line-through !font-normal !text-[13px]" />
+                              )}
+                              <DisplayPrice price={sale} currency={item?.currency} className="!text-[#F27145] !font-extrabold !text-lg" />
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
