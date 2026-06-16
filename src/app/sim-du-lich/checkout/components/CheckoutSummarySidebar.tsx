@@ -206,7 +206,12 @@ export default function CheckoutSummarySidebar({
         <Headphones className="w-5 h-5" />
         <span>
           {t("Cần hỗ trợ?")}{" "}
-          <a className="text-[#1E40AF] font-bold hover:underline" href="#">
+          <a
+            className="text-[#1E40AF] font-bold hover:underline"
+            href="https://zalo.me/2451421179976954585/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {t("Chat với chúng tôi")}
           </a>
         </span>

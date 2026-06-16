@@ -46,6 +46,7 @@ export default function Search({
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
+    "location_id[]": searchParams.getAll("location_id[]") ?? [],
     per_page: pageSize,
     location: searchParams.get("location") ?? "",
     "category[]": categoryDefault ? [categoryDefault] : "",
@@ -266,7 +267,8 @@ export default function Search({
                       ) : item.discount_price > 0 && item.price > 0 ? (
                         <div className="flex flex-col items-end">
                           <DisplayPrice
-                            price={item.price}
+                            price={item.min_price}
+                            textPrefix="Giá"
                             currency={item?.currency}
                             className="!text-gray-500 !line-through !font-normal !text-sm"
                           />
