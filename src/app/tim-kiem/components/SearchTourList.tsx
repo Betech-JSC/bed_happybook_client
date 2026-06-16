@@ -138,7 +138,6 @@ export default function SearchTourList({ tours }: any) {
                         <DisplayPrice
                           price={product.price - product?.discount_price}
                           currency={product?.currency}
-                          textPrefix="chỉ từ"
                         />
                       </div>
                     </div>
