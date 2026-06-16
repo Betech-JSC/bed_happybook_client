@@ -158,143 +158,135 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
             {/* Tab 1 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "ve-may-bay" ? null : "ve-may-bay")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "ve-may-bay" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[100px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "ve-may-bay" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className="w-11 h-11 bg-[#1570EF] rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-[#1570EF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/AirplaneTilt.svg"
                   alt="Vé máy bay"
-                  width={22}
-                  height={22}
+                  width={28}
+                  height={28}
                   className="rounded-full"
-                  style={{ width: 22, height: 22 }}
+                  style={{ width: 28, height: 28 }}
                 />
               </div>
-              <span className="px-1 mt-1 text-[10px] font-bold block leading-tight">{t("ve_may_bay")}</span>
+              <span className="px-1 mt-1 text-[11px] font-bold block leading-tight">{t("ve_may_bay")}</span>
             </div>
 
             {/* Tab 2 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "hotel" ? null : "hotel")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "hotel" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[100px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "hotel" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className="w-11 h-11 bg-[#1570EF] rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-[#1570EF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/Buildings.svg"
                   alt="Khách sạn"
-                  width={22}
-                  height={22}
+                  width={28}
+                  height={28}
                   className="rounded-full"
-                  style={{ width: 22, height: 22 }}
+                  style={{ width: 28, height: 28 }}
                 />
               </div>
-              <span className="px-1 mt-1 text-[10px] font-bold block leading-tight">{t("khach_san")}</span>
+              <span className="px-1 mt-1 text-[11px] font-bold block leading-tight">{t("khach_san")}</span>
             </div>
 
             {/* Tab 3 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "visa" ? null : "visa")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "visa" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[100px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "visa" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className="w-11 h-11 bg-[#1570EF] rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-[#1570EF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/Umbrella.svg"
                   alt="Visa"
-                  width={22}
-                  height={22}
+                  width={28}
+                  height={28}
                   className="rounded-full"
-                  style={{ width: 22, height: 22 }}
+                  style={{ width: 28, height: 28 }}
                 />
               </div>
-              <span className="px-1 mt-1 text-[10px] font-bold block leading-tight">{t("visa")}</span>
+              <span className="px-1 mt-1 text-[11px] font-bold block leading-tight">{t("visa")}</span>
             </div>
 
             {/* Tab 4 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "sim-du-lich" ? null : "sim-du-lich")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "sim-du-lich" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[100px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "sim-du-lich" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className="w-11 h-11 bg-[#1570EF] rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-[#1570EF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/Ticket.svg"
                   alt="Sim du lịch"
-                  width={22}
-                  height={22}
+                  width={28}
+                  height={28}
                   className="rounded-full"
-                  style={{ width: 22, height: 22 }}
+                  style={{ width: 28, height: 28 }}
                 />
               </div>
-              <span className="px-1 mt-1 text-[10px] font-bold block leading-tight">{t("sim_du_lich")}</span>
+              <span className="px-1 mt-1 text-[11px] font-bold block leading-tight">{t("sim_du_lich")}</span>
             </div>
 
             {/* Tab 5 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "combo" ? null : "combo")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "combo" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[100px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "combo" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className="w-11 h-11 bg-[#1570EF] rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-[#1570EF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/Ticket.svg"
                   alt="Combo tiết kiệm"
-                  width={22}
-                  height={22}
+                  width={28}
+                  height={28}
                   className="rounded-full"
-                  style={{ width: 22, height: 22 }}
+                  style={{ width: 28, height: 28 }}
                 />
               </div>
-              <span className="px-1 mt-1 text-[10px] font-bold block leading-tight">{t("combo_tiet_kiem")}</span>
+              <span className="px-1 mt-1 text-[11px] font-bold block leading-tight">{t("combo_tiet_kiem")}</span>
             </div>
 
             {/* Tab 6 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "airport-service" ? null : "airport-service")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "airport-service" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[100px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "airport-service" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className="w-11 h-11 bg-[#1570EF] rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-[#1570EF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/Ticket.svg"
                   alt="Đón tiễn ưu tiên (FastTrack)"
-                  width={22}
-                  height={22}
+                  width={28}
+                  height={28}
                   className="rounded-full"
-                  style={{ width: 22, height: 22 }}
+                  style={{ width: 28, height: 28 }}
                 />
               </div>
-              <span className="px-1 mt-1 text-[10px] font-bold block leading-tight">{t("don_tien_uu_tien_fast_track") || "Đón tiễn ưu tiên (FastTrack)"}</span>
+              <span className="px-1 mt-1 text-[11px] font-bold block leading-tight">{t("don_tien_uu_tien_fast_track") || "Đón tiễn ưu tiên (FastTrack)"}</span>
             </div>
 
 
             {/* Tab 11 - Phòng chờ thương gia */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "phong-cho-thuong-gia" ? null : "phong-cho-thuong-gia")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "phong-cho-thuong-gia" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "phong-cho-thuong-gia" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className={`w-11 h-11 rounded-full flex items-center justify-center ${
-                activeTabMb === "phong-cho-thuong-gia" ? "bg-[#1570EF]" : "bg-[#EFF8FF]"
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activeTabMb === "phong-cho-thuong-gia" ? "bg-[#1570EF]" : "bg-[#EFF8FF]"
+                }`}>
                 <Image
                   src="/icon/lounge-light.svg"
                   alt="Phòng chờ thương gia"
-                  width={22}
-                  height={22}
+                  width={20}
+                  height={20}
                   className="rounded-full"
                   style={{
-                    width: 22,
-                    height: 22,
+                    width: 20,
+                    height: 20,
                     filter: activeTabMb === "phong-cho-thuong-gia"
                       ? "none"
                       : "brightness(0) saturate(100%) invert(32%) sepia(85%) saturate(1472%) hue-rotate(204deg) brightness(96%) contrast(97%)"
@@ -311,12 +303,12 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
               href="/du-thuyen"
               className="rounded-xl text-center h-[80px] flex flex-col items-center justify-center bg-transparent text-[#344054]"
             >
-              <div className="w-11 h-11 bg-[#EFF8FF] rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#EFF8FF] rounded-full flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  height="22px"
+                  height="20px"
                   viewBox="0 -960 960 960"
-                  width="22px"
+                  width="20px"
                   fill="#1570EF"
                   className="rounded-full"
                 >
@@ -329,18 +321,16 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
             {/* Vé vui chơi */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "ve-vui-choi" ? null : "ve-vui-choi")}
-              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${
-                activeTabMb === "ve-vui-choi" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
-              }`}
+              className={`rounded-xl text-center h-[80px] flex flex-col items-center justify-center cursor-pointer ${activeTabMb === "ve-vui-choi" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+                }`}
             >
-              <div className={`w-11 h-11 rounded-full flex items-center justify-center ${
-                activeTabMb === "ve-vui-choi" ? "bg-[#1570EF]" : "bg-[#EFF8FF]"
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activeTabMb === "ve-vui-choi" ? "bg-[#1570EF]" : "bg-[#EFF8FF]"
+                }`}>
                 <Image
                   src="/icon/Ticket.svg"
                   alt="Vé vui chơi"
-                  width={22}
-                  height={22}
+                  width={20}
+                  height={20}
                   className="rounded-full"
                   style={{
                     filter: activeTabMb === "ve-vui-choi"
@@ -360,12 +350,12 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
               href="/tours"
               className="rounded-xl text-center h-[80px] flex flex-col items-center justify-center bg-transparent text-[#344054]"
             >
-              <div className="w-11 h-11 bg-[#EFF8FF] rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#EFF8FF] rounded-full flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  height="22px"
+                  height="20px"
                   viewBox="0 -960 960 960"
-                  width="22px"
+                  width="20px"
                   fill="#1570EF"
                   className="rounded-full"
                 >
@@ -380,12 +370,12 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
               href="/ve-tau"
               className="rounded-xl text-center h-[80px] flex flex-col items-center justify-center bg-transparent text-[#344054]"
             >
-              <div className="w-11 h-11 bg-[#EFF8FF] rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#EFF8FF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/Ticket.svg"
                   alt="Vé tàu"
-                  width={22}
-                  height={22}
+                  width={20}
+                  height={20}
                   className="rounded-full"
                   style={{
                     filter: "brightness(0) saturate(100%) invert(32%) sepia(85%) saturate(1472%) hue-rotate(204deg) brightness(96%) contrast(97%)"
@@ -400,12 +390,12 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
               href="/thue-xe"
               className="rounded-xl text-center h-[80px] flex flex-col items-center justify-center bg-transparent text-[#344054]"
             >
-              <div className="w-11 h-11 bg-[#EFF8FF] rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#EFF8FF] rounded-full flex items-center justify-center">
                 <Image
                   src="/icon/car-outline.svg"
                   alt="Thuê xe"
-                  width={22}
-                  height={22}
+                  width={20}
+                  height={20}
                   className="rounded-full"
                   style={{
                     filter: "brightness(0) saturate(100%) invert(32%) sepia(85%) saturate(1472%) hue-rotate(204deg) brightness(96%) contrast(97%)"
