@@ -36,6 +36,7 @@ export default function TicketOptionContent({ content }: any) {
       <div className="ckeditor_container relative">
         <div
           ref={contentRef}
+          data-translate="true"
           className={`cke_editable text-base transition-[max-height] duration-500 ease-in-out overflow-hidden`}
           style={{
             maxHeight: isExpanded
