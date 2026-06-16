@@ -58,10 +58,27 @@ export default function FormLogin() {
       const redirectUrl = resolveSafeAuthRedirect(
         searchParams.get("redirect")
       );
+
+      // Check if there is any pending action from the voucher popup modal
+      let targetRedirectUrl = redirectUrl;
+      const postLoginActionStr = sessionStorage.getItem("post_login_action");
+      if (postLoginActionStr) {
+        try {
+          const action = JSON.parse(postLoginActionStr);
+          if (action.code && action.redirectUrl) {
+            sessionStorage.setItem("applied_welcome_program", action.code);
+            targetRedirectUrl = action.redirectUrl;
+            sessionStorage.removeItem("post_login_action");
+          }
+        } catch (e) {
+          console.error("Error parsing post_login_action:", e);
+        }
+      }
+
       setTimeout(() => {
         toast.dismiss();
         setUserInfo(resData.user_info);
-        if (redirectUrl) router.push(redirectUrl);
+        if (targetRedirectUrl) router.push(targetRedirectUrl);
         else router.push("/");
       }, 500);
     } catch (error: any) {
