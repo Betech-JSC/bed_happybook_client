@@ -414,14 +414,14 @@ export default function Header() {
                       </div>
                     </Link>
                     <div className="absolute left-[calc(100%+8px)] top-0 bg-white border border-gray-100 rounded-xl shadow-xl p-5 w-[420px] max-w-[calc(100vw-24px)] opacity-0 invisible group-hover/fasttrack:opacity-100 group-hover/fasttrack:visible group-hover/fasttrack:pointer-events-auto transition-all duration-200 pointer-events-none flex flex-col space-y-2 z-[60] before:content-[''] before:absolute before:-left-2 before:top-0 before:w-2 before:h-full">
-                      <Link href="/fast-track/xuat-canh" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto w-full group/item">
+                      <Link href="/fast-track/tien-xuat-canh" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto w-full group/item">
                         <img src="/icon/fast-track.png" alt={t("tien_xuat_canh")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                         <div className="flex min-w-0 flex-1 flex-col items-start text-left">
                           <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("tien_xuat_canh")}</div>
                           <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("ho_tro_lam_thu_tuc_xuat_canh_nhanh_rut_ngan_thoi_gian_cho_doi")}</div>
                         </div>
                       </Link>
-                      <Link href="/fast-track/nhap-canh" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto w-full group/item">
+                      <Link href="/fast-track/don-nhap-canh" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto w-full group/item">
                         <img src="/icon/fast-track.png" alt={t("don_nhap_canh")} className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                         <div className="flex min-w-0 flex-1 flex-col items-start text-left">
                           <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("don_nhap_canh")}</div>
@@ -448,7 +448,7 @@ export default function Header() {
                   <Link href="/flight-radar" className="!flex items-start gap-4 hover:bg-blue-50 p-3 -mx-3 rounded-xl transition-all duration-300 !h-auto">
                     <img src="/icon/AirplaneTiltBlue.svg" alt="Flight Radar" className="w-[42px] h-[42px] object-contain flex-shrink-0" />
                     <div className="flex flex-col items-start text-left group/item">
-                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("flight_radar")}</div>
+                      <div className="text-[#101828] font-bold text-[15px] leading-tight mb-1 group-hover/item:!text-blue-600 transition-colors break-words">{t("check_tinh_trang_chuyen")}</div>
                       <div className="text-gray-500 text-xs leading-relaxed font-normal whitespace-normal break-words">{t("tra_cuu_va_theo_doi_tinh_trang_chuyen_bay_truc_tuyen")}</div>
                     </div>
                   </Link>

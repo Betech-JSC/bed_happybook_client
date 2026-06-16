@@ -274,34 +274,6 @@ export default function YachtDetailInfor({ product }: any) {
             </SmoothScrollLink>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-4 md:p-6 mt-3">
-          <p className="font-semibold">{t("ngay_di")}</p>
-          <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
-            <Image
-              src="/icon/calendar.svg"
-              alt={language === "vi" ? "Lịch" : "Calendar"}
-              className="h-10"
-              width={18}
-              height={18}
-            />
-            <div className="w-full [&>div]:w-full">
-              <DatePicker
-                selected={departDate}
-                onChange={(date) => setDepartDate(date ? date : today)}
-                dateFormat="dd/MM/yyyy"
-                placeholderText={language === "vi" ? "Chọn ngày" : "Select date"}
-                popperPlacement="bottom-start"
-                minDate={today}
-                locale={language === "vi" ? vi : enUS}
-                onFocus={(e) => e.target.blur()}
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                }}
-                className="z-20 pl-3 w-full outline-none"
-              />
-            </div>
-          </div>
-        </div>
         <div className="mt-3">
           <Schedule schedule={detail?.schedule ?? []} />
         </div>

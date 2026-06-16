@@ -243,7 +243,7 @@ export default function Search({
                       <div className="mt-1 text-end">
                         <DisplayPrice
                           price={item.min_price}
-                          textPrefix="Giá từ"
+                          textPrefix="Giá"
                           currency={item?.currency}
                         />
                       </div>

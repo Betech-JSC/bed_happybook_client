@@ -36,6 +36,7 @@ export default function Search({
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
+    "location_id[]": searchParams.getAll("location_id[]") ?? [],
     location: searchParams.get("location") ?? "",
     "category[]": categoryDefault ? [categoryDefault] : "",
   });
@@ -219,7 +220,7 @@ export default function Search({
                         ) : (
                           <DisplayPrice
                             price={item.min_price}
-                            textPrefix="Giá từ"
+                            textPrefix="Giá"
                             currency={item?.currency}
                           />
                         )}
