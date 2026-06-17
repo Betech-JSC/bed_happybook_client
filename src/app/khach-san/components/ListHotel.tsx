@@ -313,7 +313,7 @@ export default function ListHotel({
                                 className="text-gray-500 text-sm md:text-base mr-2"
                                 data-translate="true"
                               >
-                                chỉ từ
+                                Giá
                               </span>
                               <DisplayPrice
                                 price={

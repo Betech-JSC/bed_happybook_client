@@ -177,12 +177,15 @@ const FlagDisplay = ({ flag, size = 28 }: { flag: FlagResult; size?: number }) =
   return <span style={{ fontSize: size }}>{flag.value}</span>;
 };
 
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
+
 export default function EsimInternationalCards({
   packages,
   selectedPackageSlug,
   activeLocale,
 }: Props) {
   const t = useSimDuLichStaticText(activeLocale);
+  const welcomeDiscount = useWelcomeDiscount("esim");
 
   if (!packages.length) return null;
 
@@ -320,14 +323,30 @@ export default function EsimInternationalCards({
                           <div className="text-xs uppercase tracking-[0.18em] text-steel-secondary">
                             {t("Gia chi từ")}
                           </div>
-                          {cheapestMoney.originalPrice > cheapestMoney.price && (
-                            <div className="text-xs font-normal text-slate-400 line-through">
-                              {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
-                            </div>
+                          {welcomeDiscount ? (
+                            <>
+                              <div className="text-xs font-normal text-slate-400 line-through">
+                                {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                              </div>
+                              <div className="text-xl font-extrabold text-hb-coral">
+                                {formatEsimMoney(
+                                  Math.max(0, cheapestMoney.price - (cheapestMoney.currency === "USD" ? 2 : 50000)),
+                                  cheapestMoney.currency
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              {cheapestMoney.originalPrice > cheapestMoney.price && (
+                                <div className="text-xs font-normal text-slate-400 line-through">
+                                  {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                                </div>
+                              )}
+                              <div className="text-xl font-extrabold text-hb-coral">
+                                {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                              </div>
+                            </>
                           )}
-                          <div className="text-xl font-extrabold text-hb-coral">
-                            {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
-                          </div>
                         </div>
                       </div>
                     </div>

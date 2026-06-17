@@ -248,7 +248,6 @@ export default function Search({
                             <DisplayPrice
                               price={item.min_price}
                               currency={item?.currency}
-                              textPrefix="Giá"
                               className="!text-gray-500 !line-through !font-normal !text-sm"
                             />
                             <DisplayPrice

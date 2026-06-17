@@ -269,7 +269,6 @@ export default function Search({
                             <DisplayPrice
                               price={item.min_price}
                               currency={item?.currency}
-                              textPrefix="Giá từ"
                               className="!text-gray-500 !line-through !font-normal !text-sm"
                             />
                             <DisplayPrice
@@ -279,7 +278,7 @@ export default function Search({
                                   : Math.max(0, item.min_price * (1 - welcomeDiscount.value / 100))
                               }
                               currency={item?.currency}
-                              textPrefix="Giá từ"
+                              textPrefix="Giá"
                               className="!text-[#F27145] !font-bold !text-lg"
                             />
                           </div>
@@ -293,6 +292,7 @@ export default function Search({
                             <DisplayPrice
                               price={item.price - item.discount_price}
                               currency={item?.currency}
+                              textPrefix="Giá"
                               className="!text-[#F27145] !font-bold !text-lg"
                             />
                           </div>

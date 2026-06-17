@@ -75,6 +75,20 @@ export default function FormLogin() {
         }
       }
 
+      // Try to claim welcome vouchers in the background for first-time customers
+      fetch("/api/auth/claim-welcome-vouchers", { method: "POST" })
+        .then(async (res) => {
+          if (res.ok) {
+            console.log("Welcome vouchers successfully claimed/verified in database.");
+          } else {
+            const errData = await res.json();
+            console.log("Welcome vouchers claim status:", errData.message);
+          }
+        })
+        .catch((err) => {
+          console.error("Error calling claim-welcome-vouchers API:", err);
+        });
+
       setTimeout(() => {
         toast.dismiss();
         setUserInfo(resData.user_info);

@@ -2,75 +2,68 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
+import { toast } from "react-hot-toast";
 
 const WELCOME10_VOUCHERS = [
-  {
-    name: "Dịch vụ Fast Track",
-    desc: "Đón tiễn ưu tiên tại sân bay quốc tế & nội địa",
-    discount: "Giảm 5%",
-    url: "/fast-track",
-    productType: "fast-track",
-    icon: "✈️"
-  },
-  {
-    name: "Dịch vụ Du Thuyền",
-    desc: "Trải nghiệm nghỉ dưỡng, ngắm cảnh sang trọng",
-    discount: "Giảm 2%",
-    url: "/du-thuyen",
-    productType: "yacht",
-    icon: "🚢"
-  },
-  {
-    name: "Vé Vui Chơi",
-    desc: "Vé vào cổng các khu vui chơi giải trí toàn quốc",
-    discount: "Giảm 5%",
-    url: "/ve-vui-choi",
-    productType: "entertainment_ticket",
-    icon: "🎡"
-  },
-  {
-    name: "Bảo Hiểm Du Lịch",
-    desc: "Bảo hiểm an toàn cho chuyến đi nội địa & quốc tế",
-    discount: "Giảm 10%",
-    url: "/bao-hiem",
-    productType: "insurance",
-    icon: "🛡️"
-  },
-  {
-    name: "Dịch vụ Visa",
-    desc: "Tư vấn hồ sơ, làm visa nhanh chóng, chuyên nghiệp",
-    discount: "Giảm 5%",
-    url: "/visa",
-    productType: "visa",
-    icon: "🛂"
-  }
+    {
+        name: "Dịch vụ Fast Track",
+        desc: "Đón tiễn ưu tiên tại sân bay quốc tế & nội địa",
+        discount: "Giảm 5%",
+        url: "/fast-track",
+        productType: "fast-track",
+        icon: "✈️"
+    },
+    {
+        name: "Dịch vụ Du Thuyền",
+        desc: "Trải nghiệm nghỉ dưỡng, ngắm cảnh sang trọng",
+        discount: "Giảm 2%",
+        url: "/du-thuyen",
+        productType: "yacht",
+        icon: "🚢"
+    },
+    {
+        name: "Vé Vui Chơi",
+        desc: "Vé vào cổng các khu vui chơi giải trí toàn quốc",
+        discount: "Giảm 5%",
+        url: "/ve-vui-choi",
+        productType: "entertainment_ticket",
+        icon: "🎡"
+    },
+    {
+        name: "Bảo Hiểm Du Lịch",
+        desc: "Bảo hiểm an toàn cho chuyến đi nội địa & quốc tế",
+        discount: "Giảm 10%",
+        url: "/bao-hiem",
+        productType: "insurance",
+        icon: "🛡️"
+    },
+    {
+        name: "Dịch vụ Visa",
+        desc: "Tư vấn hồ sơ, làm visa nhanh chóng, chuyên nghiệp",
+        discount: "Giảm 5%",
+        url: "/visa",
+        productType: "visa",
+        icon: "🛂"
+    }
 ];
 
 const WELCOME50K_VOUCHERS = [
-  {
-    name: "Phòng Chờ Thương Gia",
-    desc: "Phòng chờ VIP sang trọng tại các sân bay lớn",
-    discount: "Giảm 50K",
-    url: "/phong-cho-thuong-gia",
-    productType: "business-lounge",
-    icon: "🛋️"
-  },
-  {
-    name: "Sim Du Lịch / eSIM",
-    desc: "Sim data kết nối internet quốc tế tốc độ cao",
-    discount: "Giảm 50K",
-    url: "/sim-du-lich",
-    productType: "esim",
-    icon: "📱"
-  },
-  {
-    name: "Dịch vụ Fast Track",
-    desc: "Đón tiễn ưu tiên tại sân bay quốc tế & nội địa",
-    discount: "Giảm 50K",
-    url: "/fast-track",
-    productType: "fast-track",
-    icon: "✈️"
-  }
+    {
+        name: "Phòng Chờ Thương Gia",
+        desc: "Phòng chờ VIP sang trọng tại các sân bay lớn",
+        discount: "Giảm 50K",
+        url: "/phong-cho-thuong-gia",
+        productType: "business-lounge",
+        icon: "🛋️"
+    },
+    {
+        name: "Dịch vụ Fast Track",
+        desc: "Đón tiễn ưu tiên tại sân bay quốc tế & nội địa",
+        discount: "Giảm 50K",
+        url: "/fast-track",
+        productType: "fast-track",
+        icon: "✈️"
+    }
 ];
 
 export default function PromoModal() {
@@ -128,7 +121,10 @@ export default function PromoModal() {
 
     const handleApplyVoucher = (voucher: typeof WELCOME10_VOUCHERS[0], programCode: "WELCOME10" | "WELCOME50K") => {
         if (userInfo) {
-            // Logged in: save applied welcome program and redirect
+            // Logged in: claim in DB, save applied welcome program, and redirect
+            fetch("/api/auth/claim-welcome-vouchers", { method: "POST" })
+                .catch((err) => console.error("Error claiming vouchers in background:", err));
+
             sessionStorage.setItem("applied_welcome_program", programCode);
             handleClose();
             router.push(voucher.url);
@@ -144,9 +140,23 @@ export default function PromoModal() {
         }
     };
 
-    const handleBottomAction = () => {
+    const handleBottomAction = async () => {
         if (userInfo) {
-            // Logged in: prompt they can select a voucher
+            // Logged in: claim in DB with toast feedback
+            const loadToast = toast.loading("Đang lưu mã giảm giá...");
+            try {
+                const response = await fetch("/api/auth/claim-welcome-vouchers", { method: "POST" });
+                const resData = await response.json();
+                toast.dismiss(loadToast);
+                if (response.ok) {
+                    toast.success("Đã lưu mã giảm giá thành công vào tài khoản!");
+                } else {
+                    toast.error(resData.message || "Không thể lưu mã giảm giá.");
+                }
+            } catch (error) {
+                toast.dismiss(loadToast);
+                toast.error("Đã xảy ra lỗi khi lưu mã giảm giá.");
+            }
             handleClose();
         } else {
             // Not logged in: save general login action and redirect to login
@@ -167,48 +177,44 @@ export default function PromoModal() {
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className={`relative w-full transition-all duration-300 ${
-                    activeTab === "banner"
+                className={`relative w-full transition-all duration-300 ${activeTab === "banner"
                         ? "max-w-2xl bg-transparent flex flex-col items-center"
                         : "max-w-lg bg-white rounded-3xl shadow-2xl flex flex-col p-6 border border-gray-100"
-                }`}
+                    }`}
             >
                 {/* Close Button */}
                 <button
                     onClick={handleClose}
-                    className={`absolute text-3xl transition flex items-center justify-center z-[100] ${
-                        activeTab === "banner"
+                    className={`absolute text-3xl transition flex items-center justify-center z-[100] ${activeTab === "banner"
                             ? "-top-12 right-2 text-white hover:text-gray-300 bg-black/40 w-10 h-10 rounded-full"
                             : "top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 w-8 h-8 rounded-full text-xl"
-                    }`}
+                        }`}
                 >
                     ✕
                 </button>
 
                 {activeTab === "banner" ? (
                     <div className="relative w-full h-auto select-none">
-                        <img 
-                            src="/opt 1.png" 
-                            alt="Đăng ký nhận quà" 
-                            className="w-full h-auto object-contain rounded-2xl shadow-2xl"
+                        <img
+                            src="/opt 1.png"
+                            alt="Đăng ký nhận quà"
+                            className="w-full h-auto object-contain"
                         />
-                        
-                        {/* Left Ticket Overlay (WELCOME10 Detail) */}
-                        <div 
+
+                        <div
                             onClick={() => setActiveTab("welcome10")}
                             className="absolute left-[5%] top-[55%] w-[42%] h-[28%] cursor-pointer hover:bg-white/10 rounded-2xl transition-all"
                             title="Chi tiết chương trình Giảm đến 10%"
                         />
 
-                        {/* Right Ticket Overlay (WELCOME50K Detail) */}
-                        <div 
+                        <div
                             onClick={() => setActiveTab("welcome50k")}
                             className="absolute right-[5%] top-[55%] w-[42%] h-[28%] cursor-pointer hover:bg-white/10 rounded-2xl transition-all"
                             title="Chi tiết chương trình Tặng 50K"
                         />
 
                         {/* Bottom Action Button Overlay */}
-                        <div 
+                        <div
                             onClick={handleBottomAction}
                             className="absolute left-[15%] bottom-[2%] w-[70%] h-[10%] cursor-pointer hover:scale-[1.02] rounded-full transition-all"
                             title={userInfo ? "Lưu mã ngay" : "Đăng nhập để nhận ưu đãi"}
@@ -218,7 +224,7 @@ export default function PromoModal() {
                     <div className="flex flex-col w-full">
                         {/* Header */}
                         <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
-                            <button 
+                            <button
                                 onClick={() => setActiveTab("banner")}
                                 className="text-gray-500 hover:text-blue-700 font-bold flex items-center gap-1 text-sm bg-gray-50 hover:bg-blue-50 px-3 py-1.5 rounded-xl transition duration-300"
                             >
@@ -231,16 +237,16 @@ export default function PromoModal() {
 
                         {/* Subtitle */}
                         <p className="text-sm text-gray-500 mb-4 bg-blue-50/50 text-blue-700 px-4 py-2.5 rounded-2xl border border-blue-100/50">
-                            {activeTab === "welcome10" 
+                            {activeTab === "welcome10"
                                 ? "✨ Áp dụng riêng biệt cho từng dịch vụ dưới đây cho lượt đặt đầu tiên của thành viên mới."
-                                : "🎁 Nhận ngay 50.000đ khi đặt phòng chờ thương gia, eSIM, hoặc dịch vụ Fast Track đầu tiên."
+                                : "🎁 Nhận ngay 50.000đ khi đặt phòng chờ thương gia hoặc dịch vụ Fast Track đầu tiên."
                             }
                         </p>
 
                         {/* Vouchers List */}
                         <div className="max-h-[380px] overflow-y-auto space-y-3 pr-1">
                             {(activeTab === "welcome10" ? WELCOME10_VOUCHERS : WELCOME50K_VOUCHERS).map((voucher, idx) => (
-                                <div 
+                                <div
                                     key={idx}
                                     className="flex items-center justify-between p-3 bg-gray-50/50 border border-gray-100 rounded-2xl hover:bg-blue-50/40 hover:border-blue-200 transition-all duration-300"
                                 >
@@ -254,11 +260,10 @@ export default function PromoModal() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2.5 ml-3">
-                                        <span className={`font-extrabold text-xs px-2.5 py-1.5 rounded-full whitespace-nowrap ${
-                                            activeTab === "welcome10" 
-                                                ? "bg-orange-100 text-orange-600" 
+                                        <span className={`font-extrabold text-xs px-2.5 py-1.5 rounded-full whitespace-nowrap ${activeTab === "welcome10"
+                                                ? "bg-orange-100 text-orange-600"
                                                 : "bg-blue-100 text-blue-600"
-                                        }`}>
+                                            }`}>
                                             {voucher.discount}
                                         </span>
                                         <button

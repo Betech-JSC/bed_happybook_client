@@ -12,7 +12,7 @@ export function useWelcomeDiscount(productType: string) {
     const programCode = sessionStorage.getItem("applied_welcome_program");
     if (programCode) {
       if (programCode === "WELCOME50K") {
-        if (["business-lounge", "esim", "fast-track"].includes(productType)) {
+        if (["business-lounge", "fast-track"].includes(productType)) {
           setWelcomeDiscount({
             type: "amount",
             value: 50000,
