@@ -30,9 +30,9 @@ export default function DisplayPrice({
   return (
     <Fragment>
       {price > 0 ? (
-        <>
+        <span className="inline-flex items-baseline gap-1">
           {!isEmpty(textPrefix) && (
-            <span className="mr-1">{t(toSnakeCase(textPrefix as string))}</span>
+            <span className="text-slate-700 text-sm lg:text-base font-medium">{t(toSnakeCase(textPrefix as string))}</span>
           )}
           <span
             className={cn(
@@ -42,7 +42,7 @@ export default function DisplayPrice({
           >
             {formattedPrice}
           </span>
-        </>
+        </span>
       ) : (
         <span
           className={cn(

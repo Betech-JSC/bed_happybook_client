@@ -12,6 +12,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ProductFastTrackApi } from "@/api/ProductFastTrack";
 import { translateText } from "@/utils/translateApi";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 
 type optionFilterType = {
   label: string;
@@ -30,6 +31,7 @@ export default function Search({
   categoryDefault?: number;
 }) {
   const { t } = useTranslation();
+  const welcomeDiscount = useWelcomeDiscount("fast-track");
 
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category[]") || searchParams.get("category");
@@ -262,7 +264,25 @@ export default function Search({
                         {renderTextContent(item.name)}
                       </Link>
                       <div className="mt-1 text-end">
-                        {item.discount_price > 0 && item.price > 0 ? (
+                        {welcomeDiscount ? (
+                          <div className="flex flex-col items-end">
+                            <DisplayPrice
+                              price={item.min_price}
+                              currency={item?.currency}
+                              className="!text-gray-500 !line-through !font-normal !text-sm"
+                            />
+                            <DisplayPrice
+                              price={
+                                welcomeDiscount.type === "amount"
+                                  ? Math.max(0, item.min_price - (item?.currency?.code?.toUpperCase() === "USD" ? 2 : 50000))
+                                  : Math.max(0, item.min_price * (1 - welcomeDiscount.value / 100))
+                              }
+                              currency={item?.currency}
+                              textPrefix="Giá"
+                              className="!text-[#F27145] !font-bold !text-lg"
+                            />
+                          </div>
+                        ) : item.discount_price > 0 && item.price > 0 ? (
                           <div className="flex flex-col items-end">
                             <DisplayPrice
                               price={item.price}
@@ -272,6 +292,7 @@ export default function Search({
                             <DisplayPrice
                               price={item.price - item.discount_price}
                               currency={item?.currency}
+                              textPrefix="Giá"
                               className="!text-[#F27145] !font-bold !text-lg"
                             />
                           </div>

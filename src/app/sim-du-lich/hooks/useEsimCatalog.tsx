@@ -18,6 +18,7 @@ import {
 import { getSimDuLichDetailHref, normalizeSimDuLichCategory } from "../lib/routes";
 import { useEsimDetailSections } from "./useEsimDetailSections";
 import { useSimDuLichStaticText } from "./useSimDuLichStaticText";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 
 type Locale = "vi" | "en";
 type DetailAccordionKey = "compatibility" | "refund" | "faq";
@@ -47,6 +48,7 @@ export function useEsimCatalog({
 }: Args) {
   const router = useRouter();
   const t = useSimDuLichStaticText(activeLocale);
+  const welcomeDiscount = useWelcomeDiscount("esim");
   const [mounted, setMounted] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [query, setQuery] = useState("");
@@ -382,7 +384,12 @@ export function useEsimCatalog({
 
   const subtotal = selectedVariant ? selectedVariantMoney.price * quantity : 0;
   const serviceFee = selectedVariant ? selectedVariantMoney.serviceFeeAmount * quantity : 0;
-  const total = subtotal + serviceFee;
+  const rawTotal = subtotal + serviceFee;
+  const total = useMemo(() => {
+    if (!welcomeDiscount) return rawTotal;
+    const discountAmount = selectedVariantMoney.currency === "USD" ? 2 : 50000;
+    return Math.max(0, rawTotal - discountAmount);
+  }, [welcomeDiscount, rawTotal, selectedVariantMoney.currency]);
 
   useEffect(() => {
     if (!mounted) return;

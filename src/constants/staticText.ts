@@ -454,6 +454,7 @@ const authStaticText: string[] = [
   "Lịch sử đặt vé máy bay",
   "Lịch sử đặt hàng",
   "Đổi mật khẩu",
+  "Kho voucher",
   "Đăng xuất",
   "Mật khẩu",
   "Nhập lại mật khẩu",
