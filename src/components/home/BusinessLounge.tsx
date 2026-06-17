@@ -1,10 +1,12 @@
 import Image from "next/image";
 import { HomeApi } from "@/api/Home";
 import BusinessLoungeTabs from "./BusinessLoungeTabs";
+import { getServerT } from "@/lib/i18n/getServerT";
 
 export default async function HomeBusinessLounge() {
   const data =
     ((await HomeApi.index("business-lounge"))?.payload?.data as any) ?? [];
+  const t = await getServerT();
   if (!data?.length) return;
   return (
     <div className="px-3 lg:px-[50px] xl:px-[80px] max__screen">
@@ -25,7 +27,7 @@ export default async function HomeBusinessLounge() {
             src="/bg-img/tour-noi-dia.png"
             width={1280}
             height={500}
-            alt="Phòng chờ thương gia Happy Book"
+            alt={t("phong_cho_thuong_gia_happy_book")}
             sizes="100vw"
             className="w-full h-full rounded-3xl "
           />

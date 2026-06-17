@@ -181,21 +181,34 @@ const getLabelRatingProduct = (rating: number, lang?: string) => {
 };
 
 const getCurrentLanguage = () => {
-  const locale =
-    typeof window !== "undefined"
-      ? localStorage.getItem("language") ?? "vi"
-      : "vi";
-  return arrLanguages.includes(locale) ? locale : "vi";
+  if (typeof window !== "undefined") {
+    const match = document.cookie.match(/(^| )locale=([^;]+)/);
+    if (match) {
+      const val = decodeURIComponent(match[2]);
+      if (arrLanguages.includes(val)) return val;
+    }
+    const locale = localStorage.getItem("language");
+    if (locale && arrLanguages.includes(locale)) return locale;
+  }
+  return "vi";
 };
 
 const renderTextContent = (content: any) => {
-  return !_.isEmpty(content) ? content : "Nội dung đang cập nhật...!";
+  const lang = getCurrentLanguage();
+  return !_.isEmpty(content)
+    ? content
+    : lang === "en"
+    ? "Content is updating...!"
+    : "Nội dung đang cập nhật...!";
 };
 
 const renderTextContentArray = (content: any) => {
+  const lang = getCurrentLanguage();
   return !_.isEmpty(content)
     ? `- ` +
         content.map((item: any) => renderTextContent(item)).join("<br /> - ")
+    : lang === "en"
+    ? "Content is updating...!"
     : "Nội dung đang cập nhật...!";
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export type FilterOption = { value: string; label: string; count?: number };
 export type FilterGroup = { name: string; label: string; option: FilterOption[] };
@@ -37,19 +38,37 @@ function FilterGroupView({
   selected: string[];
   onToggle: (value: string) => void;
 }) {
+  const { t } = useTranslation();
   const [mini, setMini] = useState("");
   const [expand, setExpand] = useState(false);
 
   const norm = (s: string) => (s || "").toLowerCase();
   let opts = group.option || [];
   if (mini.trim()) opts = opts.filter((o) => norm(o.label).includes(norm(mini.trim())));
-  const shown = expand ? opts : opts.slice(0, LIMIT);
+  // Đưa mục ĐÃ CHỌN lên đầu để luôn nhìn thấy (pre-fill từ widget trang chủ: sân bay
+  // được chọn có thể nằm dưới fold LIMIT trong danh sách dài 600+ mục). sort ổn định.
+  const ordered = [...opts].sort(
+    (a, b) =>
+      (selected.includes(b.value) ? 1 : 0) - (selected.includes(a.value) ? 1 : 0)
+  );
+  const shown = expand ? ordered : ordered.slice(0, LIMIT);
+
+  const groupLabel =
+    group.name === "country"
+      ? t("quoc_gia")
+      : group.name === "city"
+      ? t("thanh_pho")
+      : group.name === "airport"
+      ? t("san_bay")
+      : group.label;
 
   return (
     <div className="border-t border-gray-100 first:border-t-0 px-4 py-3.5">
       <div className="flex items-center gap-2 text-[13px] font-bold text-gray-800 mb-2.5">
         <GroupIcon name={group.name} />
-        <span>{group.label}</span>
+        {/* groupLabel đã được t() bản địa hoá — KHÔNG gắn data-translate để
+            translatePage không dịch chồng (vd "Country" -> "chicken"). */}
+        <span>{groupLabel}</span>
       </div>
 
       {/* mini-search trong nhóm */}
@@ -60,13 +79,13 @@ function FilterGroupView({
         <input
           value={mini}
           onChange={(e) => setMini(e.target.value)}
-          placeholder={`Tìm ${group.label.toLowerCase()}…`}
+          placeholder={`${t("tim_kiem")} ${groupLabel.toLowerCase()}…`}
           className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-8 pr-2.5 text-[13px] outline-none focus:border-primary focus:bg-white"
         />
       </div>
 
       <div className="flex flex-col gap-0.5 max-h-[200px] overflow-y-auto -mx-1.5 px-1.5">
-        {shown.length === 0 && <div className="text-[12.5px] text-gray-400 px-1.5 py-1.5">Không tìm thấy</div>}
+        {shown.length === 0 && <div className="text-[12.5px] text-gray-400 px-1.5 py-1.5">{t("khong_tim_thay")}</div>}
         {shown.map((o) => {
           const checked = selected.includes(o.value);
           return (
@@ -80,7 +99,7 @@ function FilterGroupView({
                 onChange={() => onToggle(o.value)}
                 className="w-4 h-4 shrink-0 accent-[#F27145] cursor-pointer"
               />
-              <span className="flex-1 text-gray-800">{o.label}</span>
+              <span className="flex-1 text-gray-800" data-translate="true">{o.label}</span>
               {typeof o.count === "number" && <span className="text-[12.5px] text-gray-400">{o.count}</span>}
             </label>
           );
@@ -95,7 +114,7 @@ function FilterGroupView({
           <svg className={`w-3.5 h-3.5 transition-transform ${expand ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="6 9 12 15 18 9" />
           </svg>
-          {expand ? "Thu gọn" : `Xem thêm (${opts.length - LIMIT})`}
+          {expand ? t("thu_gon") : `${t("xem_them")} (${opts.length - LIMIT})`}
         </button>
       )}
     </div>
@@ -114,13 +133,14 @@ export default function LoungeFilter({
   onClear: () => void;
 }) {
   const hasAny = Object.values(selected).some((arr) => arr.length > 0);
+  const { t } = useTranslation();
   return (
     <div className="bg-white border border-gray-100 rounded-xl shadow-sm">
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
-        <h2 className="text-[15px] font-bold">Bộ lọc</h2>
+        <h2 className="text-[15px] font-bold">{t("bo_loc")}</h2>
         {hasAny && (
-          <button onClick={onClear} className="text-[12.5px] text-blue-600 hover:underline">
-            Xóa tất cả
+           <button onClick={onClear} className="text-[12.5px] text-blue-600 hover:underline">
+            {t("xoa_tat_ca")}
           </button>
         )}
       </div>

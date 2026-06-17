@@ -13,8 +13,8 @@ import Select from "react-select";
 const VisaSearchForm = dynamic(() => import("@/app/visa/components/SeachForm"), { ssr: false });
 const SimDuLichHeroFilters = dynamic(() => import("@/app/sim-du-lich/components/SimDuLichHeroFilters"), { ssr: false });
 const AirportSearchForm = dynamic(() => import("@/app/fast-track/components/SearchForm"), { ssr: false });
-const LoungeSearchForm = dynamic(() => import("@/app/phong-cho-thuong-gia/components/SearchForm"), { ssr: false });
 const SearchAmusement = dynamic(() => import("@/app/ve-vui-choi/components/SearchForm"), { ssr: false });
+const LoungeSearchWidget = dynamic(() => import("@/app/phong-cho-thuong-gia/components/LoungeSearchWidget"), { ssr: false });
 
 function ComboSearchForm({ locations }: { locations: any[] }) {
   const { t } = useTranslation();
@@ -311,7 +311,7 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
               <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${activeTabMb === "phong-cho-thuong-gia" ? "bg-[#1570EF]" : "bg-[#EFF8FF]"
                 }`}>
                 <Image
-                  src="/icon/lounge-light.svg"
+                  src="/icon/waiting-room-icon.svg"
                   alt="Phòng chờ thương gia"
                   width={16}
                   height={16}
@@ -483,16 +483,15 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
             <AirportSearchForm />
           </div>
 
-          {/* Tab 11 - Phòng chờ thương gia */}
+          {/* Tab Phòng chờ thương gia */}
           <div className={`px-3 ${activeTabMb === "phong-cho-thuong-gia" ? "block" : "hidden"}`}>
-            <LoungeSearchForm />
+            <LoungeSearchWidget />
           </div>
 
           {/* Tab 8 - Vé vui chơi & hoạt động */}
           <div className={`px-3 ${activeTabMb === "ve-vui-choi" ? "block" : "hidden"}`}>
             <SearchAmusement locations={comboLocations} />
           </div>
-
         </div>
       </div>
     </div>

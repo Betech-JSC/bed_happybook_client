@@ -719,6 +719,57 @@ const simDuLichStaticText: string[] = [
   "Điểm đến quốc tế",
 ];
 
+const businessLoungeStaticText: string[] = [
+  // === Search & Filter (listing page) ===
+  "Quốc gia",
+  "Thành phố",
+  "Sân bay",
+  "Tìm theo quốc gia, thành phố, tỉnh, tên sân bay hoặc tên phòng chờ...",
+  "Bỏ lọc",
+  "Không tìm thấy",
+  "Thu gọn",
+  "Bộ lọc",
+  "Xóa tất cả",
+  // === Home Search Widget ===
+  "Sân bay khởi hành",
+  "Ngày đến sân bay",
+  "Số khách",
+  "người lớn",
+  "Trẻ em",
+  "Tìm phòng chờ",
+  "Tìm hoặc chọn sân bay...",
+  "Không tìm thấy sân bay",
+  "Chọn ngày",
+  "Phòng chờ trong nước",
+  "Phòng chờ quốc tế",
+  // === Detail page ===
+  "Thứ Hai",
+  "Thứ Ba",
+  "Thứ Tư",
+  "Thứ Năm",
+  "Thứ Sáu",
+  "Thứ Bảy",
+  "Chủ nhật",
+  "Mỗi ngày",
+  "Lịch trình",
+  "Ẩn bớt",
+  "Ảnh Phòng chờ thương gia",
+  // === Checkout ===
+  "Vui lòng chọn ít nhất 1 loại vé",
+  "Địa điểm",
+  "Ngày sử dụng",
+  "Thông tin sử dụng",
+  "Sân bay & Ngày sử dụng",
+  "Giảm",
+  // === Booking Detail ===
+  "Không thể tạo receipt",
+  "Chuyển khoản",
+  // === Search Form ===
+  "Vui lòng chọn đầy đủ thông tin",
+  // === Home section ===
+  "Phòng chờ thương gia Happy Book",
+];
+
 export const unifiedStaticText: string[] = [
   ...homeStaticText,
   ...headerStaticText,
@@ -750,6 +801,7 @@ export const unifiedStaticText: string[] = [
   ...aboutUsStaticText,
   ...flightStaticText,
   ...simDuLichStaticText,
+  ...businessLoungeStaticText,
 ];
 
 const staticTextTranslationCache = new Map<string, Promise<Record<string, string>>>();
@@ -773,12 +825,28 @@ const applyAmusementTicketAliases = (
       "Tìm vé vui chơi & hoạt động"
       : "Search attraction tickets";
 
+  // Override EN cho các chuỗi Google dịch vụng:
+  //  - "Tìm phòng chờ" -> "Find the waiting room" (sai ngữ cảnh hàng không) => "Search lounges"
+  //  - "Quốc gia" -> "Nation" => "Country" (nhãn bộ lọc tự nhiên hơn)
+  //  - "Xóa tất cả" -> "Delete all" => "Clear all"
+  // VI giữ nguyên qua fallback.
+  const manualEnOverrides: Record<string, string> =
+    lang === "vi"
+      ? {}
+      : {
+          tim_phong_cho: "Search lounges",
+          quoc_gia: "Country",
+          xoa_tat_ca: "Clear all",
+          giam: "Discount",
+        };
+
   return {
     ...translations,
     ve_vui_choi: amusementLabel,
     ve_vui_choi_hoat_dong: amusementLabel,
     tim_ve_vui_choi: searchLabel,
     tim_ve_vui_choi_hoat_dong: searchLabel,
+    ...manualEnOverrides,
   };
 };
 
