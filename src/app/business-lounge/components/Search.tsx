@@ -36,6 +36,7 @@ export default function Search({
     [key: string]: string | number | boolean | undefined | any;
   }>({
     page: 1,
+    "location_id[]": searchParams.getAll("location_id[]") ?? [],
     location_id: searchParams.get("location_id") ?? "",
     "category[]": categoryDefault ? [categoryDefault] : "",
   });
@@ -194,7 +195,7 @@ export default function Search({
                       <div className="mt-1 text-end">
                         <DisplayPrice
                           price={item.min_price}
-                          textPrefix="Giá từ"
+                          textPrefix="Giá"
                           currency={item?.currency}
                         />
                       </div>

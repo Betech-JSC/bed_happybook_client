@@ -13,6 +13,7 @@ const SearchHotel = dynamic(() => import("@/app/khach-san/components/Search"), {
 const VisaSearchForm = dynamic(() => import("@/app/visa/components/SeachForm"), { ssr: false });
 const SimDuLichHeroFilters = dynamic(() => import("@/app/sim-du-lich/components/SimDuLichHeroFilters"), { ssr: false });
 const AirportSearchForm = dynamic(() => import("@/app/fast-track/components/SearchForm"), { ssr: false });
+const LoungeSearchForm = dynamic(() => import("@/app/phong-cho-thuong-gia/components/SearchForm"), { ssr: false });
 const SearchTour = dynamic(() => import("@/app/tours/components/Search"), { ssr: false });
 const SearchYacht = dynamic(() => import("@/app/du-thuyen/components/SearchForm"), { ssr: false });
 const SearchAmusement = dynamic(() => import("@/app/ve-vui-choi/components/SearchForm"), { ssr: false });
@@ -216,17 +217,33 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               >
                 <Image
                   src="/icon/Ticket.svg"
-                  alt="Dịch vụ tại sân bay"
+                  alt="Đón tiễn ưu tiên (FastTrack)"
                   width={18}
                   height={18}
                   style={{ width: 18, height: 18 }}
                 />
-                <span className="ml-2 text-sm">{t("dich_vu_tai_san_bay")}</span>
+                <span className="ml-2 text-sm">{t("don_tien_uu_tien_fast_track") || "Đón tiễn ưu tiên (FastTrack)"}</span>
               </button>
             </div>
 
             {/* Hàng 2: Menu còn lại (nhỏ hơn) */}
             <div className="flex justify-center gap-2 mt-0.5 border-t border-gray-800 w-full pt-1.5 pb-0.5">
+              {/* Tab 11: Phòng chờ thương gia */}
+              <button
+                onClick={() => setActiveTab(11)}
+                className={`flex items-center justify-center whitespace-nowrap text-white px-3 py-1 rounded-2xl focus:outline-none transition-colors text-xs ${activeTab === 11 ? "bg-[#1570EF]" : "bg-transparent opacity-75 hover:opacity-100"
+                  }`}
+              >
+                <Image
+                  src="/icon/lounge-light.svg"
+                  alt="Phòng chờ thương gia"
+                  width={14}
+                  height={14}
+                  style={{ width: 14, height: 14 }}
+                />
+                <span className="ml-1.5">{t("phong_cho_thuong_gia") || "Phòng chờ thương gia"}</span>
+              </button>
+
               {/* Tab 6: Tours */}
               <button
                 onClick={() => setActiveTab(6)}
@@ -234,7 +251,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
                   }`}
               >
                 <Image
-                  src="/icon/map-pinned.svg"
+                  src="/icon/map-pinned-light.svg"
                   alt="Tours"
                   width={14}
                   height={14}
@@ -358,6 +375,11 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
           {/* Tabs 5 - Dịch vụ tại sân bay */}
           <div className={`${activeTab === 5 ? "block" : "hidden"}`}>
             <AirportSearchForm />
+          </div>
+
+          {/* Tabs 11 - Phòng chờ thương gia */}
+          <div className={`mt-2 ${activeTab === 11 ? "block" : "hidden"}`}>
+            <LoungeSearchForm />
           </div>
 
           {/* Tabs 6 - Tours */}

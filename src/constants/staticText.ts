@@ -212,7 +212,7 @@ const headerStaticText: string[] = [
   "Thuê xe",
   "Đưa đón sân bay",
   "Xe riêng đưa đón tận nơi, đúng giờ, chu đáo 24/7.",
-  "Flight Radar",
+  "Check tình trạng chuyến",
   "Tra cứu và theo dõi tình trạng chuyến bay trực tuyến",
 ];
 
@@ -244,6 +244,7 @@ const footerStaticText: string[] = [
 const generalStaticText: string[] = [
   "Tìm du thuyền",
   "Nơi đi",
+  "Địa điểm",
   "Chọn điểm đi",
   "Chọn điểm đến",
   "Từ",
@@ -310,6 +311,7 @@ const generalStaticText: string[] = [
   "Thông tin đơn hàng",
   "Tôi muốn xuất hóa đơn",
   "Fast track",
+  "Tìm phòng chờ thương gia",
   "Phòng chờ thương gia",
   "Mã đơn hàng",
   "Gói dữ liệu",

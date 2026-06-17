@@ -204,7 +204,7 @@ export default function EsimPackageDiscoveryList({
                     </div>
 
                     <div className="mt-4 flex flex-col justify-end items-end lg:mt-0 lg:pl-6 lg:border-l lg:border-slate-100 lg:min-w-[180px]">
-                      <div className="text-xs text-steel-secondary mb-1">{t("Giá từ")}</div>
+                      <div className="text-xs text-steel-secondary mb-1">{t("Giá")}</div>
                       {isSelectable ? (
                         <div className="flex flex-col items-end">
                           {cheapestMoney.originalPrice > cheapestMoney.price && (

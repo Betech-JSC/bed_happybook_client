@@ -278,7 +278,7 @@ export default function Search({
                         ) : (
                           <DisplayPrice
                             price={item.min_price}
-                            textPrefix="Giá từ"
+                            textPrefix="Giá"
                             currency={item?.currency}
                           />
                         )}

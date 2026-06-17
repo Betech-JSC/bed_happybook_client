@@ -133,11 +133,6 @@ const nextConfig = {
         hostname: "flagcdn.com",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "*.dragonpass.com.cn",
-        pathname: "/**",
-      },
     ],
     loader: "default",
     formats: ["image/avif", "image/webp"],
