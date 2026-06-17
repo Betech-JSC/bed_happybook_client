@@ -11,6 +11,7 @@ import SideBarFilterProduct from "@/components/product/components/SideBarFilter"
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ProductBusinessLoungeApi } from "@/api/ProductBusinessLounge";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 
 type optionFilterType = {
   label: string;
@@ -38,6 +39,7 @@ export default function Search({
 }) {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
+  const welcomeDiscount = useWelcomeDiscount("business-lounge");
 
   const [query, setQuery] = useState<{
     page: number;
@@ -243,24 +245,42 @@ export default function Search({
                       {renderTextContent(item.name)}
                     </Link>
                     <div className="mt-1 text-end">
-                      {item.discount_price > 0 && item.price > 0 ? (
+                      {welcomeDiscount ? (
                         <div className="flex flex-col items-end">
                           <DisplayPrice
                             price={item.min_price}
+                            currency={item?.currency}
+                            className="!text-gray-500 !line-through !font-normal !text-sm"
+                          />
+                          <DisplayPrice
+                            price={
+                              welcomeDiscount.type === "amount"
+                                ? Math.max(0, item.min_price - (item?.currency?.code?.toUpperCase() === "USD" ? 2 : 50000))
+                                : Math.max(0, item.min_price * (1 - welcomeDiscount.value / 100))
+                            }
+                            currency={item?.currency}
                             textPrefix="Giá"
+                            className="!text-[#F27145] !font-bold !text-lg"
+                          />
+                        </div>
+                      ) : item.discount_price > 0 && item.price > 0 ? (
+                        <div className="flex flex-col items-end">
+                          <DisplayPrice
+                            price={item.min_price}
                             currency={item?.currency}
                             className="!text-gray-500 !line-through !font-normal !text-sm"
                           />
                           <DisplayPrice
                             price={item.price - item.discount_price}
                             currency={item?.currency}
+                            textPrefix="Giá"
                             className="!text-[#F27145] !font-bold !text-lg"
                           />
                         </div>
                       ) : (
                         <DisplayPrice
                           price={item.min_price}
-                          textPrefix="Giá từ"
+                          textPrefix="Giá"
                           currency={item?.currency}
                         />
                       )}

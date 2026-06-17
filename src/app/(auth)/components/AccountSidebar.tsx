@@ -1,6 +1,6 @@
 "use client";
 import { useTranslation } from "@/hooks/useTranslation";
-import { User, Settings, ClipboardList, Lock } from "lucide-react";
+import { User, Settings, ClipboardList, Lock, Ticket } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -48,6 +48,22 @@ export default function AccountSidebar({ userInfo }: any) {
               className="hover:text-primary duration-300"
             >
               {t("lich_su_dat_hang")}
+            </Link>
+          </li>
+
+          <li
+            className={`flex items-center space-x-2 text-gray-700 hover:text-primary duration-300 cursor-pointer ${
+              pathname === "/kho-voucher"
+                ? "text-primary"
+                : "text-gray-700"
+            }`}
+          >
+            <Ticket className="w-4 h-4" />
+            <Link
+              href="/kho-voucher"
+              className="hover:text-primary duration-300"
+            >
+              {t("kho_voucher")}
             </Link>
           </li>
 

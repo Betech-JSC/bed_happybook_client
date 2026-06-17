@@ -35,6 +35,7 @@ type Props = {
   formatCheckoutAmount: (amount: number, currency?: string) => string;
   onPay: () => void;
   onContinue: () => void;
+  totalDiscount: number;
 };
 
 export default function CheckoutSummarySidebar({
@@ -58,6 +59,7 @@ export default function CheckoutSummarySidebar({
   formatCheckoutAmount,
   onPay,
   onContinue,
+  totalDiscount,
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
@@ -120,6 +122,14 @@ export default function CheckoutSummarySidebar({
                     checkoutData?.payment_fee_amount ?? 0,
                     checkoutData?.currency || currency,
                   )}
+                </span>
+              </div>
+            ) : null}
+            {totalDiscount > 0 ? (
+              <div className="flex justify-between text-emerald-600 font-semibold">
+                <span>{t("Khuyến mãi")}</span>
+                <span>
+                  -{formatCheckoutAmount(totalDiscount, currency)}
                 </span>
               </div>
             ) : null}

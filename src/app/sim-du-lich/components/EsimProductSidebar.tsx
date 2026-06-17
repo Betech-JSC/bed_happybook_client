@@ -5,6 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import type { Dispatch, ReactNode, Ref, SetStateAction } from "react";
 import { formatEsimMoney, type EsimPackageView, type EsimVariantView } from "../lib/esim";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 
 type DetailAccordionKey = "compatibility" | "refund" | "faq";
 
@@ -57,6 +58,7 @@ export default function EsimProductSidebar({
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+  const welcomeDiscount = useWelcomeDiscount("esim");
   const canBook = Boolean(selectedPackage && selectedVariant && selectedVariantMoney.price > 0);
 
   return (
@@ -110,13 +112,22 @@ export default function EsimProductSidebar({
               <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <span className="text-steel-secondary text-sm font-medium">{t("Tổng cộng:")}</span>
                 <div className="flex flex-col items-end">
-                  {selectedVariant && selectedVariantMoney.originalPrice && selectedVariantMoney.originalPrice > selectedVariantMoney.price && (
-                    <span className="text-sm font-normal text-slate-400 line-through">
-                      {formatEsimMoney(
-                        (selectedVariantMoney.originalPrice * quantity) + ((selectedVariantMoney.serviceFeeAmount ?? 0) * quantity),
-                        selectedVariantMoney.currency
-                      )}
-                    </span>
+                                    {selectedVariant && (
+                    welcomeDiscount ? (
+                      <span className="text-sm font-normal text-slate-400 line-through">
+                        {formatEsimMoney(
+                          (selectedVariantMoney.price * quantity) + ((selectedVariantMoney.serviceFeeAmount ?? 0) * quantity),
+                          selectedVariantMoney.currency
+                        )}
+                      </span>
+                    ) : selectedVariantMoney.originalPrice && selectedVariantMoney.originalPrice > selectedVariantMoney.price ? (
+                      <span className="text-sm font-normal text-slate-400 line-through">
+                        {formatEsimMoney(
+                          (selectedVariantMoney.originalPrice * quantity) + ((selectedVariantMoney.serviceFeeAmount ?? 0) * quantity),
+                          selectedVariantMoney.currency
+                        )}
+                      </span>
+                    ) : null
                   )}
                   <span className="text-2xl font-bold leading-tight text-hb-coral sm:text-3xl">
                     {selectedVariant ? formatEsimMoney(total, selectedVariantMoney.currency) : t("Chưa chọn gói")}
@@ -183,15 +194,31 @@ export default function EsimProductSidebar({
                     <span className="font-semibold block mb-1">
                       {selectedVariant?.desc || t("Chưa chọn gói")}
                     </span>
-                    {t("Đơn giá:")}{" "}
-                    {selectedVariantMoney.originalPrice && selectedVariantMoney.originalPrice > selectedVariantMoney.price && (
-                      <span className="text-slate-400 line-through mr-1">
-                        {formatEsimMoney(selectedVariantMoney.originalPrice, selectedVariantMoney.currency)}
-                      </span>
-                    )}
-                    <span className="font-semibold text-hb-coral">
-                      {formatEsimMoney(selectedVariantMoney.price, selectedVariantMoney.currency)}
-                    </span>{" "}
+                                        {t("Đơn giá:")}{" "}
+                    {welcomeDiscount ? (
+                      <>
+                        <span className="text-slate-400 line-through mr-1">
+                          {formatEsimMoney(selectedVariantMoney.price, selectedVariantMoney.currency)}
+                        </span>
+                        <span className="font-semibold text-hb-coral">
+                          {formatEsimMoney(
+                            Math.max(0, selectedVariantMoney.price - (selectedVariantMoney.currency === "USD" ? 2 : 50000)),
+                            selectedVariantMoney.currency
+                          )}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        {selectedVariantMoney.originalPrice && selectedVariantMoney.originalPrice > selectedVariantMoney.price && (
+                          <span className="text-slate-400 line-through mr-1">
+                            {formatEsimMoney(selectedVariantMoney.originalPrice, selectedVariantMoney.currency)}
+                          </span>
+                        )}
+                        <span className="font-semibold text-hb-coral">
+                          {formatEsimMoney(selectedVariantMoney.price, selectedVariantMoney.currency)}
+                        </span>
+                      </>
+                    )}{" "}
                     x {quantity}
                   </div>
                 </div>
