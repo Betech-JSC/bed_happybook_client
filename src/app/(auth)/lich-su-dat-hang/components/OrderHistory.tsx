@@ -36,6 +36,18 @@ export default function OrderHistory({
         <>
           {data.map((item) => {
             const esimCurrencyLocale = item?.currency === "USD" ? "en" : "vi";
+            const isPaid = [
+              "paid",
+              "processing",
+              "completed",
+              "approved",
+              "done",
+              "price_confirmed",
+              "issued",
+              "issuing",
+              "paid_book_failed",
+              "pending_refund",
+            ].includes(item?.status?.toLowerCase() ?? "");
             const detailMap: any = {
               insurance: <OrderInsurance order={item} />,
               yacht: <OrderYacht order={item} />,
@@ -75,69 +87,94 @@ export default function OrderHistory({
                     />
                   )}
                   {detailMap[product.type] ?? null}
-                  <OrderRow
-                    label={`${t("tong_gia")}`}
-                    value={
-                      product?.type === "insurance" ? (
-                        formatCurrency(
-                          item.total_price,
-                          item?.insurance_package?.currency === "VND"
-                            ? "vi"
-                            : "en"
-                        )
-                      ) : product?.type === "esim" ? (
-                        formatCurrency(item.total_amount, esimCurrencyLocale)
-                      ) : (
-                        <DisplayPrice
-                          price={item.total_price}
-                          currency={item?.product?.currency}
-                          className="text-black font-normal lg:text-base"
-                        />
-                      )
-                    }
-                  />
-                  {product?.type !== "esim" && (
+                  {isPaid ? (
                     <OrderRow
-                      label={`${t("gia_giam")}`}
+                      label={t("tong_cong")}
                       value={
-                        product?.type === "insurance"
-                          ? item.total_discount > 0 &&
+                        product?.type === "insurance" ? (
                           formatCurrency(
-                            item.total_discount,
+                            item.total_price,
                             item?.insurance_package?.currency === "VND"
                               ? "vi"
                               : "en"
                           )
-                          : item.total_discount > 0 && (
+                        ) : product?.type === "esim" ? (
+                          formatCurrency(item.total_amount, esimCurrencyLocale)
+                        ) : (
+                          <DisplayPrice
+                            price={item.total_price}
+                            currency={item?.product?.currency}
+                          />
+                        )
+                      }
+                    />
+                  ) : (
+                    <>
+                      <OrderRow
+                        label={`${t("tong_gia")}`}
+                        value={
+                          product?.type === "insurance" ? (
+                            formatCurrency(
+                              item.total_price,
+                              item?.insurance_package?.currency === "VND"
+                                ? "vi"
+                                : "en"
+                            )
+                          ) : product?.type === "esim" ? (
+                            formatCurrency(item.total_amount, esimCurrencyLocale)
+                          ) : (
                             <DisplayPrice
-                              price={item.total_discount}
+                              price={item.total_price}
                               currency={item?.product?.currency}
                               className="text-black font-normal lg:text-base"
                             />
                           )
-                      }
-                    />
-                  )}
-                  <OrderRow
-                    label={t("tong_cong")}
-                    value={
-                      product?.type === "insurance" ? (
-                        formatCurrency(
-                          item.total_price,
-                          item?.insurance_package?.currency === "VND"
-                            ? "vi"
-                            : "en"
-                        )
-                      ) : product?.type === "esim" ? (
-                        formatCurrency(item.total_amount, esimCurrencyLocale)
-                      ) : (
-                        <DisplayPrice
-                          price={item.total_price - item.total_discount}
-                          currency={item?.product?.currency}
+                        }
+                      />
+                      {product?.type !== "esim" && (
+                        <OrderRow
+                          label={`${t("gia_giam")}`}
+                          value={
+                            product?.type === "insurance"
+                              ? item.total_discount > 0 &&
+                              formatCurrency(
+                                item.total_discount,
+                                item?.insurance_package?.currency === "VND"
+                                  ? "vi"
+                                  : "en"
+                              )
+                              : item.total_discount > 0 && (
+                                <DisplayPrice
+                                  price={item.total_discount}
+                                  currency={item?.product?.currency}
+                                  className="text-black font-normal lg:text-base"
+                                />
+                              )
+                          }
                         />
-                      )
-                    }
-                  />
+                      )}
+                      <OrderRow
+                        label={t("tong_cong")}
+                        value={
+                          product?.type === "insurance" ? (
+                            formatCurrency(
+                              item.total_price,
+                              item?.insurance_package?.currency === "VND"
+                                ? "vi"
+                                : "en"
+                            )
+                          ) : product?.type === "esim" ? (
+                            formatCurrency(item.total_amount, esimCurrencyLocale)
+                          ) : (
+                            <DisplayPrice
+                              price={item.total_price - item.total_discount}
+                              currency={item?.product?.currency}
+                            />
+                          )
+                        }
+                      />
+                    </>
+                  )}
                 </div>
               </section>
             );

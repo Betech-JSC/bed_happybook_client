@@ -300,7 +300,7 @@ export default function Header() {
                 </svg>
               </div>
               <div
-                className={`!max-h-40 w-fit ${styles.header__sub_menu_item} !flex-col gap-2 items-start`}
+                className={`!max-h-60 w-fit ${styles.header__sub_menu_item} !flex-col gap-2 items-start`}
                 style={{
                   display: "flex",
                   top: 40,
@@ -315,6 +315,9 @@ export default function Header() {
                 </Link>
                 <Link href="/lich-su-dat-hang" style={{ margin: 0 }}>
                   {t("lich_su_dat_hang")}
+                </Link>
+                <Link href="/kho-voucher" style={{ margin: 0 }}>
+                  {t("kho_voucher")}
                 </Link>
                 <Link href="/thay-doi-mat-khau" style={{ margin: 0 }}>
                   {t("doi_mat_khau")}

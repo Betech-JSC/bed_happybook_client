@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useVoucherManager } from "@/hooks/useVoucherManager";
 import {
   formatEsimMoney,
   getEsimVariantMoney,
@@ -37,6 +38,16 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
   const router = useRouter();
   const { language } = useLanguage();
   const { userInfo } = useUser();
+  const {
+    totalDiscount,
+    voucherProgramIds,
+    voucherErrors,
+    vouchersData,
+    searchingVouchers,
+    setVoucherErrors,
+    handleApplyVoucher,
+    handleSearch,
+  } = useVoucherManager("esim");
   const isEnglish = language === "en";
   const activeLocale = isEnglish ? "en" : "vi";
   const t = useSimDuLichStaticText(activeLocale);
@@ -180,6 +191,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
             variant_id: selectedVariant.id,
             quantity: qty,
             payment_method: paymentMethod,
+            voucher_program_ids: voucherProgramIds,
           },
           activeLocale
         );
@@ -190,7 +202,10 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
         if (!active) return;
         console.error("Failed to load eSIM quote", err);
         setQuote(null);
-        setQuoteError(t("Không thể tính giá thanh toán lúc này."));
+        if (err?.payload?.errors?.voucher_programs) {
+          setVoucherErrors(err.payload.errors.voucher_programs);
+        }
+        setQuoteError(err?.payload?.message || t("Không thể tính giá thanh toán lúc này."));
       } finally {
         if (active) {
           setQuoteLoading(false);
@@ -203,11 +218,11 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     return () => {
       active = false;
     };
-  }, [activeLocale, paymentMethod, qty, selectedVariant, t]);
+  }, [activeLocale, paymentMethod, qty, selectedVariant, t, voucherProgramIds, setVoucherErrors]);
 
   const subtotal = quote?.subtotal_amount ?? (selectedVariant ? selectedVariantMoney.price * qty : 0);
   const serviceFee = quote?.service_fee_amount ?? (selectedVariant ? selectedVariantMoney.serviceFeeAmount * qty : 0);
-  const total = checkoutData?.payable_amount ?? quote?.total_amount ?? subtotal + serviceFee;
+  const total = checkoutData?.payable_amount ?? quote?.total_amount ?? Math.max(0, subtotal + serviceFee - totalDiscount);
   const currency = quote?.currency || checkoutData?.currency || selectedVariantMoney.currency || (isEnglish ? "USD" : "VND");
   const quoteIsAvailable = selectedVariant ? quote?.is_available !== false : false;
 
@@ -327,6 +342,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
           payment_method: paymentMethod,
           customer_id: userInfo?.id,
           source: "website",
+          voucher_program_ids: voucherProgramIds,
         },
         activeLocale
       );
@@ -373,7 +389,7 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     } finally {
       setSubmitting(false);
     }
-  }, [activeLocale, contactName, contactPhone, email, packageData, paymentMethod, qty, selectedVariant, t, userInfo?.id, validateEmail]);
+  }, [activeLocale, contactName, contactPhone, email, packageData, paymentMethod, qty, selectedVariant, t, userInfo?.id, validateEmail, voucherProgramIds]);
 
   const handleContactSave = useCallback((name: string, phone: string) => {
     setContactName(name);
@@ -432,5 +448,13 @@ export function useEsimCheckoutFlow({ pkgSlug, skuFromQuery, qty }: Args) {
     handleContactSave,
     selectedVariant,
     selectedVariantMoney,
+    totalDiscount,
+    voucherProgramIds,
+    voucherErrors,
+    vouchersData,
+    searchingVouchers,
+    setVoucherErrors,
+    handleApplyVoucher,
+    handleSearch,
   };
 }

@@ -8,6 +8,7 @@ import { translatePage } from "@/utils/translateDom";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ProductBusinessLoungeApi } from "@/api/ProductBusinessLounge";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 import LoungeFilter, { FilterGroup } from "./LoungeFilter";
 import {
   Pagination,
@@ -66,6 +67,7 @@ export default function Search({
   initialSel?: Partial<Record<GroupKey, string[]>>;
 }) {
   const { t } = useTranslation();
+  const welcomeDiscount = useWelcomeDiscount("business-lounge");
 
   const KIND_LABEL: Record<GroupKey, string> = useMemo(() => ({
     country: t("quoc_gia"),
@@ -342,6 +344,19 @@ export default function Search({
                       </div>
                       <div className="flex items-baseline justify-end gap-2.5 mt-auto">
                         {(() => {
+                          // Welcome discount (chiến dịch của master) ưu tiên trước discount_price
+                          if (welcomeDiscount) {
+                            const wsale =
+                              welcomeDiscount.type === "amount"
+                                ? Math.max(0, item.min_price - (item?.currency?.code?.toUpperCase() === "USD" ? 2 : 50000))
+                                : Math.max(0, item.min_price * (1 - welcomeDiscount.value / 100));
+                            return (
+                              <>
+                                <DisplayPrice price={item.min_price} currency={item?.currency} className="!text-gray-400 !line-through !font-normal !text-[13px]" />
+                                <DisplayPrice price={wsale} currency={item?.currency} className="!text-[#F27145] !font-extrabold !text-lg" />
+                              </>
+                            );
+                          }
                           const sale =
                             item.discount_price > 0 && item.price > 0
                               ? item.price - item.discount_price

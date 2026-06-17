@@ -61,20 +61,40 @@ export default function OrderHistoryOverview({
                     label={t("ma_don_hang")}
                     value={item?.order_code}
                   />
-                  <OrderRow
-                    label={`${t("tong_gia")}`}
-                    value={renderMoney(totalPrice, item?.currency_code)}
-                  />
-                  {totalDiscount > 0 && (
+                  {[
+                    "paid",
+                    "processing",
+                    "completed",
+                    "approved",
+                    "done",
+                    "price_confirmed",
+                    "issued",
+                    "issuing",
+                    "paid_book_failed",
+                    "pending_refund",
+                  ].includes(item?.status?.toLowerCase() ?? "") ? (
                     <OrderRow
-                      label={`${t("gia_giam")}`}
-                      value={renderMoney(totalDiscount, item?.currency_code)}
+                      label={t("tong_cong")}
+                      value={renderMoney(totalPrice, item?.currency_code)}
                     />
+                  ) : (
+                    <>
+                      <OrderRow
+                        label={`${t("tong_gia")}`}
+                        value={renderMoney(totalPrice, item?.currency_code)}
+                      />
+                      {totalDiscount > 0 && (
+                        <OrderRow
+                          label={`${t("gia_giam")}`}
+                          value={renderMoney(totalDiscount, item?.currency_code)}
+                        />
+                      )}
+                      <OrderRow
+                        label={t("tong_cong")}
+                        value={renderMoney(finalTotal, item?.currency_code)}
+                      />
+                    </>
                   )}
-                  <OrderRow
-                    label={t("tong_cong")}
-                    value={renderMoney(finalTotal, item?.currency_code)}
-                  />
                   {item?.detail_path && (
                     <div className="px-4 py-3 border-t border-gray-200">
                       <Link

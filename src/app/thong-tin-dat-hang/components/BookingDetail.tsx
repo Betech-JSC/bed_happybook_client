@@ -331,6 +331,20 @@ export default function BookingDetail() {
   const finalTotal = totalPrice + onePayFee - totalDiscount;
   const isYacht = data?.code?.startsWith("YACHT");
 
+  const paidStatuses = [
+    "paid",
+    "processing",
+    "completed",
+    "approved",
+    "done",
+    "price_confirmed",
+    "issued",
+    "issuing",
+    "paid_book_failed",
+    "pending_refund"
+  ];
+  const isPaidOrder = isPaid || paidStatuses.includes(data?.status?.toLowerCase() ?? "");
+
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0 ">
@@ -354,14 +368,14 @@ export default function BookingDetail() {
           </div>
         )}
 
-        {pollingStatus && !isPaid && (
+        {pollingStatus && !isPaidOrder && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
             <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
             <p>{t("dang_cho_thanh_toan")}</p>
           </div>
         )}
 
-        {isPaid && (
+        {isPaidOrder && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
             <p>
               {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
@@ -639,7 +653,7 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid && !isYacht && (
+        {!isPaidOrder && !isYacht && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
@@ -796,7 +810,7 @@ export default function BookingDetail() {
           </form>
         )}
 
-        {isPaid && (
+        {isPaidOrder && (
           <Link
             href="/"
             className="block w-full bg-blue-600 text-white py-2.5 rounded-lg text-center cursor-pointer text__default_hover mt-6"
@@ -825,7 +839,7 @@ export default function BookingDetail() {
         <div className="py-3 px-5">
           <h2 className="text-xl font-semibold">{data?.product?.name}</h2>
           <div className="mt-4 pt-4 border-t border-t-gray-200">
-            {onePayFee > 0 && (
+            {onePayFee > 0 && !isPaidOrder && (
               <div className="flex justify-between mb-1 text-red-600 font-semibold">
                 <span className="text-sm">
                   {t("phi_xu_ly_giao_dich_the_quoc_te")}
@@ -836,7 +850,17 @@ export default function BookingDetail() {
                 />
               </div>
             )}
-            {((data?.product?.discount_price || 0) + totalDiscount) > 0 ? (
+            {isPaidOrder ? (
+              totalPrice > 0 && (
+                <div className="w-full flex justify-between">
+                  <DisplayPrice
+                    textPrefix={"Tổng cộng"}
+                    price={totalPrice}
+                    currency={data?.product?.currency}
+                  />
+                </div>
+              )
+            ) : (((data?.product?.discount_price || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
                 price={finalTotal}
                 originalPrice={totalPrice + (data?.product?.discount_price || 0) + onePayFee}
@@ -852,7 +876,7 @@ export default function BookingDetail() {
                   />
                 </div>
               )
-            )}
+            ))}
           </div>
         </div>
       </div>

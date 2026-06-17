@@ -9,6 +9,7 @@ import CheckoutPaymentSection from "./components/CheckoutPaymentSection";
 import CheckoutSummarySidebar from "./components/CheckoutSummarySidebar";
 import { useEsimCheckoutFlow } from "../hooks/useEsimCheckoutFlow";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+import VoucherProgram from "@/components/product/components/VoucherProgram";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -69,18 +70,29 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-8 space-y-6">
           {checkout.step === 2 ? (
-            <CheckoutContactSection
-              email={checkout.email}
-              emailError={checkout.emailError}
-              contactName={checkout.contactName}
-              contactPhone={checkout.contactPhone}
-              onEmailChange={(value) => {
-                checkout.setEmail(value);
-                if (checkout.emailError) checkout.setEmailError("");
-              }}
-            onOpenContact={() => checkout.setShowContact(true)}
-          />
-        ) : (
+            <>
+              <CheckoutContactSection
+                email={checkout.email}
+                emailError={checkout.emailError}
+                contactName={checkout.contactName}
+                contactPhone={checkout.contactPhone}
+                onEmailChange={(value) => {
+                  checkout.setEmail(value);
+                  if (checkout.emailError) checkout.setEmailError("");
+                }}
+                onOpenContact={() => checkout.setShowContact(true)}
+              />
+              <VoucherProgram
+                totalPrice={checkout.subtotal}
+                voucherErrors={checkout.voucherErrors}
+                vouchersData={checkout.vouchersData}
+                currency={checkout.currency}
+                isSearching={checkout.searchingVouchers}
+                onApplyVoucher={checkout.handleApplyVoucher}
+                onSearch={checkout.handleSearch}
+              />
+            </>
+          ) : (
             <CheckoutPaymentSection
               isEnglish={checkout.isEnglish}
               paymentMethod={checkout.paymentMethod}
@@ -121,6 +133,7 @@ export default function CheckoutPage() {
           formatCheckoutAmount={checkout.formatCheckoutAmount}
           onPay={checkout.handlePay}
           onContinue={checkout.handleContinue}
+          totalDiscount={checkout.totalDiscount}
         />
       </div>
 

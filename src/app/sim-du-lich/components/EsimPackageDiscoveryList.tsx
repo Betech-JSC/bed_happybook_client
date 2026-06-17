@@ -13,6 +13,7 @@ import {
 } from "../lib/esim";
 import { sortEsimPackages, type SortMode } from "../lib/esim-discovery";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 
 type Props = {
   query: string;
@@ -50,6 +51,7 @@ export default function EsimPackageDiscoveryList({
   onLoadMorePackages,
 }: Props) {
   const t = useSimDuLichStaticText(activeLocale);
+  const welcomeDiscount = useWelcomeDiscount("esim");
   const sortedPackages = useMemo(
     () => sortEsimPackages(packages, activeLocale, sortMode, showInternationalFilters),
     [activeLocale, packages, showInternationalFilters, sortMode]
@@ -206,16 +208,30 @@ export default function EsimPackageDiscoveryList({
                     <div className="mt-4 flex flex-col justify-end items-end lg:mt-0 lg:pl-6 lg:border-l lg:border-slate-100 lg:min-w-[180px]">
                       <div className="text-xs text-steel-secondary mb-1">{t("Giá")}</div>
                       {isSelectable ? (
-                        <div className="flex flex-col items-end">
-                          {cheapestMoney.originalPrice > cheapestMoney.price && (
+                        welcomeDiscount ? (
+                          <div className="flex flex-col items-end">
                             <span className="text-sm font-normal text-slate-400 line-through">
-                              {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                              {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
                             </span>
-                          )}
-                          <div className="text-2xl font-extrabold text-hb-coral">
-                            {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                            <div className="text-2xl font-extrabold text-hb-coral">
+                              {formatEsimMoney(
+                                Math.max(0, cheapestMoney.price - (cheapestMoney.currency === "USD" ? 2 : 50000)),
+                                cheapestMoney.currency
+                              )}
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="flex flex-col items-end">
+                            {cheapestMoney.originalPrice > cheapestMoney.price && (
+                              <span className="text-sm font-normal text-slate-400 line-through">
+                                {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                              </span>
+                            )}
+                            <div className="text-2xl font-extrabold text-hb-coral">
+                              {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                            </div>
+                          </div>
+                        )
                       ) : (
                         <div className="text-sm font-semibold text-slate-400" data-translate="true">
                           {t("Chưa có giá khả dụng")}
@@ -286,16 +302,30 @@ export default function EsimPackageDiscoveryList({
                   </div>
                   <div className="mt-2 text-sm font-bold text-hb-coral">
                     {isSelectable ? (
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        {cheapestMoney.originalPrice > cheapestMoney.price && (
+                      welcomeDiscount ? (
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <span className="text-xs font-normal text-slate-400 line-through">
-                            {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                            {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
                           </span>
-                        )}
-                        <span>
-                          {t("Từ")} {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
-                        </span>
-                      </div>
+                          <span>
+                            {t("Từ")} {formatEsimMoney(
+                              Math.max(0, cheapestMoney.price - (cheapestMoney.currency === "USD" ? 2 : 50000)),
+                              cheapestMoney.currency
+                            )}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {cheapestMoney.originalPrice > cheapestMoney.price && (
+                            <span className="text-xs font-normal text-slate-400 line-through">
+                              {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                            </span>
+                          )}
+                          <span>
+                            {t("Từ")} {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                          </span>
+                        </div>
+                      )
                     ) : (
                       t("Chưa có giá khả dụng")
                     )}

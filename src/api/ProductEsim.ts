@@ -100,6 +100,7 @@ const ProductEsimApi = {
     variant_id: string | number;
     quantity?: number;
     payment_method?: "vietqr" | "onepay" | "paypal";
+    voucher_program_ids?: number[];
   }, locale?: string) => http.post<any>(`${path}/quote`, body, langHeader(locale)),
   checkout: (body: {
     variant_id: string | number;
@@ -114,6 +115,7 @@ const ProductEsimApi = {
     customer_id?: number;
     source?: string;
     notes?: string;
+    voucher_program_ids?: number[];
   }, locale?: string) => http.post<any>(`${path}/checkout`, body, langHeader(locale), 60000),
   paypalCaptureOrder: (body: {
     order_code?: string;
