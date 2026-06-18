@@ -17,8 +17,9 @@ export default async function FooterMenu({ page }: { page: string }) {
             {data.flight.map((item: any) => (
               <Link key={item.id} href={`/ve-may-bay/${item.alias}`}>
                 <h3
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                  className={`text-gray-700 font-medium truncate ${styles.text_hover_default}`}
                   data-translate="true"
+                  title={item.name}
                 >
                   {item.name}
                 </h3>
@@ -38,7 +39,8 @@ export default async function FooterMenu({ page }: { page: string }) {
               <Link href={`/tours/tim-kiem?text=${item.name}`} key={item.id}>
                 <h3
                   data-translate="true"
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                  className={`text-gray-700 font-medium truncate ${styles.text_hover_default}`}
+                  title={item.name}
                 >
                   {item.name}
                 </h3>
@@ -58,7 +60,8 @@ export default async function FooterMenu({ page }: { page: string }) {
               <Link href={`/khach-san/${hotel.slug}`} key={hotel.id}>
                 <h3
                   data-translate="true"
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                  className={`text-gray-700 font-medium truncate ${styles.text_hover_default}`}
+                  title={hotel.name}
                 >
                   {hotel.name}
                 </h3>
@@ -78,7 +81,8 @@ export default async function FooterMenu({ page }: { page: string }) {
               <Link href={`/visa/${visa.slug}`} key={visa.id}>
                 <h3
                   data-translate="true"
-                  className={`text-gray-700 font-medium ${styles.text_hover_default}`}
+                  className={`text-gray-700 font-medium truncate ${styles.text_hover_default}`}
+                  title={visa.name}
                 >
                   {visa.name}
                 </h3>
