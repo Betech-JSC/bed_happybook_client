@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi, enUS } from "date-fns/locale";
 import { format } from "date-fns";
-import { PlaneTakeoff, Calendar, Users, Search, ChevronDown } from "lucide-react";
+import { Calendar, Search } from "lucide-react";
 import { ProductBusinessLoungeApi } from "@/api/ProductBusinessLounge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -16,53 +16,7 @@ import Image from "next/image";
 
 type AirportOpt = { label: string; value: string };
 
-function GuestRow({
-  label,
-  sub,
-  value,
-  min,
-  max,
-  onChange,
-}: {
-  label: string;
-  sub?: string;
-  value: number;
-  min: number;
-  max: number;
-  onChange: (v: number) => void;
-}) {
-  const btn =
-    "w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold leading-none flex items-center justify-center shrink-0 disabled:opacity-40 disabled:cursor-not-allowed";
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div>
-        <div className="text-sm font-medium text-gray-800">{label}</div>
-        {sub && <div className="text-xs text-gray-400">{sub}</div>}
-      </div>
-      <div className="flex items-center gap-2.5">
-        <button
-          type="button"
-          aria-label="−"
-          disabled={value <= min}
-          onClick={() => onChange(Math.max(min, value - 1))}
-          className={btn}
-        >
-          −
-        </button>
-        <span className="w-5 text-center text-sm font-semibold">{value}</span>
-        <button
-          type="button"
-          aria-label="+"
-          disabled={value >= max}
-          onClick={() => onChange(Math.min(max, value + 1))}
-          className={btn}
-        >
-          +
-        </button>
-      </div>
-    </div>
-  );
-}
+
 
 export default function LoungeSearchWidget() {
   const router = useRouter();
@@ -73,11 +27,7 @@ export default function LoungeSearchWidget() {
   const [airports, setAirports] = useState<AirportOpt[]>([]);
   const [airport, setAirport] = useState<AirportOpt | null>(null);
   const [date, setDate] = useState<Date | null>(today);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [guestOpen, setGuestOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const guestRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -116,24 +66,12 @@ export default function LoungeSearchWidget() {
     };
   }, [lang]);
 
-  // đóng popover số khách khi click ra ngoài
-  useEffect(() => {
-    if (!guestOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (guestRef.current && !guestRef.current.contains(e.target as Node)) {
-        setGuestOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [guestOpen]);
 
   const handleSearch = () => {
     const p = new URLSearchParams();
     if (airport) p.append("airport[]", airport.value);
     if (date) p.set("departDate", format(date, "yyyy-MM-dd"));
-    p.set("adults", String(adults));
-    if (children > 0) p.set("children", String(children));
+
     router.push(`/phong-cho-thuong-gia${p.toString() ? "?" + p.toString() : ""}`);
   };
 
@@ -143,9 +81,7 @@ export default function LoungeSearchWidget() {
   const fieldCls =
     "flex h-12 items-center gap-2.5 border border-gray-200 rounded-xl px-3 bg-white focus-within:border-[#F27145] transition-colors";
 
-  const guestSummary = `${adults} ${t("nguoi_lon")}${
-    children > 0 ? `, ${children} ${t("tre_em")}` : ""
-  }`;
+
 
   return (
     <div className="flex flex-col lg:flex-row gap-3 items-end mt-2">
@@ -242,43 +178,6 @@ export default function LoungeSearchWidget() {
         </div>
       </div>
 
-      {/* Số khách */}
-      <div className="w-full lg:w-52 shrink-0 relative" ref={guestRef}>
-        <label className={labelCls}>{t("so_khach")}</label>
-        <button
-          type="button"
-          onClick={() => setGuestOpen((o) => !o)}
-          className={`${fieldCls} w-full justify-between`}
-        >
-          <span className="flex items-center gap-2.5 min-w-0">
-            <Users className="w-4 h-4 text-gray-400 shrink-0" />
-            <span className="text-sm font-medium truncate">{guestSummary}</span>
-          </span>
-          <ChevronDown
-            className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${
-              guestOpen ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-        {guestOpen && (
-          <div className="absolute left-0 right-0 z-50 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg p-4 space-y-4">
-            <GuestRow
-              label={t("nguoi_lon")}
-              value={adults}
-              min={1}
-              max={20}
-              onChange={setAdults}
-            />
-            <GuestRow
-              label={t("tre_em")}
-              value={children}
-              min={0}
-              max={20}
-              onChange={setChildren}
-            />
-          </div>
-        )}
-      </div>
 
       {/* Button */}
       <div className="w-full lg:w-auto shrink-0">

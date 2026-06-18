@@ -150,11 +150,30 @@ export default function CheckOutForm({
   }, [product, ticketOptionId]);
 
   const childPolicy = useMemo(() => {
-    const desc = product?.business_lounge?.description || "";
-    // Nhãn nhận diện đa ngôn ngữ: VI gốc + biến thể EN (mô tả EN do biên tập
-    // hoặc dịch). API trả description theo locale nên ở cờ EN phải khớp nhãn EN.
-    // Bắt linh hoạt mọi markup CKEditor: có/không <strong>/<b>, dấu cách trước
-    // ':', dấu ':' trong/ngoài thẻ in đậm, nội dung xuống nhiều dòng.
+    const desc = (product?.business_lounge?.description || "") + "\n" + (product?.business_lounge?.note || "");
+    if (!desc) return "";
+
+    const matches: string[] = [];
+    const elementRegex = /<li[^>]*>([\s\S]*?)<\/li>|<p[^>]*>([\s\S]*?)<\/p>/gi;
+    let match;
+    const childKeywords = /trẻ\s+em|trẻ\s+nhỏ|trẻ\s+sơ\s+sinh|em\s+bé|child|children|infant/i;
+    
+    while ((match = elementRegex.exec(desc)) !== null) {
+      const content = match[1] || match[2] || "";
+      if (childKeywords.test(content)) {
+        const cleanContent = content
+          .replace(/<\/?(?:strong|b|span|a)[^>]*>/gi, "")
+          .trim();
+        if (cleanContent) {
+          matches.push(cleanContent);
+        }
+      }
+    }
+
+    if (matches.length > 0) {
+      return matches.join("<br/>");
+    }
+
     const labels =
       "Phụ phí trẻ em|Children(?:'s)? surcharge|Child(?:ren)? (?:surcharge|policy|fee)";
     const block = desc.match(

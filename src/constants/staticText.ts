@@ -769,6 +769,7 @@ const businessLoungeStaticText: string[] = [
   "Vui lòng chọn đầy đủ thông tin",
   // === Home section ===
   "Phòng chờ thương gia Happy Book",
+  "Chính sách trẻ em",
 ];
 
 export const unifiedStaticText: string[] = [

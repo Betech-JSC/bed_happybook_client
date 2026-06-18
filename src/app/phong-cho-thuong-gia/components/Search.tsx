@@ -92,6 +92,7 @@ export default function Search({
   const [total, setTotal] = useState(initialTotal);
   const [lastPage, setLastPage] = useState(Math.max(1, initialLastPage));
   const [loading, setLoading] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   // bỏ lần load đầu (đã có SSR cho trang 1)
   const skipInitial = useRef(initialItems.length > 0);
@@ -227,7 +228,31 @@ export default function Search({
 
   return (
     <div ref={wrapperRef} id="wrapper-search-lounge" className="flex flex-col lg:flex-row mt-6 md:gap-6 items-start pb-8">
-      <aside className="w-full lg:w-3/12 lg:sticky lg:top-4">
+      {/* Mobile filter toggle */}
+      <button
+        onClick={() => setFilterOpen((o) => !o)}
+        className="flex lg:hidden items-center gap-2 mb-3 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium hover:bg-gray-50 transition-colors"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="4" y1="21" x2="4" y2="14" />
+          <line x1="4" y1="10" x2="4" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12" y2="3" />
+          <line x1="20" y1="21" x2="20" y2="16" />
+          <line x1="20" y1="12" x2="20" y2="3" />
+          <line x1="1" y1="14" x2="7" y2="14" />
+          <line x1="9" y1="8" x2="15" y2="8" />
+          <line x1="17" y1="16" x2="23" y2="16" />
+        </svg>
+        <span>{t("bo_loc")}</span>
+        {chips.length > 0 && (
+          <span className="inline-flex items-center justify-center w-5 h-5 text-[11px] font-bold text-white bg-[#F27145] rounded-full">
+            {chips.length}
+          </span>
+        )}
+      </button>
+
+      <aside className={`w-full lg:w-3/12 lg:sticky lg:top-4 ${filterOpen ? 'block' : 'hidden lg:block'}`}>
         <LoungeFilter groups={groups} selected={sel} onToggle={toggle} onClear={clearAll} />
       </aside>
 
