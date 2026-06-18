@@ -9,7 +9,7 @@ import CheckoutPaymentSection from "./components/CheckoutPaymentSection";
 import CheckoutSummarySidebar from "./components/CheckoutSummarySidebar";
 import { useEsimCheckoutFlow } from "../hooks/useEsimCheckoutFlow";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
-import VoucherProgram from "@/components/product/components/VoucherProgram";
+// import VoucherProgram from "@/components/product/components/VoucherProgram";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -82,7 +82,8 @@ export default function CheckoutPage() {
                 }}
                 onOpenContact={() => checkout.setShowContact(true)}
               />
-              <VoucherProgram
+              {/* Hide Voucher program for eSIM checkout as the flow is not fully implemented yet */}
+              {/* <VoucherProgram
                 totalPrice={checkout.subtotal}
                 voucherErrors={checkout.voucherErrors}
                 vouchersData={checkout.vouchersData}
@@ -90,7 +91,7 @@ export default function CheckoutPage() {
                 isSearching={checkout.searchingVouchers}
                 onApplyVoucher={checkout.handleApplyVoucher}
                 onSearch={checkout.handleSearch}
-              />
+              /> */}
             </>
           ) : (
             <CheckoutPaymentSection
