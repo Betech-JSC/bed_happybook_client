@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "react-hot-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const WELCOME10_VOUCHERS = [
     {
@@ -72,6 +73,7 @@ export default function PromoModal() {
     const { userInfo } = useUser();
     const router = useRouter();
     const pathname = usePathname();
+    const { language } = useLanguage();
 
     useEffect(() => {
         const checkFirstTime = async () => {
@@ -177,26 +179,23 @@ export default function PromoModal() {
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className={`relative w-full transition-all duration-300 ${activeTab === "banner"
-                        ? "max-w-2xl bg-transparent flex flex-col items-center"
-                        : "max-w-lg bg-white rounded-3xl shadow-2xl flex flex-col p-6 border border-gray-100"
-                    }`}
+                className="relative w-full max-w-lg bg-transparent flex flex-col items-center transition-all duration-300"
             >
-                {/* Close Button */}
-                <button
-                    onClick={handleClose}
-                    className={`absolute text-3xl transition flex items-center justify-center z-[100] ${activeTab === "banner"
-                            ? "-top-12 right-2 text-white hover:text-gray-300 bg-black/40 w-10 h-10 rounded-full"
-                            : "top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 w-8 h-8 rounded-full text-xl"
-                        }`}
-                >
-                    ✕
-                </button>
+                {/* Close Button (only for banner state) */}
+                {activeTab === "banner" && (
+                    <button
+                        onClick={handleClose}
+                        className="absolute text-3xl transition flex items-center justify-center z-[100] -top-12 right-2 text-white hover:text-gray-300 bg-black/40 w-10 h-10 rounded-full"
+                    >
+                        ✕
+                    </button>
+                )}
 
-                {activeTab === "banner" ? (
+                {/* State 1: Banner */}
+                {activeTab === "banner" && (
                     <div className="relative w-full h-auto select-none">
                         <img
-                            src="/opt 1.png"
+                            src={language === "en" ? "/POPUPEN.png" : "/POPUPVN.png"}
                             alt="Đăng ký nhận quà"
                             className="w-full h-auto object-contain"
                         />
@@ -220,67 +219,115 @@ export default function PromoModal() {
                             title={userInfo ? "Lưu mã ngay" : "Đăng nhập để nhận ưu đãi"}
                         />
                     </div>
-                ) : (
-                    <div className="flex flex-col w-full">
-                        {/* Header */}
-                        <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
-                            <button
-                                onClick={() => setActiveTab("banner")}
-                                className="text-gray-500 hover:text-blue-700 font-bold flex items-center gap-1 text-sm bg-gray-50 hover:bg-blue-50 px-3 py-1.5 rounded-xl transition duration-300"
-                            >
-                                ← Quay lại
-                            </button>
-                            <h3 className="font-bold text-gray-900 text-lg flex-1 text-right">
-                                {activeTab === "welcome10" ? "Đơn đầu giảm đến 10%" : "Voucher tặng 50K"}
-                            </h3>
-                        </div>
+                )}
 
-                        {/* Subtitle */}
-                        <p className="text-sm text-gray-500 mb-4 bg-blue-50/50 text-blue-700 px-4 py-2.5 rounded-2xl border border-blue-100/50">
-                            {activeTab === "welcome10"
-                                ? "✨ Áp dụng riêng biệt cho từng dịch vụ dưới đây cho lượt đặt đầu tiên của thành viên mới."
-                                : "🎁 Nhận ngay 50.000đ khi đặt phòng chờ thương gia hoặc dịch vụ Fast Track đầu tiên."
-                            }
-                        </p>
+                {/* State 2: Welcome10 */}
+                {activeTab === "welcome10" && (
+                    <div className="relative w-full h-auto select-none">
+                        <img
+                            src={language === "en" ? "/CTR 1 (EN).png" : "/CTR 1 (VN).png"}
+                            alt="Đơn đầu giảm đến 10%"
+                            className="w-full h-auto object-contain"
+                        />
 
-                        {/* Vouchers List */}
-                        <div className="max-h-[380px] overflow-y-auto space-y-3 pr-1">
-                            {(activeTab === "welcome10" ? WELCOME10_VOUCHERS : WELCOME50K_VOUCHERS).map((voucher, idx) => (
-                                <div
-                                    key={idx}
-                                    className="flex items-center justify-between p-3 bg-gray-50/50 border border-gray-100 rounded-2xl hover:bg-blue-50/40 hover:border-blue-200 transition-all duration-300"
-                                >
-                                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                                        <div className="w-10 h-10 rounded-xl bg-blue-100/70 text-blue-700 flex items-center justify-center text-lg flex-shrink-0">
-                                            {voucher.icon}
-                                        </div>
-                                        <div className="min-w-0">
-                                            <h4 className="font-bold text-gray-900 text-sm truncate">{voucher.name}</h4>
-                                            <p className="text-xs text-gray-400 mt-0.5 truncate">{voucher.desc}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2.5 ml-3">
-                                        <span className={`font-extrabold text-xs px-2.5 py-1.5 rounded-full whitespace-nowrap ${activeTab === "welcome10"
-                                                ? "bg-orange-100 text-orange-600"
-                                                : "bg-blue-100 text-blue-600"
-                                            }`}>
-                                            {voucher.discount}
-                                        </span>
-                                        <button
-                                            onClick={() => handleApplyVoucher(voucher, activeTab === "welcome10" ? "WELCOME10" : "WELCOME50K")}
-                                            className="bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition duration-300 shadow-sm shadow-blue-500/10 active:scale-95 whitespace-nowrap"
-                                        >
-                                            Áp dụng
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        {/* Back Button Hotspot */}
+                        <div
+                            onClick={() => setActiveTab("banner")}
+                            className="absolute cursor-pointer hover:bg-black/5 rounded-xl transition-all"
+                            style={{ left: "4%", top: "3%", width: "22%", height: "7%" }}
+                            title="Quay lại"
+                        />
 
-                        {/* Footer Info */}
-                        <div className="mt-5 pt-3 border-t border-gray-100 text-center text-[11px] text-gray-400">
-                            * Ưu đãi dành riêng cho lượt đặt đầu tiên của khách hàng mới. Không áp dụng đồng thời các chương trình khác.
-                        </div>
+                        {/* Close Button Hotspot */}
+                        <div
+                            onClick={handleClose}
+                            className="absolute cursor-pointer hover:bg-black/5 rounded-full transition-all"
+                            style={{ right: "3%", top: "3%", width: "8%", height: "8%" }}
+                            title="Đóng"
+                        />
+
+                        {/* Fast Track - Index 0 */}
+                        <div
+                            onClick={() => handleApplyVoucher(WELCOME10_VOUCHERS[0], "WELCOME10")}
+                            className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
+                            style={{ left: "74%", top: "28%", width: "20%", height: "9%" }}
+                            title="Áp dụng Fast Track"
+                        />
+
+                        {/* Yacht - Index 1 */}
+                        <div
+                            onClick={() => handleApplyVoucher(WELCOME10_VOUCHERS[1], "WELCOME10")}
+                            className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
+                            style={{ left: "74%", top: "40%", width: "20%", height: "9%" }}
+                            title="Áp dụng Du Thuyền"
+                        />
+
+                        {/* Entertainment - Index 2 */}
+                        <div
+                            onClick={() => handleApplyVoucher(WELCOME10_VOUCHERS[2], "WELCOME10")}
+                            className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
+                            style={{ left: "74%", top: "52%", width: "20%", height: "9%" }}
+                            title="Áp dụng Vé Vui Chơi"
+                        />
+
+                        {/* Insurance - Index 3 */}
+                        <div
+                            onClick={() => handleApplyVoucher(WELCOME10_VOUCHERS[3], "WELCOME10")}
+                            className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
+                            style={{ left: "74%", top: "64%", width: "20%", height: "9%" }}
+                            title="Áp dụng Bảo Hiểm"
+                        />
+
+                        {/* Visa - Index 4 */}
+                        <div
+                            onClick={() => handleApplyVoucher(WELCOME10_VOUCHERS[4], "WELCOME10")}
+                            className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
+                            style={{ left: "74%", top: "76%", width: "20%", height: "9%" }}
+                            title="Áp dụng Visa"
+                        />
+                    </div>
+                )}
+
+                {/* State 3: Welcome50k */}
+                {activeTab === "welcome50k" && (
+                    <div className="relative w-full h-auto select-none">
+                        <img
+                            src={language === "en" ? "/CTR 2 (EN).png" : "/CTR 2 (VN).png"}
+                            alt="Voucher tặng 50K"
+                            className="w-full h-auto object-contain"
+                        />
+
+                        {/* Back Button Hotspot */}
+                        <div
+                            onClick={() => setActiveTab("banner")}
+                            className="absolute cursor-pointer hover:bg-black/5 rounded-xl transition-all"
+                            style={{ left: "4%", top: "3%", width: "22%", height: "7%" }}
+                            title="Quay lại"
+                        />
+
+                        {/* Close Button Hotspot */}
+                        <div
+                            onClick={handleClose}
+                            className="absolute cursor-pointer hover:bg-black/5 rounded-full transition-all"
+                            style={{ right: "3%", top: "3%", width: "8%", height: "8%" }}
+                            title="Đóng"
+                        />
+
+                        {/* Lounge - Index 0 */}
+                        <div
+                            onClick={() => handleApplyVoucher(WELCOME50K_VOUCHERS[0], "WELCOME50K")}
+                            className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
+                            style={{ left: "74%", top: "39%", width: "20%", height: "9%" }}
+                            title="Áp dụng Phòng Chờ Thương Gia"
+                        />
+
+                        {/* Fast Track - Index 1 */}
+                        <div
+                            onClick={() => handleApplyVoucher(WELCOME50K_VOUCHERS[1], "WELCOME50K")}
+                            className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
+                            style={{ left: "74%", top: "54%", width: "20%", height: "9%" }}
+                            title="Áp dụng Fast Track"
+                        />
                     </div>
                 )}
             </div>

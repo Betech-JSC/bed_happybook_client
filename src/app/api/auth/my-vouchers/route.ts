@@ -16,13 +16,16 @@ export async function GET() {
       },
     });
 
-    const data = await response.json();
     if (!response.ok) {
+      const text = await response.text();
+      console.error(`my-vouchers API responded with status ${response.status}:`, text);
       return Response.json({ data: [] }, { status: response.status });
     }
 
+    const data = await response.json();
     return Response.json({ data: data.data || [] }, { status: 200 });
   } catch (error) {
+    console.error("Exception in my-vouchers proxy route:", error);
     return Response.json({ data: [] }, { status: 500 });
   }
 }
