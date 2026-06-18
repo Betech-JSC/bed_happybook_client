@@ -154,62 +154,62 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
       <div className="relative">
         <div className="mx-3 my-2 bg-white rounded-2xl pt-3 pb-3 px-4 shadow-[0_4px_30px_rgba(0,0,0,0.05)] border border-[#F2F4F7]">
           {/* Search Bar Grid */}
-          <div className="grid grid-cols-3 gap-x-1.5 gap-y-2 w-full max-w-[310px] mx-auto items-start">
+          <div className="grid grid-cols-3 gap-x-1.5 gap-y-2 w-full max-w-[340px] mx-auto items-start">
             {/* Tab 1 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "ve-may-bay" ? null : "ve-may-bay")}
-              className={`rounded-xl text-center min-h-[62px] h-fit pb-1 flex flex-col items-center justify-start pt-1 cursor-pointer ${activeTabMb === "ve-may-bay" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+              className={`rounded-xl text-center min-h-[80px] h-fit pb-1.5 flex flex-col items-center justify-start pt-1.5 cursor-pointer ${activeTabMb === "ve-may-bay" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
                 }`}
             >
-              <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
                 <Image
                   src="/icon/AirplaneTilt.svg"
                   alt="Vé máy bay"
-                  width={28}
-                  height={28}
+                  width={36}
+                  height={36}
                   style={{
-                    width: 28,
-                    height: 28,
+                    width: 36,
+                    height: 36,
                     filter: "brightness(0) saturate(100%) invert(35%) sepia(87%) saturate(1487%) hue-rotate(203deg) brightness(97%) contrast(96%)"
                   }}
                 />
               </div>
-              <span className="px-1 mt-0.5 text-[14px] font-bold block leading-tight">{t("ve_may_bay")}</span>
+              <span className="px-1 mt-1 text-[16px] font-bold block leading-tight">{t("ve_may_bay")}</span>
             </div>
 
             {/* Tab 2 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "hotel" ? null : "hotel")}
-              className={`rounded-xl text-center min-h-[62px] h-fit pb-1 flex flex-col items-center justify-start pt-1 cursor-pointer ${activeTabMb === "hotel" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+              className={`rounded-xl text-center min-h-[80px] h-fit pb-1.5 flex flex-col items-center justify-start pt-1.5 cursor-pointer ${activeTabMb === "hotel" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
                 }`}
             >
-              <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
                 <Image
                   src="/icon/Buildings.svg"
                   alt="Khách sạn"
-                  width={28}
-                  height={28}
+                  width={36}
+                  height={36}
                   style={{
-                    width: 28,
-                    height: 28,
+                    width: 36,
+                    height: 36,
                     filter: "brightness(0) saturate(100%) invert(35%) sepia(87%) saturate(1487%) hue-rotate(203deg) brightness(97%) contrast(96%)"
                   }}
                 />
               </div>
-              <span className="px-1 mt-0.5 text-[14px] font-bold block leading-tight">{t("khach_san")}</span>
+              <span className="px-1 mt-1 text-[16px] font-bold block leading-tight">{t("khach_san")}</span>
             </div>
 
             {/* Tab 3 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "visa" ? null : "visa")}
-              className={`rounded-xl text-center min-h-[62px] h-fit pb-1 flex flex-col items-center justify-start pt-1 cursor-pointer ${activeTabMb === "visa" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+              className={`rounded-xl text-center min-h-[80px] h-fit pb-1.5 flex flex-col items-center justify-start pt-1.5 cursor-pointer ${activeTabMb === "visa" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
                 }`}
             >
-              <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width={28}
-                  height={28}
+                  width={36}
+                  height={36}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="#1570EF"
@@ -224,20 +224,20 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
                   <line x1="8" y1="18" x2="16" y2="18" strokeWidth="1.5" />
                 </svg>
               </div>
-              <span className="px-1 mt-0.5 text-[14px] font-bold block leading-tight">{t("visa")}</span>
+              <span className="px-1 mt-1 text-[16px] font-bold block leading-tight">{t("visa")}</span>
             </div>
 
             {/* Tab 4 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "sim-du-lich" ? null : "sim-du-lich")}
-              className={`rounded-xl text-center min-h-[62px] h-fit pb-1 flex flex-col items-center justify-start pt-1 cursor-pointer ${activeTabMb === "sim-du-lich" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+              className={`rounded-xl text-center min-h-[80px] h-fit pb-1.5 flex flex-col items-center justify-start pt-1.5 cursor-pointer ${activeTabMb === "sim-du-lich" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
                 }`}
             >
-              <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width={28}
-                  height={28}
+                  width={36}
+                  height={36}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="#1570EF"
@@ -251,20 +251,20 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
                   <line x1="8" y1="14" x2="16" y2="14" strokeWidth="1.5" />
                 </svg>
               </div>
-              <span className="px-1 mt-0.5 text-[14px] font-bold block leading-tight">{t("sim_du_lich")}</span>
+              <span className="px-1 mt-1 text-[16px] font-bold block leading-tight">{t("sim_du_lich")}</span>
             </div>
 
             {/* Tab 5 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "combo" ? null : "combo")}
-              className={`rounded-xl text-center min-h-[62px] h-fit pb-1 flex flex-col items-center justify-start pt-1 cursor-pointer ${activeTabMb === "combo" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+              className={`rounded-xl text-center min-h-[80px] h-fit pb-1.5 flex flex-col items-center justify-start pt-1.5 cursor-pointer ${activeTabMb === "combo" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
                 }`}
             >
-              <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width={28}
-                  height={28}
+                  width={36}
+                  height={36}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="#1570EF"
@@ -276,20 +276,20 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
                   <line x1="7" y1="7" x2="7.01" y2="7" strokeWidth="2.5" />
                 </svg>
               </div>
-              <span className="px-1 mt-0.5 text-[14px] font-bold block leading-tight">{t("combo_tiet_kiem")}</span>
+              <span className="px-1 mt-1 text-[16px] font-bold block leading-tight">{t("combo_tiet_kiem")}</span>
             </div>
 
             {/* Tab 6 */}
             <div
               onClick={() => setActiveTabMb(activeTabMb === "airport-service" ? null : "airport-service")}
-              className={`rounded-xl text-center min-h-[62px] h-fit pb-1 flex flex-col items-center justify-start pt-1 cursor-pointer ${activeTabMb === "airport-service" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
+              className={`rounded-xl text-center min-h-[80px] h-fit pb-1.5 flex flex-col items-center justify-start pt-1.5 cursor-pointer ${activeTabMb === "airport-service" ? "bg-blue-50 text-[#1570EF]" : "bg-transparent text-[#344054]"
                 }`}
             >
-              <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width={28}
-                  height={28}
+                  width={36}
+                  height={36}
                   viewBox="0 0 24 24"
                   fill="#1570EF"
                   stroke="#1570EF"
@@ -300,7 +300,7 @@ export default function SearchMobile({ airportsData, visaOptionsFilter, comboLoc
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
               </div>
-              <span className="px-1 mt-0.5 text-[14px] font-bold block leading-tight">{t("don_tien_uu_tien_fast_track") || "Đón tiễn ưu tiên (FastTrack)"}</span>
+              <span className="px-1 mt-1 text-[16px] font-bold block leading-tight">{t("don_tien_uu_tien_fast_track") || "Đón tiễn ưu tiên (FastTrack)"}</span>
             </div>
 
 
