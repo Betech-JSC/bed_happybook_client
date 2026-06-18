@@ -116,7 +116,7 @@ export default function BookingDetail() {
                 setQrCodeGenerated(true);
                 setVietQrData(receiptResult?.data);
               } else {
-                throw new Error("Không thể tạo receipt");
+                throw new Error(t("khong_the_tao_receipt"));
               }
             })
             .catch((error) => {
@@ -612,7 +612,7 @@ export default function BookingDetail() {
                     <div className="font-normal">
                       <Image
                         src="/payment-method/transfer.svg"
-                        alt="Chuyển khoản"
+                        alt={t("chuyen_khoan")}
                         width={24}
                         height={24}
                         className="w-6 h-6"
@@ -715,7 +715,7 @@ export default function BookingDetail() {
           {data?.product?.image_location && (
             <Image
               src={`${data?.product?.image_url}/${data?.product?.image_location}`}
-              alt={data?.product?.name || "Phòng chờ thương gia"}
+              alt={data?.product?.name || t("phong_cho_thuong_gia")}
               width={600}
               height={450}
               className="w-full h-auto rounded-t-2xl hover:scale-110 ease-in duration-300"

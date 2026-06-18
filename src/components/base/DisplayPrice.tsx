@@ -36,7 +36,7 @@ export default function DisplayPrice({
           )}
           <span
             className={cn(
-              "text-[#F27145] font-semibold text-base lg:text-xl",
+              "text-[#F27145] font-semibold text-base lg:text-xl whitespace-nowrap",
               className
             )}
           >
@@ -46,7 +46,7 @@ export default function DisplayPrice({
       ) : (
         <span
           className={cn(
-            "text-[#F27145] font-semibold text-base lg:text-xl",
+            "text-[#F27145] font-semibold text-base lg:text-xl whitespace-nowrap",
             className
           )}
         >

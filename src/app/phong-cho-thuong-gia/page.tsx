@@ -50,13 +50,37 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
 const PAGE_SIZE = 12;
 
-export default async function ProductBusinessLounge() {
+function toArr(v: string | string[] | undefined): string[] {
+  if (!v) return [];
+  return Array.isArray(v) ? v : [v];
+}
+
+export default async function ProductBusinessLounge({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
   const language = await getServerLang();
+
+  // Pre-fill từ homepage widget (e.g. ?airport[]=Sân bay Tân Sơn Nhất)
+  const preAirport = toArr(searchParams["airport[]"] ?? searchParams["airport"]);
+  const preCity = toArr(searchParams["city[]"] ?? searchParams["city"]);
+  const preCountry = toArr(searchParams["country[]"] ?? searchParams["country"]);
+
+  const hasPreFilter = preAirport.length > 0 || preCity.length > 0 || preCountry.length > 0;
+
+  const filterQuery = () => {
+    const p = new URLSearchParams({ page: "1", per_page: String(PAGE_SIZE) });
+    preAirport.forEach((a) => p.append("airport[]", a));
+    preCity.forEach((c) => p.append("city[]", c));
+    preCountry.forEach((c) => p.append("country[]", c));
+    return "?" + p.toString();
+  };
 
   // Tải song song: bộ lọc + trang 1 danh sách (SSR) + nội dung trang
   const [optionsRes, initialRes, contentRes] = await Promise.all([
-    ProductBusinessLoungeApi.getOptionsFilter(),
-    ProductBusinessLoungeApi.search(`?page=1&per_page=${PAGE_SIZE}`),
+    ProductBusinessLoungeApi.getOptionsFilter(hasPreFilter ? filterQuery() : ""),
+    ProductBusinessLoungeApi.search(filterQuery()),
     PageApi.getContent("business-lounge", language),
   ]);
 
@@ -119,6 +143,7 @@ export default async function ProductBusinessLounge() {
               initialLastPage={initialData?.last_page ?? 1}
               initialTotal={initialData?.total ?? 0}
               pageSize={PAGE_SIZE}
+              initialSel={{ country: preCountry, city: preCity, airport: preAirport }}
             />
           </Suspense>
         </div>

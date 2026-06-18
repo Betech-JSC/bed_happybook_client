@@ -94,7 +94,7 @@ export default function SearchForm() {
       router.push(`/phong-cho-thuong-gia?location_id[]=${locationSelected.value}`);
     } else {
       toast.dismiss();
-      toast.error("Vui lòng chọn đầy đủ thông tin");
+      toast.error(t("vui_long_chon_day_du_thong_tin"));
     }
   };
   return (
@@ -153,6 +153,37 @@ export default function SearchForm() {
                 isLoading={isLoading}
               />
             )}
+          </div>
+        </div>
+        <div className="w-full lg:w-5/12">
+          <label className="block text-gray-700 mb-1" data-translate="true">
+            Ngày đi
+          </label>
+          <div className="flex h-12 items-center border rounded-lg px-2">
+            <Image
+              src="/icon/calendar.svg"
+              alt="Phone icon"
+              className="h-10"
+              width={18}
+              height={18}
+            ></Image>
+            <div className="w-full [&>div]:w-full border-none">
+              <DatePicker
+                // ref={departDateRef}
+                selected={departureDate}
+                onChange={(date) => setDepartureDate(date)}
+                dateFormat="dd/MM/yyyy"
+                placeholderText={t("chon_ngay")}
+                popperPlacement="bottom-start"
+                minDate={today}
+                locale={language === "vi" ? vi : enUS}
+                onFocus={(e) => e.target.blur()}
+                onKeyDown={(e) => {
+                  e.preventDefault();
+                }}
+                className="z-20 pl-3 w-full outline-none"
+              />
+            </div>
           </div>
         </div>
         <div className="w-full lg:w-2/12">
