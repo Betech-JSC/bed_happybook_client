@@ -425,7 +425,7 @@ export default function PromoModal() {
                         <div
                             onClick={() => handleApplyVoucher(WELCOME50K_VOUCHERS[0], "WELCOME50K")}
                             className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
-                            style={{ left: "74%", top: "39%", width: "20%", height: "9%" }}
+                            style={{ left: "74%", top: "51%", width: "20%", height: "9%" }}
                             title="Áp dụng Phòng Chờ Thương Gia"
                         />
 
@@ -433,7 +433,7 @@ export default function PromoModal() {
                         <div
                             onClick={() => handleApplyVoucher(WELCOME50K_VOUCHERS[1], "WELCOME50K")}
                             className="absolute cursor-pointer hover:scale-[1.02] rounded-xl transition-all"
-                            style={{ left: "74%", top: "54%", width: "20%", height: "9%" }}
+                            style={{ left: "74%", top: "74%", width: "20%", height: "9%" }}
                             title="Áp dụng Fast Track"
                         />
                     </div>
