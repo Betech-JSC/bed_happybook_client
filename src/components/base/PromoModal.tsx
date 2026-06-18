@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "react-hot-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ArrowLeft } from "lucide-react";
 
 const WELCOME10_VOUCHERS = [
     {
@@ -341,10 +342,13 @@ export default function PromoModal() {
                         {/* Back Button Hotspot */}
                         <div
                             onClick={() => setActiveTab("banner")}
-                            className="absolute cursor-pointer hover:bg-black/5 rounded-xl transition-all"
+                            className="absolute cursor-pointer hover:bg-slate-100/80 rounded-lg transition-all flex items-center justify-center gap-1 text-[#04349A] font-bold"
                             style={{ left: "4%", top: "3%", width: "22%", height: "7%" }}
-                            title="Quay lại"
-                        />
+                            title={language === "en" ? "Back" : "Quay lại"}
+                        >
+                            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-current shrink-0" />
+                            <span className="text-[11px] sm:text-sm select-none">{language === "en" ? "Back" : "Quay lại"}</span>
+                        </div>
 
                         {/* Close Button Hotspot */}
                         <div
@@ -408,10 +412,13 @@ export default function PromoModal() {
                         {/* Back Button Hotspot */}
                         <div
                             onClick={() => setActiveTab("banner")}
-                            className="absolute cursor-pointer hover:bg-black/5 rounded-xl transition-all"
+                            className="absolute cursor-pointer hover:bg-slate-100/80 rounded-lg transition-all flex items-center justify-center gap-1 text-[#04349A] font-bold"
                             style={{ left: "4%", top: "3%", width: "22%", height: "7%" }}
-                            title="Quay lại"
-                        />
+                            title={language === "en" ? "Back" : "Quay lại"}
+                        >
+                            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-current shrink-0" />
+                            <span className="text-[11px] sm:text-sm select-none">{language === "en" ? "Back" : "Quay lại"}</span>
+                        </div>
 
                         {/* Close Button Hotspot */}
                         <div
