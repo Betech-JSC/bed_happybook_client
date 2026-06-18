@@ -13,6 +13,7 @@ import {
 } from "../lib/esim";
 import { sortEsimPackages, type SortMode } from "../lib/esim-discovery";
 import { useSimDuLichStaticText } from "../hooks/useSimDuLichStaticText";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 
 type Props = {
   query: string;
@@ -50,6 +51,7 @@ export default function EsimPackageDiscoveryList({
   onLoadMorePackages,
 }: Props) {
   const t = useSimDuLichStaticText(activeLocale);
+  const welcomeDiscount = useWelcomeDiscount("esim");
   const sortedPackages = useMemo(
     () => sortEsimPackages(packages, activeLocale, sortMode, showInternationalFilters),
     [activeLocale, packages, showInternationalFilters, sortMode]
@@ -88,7 +90,7 @@ export default function EsimPackageDiscoveryList({
     if (showInternationalFilters) {
       return (
         <div className="space-y-0">
-          {sortedPackages.map((pkg) => {
+          {sortedPackages.map((pkg, index) => {
             const cheapest = findCheapestVariant(pkg, activeLocale);
             const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
             const isSelectable = cheapest ? isEsimVariantSelectable(cheapest, activeLocale) : false;
@@ -116,9 +118,9 @@ export default function EsimPackageDiscoveryList({
                     isActive ? "ring-2 ring-orange-100" : ""
                   } ${!isSelectable ? "cursor-not-allowed opacity-50" : ""}`}
                 >
-                  <div className="relative w-full overflow-hidden rounded-xl lg:w-5/12">
+                  <div className="relative w-full overflow-hidden rounded-xl lg:w-[280px] lg:shrink-0">
                     <div
-                      className={`relative aspect-[4/3] min-h-40 w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-full ${
+                      className={`relative aspect-[16/10] w-full overflow-hidden rounded-xl ${
                         avatarUrl ? "border border-slate-200 bg-white shadow-sm" : ""
                       }`}
                       style={{
@@ -133,7 +135,8 @@ export default function EsimPackageDiscoveryList({
                           alt={title}
                           fill
                           sizes="(max-width: 1024px) 100vw, 42vw"
-                          className="object-cover object-top opacity-100"
+                          className="object-contain bg-white opacity-100"
+                          priority={index < 2}
                         />
                       ) : null}
                       {avatarUrl ? null : (
@@ -172,42 +175,72 @@ export default function EsimPackageDiscoveryList({
                     </div>
                   </div>
 
-                  <div className="mt-4 flex w-full flex-col justify-between lg:mt-0 lg:w-7/12">
-                    <div className="space-y-3">
+                  <div className="mt-4 flex w-full flex-col lg:mt-0 lg:flex-row lg:justify-between lg:items-stretch lg:flex-1">
+                    <div className="flex-1 flex flex-col justify-between space-y-3">
                       <div className="space-y-1.5">
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hb-coral">eSIM</p>
                         <h3 className="text-18 font-semibold leading-tight transition-colors duration-300 hover:text-primary">
                           <span data-translate="true">{title}</span>
                         </h3>
+                        <div className="flex items-center gap-2.5 text-gray-500 text-sm">
+                          <span data-translate="true">0 đánh giá</span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5 text-gray-500">
-                        <span data-translate="true">0 đánh giá</span>
-                      </div>
-
-                      <div className="space-y-2.5 text-midnight-ink">
-                        <div className="flex items-center gap-2.5 leading-6">
+                      <div className="flex flex-row flex-nowrap lg:flex-col items-center lg:items-start gap-x-4 lg:gap-x-0 lg:gap-y-2.5 text-midnight-ink text-xs sm:text-sm overflow-hidden lg:overflow-visible">
+                        <div className="flex items-center gap-1.5 leading-6 shrink-0">
                           <Clock3 className="h-4 w-4 shrink-0 text-slate-500" />
                           <span data-translate="true">{validityLabel}</span>
                         </div>
 
-                        <div className="flex items-center gap-2.5 leading-6">
+                        <div className="flex items-center gap-1.5 leading-6 min-w-0 shrink-0 lg:shrink">
                           <MapPin className="h-4 w-4 shrink-0 text-slate-500" />
-                          <span data-translate="true">{pkg.regionLabel || pkg.destination}</span>
+                          <span className="truncate lg:whitespace-normal" data-translate="true">{pkg.regionLabel || pkg.destination}</span>
                         </div>
 
-                        <div className="flex items-center gap-2.5 leading-6">
+                        <div className="flex items-center gap-1.5 leading-6 min-w-0 shrink-0 lg:shrink">
                           <Wifi className="h-4 w-4 shrink-0 text-slate-500" />
-                          <span data-translate="true">{pkg.network || pkg.coverage}</span>
+                          <span className="truncate lg:whitespace-normal" data-translate="true">{pkg.network || pkg.coverage}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-3 text-end text-2xl font-bold text-primary">
+                    <div className="mt-4 flex flex-col justify-end items-end lg:mt-0 lg:pl-6 lg:border-l lg:border-slate-100 lg:min-w-[180px]">
+                      <div className="text-xs text-steel-secondary mb-1">{t("Giá")}</div>
                       {isSelectable ? (
-                        <span>{formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}</span>
+                        welcomeDiscount ? (
+                          <div className="flex flex-col items-end">
+                            <span className="text-sm font-normal text-slate-400 line-through">
+                              {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                            </span>
+                            <div className="text-2xl font-extrabold text-hb-coral">
+                              {formatEsimMoney(
+                                Math.max(0, cheapestMoney.price - (cheapestMoney.currency === "USD" ? 2 : 50000)),
+                                cheapestMoney.currency
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-end">
+                            {cheapestMoney.originalPrice > cheapestMoney.price && (
+                              <span className="text-sm font-normal text-slate-400 line-through">
+                                {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                              </span>
+                            )}
+                            <div className="text-2xl font-extrabold text-hb-coral">
+                              {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                            </div>
+                          </div>
+                        )
                       ) : (
-                        <span data-translate="true">Chưa có giá khả dụng</span>
+                        <div className="text-sm font-semibold text-slate-400" data-translate="true">
+                          {t("Chưa có giá khả dụng")}
+                        </div>
+                      )}
+                      {isSelectable && (
+                        <div className="mt-4 hidden lg:block bg-hb-coral hover:bg-orange-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all shadow-sm">
+                          {t("Chọn gói")}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -221,7 +254,7 @@ export default function EsimPackageDiscoveryList({
 
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {sortedPackages.map((pkg) => {
+        {sortedPackages.map((pkg, index) => {
           const cheapest = findCheapestVariant(pkg, activeLocale);
           const cheapestMoney = getEsimVariantMoney(cheapest, activeLocale);
           const isSelectable = cheapest ? isEsimVariantSelectable(cheapest, activeLocale) : false;
@@ -256,6 +289,7 @@ export default function EsimPackageDiscoveryList({
                       width={56}
                       height={56}
                       className="h-full w-full object-cover object-top"
+                      priority={index < 4}
                     />
                   </div>
                 ) : null}
@@ -267,9 +301,34 @@ export default function EsimPackageDiscoveryList({
                     {pkg.subtitle} - {pkg.network}
                   </div>
                   <div className="mt-2 text-sm font-bold text-hb-coral">
-                    {isSelectable
-                      ? `${t("Từ")} ${formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}`
-                      : t("Chưa có giá khả dụng")}
+                    {isSelectable ? (
+                      welcomeDiscount ? (
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-xs font-normal text-slate-400 line-through">
+                            {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                          </span>
+                          <span>
+                            {t("Từ")} {formatEsimMoney(
+                              Math.max(0, cheapestMoney.price - (cheapestMoney.currency === "USD" ? 2 : 50000)),
+                              cheapestMoney.currency
+                            )}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {cheapestMoney.originalPrice > cheapestMoney.price && (
+                            <span className="text-xs font-normal text-slate-400 line-through">
+                              {formatEsimMoney(cheapestMoney.originalPrice, cheapestMoney.currency)}
+                            </span>
+                          )}
+                          <span>
+                            {t("Từ")} {formatEsimMoney(cheapestMoney.price, cheapestMoney.currency)}
+                          </span>
+                        </div>
+                      )
+                    ) : (
+                      t("Chưa có giá khả dụng")
+                    )}
                   </div>
                 </div>
               </div>
@@ -282,7 +341,7 @@ export default function EsimPackageDiscoveryList({
 
   if (!showInternationalFilters) {
     return (
-      <div className="pt-8">
+      <div>
         <div className="relative mb-6">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -300,7 +359,7 @@ export default function EsimPackageDiscoveryList({
   }
 
   return (
-    <div className="pt-8">
+    <div>
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-midnight-ink lg:text-4xl">{pageTitle || t("Sim du lịch quốc tế")}</h1>

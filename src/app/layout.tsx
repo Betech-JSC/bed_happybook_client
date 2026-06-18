@@ -20,7 +20,7 @@ import Script from "next/script";
 import ProgressBar from "@/components/layout/ProgressBar";
 import { getServerTranslations } from "@/lib/i18n/serverTranslations";
 import { TranslationProvider } from "../contexts/TranslationContext";
-import PromoModal from "@/components/base/PromoModal";
+// import PromoModal from "@/components/base/PromoModal";
 import { AosProvider } from "@/components/layout/AosProvider";
 
 const OpenSans = Open_Sans({ subsets: ["vietnamese"], display: "swap" });

@@ -26,13 +26,13 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
   const [detail, setDetail] = useState<any>(product);
   const isBusinessLounge = !!product?.business_lounge?.is_business_lounge;
   const dayMap: Record<string, string> = {
-    monday: "Thứ Hai",
-    tuesday: "Ba",
-    wednesday: "Tư",
-    thursday: "Năm",
-    friday: "Sáu",
-    saturday: "Bảy",
-    sunday: "Chủ nhật",
+    monday: t("thu_hai"),
+    tuesday: t("thu_ba"),
+    wednesday: t("thu_tu"),
+    thursday: t("thu_nam"),
+    friday: t("thu_sau"),
+    saturday: t("thu_bay"),
+    sunday: t("chu_nhat"),
   };
   const daysOpeningRaw = product?.business_lounge?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
@@ -42,7 +42,7 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
       : [];
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
-    ? "Mỗi ngày"
+    ? t("moi_ngay")
     : daysOpening
       .map((day: any) => dayMap[day])
       .filter(Boolean)
@@ -92,6 +92,7 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
 
   useEffect(() => {
     setIsMounted(true);
+    setDepartDate(new Date());
   }, []);
   return (
     <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
@@ -117,12 +118,7 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
                         >
                           {option?.name}
                         </p>
-                        {departDate && (
-                          <div className="w-32 flex-shrink-0">
-                            <span>Ngày </span>
-                            <span>{format(departDate, "dd/MM/yyyy")}</span>
-                          </div>
-                        )}
+
                       </div>
                       <TicketOptionContent content={option?.description} />
                     </div>
@@ -150,13 +146,40 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
                           </div>
                           <div className="flex items-start justify-between">
                             <div>
-                              <DisplayPrice
-                                className={`!text-base mr-4 text-black !font-normal`}
-                                price={ticket.price}
-                                currency={product?.currency}
-                              />
+                              {(() => {
+                                const hasDiscount =
+                                  product?.discount_price > 0 && product?.price > 0;
+                                if (hasDiscount) {
+                                  const discountRatio = product.discount_price / product.price;
+                                  const sale = ticket.price * (1 - discountRatio);
+                                  const original = ticket.price;
+                                  return (
+                                    <div className="flex items-baseline justify-end gap-2.5">
+                                      {original > sale && (
+                                        <DisplayPrice
+                                          price={original}
+                                          currency={product?.currency}
+                                          className="!text-gray-400 !line-through !font-normal !text-[13px]"
+                                        />
+                                      )}
+                                      <DisplayPrice
+                                        price={sale}
+                                        currency={product?.currency}
+                                        className="!text-[#F27145] !font-extrabold !text-lg"
+                                      />
+                                    </div>
+                                  );
+                                }
+                                return (
+                                  <DisplayPrice
+                                    className={`!text-base mr-4 text-black !font-normal`}
+                                    price={ticket.price}
+                                    currency={product?.currency}
+                                  />
+                                );
+                              })()}
 
-                              <p className="text-sm text-gray-500 mt-1">
+                              <p className="text-sm text-gray-500 mt-1 text-end">
                                 {t("gia")} / {t("khach")}
                               </p>
                             </div>
@@ -250,7 +273,7 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
               <Image
                 className="w-4 h-4"
                 src="/icon/clock.svg"
-                alt="Thời gian"
+                alt={t("thoi_gian")}
                 width={18}
                 height={18}
               />
@@ -263,7 +286,7 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
               <Image
                 className="w-4 h-4"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa chỉ"
+                alt={t("dia_chi")}
                 width={18}
                 height={18}
               />
@@ -285,34 +308,6 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
             </SmoothScrollLink>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 mt-3">
-          <p className="font-semibold">{t("ngay_di")}</p>
-          <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
-            <Image
-              src="/icon/calendar.svg"
-              alt="Lịch trình"
-              className="h-10"
-              width={18}
-              height={18}
-            />
-            <div className="w-full [&>div]:w-full">
-              <DatePicker
-                selected={departDate}
-                onChange={(date) => setDepartDate(date ? date : today)}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="Chọn ngày"
-                popperPlacement="bottom-start"
-                minDate={today}
-                locale={language === "vi" ? vi : enUS}
-                onFocus={(e) => e.target.blur()}
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                }}
-                className="z-20 pl-3 w-full outline-none"
-              />
-            </div>
-          </div>
-        </div>
         <div className="mt-3">
           <Schedule schedule={detail?.schedule ?? []} />
         </div>
@@ -321,7 +316,7 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
             {t("luu_y")}
           </h2>
           <div className="mt-4">
-            <DisplayContentEditor content={detail?.yacht?.note} />
+            <DisplayContentEditor content={detail?.business_lounge?.note} />
           </div>
         </div>
       </div>

@@ -5,8 +5,10 @@ import { useState } from "react";
 import Image from "next/image";
 import "swiper/css";
 import "swiper/css/thumbs";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ImageGallery({ detail }: any) {
+  const { t } = useTranslation();
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const gallery = detail?.gallery ?? [];
   const imageUrl = detail?.image_url;
@@ -31,7 +33,7 @@ export default function ImageGallery({ detail }: any) {
               <Image
                 className="cursor-pointer w-full h-[300px] md:h-[450px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                 src={((item.image_url || "") + "/" + item.image).replace(/(^|[^:])\/\/+/g, "$1/")}
-                alt="Ảnh Phòng chờ thương gia"
+                alt={t("anh_phong_cho_thuong_gia")}
                 width={845}
                 height={450}
                 sizes="100vw"
@@ -78,7 +80,7 @@ export default function ImageGallery({ detail }: any) {
                 <Image
                   className="cursor-pointer h-24 md:h-[120px] rounded-lg hover:scale-110 ease-in duration-300 object-cover"
                   src={((item.image_url || "") + "/" + item.image).replace(/(^|[^:])\/\/+/g, "$1/")}
-                  alt="Ảnh Phòng chờ thương gia"
+                  alt={t("anh_phong_cho_thuong_gia")}
                   width={135}
                   height={120}
                 />

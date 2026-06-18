@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Carousel,
@@ -12,6 +12,8 @@ import styles from "@/styles/styles.module.scss";
 import Link from "next/link";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { useTranslation } from "@/hooks/useTranslation";
+import { translateText } from "@/utils/translateApi";
+import { getImageSrc } from "@/utils/Helper";
 
 export default function YachtTabs({
   title,
@@ -22,11 +24,43 @@ export default function YachtTabs({
   defaultCategoryAlias?: string;
   data: any;
 }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
+  const [translatedData, setTranslatedData] = useState(data);
+  const getYachtDisplayName = (item: any) =>
+    item?.yacht?.name || item?.name || "";
   const [linkCategory, setLinkCategory] = useState<string>(
     data?.[0]?.alias ? `/du-thuyen/${data?.[0]?.alias}` : "/du-thuyen"
   );
+
+  useEffect(() => {
+    if (lang === "vi") {
+      setTranslatedData(data);
+      return;
+    }
+
+    const tabNames = data.map((tab: any) => tab?.name).filter(Boolean) as string[];
+    if (!tabNames.length) {
+      setTranslatedData(data);
+      return;
+    }
+
+    translateText(tabNames, lang).then((translated) => {
+      const translatedMap = new Map<string, string>();
+      tabNames.forEach((name, index) => {
+        translatedMap.set(name, translated[index] ?? name);
+      });
+
+      setTranslatedData(
+        data.map((tab: any) => ({
+          ...tab,
+          name: translatedMap.get(tab?.name) ?? tab?.name,
+          products: tab.products,
+        }))
+      );
+    });
+  }, [data, lang]);
+
   return (
     <Fragment>
       <div className="flex justify-between">
@@ -76,11 +110,11 @@ export default function YachtTabs({
             }}
           >
             <CarouselContent>
-              {data.map(
+              {translatedData.map(
                 (tab: any, index: number) =>
                   tab.name && (
                     <CarouselItem key={index} className="basis-1/8">
-                      <button
+                        <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
                      ${activeTab === index
                             ? "bg-[#1570EF] hover:bg-blue-700 text-white"
@@ -90,7 +124,6 @@ export default function YachtTabs({
                           setActiveTab(index);
                           setLinkCategory(`/du-thuyen/${tab.alias}`);
                         }}
-                        data-translate="true"
                       >
                         {tab.name}
                       </button>
@@ -101,7 +134,7 @@ export default function YachtTabs({
           </Carousel>
         </div>
         <div>
-          {data.map((category: any, index: number) => {
+          {translatedData.map((category: any, index: number) => {
             if (index !== activeTab) return null;
             return (
               <div key={index}>
@@ -126,8 +159,8 @@ export default function YachtTabs({
                             <Link href={`/du-thuyen/${item.slug}`}>
                               <Image
                                 className="lg:group-hover:scale-105 ease-in-out duration-300 w-full h-full cursor-pointer object-cover"
-                                src={`${item.image_url}/${item.image_location}`}
-                                alt={item.name}
+                                src={getImageSrc(item.image_url, item.image_location)}
+                                alt={getYachtDisplayName(item)}
                                 width={320}
                                 height={320}
                               />
@@ -139,15 +172,14 @@ export default function YachtTabs({
                               className={`text-base font-semibold ${styles.text_hover_default}`}
                             >
                               <h3
-                                data-translate="true"
                                 className="h-12 line-clamp-2"
                               >
-                                {item.name}
+                                {getYachtDisplayName(item)}
                               </h3>
                             </Link>
                             <div className="mt-2 text-end">
                               <DisplayPrice
-                                textPrefix="Giá từ"
+                                textPrefix="Giá"
                                 price={item.min_price}
                                 currency={item?.currency}
                               />

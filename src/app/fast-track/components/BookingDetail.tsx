@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
-import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
+import { getImageSrc, handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
 import { notFound, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -150,6 +150,22 @@ export default function BookingDetail() {
     }
   }, [selectedPaymentMethod]);
 
+  const isFastTrack = data?.product?.product_type === "fast-track";
+  const isEnglish = language === "en";
+  const showPayPalOnly = isFastTrack || isEnglish; // Wait, for this fastTrack component, it can be either (actually it's always fast-track, so showPayPalOnly if language === 'en')
+
+  useEffect(() => {
+    if (language === "en") {
+      setValue("payment_method", "paypal");
+      setSelectedPaymentMethod("paypal");
+    } else {
+      if (selectedPaymentMethod === "paypal") {
+        setValue("payment_method", "");
+        setSelectedPaymentMethod("");
+      }
+    }
+  }, [language, setValue]);
+
   const getTransferInformation = async () => {
     PageApi.getContent("thong-tin-chuyen-khoan").then((result: any) => {
       setTransferInformation(result?.payload?.data);
@@ -205,6 +221,25 @@ export default function BookingDetail() {
             setIsGeneratingPaymentUrl(false);
             console.error("Error generating payment URL:", paymentError);
             toast.error(t("co_loi_xay_ra_khi_tao_link_thanh_toan"));
+          }
+        } else if (selectedPaymentMethod === "paypal") {
+          setIsGeneratingPaymentUrl(true);
+          try {
+            const paymentResult = await BookingProductApi.paypalCreateOrder({
+              order_code: data.code,
+            });
+
+            if (paymentResult?.payload?.success && paymentResult?.payload?.data?.approval_url) {
+              // Redirect to PayPal
+              window.location.href = paymentResult.payload.data.approval_url;
+            } else {
+              setIsGeneratingPaymentUrl(false);
+              toast.error(paymentResult?.payload?.message || t("Không thể tạo link thanh toán PayPal."));
+            }
+          } catch (paymentError: any) {
+            setIsGeneratingPaymentUrl(false);
+            console.error("Error generating PayPal URL:", paymentError);
+            toast.error(t("Có lỗi xảy ra khi tạo link thanh toán PayPal."));
           }
         } else if (selectedPaymentMethod === "vietqr") {
           // VietQR - QR code đã được generate trong useEffect, không cần xử lý gì thêm ở đây
@@ -279,6 +314,20 @@ export default function BookingDetail() {
   const totalDiscount = data?.total_discount || 0;
   const finalTotal = totalPrice + onePayFee - totalDiscount;
 
+  const paidStatuses = [
+    "paid",
+    "processing",
+    "completed",
+    "approved",
+    "done",
+    "price_confirmed",
+    "issued",
+    "issuing",
+    "paid_book_failed",
+    "pending_refund"
+  ];
+  const isPaidOrder = isPaid || paidStatuses.includes(data?.status?.toLowerCase() ?? "");
+
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0">
@@ -296,14 +345,14 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {pollingStatus && !isPaid && (
+        {pollingStatus && !isPaidOrder && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
             <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
             <p>{t("dang_cho_thanh_toan")}</p>
           </div>
         )}
 
-        {isPaid && (
+        {isPaidOrder && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
             <p>
               {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
@@ -572,79 +621,117 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid && (
+        {!isPaidOrder && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
                 {t("hinh_thuc_thanh_toan")}
               </p>
               <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                <div className="flex space-x-3 items-start ">
-                  <input
-                    type="radio"
-                    value="vietqr"
-                    id="payment_vietqr"
-                    {...register("payment_method")}
-                    className="w-5 h-5 mt-[2px]"
-                    onChange={(e) => {
-                      setValue("payment_method", e.target.value);
-                      setSelectedPaymentMethod(e.target.value);
-                    }}
-                  />
-                  <label
-                    htmlFor="payment_vietqr"
-                    className=" flex space-x-1"
-                  >
-                    <div className="font-normal">
-                      <Image
-                        src="/payment-method/transfer.svg"
-                        alt="Chuyển khoản"
-                        width={24}
-                        height={24}
-                        className="w-6 h-6"
+                {language === "en" ? (
+                  <div className="flex space-x-3 items-start ">
+                    <input
+                      type="radio"
+                      value="paypal"
+                      id="payment_paypal"
+                      {...register("payment_method")}
+                      className="w-5 h-5 mt-[2px]"
+                      checked={selectedPaymentMethod === "paypal"}
+                      onChange={(e) => {
+                        setValue("payment_method", e.target.value);
+                        setSelectedPaymentMethod(e.target.value);
+                      }}
+                    />
+                    <label
+                      htmlFor="payment_paypal"
+                      className=" flex space-x-1"
+                    >
+                      <div className="font-normal">
+                        <Image
+                          src="/payment-method/visa.svg"
+                          alt="PayPal"
+                          width={48}
+                          height={28}
+                          className="md:mt-1"
+                        />
+                      </div>
+                      <div>
+                        <span className="font-medium text-base max-width-[85%]">
+                          {t("Thanh toán qua PayPal")}
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex space-x-3 items-start ">
+                      <input
+                        type="radio"
+                        value="vietqr"
+                        id="payment_vietqr"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
                       />
+                      <label
+                        htmlFor="payment_vietqr"
+                        className=" flex space-x-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/transfer.svg"
+                            alt="Chuyển khoản"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("thanh_toan_quet_ma_qr_ngan_hang")}
+                          </span>
+                        </div>
+                      </label>
                     </div>
-                    <div>
-                      <span className="font-medium text-base max-width-[85%]">
-                        {t("thanh_toan_quet_ma_qr_ngan_hang")}
-                      </span>
-                    </div>
-                  </label>
-                </div>
 
-                <div className="flex space-x-3 md:items-center mt-4">
-                  <input
-                    type="radio"
-                    value="onepay"
-                    id="payment_onepay"
-                    {...register("payment_method")}
-                    className="w-5 h-5 mt-[2px]"
-                    checked={selectedPaymentMethod === "onepay"}
-                    onChange={(e) => {
-                      setValue("payment_method", e.target.value);
-                      setSelectedPaymentMethod(e.target.value);
-                    }}
-                  />
-                  <label
-                    htmlFor="payment_onepay"
-                    className="flex md:items-center gap-1"
-                  >
-                    <div className="font-normal">
-                      <Image
-                        src="/payment-method/visa.svg"
-                        alt="Visa/MasterCard"
-                        width={48}
-                        height={28}
-                        className="md:mt-1"
+                    <div className="flex space-x-3 md:items-center mt-4">
+                      <input
+                        type="radio"
+                        value="onepay"
+                        id="payment_onepay"
+                        {...register("payment_method")}
+                        className="w-5 h-5 mt-[2px]"
+                        checked={selectedPaymentMethod === "onepay"}
+                        onChange={(e) => {
+                          setValue("payment_method", e.target.value);
+                          setSelectedPaymentMethod(e.target.value);
+                        }}
                       />
+                      <label
+                        htmlFor="payment_onepay"
+                        className="flex md:items-center gap-1"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/visa.svg"
+                            alt="Visa/MasterCard"
+                            width={48}
+                            height={28}
+                            className="md:mt-1"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("thanh_toan_visa_master_card_jcb")}
+                          </span>
+                        </div>
+                      </label>
                     </div>
-                    <div>
-                      <span className="font-medium text-base max-width-[85%]">
-                        {t("thanh_toan_visa_master_card_jcb")}
-                      </span>
-                    </div>
-                  </label>
-                </div>
+                  </>
+                )}
                 {errors.payment_method && (
                   <p className="text-red-600 mt-2">
                     {errors.payment_method.message}
@@ -700,7 +787,7 @@ export default function BookingDetail() {
         <div className="overflow-hidden rounded-t-2xl">
           {data?.product?.image_location && (
             <Image
-              src={`${data?.product?.image_url}/${data?.product?.image_location}`}
+              src={getImageSrc(data?.product?.image_url, data?.product?.image_location)}
               alt={data?.product?.name || "Fast Track"}
               width={600}
               height={450}
@@ -713,7 +800,7 @@ export default function BookingDetail() {
             {renderTextContent(data?.product?.name)}
           </h2>
           <div className="mt-4 pt-4 border-t border-t-gray-200">
-            {onePayFee > 0 && (
+            {onePayFee > 0 && !isPaidOrder && (
               <div className="flex justify-between mb-1 text-red-600 font-semibold">
                 <span className="text-sm">
                   {t("phi_xu_ly_giao_dich_the_quoc_te")}
@@ -724,7 +811,32 @@ export default function BookingDetail() {
                 />
               </div>
             )}
-            {totalDiscount > 0 ? (
+            {data?.product?.discount_price > 0 && !isPaidOrder && (
+              <div className="flex justify-between mb-2 text-green-600 font-semibold">
+                <span className="text-sm" data-translate="true">
+                  Giảm giá trực tiếp
+                </span>
+                <div className="flex gap-1 items-center">
+                  <span>-</span>
+                  <DisplayPrice
+                    className="!font-bold !text-base !text-green-600"
+                    price={data.product.discount_price}
+                    currency={data?.product?.currency}
+                  />
+                </div>
+              </div>
+            )}
+            {isPaidOrder ? (
+              totalPrice > 0 && (
+                <div className="w-full flex justify-between">
+                  <DisplayPrice
+                    textPrefix={t("tong_cong")}
+                    price={totalPrice}
+                    currency={data?.product?.currency}
+                  />
+                </div>
+              )
+            ) : (totalDiscount > 0 ? (
               <DisplayPriceWithDiscount
                 price={totalPrice}
                 totalDiscount={totalDiscount}
@@ -740,7 +852,7 @@ export default function BookingDetail() {
                   />
                 </div>
               )
-            )}
+            ))}
           </div>
         </div>
       </div>

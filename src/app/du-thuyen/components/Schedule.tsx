@@ -1,10 +1,13 @@
 "use client";
-import { renderTextContent } from "@/utils/Helper";
 import { useState } from "react";
 import "@/styles/ckeditor-content.scss";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Schedule({ schedule }: any) {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const [openDropdown, setOpenDropdown] = useState<number | null>(0);
   const toggleDropdown = (id: number) => {
     setOpenDropdown(openDropdown === id ? null : id);
@@ -15,7 +18,7 @@ export default function Schedule({ schedule }: any) {
         className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
         data-translate
       >
-        Lịch trình
+        {language === "vi" ? "Lịch trình" : "Schedule"}
       </h2>
       {schedule.length > 0 ? (
         schedule.map((schedule: any, key: number) => (
@@ -74,7 +77,7 @@ export default function Schedule({ schedule }: any) {
       ) : (
         <div className="mt-4">
           <p className="text-base font-semibold" data-translate>
-            Nội dung đang cập nhật....
+            {t("thong_tin_dang_cap_nhat")}
           </p>
         </div>
       )}

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface AosAnimateProps {
   children: React.ReactNode;
@@ -7,7 +7,17 @@ interface AosAnimateProps {
 }
 
 const AosAnimate = ({ children, animation = "fade-up" }: AosAnimateProps) => {
-  return <div data-aos={animation}>{children}</div>;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return (
+    <div {...(mounted ? { "data-aos": animation } : {})}>
+      {children}
+    </div>
+  );
 };
 
 export default AosAnimate;

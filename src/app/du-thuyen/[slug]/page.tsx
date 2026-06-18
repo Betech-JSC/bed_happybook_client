@@ -29,21 +29,32 @@ import { BlogTypes, pageUrl } from "@/utils/Urls";
 import YachtDetail from "../components/YachtDetail";
 import YachtCategory from "../components/YachtCategory";
 import { ProductCategoryApi } from "@/api/ProductCategory";
+import { getServerLang } from "@/lib/session";
+import { translateText } from "@/utils/translateApi";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
-  let data = null;
+  const language = await getServerLang();
+  let data = (await ProductYachtApi.detailBySlug(slug, language))?.payload
+    ?.data as any;
 
-  data = (await ProductCategoryApi.detail("yacht", slug))?.payload?.data as any;
+  if (data) {
+    data.alias = data?.slug;
+  } else {
+    data = (await ProductCategoryApi.detail("yacht", slug, language))?.payload
+      ?.data as any;
+  }
 
-  if (!data) {
-    const resDetail = await ProductYachtApi.detailBySlug(slug);
-    data = resDetail?.payload.data;
-    if (data) data.alias = data?.slug;
+  if (data) {
+    const rawTitle = data?.name || data?.alias || data?.slug || "";
+    data.display_title =
+      language === "vi" || !rawTitle
+        ? rawTitle
+        : (await translateText([rawTitle], language))[0] || rawTitle;
   }
 
   return formatMetadata({
-    title: data?.meta_title ?? data?.name,
+    title: data?.meta_title ?? data?.display_title ?? data?.name,
     description: data?.meta_description,
     robots: data?.meta_robots,
     keywords: data?.keywords,
@@ -73,11 +84,21 @@ export default async function YachtAliasPage({
   searchParams: { [key: string]: string | undefined };
 }) {
   const { slug } = params;
-  const detailCate = (await ProductCategoryApi.detail("yacht", slug))?.payload
+  const language = await getServerLang();
+  const detail = (await ProductYachtApi.detailBySlug(slug, language))?.payload
     ?.data as any;
-  return !detailCate ? (
-    <YachtDetail alias={slug} searchParams={searchParams} />
-  ) : (
-    <YachtCategory detail={detailCate} />
-  );
+
+  if (detail) {
+    return <YachtDetail alias={slug} searchParams={searchParams} />;
+  }
+
+  const detailCate = (await ProductCategoryApi.detail("yacht", slug, language))
+    ?.payload
+    ?.data as any;
+
+  if (detailCate) {
+    return <YachtCategory detail={detailCate} />;
+  }
+
+  return <YachtDetail alias={slug} searchParams={searchParams} />;
 }

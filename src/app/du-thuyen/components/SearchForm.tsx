@@ -1,14 +1,15 @@
 import Image from "next/image";
-import { Fragment, use, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter } from "next/navigation";
 import { vi, enUS } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ProductTicket } from "@/api/ProductTicket";
+import { ProductYachtApi } from "@/api/ProductYacht";
 import { format, isValid } from "date-fns";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Option = {
   label: string;
@@ -16,6 +17,7 @@ type Option = {
 };
 
 export default function SearchForm() {
+  const { t } = useTranslation();
   const router = useRouter();
   const today = new Date();
   const { language } = useLanguage();
@@ -50,7 +52,7 @@ export default function SearchForm() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const res = await ProductTicket.location(`?departDate=${dateStr}`);
+      const res = await ProductYachtApi.location(`?departDate=${dateStr}`);
       const data = res?.payload?.data ?? [];
 
       const newOptions: Option[] = data.map((item: any) => ({
@@ -95,7 +97,7 @@ export default function SearchForm() {
       );
       const lastDashIndex = locationSelected.value.lastIndexOf("-");
       const slug = locationSelected.value.substring(0, lastDashIndex);
-      router.push(`/ve-vui-choi/chi-tiet/${slug}?departDate=${date}`);
+      router.push(`/du-thuyen/${slug}?departDate=${date}`);
     } else {
       toast.dismiss();
       toast.error("Vui lòng chọn đầy đủ thông tin");
@@ -109,15 +111,15 @@ export default function SearchForm() {
             className="text-[18px] font-semibold text-black"
             data-translate="true"
           >
-            Tìm vé vui chơi & hoạt động
+            {t("tim_du_thuyen") || "Tìm du thuyền"}
           </span>
         </label>
       </div>
 
       <div className="flex flex-wrap lg:flex-nowrap gap-2">
-        <div className="w-full lg:w-5/12">
+        <div className="w-full lg:w-10/12">
           <label className="block text-gray-700 mb-1" data-translate="true">
-            Nơi đi
+            {t("noi_di") || "Nơi đi"}
           </label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
@@ -160,37 +162,6 @@ export default function SearchForm() {
             )}
           </div>
         </div>
-        <div className="w-full lg:w-5/12">
-          <label className="block text-gray-700 mb-1" data-translate="true">
-            Ngày đi
-          </label>
-          <div className="flex h-12 items-center border rounded-lg px-2">
-            <Image
-              src="/icon/calendar.svg"
-              alt="Phone icon"
-              className="h-10"
-              width={18}
-              height={18}
-            ></Image>
-            <div className="w-full [&>div]:w-full border-none">
-              <DatePicker
-                // ref={departDateRef}
-                selected={departureDate}
-                onChange={(date) => setDepartureDate(date)}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="Chọn ngày"
-                popperPlacement="bottom-start"
-                minDate={today}
-                locale={language === "vi" ? vi : enUS}
-                onFocus={(e) => e.target.blur()}
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                }}
-                className="z-20 pl-3 w-full outline-none"
-              />
-            </div>
-          </div>
-        </div>
         <div className="w-full lg:w-2/12">
           <label className="block text-gray-700 mb-1 h-6"></label>
           <div
@@ -211,7 +182,7 @@ export default function SearchForm() {
               data-translate="true"
               disabled={isLoading}
             >
-              Tìm kiếm
+              {t("tim_kiem") || "Tìm kiếm"}
             </button>
           </div>
         </div>

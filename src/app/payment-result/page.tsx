@@ -3,6 +3,7 @@
 import { CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
@@ -11,6 +12,29 @@ export default function PaymentResultPage() {
   const orderCode = searchParams.get("id") || searchParams.get("order_code") || "";
 
   const isSuccess = status === "success";
+
+  useEffect(() => {
+    if (!isSuccess && orderCode) {
+      fetch("/api/auth/payment/cancel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ orderCode }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            console.error("Failed to cancel payment order status:", res.status);
+          } else {
+            console.log("Successfully cancelled payment order status:", orderCode);
+          }
+        })
+        .catch((err) => {
+          console.error("Error cancelling payment order status:", err);
+        });
+    }
+  }, [isSuccess, orderCode]);
+
   const isEnglish = paymentMethod === "paypal";
 
   const successTitle = isEnglish ? "Payment successful!" : "Thanh toán thành công!";
@@ -18,7 +42,17 @@ export default function PaymentResultPage() {
     ? "Thank you for your order."
     : "Cảm ơn bạn đã đặt hàng.";
   const successBodyBottom = isEnglish
-    ? "Your eSIM order will be processed shortly."
+    ? (orderCode.startsWith("EVT")
+        ? "Your ticket order will be processed shortly."
+        : orderCode.startsWith("YACHT")
+        ? "Your yacht charter booking will be processed shortly."
+        : orderCode.startsWith("VISA")
+        ? "Your visa service order will be processed shortly."
+        : orderCode.startsWith("COMBO")
+        ? "Your combo package booking will be processed shortly."
+        : orderCode.startsWith("HAP")
+        ? "Your booking will be processed shortly."
+        : "Your eSIM order will be processed shortly.")
     : "Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.";
   const errorTitle = isEnglish ? "Payment failed" : "Thanh toán thất bại";
   const errorBodyTop = isEnglish

@@ -92,10 +92,27 @@ export default function VoucherProgram({
     discountAmount: number;
     programIds: number[];
   } | null>(null);
+  const hasAutoApplied = useRef(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Auto-apply pending welcome voucher from promo banner
+  useEffect(() => {
+    if (!vouchersData || vouchersData.length === 0 || hasAutoApplied.current) return;
+    const programCode = sessionStorage.getItem("applied_welcome_program");
+    if (programCode) {
+      // Find matching voucher from vouchersData
+      const match = vouchersData.find((v) =>
+        v.code?.toUpperCase().startsWith(programCode.toUpperCase())
+      );
+      if (match) {
+        setSelectedVouchers([match]);
+        hasAutoApplied.current = true;
+      }
+    }
+  }, [vouchersData]);
 
   const handleSelectChange = useCallback(
     (newValue: MultiValue<VoucherType>, _meta: ActionMeta<VoucherType>) => {

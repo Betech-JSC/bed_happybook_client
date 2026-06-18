@@ -2,8 +2,10 @@
 import { renderTextContent } from "@/utils/Helper";
 import { Fragment, useEffect, useRef, useState } from "react";
 import "@/styles/ckeditor-content.scss";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function TicketOptionContent({ content }: any) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showToggleButton, setShowToggleButton] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
@@ -36,6 +38,7 @@ export default function TicketOptionContent({ content }: any) {
       <div className="ckeditor_container relative">
         <div
           ref={contentRef}
+          data-translate="true"
           className={`cke_editable text-base transition-[max-height] duration-500 ease-in-out overflow-hidden`}
           style={{
             maxHeight: isExpanded
@@ -58,7 +61,7 @@ export default function TicketOptionContent({ content }: any) {
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <span className="font-medium group-hover:text-primary duration-300">
-            {isExpanded ? "Ẩn bớt" : "Xem thêm"}
+            {isExpanded ? t("an_bot") : t("xem_them")}
           </span>
           <button
             className={`duration-300 ${isExpanded ? "rotate-180" : "rotate-0"}`}

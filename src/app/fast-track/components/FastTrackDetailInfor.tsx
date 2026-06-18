@@ -102,7 +102,7 @@ export default function FastTrackDetailInfor({ product }: any) {
       .catch(() => {});
   }, [language, product?.slug]);
   return (
-    <div className="flex flex-col-reverse lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
+    <div className="flex flex-col lg:flex-row lg:space-x-8 items-start mt-6 pb-12">
       <div className="w-full lg:w-8/12 mt-4 lg:mt-0">
         <ProductGallery product={detail} />
         <div id="cac-goi-dich-vu" className="mt-4">
@@ -137,7 +137,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                       option.prices.map((ticket: any) => (
                         <div
                           key={ticket.id}
-                          className="flex space-x-2 justify-between items-start py-4 border-b last:border-none"
+                          className="flex space-x-2 justify-between items-start py-4 border-b last:border-none pr-14 md:pr-0"
                         >
                           <div>
                             <div
@@ -156,7 +156,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                           <div className="flex items-start justify-between">
                             <div>
                               <DisplayPrice
-                                className={`!text-base mr-4 text-black !font-normal`}
+                                className={`!text-base text-black !font-normal whitespace-nowrap flex-shrink-0`}
                                 price={ticket.price}
                                 currency={product?.currency}
                               />
@@ -177,7 +177,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                         {detail.additional_fees.map((fee: any) => (
                           <div
                             key={fee.id}
-                            className="flex justify-between items-center py-2 last:border-none"
+                            className="flex justify-between items-center py-2 last:border-none pr-14 md:pr-0"
                           >
                             <div>
                               <div
@@ -195,7 +195,7 @@ export default function FastTrackDetailInfor({ product }: any) {
                               )}
                             </div>
                             <DisplayPrice
-                              className="!text-sm text-black !font-medium"
+                              className="!text-sm text-black !font-medium whitespace-nowrap flex-shrink-0"
                               price={fee.price}
                               currency={product?.currency}
                             />
@@ -287,34 +287,6 @@ export default function FastTrackDetailInfor({ product }: any) {
                 </span>
               </button>
             </SmoothScrollLink>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 mt-3">
-          <p className="font-semibold">{t("ngay_di")}</p>
-          <div className="flex h-12 items-center border rounded-lg px-2 mt-2">
-            <Image
-              src="/icon/calendar.svg"
-              alt="Lịch trình"
-              className="h-10"
-              width={18}
-              height={18}
-            />
-            <div className="w-full [&>div]:w-full">
-              <DatePicker
-                selected={departDate}
-                onChange={(date) => setDepartDate(date ? date : today)}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="Chọn ngày"
-                popperPlacement="bottom-start"
-                minDate={today}
-                locale={language === "vi" ? vi : enUS}
-                onFocus={(e) => e.target.blur()}
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                }}
-                className="z-20 pl-3 w-full outline-none"
-              />
-            </div>
           </div>
         </div>
         <div className="mt-3">

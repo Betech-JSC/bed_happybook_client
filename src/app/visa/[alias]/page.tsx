@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   let data = null;
   const resCategory = (await VisaApi.getCategory(alias, null, language)) as any;
   data = resCategory?.payload.data;
-  if (!data) {
+  if (!data || (Array.isArray(data) && data.length === 0) || (typeof data === "object" && !data.id)) {
     const resDetail = await VisaApi.detail(alias, language);
     data = resDetail?.payload.data;
     if (data) data.alias = data?.slug;
@@ -50,7 +50,8 @@ export default async function VisaAliasPage({
   const { alias } = params;
   const resCategory = (await VisaApi.getCategory(alias)) as any;
   const detailCate = resCategory?.payload.data;
-  return !detailCate ? (
+  const hasCategory = detailCate && !Array.isArray(detailCate) && !!detailCate.id;
+  return !hasCategory ? (
     <VisaDetail alias={alias} />
   ) : (
     <VisaCategory alias={alias} />

@@ -1,5 +1,5 @@
 "use client";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrencyFromVnd, isVndCurrency } from "@/lib/formatters";
 import { displayProductPrice, toSnakeCase } from "@/utils/Helper";
 import { isEmpty } from "lodash";
 import { Fragment } from "react";
@@ -20,30 +20,33 @@ export default function DisplayPrice({
 }) {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const shouldConvertVndToUsd = language === "en" && isVndCurrency(currency);
+  const formattedPrice = shouldConvertVndToUsd
+    ? formatCurrencyFromVnd(price, language)
+    : !isEmpty(currency)
+      ? displayProductPrice(price, currency)
+      : formatCurrencyFromVnd(price, language);
+
   return (
     <Fragment>
       {price > 0 ? (
-        <>
+        <span className="inline-flex items-baseline gap-1">
           {!isEmpty(textPrefix) && (
-            <span className="mr-1">{t(toSnakeCase(textPrefix as string))}</span>
+            <span className="text-slate-700 text-sm lg:text-base font-medium">{t(toSnakeCase(textPrefix as string))}</span>
           )}
           <span
             className={cn(
-              "text-[#F27145] font-semibold text-base lg:text-xl",
+              "text-[#F27145] font-semibold text-base lg:text-xl whitespace-nowrap",
               className
             )}
           >
-            {!isEmpty(currency) ? (
-              <>{displayProductPrice(price, currency)}</>
-            ) : (
-              <>{formatCurrency(price, language)}</>
-            )}
+            {formattedPrice}
           </span>
-        </>
+        </span>
       ) : (
         <span
           className={cn(
-            "text-[#F27145] font-semibold text-base lg:text-xl",
+            "text-[#F27145] font-semibold text-base lg:text-xl whitespace-nowrap",
             className
           )}
         >

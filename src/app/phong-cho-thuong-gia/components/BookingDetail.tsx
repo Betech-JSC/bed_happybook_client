@@ -116,7 +116,7 @@ export default function BookingDetail() {
                 setQrCodeGenerated(true);
                 setVietQrData(receiptResult?.data);
               } else {
-                throw new Error("Không thể tạo receipt");
+                throw new Error(t("khong_the_tao_receipt"));
               }
             })
             .catch((error) => {
@@ -279,6 +279,20 @@ export default function BookingDetail() {
   const totalDiscount = data?.total_discount || 0;
   const finalTotal = totalPrice + onePayFee - totalDiscount;
 
+  const paidStatuses = [
+    "paid",
+    "processing",
+    "completed",
+    "approved",
+    "done",
+    "price_confirmed",
+    "issued",
+    "issuing",
+    "paid_book_failed",
+    "pending_refund"
+  ];
+  const isPaidOrder = isPaid || paidStatuses.includes(data?.status?.toLowerCase() ?? "");
+
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
       <div className="w-full md:w-7/12 lg:w-8/12 mt-4 md:mt-0">
@@ -296,14 +310,14 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {pollingStatus && !isPaid && (
+        {pollingStatus && !isPaidOrder && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
             <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
             <p>{t("dang_cho_thanh_toan")}</p>
           </div>
         )}
 
-        {isPaid && (
+        {isPaidOrder && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
             <p>
               {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
@@ -572,7 +586,7 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid && (
+        {!isPaidOrder && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
@@ -598,7 +612,7 @@ export default function BookingDetail() {
                     <div className="font-normal">
                       <Image
                         src="/payment-method/transfer.svg"
-                        alt="Chuyển khoản"
+                        alt={t("chuyen_khoan")}
                         width={24}
                         height={24}
                         className="w-6 h-6"
@@ -701,7 +715,7 @@ export default function BookingDetail() {
           {data?.product?.image_location && (
             <Image
               src={`${data?.product?.image_url}/${data?.product?.image_location}`}
-              alt={data?.product?.name || "Phòng chờ thương gia"}
+              alt={data?.product?.name || t("phong_cho_thuong_gia")}
               width={600}
               height={450}
               className="w-full h-auto rounded-t-2xl hover:scale-110 ease-in duration-300"
@@ -713,7 +727,7 @@ export default function BookingDetail() {
             {renderTextContent(data?.product?.name)}
           </h2>
           <div className="mt-4 pt-4 border-t border-t-gray-200">
-            {onePayFee > 0 && (
+            {onePayFee > 0 && !isPaidOrder && (
               <div className="flex justify-between mb-1 text-red-600 font-semibold">
                 <span className="text-sm">
                   {t("phi_xu_ly_giao_dich_the_quoc_te")}
@@ -724,10 +738,21 @@ export default function BookingDetail() {
                 />
               </div>
             )}
-            {totalDiscount > 0 ? (
+            {/* Removed direct discount row as requested */}
+            {isPaidOrder ? (
+              totalPrice > 0 && (
+                <div className="w-full flex justify-between">
+                  <DisplayPrice
+                    textPrefix={t("tong_cong")}
+                    price={totalPrice}
+                    currency={data?.product?.currency}
+                  />
+                </div>
+              )
+            ) : (((data?.product?.discount_price || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
-                price={totalPrice}
-                totalDiscount={totalDiscount}
+                price={finalTotal}
+                originalPrice={totalPrice + (data?.product?.discount_price || 0) + onePayFee}
                 currency={data?.product?.currency}
               />
             ) : (
@@ -740,7 +765,7 @@ export default function BookingDetail() {
                   />
                 </div>
               )
-            )}
+            ))}
           </div>
         </div>
       </div>

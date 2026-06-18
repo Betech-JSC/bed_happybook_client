@@ -172,12 +172,15 @@ const headerStaticText: string[] = [
   "Tour nội địa",
   "Tour quốc tế",
   "Combo",
+  "Combo tiết kiệm",
   "Visa",
   "Bảo hiểm",
   "Định cư",
   "Tiện ích",
   "Dịch vụ tiện ích",
   "Dịch vụ tại sân bay",
+  "Dịch vụ đưa đón sân bay",
+  "Hỗ trợ xuất nhập cảnh nhanh, rút ngắn thời gian chờ hàng.",
   "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
   "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Dành cho bạn",
@@ -191,10 +194,6 @@ const headerStaticText: string[] = [
   "Điều khoản sử dụng",
   "Chính sách bảo mật",
   "Bắt đầu hành trình với HappyBook",
-  "Tiện ích",
-  "Dịch vụ tiện ích",
-  "Hỗ trợ làm thủ tục nhanh chóng tại sân bay",
-  "Bảo vệ sức khỏe và tài sản cho toàn bộ chuyến đi của bạn.",
   "Sim du lịch",
   "Internet toàn cầu với mức giá rẻ hơn data roaming & không cần tháo lắp sim",
   "Tận hưởng không gian thư giãn, cao cấp và tiện nghi trước chuyến hành trình sắp tới.",
@@ -202,7 +201,18 @@ const headerStaticText: string[] = [
   "Sim du lịch quốc tế",
   "Kết nối eSIM tiện lợi cho mọi hành trình khám phá Việt Nam.",
   "Phủ sóng đa quốc gia, nhận QR nhanh và online ngay khi hạ cánh.",
-  "Flight Radar",
+  "Đón tiễn ưu tiên (FastTrack)",
+  "Xuất cảnh",
+  "Nhập cảnh",
+  "Tiễn xuất cảnh",
+  "Hỗ trợ làm thủ tục xuất cảnh nhanh, rút ngắn thời gian chờ đợi.",
+  "Đón nhập cảnh",
+  "Hỗ trợ làm thủ tục nhập cảnh nhanh, rút ngắn thời gian chờ đợi.",
+  "Vé tàu",
+  "Thuê xe",
+  "Đưa đón sân bay",
+  "Xe riêng đưa đón tận nơi, đúng giờ, chu đáo 24/7.",
+  "Check tình trạng chuyến",
   "Tra cứu và theo dõi tình trạng chuyến bay trực tuyến",
 ];
 
@@ -232,6 +242,9 @@ const footerStaticText: string[] = [
 ];
 
 const generalStaticText: string[] = [
+  "Tìm du thuyền",
+  "Nơi đi",
+  "Địa điểm",
   "Chọn điểm đi",
   "Chọn điểm đến",
   "Từ",
@@ -298,6 +311,7 @@ const generalStaticText: string[] = [
   "Thông tin đơn hàng",
   "Tôi muốn xuất hóa đơn",
   "Fast track",
+  "Tìm phòng chờ thương gia",
   "Phòng chờ thương gia",
   "Mã đơn hàng",
   "Gói dữ liệu",
@@ -385,6 +399,7 @@ const generalStaticText: string[] = [
   "Vui lòng nhập giờ đáp cho dịch vụ đón sân bay",
   "Vui lòng nhập giờ bay cho dịch vụ tiễn sân bay",
 ];
+
 const tourStaticText: string[] = [
   "Tour & Trải nghiệm",
   "Chơi Hè Thả Ga, Không Lo Về Giá",
@@ -392,6 +407,7 @@ const tourStaticText: string[] = [
   "Tour Du Lịch Nước Ngoài Cao Cấp",
   "Trải Nghiệm Thế Giới, Khám Phá Bản Thân",
 ];
+
 const comboStaticText2: string[] = [
   "Khám phá các điểm đến HOT",
   "Các combo du lịch ưu đãi",
@@ -438,6 +454,7 @@ const authStaticText: string[] = [
   "Lịch sử đặt vé máy bay",
   "Lịch sử đặt hàng",
   "Đổi mật khẩu",
+  "Kho voucher",
   "Đăng xuất",
   "Mật khẩu",
   "Nhập lại mật khẩu",
@@ -703,6 +720,57 @@ const simDuLichStaticText: string[] = [
   "Điểm đến quốc tế",
 ];
 
+const businessLoungeStaticText: string[] = [
+  // === Search & Filter (listing page) ===
+  "Quốc gia",
+  "Thành phố",
+  "Sân bay",
+  "Tìm theo quốc gia, thành phố, tỉnh, tên sân bay hoặc tên phòng chờ...",
+  "Bỏ lọc",
+  "Không tìm thấy",
+  "Thu gọn",
+  "Bộ lọc",
+  "Xóa tất cả",
+  // === Home Search Widget ===
+  "Sân bay khởi hành",
+  "Ngày đến sân bay",
+  "Số khách",
+  "người lớn",
+  "Trẻ em",
+  "Tìm phòng chờ",
+  "Tìm hoặc chọn sân bay...",
+  "Không tìm thấy sân bay",
+  "Chọn ngày",
+  "Phòng chờ trong nước",
+  "Phòng chờ quốc tế",
+  // === Detail page ===
+  "Thứ Hai",
+  "Thứ Ba",
+  "Thứ Tư",
+  "Thứ Năm",
+  "Thứ Sáu",
+  "Thứ Bảy",
+  "Chủ nhật",
+  "Mỗi ngày",
+  "Lịch trình",
+  "Ẩn bớt",
+  "Ảnh Phòng chờ thương gia",
+  // === Checkout ===
+  "Vui lòng chọn ít nhất 1 loại vé",
+  "Địa điểm",
+  "Ngày sử dụng",
+  "Thông tin sử dụng",
+  "Sân bay & Ngày sử dụng",
+  "Giảm",
+  // === Booking Detail ===
+  "Không thể tạo receipt",
+  "Chuyển khoản",
+  // === Search Form ===
+  "Vui lòng chọn đầy đủ thông tin",
+  // === Home section ===
+  "Phòng chờ thương gia Happy Book",
+];
+
 export const unifiedStaticText: string[] = [
   ...homeStaticText,
   ...headerStaticText,
@@ -734,6 +802,7 @@ export const unifiedStaticText: string[] = [
   ...aboutUsStaticText,
   ...flightStaticText,
   ...simDuLichStaticText,
+  ...businessLoungeStaticText,
 ];
 
 const staticTextTranslationCache = new Map<string, Promise<Record<string, string>>>();
@@ -757,12 +826,28 @@ const applyAmusementTicketAliases = (
       "Tìm vé vui chơi & hoạt động"
       : "Search attraction tickets";
 
+  // Override EN cho các chuỗi Google dịch vụng:
+  //  - "Tìm phòng chờ" -> "Find the waiting room" (sai ngữ cảnh hàng không) => "Search lounges"
+  //  - "Quốc gia" -> "Nation" => "Country" (nhãn bộ lọc tự nhiên hơn)
+  //  - "Xóa tất cả" -> "Delete all" => "Clear all"
+  // VI giữ nguyên qua fallback.
+  const manualEnOverrides: Record<string, string> =
+    lang === "vi"
+      ? {}
+      : {
+          tim_phong_cho: "Search lounges",
+          quoc_gia: "Country",
+          xoa_tat_ca: "Clear all",
+          giam: "Discount",
+        };
+
   return {
     ...translations,
     ve_vui_choi: amusementLabel,
     ve_vui_choi_hoat_dong: amusementLabel,
     tim_ve_vui_choi: searchLabel,
     tim_ve_vui_choi_hoat_dong: searchLabel,
+    ...manualEnOverrides,
   };
 };
 

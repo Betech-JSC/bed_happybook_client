@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronRight, Headphones } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getEsimVariantMoney } from "../../lib/esim";
 import type { EsimPackageView, EsimVariantView } from "../../lib/esim";
 import { useSimDuLichStaticText } from "../../hooks/useSimDuLichStaticText";
 
@@ -34,6 +35,7 @@ type Props = {
   formatCheckoutAmount: (amount: number, currency?: string) => string;
   onPay: () => void;
   onContinue: () => void;
+  totalDiscount: number;
 };
 
 export default function CheckoutSummarySidebar({
@@ -57,9 +59,11 @@ export default function CheckoutSummarySidebar({
   formatCheckoutAmount,
   onPay,
   onContinue,
+  totalDiscount,
 }: Props) {
   const { language } = useLanguage();
   const t = useSimDuLichStaticText(language === "en" ? "en" : "vi");
+  const money = getEsimVariantMoney(selectedVariant, language);
 
   return (
     <div className="lg:col-span-4 lg:sticky lg:top-[140px] space-y-6 h-fit">
@@ -89,7 +93,14 @@ export default function CheckoutSummarySidebar({
           <div className="space-y-3">
             <div className="flex justify-between text-slate-600 font-medium">
               <span>{t("Tạm tính")}</span>
-              <span>{formatCheckoutAmount(subtotal, currency)}</span>
+              <div className="flex flex-col items-end">
+                {money.originalPrice > money.price && (
+                  <span className="text-xs text-slate-400 line-through">
+                    {formatCheckoutAmount(money.originalPrice * qty, currency)}
+                  </span>
+                )}
+                <span>{formatCheckoutAmount(subtotal, currency)}</span>
+              </div>
             </div>
             <div className="flex justify-between text-slate-600 font-medium">
               <span
@@ -114,6 +125,14 @@ export default function CheckoutSummarySidebar({
                 </span>
               </div>
             ) : null}
+            {totalDiscount > 0 ? (
+              <div className="flex justify-between text-emerald-600 font-semibold">
+                <span>{t("Khuyến mãi")}</span>
+                <span>
+                  -{formatCheckoutAmount(totalDiscount, currency)}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           <div className="pt-6 border-t border-slate-100 space-y-6">
@@ -121,6 +140,14 @@ export default function CheckoutSummarySidebar({
               <span className="text-sm font-bold text-slate-500 mb-1">
                 {t("Số tiền thanh toán:")}
               </span>
+              {money.originalPrice > money.price && (
+                <span className="text-sm font-normal text-slate-400 line-through mb-1">
+                  {formatCheckoutAmount(
+                    (money.originalPrice * qty) + (money.serviceFeeAmount * qty) + (paymentMethod === "onepay" ? (checkoutData?.payment_fee_amount ?? 0) : 0),
+                    currency
+                  )}
+                </span>
+              )}
               <span className="text-3xl font-bold text-[#F27145]">
                 {formatCheckoutAmount(total, currency)}
               </span>
@@ -179,7 +206,12 @@ export default function CheckoutSummarySidebar({
         <Headphones className="w-5 h-5" />
         <span>
           {t("Cần hỗ trợ?")}{" "}
-          <a className="text-[#1E40AF] font-bold hover:underline" href="#">
+          <a
+            className="text-[#1E40AF] font-bold hover:underline"
+            href="https://zalo.me/2451421179976954585/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {t("Chat với chúng tôi")}
           </a>
         </span>

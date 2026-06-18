@@ -81,7 +81,7 @@ export default async function Hotel() {
   const contentPage = (await PageApi.getContent("khach-san", language))?.payload
     ?.data as any;
   const provincePopular =
-    ((await BannerApi.getBannerPage("hotel-tpphobien"))?.payload
+    ((await BannerApi.getBannerPage("hotel-tpphobien", language))?.payload
       ?.data as any) ?? [];
 
   const metadata = getMetadata(contentPage);

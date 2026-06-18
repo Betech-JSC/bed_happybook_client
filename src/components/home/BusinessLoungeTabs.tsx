@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useMemo } from "react";
 import Image from "next/image";
 import {
   Carousel,
@@ -15,18 +15,56 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 export default function BusinessLoungeTabs({
   title,
-  defaultCategoryAlias,
   data,
 }: {
   title: string;
   defaultCategoryAlias?: string;
   data: any;
 }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
+  const [visited, setVisited] = useState<number[]>([0]);
   const [linkCategory, setLinkCategory] = useState<string>(
-    data?.[0]?.alias ? `/phong-cho-thuong-gia/${data?.[0]?.alias}` : "/phong-cho-thuong-gia"
+    "/phong-cho-thuong-gia?country[]=Việt Nam"
   );
+
+  // Phân loại phòng chờ thành "Trong nước" và "Quốc tế"
+  const tabData = useMemo(() => {
+    if (!data || data.length === 0) return [];
+
+    // Gom tất cả sản phẩm phòng chờ từ API
+    const allProducts = data.reduce((acc: any[], cat: any) => {
+      return acc.concat(cat.products || []);
+    }, []);
+
+    const trongNuoc = allProducts.filter((p: any) => {
+      const country = p.business_lounge?.country || "";
+      return ["vietnam", "viet nam", "việt nam"].includes(
+        country.toLowerCase().trim()
+      );
+    });
+
+    const quocTe = allProducts.filter((p: any) => {
+      const country = p.business_lounge?.country || "";
+      return !["vietnam", "viet nam", "việt nam"].includes(
+        country.toLowerCase().trim()
+      );
+    });
+
+    return [
+      {
+        name: t("phong_cho_trong_nuoc"),
+        alias: "trong-nuoc",
+        products: trongNuoc,
+      },
+      {
+        name: t("phong_cho_quoc_te"),
+        alias: "quoc-te",
+        products: quocTe,
+      },
+    ];
+  }, [data, t]);
+
   return (
     <Fragment>
       <div className="flex justify-between">
@@ -44,7 +82,7 @@ export default function BusinessLoungeTabs({
           <Image
             className=" hover:scale-110 ease-in duration-300"
             src="/icon/chevron-right.svg"
-            alt="Mũi tên xem tất cả"
+            alt={t("xem_tat_ca")}
             width={20}
             height={20}
           />
@@ -56,13 +94,12 @@ export default function BusinessLoungeTabs({
         className="lg:hidden inline-flex bg-[#EFF8FF] mt-3 py-3 px-4 rounded-lg space-x-3"
       >
         <button className="text-[#175CD3] font-medium">
-          {" "}
           {t("xem_tat_ca")}
         </button>
         <Image
           className=" hover:scale-110 ease-in duration-300"
           src="/icon/chevron-right.svg"
-          alt="Mũi tên xem tất cả"
+          alt={t("xem_tat_ca")}
           width={20}
           height={20}
         />
@@ -72,23 +109,31 @@ export default function BusinessLoungeTabs({
           <Carousel
             opts={{
               align: "start",
-              loop: true,
+              loop: false,
             }}
           >
             <CarouselContent>
-              {data.map(
+              {tabData.map(
                 (tab: any, index: number) =>
                   tab.name && (
                     <CarouselItem key={index} className="basis-1/8">
                       <button
                         className={`h-10 text-sm border-solid border-2 lg:text-base px-3 lg:px-4 py-2 rounded-[8px] duration-300
-                     ${activeTab === index
-                            ? "bg-[#1570EF] hover:bg-blue-700 text-white"
-                            : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
-                          }`}
+                     ${
+                       activeTab === index
+                         ? "bg-[#1570EF] hover:bg-blue-700 text-white"
+                         : "text-gray-500 border-[#D0D5DD] hover:bg-gray-100"
+                     }`}
                         onClick={() => {
                           setActiveTab(index);
-                          setLinkCategory(`/phong-cho-thuong-gia/${tab.alias}`);
+                          setLinkCategory(
+                            tab.alias === "trong-nuoc"
+                              ? "/phong-cho-thuong-gia?country[]=Việt Nam"
+                              : "/phong-cho-thuong-gia"
+                          );
+                          if (!visited.includes(index)) {
+                            setVisited([...visited, index]);
+                          }
                         }}
                         data-translate="true"
                       >
@@ -101,19 +146,24 @@ export default function BusinessLoungeTabs({
           </Carousel>
         </div>
         <div>
-          {data.map((category: any, index: number) => {
-            if (index !== activeTab) return null;
+          {tabData.map((category: any, index: number) => {
+            const isVisited = visited.includes(index);
+            if (!isVisited) return null;
             return (
-              <div key={index}>
+              <div
+                key={index}
+                className={index === activeTab ? "block" : "hidden"}
+              >
                 <Carousel
                   opts={{
                     align: "start",
                     loop: true,
                   }}
-                  className={`${category.products.length > 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                    }`}
+                  className={`${
+                    category.products.length > 0
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
                 >
                   <CarouselContent>
                     {category.products.map((item: any, subIndex: number) => (
@@ -121,44 +171,86 @@ export default function BusinessLoungeTabs({
                         key={subIndex}
                         className="basis-10/12 md:basis-5/12 lg:basis-1/4"
                       >
-                        <div className="relative overflow-hidden border-solid border-2 border-[#EAECF0] rounded-2xl bg-white group">
-                          <div className="relative overflow-hidden aspect-[1/1]">
+                        <div
+                          key={item.id}
+                          className="flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-150 hover:shadow-lg transition-shadow duration-300"
+                        >
+                          <div className="w-full relative overflow-hidden">
                             <Link href={`/phong-cho-thuong-gia/${item.slug}`}>
-                              {item.image_url && item.image_location ? (
+                              {item.image_location ? (
                                 <Image
-                                  className="lg:group-hover:scale-105 ease-in-out w-full h-full duration-300 cursor-pointer object-cover"
+                                  className="hover:scale-105 ease-in duration-300 cursor-pointer w-full h-[200px] object-cover bg-gray-100"
                                   src={`${item.image_url}/${item.image_location}`}
-                                  alt={item.name || "Image"}
-                                  width={320}
-                                  height={320}
+                                  alt={item.name}
+                                  width={360}
+                                  height={240}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 360px"
+                                  loading="lazy"
                                 />
                               ) : (
-                                <div
-                                  className="lg:group-hover:scale-105 ease-in-out w-full h-full duration-300 cursor-pointer object-cover bg-gray-200 flex items-center justify-center text-gray-500"
-                                >
+                                <div className="flex w-full h-[200px] bg-slate-200 justify-center items-center font-semibold text-lg">
                                   No Image
+                                </div>
+                              )}
+                              {(item.business_lounge?.iata_code || (item.discount_price > 0 && item.price > 0)) && (
+                                <div className="absolute top-3 left-3 flex gap-1.5 items-center">
+                                  {item.business_lounge?.iata_code && (
+                                    <span className="bg-black/55 text-white text-[12px] font-bold tracking-wide px-2.5 py-1 rounded-md backdrop-blur-sm">
+                                      {item.business_lounge.iata_code}
+                                    </span>
+                                  )}
+                                  {item.discount_price > 0 && item.price > 0 && (
+                                    <span className="bg-[#F27145] text-white text-[12px] font-bold px-2 py-1 rounded-md shadow-sm" data-translate="true">
+                                      {t("giam")} {Math.round((item.discount_price / item.price) * 100)}%
+                                    </span>
+                                  )}
                                 </div>
                               )}
                             </Link>
                           </div>
-                          <div className="py-3 px-4 h-fit ">
-                            <Link
-                              href={`/phong-cho-thuong-gia/${item.slug}`}
-                              className={`text-base font-semibold ${styles.text_hover_default}`}
-                            >
-                              <h3
-                                data-translate="true"
-                                className="h-12 line-clamp-2"
+                          <div className="py-3 px-4 flex-1 flex flex-col justify-between">
+                            <div>
+                              <Link
+                                href={`/phong-cho-thuong-gia/${item.slug}`}
+                                className={`text-base font-semibold ${styles.text_hover_default}`}
                               >
-                                {item.name}
-                              </h3>
-                            </Link>
-                            <div className="mt-2 text-end">
-                              <DisplayPrice
-                                textPrefix="Giá từ"
-                                price={item.min_price}
-                                currency={item?.currency}
-                              />
+                                <h3
+                                  data-translate="true"
+                                  className="h-12 line-clamp-2"
+                                >
+                                  {item.name}
+                                </h3>
+                              </Link>
+                            </div>
+                            <div className="mt-2 flex items-baseline justify-end gap-2.5 mt-auto">
+                              {(() => {
+                                const sale =
+                                  item.discount_price > 0 && item.price > 0
+                                    ? item.price - item.discount_price
+                                    : item.min_price || item.price || 0;
+                                const original =
+                                  item.discount_price > 0 && item.price > 0
+                                    ? item.price
+                                    : item.price > sale
+                                    ? item.price
+                                    : 0;
+                                return (
+                                  <Fragment>
+                                    {original > sale && (
+                                      <DisplayPrice
+                                        price={original}
+                                        currency={item?.currency}
+                                        className="!text-gray-400 !line-through !font-normal !text-[13px]"
+                                      />
+                                    )}
+                                    <DisplayPrice
+                                      price={sale}
+                                      currency={item?.currency}
+                                      className="!text-[#F27145] !font-extrabold !text-lg"
+                                    />
+                                  </Fragment>
+                                );
+                              })()}
                             </div>
                           </div>
                         </div>
@@ -169,10 +261,11 @@ export default function BusinessLoungeTabs({
                   <CarouselNext className="hidden lg:inline-flex" />
                 </Carousel>
                 <div
-                  className={`min-h-[100px] content-center text-center ${category.products.length <= 0 && activeTab === index
-                    ? "block visible"
-                    : "hidden invisible"
-                    }`}
+                  className={`min-h-[100px] content-center text-center ${
+                    category.products.length <= 0
+                      ? "block visible"
+                      : "hidden invisible"
+                  }`}
                 >
                   <p className="font-bold text-xl">
                     {t("thong_tin_dang_cap_nhat")}

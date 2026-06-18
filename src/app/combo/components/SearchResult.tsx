@@ -271,7 +271,7 @@ export default function SearchResult({
                     <div className="text-base text-end">
                       <DisplayPrice
                         price={item?.price - item?.discount_price}
-                        textPrefix={`${item?.discount_price > 0 ? "giá ưu đãi" : "chỉ từ"
+                        textPrefix={`${item?.discount_price > 0 ? "giá ưu đãi" : "Giá"
                           }`}
                       />
                     </div>
