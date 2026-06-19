@@ -108,6 +108,19 @@ export default function BookingDetail() {
       if (bookingData) {
         setData(bookingData);
         setLoading(false);
+
+        // Hậu cảnh: kiểm tra và xác thực lại trạng thái mới nhất từ server
+        if (bookingData.code) {
+          try {
+            const response = await BookingProductApi.getByCode(bookingData.code);
+            if (response?.payload?.data) {
+              setData(response.payload.data);
+              handleSessionStorage("set", "bookingData", response.payload.data);
+            }
+          } catch (error) {
+            console.error("Error verifying order status in background:", error);
+          }
+        }
         return;
       }
 
@@ -344,6 +357,35 @@ export default function BookingDetail() {
     "pending_refund"
   ];
   const isPaidOrder = isPaid || paidStatuses.includes(data?.status?.toLowerCase() ?? "");
+
+  const cancelledStatuses = ["failed", "cancelled"];
+  const isCancelledOrFailedOrder = cancelledStatuses.includes(data?.status?.toLowerCase() ?? "");
+
+  const getNewBookingUrl = (orderData: any) => {
+    const type = orderData?.product?.product_type;
+    switch (type) {
+      case "business-lounge":
+        return "/phong-cho-thuong-gia";
+      case "fast-track":
+        return "/fast-track";
+      case "tour":
+        return "/tours";
+      case "hotel":
+        return "/khach-san";
+      case "visa":
+        return "/visa";
+      case "dinhcu":
+        return "/dinh-cu";
+      case "combo":
+        return "/combo";
+      case "ticket":
+        return "/ve-vui-choi";
+      case "yacht":
+        return "/du-thuyen";
+      default:
+        return "/";
+    }
+  };
 
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
@@ -653,7 +695,7 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaidOrder && !isYacht && (
+        {!isPaidOrder && !isCancelledOrFailedOrder && !isYacht && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
@@ -808,6 +850,32 @@ export default function BookingDetail() {
               }
             />
           </form>
+        )}
+
+        {isCancelledOrFailedOrder && (
+          <div className="mt-6 bg-red-50 border border-red-200 rounded-xl p-6">
+            <div className="flex items-start space-x-3">
+              <svg className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h3 className="font-bold text-red-800 text-lg">
+                  {isEnglish ? "Booking Cancelled or Invalid" : "Đơn đặt chỗ đã bị hủy hoặc không hợp lệ"}
+                </h3>
+                <p className="text-red-700 mt-2 text-base leading-relaxed">
+                  {isEnglish 
+                    ? "This booking is no longer valid. This may happen if the applied promo voucher has been used in another transaction, or the booking has expired."
+                    : "Đơn đặt chỗ này không còn hiệu lực. Điều này có thể xảy ra nếu mã giảm giá áp dụng đã được sử dụng ở giao dịch khác, hoặc đơn hàng đã hết hạn thanh toán."}
+                </p>
+                <Link
+                  href={getNewBookingUrl(data)}
+                  className="inline-block bg-[#F27145] text-white font-bold px-6 py-2.5 rounded-lg text-center cursor-pointer text__default_hover mt-4 transition-all duration-200 shadow-md hover:bg-[#d95a32]"
+                >
+                  {isEnglish ? "Book Again" : "Đặt chỗ mới"}
+                </Link>
+              </div>
+            </div>
+          </div>
         )}
 
         {isPaidOrder && (
