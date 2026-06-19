@@ -47,6 +47,13 @@ const settingApi = {
       ].join(",")}`
     ),
   getCachedMetaSeo: getCachedMetaSeo,
+  getWelcomeSettings: () =>
+    http.get<any>(
+      `${path}?keys=welcome50k_vnd_discount_amount,welcome50k_usd_discount_amount,welcome10_fast-track_discount_percent,welcome10_yacht_discount_percent,welcome10_entertainment_ticket_discount_percent,welcome10_insurance_discount_percent,welcome10_visa_discount_percent`,
+      { cache: "no-store" },
+      10000,
+      0
+    ),
 };
 
 export { settingApi };
