@@ -142,11 +142,11 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   let dropdown: any = [];
   let fareData: any = [];
   if (data?.isEmailRecovery) {
-    totalPrice = data?.orderInfo?.total_price ?? 0;
+    totalPrice = Number(data?.orderInfo?.total_price ?? 0);
   } else if (data?.flights?.length) {
     data.flights.map((flightItem: any, index: number) => {
       fareData.push(flightItem);
-      totalPrice = flightItem.totalPrice;
+      totalPrice = Number(flightItem.totalPrice ?? 0);
       totalAdt = flightItem.numberAdt;
       totalChd = flightItem.numberChd;
       totalInf = flightItem.numberInf;
@@ -215,8 +215,8 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
             setData({
               orderInfo: {
                 sku: info.order_code,
-                total_price: info.total_price ?? 0,
-                total_discount: info.total_discount ?? 0,
+                total_price: Number(info.total_price ?? 0),
+                total_discount: Number(info.total_discount ?? 0),
                 booking_deadline: info.deadline,
                 payment_method: info.payment_method,
               },
@@ -310,7 +310,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
   useEffect(() => {
     if (selectedPaymentMethod === "onepay") {
       setOnePayFee(
-        (totalPrice + totalBaggages.price - data?.orderInfo?.total_discount) *
+        (totalPrice + totalBaggages.price - Number(data?.orderInfo?.total_discount ?? 0)) *
         0.025
       );
     } else {
@@ -1021,7 +1021,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                 : "0đ"}
             </p>
           </div>
-          {data?.orderInfo?.total_discount > 0 && (
+          {Number(data?.orderInfo?.total_discount ?? 0) > 0 && (
             <div className="flex flex-col gap-2 mt-4 pt-3 border-t border-t-gray-200">
               <div className="flex justify-between">
                 <span
@@ -1054,7 +1054,7 @@ export default function BookingDetail1G({ airports }: BookingDetailProps) {
                 totalPrice +
                 onePayFee +
                 totalBaggages.price -
-                data?.orderInfo?.total_discount
+                Number(data?.orderInfo?.total_discount ?? 0)
               )}
             </p>
           </div>

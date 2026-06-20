@@ -90,7 +90,6 @@ export default function HotTourItem({ tour, isHot }: any) {
           <div>
             <DisplayPrice
               price={tour.price ? tour.price.replace(/,/g, "") : 0}
-              textPrefix="chỉ từ"
             />
           </div>
         </div>

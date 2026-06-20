@@ -59,6 +59,13 @@ export default function CheckOutForm({
   const toaStrMsg = toastMessages[language as "vi" | "en"];
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [errTicketOption, setErrTicketOption] = useState<string>("");
+  // Guests (adults / children) — informational only, does NOT affect price.
+  const [adults, setAdults] = useState<number>(
+    Math.max(1, Number(searchParams.get("adults")) || 1),
+  );
+  const [childrenCount, setChildrenCount] = useState<number>(
+    Math.max(0, Number(searchParams.get("children")) || 0),
+  );
   const [flightNumber, setFlightNumber] = useState<string>("");
   const [flightTime, setFlightTime] = useState<string>("");
   const [flightArrivalTime, setFlightArrivalTime] = useState<string>("");
@@ -169,6 +176,12 @@ export default function CheckOutForm({
     setSchemaForm(CheckOutYachtSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
 
+  useEffect(() => {
+    if (language) {
+      registerLocale(language, datePickerLocale[language as keyof typeof datePickerLocale]);
+    }
+  }, [language]);
+
   const {
     register,
     handleSubmit,
@@ -215,6 +228,8 @@ export default function CheckOutForm({
           departure_date: format(data.depart_date, "yyyy-MM-dd"),
           ticket_option_id: ticketOptionId,
           tickets: ticketsBooking,
+          adults,
+          children: childrenCount,
           ...(flightNumber && { flight_number: flightNumber }),
           ...(flightTime && { flight_time: flightTime }),
           ...(flightArrivalTime && { flight_arrival_time: flightArrivalTime }),
@@ -304,10 +319,17 @@ export default function CheckOutForm({
     );
   };
 
-  const totalPrice = tickets.reduce(
+  const ticketsPrice = tickets.reduce(
     (sum, ticket) => sum + ticket.quantity * ticket.price,
     0,
   );
+
+  // Áp tỷ lệ giảm giá lên giá vé cho KHỚP giá hiển thị từng vé (giá cuối = giá đã giảm).
+  const productDiscountRatio =
+    product?.discount_price > 0 && product?.price > 0
+      ? product.discount_price / product.price
+      : 0;
+  const totalPrice = Math.max(0, ticketsPrice * (1 - productDiscountRatio));
 
   return (
     <div className="flex flex-col-reverse items-start lg:flex-row lg:space-x-8 lg:mt-4 pb-8">
@@ -331,16 +353,28 @@ export default function CheckOutForm({
                   <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
                     <Image
                       src="/icon/calendar.svg"
-                      alt="Lịch"
+                      alt="Calendar"
                       width={18}
                       height={18}
                     />
                   </div>
                   <h3 className="text-lg font-bold text-gray-800" data-translate="true">
-                    {t("Ngày sử dụng")}
+                    {t("Thông tin sử dụng")}
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="relative group">
+                    <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-500">
+                      <span data-translate="true">{t("Sân bay")}</span>
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      value={product?.business_lounge?.airport_name || ""}
+                      className="text-sm w-full border border-gray-200 rounded-xl pt-6 pb-2.5 bg-gray-100/80 indent-3.5 cursor-not-allowed font-medium text-gray-700 focus:outline-none"
+                    />
+                  </div>
+
                   <Controller
                     name="depart_date"
                     control={control}
@@ -351,7 +385,7 @@ export default function CheckOutForm({
                           htmlFor="depart_date"
                         >
                           <span data-translate={true}>
-                            {t("Chọn ngày")}
+                            {t("Ngày sử dụng")}
                           </span>
                           <span className="text-red-500 ml-0.5">*</span>
                         </label>
@@ -393,6 +427,40 @@ export default function CheckOutForm({
                   </h3>
                 </div>
 
+                {/* Guests: adults / children — informational only, no price impact */}
+                <div className="mb-4 p-3 border border-gray-200 rounded-xl">
+                  <div className="font-semibold text-sm text-gray-800 mb-3">{t("so_khach")}</div>
+                  <div className="flex flex-col gap-3">
+                    {[
+                      { label: t("nguoi_lon"), value: adults, set: setAdults, min: 1 },
+                      { label: t("tre_em"), value: childrenCount, set: setChildrenCount, min: 0 },
+                    ].map((row) => (
+                      <div key={row.label} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-700">{row.label}</span>
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => row.set((v: number) => Math.max(row.min, v - 1))}
+                            disabled={row.value <= row.min}
+                            className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            −
+                          </button>
+                          <span className="w-6 text-center font-semibold">{row.value}</span>
+                          <button
+                            type="button"
+                            onClick={() => row.set((v: number) => Math.min(20, v + 1))}
+                            disabled={row.value >= 20}
+                            className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {errTicketOption && (
                   <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl mb-3">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -431,11 +499,38 @@ export default function CheckOutForm({
                           </p>
                         )}
                         <div className="mt-2">
-                          <DisplayPrice
-                            className="!font-bold !text-base text-primary"
-                            price={ticket.price}
-                            currency={product?.currency}
-                          />
+                          {(() => {
+                            const hasDiscount =
+                              product?.discount_price > 0 && product?.price > 0;
+                            if (hasDiscount) {
+                              const discountRatio = product.discount_price / product.price;
+                              const sale = ticket.price * (1 - discountRatio);
+                              const original = ticket.price;
+                              return (
+                                <div className="flex items-baseline gap-2">
+                                  {original > sale && (
+                                    <DisplayPrice
+                                      price={original}
+                                      currency={product?.currency}
+                                      className="!text-gray-400 !line-through !font-normal !text-[13px]"
+                                    />
+                                  )}
+                                  <DisplayPrice
+                                    price={sale}
+                                    currency={product?.currency}
+                                    className="!text-[#F27145] !font-extrabold !text-base lg:text-lg"
+                                  />
+                                </div>
+                              );
+                            }
+                            return (
+                              <DisplayPrice
+                                className="!font-bold !text-base text-primary"
+                                price={ticket.price}
+                                currency={product?.currency}
+                              />
+                            );
+                          })()}
                           <span className="text-xs text-gray-400 ml-1" data-translate="true">/ {t("khách")}</span>
                         </div>
                       </div>
@@ -471,73 +566,7 @@ export default function CheckOutForm({
               </div>
             </div>
 
-            {/* Flight Information - Optional */}
-            <div className="mt-6 pt-5 border-t border-dashed border-gray-200">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-cyan-50 flex items-center justify-center flex-shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#0891B2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <polyline points="3.29 7 12 12 20.71 7" stroke="#0891B2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <line x1="12" y1="22" x2="12" y2="12" stroke="#0891B2" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800" data-translate="true">
-                    {t("Thông tin chuyến bay")}
-                  </h3>
-                  <p className="text-xs text-gray-500" data-translate="true">Tùy chọn</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Số hiệu chuyến bay</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={flightNumber}
-                    onChange={(e) => setFlightNumber(e.target.value)}
-                    placeholder="VD: VN123"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                </div>
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Giờ bay</span>
-                  </label>
-                  <input
-                    type="time"
-                    value={flightTime}
-                    onChange={handleFlightTimeChange}
-                    step="60"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                </div>
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Giờ đáp</span>
-                  </label>
-                  <input
-                    type="time"
-                    value={flightArrivalTime}
-                    onChange={handleFlightArrivalTimeChange}
-                    step="60"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                </div>
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Ngày bay</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={flightDate}
-                    onChange={(e) => setFlightDate(e.target.value)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                </div>
-              </div>
-            </div>
+
 
             <div className="mt-6 pt-5 border-t border-dashed border-gray-200">
               <div className="flex items-center gap-2 mb-4">
@@ -704,11 +733,38 @@ export default function CheckOutForm({
               <div key={item.id} className="mt-2 flex justify-between">
                 <span data-translate="true">{item.title}</span>
                 <div className="font-bold text-sm flex gap-1">
-                  <DisplayPrice
-                    className={`!font-bold !text-sm text-black`}
-                    price={item.price}
-                    currency={product?.currency}
-                  />
+                  {(() => {
+                    const hasDiscount =
+                      product?.discount_price > 0 && product?.price > 0;
+                    if (hasDiscount) {
+                      const discountRatio = product.discount_price / product.price;
+                      const sale = item.price * (1 - discountRatio);
+                      const original = item.price;
+                      return (
+                        <div className="flex items-baseline gap-1.5">
+                          {original > sale && (
+                            <DisplayPrice
+                              price={original}
+                              currency={product?.currency}
+                              className="!text-gray-400 !line-through !font-normal !text-[11px]"
+                            />
+                          )}
+                          <DisplayPrice
+                            price={sale}
+                            currency={product?.currency}
+                            className="!text-[#F27145] !font-bold !text-sm"
+                          />
+                        </div>
+                      );
+                    }
+                    return (
+                      <DisplayPrice
+                        className={`!font-bold !text-sm text-black`}
+                        price={item.price}
+                        currency={product?.currency}
+                      />
+                    );
+                  })()}
                   <span>{` x ${item.quantity}`}</span>
                 </div>
               </div>
@@ -726,17 +782,17 @@ export default function CheckOutForm({
             />
           </div>
           <div className="mt-4">
-            {totalDiscount > 0 ? (
+            {((product?.discount_price || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
-                price={totalPrice}
-                totalDiscount={totalDiscount}
+                price={Math.max(0, totalPrice - totalDiscount)}
+                originalPrice={ticketsPrice}
                 currency={product?.currency}
               />
             ) : (
               totalPrice > 0 && (
                 <div className="w-full flex justify-between">
                   <DisplayPrice
-                    textPrefix={"Tổng cộng"}
+                    textPrefix={t("tong_cong")}
                     price={totalPrice}
                     currency={product?.currency}
                   />

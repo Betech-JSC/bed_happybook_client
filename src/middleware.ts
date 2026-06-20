@@ -8,6 +8,7 @@ const protectedRoutes = [
   "/lich-su-dat-ve",
   "/lich-su-dat-hang",
   "/thay-doi-mat-khau",
+  "/kho-voucher",
 ];
 
 export async function middleware(request: NextRequest) {
@@ -39,5 +40,6 @@ export const config = {
     "/lich-su-dat-hang",
     "/lich-su-dat-hang/:path*",
     "/thay-doi-mat-khau",
+    "/kho-voucher",
   ],
 };

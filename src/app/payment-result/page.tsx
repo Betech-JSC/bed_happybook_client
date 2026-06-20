@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
   const [ready, setReady] = useState(false);
@@ -18,6 +19,29 @@ export default function PaymentResultPage() {
   const orderCode = searchParams.get("id") || searchParams.get("order_code") || "";
 
   const isSuccess = status === "success";
+
+  useEffect(() => {
+    if (!isSuccess && orderCode) {
+      fetch("/api/auth/payment/cancel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ orderCode }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            console.error("Failed to cancel payment order status:", res.status);
+          } else {
+            console.log("Successfully cancelled payment order status:", orderCode);
+          }
+        })
+        .catch((err) => {
+          console.error("Error cancelling payment order status:", err);
+        });
+    }
+  }, [isSuccess, orderCode]);
+
   const isEnglish = paymentMethod === "paypal";
 
   const successTitle = isEnglish ? "Payment successful!" : "Thanh toán thành công!";

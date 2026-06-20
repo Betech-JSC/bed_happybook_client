@@ -67,6 +67,24 @@ export default function CheckOutForm({
     "personal",
   );
   const [guestList, setGuestList] = useState<any[]>([]);
+  // Tổng số khách (gộp chung người lớn và trẻ em)
+  const [adults, setAdults] = useState<number>(
+    Math.max(1, (Number(searchParams.get("adults")) || 1) + (Number(searchParams.get("children")) || 0)),
+  );
+  const childrenCount = 0;
+
+  const handleAdultsChange = (value: React.SetStateAction<number>) => {
+    setAdults((prev) => {
+      const newVal = typeof value === "function" ? (value as Function)(prev) : value;
+      setTickets((prevTickets) =>
+        prevTickets.map((t, index) =>
+          index === 0 ? { ...t, quantity: newVal } : t
+        )
+      );
+      return newVal;
+    });
+  };
+
   const [flightNumber, setFlightNumber] = useState<string>("");
   const [flightTime, setFlightTime] = useState<string>("");
   const [flightArrivalTime, setFlightArrivalTime] = useState<string>("");
@@ -131,6 +149,44 @@ export default function CheckOutForm({
     );
   }, [product, ticketOptionId]);
 
+  const childPolicy = useMemo(() => {
+    const desc = (product?.business_lounge?.description || "") + "\n" + (product?.business_lounge?.note || "");
+    if (!desc) return "";
+
+    const matches: string[] = [];
+    const elementRegex = /<li[^>]*>([\s\S]*?)<\/li>|<p[^>]*>([\s\S]*?)<\/p>/gi;
+    let match;
+    const childKeywords = /trẻ\s+em|trẻ\s+nhỏ|trẻ\s+sơ\s+sinh|em\s+bé|child|children|infant/i;
+    
+    while ((match = elementRegex.exec(desc)) !== null) {
+      const content = match[1] || match[2] || "";
+      if (childKeywords.test(content)) {
+        const cleanContent = content
+          .replace(/<\/?(?:strong|b|span|a)[^>]*>/gi, "")
+          .trim();
+        if (cleanContent) {
+          matches.push(cleanContent);
+        }
+      }
+    }
+
+    if (matches.length > 0) {
+      return matches.join("<br/>");
+    }
+
+    const labels =
+      "Phụ phí trẻ em|Children(?:'s)? surcharge|Child(?:ren)? (?:surcharge|policy|fee)";
+    const block = desc.match(
+      new RegExp(`(?:${labels})[\\s\\S]*?(?:</li>|</p>|$)`, "i"),
+    );
+    if (!block) return "";
+    const body = block[0]
+      .replace(/<\/?(?:li|p|strong|b|span)[^>]*>/gi, "") // bỏ thẻ bọc
+      .replace(new RegExp(`^\\s*(?:${labels})\\s*:?\\s*`, "i"), "") // bỏ nhãn + ':'
+      .trim();
+    return body;
+  }, [product]);
+
   // Xác định loại dịch vụ (đón hay tiễn) dựa trên tên option
   const serviceType = useMemo(() => {
     const optionName = (yachtOptionSelected?.name || "").toLowerCase();
@@ -145,13 +201,13 @@ export default function CheckOutForm({
     CheckOutYachtSchema(messages, generateInvoice),
   );
   const dayMap: Record<string, string> = {
-    monday: "Thứ Hai",
-    tuesday: "Ba",
-    wednesday: "Tư",
-    thursday: "Năm",
-    friday: "Sáu",
-    saturday: "Bảy",
-    sunday: "Chủ nhật",
+    monday: t("thu_hai"),
+    tuesday: t("thu_ba"),
+    wednesday: t("thu_tu"),
+    thursday: t("thu_nam"),
+    friday: t("thu_sau"),
+    saturday: t("thu_bay"),
+    sunday: t("chu_nhat"),
   };
   const daysOpeningRaw = product?.business_lounge?.opening_days;
   const daysOpening = Array.isArray(daysOpeningRaw)
@@ -161,7 +217,7 @@ export default function CheckOutForm({
       : [];
   const isFullWeek = daysOpening.length === 7;
   const displayDaysOpening = isFullWeek
-    ? "Mỗi ngày"
+    ? t("moi_ngay")
     : daysOpening
       .map((day: any) => dayMap[day])
       .filter(Boolean)
@@ -179,6 +235,13 @@ export default function CheckOutForm({
 
   useEffect(() => {
     if (product?.ticket_prices) {
+      // Tính toán số lượng khách ban đầu từ searchParams để tránh dependency warning với adults
+      const initialAdults = Math.max(
+        1,
+        (Number(searchParams.get("adults")) || 1) +
+          (Number(searchParams.get("children")) || 0)
+      );
+
       const initialTickets: Ticket[] = [...product.ticket_prices]
         .sort((a, b) => {
           return (b?.day_price || 0) - (a?.day_price || 0);
@@ -190,12 +253,12 @@ export default function CheckOutForm({
           price: item?.day_price || 0,
           name: `number_${item.id}`,
           minQty: 0,
-          quantity: index ? 0 : 1,
+          quantity: index ? 0 : initialAdults,
         }));
 
       setTickets(initialTickets);
     }
-  }, [product?.ticket_prices]);
+  }, [product?.ticket_prices, searchParams]);
 
   // Business Lounge does not have additional fees
   useEffect(() => {
@@ -205,6 +268,12 @@ export default function CheckOutForm({
   useEffect(() => {
     setSchemaForm(CheckOutYachtSchema(messages, generateInvoice));
   }, [generateInvoice, messages]);
+
+  useEffect(() => {
+    if (language) {
+      registerLocale(language, datePickerLocale[language as keyof typeof datePickerLocale]);
+    }
+  }, [language]);
 
   const {
     register,
@@ -231,23 +300,14 @@ export default function CheckOutForm({
       (item: any) => item.quantity > 0,
     );
     if (isEmpty(isSelectedTicketOption)) {
-      setErrTicketOption("Vui lòng chọn ít nhất 1 loại vé");
+      setErrTicketOption(t("vui_long_chon_it_nhat_1_loai_ve"));
       toast.error(toaStrMsg.formNotValid);
       return;
     } else {
       setErrTicketOption("");
     }
 
-    // Validate giờ bay/giờ đáp dựa trên dịch vụ
-    if (serviceType.isDonService && !flightArrivalTime) {
-      toast.error(t("vui_long_nhap_gio_dap_cho_dich_vu_don_san_bay"));
-      return;
-    }
 
-    if (serviceType.isTienService && !flightTime) {
-      toast.error(t("vui_long_nhap_gio_bay_cho_dich_vu_tien_san_bay"));
-      return;
-    }
 
     try {
       setLoading(true);
@@ -269,6 +329,8 @@ export default function CheckOutForm({
           ticket_option_id: ticketOptionId,
           tickets: ticketsBooking,
           customer_type: customerType, // Luôn gửi customer_type (mặc định là "personal")
+          adults,
+          children: childrenCount,
           ...(shouldSendGuestList && { guest_list: guestList }),
           ...(flightNumber && { flight_number: flightNumber }),
           ...(flightTime && { flight_time: flightTime }),
@@ -377,9 +439,13 @@ export default function CheckOutForm({
   const updateCount = (id: number, delta: number) => {
     setErrTicketOption("");
     setTickets((prev) =>
-      prev.map((ticket) => {
+      prev.map((ticket, index) => {
         if (ticket.id === id) {
           const newQty = Math.max(ticket.minQty, ticket.quantity + delta);
+          // Đồng bộ ngược lại adults khi thay đổi số lượng vé
+          if (index === 0) {
+            setAdults(newQty);
+          }
           return { ...ticket, quantity: newQty };
         }
         return ticket;
@@ -506,8 +572,16 @@ export default function CheckOutForm({
     }
   }, [shouldApplyNightTimeSurcharge, additionalFees, selectedAdditionalFees, isBusinessLounge]);
 
-  // Tổng chi phí = giá vé + phụ phí (phụ phí giờ bay thêm đã được tự động tích vào additional fees nếu đáp ứng điều kiện)
-  const totalPrice = ticketsPrice + additionalFeesPrice;
+  // Tổng chi phí: áp tỷ lệ giảm giá (discount_price/price) lên giá vé cho KHỚP với
+  // giá từng vé đang hiển thị, rồi cộng phụ phí. Giá cuối = giá đã giảm.
+  const productDiscountRatio =
+    product?.discount_price > 0 && product?.price > 0
+      ? product.discount_price / product.price
+      : 0;
+  const totalPrice = Math.max(
+    0,
+    ticketsPrice * (1 - productDiscountRatio) + additionalFeesPrice
+  );
   // const totalPrice = 2000; => test case
 
   // Đồng bộ guestList với số lượng vé đã chọn
@@ -590,46 +664,129 @@ export default function CheckOutForm({
             >
               {yachtOptionSelected?.name}
             </p>
+
+            {/* Số khách (gộp chung người lớn và trẻ em) */}
+            <div className="mt-2 py-4 border-b">
+              <div className="font-semibold text-base mb-3">{t("so_khach")}</div>
+              <div className="flex flex-col gap-3 max-w-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">{t("so_khach")}</span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleAdultsChange((v: number) => Math.max(1, v - 1))}
+                      disabled={adults <= 1}
+                      className="w-7 h-7 rounded-sm border border-blue-700 text-blue-700 text-xl font-medium flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <span className="mb-1">-</span>
+                    </button>
+                    <span className="w-8 text-center text-18 text-blue-700 font-bold">
+                      {adults}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleAdultsChange((v: number) => Math.min(20, v + 1))}
+                      disabled={adults >= 20}
+                      className="w-7 h-7 rounded-sm border border-blue-700 text-blue-700 text-xl font-medium flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <span className="mb-1">+</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {childPolicy && (
+                <div className="mt-4 p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-xl flex items-start space-x-3 text-gray-800 text-sm max-w-md shadow-sm transition-all duration-200">
+                  <div className="w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Info className="w-3.5 h-3.5 text-blue-600" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-gray-900 block mb-1">
+                      {language === "vi" ? "Chính sách trẻ em:" : "Child Policy:"}
+                    </span>
+                    <span className="text-gray-700 leading-relaxed" data-translate="true" dangerouslySetInnerHTML={{ __html: childPolicy }} />
+                    <p className="text-xs text-gray-500 mt-2 italic border-t border-gray-100 pt-1.5">
+                      {language === "vi" 
+                        ? "* Trẻ em không thuộc diện miễn phí cần tính vào tổng số lượng khách bằng cách tăng số lượng khách ở trên."
+                        : "* Children not eligible for free entry must be included in the total guest count above."}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="mt-1">
               {tickets.map(
                 (ticket, index: number) =>
                   ticket.price > 0 && (
                     <div
                       key={index}
-                      className="flex space-x-2 justify-between items-start py-4 border-b last:border-none"
+                      className="flex space-x-2 justify-between items-center py-4 border-b last:border-none"
                     >
-                      <div>
+                      <div className="flex-1 min-w-0 pr-4">
                         <div
-                          className="font-semibold text-base"
+                          className="font-semibold text-base text-gray-900 truncate"
                           data-translate="true"
                         >
                           {renderTextContent(ticket.title)}
                         </div>
-                        <div
-                          className="text-sm text-gray-500 mt-1"
-                          data-translate="true"
-                        >
-                          {!isEmpty(ticket.description)
-                            ? renderTextContent(ticket.description)
-                            : ""}
-                        </div>
+                        {(() => {
+                          const desc = (ticket.description || "").trim().toLowerCase();
+                          const title = (ticket.title || "").trim().toLowerCase();
+                          const isDuplicate = !desc || desc === title || desc === "1 khách" || desc === "1 guest" || desc === "1 khach";
+                          if (isDuplicate) return null;
+                          return (
+                            <div
+                              className="text-sm text-gray-500 mt-1"
+                              data-translate="true"
+                            >
+                              {renderTextContent(ticket.description)}
+                            </div>
+                          );
+                        })()}
                       </div>
-                      <div className="flex items-start md:w-[30%] justify-between">
-                        <div>
-                          <DisplayPrice
-                            className={`!text-base mr-4 text-black !font-normal`}
-                            price={ticket.price}
-                            currency={product?.currency}
-                          />
+                      <div className="flex items-center gap-4 md:gap-8 flex-shrink-0 md:w-[35%] justify-between">
+                        <div className="text-end">
+                          {(() => {
+                            const hasDiscount =
+                              product?.discount_price > 0 && product?.price > 0;
+                            if (hasDiscount) {
+                              const discountRatio = product.discount_price / product.price;
+                              const sale = ticket.price * (1 - discountRatio);
+                              const original = ticket.price;
+                              return (
+                                <div className="flex items-baseline justify-end gap-2">
+                                  {original > sale && (
+                                    <DisplayPrice
+                                      price={original}
+                                      currency={product?.currency}
+                                      className="!text-gray-400 !line-through !font-normal !text-[13px]"
+                                    />
+                                  )}
+                                  <DisplayPrice
+                                    price={sale}
+                                    currency={product?.currency}
+                                    className="!text-[#F27145] !font-extrabold !text-base md:text-lg"
+                                  />
+                                </div>
+                              );
+                            }
+                            return (
+                              <DisplayPrice
+                                className={`!text-base text-black !font-normal`}
+                                price={ticket.price}
+                                currency={product?.currency}
+                              />
+                            );
+                          })()}
 
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-xs text-gray-400 mt-0.5">
                             {t("gia")} / {t("khach")}
                           </p>
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-1 bg-gray-50 p-0.5 rounded-sm border border-gray-200">
                           <button
                             type="button"
-                            className={`w-6 h-6 font-medium text-xl rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center
+                            className={`w-6 h-6 font-medium text-lg rounded-sm text-blue-700 bg-white hover:bg-gray-100 flex items-center justify-center transition-colors
                           ${ticket.quantity <= ticket.minQty
                                 ? "cursor-not-allowed opacity-50"
                                 : ""
@@ -637,15 +794,15 @@ export default function CheckOutForm({
                             onClick={() => updateCount(ticket.id, -1)}
                             disabled={ticket.quantity <= ticket.minQty}
                           >
-                            <span className="mb-1">-</span>
+                            <span className="mb-0.5">-</span>
                           </button>
-                          <span className="w-8 outline-none text-center text-18 text-blue-700 font-bold">
+                          <span className="w-8 outline-none text-center text-16 text-blue-700 font-bold">
                             {ticket.quantity}
                           </span>
 
                           <button
                             type="button"
-                            className={`w-6 h-6 text-xl font-medium rounded-sm border text-blue-700 bg-white border-blue-700 flex items-center justify-center 
+                            className={`w-6 h-6 text-lg font-medium rounded-sm text-blue-700 bg-white hover:bg-gray-100 flex items-center justify-center transition-colors 
                            ${ticket.quantity >= 20
                                 ? "cursor-not-allowed opacity-50"
                                 : ""
@@ -653,7 +810,7 @@ export default function CheckOutForm({
                             onClick={() => updateCount(ticket.id, 1)}
                             disabled={ticket.quantity >= 20}
                           >
-                            <span className="mb-1">+</span>
+                            <span className="mb-0.5">+</span>
                           </button>
                         </div>
                       </div>
@@ -749,84 +906,69 @@ export default function CheckOutForm({
             </div>
           )}
 
-          {/* Customer Type and Guest Information - Optional */}
+          {/* Thông tin sử dụng (Sân bay & Ngày sử dụng) */}
           <div className="mt-6 bg-white p-4 rounded-xl">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <Image
+                  src="/icon/calendar.svg"
+                  alt="Calendar"
+                  width={18}
+                  height={18}
+                />
+              </div>
+              <h3 className="text-lg font-bold text-gray-800" data-translate="true">
+                Thông tin sử dụng
+              </h3>
+            </div>
 
-
-            {/* Flight Information - Optional */}
-            <div className="mt-6 pt-4 border-t">
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-18 font-bold" data-translate="true">
-                  Thông tin chuyến bay
-                </p>
-                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                  Tùy chọn
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="relative group">
+                <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-500">
+                  <span data-translate="true">Sân bay</span>
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value={product?.business_lounge?.airport_name || ""}
+                  className="text-sm w-full border border-gray-200 rounded-xl pt-6 pb-2.5 bg-gray-100/80 indent-3.5 cursor-not-allowed font-medium text-gray-700 focus:outline-none"
+                />
               </div>
 
-
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Số hiệu chuyến bay</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={flightNumber}
-                    onChange={(e) => setFlightNumber(e.target.value)}
-                    placeholder="VD: VN123"
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                </div>
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Giờ bay</span>
-                    {serviceType.isTienService && (
-                      <span className="text-red-500 ml-1">*</span>
-                    )}
-                  </label>
-                  <input
-                    type="time"
-                    value={flightTime}
-                    onChange={handleFlightTimeChange}
-                    step="60"
-                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isTienService && !flightTime
-                      ? "border-red-300"
-                      : "border-gray-300"
-                      }`}
-                  />
-                </div>
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Giờ đáp</span>
-                    {serviceType.isDonService && (
-                      <span className="text-red-500 ml-1">*</span>
-                    )}
-                  </label>
-                  <input
-                    type="time"
-                    value={flightArrivalTime}
-                    onChange={handleFlightArrivalTimeChange}
-                    step="60"
-                    className={`text-sm w-full border rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5 ${serviceType.isDonService && !flightArrivalTime
-                      ? "border-red-300"
-                      : "border-gray-300"
-                      }`}
-                  />
-                </div>
-                <div className="relative">
-                  <label className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-600">
-                    <span data-translate="true">Ngày bay</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={flightDate}
-                    onChange={(e) => setFlightDate(e.target.value)}
-                    className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
-                  />
-                </div>
-              </div>
+              <Controller
+                name="depart_date"
+                control={control}
+                render={({ field }) => (
+                  <div className="relative group">
+                    <label
+                      className="absolute top-0 left-0 h-5 translate-y-1 translate-x-4 font-medium text-xs text-gray-500"
+                      htmlFor="depart_date"
+                    >
+                      <span data-translate="true">
+                        Ngày sử dụng
+                      </span>
+                      <span className="text-red-500 ml-0.5">*</span>
+                    </label>
+                    <DatePicker
+                      id="depart_date"
+                      dateFormat={"dd/MM/yyyy"}
+                      className="text-sm w-full border border-gray-200 rounded-xl pt-6 pb-2.5 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 indent-3.5 transition-all duration-200 bg-gray-50/50 hover:bg-white hover:border-gray-300"
+                      selected={field.value}
+                      onChange={(date: Date | null) => {
+                        if (date) {
+                          field.onChange(date);
+                        }
+                      }}
+                      minDate={new Date()}
+                      locale={
+                        datePickerLocale[
+                        language as keyof typeof datePickerLocale
+                        ]
+                      }
+                    />
+                  </div>
+                )}
+              />
             </div>
           </div>
 
@@ -846,8 +988,8 @@ export default function CheckOutForm({
                     id="fullName"
                     type="text"
                     {...register("full_name")}
-                    placeholder="Nhập họ và tên"
-                    title="Nhập họ và tên"
+                    placeholder={t("nhap_ho_va_ten")}
+                    title={t("nhap_ho_va_ten")}
                     className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                   />
                   {errors.full_name && (
@@ -895,10 +1037,10 @@ export default function CheckOutForm({
                           id="phone"
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="Nhập số điện thoại"
+                          placeholder={t("nhap_so_dien_thoai")}
                           error={errors.phone?.message}
                           defaultCountry="VN"
-                          label="Số điện thoại"
+                          label={t("so_dien_thoai")}
                           required
                         />
                       )}
@@ -915,9 +1057,9 @@ export default function CheckOutForm({
                     <input
                       id="email"
                       type="text"
-                      title="Nhập email"
+                      title={t("nhap_email")}
                       {...register("email")}
-                      placeholder="Nhập email"
+                      placeholder={t("nhap_email")}
                       className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none focus:border-primary indent-3.5"
                     />{" "}
                     {errors.email && (
@@ -928,7 +1070,7 @@ export default function CheckOutForm({
               </div>
               <div className="mt-4">
                 <textarea
-                  placeholder="Yêu cầu đặc biệt"
+                  placeholder={t("yeu_cau_dac_biet")}
                   {...register("note")}
                   className="w-full border border-gray-300 rounded-lg h-28 focus:outline-none focus:border-primary indent-3.5 pt-2.5"
                 ></textarea>
@@ -943,7 +1085,7 @@ export default function CheckOutForm({
             <LoadingButton
               style="mt-6"
               isLoading={loading}
-              text="Thanh toán"
+              text={t("thanh_toan")}
               disabled={loading}
             />
           </div>
@@ -962,7 +1104,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/clock.svg"
-                alt="Thời gian"
+                alt={t("thoi_gian")}
                 width={18}
                 height={18}
               />
@@ -974,7 +1116,7 @@ export default function CheckOutForm({
               <Image
                 className="w-4 h-4 mt-1"
                 src="/icon/marker-pin-01.svg"
-                alt="Địa điểm"
+                alt={t("dia_diem")}
                 width={18}
                 height={18}
               />
@@ -986,11 +1128,38 @@ export default function CheckOutForm({
               <div key={item.id} className="mt-2 flex justify-between">
                 <span data-translate="true">{item.title}</span>
                 <div className="font-bold text-sm flex gap-1">
-                  <DisplayPrice
-                    className={`!font-bold !text-sm text-black`}
-                    price={item.price}
-                    currency={product?.currency}
-                  />
+                  {(() => {
+                    const hasDiscount =
+                      product?.discount_price > 0 && product?.price > 0;
+                    if (hasDiscount) {
+                      const discountRatio = product.discount_price / product.price;
+                      const sale = item.price * (1 - discountRatio);
+                      const original = item.price;
+                      return (
+                        <div className="flex items-baseline gap-1.5">
+                          {original > sale && (
+                            <DisplayPrice
+                              price={original}
+                              currency={product?.currency}
+                              className="!text-gray-400 !line-through !font-normal !text-[11px]"
+                            />
+                          )}
+                          <DisplayPrice
+                            price={sale}
+                            currency={product?.currency}
+                            className="!text-[#F27145] !font-bold !text-sm"
+                          />
+                        </div>
+                      );
+                    }
+                    return (
+                      <DisplayPrice
+                        className={`!font-bold !text-sm text-black`}
+                        price={item.price}
+                        currency={product?.currency}
+                      />
+                    );
+                  })()}
                   <span>{` x ${item.quantity}`}</span>
                 </div>
               </div>
@@ -1019,6 +1188,7 @@ export default function CheckOutForm({
                 </div>
               </>
             )}
+            {/* Removed direct discount row as requested */}
           </div>
           <div className="pt-4 border-t">
             <VoucherProgram
@@ -1032,17 +1202,17 @@ export default function CheckOutForm({
             />
           </div>
           <div className="mt-4">
-            {totalDiscount > 0 ? (
+            {((product?.discount_price || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
-                price={totalPrice}
-                totalDiscount={totalDiscount}
+                price={Math.max(0, totalPrice - totalDiscount)}
+                originalPrice={ticketsPrice + additionalFeesPrice}
                 currency={product?.currency}
               />
             ) : (
               totalPrice > 0 && (
                 <div className="w-full flex justify-between">
                   <DisplayPrice
-                    textPrefix={"Tổng cộng"}
+                    textPrefix={t("tong_cong")}
                     price={totalPrice}
                     currency={product?.currency}
                   />

@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { toast } from "react-hot-toast";
 import { notFound, useRouter } from "next/navigation";
@@ -42,6 +42,20 @@ export default function BookingDetail() {
   const [vietQrData, setVietQrData] = useState<any>({});
   const [transferInformation, setTransferInformation] = useState<any>(null);
   const [pollingStatus, setPollingStatus] = useState<boolean>(false);
+  const paymentWindowRef = useRef<Window | null>(null);
+  const paidStatuses = useMemo(() => [
+    "paid",
+    "processing",
+    "completed",
+    "approved",
+    "done",
+    "price_confirmed",
+    "issued",
+    "issuing",
+    "paid_book_failed",
+    "pending_refund"
+  ], []);
+  const isPaidOrder = isPaid || paidStatuses.includes(data?.status?.toLowerCase() ?? "");
 
   const {
     register,
@@ -82,17 +96,49 @@ export default function BookingDetail() {
     };
   }, [data?.code, isPaid, pollingStatus]);
 
+  // Monitor payment window close to auto-cancel and release welcome voucher
+  useEffect(() => {
+    let interval: any;
+    if (pollingStatus && !isPaidOrder && data?.code) {
+      interval = setInterval(() => {
+        if (paymentWindowRef.current && paymentWindowRef.current.closed) {
+          clearInterval(interval);
+          setPollingStatus(false);
+          fetch("/api/auth/payment/cancel", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderCode: data.code }),
+          })
+            .then((res) => {
+              if (res.ok) {
+                toast.success(t("Thanh toán đã được hủy và giải phóng mã giảm giá."));
+                router.refresh ? router.refresh() : window.location.reload();
+              }
+            })
+            .catch((err) => {
+              console.error("Error cancelling payment order status:", err);
+            });
+        }
+      }, 1500);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [pollingStatus, isPaidOrder, data?.code, router, t]);
+
   useEffect(() => {
     if (selectedPaymentMethod === "onepay") {
-      const totalPrice = data?.total_price || 0;
-      const totalDiscount = data?.total_discount || 0;
+      const totalPrice = Number(data?.total_price ?? 0);
+      const totalDiscount = Number(data?.total_discount ?? 0);
       setOnePayFee((totalPrice - totalDiscount) * 0.025);
     } else {
       setOnePayFee(0);
       if (selectedPaymentMethod === 'vietqr' && !qrCodeGenerated && data?.code) {
         // Sử dụng trực tiếp bookingData từ sessionStorage để tạo receipt
-        const totalPrice = data?.total_price || 0;
-        const totalDiscount = data?.total_discount || 0;
+        const totalPrice = Number(data?.total_price ?? 0);
+        const totalDiscount = Number(data?.total_discount ?? 0);
         const total = totalPrice - totalDiscount;
         // const total = 2000; => test case
         const orderCode = data?.code;
@@ -116,7 +162,7 @@ export default function BookingDetail() {
                 setQrCodeGenerated(true);
                 setVietQrData(receiptResult?.data);
               } else {
-                throw new Error("Không thể tạo receipt");
+                throw new Error(t("khong_the_tao_receipt"));
               }
             })
             .catch((error) => {
@@ -194,7 +240,8 @@ export default function BookingDetail() {
 
             if (paymentResult?.success && paymentResult?.payment_url) {
               // Redirect đến trang thanh toán OnePay (Mở tab mới)
-              window.open(paymentResult.payment_url, '_blank');
+              const payWin = window.open(paymentResult.payment_url, '_blank');
+              paymentWindowRef.current = payWin;
               setPollingStatus(true);
               toast.success(t("da_mo_trang_thanh_toan_o_tab_moi"));
             } else {
@@ -220,6 +267,35 @@ export default function BookingDetail() {
       toast.error(errorMessage);
     } finally {
       setLoadingSubmitForm(false);
+    }
+  };
+
+  const [isCancellingOrder, setIsCancellingOrder] = useState<boolean>(false);
+
+  const handleCancelOrder = async () => {
+    if (!data?.code) return;
+    if (confirm(t("Bạn có chắc chắn muốn hủy đặt dịch vụ này không?"))) {
+      try {
+        setIsCancellingOrder(true);
+        const res = await fetch("/api/auth/payment/cancel", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderCode: data.code }),
+        });
+        if (res.ok) {
+          toast.success(t("Hủy đơn hàng thành công và giải phóng mã giảm giá."));
+          router.refresh ? router.refresh() : window.location.reload();
+        } else {
+          toast.error(t("Không thể hủy đặt dịch vụ. Vui lòng liên hệ hỗ trợ."));
+        }
+      } catch (err) {
+        console.error("Error cancelling order:", err);
+        toast.error(t("Có lỗi xảy ra khi hủy đặt dịch vụ."));
+      } finally {
+        setIsCancellingOrder(false);
+      }
     }
   };
 
@@ -275,9 +351,11 @@ export default function BookingDetail() {
   }
   if (!data) notFound();
 
-  const totalPrice = data?.total_price || 0;
-  const totalDiscount = data?.total_discount || 0;
+  const totalPrice = Number(data?.total_price ?? 0);
+  const totalDiscount = Number(data?.total_discount ?? 0);
   const finalTotal = totalPrice + onePayFee - totalDiscount;
+
+
 
   return (
     <div className="flex flex-col-reverse items-start md:flex-row md:space-x-8 lg:mt-4 pb-8">
@@ -296,14 +374,14 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {pollingStatus && !isPaid && (
+        {pollingStatus && !isPaidOrder && (
           <div className="mt-6 bg-blue-50 text-blue-700 font-bold px-4 py-3 rounded w-full text-base border border-blue-200 flex items-center space-x-3">
             <span className="loader_spiner !w-5 !h-5 !border-blue-500 !border-t-blue-200"></span>
             <p>{t("dang_cho_thanh_toan")}</p>
           </div>
         )}
 
-        {isPaid && (
+        {isPaidOrder && (
           <div className="mt-6 bg-white text-green-700 font-bold px-4 py-3 rounded w-full text-base">
             <p>
               {t("happybook_da_nhan_duoc_khoan_thanh_toan_thanh_cong_cho_don_hang")}
@@ -572,7 +650,7 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {!isPaid && (
+        {!isPaidOrder && (
           <form id="frmPayment" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <p className="font-bold text-18">
@@ -598,7 +676,7 @@ export default function BookingDetail() {
                     <div className="font-normal">
                       <Image
                         src="/payment-method/transfer.svg"
-                        alt="Chuyển khoản"
+                        alt={t("chuyen_khoan")}
                         width={24}
                         height={24}
                         className="w-6 h-6"
@@ -657,37 +735,49 @@ export default function BookingDetail() {
                 vietQrData={vietQrData}
                 order={{
                   sku: data?.code,
-                  total_price: data?.total_price,
-                  total_discount: data?.total_discount,
+                  total_price: Number(data?.total_price ?? 0),
+                  total_discount: Number(data?.total_discount ?? 0),
                 }}
                 isPaid={isPaid}
                 setIsPaid={(paid) => setIsPaid(paid)}
               />
             )}
-            <LoadingButton
-              style={
-                loadingSubmitForm ||
-                  isGeneratingPaymentUrl ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
-                  ? "mt-6 bg-gray-300 disabled:cursor-not-allowed"
-                  : "mt-6"
-              }
-              isLoading={loadingSubmitForm || isGeneratingPaymentUrl}
-              text={
-                isGeneratingPaymentUrl
-                  ? t("dang_tao_link_thanh_toan")
-                  : selectedPaymentMethod === "vietqr" && !isPaid
-                    ? t("dang_cho_thanh_toan")
-                    : t("thanh_toan")
-              }
-              disabled={
-                loadingSubmitForm ||
-                isGeneratingPaymentUrl ||
-                !selectedPaymentMethod ||
-                (selectedPaymentMethod === "vietqr" && !isPaid)
-              }
-            />
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 mt-6">
+              <div className="flex-1">
+                <LoadingButton
+                  style={
+                    loadingSubmitForm ||
+                      isGeneratingPaymentUrl ||
+                      !selectedPaymentMethod ||
+                      (selectedPaymentMethod === "vietqr" && !isPaid)
+                      ? "w-full bg-gray-300 disabled:cursor-not-allowed"
+                      : "w-full"
+                  }
+                  isLoading={loadingSubmitForm || isGeneratingPaymentUrl}
+                  text={
+                    isGeneratingPaymentUrl
+                      ? t("dang_tao_link_thanh_toan")
+                      : selectedPaymentMethod === "vietqr" && !isPaid
+                        ? t("dang_cho_thanh_toan")
+                        : t("thanh_toan")
+                  }
+                  disabled={
+                    loadingSubmitForm ||
+                    isGeneratingPaymentUrl ||
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
+                  }
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleCancelOrder}
+                disabled={isCancellingOrder || loadingSubmitForm || isGeneratingPaymentUrl}
+                className="flex-1 border border-red-500 text-red-500 hover:bg-red-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-200 py-2.5 rounded-lg text-center font-semibold text-15 cursor-pointer transition-colors"
+              >
+                {isCancellingOrder ? t("dang_huy") : t("Hủy đặt dịch vụ")}
+              </button>
+            </div>
           </form>
         )}
       </div>
@@ -701,7 +791,7 @@ export default function BookingDetail() {
           {data?.product?.image_location && (
             <Image
               src={`${data?.product?.image_url}/${data?.product?.image_location}`}
-              alt={data?.product?.name || "Phòng chờ thương gia"}
+              alt={data?.product?.name || t("phong_cho_thuong_gia")}
               width={600}
               height={450}
               className="w-full h-auto rounded-t-2xl hover:scale-110 ease-in duration-300"
@@ -713,7 +803,7 @@ export default function BookingDetail() {
             {renderTextContent(data?.product?.name)}
           </h2>
           <div className="mt-4 pt-4 border-t border-t-gray-200">
-            {onePayFee > 0 && (
+            {onePayFee > 0 && !isPaidOrder && (
               <div className="flex justify-between mb-1 text-red-600 font-semibold">
                 <span className="text-sm">
                   {t("phi_xu_ly_giao_dich_the_quoc_te")}
@@ -724,10 +814,21 @@ export default function BookingDetail() {
                 />
               </div>
             )}
-            {totalDiscount > 0 ? (
+            {/* Removed direct discount row as requested */}
+            {isPaidOrder ? (
+              totalPrice > 0 && (
+                <div className="w-full flex justify-between">
+                  <DisplayPrice
+                    textPrefix={t("tong_cong")}
+                    price={totalPrice}
+                    currency={data?.product?.currency}
+                  />
+                </div>
+              )
+            ) : (((Number(data?.product?.discount_price) || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
-                price={totalPrice}
-                totalDiscount={totalDiscount}
+                price={finalTotal}
+                originalPrice={totalPrice + (Number(data?.product?.discount_price) || 0) + onePayFee}
                 currency={data?.product?.currency}
               />
             ) : (
@@ -740,7 +841,7 @@ export default function BookingDetail() {
                   />
                 </div>
               )
-            )}
+            ))}
           </div>
         </div>
       </div>

@@ -71,7 +71,7 @@ export default function CompoItem({ data }: any) {
           <div>
             <DisplayPrice
               price={data.price - data.discount_price}
-              textPrefix={`${data.discount_price > 0 ? "giá ưu đãi" : "chỉ từ"
+              textPrefix={`${data.discount_price > 0 ? "giá ưu đãi" : "Giá"
                 }`}
             />
           </div>

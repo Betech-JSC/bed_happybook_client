@@ -31,7 +31,8 @@ const ProductBusinessLoungeApi = {
       10000,
       0
     ),
-  getOptionsFilter: () => http.get<any>(`${path}/options-filter`),
+  getOptionsFilter: (query: string = "") =>
+    http.get<any>(`${path}/options-filter${query}`),
 };
 
 export { ProductBusinessLoungeApi };

@@ -103,7 +103,7 @@ export default function TourItem({ tour }: any) {
               ))}
           </div>
           <div>
-            <DisplayPrice price={tour.price} textPrefix="chỉ từ" />
+            <DisplayPrice price={tour.price} />
           </div>
         </div>
       </div>

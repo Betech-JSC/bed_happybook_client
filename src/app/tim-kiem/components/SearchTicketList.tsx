@@ -88,7 +88,7 @@ export default function SearchTicketList({ tickets }: any) {
                   </Link>
                   <div className="mt-2 text-end">
                     <DisplayPrice
-                      textPrefix={"chỉ từ"}
+                      textPrefix="Giá"
                       price={item.minPrice}
                       currency={item?.currency}
                     />

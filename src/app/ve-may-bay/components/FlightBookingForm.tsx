@@ -33,7 +33,7 @@ import { datePickerLocale } from "@/constants/language";
 import { toastMessages, validationMessages } from "@/lib/messages";
 import { useUser } from "@/contexts/UserContext";
 import { isEmpty, isNumber } from "lodash";
-import VoucherProgram from "@/components/product/components/VoucherProgram";
+// import VoucherProgram from "@/components/product/components/VoucherProgram";
 import { HttpError } from "@/lib/error";
 import type { FlightBookFlightResponse } from "@/types/flightBooking";
 import {
@@ -2841,7 +2841,7 @@ export default function FlightBookForm({ airportsData }: any) {
                     : "0đ"}
                 </p>
               </div>
-              <div className="pt-4 border-t">
+              {/* <div className="pt-4 border-t">
                 <VoucherProgram
                   totalPrice={finalPrice}
                   onApplyVoucher={handleApplyVoucher}
@@ -2851,7 +2851,7 @@ export default function FlightBookForm({ airportsData }: any) {
                   onSearch={handleSearch}
                   isSearching={searchingVouchers}
                 />
-              </div>
+              </div> */}
               <div className="border-t border-t-gray-200">
                 {totalDiscount > 0 && (
                   <div>

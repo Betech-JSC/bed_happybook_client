@@ -48,15 +48,61 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   return getMetadata(contentPage);
 }
 
-export default async function ProductBusinessLounge() {
-  const optionsFilter = (await ProductBusinessLoungeApi.getOptionsFilter())?.payload
-    ?.data as any;
+const PAGE_SIZE = 12;
 
+function toArr(v: string | string[] | undefined): string[] {
+  if (!v) return [];
+  return Array.isArray(v) ? v : [v];
+}
+
+export default async function ProductBusinessLounge({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
   const language = await getServerLang();
-  const contentPage = (await PageApi.getContent("business-lounge", language))
-    ?.payload?.data as any;
+
+  // Pre-fill từ homepage widget (e.g. ?airport[]=Sân bay Tân Sơn Nhất)
+  const preAirport = toArr(searchParams["airport[]"] ?? searchParams["airport"]);
+  const preCity = toArr(searchParams["city[]"] ?? searchParams["city"]);
+  const preCountry = toArr(searchParams["country[]"] ?? searchParams["country"]);
+
+  const hasPreFilter = preAirport.length > 0 || preCity.length > 0 || preCountry.length > 0;
+
+  const filterQuery = () => {
+    const p = new URLSearchParams({ page: "1", per_page: String(PAGE_SIZE) });
+    preAirport.forEach((a) => p.append("airport[]", a));
+    preCity.forEach((c) => p.append("city[]", c));
+    preCountry.forEach((c) => p.append("country[]", c));
+    return "?" + p.toString();
+  };
+
+  // Tải song song: bộ lọc + trang 1 danh sách (SSR) + nội dung trang
+  const [optionsRes, initialRes, contentRes] = await Promise.all([
+    ProductBusinessLoungeApi.getOptionsFilter(hasPreFilter ? filterQuery() : ""),
+    ProductBusinessLoungeApi.search(filterQuery()),
+    PageApi.getContent("business-lounge", language),
+  ]);
+
+  const optionsFilter = optionsRes?.payload?.data as any;
+  const initialData = (initialRes?.payload?.data as any) ?? {};
+  const contentPage = contentRes?.payload?.data as any;
   const metadata = getMetadata(contentPage);
   const t = await getServerT();
+
+  // JSON-LD ItemList cho danh sách (SEO) — trang đầu render sẵn server-side
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: (metadata.title as string) || "Phòng chờ thương gia",
+    numberOfItems: initialData?.total ?? 0,
+    itemListElement: (initialData?.items ?? []).map((it: any, i: number) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${pageUrl(BlogTypes.BUSINESS_LOUNGE, true)}/${it.slug}`,
+      name: it.name,
+    })),
+  };
   return (
     <SeoSchema
       metadata={metadata}
@@ -86,8 +132,19 @@ export default async function ProductBusinessLounge() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+          />
           <Suspense>
-            <Search optionsFilter={optionsFilter} />
+            <Search
+              optionsFilter={optionsFilter}
+              initialItems={initialData?.items ?? []}
+              initialLastPage={initialData?.last_page ?? 1}
+              initialTotal={initialData?.total ?? 0}
+              pageSize={PAGE_SIZE}
+              initialSel={{ country: preCountry, city: preCity, airport: preAirport }}
+            />
           </Suspense>
         </div>
       </div>

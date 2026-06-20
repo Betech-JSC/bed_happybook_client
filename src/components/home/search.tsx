@@ -17,6 +17,7 @@ const SearchTour = dynamic(() => import("@/app/tours/components/Search"), { ssr:
 const SearchYacht = dynamic(() => import("@/app/du-thuyen/components/SearchForm"), { ssr: false });
 const SearchAmusement = dynamic(() => import("@/app/ve-vui-choi/components/SearchForm"), { ssr: false });
 const SearchInsurance = dynamic(() => import("@/app/bao-hiem/components/SearchForm"), { ssr: false });
+const LoungeSearchWidget = dynamic(() => import("@/app/phong-cho-thuong-gia/components/LoungeSearchWidget"), { ssr: false });
 
 function ComboSearchForm({ locations }: { locations: any[] }) {
   const { t } = useTranslation();
@@ -119,15 +120,15 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="relative z-[1] hidden lg:block">
+    <div className="relative z-20 hidden lg:block pointer-events-none">
       <div className="lg:h-[800px] lg:px-[50px] xl:px-[80px] sm:px-3 pt-[210px] max__screen">
         <h2 className="text-3xl text-white font-bold text-center mb-12 relative top-[-40px]">
           {t("bat_dau_hanh_trinh_voi_happy_book")}
         </h2>
-        <div className="min-h-[192px] h-fit pt-[42px] p-6 mx-auto bg-white rounded-lg shadow-lg relative max-w-[1100px]">
-          <div className="absolute -top-[52px] left-1/2 -translate-x-1/2 flex flex-col items-center w-full max-w-[960px] min-w-[820px] gap-1 bg-[#000000] p-2 rounded-3xl shadow-lg z-10">
+        <div className="min-h-[192px] h-fit pt-[55px] p-6 mx-auto bg-white rounded-lg shadow-lg relative max-w-[1100px] pointer-events-auto">
+          <div className="absolute -top-[74px] left-1/2 -translate-x-1/2 flex flex-col items-center w-full max-w-[960px] min-w-[820px] gap-1 bg-[#000000] pt-2 pb-2.5 px-2.5 rounded-3xl shadow-lg z-10">
             {/* Hàng 1: Sản phẩm nổi bật */}
-            <div className="flex justify-center gap-2 w-full">
+            <div className="flex justify-center gap-2 w-full pb-1.5">
               {/* Tab 0 */}
               <button
                 className={`flex items-center justify-center whitespace-nowrap text-white px-5 py-2.5 rounded-3xl focus:outline-none transition-colors ${activeTab === 0 ? "bg-[#1570EF]" : "bg-transparent"
@@ -216,12 +217,12 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
               >
                 <Image
                   src="/icon/Ticket.svg"
-                  alt="Dịch vụ tại sân bay"
+                  alt="Đón tiễn ưu tiên (FastTrack)"
                   width={18}
                   height={18}
                   style={{ width: 18, height: 18 }}
                 />
-                <span className="ml-2 text-sm">{t("dich_vu_tai_san_bay")}</span>
+                <span className="ml-2 text-sm">{t("don_tien_uu_tien_fast_track") || "Đón tiễn ưu tiên (FastTrack)"}</span>
               </button>
             </div>
 
@@ -234,7 +235,7 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
                   }`}
               >
                 <Image
-                  src="/icon/map-pinned.svg"
+                  src="/icon/map-pinned-light.svg"
                   alt="Tours"
                   width={14}
                   height={14}
@@ -291,6 +292,22 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
                   style={{ width: 14, height: 14 }}
                 />
                 <span className="ml-1.5">{t("bao_hiem") || "Bảo hiểm"}</span>
+              </button>
+
+              {/* Tab 10: Phòng chờ */}
+              <button
+                onClick={() => setActiveTab(10)}
+                className={`flex items-center justify-center whitespace-nowrap text-white px-3 py-1 rounded-2xl focus:outline-none transition-colors text-xs ${activeTab === 10 ? "bg-[#1570EF]" : "bg-transparent opacity-75 hover:opacity-100"
+                  }`}
+              >
+                <Image
+                  src="/icon/waiting-room-icon.svg"
+                  alt="Phòng chờ"
+                  width={14}
+                  height={14}
+                  style={{ width: 14, height: 14 }}
+                />
+                <span className="ml-1.5">{t("phong_cho_thuong_gia") || "Phòng chờ"}</span>
               </button>
 
               {/* Vé tàu */}
@@ -372,12 +389,17 @@ export default function Search({ airportsData, visaOptionsFilter, comboLocations
 
           {/* Tabs 8 - Vé vui chơi & hoạt động */}
           <div className={`mt-2 ${activeTab === 8 ? "block" : "hidden"}`}>
-            <SearchAmusement />
+            <SearchAmusement locations={comboLocations} />
           </div>
 
           {/* Tabs 9 - Bảo hiểm */}
           <div className={`mt-2 ${activeTab === 9 ? "block" : "hidden"}`}>
             <SearchInsurance />
+          </div>
+
+          {/* Tabs 10 - Phòng chờ thương gia */}
+          <div className={`mt-2 ${activeTab === 10 ? "block" : "hidden"}`}>
+            <LoungeSearchWidget />
           </div>
         </div>
       </div>

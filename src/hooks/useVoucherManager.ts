@@ -2,6 +2,7 @@ import { VoucherProgramApi } from "@/api/VoucherProgram";
 import { VoucherType } from "@/types/voucher";
 import { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
+import { useUser } from "@/contexts/UserContext";
 
 export interface InvalidVoucher {
   id: number;
@@ -9,6 +10,9 @@ export interface InvalidVoucher {
 }
 
 export function useVoucherManager(productType: string) {
+  const { userInfo } = useUser();
+  const customerId = userInfo?.id;
+
   const [voucherProgramIds, setVoucherProgramIds] = useState<number[]>([]);
   const [voucherErrors, setVoucherErrors] = useState<InvalidVoucher[]>([]);
   const [vouchersData, setVouchersData] = useState<VoucherType[]>([]);
@@ -17,12 +21,12 @@ export function useVoucherManager(productType: string) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await VoucherProgramApi.list(productType);
+      const response = await VoucherProgramApi.list(productType, customerId);
       const data = response?.payload?.data ?? [];
       setVouchersData(data);
     };
     fetchData();
-  }, [productType]);
+  }, [productType, customerId]);
 
   const handleInvalidVouchers = (invalidList: InvalidVoucher[]) => {
     const invalidIds = invalidList.map((v) => v.id);
@@ -41,16 +45,32 @@ export function useVoucherManager(productType: string) {
       programIds: number[];
     }) => {
       setTotalDiscount(discountAmount);
+      
+      const hasChanged =
+        programIds.length !== voucherProgramIds.length ||
+        programIds.some((id, idx) => id !== voucherProgramIds[idx]);
+
       setVoucherProgramIds(programIds);
-      handleInvalidVouchers(voucherErrors);
+
+      if (hasChanged) {
+        handleInvalidVouchers(voucherErrors);
+      }
     },
-    [voucherErrors]
+    [voucherErrors, voucherProgramIds]
   );
+
+  const productTypeRef = useRef(productType);
+  const customerIdRef = useRef(customerId);
+
+  useEffect(() => {
+    productTypeRef.current = productType;
+    customerIdRef.current = customerId;
+  }, [productType, customerId]);
 
   const debouncedSearchRef = useRef(
     debounce(async (code: string) => {
       setSearchingVouchers(true);
-      const res = await VoucherProgramApi.search(productType, code);
+      const res = await VoucherProgramApi.search(productTypeRef.current, code, customerIdRef.current);
 
       setVouchersData((prev) => {
         const newData = res?.payload?.data ?? [];
