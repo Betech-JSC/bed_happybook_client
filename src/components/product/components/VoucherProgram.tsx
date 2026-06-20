@@ -7,6 +7,7 @@ import { VoucherType } from "@/types/voucher";
 import { debounce, isEqual } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Select, { MultiValue, ActionMeta } from "react-select";
+import { toast } from "react-hot-toast";
 
 const CustomOption = (isCurrencyVnd: boolean) => {
   const Component = (props: any) => {
@@ -128,6 +129,10 @@ export default function VoucherProgram({
   useEffect(() => {
     const programIds = selectedVouchers.map((v) => v.voucher_id);
     let discount = selectedVouchers.reduce((sum, v) => {
+      // Check if this voucher has a pending error in voucherErrors
+      const hasError = voucherErrors?.some((err: any) => err.id === v.voucher_id);
+      if (hasError) return sum;
+
       if (isCurrencyVnd) {
         return (
           sum +
@@ -164,7 +169,7 @@ export default function VoucherProgram({
       prevPayload.current = payload;
       onApplyVoucher(payload);
     }
-  }, [selectedVouchers, totalPrice, onApplyVoucher, isCurrencyVnd]);
+  }, [selectedVouchers, totalPrice, onApplyVoucher, isCurrencyVnd, voucherErrors]);
 
   useEffect(() => {
     if (!selectedVouchers.length) return;
@@ -191,6 +196,31 @@ export default function VoucherProgram({
       return voucher.discount_value_dollar > 0;
     }
   });
+
+  const handleCancelPendingOrder = async (orderCode: string) => {
+    if (confirm(t("Bạn có chắc chắn muốn hủy đơn hàng đang chờ thanh toán trước đó không?"))) {
+      try {
+        const res = await fetch("/api/auth/payment/cancel", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderCode }),
+        });
+        if (res.ok) {
+          toast.success(t("Hủy đơn hàng thành công. Hãy thử áp dụng lại mã giảm giá."));
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          toast.error(t("Không thể hủy đơn hàng. Vui lòng liên hệ hỗ trợ."));
+        }
+      } catch (err) {
+        console.error("Error cancelling pending order:", err);
+        toast.error(t("Có lỗi xảy ra khi hủy đơn hàng."));
+      }
+    }
+  };
 
   const handleInputChange = (input: string) => {
     onSearch(input);
@@ -232,9 +262,22 @@ export default function VoucherProgram({
         </div>
         {voucherErrors?.length > 0 &&
           voucherErrors.map((error: any, index: number) => (
-            <p key={index} className="text-red-500 font-medium text-sm">
-              {error.message}
-            </p>
+            <div key={index} className="text-red-500 font-medium text-sm flex flex-col gap-1 mt-1">
+              <span>{error.message}</span>
+              {error.pending_order_code && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCancelPendingOrder(error.pending_order_code);
+                  }}
+                  className="text-blue-600 underline font-semibold text-left hover:text-blue-800 transition-colors mt-0.5"
+                >
+                  {t("Hủy đơn hàng chờ thanh toán trước đó để áp dụng mã mới")}
+                </button>
+              )}
+            </div>
           ))}
       </div>
     </div>

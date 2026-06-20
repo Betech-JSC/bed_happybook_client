@@ -63,9 +63,9 @@ export function resolveCheckoutFareTotal(input: {
 
   if (
     input.orderInfoTotal != null &&
-    !Number.isNaN(input.orderInfoTotal)
+    !Number.isNaN(Number(input.orderInfoTotal))
   ) {
-    return input.orderInfoTotal;
+    return Number(input.orderInfoTotal);
   }
 
   return searchTotal;

@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { getImageSrc, handleSessionStorage, renderTextContent } from "@/utils/Helper";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { BookingDetailProps } from "@/types/flight";
@@ -43,6 +43,20 @@ export default function BookingDetail() {
   const [vietQrData, setVietQrData] = useState<any>({});
   const [loadingSubmitForm, setLoadingSubmitForm] = useState<boolean>(false);
   const [pollingStatus, setPollingStatus] = useState<boolean>(false);
+  const paymentWindowRef = useRef<Window | null>(null);
+  const paidStatuses = useMemo(() => [
+    "paid",
+    "processing",
+    "completed",
+    "approved",
+    "done",
+    "price_confirmed",
+    "issued",
+    "issuing",
+    "paid_book_failed",
+    "pending_refund"
+  ], []);
+  const isPaidOrder = isPaid || paidStatuses.includes(data?.status?.toLowerCase() ?? "");
 
   // Lấy order_code từ URL
   const orderCodeFromUrl = searchParams.get("order_code");
@@ -196,16 +210,48 @@ export default function BookingDetail() {
     };
   }, [data?.code, isPaid, pollingStatus]);
 
+  // Monitor payment window close to auto-cancel and release welcome voucher
+  useEffect(() => {
+    let interval: any;
+    if (pollingStatus && !isPaidOrder && data?.code) {
+      interval = setInterval(() => {
+        if (paymentWindowRef.current && paymentWindowRef.current.closed) {
+          clearInterval(interval);
+          setPollingStatus(false);
+          fetch("/api/auth/payment/cancel", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderCode: data.code }),
+          })
+            .then((res) => {
+              if (res.ok) {
+                toast.success(t("Thanh toán đã được hủy và giải phóng mã giảm giá."));
+                router.refresh ? router.refresh() : window.location.reload();
+              }
+            })
+            .catch((err) => {
+              console.error("Error cancelling payment order status:", err);
+            });
+        }
+      }, 1500);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [pollingStatus, isPaidOrder, data?.code, router, t]);
+
   useEffect(() => {
     if (selectedPaymentMethod === "onepay") {
-      const totalPrice = data?.total_price || 0;
-      const totalDiscount = data?.total_discount || 0;
+      const totalPrice = Number(data?.total_price ?? 0);
+      const totalDiscount = Number(data?.total_discount ?? 0);
       setOnePayFee((totalPrice - totalDiscount) * 0.025);
     } else {
       setOnePayFee(0);
       if (selectedPaymentMethod === 'vietqr' && !qrCodeGenerated && data?.code) {
-        const totalPrice = data?.total_price || 0;
-        const totalDiscount = data?.total_discount || 0;
+        const totalPrice = Number(data?.total_price ?? 0);
+        const totalDiscount = Number(data?.total_discount ?? 0);
         const total = totalPrice - totalDiscount;
         const orderCode = data?.code;
 
@@ -280,7 +326,8 @@ export default function BookingDetail() {
 
             if (paymentResult?.success && paymentResult?.payment_url) {
               // Redirect đến trang thanh toán OnePay (Mở tab mới)
-              window.open(paymentResult.payment_url, '_blank');
+              const payWin = window.open(paymentResult.payment_url, '_blank');
+              paymentWindowRef.current = payWin;
               setPollingStatus(true);
               toast.success(t("da_mo_trang_thanh_toan_o_tab_moi"));
             } else {
@@ -327,6 +374,35 @@ export default function BookingDetail() {
     }
   };
 
+  const [isCancellingOrder, setIsCancellingOrder] = useState<boolean>(false);
+
+  const handleCancelOrder = async () => {
+    if (!data?.code) return;
+    if (confirm(t("Bạn có chắc chắn muốn hủy đặt dịch vụ này không?"))) {
+      try {
+        setIsCancellingOrder(true);
+        const res = await fetch("/api/auth/payment/cancel", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderCode: data.code }),
+        });
+        if (res.ok) {
+          toast.success(t("Hủy đơn hàng thành công và giải phóng mã giảm giá."));
+          router.refresh ? router.refresh() : window.location.reload();
+        } else {
+          toast.error(t("Không thể hủy đặt dịch vụ. Vui lòng liên hệ hỗ trợ."));
+        }
+      } catch (err) {
+        console.error("Error cancelling order:", err);
+        toast.error(t("Có lỗi xảy ra khi hủy đặt dịch vụ."));
+      } finally {
+        setIsCancellingOrder(false);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -339,24 +415,12 @@ export default function BookingDetail() {
   }
   if (!data) notFound();
 
-  const totalPrice = data?.total_price || 0;
-  const totalDiscount = data?.total_discount || 0;
+  const totalPrice = Number(data?.total_price ?? 0);
+  const totalDiscount = Number(data?.total_discount ?? 0);
   const finalTotal = totalPrice + onePayFee - totalDiscount;
   const isYacht = data?.code?.startsWith("YACHT");
 
-  const paidStatuses = [
-    "paid",
-    "processing",
-    "completed",
-    "approved",
-    "done",
-    "price_confirmed",
-    "issued",
-    "issuing",
-    "paid_book_failed",
-    "pending_refund"
-  ];
-  const isPaidOrder = isPaid || paidStatuses.includes(data?.status?.toLowerCase() ?? "");
+
 
   const cancelledStatuses = ["failed", "cancelled"];
   const isCancelledOrFailedOrder = cancelledStatuses.includes(data?.status?.toLowerCase() ?? "");
@@ -818,37 +882,49 @@ export default function BookingDetail() {
                 vietQrData={vietQrData}
                 order={{
                   sku: data?.code,
-                  total_price: data?.total_price,
-                  total_discount: data?.total_discount,
+                  total_price: Number(data?.total_price ?? 0),
+                  total_discount: Number(data?.total_discount ?? 0),
                 }}
                 isPaid={isPaid}
                 setIsPaid={(paid) => setIsPaid(paid)}
               />
             )}
-            <LoadingButton
-              style={
-                loadingSubmitForm ||
-                  isGeneratingPaymentUrl ||
-                  !selectedPaymentMethod ||
-                  (selectedPaymentMethod === "vietqr" && !isPaid)
-                  ? "mt-6 bg-gray-300 disabled:cursor-not-allowed"
-                  : "mt-6"
-              }
-              isLoading={loadingSubmitForm || isGeneratingPaymentUrl}
-              text={
-                isGeneratingPaymentUrl
-                  ? t("dang_tao_link_thanh_toan")
-                  : selectedPaymentMethod === "vietqr" && !isPaid
-                    ? t("dang_cho_thanh_toan")
-                    : t("thanh_toan")
-              }
-              disabled={
-                loadingSubmitForm ||
-                isGeneratingPaymentUrl ||
-                !selectedPaymentMethod ||
-                (selectedPaymentMethod === "vietqr" && !isPaid)
-              }
-            />
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 mt-6">
+              <div className="flex-1">
+                <LoadingButton
+                  style={
+                    loadingSubmitForm ||
+                      isGeneratingPaymentUrl ||
+                      !selectedPaymentMethod ||
+                      (selectedPaymentMethod === "vietqr" && !isPaid)
+                      ? "w-full bg-gray-300 disabled:cursor-not-allowed"
+                      : "w-full"
+                  }
+                  isLoading={loadingSubmitForm || isGeneratingPaymentUrl}
+                  text={
+                    isGeneratingPaymentUrl
+                      ? t("dang_tao_link_thanh_toan")
+                      : selectedPaymentMethod === "vietqr" && !isPaid
+                        ? t("dang_cho_thanh_toan")
+                        : t("thanh_toan")
+                  }
+                  disabled={
+                    loadingSubmitForm ||
+                    isGeneratingPaymentUrl ||
+                    !selectedPaymentMethod ||
+                    (selectedPaymentMethod === "vietqr" && !isPaid)
+                  }
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleCancelOrder}
+                disabled={isCancellingOrder || loadingSubmitForm || isGeneratingPaymentUrl}
+                className="flex-1 border border-red-500 text-red-500 hover:bg-red-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-200 py-2.5 rounded-lg text-center font-semibold text-15 cursor-pointer transition-colors"
+              >
+                {isCancellingOrder ? t("dang_huy") : t("Hủy đặt dịch vụ")}
+              </button>
+            </div>
           </form>
         )}
 
@@ -928,10 +1004,10 @@ export default function BookingDetail() {
                   />
                 </div>
               )
-            ) : (((data?.product?.discount_price || 0) + totalDiscount) > 0 ? (
+            ) : (((Number(data?.product?.discount_price) || 0) + totalDiscount) > 0 ? (
               <DisplayPriceWithDiscount
                 price={finalTotal}
-                originalPrice={totalPrice + (data?.product?.discount_price || 0) + onePayFee}
+                originalPrice={totalPrice + (Number(data?.product?.discount_price) || 0) + onePayFee}
                 currency={data?.product?.currency}
               />
             ) : (
