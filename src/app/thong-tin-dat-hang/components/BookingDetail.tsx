@@ -165,7 +165,8 @@ export default function BookingDetail() {
   const showPayPalOnly = isFastTrack && isEnglish;
 
   useEffect(() => {
-    if (showPayPalOnly) {
+    const isAmusementPaypal = data?.code?.startsWith("EVT") && language === "en";
+    if (showPayPalOnly || isAmusementPaypal) {
       setValue("payment_method", "paypal");
       setSelectedPaymentMethod("paypal");
     } else {
@@ -174,7 +175,7 @@ export default function BookingDetail() {
         setSelectedPaymentMethod("");
       }
     }
-  }, [showPayPalOnly, setValue]);
+  }, [showPayPalOnly, language, data?.code, selectedPaymentMethod, setValue]);
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -292,6 +293,7 @@ export default function BookingDetail() {
     }
   }, [selectedPaymentMethod]);
 
+
   const onSubmit = async (dataForm: CheckOutBodyType) => {
     if (!data?.code) {
       toast.error(t("khong_tim_thay_ma_don_hang"));
@@ -342,21 +344,34 @@ export default function BookingDetail() {
         } else if (selectedPaymentMethod === "paypal") {
           setIsGeneratingPaymentUrl(true);
           try {
-            const paymentResult = await BookingProductApi.paypalCreateOrder({
-              order_code: data.code,
-            });
+            if (data.code.startsWith("EVT")) {
+              const paymentResult = await BookingProductApi.paypalCreateTicketOrder({
+                order_code: data.code,
+              });
 
-            if (paymentResult?.payload?.success && paymentResult?.payload?.data?.approval_url) {
-              // Redirect to PayPal
-              window.location.href = paymentResult.payload.data.approval_url;
+              if (paymentResult?.status === 200 && paymentResult?.payload?.data?.approval_url) {
+                window.location.href = paymentResult.payload.data.approval_url;
+                toast.success(t("dang_chuyen_toi_paypal") || "Redirecting to PayPal...");
+              } else {
+                setIsGeneratingPaymentUrl(false);
+                toast.error(paymentResult?.payload?.message || t("khong_the_tao_link_thanh_toan"));
+              }
             } else {
-              setIsGeneratingPaymentUrl(false);
-              toast.error(paymentResult?.payload?.message || t("Không thể tạo link thanh toán PayPal."));
+              const paymentResult = await BookingProductApi.paypalCreateOrder({
+                order_code: data.code,
+              });
+
+              if (paymentResult?.payload?.success && paymentResult?.payload?.data?.approval_url) {
+                window.location.href = paymentResult.payload.data.approval_url;
+              } else {
+                setIsGeneratingPaymentUrl(false);
+                toast.error(paymentResult?.payload?.message || t("Không thể tạo link thanh toán PayPal."));
+              }
             }
           } catch (paymentError: any) {
             setIsGeneratingPaymentUrl(false);
             console.error("Error generating PayPal URL:", paymentError);
-            toast.error(t("Có lỗi xảy ra khi tạo link thanh toán PayPal."));
+            toast.error(t("co_loi_xay_ra_khi_tao_link_thanh_toan"));
           }
         } else if (selectedPaymentMethod === "vietqr") {
           // VietQR handled by useEffect
@@ -766,39 +781,60 @@ export default function BookingDetail() {
                 {t("hinh_thuc_thanh_toan")}
               </p>
               <div className="bg-white rounded-xl p-3 md:p-6 mt-3">
-                {showPayPalOnly ? (
-                  <div className="flex space-x-3 items-start ">
+                {showPayPalOnly || (language === "en" && data?.code?.startsWith("EVT")) ? (
+                  <div className="flex space-x-3 items-center">
                     <input
                       type="radio"
                       value="paypal"
                       id="payment_paypal"
                       {...register("payment_method")}
-                      className="w-5 h-5 mt-[2px]"
+                      className="w-5 h-5 shrink-0 mt-[2px]"
                       checked={selectedPaymentMethod === "paypal"}
                       onChange={(e) => {
                         setValue("payment_method", e.target.value);
                         setSelectedPaymentMethod(e.target.value);
                       }}
                     />
-                    <label
-                      htmlFor="payment_paypal"
-                      className=" flex space-x-1"
-                    >
-                      <div className="font-normal">
-                        <Image
-                          src="/payment-method/visa.svg"
-                          alt="PayPal"
-                          width={48}
-                          height={28}
-                          className="md:mt-1"
-                        />
-                      </div>
-                      <div>
-                        <span className="font-medium text-base max-width-[85%]">
-                          {t("Thanh toán qua PayPal")}
-                        </span>
-                      </div>
-                    </label>
+                    {data?.code?.startsWith("EVT") ? (
+                      <label
+                        htmlFor="payment_paypal"
+                        className="flex items-center gap-4 cursor-pointer"
+                      >
+                        <div className="flex h-11 min-w-[92px] items-center justify-center rounded-2xl border border-[#D7E3FA] bg-[#F7FAFF] px-3 shadow-sm">
+                          <span
+                            className="text-[17px] font-extrabold italic leading-none tracking-[-0.02em] text-[#003087]"
+                            style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}
+                          >
+                            PayPal
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-bold text-slate-800 text-lg">
+                            PayPal / Credit Card
+                          </span>
+                        </div>
+                      </label>
+                    ) : (
+                      <label
+                        htmlFor="payment_paypal"
+                        className="flex space-x-1 cursor-pointer"
+                      >
+                        <div className="font-normal">
+                          <Image
+                            src="/payment-method/visa.svg"
+                            alt="PayPal"
+                            width={48}
+                            height={28}
+                            className="md:mt-1"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-medium text-base max-width-[85%]">
+                            {t("Thanh toán qua PayPal")}
+                          </span>
+                        </div>
+                      </label>
+                    )}
                   </div>
                 ) : (
                   <>

@@ -61,7 +61,7 @@ export default function TicketOptionContent({ content }: any) {
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <span className="font-medium group-hover:text-primary duration-300">
-            {isExpanded ? t("an_bot") : t("xem_them")}
+            {isExpanded ? (t("thu_gon") || t("an_bot")) : t("xem_them")}
           </span>
           <button
             className={`duration-300 ${isExpanded ? "rotate-180" : "rotate-0"}`}

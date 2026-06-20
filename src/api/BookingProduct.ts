@@ -23,7 +23,7 @@ const BookingProductApi = {
   FastTrack: (data: any) => http.post<any>(`${path}/fast-track`, data, undefined, 60000),
   BusinessLounge: (data: any) => http.post<any>(`${path}/business-lounge`, data, undefined, 60000),
   updatePaymentMethod: (data: any) =>
-    http.post<any>(`${path}/update-payment-method`, data),
+    http.post<any>(`${path}/update-payment-method`, data, undefined, 60000),
   paypalCreateOrder: (body: { order_code: string }) =>
     http.post<any>(`${path}/paypal/create-order`, body),
   paypalCaptureOrder: (body: { order_code?: string; paypal_order_id?: string }) =>
@@ -38,6 +38,10 @@ const BookingProductApi = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  paypalCreateTicketOrder: (body: { order_code: string }) =>
+    http.post<any>(`product/amusement-ticket/paypal/create-order`, body),
+  paypalCaptureTicketOrder: (body: { paypal_order_id?: string; order_code?: string }) =>
+    http.post<any>(`product/amusement-ticket/paypal/capture-order`, body),
   HistoryAll: (token: string | undefined, page: number, pageSize: number = 10) =>
     http.get<any>(`${path}/history/all?page=${page}&page_size=${pageSize}`, {
       headers: {

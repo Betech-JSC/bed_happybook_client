@@ -27,11 +27,13 @@ import { Metadata } from "next";
 import { BlogTypes, pageUrl } from "@/utils/Urls";
 import { getServerT } from "@/lib/i18n/getServerT";
 import TicketDetailInfor from "../components/TicketDetailInfor";
+import { getServerLang } from "@/lib/session";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { slug } = params;
+  const language = await getServerLang();
 
-  const res = (await ProductTicket.detailBySlug(params.slug)) as any;
+  const res = (await ProductTicket.detailBySlug(params.slug, language)) as any;
   const data = res?.payload?.data;
 
   return formatMetadata({
@@ -62,7 +64,8 @@ export default async function EntertainmentTicketDetail({
   params: { slug: string };
   searchParams: { [key: string]: string | undefined };
 }) {
-  const res = (await ProductTicket.detail(params.slug)) as any;
+  const language = await getServerLang();
+  const res = (await ProductTicket.detail(params.slug, undefined, language)) as any;
   const detail = res?.payload?.data;
 
   if (!detail) notFound();
