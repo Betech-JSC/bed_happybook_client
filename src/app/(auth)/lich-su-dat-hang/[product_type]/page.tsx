@@ -21,6 +21,7 @@ type ProductType =
   | "bao-hiem"
   | "fast-track"
   | "phong-cho-thuong-gia"
+  | "business-lounge"
   | "esim";
 
 interface ProductItem {
@@ -93,6 +94,12 @@ const products: Record<ProductType, ProductItem> = {
     label: "Phòng chờ thương gia",
     type: "business-lounge",
     path: "/lich-su-dat-hang/phong-cho-thuong-gia",
+    page: "/phong-cho-thuong-gia",
+  },
+  "business-lounge": {
+    label: "Phòng chờ thương gia",
+    type: "business-lounge",
+    path: "/lich-su-dat-hang/business-lounge",
     page: "/phong-cho-thuong-gia",
   },
   esim: {

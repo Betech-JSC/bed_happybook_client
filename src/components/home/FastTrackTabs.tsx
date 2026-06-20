@@ -148,7 +148,7 @@ export default function FastTrackTabs({
                             </Link>
                             <div className="mt-2 text-end">
                               <DisplayPrice
-                                textPrefix="Giá từ"
+                                textPrefix="Giá"
                                 price={item.min_price}
                                 currency={item?.currency}
                               />

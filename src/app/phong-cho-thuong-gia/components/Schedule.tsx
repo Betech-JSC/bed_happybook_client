@@ -3,9 +3,11 @@ import { renderTextContent } from "@/utils/Helper";
 import { useState } from "react";
 import "@/styles/ckeditor-content.scss";
 import DisplayContentEditor from "@/components/base/DisplayContentEditor";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Schedule({ schedule }: any) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(0);
+  const { t } = useTranslation();
   const toggleDropdown = (id: number) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
@@ -13,9 +15,8 @@ export default function Schedule({ schedule }: any) {
     <div className={`bg-white rounded-2xl p-6`}>
       <h2
         className="pl-2 border-l-4 mb-5 border-[#F27145] text-22 font-bold"
-        data-translate
       >
-        Lịch trình
+        {t("lich_trinh")}
       </h2>
       {schedule.length > 0 ? (
         schedule.map((schedule: any, key: number) => (
@@ -73,8 +74,8 @@ export default function Schedule({ schedule }: any) {
         ))
       ) : (
         <div className="mt-4">
-          <p className="text-base font-semibold" data-translate>
-            Nội dung đang cập nhật....
+          <p className="text-base font-semibold">
+            {t("thong_tin_dang_cap_nhat")}
           </p>
         </div>
       )}

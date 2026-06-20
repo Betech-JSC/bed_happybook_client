@@ -117,7 +117,7 @@ export default function SearchForm() {
       </div>
 
       <div className="flex flex-wrap lg:flex-nowrap gap-2">
-        <div className="w-full lg:w-5/12">
+        <div className="w-full lg:w-10/12">
           <label className="block text-gray-700 mb-1" data-translate="true">
             {t("noi_di") || "Nơi đi"}
           </label>
@@ -160,36 +160,6 @@ export default function SearchForm() {
                 isLoading={isLoading}
               />
             )}
-          </div>
-        </div>
-        <div className="w-full lg:w-5/12">
-          <label className="block text-gray-700 mb-1" data-translate="true">
-            {t("ngay_di") || "Ngày đi"}
-          </label>
-          <div className="flex h-12 items-center border rounded-lg px-2">
-            <Image
-              src="/icon/calendar.svg"
-              alt="Phone icon"
-              className="h-10"
-              width={18}
-              height={18}
-            ></Image>
-            <div className="w-full [&>div]:w-full border-none">
-              <DatePicker
-                selected={departureDate}
-                onChange={(date) => setDepartureDate(date)}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="Chọn ngày"
-                popperPlacement="bottom-start"
-                minDate={today}
-                locale={language === "vi" ? vi : enUS}
-                onFocus={(e) => e.target.blur()}
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                }}
-                className="z-20 pl-3 w-full outline-none"
-              />
-            </div>
           </div>
         </div>
         <div className="w-full lg:w-2/12">

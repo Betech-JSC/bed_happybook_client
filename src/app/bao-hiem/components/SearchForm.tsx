@@ -188,8 +188,8 @@ export default function SearchFormInsurance() {
     (opt) => opt.label !== formData.departurePlace
   );
   return (
-    <div className="flex flex-wrap lg:flex-nowrap gap-4 lg:gap-2">
-      <div className="w-full xl:w-[40%] flex flex-wrap md:flex-nowrap gap-3">
+    <div className="flex flex-wrap lg:flex-nowrap gap-4 lg:gap-2 mt-[15px]">
+      <div className="w-full lg:w-[40%] flex flex-wrap md:flex-nowrap gap-3">
         <div className="w-full md:w-1/2">
           <label className="block text-gray-700 mb-2 lg:mb-1">
             {t("diem_di")}
@@ -315,7 +315,7 @@ export default function SearchFormInsurance() {
         </div>
       </div>
 
-      <div className="w-full xl:w-[50%] flex flex-wrap md:flex-nowrap gap-2 md:gap-3">
+      <div className="w-full lg:w-[45%] flex flex-wrap md:flex-nowrap gap-2 md:gap-3">
         <div className="w-full md:w-1/2 lg:w-[55%]">
           <label className="block text-gray-700 mb-2 lg:mb-1">
             {t("ngay_di")} - {t("ngay_ve")}
@@ -420,19 +420,20 @@ export default function SearchFormInsurance() {
         </div>
       </div>
 
-      <div className="w-full lg:w-[10%]" onClick={handleSearch}>
-        <label className="hidden lg:block text-gray-700 mb-1 h-6"></label>
-        <div className="text-center cursor-pointer w-full items-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800  ">
-          <Image
-            src="/icon/search.svg"
-            alt="Tìm kiếm"
-            className="h-10 inline-block"
-            width={18}
-            height={18}
-            style={{ width: 18, height: 18 }}
-          ></Image>
-          <button className="ml-2 inline-block h-12 text-white rounded-lg focus:outline-none">
-            {t("tim_kiem")}
+      <div className="w-full lg:w-[15%] cursor-pointer lg:mt-8" onClick={handleSearch}>
+        <div className="flex items-center justify-center border rounded-lg px-2 h-12 bg-orange-700 hover:bg-orange-800 duration-300">
+          <button
+            type="button"
+            className="inline-flex items-center justify-center space-x-2 text-white font-medium focus:outline-none"
+          >
+            <Image
+              src="/icon/search.svg"
+              alt="Tìm kiếm"
+              className="h-5"
+              width={18}
+              height={18}
+            />
+            <span>{t("tim_kiem")}</span>
           </button>
         </div>
       </div>

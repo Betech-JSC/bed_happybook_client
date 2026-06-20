@@ -93,7 +93,7 @@ export default function SearchYachtList({ yachts }: any) {
                 <div className="mt-1 text-end">
                   <DisplayPrice
                     price={item.min_price}
-                    textPrefix="chỉ từ"
+                    textPrefix="Giá"
                     currency={item?.currency}
                   />
                 </div>

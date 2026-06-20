@@ -18,6 +18,7 @@ import SideBarFilterProduct from "@/components/product/components/SideBarFilter"
 import { useTranslation } from "@/hooks/useTranslation";
 import DisplayPrice from "@/components/base/DisplayPrice";
 import { translateText } from "@/utils/translateApi";
+import { useWelcomeDiscount } from "@/hooks/useWelcomeDiscount";
 
 type optionFilterType = {
   label: string;
@@ -35,6 +36,7 @@ export default function Search({
 }) {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const welcomeDiscount = useWelcomeDiscount("entertainment_ticket");
 
   const searchParams = useSearchParams();
   const paramCategory = searchParams.get("category");
@@ -44,6 +46,8 @@ export default function Search({
   }>({
     page: 1,
     location: searchParams.get("location") ?? "",
+    from: searchParams.get("from") ?? "",
+    to: searchParams.get("to") ?? "",
     "category[]": paramCategory ? [paramCategory] : [],
   });
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
@@ -97,6 +101,8 @@ export default function Search({
   const handleFilterChange = (group: string, value: string) => {
     setData([]);
     query.location = "";
+    query.from = "";
+    query.to = "";
     setQuery((prevFilters) => {
       const groupFilters = Array.isArray(prevFilters[group])
         ? prevFilters[group]
@@ -237,11 +243,31 @@ export default function Search({
                         {renderTextContent(item.name)}
                       </Link>
                       <div className="mt-1 text-end">
-                        <DisplayPrice
-                          price={item.min_price}
-                          textPrefix="Giá từ"
-                          currency={item?.currency}
-                        />
+                        {welcomeDiscount ? (
+                          <div className="flex flex-col items-end">
+                            <DisplayPrice
+                              price={item.min_price}
+                              currency={item?.currency}
+                              className="!text-gray-500 !line-through !font-normal !text-sm"
+                            />
+                            <DisplayPrice
+                              price={
+                                welcomeDiscount.type === "amount"
+                                  ? Math.max(0, item.min_price - (item?.currency?.code?.toUpperCase() === "USD" ? (welcomeDiscount.valueUsd ?? 2) : welcomeDiscount.value))
+                                  : Math.max(0, item.min_price * (1 - welcomeDiscount.value / 100))
+                              }
+                              currency={item?.currency}
+                              textPrefix="Giá"
+                              className="!text-[#F27145] !font-bold !text-lg"
+                            />
+                          </div>
+                        ) : (
+                          <DisplayPrice
+                            price={item.min_price}
+                            textPrefix="Giá"
+                            currency={item?.currency}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>

@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { ProductBusinessLoungeApi } from "@/api/ProductBusinessLounge";
 import { format, isValid } from "date-fns";
 import toast from "react-hot-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Option = {
   label: string;
@@ -19,6 +20,7 @@ export default function SearchForm() {
   const router = useRouter();
   const today = new Date();
   const { language } = useLanguage();
+  const { t } = useTranslation();
 
   const [locationSelected, setLocationSelected] = useState<any>(null);
   const [departureDate, setDepartureDate] = useState<Date | null>(today);
@@ -50,12 +52,12 @@ export default function SearchForm() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const res = await ProductBusinessLoungeApi.search(`?location=${dateStr}`);
+      const res = await ProductBusinessLoungeApi.location(`?departDate=${dateStr}`);
       const data = res?.payload?.data ?? [];
 
       const newOptions: Option[] = data.map((item: any) => ({
-        label: item.name,
-        value: `${item.slug}-${item.id}`,
+        label: item.label,
+        value: String(item.value),
       }));
 
       setLocations(newOptions);
@@ -88,17 +90,11 @@ export default function SearchForm() {
   }, [locationSelected]);
 
   const handleSearch = () => {
-    if (locationSelected && isValid(departureDate)) {
-      const date = format(
-        isValid(departureDate ?? undefined) ? departureDate! : new Date(),
-        "yyyy-MM-dd"
-      );
-      const lastDashIndex = locationSelected.value.lastIndexOf("-");
-      const slug = locationSelected.value.substring(0, lastDashIndex);
-      router.push(`/phong-cho-thuong-gia/${slug}?departDate=${date}`);
+    if (locationSelected) {
+      router.push(`/phong-cho-thuong-gia?location_id[]=${locationSelected.value}`);
     } else {
       toast.dismiss();
-      toast.error("Vui lòng chọn đầy đủ thông tin");
+      toast.error(t("vui_long_chon_day_du_thong_tin"));
     }
   };
   return (
@@ -109,15 +105,15 @@ export default function SearchForm() {
             className="text-[18px] font-semibold text-black"
             data-translate="true"
           >
-            Tìm phòng chờ thương gia
+            {t("tim_phong_cho_thuong_gia") || "Tìm phòng chờ thương gia"}
           </span>
         </label>
       </div>
 
       <div className="flex flex-wrap lg:flex-nowrap gap-2">
-        <div className="w-full lg:w-5/12">
+        <div className="w-full lg:w-10/12">
           <label className="block text-gray-700 mb-1" data-translate="true">
-            Nơi đi
+            {t("dia_diem") || "Địa điểm"}
           </label>
           <div className="flex h-12 items-center border rounded-lg px-2">
             <Image
@@ -131,8 +127,7 @@ export default function SearchForm() {
               <Select
                 options={locations}
                 value={locationSelected}
-                placeholder={`${language === "en" ? "Select destination" : "Chọn điểm đến"
-                  }`}
+                placeholder={t("chon_diem_den") || "Chọn điểm đến"}
                 className="w-full"
                 styles={{
                   control: (base) => ({
@@ -178,7 +173,7 @@ export default function SearchForm() {
                 selected={departureDate}
                 onChange={(date) => setDepartureDate(date)}
                 dateFormat="dd/MM/yyyy"
-                placeholderText="Chọn ngày"
+                placeholderText={t("chon_ngay")}
                 popperPlacement="bottom-start"
                 minDate={today}
                 locale={language === "vi" ? vi : enUS}
@@ -211,7 +206,7 @@ export default function SearchForm() {
               data-translate="true"
               disabled={isLoading}
             >
-              Tìm kiếm
+              {t("tim_kiem") || "Tìm kiếm"}
             </button>
           </div>
         </div>

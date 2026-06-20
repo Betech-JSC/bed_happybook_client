@@ -58,10 +58,41 @@ export default function FormLogin() {
       const redirectUrl = resolveSafeAuthRedirect(
         searchParams.get("redirect")
       );
+
+      // Check if there is any pending action from the voucher popup modal
+      let targetRedirectUrl = redirectUrl;
+      const postLoginActionStr = sessionStorage.getItem("post_login_action");
+      if (postLoginActionStr) {
+        try {
+          const action = JSON.parse(postLoginActionStr);
+          if (action.code && action.redirectUrl) {
+            sessionStorage.setItem("applied_welcome_program", action.code);
+            targetRedirectUrl = action.redirectUrl;
+            sessionStorage.removeItem("post_login_action");
+          }
+        } catch (e) {
+          console.error("Error parsing post_login_action:", e);
+        }
+      }
+
+      // Try to claim welcome vouchers in the background for first-time customers
+      fetch("/api/auth/claim-welcome-vouchers", { method: "POST" })
+        .then(async (res) => {
+          if (res.ok) {
+            console.log("Welcome vouchers successfully claimed/verified in database.");
+          } else {
+            const errData = await res.json();
+            console.log("Welcome vouchers claim status:", errData.message);
+          }
+        })
+        .catch((err) => {
+          console.error("Error calling claim-welcome-vouchers API:", err);
+        });
+
       setTimeout(() => {
         toast.dismiss();
         setUserInfo(resData.user_info);
-        if (redirectUrl) router.push(redirectUrl);
+        if (targetRedirectUrl) router.push(targetRedirectUrl);
         else router.push("/");
       }, 500);
     } catch (error: any) {

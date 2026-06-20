@@ -143,13 +143,40 @@ export default function BusinessLoungeDetailInfor({ product }: any) {
                           </div>
                           <div className="flex items-start justify-between">
                             <div>
-                              <DisplayPrice
-                                className={`!text-base mr-4 text-black !font-normal`}
-                                price={ticket.price}
-                                currency={product?.currency}
-                              />
+                              {(() => {
+                                const hasDiscount =
+                                  product?.discount_price > 0 && product?.price > 0;
+                                if (hasDiscount) {
+                                  const discountRatio = product.discount_price / product.price;
+                                  const sale = ticket.price * (1 - discountRatio);
+                                  const original = ticket.price;
+                                  return (
+                                    <div className="flex items-baseline justify-end gap-2.5">
+                                      {original > sale && (
+                                        <DisplayPrice
+                                          price={original}
+                                          currency={product?.currency}
+                                          className="!text-gray-400 !line-through !font-normal !text-[13px]"
+                                        />
+                                      )}
+                                      <DisplayPrice
+                                        price={sale}
+                                        currency={product?.currency}
+                                        className="!text-[#F27145] !font-extrabold !text-lg"
+                                      />
+                                    </div>
+                                  );
+                                }
+                                return (
+                                  <DisplayPrice
+                                    className={`!text-base mr-4 text-black !font-normal`}
+                                    price={ticket.price}
+                                    currency={product?.currency}
+                                  />
+                                );
+                              })()}
 
-                              <p className="text-sm text-gray-500 mt-1">
+                              <p className="text-sm text-gray-500 mt-1 text-end">
                                 {t("gia")} / {t("khach")}
                               </p>
                             </div>

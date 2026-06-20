@@ -149,7 +149,7 @@ export default async function RootLayout({
                   <Header></Header>
                   <HeaderMobile></HeaderMobile>
                   <MobileMenuOverlay />
-                  {/* <PromoModal /> */}
+                  <PromoModal />
                   {children}
                   <Toaster toastOptions={toastOptions} />
                   <div id="datepicker-portal"></div>

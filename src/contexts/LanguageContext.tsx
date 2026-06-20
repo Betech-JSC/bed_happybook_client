@@ -7,6 +7,7 @@ import {
   useContext,
   useEffect,
   useState,
+  Suspense,
 } from "react";
 
 type LanguageContextType = {
@@ -34,6 +35,27 @@ export const useLanguage = () => {
   );
 };
 
+function LanguageSync({
+  serverLang,
+  changeLanguage,
+}: {
+  serverLang: string;
+  changeLanguage: (lang: string) => void;
+}) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.has("lang")) {
+      const lang = searchParams.get("lang");
+      if (lang !== serverLang && arrLanguages.includes(lang!)) {
+        changeLanguage(lang!);
+      }
+    }
+  }, [searchParams, serverLang, changeLanguage]);
+
+  return null;
+}
+
 export const LanguageProvider = ({
   children,
   serverLang,
@@ -42,7 +64,6 @@ export const LanguageProvider = ({
   serverLang: string;
 }) => {
   const [language, setLanguage] = useState(serverLang);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     localStorage.setItem("language", serverLang);
@@ -64,17 +85,11 @@ export const LanguageProvider = ({
     [language]
   );
 
-  useEffect(() => {
-    if (searchParams.has("lang")) {
-      const lang = searchParams.get("lang");
-      if (lang !== serverLang && arrLanguages.includes(lang!)) {
-        changeLanguage(lang!);
-      }
-    }
-  }, [searchParams, serverLang, changeLanguage]);
-
   return (
     <LanguageContext.Provider value={{ language, setLanguage: changeLanguage }}>
+      <Suspense fallback={null}>
+        <LanguageSync serverLang={serverLang} changeLanguage={changeLanguage} />
+      </Suspense>
       {children}
     </LanguageContext.Provider>
   );
