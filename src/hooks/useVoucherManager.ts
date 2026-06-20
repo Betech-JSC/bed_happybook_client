@@ -45,10 +45,18 @@ export function useVoucherManager(productType: string) {
       programIds: number[];
     }) => {
       setTotalDiscount(discountAmount);
+      
+      const hasChanged =
+        programIds.length !== voucherProgramIds.length ||
+        programIds.some((id, idx) => id !== voucherProgramIds[idx]);
+
       setVoucherProgramIds(programIds);
-      handleInvalidVouchers(voucherErrors);
+
+      if (hasChanged) {
+        handleInvalidVouchers(voucherErrors);
+      }
     },
-    [voucherErrors]
+    [voucherErrors, voucherProgramIds]
   );
 
   const productTypeRef = useRef(productType);
