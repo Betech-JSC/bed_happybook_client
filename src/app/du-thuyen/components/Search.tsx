@@ -275,7 +275,7 @@ export default function Search({
                             <DisplayPrice
                               price={
                                 welcomeDiscount.type === "amount"
-                                  ? Math.max(0, item.min_price - (item?.currency?.code?.toUpperCase() === "USD" ? 2 : 50000))
+                                  ? Math.max(0, item.min_price - (item?.currency?.code?.toUpperCase() === "USD" ? (welcomeDiscount.valueUsd ?? 2) : welcomeDiscount.value))
                                   : Math.max(0, item.min_price * (1 - welcomeDiscount.value / 100))
                               }
                               currency={item?.currency}

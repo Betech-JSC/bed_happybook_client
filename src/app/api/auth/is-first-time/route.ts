@@ -2,6 +2,8 @@ import { getSession } from "@/lib/session";
 
 const apiEndPoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/customer/is-first-time`;
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const session = await getSession();
   if (!session.access_token) {
@@ -14,6 +16,7 @@ export async function GET() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.access_token}`,
       },
+      cache: "no-store",
     });
 
     if (!response.ok) {
