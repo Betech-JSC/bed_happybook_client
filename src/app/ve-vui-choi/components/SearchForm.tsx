@@ -35,6 +35,7 @@ export default function SearchForm({ locations: propLocations = [] }: { location
   const [isLoading, setIsLoading] = useState(false);
   const isFetchedRef = useRef<boolean>(false);
   const lastFetchedDateRef = useRef<string | null>(null);
+  const activeRequestRef = useRef<string | null>(null);
   const hasOpenedRef = useRef<boolean>(false);
 
   // State for Route Mode (Master logic)
@@ -57,12 +58,19 @@ export default function SearchForm({ locations: propLocations = [] }: { location
       return;
     }
 
+    activeRequestRef.current = dateStr;
     setIsLoading(true);
     setFetchedLocations([]);
     try {
       await new Promise((resolve) => setTimeout(resolve, 300));
+      if (activeRequestRef.current !== dateStr) {
+        return;
+      }
 
       const res = await ProductTicket.location(`?departDate=${dateStr}`, language);
+      if (activeRequestRef.current !== dateStr) {
+        return;
+      }
       const data = res?.payload?.data ?? [];
 
       const newOptions: Option[] = data.map((item: any) => ({
@@ -86,9 +94,13 @@ export default function SearchForm({ locations: propLocations = [] }: { location
         setLocationSelected(stillExists ?? null);
       }
     } catch (error) {
-      console.error("Error fetching locations:", error);
+      if (activeRequestRef.current === dateStr) {
+        console.error("Error fetching locations:", error);
+      }
     } finally {
-      setIsLoading(false);
+      if (activeRequestRef.current === dateStr) {
+        setIsLoading(false);
+      }
     }
   }, [departureDate, language]);
 
