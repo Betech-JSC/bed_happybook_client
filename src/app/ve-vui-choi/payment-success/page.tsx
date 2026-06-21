@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { BookingProductApi } from "@/api/BookingProduct";
@@ -9,7 +9,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 type CaptureState = "loading" | "success" | "error";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { language } = useLanguage();
@@ -100,5 +100,22 @@ export default function PaymentSuccessPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="pt-[90px] lg:min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+          <Loader2 className="text-blue-500 w-16 h-16 mx-auto animate-spin" />
+          <h2 className="text-2xl font-semibold text-slate-800 mt-4">
+            Loading...
+          </h2>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessPageContent />
+    </Suspense>
   );
 }
