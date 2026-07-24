@@ -1697,7 +1697,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         <input
                           id="fullName"
                           type="text"
-                          {...register(`atd.${index}.firstName`)}
+                          {...register(`atd.${index}.lastName`)}
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
@@ -1708,9 +1708,9 @@ export default function FlightBookForm({ airportsData }: any) {
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
                         </span>
-                        {errors.atd?.[index]?.firstName && (
+                        {errors.atd?.[index]?.lastName && (
                           <p className="text-red-600">
-                            {errors.atd[index].firstName?.message}
+                            {errors.atd[index].lastName?.message}
                           </p>
                         )}
                       </div>
@@ -1725,7 +1725,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         <input
                           id="fullName"
                           type="text"
-                          {...register(`atd.${index}.lastName`)}
+                          {...register(`atd.${index}.firstName`)}
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
@@ -1736,9 +1736,9 @@ export default function FlightBookForm({ airportsData }: any) {
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
                         </span>
-                        {errors.atd?.[index]?.lastName && (
+                        {errors.atd?.[index]?.firstName && (
                           <p className="text-red-600">
-                            {errors.atd[index].lastName?.message}
+                            {errors.atd[index].firstName?.message}
                           </p>
                         )}
                       </div>
@@ -2054,7 +2054,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         <input
                           id="fullName"
                           type="text"
-                          {...register(`chd.${index}.firstName`)}
+                          {...register(`chd.${index}.lastName`)}
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
@@ -2065,9 +2065,9 @@ export default function FlightBookForm({ airportsData }: any) {
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
                         </span>
-                        {errors.chd?.[index]?.firstName && (
+                        {errors.chd?.[index]?.lastName && (
                           <p className="text-red-600">
-                            {errors.chd[index].firstName?.message}
+                            {errors.chd[index].lastName?.message}
                           </p>
                         )}
                       </div>
@@ -2082,7 +2082,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         <input
                           id="fullName"
                           type="text"
-                          {...register(`chd.${index}.lastName`)}
+                          {...register(`chd.${index}.firstName`)}
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
@@ -2093,9 +2093,9 @@ export default function FlightBookForm({ airportsData }: any) {
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
                         </span>
-                        {errors.chd?.[index]?.lastName && (
+                        {errors.chd?.[index]?.firstName && (
                           <p className="text-red-600">
-                            {errors.chd[index].lastName?.message}
+                            {errors.chd[index].firstName?.message}
                           </p>
                         )}
                       </div>
@@ -2308,7 +2308,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         <input
                           id="fullName"
                           type="text"
-                          {...register(`inf.${index}.firstName`)}
+                          {...register(`inf.${index}.lastName`)}
                           placeholder="Nhập họ"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
@@ -2319,9 +2319,9 @@ export default function FlightBookForm({ airportsData }: any) {
                           Vui lòng nhập họ hợp lệ, đúng chính tả và như trên
                           giấy tờ tùy thân
                         </span>
-                        {errors.inf?.[index]?.firstName && (
+                        {errors.inf?.[index]?.lastName && (
                           <p className="text-red-600">
-                            {errors.inf[index].firstName?.message}
+                            {errors.inf[index].lastName?.message}
                           </p>
                         )}
                       </div>
@@ -2336,7 +2336,7 @@ export default function FlightBookForm({ airportsData }: any) {
                         <input
                           id="fullName"
                           type="text"
-                          {...register(`inf.${index}.lastName`)}
+                          {...register(`inf.${index}.firstName`)}
                           placeholder="Nhập tên đệm và tên"
                           className="text-sm w-full border border-gray-300 rounded-md pt-6 pb-2 placeholder-gray-400 focus:outline-none  focus:border-primary indent-3.5"
                         />
@@ -2347,9 +2347,9 @@ export default function FlightBookForm({ airportsData }: any) {
                           Vui lòng nhập tên của hành khách đúng như trên giấy tờ
                           tùy thân
                         </span>
-                        {errors.inf?.[index]?.lastName && (
+                        {errors.inf?.[index]?.firstName && (
                           <p className="text-red-600">
-                            {errors.inf[index].lastName?.message}
+                            {errors.inf[index].firstName?.message}
                           </p>
                         )}
                       </div>
